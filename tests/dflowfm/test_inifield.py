@@ -4,7 +4,7 @@ from typing import List
 
 import numpy as np
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -73,7 +73,7 @@ class TestIniField:
         return inifield_values
 
     @pytest.mark.parametrize(
-        "attribute,input,expected",
+        "attribute,attribute_value,expected",
         _datafiletype_cases
         + _interpolationmethod_cases
         + _operand_cases
@@ -81,10 +81,10 @@ class TestIniField:
         + _locationtype_cases,
     )
     def test_initialfield_parses_flowdirection_case_insensitive(
-        self, attribute: str, input, expected
+        self, attribute: str, attribute_value, expected
     ):
         inifield_values = self._create_required_inifield_values()
-        inifield_values[attribute.lower()] = input
+        inifield_values[attribute.lower()] = attribute_value
 
         datafiletype = inifield_values.get("datafiletype")
         if datafiletype and datafiletype.lower() == DataFileType.polygon.lower():
@@ -95,9 +95,8 @@ class TestIniField:
         assert getattr(inifield, attribute.lower()) == expected
 
     def test_inifield_model(self, input_files_dir: Path):
-        filepath = input_files_dir.joinpath(
-            "dflowfm_individual_files/initialFields.ini"
-        )
+        filepath = input_files_dir / "dflowfm_individual_files/initialFields.ini"
+
         m = IniFieldModel(filepath)
 
         assert len(m.initial) == 2
@@ -162,7 +161,9 @@ class TestIniField:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[InitialField].parse_obj({"val": document.sections[0]})
+        wrapper = WrapperTest[InitialField].model_validate(
+            {"val": document.sections[0]}
+        )
         inifield = wrapper.val
 
         assert inifield.quantity == "waterDepth"
@@ -317,5 +318,5 @@ class TestInitialConditions:
         with pytest.raises(ValidationError) as error:
             InitialField(**dict_values)
 
-        expected_message = f"{alias_field}\n  field required "
+        expected_message = f"{alias_field}\n  Field required "
         assert expected_message in str(error.value)

@@ -2,7 +2,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
-from pydantic.v1 import validator
+from pydantic import field_validator
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.ini.io_models import (
@@ -40,17 +40,18 @@ class ParserConfig(BaseModel):
     parse_comments: bool = True
     comment_delimiter: str = "#"
 
-    @validator("parse_datablocks")
+    @field_validator("parse_datablocks", mode="after")
+    @classmethod
     def allow_only_keywods_and_parse_datablocks_leads_should_not_both_be_true(
-        cls, parse_datablocks, values
+        cls, parse_datablocks, info
     ):
         # if both allow_only_keywords and parse_datablocks is true, we cannot
         # distinguish between the two, and the parsing will not recognise either
         # properly
         if (
             parse_datablocks
-            and "allow_only_keywords" in values
-            and values["allow_only_keywords"]
+            and "allow_only_keywords" in info.data
+            and info.data["allow_only_keywords"]
         ):
             raise ValueError(
                 "Both parse_datablocks and allow_only_keywords should not be both True."

@@ -229,22 +229,6 @@ def quantityunitpair(quantity, unit, verticalpositionindex=None):
 
 
 @pytest.fixture
-def time_series_values() -> Dict[str, Any]:
-    return dict(
-        name="boundary_timeseries",
-        function="timeseries",
-        timeinterpolation=TimeInterpolation.block_to,
-        offset="1.23",
-        factor="2.34",
-        quantityunitpair=[
-            quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
-            quantityunitpair("dischargebnd", "m³/s"),
-        ],
-        datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
-    )
-
-
-@pytest.fixture
 def t3d_values():
     return dict(
         name="boundary_t3d",
@@ -266,4 +250,20 @@ def t3d_values():
             ["60", "4", "5", "6"],
             ["120", "7", "8", "9"],
         ],
+    )
+
+
+@pytest.fixture
+def time_series_values() -> Dict[str, Any]:
+    return dict(
+        name="boundary_timeseries",
+        function="timeseries",
+        timeinterpolation=TimeInterpolation.block_to,
+        offset="1.23",
+        factor="2.34",
+        quantityunitpair=[
+            quantityunitpair("time", "minutes since 2015-01-01 00:00:00"),
+            quantityunitpair("dischargebnd", "m³/s"),
+        ],
+        datablock=[["0", "1.23"], ["60", "2.34"], ["120", "3.45"]],
     )

@@ -35,9 +35,9 @@ class XYNSerializer:
         for point in data["points"]:
             serialized_point: str = space.join(
                 [
-                    format_float(point.x),
-                    format_float(point.y),
-                    format_name(point.n),
+                    format_float(point["x"]),
+                    format_float(point["y"]),
+                    format_name(point["n"]),
                 ]
             )
             serialized_points.append(serialized_point)

@@ -1,17 +1,21 @@
-"""
+"""Structure models for D-Flow FM.
+
 structure namespace for storing the contents of an [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]'s structure file.
 """
-
-# TODO Implement the following structures
-# - Gate
 
 import logging
 from enum import Enum
 from operator import gt, ne
-from typing import Dict, List, Literal, Optional, Set, Union
+from pathlib import Path
+from typing import Annotated, Dict, List, Literal, Optional, Set, Union
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator, validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -22,7 +26,6 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     get_enum_validator,
-    get_from_subclass_defaults,
     get_split_string_on_delimiter_validator,
     make_list_validator,
     validate_conditionally,
@@ -34,13 +37,26 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 
 logger = logging.getLogger(__name__)
 
-ForcingData = Union[float, TimModel, ForcingModel]
+
+def load_model(value):
+    """Load a model from a file path or return the value as is."""
+    if isinstance(value, (str, Path)):
+        path = Path(value)
+        if path.suffix == ".tim":
+            return TimModel(filepath=path)
+        elif path.suffix == ".bc":
+            return ForcingModel(filepath=path)
+    return value  # already a float, TimModel, or ForcingModel
 
 
-# TODO: handle comment blocks
-# TODO: handle duplicate keys
+ForcingDataUnion = Annotated[
+    Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
+]
+
+
 class Structure(INIBasedModel):
-    # TODO: would we want to load this from something externally and generate these automatically
+    """Structure model."""
+
     class Comments(INIBasedModel.Comments):
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
@@ -88,7 +104,8 @@ class Structure(INIBasedModel):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """
+        """Get the UnknownKeywordErrorManager for this model.
+
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
@@ -97,20 +114,20 @@ class Structure(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @validator("type", pre=True)
-    def _validate_type(cls, value):
-        return get_from_subclass_defaults(Structure, "type", value)
-
-    @root_validator
+    @field_validator("type", mode="after")
     @classmethod
-    def check_location(cls, values: dict) -> dict:
-        """
-        Validates the location of the structure based on the given parameters.
-        For instance, if a branchid is given, then it is expected also the chainage,
-        otherwise numcoordinates xcoordinates and ycoordinates shall be expected.
+    def lowercase_type(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.lower()
+        return v
 
-        Args:
-            values (dict): Dictionary of values validated for the new structure.
+    @model_validator(mode="after")
+    def check_location(self):
+        """Check location of the structure.
+
+        Validates the location of the structure based on the given parameters for the following cases:
+            - if a branchid is given, then it is expected also the chainage, otherwise numcoordinates xcoordinates
+            and ycoordinates shall be expected.
 
         Raises:
             ValueError: When branchid or chainage values are not valid (empty strings).
@@ -119,12 +136,14 @@ class Structure(INIBasedModel):
         Returns:
             dict: Dictionary of values validated for the new structure.
         """
-        filtered_values = {k: v for k, v in values.items() if v is not None}
+        values_dict = self.model_dump()
+
+        filtered_values = {k: v for k, v in values_dict.items() if v is not None}
         structype = filtered_values.get("type", "").lower()
 
-        if structype == "compound" or issubclass(cls, (Compound)):
+        if structype == "compound" or issubclass(self.__class__, Compound):
             # Compound structure does not require a location specification.
-            return values
+            return self
 
         # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
         polyline_compatible_structures = dict(
@@ -146,43 +165,51 @@ class Structure(INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Error: do not allow both x/y and polyline file:
-        assert not (
-            polylinefile_in_model and coordinates_in_model
-        ), f"`Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+        if polylinefile_in_model and coordinates_in_model:
+            raise ValueError(
+                "Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+            )
 
         # Error: require x/y or polyline file:
         if (
             structype in polyline_compatible_structures.keys()
             and structype in only_coordinates_structures.keys()
         ):
-            assert (
-                coordinates_in_model or polylinefile_in_model
-            ), f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+            if not (coordinates_in_model or polylinefile_in_model):
+                raise ValueError(
+                    f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+                )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
             not polylinefile_in_model
             and structype in only_coordinates_structures.keys()
         ):
-            assert (
-                coordinates_in_model
-            ), f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+            if not coordinates_in_model:
+                raise ValueError(
+                    f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+                )
 
         # Error: final check: at least one of x/y, branchId+chainage or polyline file must be given
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
             filtered_values
         )
-        assert (
+
+        if not (
             branch_and_chainage_in_model
             or coordinates_in_model
             or polylinefile_in_model
-        ), "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+        ):
+            raise ValueError(
+                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+            )
 
-        return values
+        return self
 
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
-        """
+        """Validate branch and chainage in model.
+
         Static method to validate whether the given branchid and chainage values
         match the expectation of a new structure.
 
@@ -208,7 +235,8 @@ class Structure(INIBasedModel):
 
     @staticmethod
     def validate_coordinates_in_model(values: dict) -> bool:
-        """
+        """Validate coordinates in model.
+
         Static method to validate whether the given values match the expectations
         of a structure to define its coordinates.
 
@@ -245,32 +273,6 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `type` field.
-        This field is compared to each `type` field of the derived models of `Structure`.
-        The derived model with an equal structure type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            for c in cls.__subclasses__():
-                if (
-                    c.__fields__.get("type").default.lower()
-                    == v.get("type", "").lower()
-                ):
-                    v = c(**v)
-                    break
-            else:
-                raise ValueError(
-                    f"Type of {cls.__name__} with id={v.get('id', '')} and type={v.get('type', '')} is not recognized."
-                )
-        return super().validate(v)
-
     def _exclude_fields(self) -> Set:
         # exclude the non-applicable, or unset props like coordinates or branches
         if self.type == "compound":
@@ -287,7 +289,8 @@ class Structure(INIBasedModel):
 
 
 class FlowDirection(StrEnum):
-    """
+    """Flow direction of a structure.
+
     Enum class containing the valid values for the allowedFlowDirection
     attribute in several subclasses of Structure.
     """
@@ -300,7 +303,8 @@ class FlowDirection(StrEnum):
 
 
 class Orientation(StrEnum):
-    """
+    """Orientation of a structure.
+
     Enum class containing the valid values for the orientation
     attribute in several subclasses of Structure.
     """
@@ -311,7 +315,8 @@ class Orientation(StrEnum):
 
 
 class Weir(Structure):
-    """
+    """Weir structure.
+
     Hydraulic structure with `type=weir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -344,7 +349,7 @@ class Weir(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -353,7 +358,8 @@ class Weir(Structure):
 
 
 class UniversalWeir(Structure):
-    """
+    """Universal Weir structure.
+
     Hydraulic structure with `type=universalWeir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -408,7 +414,8 @@ class CulvertSubType(StrEnum):
 
 
 class Culvert(Structure):
-    """
+    """Culvert structure.
+
     Hydraulic structure with `type=culvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -426,29 +433,29 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: Optional[ForcingData] = Field(alias="valveOpeningHeight")
-    numlosscoeff: Optional[int] = Field(alias="numLossCoeff")
-    relopening: Optional[List[float]] = Field(alias="relOpening")
-    losscoeff: Optional[List[float]] = Field(alias="lossCoeff")
-    bedfrictiontype: Optional[FrictionType] = Field(alias="bedFrictionType")
-    bedfriction: Optional[float] = Field(alias="bedFriction")
+    valveopeningheight: Optional[ForcingDataUnion] = Field(
+        None, alias="valveOpeningHeight"
+    )
+    numlosscoeff: Optional[int] = Field(None, alias="numLossCoeff")
+    relopening: Optional[List[float]] = Field(None, alias="relOpening")
+    losscoeff: Optional[List[float]] = Field(None, alias="lossCoeff")
+    bedfrictiontype: Optional[FrictionType] = Field(None, alias="bedFrictionType")
+    bedfriction: Optional[float] = Field(None, alias="bedFriction")
     subtype: Optional[CulvertSubType] = Field(
         CulvertSubType.culvert.value, alias="subType"
     )
-    bendlosscoeff: Optional[float] = Field(alias="bendLossCoeff")
+    bendlosscoeff: Optional[float] = Field(None, alias="bendLossCoeff")
 
     _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
     _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
     _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
 
-    @root_validator(allow_reuse=True)
-    def validate_that_valve_related_fields_are_present_for_culverts_with_valves(
-        cls, values: Dict
-    ) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_valve_related_fields_are_present_for_culverts_with_valves(self):
         """Validates that valve-related fields are present when there is a valve present."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            self.model_dump(),
             "valveopeningheight",
             "numlosscoeff",
             "relopening",
@@ -456,45 +463,46 @@ class Culvert(Structure):
             conditional_field_name="valveonoff",
             conditional_value=True,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(
-        cls, values: Dict
-    ) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_bendlosscoeff_field_is_present_for_invertedsyphons(self):
         """Validates that the bendlosscoeff value is present when dealing with inverted syphons."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            self.model_dump(),
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.invertedSiphon,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths(self):
         """Validates that the length of the relopening and losscoeff fields are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.model_dump(),
             "relopening",
             "losscoeff",
             length_name="numlosscoeff",
             list_required_with_length=True,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def validate_that_bendlosscoeff_is_not_provided_for_culverts(
-        cls, values: Dict
-    ) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_bendlosscoeff_is_not_provided_for_culverts(self):
         """Validates that the bendlosscoeff field is not provided when the subtype is a culvert."""
-        return validate_forbidden_fields(
-            values,
+        validate_forbidden_fields(
+            self.model_dump(),
             "bendlosscoeff",
             conditional_field_name="subtype",
             conditional_value=CulvertSubType.culvert,
         )
+        return self
 
 
 class LongCulvert(Structure):
-    """
+    """Long Culvert structure.
+
     Hydraulic structure with `type=longCulvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -503,7 +511,7 @@ class LongCulvert(Structure):
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
-    allowedflowdir: Optional[FlowDirection] = Field(alias="allowedFlowDir")
+    allowedflowdir: Optional[FlowDirection] = Field(None, alias="allowedFlowDir")
     zcoordinates: Optional[List[float]] = Field(None, alias="zCoordinates")
 
     width: float = Field(alias="width")
@@ -511,29 +519,30 @@ class LongCulvert(Structure):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
     valverelativeopening: float = Field(alias="valveRelativeOpening")
-    csdefid: Optional[str] = Field(alias="csDefId")
+    csdefid: Optional[str] = Field(None, alias="csDefId")
 
     _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
     _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
 
-    @validator("zcoordinates", always=True)
+    @field_validator("zcoordinates", mode="after")
     @classmethod
-    def _validate_zcoordinates(cls, v, values):
+    def _validate_zcoordinates(cls, v, values: ValidationInfo):
         if v is None:
             return v
-
-        if len(v) != values["numcoordinates"]:
+        num_coordinates = values.data.get("numcoordinates")
+        if len(v) != num_coordinates:
             raise ValueError(
-                f"Expected {values['numcoordinates']} z-coordinates, but got {len(v)}."
+                f"Expected {num_coordinates} z-coordinates, but got {len(v)}."
             )
 
         return v
 
 
 class Pump(Structure):
-    """
+    """Pump structure.
+
     Hydraulic structure with `type=pump`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -543,20 +552,26 @@ class Pump(Structure):
 
     type: Literal["pump"] = Field("pump", alias="type")
 
-    orientation: Optional[Orientation] = Field(alias="orientation")
-    controlside: Optional[str] = Field(alias="controlSide")  # TODO Enum
-    numstages: Optional[int] = Field(alias="numStages")
-    capacity: ForcingData = Field(alias="capacity")
+    orientation: Optional[Orientation] = Field(None, alias="orientation")
+    controlside: Optional[str] = Field(None, alias="controlSide")
+    numstages: Optional[int] = Field(None, alias="numStages")
+    capacity: ForcingDataUnion = Field(alias="capacity")
 
-    startlevelsuctionside: Optional[List[float]] = Field(alias="startLevelSuctionSide")
-    stoplevelsuctionside: Optional[List[float]] = Field(alias="stopLevelSuctionSide")
-    startleveldeliveryside: Optional[List[float]] = Field(
-        alias="startLevelDeliverySide"
+    startlevelsuctionside: Optional[List[float]] = Field(
+        None, alias="startLevelSuctionSide"
     )
-    stopleveldeliveryside: Optional[List[float]] = Field(alias="stopLevelDeliverySide")
-    numreductionlevels: Optional[int] = Field(alias="numReductionLevels")
-    head: Optional[List[float]] = Field(alias="head")
-    reductionfactor: Optional[List[float]] = Field(alias="reductionFactor")
+    stoplevelsuctionside: Optional[List[float]] = Field(
+        None, alias="stopLevelSuctionSide"
+    )
+    startleveldeliveryside: Optional[List[float]] = Field(
+        None, alias="startLevelDeliverySide"
+    )
+    stopleveldeliveryside: Optional[List[float]] = Field(
+        None, alias="stopLevelDeliverySide"
+    )
+    numreductionlevels: Optional[int] = Field(None, alias="numReductionLevels")
+    head: Optional[List[float]] = Field(None, alias="head")
+    reductionfactor: Optional[List[float]] = Field(None, alias="reductionFactor")
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "startlevelsuctionside",
@@ -569,22 +584,21 @@ class Pump(Structure):
 
     _orientation_validator = get_enum_validator("orientation", enum=Orientation)
 
-    @root_validator(allow_reuse=True)
-    def validate_that_controlside_is_provided_when_numstages_is_provided(
-        cls, values: Dict
-    ) -> Dict:
-        return validate_required_fields(
-            values,
+    @model_validator(mode="after")
+    def validate_that_controlside_is_provided_when_numstages_is_provided(self):
+        validate_required_fields(
+            self.model_dump(),
             "controlside",
             conditional_field_name="numstages",
             conditional_value=0,
             comparison_func=gt,
         )
+        return self
 
     @classmethod
-    def _check_list_lengths_suctionside(cls, values: Dict) -> Dict:
+    def _check_list_lengths_suctionside(cls, values: Dict):
         """Validates that the length of the startlevelsuctionside and stoplevelsuctionside fields are as expected."""
-        return validate_correct_length(
+        validate_correct_length(
             values,
             "startlevelsuctionside",
             "stoplevelsuctionside",
@@ -592,25 +606,26 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
-    def conditionally_check_list_lengths_suctionside(cls, values: Dict) -> Dict:
-        """
+    @model_validator(mode="after")
+    def conditionally_check_list_lengths_suctionside(self) -> Dict:
+        """Check the length of suction side list.
+
         Validates the length of the suction side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the deliverySide.
         """
-        return validate_conditionally(
-            cls,
-            values,
+        validate_conditionally(
+            self.model_dump(),
             Pump._check_list_lengths_suctionside,
             "controlside",
             "deliverySide",
             ne,
         )
+        return self
 
-    @classmethod
-    def _check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
+    @staticmethod
+    def _check_list_lengths_deliveryside(values: Dict) -> Dict:
         """Validates that the length of the startleveldeliveryside and stopleveldeliveryside fields are as expected."""
-        return validate_correct_length(
+        validate_correct_length(
             values,
             "startleveldeliveryside",
             "stopleveldeliveryside",
@@ -618,35 +633,38 @@ class Pump(Structure):
             list_required_with_length=True,
         )
 
-    @root_validator(allow_reuse=True)
-    def conditionally_check_list_lengths_deliveryside(cls, values: Dict) -> Dict:
-        """
+    @model_validator(mode="after")
+    def conditionally_check_list_lengths_deliveryside(self):
+        """Check the length of deliveryside list.
+
         Validates the length of the delivery side fields, but only if there is a controlside value
         present in the values and the controlside is not equal to the suctionSide.
         """
-        return validate_conditionally(
-            cls,
-            values,
+        validate_conditionally(
+            self.model_dump(),
             Pump._check_list_lengths_deliveryside,
             "controlside",
             "suctionSide",
             ne,
         )
+        return self
 
-    @root_validator(allow_reuse=True)
-    def check_list_lengths_head_and_reductionfactor(cls, values):
+    @model_validator(mode="after")
+    def check_list_lengths_head_and_reductionfactor(self):
         """Validates that the lengths of the head and reductionfactor fields are as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            self.model_dump(),
             "head",
             "reductionfactor",
             length_name="numreductionlevels",
             list_required_with_length=True,
         )
+        return self
 
 
 class Compound(Structure):
-    """
+    """Compound structure.
+
     Hydraulic structure with `type=compound`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -664,7 +682,8 @@ class Compound(Structure):
 
 
 class Orifice(Structure):
-    """
+    """Orifice structure.
+
     Hydraulic structure with `type=orifice`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -677,39 +696,31 @@ class Orifice(Structure):
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: Optional[float] = Field(None, alias="crestWidth")
-    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
-    # TODO Use a validator here to check the optionals related to the bool field
     uselimitflowpos: Optional[bool] = Field(False, alias="useLimitFlowPos")
-    limitflowpos: Optional[float] = Field(alias="limitFlowPos")
+    limitflowpos: Optional[float] = Field(None, alias="limitFlowPos")
 
     uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
-    limitflowneg: Optional[float] = Field(alias="limitFlowNeg")
+    limitflowneg: Optional[float] = Field(None, alias="limitFlowNeg")
 
     _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
 
-    @validator("limitflowpos", always=True)
-    @classmethod
-    def _validate_limitflowpos(cls, v, values):
-        return cls._validate_limitflow(v, values, "limitFlowPos", "useLimitFlowPos")
-
-    @validator("limitflowneg", always=True)
-    @classmethod
-    def _validate_limitflowneg(cls, v, values):
-        return cls._validate_limitflow(v, values, "limitFlowNeg", "useLimitFlowNeg")
-
-    @classmethod
-    def _validate_limitflow(cls, v, values, limitflow: str, uselimitflow: str):
-        if v is None and values[uselimitflow.lower()] == True:
+    @model_validator(mode="after")
+    def _validate_limitflowpos(self):
+        if self.limitflowpos is None and self.uselimitflowpos:
             raise ValueError(
-                f"{limitflow} should be defined when {uselimitflow} is true"
+                "`limitFlowPos` should be defined when `useLimitFlowPos` is True."
             )
-
-        return v
+        if self.limitflowneg is None and self.uselimitflowneg:
+            raise ValueError(
+                "`limitFlowNeg` should be defined when `useLimitFlowNeg` is True."
+            )
+        return self
 
 
 class GateOpeningHorizontalDirection(StrEnum):
@@ -722,7 +733,8 @@ class GateOpeningHorizontalDirection(StrEnum):
 
 
 class GeneralStructure(Structure):
-    """
+    """General Structure.
+
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -824,7 +836,7 @@ class GeneralStructure(Structure):
     upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
 
     crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[ForcingData] = Field(0.0, alias="crestLevel")
+    crestlevel: Optional[ForcingDataUnion] = Field(0.0, alias="crestLevel")
     crestlength: Optional[float] = Field(0.0, alias="crestLength")
 
     downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
@@ -832,7 +844,9 @@ class GeneralStructure(Structure):
     downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
     downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[ForcingData] = Field(11.0, alias="gateLowerEdgeLevel")
+    gateloweredgelevel: Optional[ForcingDataUnion] = Field(
+        11.0, alias="gateLowerEdgeLevel"
+    )
     posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -845,7 +859,7 @@ class GeneralStructure(Structure):
     negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
     gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[ForcingData] = Field(0.0, alias="gateOpeningWidth")
+    gateopeningwidth: Optional[ForcingDataUnion] = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
@@ -854,13 +868,16 @@ class GeneralStructure(Structure):
 
 
 class DambreakAlgorithm(int, Enum):
+    """Dambreak algorithm options."""
+
     van_der_knaap = 1  # "van der Knaap, 2000"
     verheij_van_der_knaap = 2  # "Verheij-van der Knaap, 2002"
     timeseries = 3  # "Predefined time series, dambreakLevelsAndWidths."
 
     @property
     def description(self) -> str:
-        """
+        """Description.
+
         Property to return the description of the enums defined above.
         Useful for comments in output files.
 
@@ -876,7 +893,8 @@ class DambreakAlgorithm(int, Enum):
 
 
 class Dambreak(Structure):
-    """
+    """Dambreak structure.
+
     Hydraulic structure with `type=dambreak`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -958,26 +976,28 @@ class Dambreak(Structure):
     f2: float = Field(alias="f2")
     ucrit: float = Field(alias="uCrit")
     waterlevelupstreamlocationx: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationX"
+        None, alias="waterLevelUpstreamLocationX"
     )
     waterlevelupstreamlocationy: Optional[float] = Field(
-        alias="waterLevelUpstreamLocationY"
+        None, alias="waterLevelUpstreamLocationY"
     )
     waterleveldownstreamlocationx: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationX"
+        None, alias="waterLevelDownstreamLocationX"
     )
     waterleveldownstreamlocationy: Optional[float] = Field(
-        alias="waterLevelDownstreamLocationY"
+        None, alias="waterLevelDownstreamLocationY"
     )
-    waterlevelupstreamnodeid: Optional[str] = Field(alias="waterLevelUpstreamNodeId")
+    waterlevelupstreamnodeid: Optional[str] = Field(
+        None, alias="waterLevelUpstreamNodeId"
+    )
     waterleveldownstreamnodeid: Optional[str] = Field(
-        alias="waterLevelDownstreamNodeId"
+        None, alias="waterLevelDownstreamNodeId"
     )
     dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
-        alias="dambreakLevelsAndWidths"
+        None, alias="dambreakLevelsAndWidths"
     )
 
-    @validator("algorithm", pre=True)
+    @field_validator("algorithm", mode="after")
     @classmethod
     def validate_algorithm(cls, value: str) -> DambreakAlgorithm:
         """
@@ -993,21 +1013,22 @@ class Dambreak(Structure):
         Returns:
             int: Validated value.
         """
-        int_value = -1
         try:
             int_value = int(value)
         except Exception:
             raise ValueError("Dambreak algorithm value should be of type int.")
-        if 0 < int_value <= 3:
-            return DambreakAlgorithm(int_value)
-        raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
 
-    @validator("dambreaklevelsandwidths")
+        if not (0 < int_value <= 3):
+            raise ValueError("Dambreak algorithm value should be 1, 2 or 3.")
+        return DambreakAlgorithm(int_value)
+
+    @field_validator("dambreaklevelsandwidths", mode="after")
     @classmethod
     def validate_dambreak_levels_and_widths(
         cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
     ) -> Optional[Union[TimModel, ForcingModel]]:
-        """
+        """Validate dambreak levels and widths.
+
         Validates whether a dambreak can be created with the given dambreakLevelsAndWidths
         property. This property should be given when the algorithm value is 3.
 
@@ -1030,16 +1051,13 @@ class Dambreak(Structure):
             )
         return field_value
 
-    @root_validator
-    @classmethod
-    def check_location_dambreak(cls, values: dict) -> dict:
-        """
-        Verifies whether the location for this structure contains valid values for
-        numCoordinates, xCoordinates and yCoordinates or instead is using a polyline file.
-        Verifies whether de water level location specifications are valid.
+    @model_validator(mode="after")
+    def check_location_dambreak(self) -> "Dambreak":
+        """Check location dambreak.
 
-        Args:
-            values (dict): Dictionary of validated values to create a Dambreak.
+            - Verifies whether the location for this structure contains valid values for numCoordinates, xCoordinates and
+                yCoordinates or instead is using a polyline file.
+            - Verifies whether de water level location specifications are valid.
 
         Raises:
             ValueError: When the values dictionary does not contain valid coordinates or polyline file or when the water level location specifications are not valid.
@@ -1047,37 +1065,39 @@ class Dambreak(Structure):
         Returns:
             dict: Dictionary of validated values.
         """
-
-        def _validate_waterlevel_location(x_key: str, y_key: str, node_key: str):
-            x_is_given = values.get(x_key.lower()) is not None
-            y_is_given = values.get(y_key.lower()) is not None
-            node_is_given = values.get(node_key.lower()) is not None
-
-            if (x_is_given and y_is_given and not node_is_given) or (
-                node_is_given and not x_is_given and not y_is_given
-            ):
-                return
-
-            raise ValueError(
-                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
-            )
-
-        _validate_waterlevel_location(
+        self._validate_waterlevel_location(
+            self.model_dump(),
             "waterLevelUpstreamLocationX",
             "waterLevelUpstreamLocationY",
             "waterLevelUpstreamNodeId",
         )
-        _validate_waterlevel_location(
+        self._validate_waterlevel_location(
+            self.model_dump(),
             "waterLevelDownstreamLocationX",
             "waterLevelDownstreamLocationY",
             "waterLevelDownstreamNodeId",
         )
 
-        return values
+        return self
+
+    @staticmethod
+    def _validate_waterlevel_location(values, x_key: str, y_key: str, node_key: str):
+        x_is_given = values.get(x_key.lower()) is not None
+        y_is_given = values.get(y_key.lower()) is not None
+        node_is_given = values.get(node_key.lower()) is not None
+
+        if not (
+            (x_is_given and y_is_given and not node_is_given)
+            or (node_is_given and not x_is_given and not y_is_given)
+        ):
+            raise ValueError(
+                f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
+            )
 
 
 class Bridge(Structure):
-    """
+    """Bridge structure.
+
     Hydraulic structure with `type=bridge`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
@@ -1139,6 +1159,23 @@ class StructureGeneral(INIGeneral):
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
+StructureUnion = Annotated[
+    Union[
+        Weir,
+        UniversalWeir,
+        Culvert,
+        LongCulvert,
+        Pump,
+        Compound,
+        Orifice,
+        GeneralStructure,
+        Dambreak,
+        Bridge,
+    ],
+    Field(discriminator="type"),
+]
+
+
 class StructureModel(INIModel):
     """
     The overall structure model that contains the contents of one structure file.
@@ -1146,12 +1183,14 @@ class StructureModel(INIModel):
     This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[..]`.
 
     Attributes:
-        general (StructureGeneral): `[General]` block with file metadata.
-        branch (List[Structure]): List of `[Structure]` blocks for all hydraulic structures.
+        general (StructureGeneral):
+            `[General]` block with file metadata.
+        structure (List[Structure]):
+            List of `[Structure]` blocks for all hydraulic structures.
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[Structure] = []
+    structure: List[StructureUnion] = []
 
     @classmethod
     def _ext(cls) -> str:

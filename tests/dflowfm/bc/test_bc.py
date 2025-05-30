@@ -1,8 +1,8 @@
 import inspect
-from typing import Dict, List, Literal
+from typing import Any, Dict, List, Literal
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
@@ -49,6 +49,7 @@ class TestQuantityUnitPair:
 
 
 class TestTimeSeries:
+
     def test_create_a_forcing_from_scratch(self, time_series_values):
         forcing = TimeSeries(**time_series_values)
 
@@ -91,7 +92,7 @@ class TestTimeSeries:
 
         document = parser.finalize()
         sec = document.sections[0].flatten()
-        forcing = TimeSeries.parse_obj(sec)
+        forcing = TimeSeries.model_validate(sec)
 
         assert forcing.name == "right01_0001"
         assert forcing.function == "timeseries"
@@ -294,6 +295,7 @@ class TestVectorForcingBase:
 
 
 class TestT3D:
+
     @pytest.mark.parametrize(
         "vertical_position_type, exp_vertical_position_type",
         [

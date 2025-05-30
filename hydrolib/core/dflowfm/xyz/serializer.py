@@ -31,13 +31,13 @@ class XYZSerializer:
                 geometry: str = space.join(
                     [format_float(p) for p in XYZSerializer._get_point_values(point)]
                 )
-                if point.comment:
-                    f.write(f"{geometry} # {point.comment}\n")
+                if point.get("comment"):
+                    f.write(f"{geometry} # {point['comment']}\n")
                 else:
                     f.write(f"{geometry}\n")
 
     @staticmethod
-    def _get_point_values(point) -> Generator[float, None, None]:
-        yield point.x
-        yield point.y
-        yield point.z
+    def _get_point_values(point: Dict[str, float]) -> Generator[float, None, None]:
+        yield point["x"]
+        yield point["y"]
+        yield point["z"]

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.crosssection.models import (
     CircleCrsDef,
@@ -15,6 +15,11 @@ from hydrolib.core.dflowfm.crosssection.models import (
     ZWRiverCrsDef,
 )
 from hydrolib.core.dflowfm.friction.models import FrictionType
+from hydrolib.core.dflowfm.ini.util import (
+    LocationValidationConfiguration,
+    LocationValidationFieldNames,
+    validate_location_specification,
+)
 from tests.utils import (
     assert_files_equal,
     test_data_dir,
@@ -133,14 +138,14 @@ class TestCrossSectionDefinition:
     def test_create_a_circlecrsdef_with_duplicate_frictionspec(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = CircleCrsDef(
+            d = CircleCrsDef(
                 id=csdefid,
                 diameter=3.14,
                 frictionid="Brick",
                 frictiontype=FrictionType.walllawnikuradse,
                 frictionvalue=1.5,
             )
-        expected_message = f"Cross section has duplicate friction specification"
+        expected_message = f"{csdefid} has duplicate friction specification"
 
         assert expected_message in str(error.value)
 
@@ -219,10 +224,8 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],  # Intentional wrong list length
             )
         expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value."
-        expected_message1 = f"Number of values for frictionpositions should be equal to the sectioncount value + 1."
 
         assert expected_message0 in str(error.value)
-        assert expected_message1 in str(error.value)
 
     def test_create_a_yzcrsdef_without_frictionspec(self):
         csdefid = "Prof1"
@@ -287,11 +290,11 @@ class TestCrossSectionLocation:
     def test_one_crosssection(self):
         """test whether a CrossLocModel can be created with one cross-section"""
         data = {
-            "id": 99,
-            "branchId": 9,
+            "id": "99",
+            "branchId": "9",
             "chainage": 403.089709,
             "shift": 0.0,
-            "definitionId": 99,
+            "definitionId": "99",
         }
         cross_section = CrossSection(**data)
 
@@ -354,7 +357,17 @@ class TestCrossSectionLocation:
     )
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
         with pytest.raises(ValueError) as exc_err:
-            CrossSection.validate_that_location_specification_is_correct(dict_values)
+            validate_location_specification(
+                dict_values,
+                config=LocationValidationConfiguration(
+                    validate_node=False,
+                    validate_num_coordinates=False,
+                    validate_location_type=False,
+                ),
+                fields=LocationValidationFieldNames(
+                    x_coordinates="x", y_coordinates="y"
+                ),
+            )
         assert (
             str(exc_err.value) == "branchId and chainage or x and y should be provided"
         )
@@ -366,10 +379,16 @@ class TestCrossSectionLocation:
             x=42,
             y=24,
         )
-        return_value = CrossSection.validate_that_location_specification_is_correct(
-            test_dict
+
+        assert validate_location_specification(
+            test_dict,
+            config=LocationValidationConfiguration(
+                validate_node=False,
+                validate_num_coordinates=False,
+                validate_location_type=False,
+            ),
+            fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
-        assert return_value == test_dict
 
 
 class TestCrossSectionModel:

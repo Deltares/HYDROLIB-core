@@ -453,18 +453,18 @@ class TestFileModel(unittest.TestCase):
         # Test with valid value
         with patch.object(ConcreteFileModel, "_load"):
             value = ConcreteFileModel()
-            result = ConcreteFileModel.validate(value)
+            result = ConcreteFileModel.model_validate(value)
             self.assertEqual(result, value)
 
             # Test with None value
-            result = ConcreteFileModel.validate(None)
+            result = ConcreteFileModel.model_validate(None)
             self.assertIsNone(result)
 
             # Test with invalid value
             with patch.object(
                 FileModel,
-                "validate",
+                "model_validate",
                 side_effect=ValueError("Expected FileModel, got str"),
             ):
                 with self.assertRaises(ValueError):
-                    ConcreteFileModel.validate("not a FileModel")
+                    ConcreteFileModel.model_validate("not a FileModel")

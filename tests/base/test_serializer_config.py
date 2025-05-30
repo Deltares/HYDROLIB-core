@@ -25,7 +25,7 @@ class TestSerializerConfig(unittest.TestCase):
     def test_dict_method(self):
         """Test dict method returns correct dictionary."""
         config = SerializerConfig(float_format=".4f")
-        result = config.dict()
+        result = config.model_dump()
         self.assertIn("float_format", result)
         self.assertEqual(result["float_format"], ".4f")
 
@@ -41,7 +41,7 @@ class TestSerializerConfig(unittest.TestCase):
     def test_copy(self):
         """Test copying a SerializerConfig instance."""
         config = SerializerConfig(float_format=".5f")
-        config_copy = config.copy()
+        config_copy = config.model_copy()
 
         # Verify it's a different instance but with the same values
         self.assertIsNot(config, config_copy)

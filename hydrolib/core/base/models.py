@@ -12,10 +12,8 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
 
-from pydantic.v1 import BaseModel as PydanticBaseModel
-from pydantic.v1 import validator
-from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.v1.fields import ModelField, PrivateAttr
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import PrivateAttr, ValidationError, ValidationInfo, field_validator
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -52,22 +50,26 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
         classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
     """
 
-    def adjust_none(v: Any, field: "ModelField") -> Any:
-        if field.type_ is DiskOnlyFileModel and v is None:
+    @field_validator("*", mode="before")
+    def adjust_none(cls, v: Any, info: ValidationInfo):
+        field_type = cls.model_fields.get(info.field_name).annotation
+        if field_type is DiskOnlyFileModel and v is None:
             return {"filepath": None}
         return v
 
-    return validator("*", allow_reuse=True, pre=True)(adjust_none)
+    return adjust_none
 
 
 class BaseModel(PydanticBaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        validate_assignment = True
-        use_enum_values = True
-        extra = "forbid"  # will throw errors so we can fix our models
-        allow_population_by_field_name = True
-        alias_generator = to_key
+    model_config = {
+        "arbitrary_types_allowed": True,
+        "validate_assignment": True,
+        "use_enum_values": True,
+        "extra": "forbid",  # will throw errors so we can fix our models
+        "populate_by_name": True,
+        "alias_generator": to_key,
+        "error_url_template": None,
+    }
 
     def __init__(self, **data: Any) -> None:
         """Initialize a BaseModel with the provided data.
@@ -78,17 +80,13 @@ class BaseModel(PydanticBaseModel):
         try:
             super().__init__(**data)
         except ValidationError as e:
-
             # Give a special message for faulty list input
-            for re in e.raw_errors:
-                if (
-                    hasattr(re, "_loc")
-                    and hasattr(re.exc, "msg_template")
-                    and isinstance(data.get(to_key(re._loc)), list)
-                ):
-                    re.exc.msg_template += (
-                        f". The key {re._loc} might be duplicated in the input file."
-                    )
+            for error in e.errors():
+                loc = error.get("loc", [])
+                if loc and isinstance(data.get(to_key(loc[0])), list):
+                    error[
+                        "msg"
+                    ] += f". The key {loc[0]} might be duplicated in the input file."
 
             # Update error with specific model location name
             identifier = self._get_identifier(data)
@@ -96,7 +94,16 @@ class BaseModel(PydanticBaseModel):
                 raise e
             else:
                 # If there is an identifier, include this in the ValidationError messages.
-                raise ValidationError([ErrorWrapper(e, loc=identifier)], self.__class__)
+                # Create a new ValidationError with the identifier as the location
+                errors = e.errors()
+                title = e.title or "Validation Error"
+                for error in errors:
+                    error["loc"] = (identifier,) + tuple(error.get("loc", ()))
+                    error.pop("url", None)
+
+                raise ValidationError.from_exception_data(
+                    title=title, line_errors=errors
+                )
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -311,7 +318,6 @@ class FileModel(BaseModel, ABC):
             cwd / filename.extension
     """
 
-    __slots__ = ["__weakref__"]
     # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
     _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
@@ -486,7 +492,7 @@ class FileModel(BaseModel, ABC):
         return updated_file_path
 
     @classmethod
-    def validate(cls: Type["FileModel"], value: Any):
+    def model_validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
             # Pydantic Model init requires a dict
@@ -497,7 +503,7 @@ class FileModel(BaseModel, ABC):
             raise ValueError(
                 f"Expected {cls.__name__} or dict, got {type(value).__name__}"
             )
-        return super().validate(value)
+        return super().model_validate(value)
 
     def save(
         self,
@@ -716,7 +722,8 @@ class FileModel(BaseModel, ABC):
         else:
             return Path(filepath)
 
-    @validator("filepath")
+    @field_validator("filepath")
+    @classmethod
     def _conform_filepath_to_pathlib(cls, value):
         return FileModel._change_to_path(value)
 
@@ -786,7 +793,7 @@ class ParsableFileModel(FileModel):
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
-        self._serialize(self.dict(), save_settings)
+        self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
         """Serializes the data to file. Should not be called directly, only through `_save`.
@@ -802,9 +809,9 @@ class ParsableFileModel(FileModel):
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data, self.serializer_config, save_settings)
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["exclude"] = self._exclude_fields()
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     @classmethod
     def _exclude_fields(cls) -> Set[str]:

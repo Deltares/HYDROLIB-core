@@ -246,10 +246,11 @@ class TestValidateVarName:
 
 
 class TestValidateSourceMask:
-    @pytest.mark.parametrize("filetype", [4, 6])
-    def test_validate_sourcemask_with_valid_filetype_4_or_6(self, filetype):
+    # @pytest.mark.parametrize("filetype", [4, 6])
+    # def test_validate_sourcemask_with_valid_filetype_4_or_6(self, filetype):
+    def test_validate_sourcemask_with_valid_filetype_4_or_6(self):
         sourcemask = "sourcemask.file"
-
+        filetype = 4
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename="",

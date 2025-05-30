@@ -1,7 +1,6 @@
 from typing import Dict, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.fields import Field
+from pydantic import Field, model_validator
 
 from hydrolib.core.dflowfm.common.models import LocationType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -74,7 +73,7 @@ class ObservationPoint(INIBasedModel):
 
     _type_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(

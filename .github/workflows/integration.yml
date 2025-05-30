@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - task/814-fix-depricated-syntax-in-fm-container-ci
   pull_request:
     branches:
       - main

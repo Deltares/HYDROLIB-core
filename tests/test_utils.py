@@ -11,8 +11,7 @@ from hydrolib.core.base.utils import (
     str_is_empty_or_none,
 )
 from hydrolib.core.dflowfm.mdu.models import Geometry, Output
-
-from .utils import test_input_dir
+from tests.utils import test_input_dir
 
 
 def runs_on_windows() -> bool:

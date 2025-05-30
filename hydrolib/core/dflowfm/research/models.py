@@ -3,14 +3,15 @@ from typing import List, Literal, Optional
 from pydantic.v1 import Field
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm import (
+from hydrolib.core.dflowfm.ini.models import INIBasedModel
+from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.dflowfm.mdu import (
     FMModel,
     General,
     Geometry,
     Numerics,
     Output,
     Physics,
-    PolyFile,
     Processes,
     Restart,
     Sediment,
@@ -19,8 +20,7 @@ from hydrolib.core.dflowfm import (
     Waves,
     Wind,
 )
-from hydrolib.core.dflowfm.ini.models import INIBasedModel
-from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.dflowfm.polyfile import PolyFile
 
 DEPRECATED_VARIABLE = "Deprecated variable."
 DEPRECATED_KEYWORD = "Deprecated keyword."
