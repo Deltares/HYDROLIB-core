@@ -1,3 +1,25 @@
+## 0.9.1 (2025-05-30)
+
+### Feat
+
+- **parser**: refactor and enhance `read_polyfile` functionality (#550) (#828)
+- **parser**: refactor and enhance `read_polyfile` functionality
+- **CrossLocModel**:  extend CrossLocModel to accept a single cross-section (#820)
+- **crossloc**: improve validation and test support for single cross-section use
+
+### Fix
+
+- **path**: improve relative and case-insensitive path resolution (#829)
+- **path**: improve relative and case-insensitive path resolution
+- **test**: ignore version lines in file comparison to prevent test failures (#819)
+- **test**: ignore version lines in file comparison to prevent test failures
+
+### Refactor
+
+- **core**: restructure base and model modules, improve test coverage (#834)
+- **core**: restructure base and model modules, improve test coverage (#834)
+- **dimr**: refactor dirm tests and modules (#826)
+
 ## 0.9.0 (2025-05-16)
 
 ### Feat
