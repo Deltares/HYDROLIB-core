@@ -271,7 +271,7 @@ class ExternalForcingConverter:
 
         return new_quantity_block
 
-    def save(self, backup: bool = True, recursive: bool = True):
+    def save(self, backup: bool = True, recursive: bool = True, exclude_unset: bool = False,):
         """Save the updated models to disk.
 
         Args:
@@ -279,15 +279,17 @@ class ExternalForcingConverter:
                 Create a backup of each file that will be overwritten.
             recursive (bool, optional): Defaults to True.
                 Save the models recursively.
+            exclude_unset (bool, optional):
+                exclude the fields that are not set in all models from being saved. Defaults to False.
         """
         if (
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0
         ):
-            self._save_inifield_model(backup, recursive)
+            self._save_inifield_model(backup, recursive, exclude_unset)
 
         if len(self.structure_model.structure) > 0:
-            self._save_structure_model(backup, recursive)
+            self._save_structure_model(backup, recursive, exclude_unset)
 
         num_quantities_ext = (
             len(self.ext_model.meteo)
@@ -298,20 +300,20 @@ class ExternalForcingConverter:
         if num_quantities_ext:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
-            self.ext_model.save(recurse=recursive)
+            self.ext_model.save(recurse=recursive, exclude_unset=exclude_unset)
 
         if self.mdu_parser is not None:
             self.mdu_parser.save(backup=True)
 
-    def _save_inifield_model(self, backup: bool, recursive: bool):
+    def _save_inifield_model(self, backup: bool, recursive: bool, exclude_unset: bool = False):
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive)
+        self.inifield_model.save(recurse=recursive, exclude_unset=exclude_unset)
 
-    def _save_structure_model(self, backup: bool, recursive: bool):
+    def _save_structure_model(self, backup: bool, recursive: bool, exclude_unset: bool = False):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
-        self.structure_model.save(recurse=recursive)
+        self.structure_model.save(recurse=recursive, exclude_unset=exclude_unset)
 
     def clean(self):
         """
