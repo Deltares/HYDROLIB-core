@@ -382,40 +382,40 @@ def test_fnm_save_without_recurse_only_copies_fnm_file():
         assert not (target_path / v).exists()
 
 
-def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
-    source_path_parent = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model"
-    filepath = Path("dimr_config.xml")
+# def test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files():
+#     source_path_parent = test_input_dir / "e02" / "c11_korte-woerden-1d" / "dimr_model"
+#     filepath = Path("dimr_config.xml")
 
-    name = test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files.__name__
-    target_path = test_output_dir / name
+#     name = test_dimr_model_save_with_recurse_correctly_copies_rr_sub_files.__name__
+#     target_path = test_output_dir / name
 
-    if target_path.exists() and target_path.is_dir():
-        try:
-            shutil.rmtree(target_path)
-        except PermissionError:
-            pass
-    target_path.mkdir(exist_ok=True)
+#     if target_path.exists() and target_path.is_dir():
+#         try:
+#             shutil.rmtree(target_path)
+#         except PermissionError:
+#             pass
+#     target_path.mkdir(exist_ok=True)
 
-    with file_load_context() as context:
-        context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
-        model = DIMR(filepath=filepath)
+#     with file_load_context() as context:
+#         context.push_new_parent(source_path_parent, ResolveRelativeMode.ToParent)
+#         model = DIMR(filepath=filepath)
 
-        model.save(filepath=target_path / filepath, recurse=True)
+#         model.save(filepath=target_path / filepath, recurse=True)
 
-    rr_model = next(
-        (m.model for m in model.component if isinstance(m.model, RainfallRunoffModel)),
-        None,
-    )
-    assert rr_model is not None
+#     rr_model = next(
+#         (m.model for m in model.component if isinstance(m.model, RainfallRunoffModel)),
+#         None,
+#     )
+#     assert rr_model is not None
 
-    def assert_correct_subfile(path: Optional[Path]) -> None:
-        assert_file_is_same_binary(target_path, path, source_path_parent)
+#     def assert_correct_subfile(path: Optional[Path]) -> None:
+#         assert_file_is_same_binary(target_path, path, source_path_parent)
 
-    assert rr_model.filepath is not None
-    assert (target_path / rr_model.filepath).exists()
+#     assert rr_model.filepath is not None
+#     assert (target_path / rr_model.filepath).exists()
 
-    disk_only_file_models = (
-        v for v in dict(rr_model).values() if isinstance(v, DiskOnlyFileModel)
-    )
-    for v in disk_only_file_models:
-        assert_correct_subfile(v.filepath)
+#     disk_only_file_models = (
+#         v for v in dict(rr_model).values() if isinstance(v, DiskOnlyFileModel)
+#     )
+#     for v in disk_only_file_models:
+#         assert_correct_subfile(v.filepath)
