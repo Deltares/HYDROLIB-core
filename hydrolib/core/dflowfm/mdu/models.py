@@ -1755,9 +1755,7 @@ class Output(INIBasedModel):
                 classes, obs_files, cls.model_fields.get("obsfile")
             )
 
-            values["obsfile"] = [
-                modelclass(value) for d in cls_model for value, modelclass in d.items()
-            ]
+            values["obsfile"] = ModelFieldResolver.init_modelclass(cls_model)
 
         return values
 
@@ -1773,9 +1771,7 @@ class Output(INIBasedModel):
                 classes, crs_files, cls.model_fields.get("crsfile")
             )
 
-            values["crsfile"] = [
-                modelclass(value) for d in cls_model for value, modelclass in d.items()
-            ]
+            values["crsfile"] = ModelFieldResolver.init_modelclass(cls_model)
 
         return values
 
@@ -2183,9 +2179,7 @@ class Geometry(INIBasedModel):
                 cls.model_fields.get("drypointsfile", None),
             )
 
-            values["drypointsfile"] = [
-                modelclass(value) for d in cls_model for value, modelclass in d.items()
-            ]
+            values["drypointsfile"] = ModelFieldResolver.init_modelclass(cls_model)
 
         return values
 
@@ -2628,6 +2622,16 @@ class ModelFieldResolver:
 
     @staticmethod
     def determine_model_type(models: dict, value, field: FieldInfo) -> List[dict]:
+        """Determine the model type based on the value and field information.
+
+        Args:
+            models (dict): A dictionary mapping file extensions to model classes.
+            value (str or Path): The value to determine the model type for.
+            field (FieldInfo): The field information containing metadata about the field.
+        Returns:
+            List[dict]: A list of dictionaries where each dictionary contains a single key-value pair
+                with the value being the model class to instantiate.
+        """
         if isinstance(value, str):
             value = ModelFieldResolver.split(value, field)
         results = []
@@ -2639,6 +2643,20 @@ class ModelFieldResolver:
             if isinstance(item, Path):
                 results.append({f"{item}": models[item.suffix[1:]]})
         return results
+
+    @staticmethod
+    def init_modelclass(modelclass_dicts):
+        """Instantiate each modelclass with its value. Using the modelclass_dicts.
+
+        Args:
+            modelclass_dicts (List[Dict[str, Type[BaseModel]]]): A list of dictionaries
+                where each dictionary contains a single key-value pair with the value
+                being the model class to instantiate."""
+        return [
+            modelclass(value)
+            for d in modelclass_dicts
+            for value, modelclass in d.items()
+        ]
 
     @staticmethod
     def split(v: str, field: FieldInfo) -> List[str]:
@@ -2702,6 +2720,17 @@ class ModelFieldResolver:
 
     @classmethod
     def resolve(cls, model_cls, values: dict) -> dict:
+        """
+        Resolve the model fields to ensure that the correct pydantic model.
+
+        The method will convert the values of the model fields to their respective model classes
+        based on the field annotations. It handles both single model instances and lists of model instances.
+        Args:
+            model_cls (BaseModel): The pydantic model class to resolve.
+            values (dict): The dictionary of field values to resolve.
+        Returns:
+            dict: The resolved dictionary with model instances.
+        """
         for key, value in list(values.items()):
             field = model_cls.model_fields.get(key)
             if field is None:
