@@ -1771,9 +1771,9 @@ class Output(INIBasedModel):
             )
             for i, crs_file in enumerate(values["crsfile"]):
                 if crs_file.split(".")[-1] == "pli":
-                    values["crs_file"][i] = PolyFile(crs_file)
+                    values["crsfile"][i] = PolyFile(crs_file)
                 elif crs_file.split(".")[-1] == "ini":
-                    values["crs_file"][i] = ObservationCrossSectionModel(crs_file)
+                    values["crsfile"][i] = ObservationCrossSectionModel(crs_file)
 
         return values
 
