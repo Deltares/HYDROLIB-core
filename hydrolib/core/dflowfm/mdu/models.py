@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union, get_args, get_origin
 
 from pydantic import Field, field_validator, model_validator
+from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
@@ -2183,7 +2184,7 @@ class Calibration(INIBasedModel):
         default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
     )
 
-    @model_validator(mode="after")
+    @model_validator(mode="before")
     @classmethod
     def resolve_calibration_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         return ModelFieldResolver.resolve(cls, values)
@@ -2566,6 +2567,15 @@ class FMModel(INIModel):
 
 
 class ModelFieldResolver:
+
+    @staticmethod
+    def split(cls, v: str, field: FieldInfo) -> List[str]:
+        if isinstance(v, str):
+            delimiter = field.json_schema_extra.get("delimiter")
+            v = v.split(delimiter)
+            v = [item.strip() for item in v if item != ""]
+        return v
+
     @staticmethod
     def get_model_class(annotation):
         if isinstance(annotation, type) and issubclass(annotation, BaseModel):
@@ -2599,13 +2609,18 @@ class ModelFieldResolver:
         return None
 
     @staticmethod
-    def resolve_list_field(list_model_cls, value):
+    def resolve_list_field(cls, list_model_cls, field: FieldInfo, value):
         """Convert value to a list of model instances if needed."""
         if isinstance(value, list):
             return [
                 v if isinstance(v, list_model_cls) else list_model_cls(v) for v in value
             ]
-        elif isinstance(value, (str, Path)):
+        elif isinstance(value, str):
+            # Split the string into a list and convert each item to the model class
+            return [
+                list_model_cls(v) for v in ModelFieldResolver.split(cls, value, field)
+            ]
+        elif isinstance(value, Path):
             return [list_model_cls(value)]
         return value
 
@@ -2618,7 +2633,7 @@ class ModelFieldResolver:
             # Handle List[Model] and Optional[List[Model]]
             list_model_cls = cls.get_list_model_class(field.annotation)
             if list_model_cls:
-                values[key] = cls.resolve_list_field(list_model_cls, value)
+                values[key] = cls.resolve_list_field(cls, list_model_cls, field, value)
                 continue
 
             # Handle Model and Optional[Model]
