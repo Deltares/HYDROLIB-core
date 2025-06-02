@@ -1747,16 +1747,17 @@ class Output(INIBasedModel):
     @classmethod
     def resolve_obs_files(cls, values: dict) -> dict:
         obs_files = values.get("obsfile", None)
+        classes = {"ini": ObservationPointModel, "xyn": XYNModel}
 
-        if obs_files is not None and isinstance(obs_files, str):
-            values["obsfile"] = ModelFieldResolver.split(
-                obs_files, cls.model_fields.get("obsfile")
+        if obs_files is not None and not isinstance(obs_files, list):
+
+            cls_model = ModelFieldResolver.determine_model_type(
+                classes, obs_files, cls.model_fields.get("obsfile")
             )
-            for i, obs_file in enumerate(values["obsfile"]):
-                if obs_file.split(".")[-1] == "xyn":
-                    values["obsfile"][i] = XYNModel(obs_file)
-                elif obs_file.split(".")[-1] == "ini":
-                    values["obsfile"][i] = ObservationPointModel(obs_file)
+
+            values["obsfile"] = [
+                modelclass(value) for d in cls_model for value, modelclass in d.items()
+            ]
 
         return values
 
@@ -1764,16 +1765,17 @@ class Output(INIBasedModel):
     @classmethod
     def resolve_crs_files(cls, values: dict) -> dict:
         crs_files = values.get("crsfile", None)
+        classes = {"ini": ObservationCrossSectionModel, "pli": PolyFile}
 
         if crs_files is not None and not isinstance(crs_files, list):
-            values["crsfile"] = ModelFieldResolver.split(
-                crs_files, cls.model_fields.get("crsfile")
+
+            cls_model = ModelFieldResolver.determine_model_type(
+                classes, crs_files, cls.model_fields.get("crsfile")
             )
-            for i, crs_file in enumerate(values["crsfile"]):
-                if crs_file.split(".")[-1] == "pli":
-                    values["crsfile"][i] = PolyFile(crs_file)
-                elif crs_file.split(".")[-1] == "ini":
-                    values["crsfile"][i] = ObservationCrossSectionModel(crs_file)
+
+            values["crsfile"] = [
+                modelclass(value) for d in cls_model for value, modelclass in d.items()
+            ]
 
         return values
 
@@ -2164,6 +2166,28 @@ class Geometry(INIBasedModel):
         Resolve the geometry fields to ensure that the correct types are used.
         """
         return ModelFieldResolver.resolve(cls, values)
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_drypointsfile_files(cls, values: dict) -> dict:
+        drypointsfile_files = values.get("drypointsfile", None)
+        classes = {"xyz": XYZModel, "pli": PolyFile}
+
+        if drypointsfile_files is not None and not isinstance(
+            drypointsfile_files, list
+        ):
+
+            cls_model = ModelFieldResolver.determine_model_type(
+                classes,
+                drypointsfile_files,
+                cls.model_fields.get("drypointsfile", None),
+            )
+
+            values["drypointsfile"] = [
+                modelclass(value) for d in cls_model for value, modelclass in d.items()
+            ]
+
+        return values
 
     _split_to_list = get_split_string_on_delimiter_validator(
         "frictfile",
@@ -2603,6 +2627,20 @@ class FMModel(INIModel):
 class ModelFieldResolver:
 
     @staticmethod
+    def determine_model_type(models: dict, value, field: FieldInfo) -> List[dict]:
+        if isinstance(value, str):
+            value = ModelFieldResolver.split(value, field)
+        results = []
+        if not value:
+            return [{"": models.values()[0]}]
+        for item in value:
+            if isinstance(item, str):
+                results.append({f"{item}": models[item.split(".")[-1]]})
+            if isinstance(item, Path):
+                results.append({f"{item}": models[item.suffix[1:]]})
+        return results
+
+    @staticmethod
     def split(v: str, field: FieldInfo) -> List[str]:
         if isinstance(v, str):
             delimiter = (
@@ -2658,6 +2696,8 @@ class ModelFieldResolver:
             return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
         elif isinstance(value, Path):
             return [list_model_cls(value)]
+        elif value is None:
+            return [list_model_cls(None)]
         return value
 
     @classmethod
