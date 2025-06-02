@@ -1743,6 +1743,23 @@ class Output(INIBasedModel):
     def resolve_output_fields(cls, values: dict) -> dict:
         return ModelFieldResolver.resolve(cls, values)
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_obs_files(cls, values: dict) -> dict:
+        obs_files = values.get("obsfile", None)
+
+        if obs_files is not None and isinstance(obs_files, str):
+            values["obsfile"] = ModelFieldResolver.split(
+                obs_files, cls.model_fields.get("obsfile")
+            )
+            for i, obs_file in enumerate(values["obsfile"]):
+                if obs_file.split(".")[-1] == "xyn":
+                    values["obsfile"][i] = XYNModel(obs_file)
+                elif obs_file.split(".")[-1] == "ini":
+                    values["obsfile"][i] = ObservationPointModel(obs_file)
+
+        return values
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
         "waterdepthclasses",
@@ -2569,9 +2586,13 @@ class FMModel(INIModel):
 class ModelFieldResolver:
 
     @staticmethod
-    def split(cls, v: str, field: FieldInfo) -> List[str]:
+    def split(v: str, field: FieldInfo) -> List[str]:
         if isinstance(v, str):
-            delimiter = field.json_schema_extra.get("delimiter")
+            delimiter = (
+                field.json_schema_extra.get("delimiter")
+                if field.json_schema_extra
+                else " "
+            )
             v = v.split(delimiter)
             v = [item.strip() for item in v if item != ""]
         return v
@@ -2609,7 +2630,7 @@ class ModelFieldResolver:
         return None
 
     @staticmethod
-    def resolve_list_field(cls, list_model_cls, field: FieldInfo, value):
+    def resolve_list_field(list_model_cls, field: FieldInfo, value):
         """Convert value to a list of model instances if needed."""
         if isinstance(value, list):
             return [
@@ -2617,9 +2638,7 @@ class ModelFieldResolver:
             ]
         elif isinstance(value, str):
             # Split the string into a list and convert each item to the model class
-            return [
-                list_model_cls(v) for v in ModelFieldResolver.split(cls, value, field)
-            ]
+            return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
         elif isinstance(value, Path):
             return [list_model_cls(value)]
         return value
@@ -2633,7 +2652,7 @@ class ModelFieldResolver:
             # Handle List[Model] and Optional[List[Model]]
             list_model_cls = cls.get_list_model_class(field.annotation)
             if list_model_cls:
-                values[key] = cls.resolve_list_field(cls, list_model_cls, field, value)
+                values[key] = cls.resolve_list_field(list_model_cls, field, value)
                 continue
 
             # Handle Model and Optional[Model]
