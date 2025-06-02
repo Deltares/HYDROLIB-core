@@ -407,7 +407,7 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
 
         expected_message = (
@@ -417,6 +417,7 @@ class TestOutput:
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 
+        print(str(exc_err.value))
         assert expected_message in str(exc_err.value)
 
     def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(
@@ -437,12 +438,14 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
         name2 = "unknownkey2"
 
-        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
-
+        expected_message = (
+            "Unknown keywords are detected in section: "
+            f"'{section_header}', '{[name, name2]}'"
+        )
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 
