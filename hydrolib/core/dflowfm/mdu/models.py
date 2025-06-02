@@ -1760,6 +1760,23 @@ class Output(INIBasedModel):
 
         return values
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_crs_files(cls, values: dict) -> dict:
+        crs_files = values.get("crsfile", None)
+
+        if crs_files is not None and not isinstance(crs_files, list):
+            values["crsfile"] = ModelFieldResolver.split(
+                crs_files, cls.model_fields.get("crsfile")
+            )
+            for i, crs_file in enumerate(values["crsfile"]):
+                if crs_file.split(".")[-1] == "pli":
+                    values["crs_file"][i] = PolyFile(crs_file)
+                elif crs_file.split(".")[-1] == "ini":
+                    values["crs_file"][i] = ObservationCrossSectionModel(crs_file)
+
+        return values
+
     _split_to_list = get_split_string_on_delimiter_validator(
         "waterlevelclasses",
         "waterdepthclasses",
