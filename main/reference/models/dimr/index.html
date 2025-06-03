@@ -3996,11 +3996,7 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">509</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DIMR model representation.</span>
 
 <span class="sd">    Attributes:</span>
@@ -4086,16 +4082,12 @@ elements under <code>&lt;control&gt;</code>.</p>
             <span class="k">if</span> <span class="n">fmcomponent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-                <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">fmcomponent_process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictonary</span><span class="p">(</span>
-                    <span class="n">fmcomponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span>
-                <span class="p">)</span>
+            <span class="n">fmcomponent_process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictonary</span><span class="p">(</span>
+                <span class="n">fmcomponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span>
+            <span class="p">)</span>
 
             <span class="n">list_of_fm_components_as_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmcomponent_as_dict</span><span class="p">)</span>
 
