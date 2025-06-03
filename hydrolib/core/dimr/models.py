@@ -402,16 +402,12 @@ class DIMR(ParsableFileModel):
             if fmcomponent is None or fmcomponent.process is None:
                 continue
 
-            if fmcomponent.process == 1:
-                fmcomponent_as_dict = fmcomponent.dict()
-                fmcomponent_as_dict.pop("process", None)
-            else:
-                fmcomponent_process_value = " ".join(
-                    str(i) for i in range(fmcomponent.process)
-                )
-                fmcomponent_as_dict = self._update_component_dictonary(
-                    fmcomponent, fmcomponent_process_value
-                )
+            fmcomponent_process_value = " ".join(
+                str(i) for i in range(fmcomponent.process)
+            )
+            fmcomponent_as_dict = self._update_component_dictonary(
+                fmcomponent, fmcomponent_process_value
+            )
 
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
 
