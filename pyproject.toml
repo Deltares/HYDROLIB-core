@@ -31,7 +31,7 @@ lxml = "^5.0"
 meshkernel = "^7.0.0"
 strenum = "^0"
 tqdm = "^4.67.1"
-pandas = "^2.2.3"
+pandas = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
