@@ -276,6 +276,8 @@ class ExtOldMeteoQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
+
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -438,6 +440,7 @@ class ExtOldQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
