@@ -45,7 +45,8 @@ class ExternalForcingConverter:
 
         Args:
             extold_model (PathOrStr, ExtOldModel):
-                ExtOldModel or path to the old external forcing file.
+                ExtOldModel or path to the old external forcing file. if `ExtOldModel` without a filepath the
+                `ExtOldModel` will be assumed to be in the, current working directory.
             ext_file (PathOrStr, optional):
                 Path to the new external forcing file.
             inifield_file (PathOrStr, optional):
@@ -66,10 +67,16 @@ class ExternalForcingConverter:
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
             extold_model = self._read_old_file(extold_model)
+            rdir = extold_model.filepath.parent
+        else:
+            if not isinstance(extold_model, ExtOldModel):
+                raise TypeError(
+                    "extold_model must be a PathOrStr or ExtOldModel instance."
+                )
+            rdir = Path(".").resolve()
 
         self._extold_model = extold_model
         self._verbose = verbose
-        rdir = extold_model.filepath.parent
         self._root_dir = rdir
 
         # create the new models if not provided by the user in the same directory as the old external file
