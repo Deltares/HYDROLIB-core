@@ -314,6 +314,10 @@ class MeteoForcingFileType(StrEnum):
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
+    polygon = "polygon"
+    """str: Polygon-based time series in <*.pol> file."""
+
+
     allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
 
 
@@ -327,7 +331,8 @@ class MeteoInterpolationMethod(StrEnum):
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
     linearSpaceTime = "linearSpaceTime"
     """str: Linear interpolation in space and time."""
-    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
+    constant = "constant"
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
 
 
 class Meteo(INIBasedModel):
