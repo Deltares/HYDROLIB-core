@@ -62,8 +62,30 @@ class ExternalForcingConverter:
             FileNotFoundError: If the old external forcing file does not exist.
 
         Examples:
+            - Create a converter from old external forcing object:
+            ```python
+            >>> from hydrolib.core.dflowfm.extold.models import ExtOldModel
+            >>> root_dir = Path("path/to/your/root/dir")
+            >>> forcing_data = {
+            ... 'QUANTITY': 'windspeedfactor',
+            ... 'FILENAME': rf'{root_dir}\my-poly-file.pol',
+            ... 'FILETYPE': '11',
+            ... 'METHOD': '4',
+            ... 'OPERAND': 'O',
+            ... }
+            ... forcing_model_data = {
+            ... 'comment': [' Example (old-style) external forcings file'],
+            ... 'forcing': [forcing_data]
+            ... }
+            >>> old_model = ExtOldModel(**forcing_model_data)
+            >>> converter = ExternalForcingConverter(extold_model=old_model)
+
+            ```
+            - Create a converter from an old external forcing file:
+            ```python
             >>> converter = ExternalForcingConverter("old-external-forcing.ext") #doctest: +SKIP
             >>> converter.update() #doctest: +SKIP
+            ```
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
             extold_model = self._read_old_file(extold_model)
