@@ -6,6 +6,7 @@ import pytest
 from pydantic.v1 import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
@@ -202,11 +203,22 @@ class TestMeteo:
         meteo = Meteo(
             quantity="rainfall",
             forcingfile=time_series_file,
-            forcingfiletype=MeteoForcingFileType.bcascii,
+            forcingfiletype=MeteoForcingFileType.uniform,
         )
         assert isinstance(meteo.forcingfile, TimModel)
         assert meteo.forcingfile.filepath == time_series_file
-        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+        assert meteo.forcingfiletype == MeteoForcingFileType.uniform
+
+    def test_polyfile_as_forcingfile(self, polylines_dir: Path):
+        poly_file_path = polylines_dir / "boundary-polyline-no-z-no-label.pli"
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=poly_file_path,
+            forcingfiletype=MeteoForcingFileType.polygon,
+        )
+        assert isinstance(meteo.forcingfile, PolyFile)
+        assert meteo.forcingfile.filepath == poly_file_path
+        assert meteo.forcingfiletype == MeteoForcingFileType.polygon
 
 
 forcing_base_list = [
