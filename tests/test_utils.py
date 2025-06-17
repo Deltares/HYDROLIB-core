@@ -370,6 +370,25 @@ class TestFileChecksumCalculator:
 
 
 def enum_checker(enum_instance):
+    """
+
+    Args:
+        enum_instance:
+            An instance of an Enum class to check.
+
+    Raises:
+        AssertionError: If the enum instance does not meet the expected criteria.
+
+    Examples:
+        ```python
+        >>> from enum import Enum
+        >>> class MyEnum(Enum):
+        ...     FIRST = "first_value"
+        ...     SECOND = "second_value"
+        >>> enum_checker(MyEnum)
+
+        ```
+    """
 
     values = list(enum_instance)
     value_strings = [e.value for e in values]
