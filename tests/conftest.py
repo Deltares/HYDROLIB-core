@@ -80,29 +80,6 @@ def initial_condition_file_type() -> List[str]:
 
 
 @pytest.fixture
-def meteo_forcing_file_type() -> List[str]:
-    return [
-        "bcAscii",
-        "uniform",
-        "uniMagDir",
-        "arcInfo",
-        "spiderweb",
-        "curviGrid",
-        "netcdf",
-        "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf.",
-    ]
-
-
-@pytest.fixture
-def meteo_interpolation_methods() -> List[str]:
-    return [
-        "nearestNb",
-        "linearSpaceTime",
-        "Possible values: nearestNb, linearSpaceTime.",
-    ]
-
-
-@pytest.fixture
 def initial_cond_averaging_type() -> List[str]:
     return [
         "mean",

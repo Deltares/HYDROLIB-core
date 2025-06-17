@@ -15,7 +15,7 @@ from hydrolib.core.dflowfm.ext.models import (
     SourceSink,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
-
+from tests.test_utils import enum_checker
 
 class TestExtModel:
     """Class to test all methods contained in the
@@ -74,19 +74,11 @@ class TestExtModel:
 
 class TestMeteo:
 
-    def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
-        assert len(MeteoInterpolationMethod) == 3
-        assert all(
-            quantity.value in meteo_interpolation_methods
-            for quantity in MeteoInterpolationMethod.__members__.values()
-        )
+    def test_meteo_interpolation_methods(self):
+        enum_checker(MeteoInterpolationMethod)
 
-    def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
-        assert len(MeteoForcingFileType) == 8
-        assert all(
-            quantity.value in meteo_forcing_file_type
-            for quantity in MeteoForcingFileType.__members__.values()
-        )
+    def test_meteo_forcing_file_type(self):
+        enum_checker(MeteoForcingFileType)
 
     def test_meteo_initialization(self):
         data = {
