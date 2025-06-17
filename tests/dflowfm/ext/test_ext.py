@@ -17,6 +17,7 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.tim.models import TimModel
 from tests.test_utils import enum_checker
 
+
 class TestExtModel:
     """Class to test all methods contained in the
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
