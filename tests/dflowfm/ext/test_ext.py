@@ -6,7 +6,6 @@ import pytest
 from pydantic.v1 import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
@@ -15,6 +14,7 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoInterpolationMethod,
     SourceSink,
 )
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 from tests.test_utils import enum_checker
 
