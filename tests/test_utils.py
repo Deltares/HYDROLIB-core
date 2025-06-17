@@ -380,9 +380,9 @@ def enum_checker(enum_instance):
 
     # check that the
     for member in enum_instance:
-        assert enum_instance[member.name] == member, (
-            f"{member.name} is not in the provided {enum_instance.__name__}."
-        )
+        assert (
+            enum_instance[member.name] == member
+        ), f"{member.name} is not in the provided {enum_instance.__name__}."
 
     # test that all members are instances of the enum class
     for name in enum_instance.__members__:
