@@ -318,7 +318,7 @@ class MeteoForcingFileType(StrEnum):
     """str: Polygon-based time series in <*.pol> file."""
 
 
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf, polygon."
 
 
 class MeteoInterpolationMethod(StrEnum):
