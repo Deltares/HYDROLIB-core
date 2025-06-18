@@ -448,10 +448,14 @@ class Meteo(INIBasedModel):
         """
         # if the filetype and the filename are present in the values
         if any(par in values for par in ["forcingfiletype", "forcingFileType"]) and any(
-                par in values for par in ["forcingfile", "forcingFile"]
+            par in values for par in ["forcingfile", "forcingFile"]
         ):
-            file_type_var_name = "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
-            filename_var_name = "forcingfile" if "forcingfile" in values else "forcingFile"
+            file_type_var_name = (
+                "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
+            )
+            filename_var_name = (
+                "forcingfile" if "forcingfile" in values else "forcingFile"
+            )
             file_type = values.get(file_type_var_name)
             file_type = str(file_type).lower() if file_type is not None else None
             forcing_file = values.get(filename_var_name)
