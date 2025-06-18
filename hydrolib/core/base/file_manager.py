@@ -50,33 +50,126 @@ class ResolveRelativeMode(IntEnum):
 class FilePathResolver:
     """FilePathResolver is responsible for resolving relative paths.
 
-    The current state to which paths are resolved can be altered by
-    pushing a new parent path to the FilePathResolver, or removing the
-    latest added parent path from the FilePathResolver
+    The FilePathResolver maintains a stack of parent paths and their associated resolve modes.
+    It provides functionality to resolve relative paths to absolute paths based on the current state.
+    The current state to which paths are resolved can be altered by pushing a new parent path 
+    to the FilePathResolver, or removing the latest added parent path from the FilePathResolver.
+
+    The resolver supports two modes:
+    1. ToParent: Resolves paths relative to the direct parent
+    2. ToAnchor: Resolves paths relative to a specified anchor path
+
+    Examples:
+        - Mode ToParent:
+        ```python
+        >>> from hydrolib.core.base.file_manager import FilePathResolver, ResolveRelativeMode
+        >>> from pathlib import Path
+        >>> resolver = FilePathResolver()
+        >>> parent_path = Path("C:/project")
+        >>> resolver.push_new_parent(parent_path, ResolveRelativeMode.ToParent)
+        >>> print(resolver._parents) # doctest: +SKIP
+        [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>)]
+
+        ```
+        - Now the resolver has one parent path "C:/project" and will resolve paths relative to it.
+
+        ```python
+        >>> my_file = Path("data/file.txt")
+        >>> resolver.resolve(my_file) # doctest: +SKIP
+        Path('C:/project/data/file.txt')
+
+        ```
+        - adding new parent paths will change the current parent path:
+        ```python
+        >>> new_parent = Path("models")
+        >>> resolver.push_new_parent(new_parent, ResolveRelativeMode.ToParent)
+        >>> print(resolver._parents) # doctest: +SKIP
+        [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>), (WindowsPath('C:/project/models'), <ResolveRelativeMode.ToParent: 0>)]
+        ```
+        - Now the resolver have two parents and it will resolve paths relative to the new parent path:
+        ```python
+        >>> my_file = Path("model1.txt")
+        >>> resolver.resolve(my_file) # doctest: +SKIP
+        Path('C:/project/models/model1.txt')
+        ```
+        - Mode ToAnchor:
+        ```pyhon
+        >>> resolver = FilePathResolver()
+        >>> anchor_path = Path("C:/anchor")
+        >>> resolver.push_new_parent(anchor_path, ResolveRelativeMode.ToAnchor)
+        >>> print(resolver._anchors)
+        [WindowsPath('C:/anchor')]
+        >>> print(resolver._parents)
+        [(WindowsPath('C:/anchor'), <ResolveRelativeMode.ToAnchor: 1>)]
+        >>> new_parent = Path("subdir")
+        >>> resolver.push_new_parent(new_parent, ResolveRelativeMode.ToParent)
+        >>> resolver.resolve(Path("file.txt")) # doctest: +SKIP
+        Path('C:/anchor/file.txt')
+
+        ```
     """
 
     def __init__(self) -> None:
-        """Create a new empty FilePathResolver."""
+        """Initialize a new empty FilePathResolver.
+
+        Creates a new FilePathResolver with empty stacks for anchors and parents.
+        By default, relative paths will be resolved relative to the current working directory.
+
+        Examples:
+            ```python
+            >>> resolver = FilePathResolver()
+            >>> resolver.get_current_parent() #doctest: +SKIP
+            Path('/current/working/directory')
+
+            ```
+        """
         self._anchors: List[Path] = []
         self._parents: List[Tuple[Path, ResolveRelativeMode]] = []
 
     @property
     def _anchor(self) -> Optional[Path]:
+        """Get the latest anchor path if available.
+
+        Returns:
+            Optional[Path]:
+                The latest anchor path if any anchors have been added, None otherwise.
+        """
         return self._anchors[-1] if self._anchors else None
 
     @property
     def _direct_parent(self) -> Path:
+        """Get the latest parent path or current working directory.
+
+        Returns:
+            Path:
+                The latest parent path if any parents have been added, or the current working directory if no
+                parents have been added.
+        """
         return self._parents[-1][0] if self._parents else Path.cwd()
 
     def get_current_parent(self) -> Path:
         """Get the current absolute path with which files are resolved.
 
-        If the current mode is relative to the parent, the latest added
-        parent is added. If the current mode is relative to an anchor
-        path, the latest added anchor path is returned.
+        Determines the current parent path based on the active resolve mode:
+        - If the current mode is ResolveRelativeMode.ToAnchor, returns the latest added anchor path.
+        - If the current mode is ResolveRelativeMode.ToParent or no mode is set, returns the latest added parent path.
 
         Returns:
-            Path: The absolute path to the current parent.
+            Path:
+                The absolute path to the current parent.
+
+        Examples:
+            ```python
+            >>> resolver = FilePathResolver()
+            >>> resolver.push_new_parent(Path("C:/project"), ResolveRelativeMode.ToParent)
+            >>> resolver.get_current_parent() # doctest: +SKIP
+            Path('C:/project')
+
+            >>> resolver.push_new_parent(Path("C:/anchor"), ResolveRelativeMode.ToAnchor)
+            >>> resolver.get_current_parent() # doctest: +SKIP
+            Path('C:/anchor')
+
+            ```
         """
         if self._anchor:
             return self._anchor
@@ -86,12 +179,34 @@ class FilePathResolver:
         """Resolve the provided path to an absolute path given the current state.
 
         If the provided path is already absolute, it will be returned as is.
+        Otherwise, the path is resolved relative to the current parent path,
+        which depends on the active resolve mode.
 
         Args:
-            path (Path): The path to resolve
+            path (Path):
+                The path to resolve, can be absolute or relative.
 
         Returns:
-            Path: An absolute path resolved given the current state.
+            Path:
+                An absolute path resolved given the current state.
+
+        Examples:
+            - If the path is relative, it will be resolved relative to the current parent:
+            ```python
+            >>> from hydrolib.core.base.file_manager import FilePathResolver, ResolveRelativeMode
+            >>> from pathlib import Path
+            >>> resolver = FilePathResolver()
+            >>> resolver.push_new_parent(Path("C:/project"), ResolveRelativeMode.ToParent)
+            >>> resolver.resolve(Path("data/file.txt"))  # doctest: +SKIP
+            Path('C:/project/data/file.txt')
+
+            ```
+            - If the path is absolute, it will be returned as is:
+            ```python
+            >>> resolver.resolve(Path("D:/absolute/path.txt"))  # doctest: +SKIP
+            Path('D:/absolute/path.txt')
+
+            ```
         """
         if path.is_absolute():
             return path
@@ -104,12 +219,61 @@ class FilePathResolver:
     ) -> None:
         """Push a new parent_path with the given relative_mode to this FilePathResolver.
 
+        Adds a new parent path to the resolver's stack. The parent_path is first resolved
+        to an absolute path using the current state of the resolver. If the relative_mode
+        is ToAnchor, the resolved path is also added to the anchors stack.
+
         Relative paths added to this FilePathResolver will be resolved with respect
         to the current state, i.e. similar to FilePathResolver.resolve.
 
         Args:
-            parent_path (Path): The parent path
-            relative_mode (ResolveRelativeMode): The relative mode used to resolve.
+            parent_path (Path):
+                The parent path to add, can be absolute or relative.
+            relative_mode (ResolveRelativeMode):
+                The relative mode used to resolve paths.
+                ResolveRelativeMode.ToParent: Resolve relative to this parent.
+                ResolveRelativeMode.ToAnchor: Resolve relative to this parent as an anchor.
+
+        Examples:
+            - Mode ToParent:
+            ```python
+            >>> from hydrolib.core.base.file_manager import FilePathResolver, ResolveRelativeMode
+            >>> from pathlib import Path
+            >>> resolver = FilePathResolver()
+            >>> resolver.push_new_parent(Path("C:/project"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>)]
+            >>> resolver.push_new_parent(Path("models"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            >>> resolver.resolve(Path("model1.txt")) # doctest: +SKIP
+            Path('C:/project/models/model1.txt')
+
+            ```
+            - Mode ToAnchor:
+            ```python
+            >>> resolver = FilePathResolver()
+            >>> resolver.push_new_parent(Path("C:/project"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>)]
+            >>> resolver.push_new_parent(Path("anchor"), ResolveRelativeMode.ToAnchor)
+            >>> print(resolver._anchors) # doctest: +SKIP
+            [WindowsPath('C:/project/anchor')]
+            >>> print(resolver._parents) # doctest: +SKIP
+            [
+                (WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>),
+                (WindowsPath('C:/project/anchor'), <ResolveRelativeMode.ToAnchor: 1>)
+            ]
+            >>> resolver.push_new_parent(Path("subdir"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            [
+                (WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>),
+                (WindowsPath('C:/project/anchor'), <ResolveRelativeMode.ToAnchor: 1>),
+                (WindowsPath('C:/project/anchor/subdir'), <ResolveRelativeMode.ToParent: 0>)
+            ]
+            >>> resolver.resolve(Path("file.txt")) # doctest: +SKIP
+            Path('C:/project/anchor/file.txt')
+
+            ```
         """
         absolute_parent_path = self.resolve(parent_path)
         if relative_mode == ResolveRelativeMode.ToAnchor:
@@ -120,7 +284,33 @@ class FilePathResolver:
     def pop_last_parent(self) -> None:
         """Pop the last added parent from this FilePathResolver.
 
-        If there are currently no parents defined, nothing will happen.
+        Removes the most recently added parent path from the resolver's stack.
+        If the parent had a relative_mode of ToAnchor, also removes the corresponding
+        anchor from the anchors stack. If there are currently no parents defined,
+        nothing will happen.
+
+        Examples:
+            ```python
+            >>> resolver = FilePathResolver()
+            >>> resolver.push_new_parent(Path("C:/project"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>)]
+            >>> resolver.push_new_parent(Path("models"), ResolveRelativeMode.ToParent)
+            >>> print(resolver._parents) # doctest: +SKIP
+            [
+                (WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>),
+                (WindowsPath('C:/project/models'), <ResolveRelativeMode.ToParent: 0>)
+            ]
+            >>> resolver.pop_last_parent()
+            >>> print(resolver._parents) # doctest: +SKIP
+            [(WindowsPath('C:/project'), <ResolveRelativeMode.ToParent: 0>)]
+            >>> resolver.resolve(Path("data.txt")) # doctest: +SKIP
+            Path('C:/project/data.txt')
+
+            ```
+
+        Raises:
+            No exceptions are raised, even if the parents stack is empty.
         """
         if not self._parents:
             return
@@ -457,7 +647,8 @@ class FileLoadContext:
         path, the latest added anchor path is returned.
 
         Returns:
-            Path: The absolute path to the current parent.
+            Path:
+                The absolute path to the current parent.
         """
         return self._path_resolver.get_current_parent()
 
