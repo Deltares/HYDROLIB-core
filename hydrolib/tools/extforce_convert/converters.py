@@ -1,11 +1,11 @@
 """External forcing converter."""
-
+import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
@@ -729,7 +729,7 @@ class SourceSinkConverter(BaseConverter):
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
-        tim_file = self.root_dir / polyline.filepath.with_suffix(".tim").name
+        tim_file = resolve_relative_to_root(polyline.filepath, self.root_dir).with_suffix(".tim")
         if not tim_file.exists():
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
@@ -744,7 +744,7 @@ class SourceSinkConverter(BaseConverter):
             tim_model, start_time, user_defined_names=labels
         )
         # set the bc file names to the same names as the tim files.
-        forcing_model.filepath = location_file.with_suffix(".bc").name
+        forcing_model.filepath = Path(os.path.relpath(tim_file, self.root_dir)).with_suffix(".bc")
 
         data = {
             "id": location_name,
