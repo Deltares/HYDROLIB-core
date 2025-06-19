@@ -272,7 +272,7 @@ class TestConverter:
         """
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor.pliz",
+            filename=Path("tests/data/input/source-sink/leftsor.pliz").resolve(),
             filetype=9,
             method="1",
             operand="O",
@@ -357,7 +357,7 @@ class TestConverter:
 
             return side_effect
 
-        tim_file = Path("leftsor.tim")
+        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
         with patch("pathlib.Path.with_suffix", new=make_side_effect()):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
@@ -402,7 +402,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        tim_file = Path("no_temperature_no_salinity.tim")
+        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
@@ -442,7 +442,7 @@ class TestMainConverter:
     temperature_and_salinity_info = {
         "refdate": "minutes since 2015-01-01 00:00:00",
     }
-    tim_file = Path("tim-3-columns.tim")
+    tim_file = Path("tests/data/input/source-sink/tim-3-columns.tim")
     mdu_parser = MagicMock(spec=MDUParser)
     mdu_parser.temperature_salinity_data = temperature_and_salinity_info
 
