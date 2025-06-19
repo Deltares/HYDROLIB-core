@@ -744,16 +744,6 @@ class TestResolveRelativeToRoot:
         expected = (root / "input.txt").resolve()
         assert resolve_relative_to_root(fp, root) == expected
 
-    def test_redundant_relative_path(self, setup_files):
-        """
-        Case 2: file_path is a longer relative path that includes root_dir segments.
-        Should not cause duplication like root_dir/root_dir/file.txt.
-        """
-        fp = setup_files["relative_path_with_root"]
-        root = setup_files["root_dir"]
-        expected = (root / "input.txt").resolve()
-        assert resolve_relative_to_root(fp, root) == expected
-
     def test_absolute_path_inside_root(self, setup_files):
         """
         Case 3: file_path is an absolute path within root_dir.

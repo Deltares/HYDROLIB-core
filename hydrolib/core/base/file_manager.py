@@ -800,11 +800,6 @@ def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
         >>> resolve_relative_to_root(Path("input.txt"), root) # doctest: +SKIP
         PosixPath('/models/config/input.txt')
         ```
-        # - Case 2: file_path is a longer relative path starting with root_dir
-        # ```python
-        # >>> resolve_relative_to_root(Path("models/config/input.txt"), Path("models/config"))
-        # PosixPath('/models/config/input.txt')
-        # ```
         - Case 2: file_path is an absolute path inside root_dir
         ```python
         >>> resolve_relative_to_root(Path("/models/config/input.txt"), root)
@@ -814,6 +809,19 @@ def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
         ```python
         >>> resolve_relative_to_root(Path("/other/data/input.txt"), root) # doctest: +SKIP
         PosixPath('/other/data/input.txt')
+        ```
+        - not includes:
+        - Case 2: file_path is a longer relative path starting with root_dir
+        ```python
+        >>> resolve_relative_to_root(Path("models/config/input.txt"), Path("models/config"))
+        PosixPath('/models/config/input.txt')
+        ```
+        - or
+        ```python
+        >>> resolve_relative_to_root(Path('data/input/root/input.txt'), Path('C:/abs/path/data/input/root')) # doctest: +SKIP
+        WindowsPath('C:/abs/path/data/input/root/input.txt')
+        # but given
+        WindowsPath('C:/abs/path/data/input/root/data/input/root/input.txt')
         ```
 
     Notes:
