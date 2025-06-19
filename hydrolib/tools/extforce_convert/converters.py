@@ -1,4 +1,5 @@
 """External forcing converter."""
+
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -729,7 +730,9 @@ class SourceSinkConverter(BaseConverter):
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
-        tim_file = resolve_relative_to_root(polyline.filepath, self.root_dir).with_suffix(".tim")
+        tim_file = resolve_relative_to_root(
+            polyline.filepath, self.root_dir
+        ).with_suffix(".tim")
         if not tim_file.exists():
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
@@ -744,7 +747,9 @@ class SourceSinkConverter(BaseConverter):
             tim_model, start_time, user_defined_names=labels
         )
         # set the bc file names to the same names as the tim files.
-        forcing_model.filepath = Path(os.path.relpath(tim_file, self.root_dir)).with_suffix(".bc")
+        forcing_model.filepath = Path(
+            os.path.relpath(tim_file, self.root_dir)
+        ).with_suffix(".bc")
 
         data = {
             "id": location_name,

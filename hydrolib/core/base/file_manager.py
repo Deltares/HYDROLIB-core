@@ -839,7 +839,7 @@ def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
 
     try:
         relative_path = file_path_resolved.relative_to(root_dir)
-        final_path = (root_dir / relative_path)
+        final_path = root_dir / relative_path
     except ValueError:
         final_path = file_path_resolved
 
