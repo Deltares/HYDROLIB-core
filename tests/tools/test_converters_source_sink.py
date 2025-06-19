@@ -344,9 +344,21 @@ class TestConverter:
             "temperature",
             "initialtracer_anyname",
         ]
+        _real_with_suffix = Path.with_suffix  # Save the real method before patching
+
+        def make_side_effect():
+            call_count = {"count": 0}  # mutable counter in closure
+
+            def side_effect(self, suffix):
+                if call_count["count"] == 0:
+                    call_count["count"] += 1
+                    return tim_file
+                return _real_with_suffix(self, suffix)
+
+            return side_effect
 
         tim_file = Path("leftsor.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+        with patch("pathlib.Path.with_suffix", new=make_side_effect()):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
             )
