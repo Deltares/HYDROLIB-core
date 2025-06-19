@@ -729,7 +729,7 @@ class SourceSinkConverter(BaseConverter):
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
-        tim_file = (self.root_dir / polyline.filepath).resolve().with_suffix(".tim")
+        tim_file = self.root_dir / polyline.filepath.with_suffix(".tim").name
         if not tim_file.exists():
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
