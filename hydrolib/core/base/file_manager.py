@@ -52,7 +52,7 @@ class FilePathResolver:
 
     The FilePathResolver maintains a stack of parent paths and their associated resolve modes.
     It provides functionality to resolve relative paths to absolute paths based on the current state.
-    The current state to which paths are resolved can be altered by pushing a new parent path 
+    The current state to which paths are resolved can be altered by pushing a new parent path
     to the FilePathResolver, or removing the latest added parent path from the FilePathResolver.
 
     The resolver supports two modes:
