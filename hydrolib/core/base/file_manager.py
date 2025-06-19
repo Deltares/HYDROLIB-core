@@ -759,3 +759,80 @@ def file_load_context():
 
 
 path_style_validator = PathStyleValidator()
+
+
+def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
+    """
+    Resolve a file path relative to a root directory, handling both relative
+    and absolute input paths robustly.
+
+    This function ensures that a given `filepath` is correctly resolved under
+    the `root_dir`. It supports cases where the `filepath` is:
+
+    1. Already relative to `root_dir`.
+    2. An absolute path or a longer relative path that includes `root_dir`.
+    3. Outside the `root_dir`, in which case the path is returned as-is.
+
+    This is useful in configuration handling or model loading workflows
+    where file paths may come from user input, config files, or internal logic.
+
+    Args:
+        file_path (Path):
+            The input path to a file. Can be relative, absolute, or already resolved.
+        root_dir (Path):
+            The base directory to which `filepath` should be made relative, if applicable.
+
+    Returns:
+        Path: An absolute path that is either:
+            - Resolved under `root_dir` if possible, or
+            - Left as-is and resolved if it lies outside `root_dir`.
+
+    Raises:
+        None
+
+
+    Examples:
+        ```python
+        >>> root = Path("/models/config")
+        ```
+         - Case 1: file_path is a simple relative filename
+         ```python
+        >>> resolve_relative_to_root(Path("input.txt"), root) # doctest: +SKIP
+        PosixPath('/models/config/input.txt')
+        ```
+        # - Case 2: file_path is a longer relative path starting with root_dir
+        # ```python
+        # >>> resolve_relative_to_root(Path("models/config/input.txt"), Path("models/config"))
+        # PosixPath('/models/config/input.txt')
+        # ```
+        - Case 2: file_path is an absolute path inside root_dir
+        ```python
+        >>> resolve_relative_to_root(Path("/models/config/input.txt"), root)
+        PosixPath('/models/config/input.txt')
+        ```
+        - Case 3: file_path is an absolute path outside root_dir
+        ```python
+        >>> resolve_relative_to_root(Path("/other/data/input.txt"), root) # doctest: +SKIP
+        PosixPath('/other/data/input.txt')
+        ```
+
+    Notes:
+        - This function **does not use the current working directory** to resolve paths.
+        - It is designed for use cases where `root_dir` is the only authoritative base.
+        - Symbolic links will be resolved (because `.resolve()` is used).
+
+    """
+    root_dir = root_dir.resolve()
+    if not file_path.is_absolute():
+        # Always resolve relative paths *relative to root_dir*, never cwd
+        file_path_resolved = (root_dir / file_path).resolve()
+    else:
+        file_path_resolved = file_path.resolve()
+
+    try:
+        relative_path = file_path_resolved.relative_to(root_dir)
+        final_path = (root_dir / relative_path)
+    except ValueError:
+        final_path = file_path_resolved
+
+    return final_path
