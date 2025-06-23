@@ -1,0 +1,30 @@
+# written by HYDROLIB-core 0.7.0
+
+[General]
+
+fileType              = modelDef      # File type. Do not edit this
+program               = D-Flow FM     # Program.
+autoStart             = 0             # Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).
+pathsRelativeToParent = 0             # Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir
+
+
+[geometry]
+
+[numerics]
+
+[physics]
+Temperature                         = 5                                      #
+Salinity                            = 1                                      # Include salinity, (0=no, 1=yes)
+
+[time]
+RefDate                             = 20180101                               # Reference date (yyyymmdd)
+Startdatetime                       = 20181002000000                         # Start date time (yyyymmddHHMMSS)
+Stopdatetime                        = 20181002010000                         # Stop date time (yyyymmddHHMMSS)
+Tunit                               = M                                      # Time unit for start/stop times (H, M or S)
+
+
+[external forcing]
+
+# Editable
+extForceFile                        = relative-path.ext                       # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.
+extForceFileNew                     =                                                   # New format for external forcings file *.ext, link with bcformat boundary conditions specification.

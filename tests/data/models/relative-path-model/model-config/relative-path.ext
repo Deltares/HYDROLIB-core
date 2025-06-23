@@ -1,0 +1,6 @@
+QUANTITY     =discharge_salinity_temperature_sorsin
+FILENAME     =./../model-inputs/relative-path.pli
+FILETYPE     =9
+METHOD       =3
+OPERAND      =O
+AREA         =0
