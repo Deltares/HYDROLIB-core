@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
 
@@ -7,7 +8,9 @@ class TestSourceSinks:
         """
         Test that the pli file is read correctly and the result bc file has the right relative path.
         """
-        mdu_file = Path("tests/data/models/relative-path-model/model-config/relative-path.mdu")
+        mdu_file = Path(
+            "tests/data/models/relative-path-model/model-config/relative-path.mdu"
+        )
         bc_relative_path = Path("../model-inputs/relative-path.bc")
         converter = ExternalForcingConverter.from_mdu(mdu_file)
         ext_model, _, _ = converter.update()
@@ -16,4 +19,3 @@ class TestSourceSinks:
         assert source_sink.discharge.filepath == bc_relative_path
         assert source_sink.salinitydelta.filepath == bc_relative_path
         assert source_sink.temperaturedelta.filepath == bc_relative_path
-
