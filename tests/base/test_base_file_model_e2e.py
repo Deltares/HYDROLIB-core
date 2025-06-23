@@ -425,7 +425,9 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertIsNotNone(parent_model.child_file)
         self.assertEqual(parent_model.child_file.name, "nested_file")
         self.assertEqual(parent_model.child_file.value, 20)
-        self.assertEqual(parent_model.child_file.description, "This file is in a nested directory")
+        self.assertEqual(
+            parent_model.child_file.description, "This file is in a nested directory"
+        )
 
     def test_multiple_children(self):
         """Test loading a file with multiple child references.
@@ -471,7 +473,9 @@ class TestFileModelE2E(unittest.TestCase):
         child_model.save(filepath=absolute_path)
 
         # Create the parent model with a reference to the child
-        parent_model = SimpleFileModel(name="parent_with_absolute_child", value=700, child_file=child_model)
+        parent_model = SimpleFileModel(
+            name="parent_with_absolute_child", value=700, child_file=child_model
+        )
         parent_save_path = self.temp_dir / "parent_with_absolute_child.txt"
 
         # Save the parent model
@@ -493,7 +497,9 @@ class TestFileModelE2E(unittest.TestCase):
         relative_child.filepath = relative_path
 
         # Create a new parent model
-        parent_with_relative = SimpleFileModel(name="parent_with_relative_child", value=900, child_file=relative_child)
+        parent_with_relative = SimpleFileModel(
+            name="parent_with_relative_child", value=900, child_file=relative_child
+        )
         parent_relative_path = self.temp_dir / "parent_with_relative_child.txt"
 
         # Save the parent model recursively
