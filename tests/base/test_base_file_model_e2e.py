@@ -184,3 +184,25 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertEqual(loaded_model.name, "test_save")
         self.assertEqual(loaded_model.value, 42)
         self.assertEqual(loaded_model.description, "Test save operation")
+
+    def test_recursive_load(self):
+        """Test recursive loading of files.
+
+        This test verifies that a FileModel can recursively load child models.
+        The expected behavior is that the parent model and all child models are loaded correctly.
+        """
+        # Path to the parent file
+        parent_path = self.temp_dir / "parent_file.txt"
+
+        # Load the parent file with recurse=True (default)
+        parent_model = SimpleFileModel(filepath=parent_path)
+
+        # Verify the parent model's attributes
+        self.assertEqual(parent_model.name, "parent_file")
+        self.assertEqual(parent_model.value, 5)
+
+        # Verify the child model was loaded
+        self.assertIsNotNone(parent_model.child_file)
+        self.assertEqual(parent_model.child_file.name, "simple_file")
+        self.assertEqual(parent_model.child_file.value, 10)
+        self.assertEqual(parent_model.child_file.description, "This is a simple test file")
