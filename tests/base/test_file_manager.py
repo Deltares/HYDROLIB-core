@@ -19,7 +19,7 @@ from hydrolib.core.base.file_manager import (
     context_file_loading,
     file_load_context,
     path_style_validator,
-    resolve_relative_to_root
+    resolve_relative_to_root,
 )
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
 from hydrolib.core.base.utils import PathStyle
@@ -709,6 +709,7 @@ def root_dir(tmp_path):
     """Fixture: /tmp/.../data/input/root"""
     return tmp_path / "data" / "input" / "root"
 
+
 @pytest.fixture
 def setup_files(root_dir):
     """Create test files to cover all resolution scenarios."""
@@ -728,7 +729,7 @@ def setup_files(root_dir):
         "relative_path_with_root": redundant_path,
         "absolute_inside": (root_dir / "input.txt").resolve(),
         "absolute_outside": (outside_dir / "input.txt").resolve(),
-        "root_dir": root_dir
+        "root_dir": root_dir,
     }
 
 
