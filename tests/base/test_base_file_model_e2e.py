@@ -3,6 +3,7 @@ End-to-end tests for the FileModel class.
 
 These tests use actual files on disk to test the behaviors of the FileModel class.
 """
+
 import shutil
 import tempfile
 import unittest
@@ -90,7 +91,12 @@ class SimpleFileModel(FileModel):
                     continue
 
                 # Handle child file references
-                if key in ["child_file", "child_file1", "child_file2", "child_file3"] and isinstance(value, FileModel):
+                if key in [
+                    "child_file",
+                    "child_file1",
+                    "child_file2",
+                    "child_file3",
+                ] and isinstance(value, FileModel):
                     # Get the relative path from this file to the child file
                     if value.filepath is not None:
                         child_path = value.filepath
@@ -169,7 +175,9 @@ class TestFileModelE2E(unittest.TestCase):
         This test verifies that a FileModel can save data to a simple file.
         The expected behavior is that the file's contents match the model's attributes.
         """
-        model = SimpleFileModel(name="test_save", value=42, description="Test save operation")
+        model = SimpleFileModel(
+            name="test_save", value=42, description="Test save operation"
+        )
 
         save_path = self.temp_dir / "saved_file.txt"
         model.save(filepath=save_path)
@@ -205,8 +213,9 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertIsNotNone(parent_model.child_file)
         self.assertEqual(parent_model.child_file.name, "simple_file")
         self.assertEqual(parent_model.child_file.value, 10)
-        self.assertEqual(parent_model.child_file.description, "This is a simple test file")
-
+        self.assertEqual(
+            parent_model.child_file.description, "This is a simple test file"
+        )
 
     def test_recursive_save(self):
         """Test recursive saving of files.
@@ -221,14 +230,18 @@ class TestFileModelE2E(unittest.TestCase):
             to the parent, or the parent's filepath should be set before the recursive save operation.
         """
         # Create a parent model with a child
-        child_model = SimpleFileModel(name="child_save", value=100, description="Child model")
+        child_model = SimpleFileModel(
+            name="child_save", value=100, description="Child model"
+        )
 
         # Set the child model's filepath before assigning it to the parent
         child_save_path = self.temp_dir / "child_save.txt"
         child_model.filepath = child_save_path
 
         # Create the parent model with the child model
-        parent_model = SimpleFileModel(name="parent_save", value=200, child_file=child_model)
+        parent_model = SimpleFileModel(
+            name="parent_save", value=200, child_file=child_model
+        )
 
         # Set the parent model's filepath
         parent_save_path = self.temp_dir / "parent_save.txt"
@@ -263,7 +276,9 @@ class TestFileModelE2E(unittest.TestCase):
         """
         # Create a parent model and a separate, unrelated child model
         parent_model = SimpleFileModel(name="parent_save", value=200)
-        child_model = SimpleFileModel(name="child_save", value=100, description="Child model")
+        child_model = SimpleFileModel(
+            name="child_save", value=100, description="Child model"
+        )
 
         # Set the filepaths for both models
         parent_save_path = self.temp_dir / "parent_save_unrelated.txt"
