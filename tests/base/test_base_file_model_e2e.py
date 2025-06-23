@@ -349,3 +349,22 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertEqual(loaded_child.name, "child_save")
         self.assertEqual(loaded_child.value, 100)
         self.assertEqual(loaded_child.description, "Child model")
+
+    def test_nested_path_resolution(self):
+        """Test resolution of nested file paths.
+
+        This test verifies that a FileModel can resolve paths to files in nested directories.
+
+        The expected behavior:
+            the model can load files from nested directories correctly.
+        """
+        parent_path = self.temp_dir / "parent_with_nested_child.txt"
+
+        parent_model = SimpleFileModel(filepath=parent_path)
+
+        self.assertEqual(parent_model.name, "parent_with_nested_child")
+        self.assertEqual(parent_model.value, 25)
+        self.assertIsNotNone(parent_model.child_file)
+        self.assertEqual(parent_model.child_file.name, "nested_file")
+        self.assertEqual(parent_model.child_file.value, 20)
+        self.assertEqual(parent_model.child_file.description, "This file is in a nested directory")
