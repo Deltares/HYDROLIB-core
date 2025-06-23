@@ -489,7 +489,7 @@ class TestFileModelE2E(unittest.TestCase):
         # Now test with a relative path
         # Create a new child model
         relative_child = SimpleFileModel(name="relative_child", value=800)
-        relative_path = Path("relative_child.txt")
+        relative_path = Path("sub_dir/relative_child.txt")
         relative_child.filepath = relative_path
 
         # Create a new parent model
