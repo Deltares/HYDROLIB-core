@@ -426,3 +426,32 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertEqual(parent_model.child_file.name, "nested_file")
         self.assertEqual(parent_model.child_file.value, 20)
         self.assertEqual(parent_model.child_file.description, "This file is in a nested directory")
+
+    def test_multiple_children(self):
+        """Test loading a file with multiple child references.
+
+        This test verifies that a FileModel can load multiple child models.
+        The expected behavior is that all child models are loaded correctly.
+        """
+        # Path to the parent file with multiple children
+        parent_path = self.temp_dir / "parent_with_multiple_children.txt"
+
+        # Load the parent file
+        parent_model = SimpleFileModel(filepath=parent_path)
+
+        # Verify the parent model's attributes
+        self.assertEqual(parent_model.name, "parent_with_multiple_children")
+        self.assertEqual(parent_model.value, 30)
+
+        # Verify all child models were loaded
+        self.assertIsNotNone(parent_model.child_file1)
+        self.assertEqual(parent_model.child_file1.name, "simple_file")
+        self.assertEqual(parent_model.child_file1.value, 10)
+
+        self.assertIsNotNone(parent_model.child_file2)
+        self.assertEqual(parent_model.child_file2.name, "mixed_case_file")
+        self.assertEqual(parent_model.child_file2.value, 15)
+
+        self.assertIsNotNone(parent_model.child_file3)
+        self.assertEqual(parent_model.child_file3.name, "nested_file")
+        self.assertEqual(parent_model.child_file3.value, 20)
