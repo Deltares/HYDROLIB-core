@@ -354,10 +354,14 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[PathOrStr], optional): The file path. Defaults to None.
-            resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
-            recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
-            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
+            filepath (Optional[PathOrStr], optional):
+                The file path. Defaults to None.
+            resolve_casing (bool, optional):
+                Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
+            recurse (bool, optional):
+                Whether or not to recursively load the model. Defaults to True.
+            path_style (Optional[str], optional):
+                Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
 
         Raises:
             ValueError: When an unsupported path style is passed.
@@ -911,7 +915,7 @@ class DiskOnlyFileModel(FileModel):
 
     def _load(self, filepath: Path) -> Dict:
         # We de not load any additional data, as such we return an empty dict.
-        return dict()
+        return {}
 
     def _save(self, save_settings: ModelSaveSettings) -> None:
         # The target_file_path contains the new path to write to, while the
