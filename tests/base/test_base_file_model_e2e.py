@@ -455,3 +455,58 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertIsNotNone(parent_model.child_file3)
         self.assertEqual(parent_model.child_file3.name, "nested_file")
         self.assertEqual(parent_model.child_file3.value, 20)
+
+    def test_absolute_paths_handling(self):
+        """Test handling of absolute vs. relative paths.
+
+        This test verifies that a FileModel correctly handles both absolute and relative paths.
+        The expected behavior is that absolute paths are used as-is, while relative paths are
+        resolved relative to the parent model's location.
+        """
+        # Create a parent model with a child using an absolute path
+        absolute_path = self.temp_dir / "absolute_child.txt"
+
+        # Create and save the child model first
+        child_model = SimpleFileModel(name="absolute_child", value=600)
+        child_model.save(filepath=absolute_path)
+
+        # Create the parent model with a reference to the child
+        parent_model = SimpleFileModel(name="parent_with_absolute_child", value=700, child_file=child_model)
+        parent_save_path = self.temp_dir / "parent_with_absolute_child.txt"
+
+        # Save the parent model
+        parent_model.save(filepath=parent_save_path)
+
+        # Load the parent model again
+        loaded_parent = SimpleFileModel(filepath=parent_save_path)
+
+        # Verify the child reference is loaded correctly
+        self.assertIsNotNone(loaded_parent.child_file)
+        self.assertEqual(loaded_parent.child_file.name, "absolute_child")
+        self.assertEqual(loaded_parent.child_file.value, 600)
+
+    def test_relative_paths_handling(self):
+        # Now test with a relative path
+        # Create a new child model
+        relative_child = SimpleFileModel(name="relative_child", value=800)
+        relative_path = Path("relative_child.txt")
+        relative_child.filepath = relative_path
+
+        # Create a new parent model
+        parent_with_relative = SimpleFileModel(name="parent_with_relative_child", value=900, child_file=relative_child)
+        parent_relative_path = self.temp_dir / "parent_with_relative_child.txt"
+
+        # Save the parent model recursively
+        parent_with_relative.save(filepath=parent_relative_path, recurse=True)
+
+        # Verify both files were created
+        self.assertTrue(parent_relative_path.exists())
+        self.assertTrue((self.temp_dir / relative_path).exists())
+
+        # Load the parent model again
+        loaded_parent_relative = SimpleFileModel(filepath=parent_relative_path)
+
+        # Verify the child reference is loaded correctly
+        self.assertIsNotNone(loaded_parent_relative.child_file)
+        self.assertEqual(loaded_parent_relative.child_file.name, "relative_child")
+        self.assertEqual(loaded_parent_relative.child_file.value, 800)
