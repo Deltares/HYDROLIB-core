@@ -117,10 +117,17 @@ class TestFileModelE2E(unittest.TestCase):
         Creates a temporary directory for test output and copies test input files.
         """
         # Create a temporary directory for test output
+        # self.temp_dir = Path("tests/data/output/delete_me").absolute()
         self.temp_dir = Path(tempfile.mkdtemp())
+        # Ensure the directory exists and is empty
+        if self.temp_dir.exists():
+            shutil.rmtree(self.temp_dir)
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Temporary directory: {self.temp_dir} (absolute: {self.temp_dir.is_absolute()})")
 
         # Path to the test input files
-        self.input_dir = Path("tests/data/input/base_file_model_tests")
+        self.input_dir = Path("tests/data/input/base_file_model_tests").absolute()
+        print(f"Input directory: {self.input_dir} (absolute: {self.input_dir.is_absolute()})")
 
         # Copy test input files to the temporary directory
         for file in self.input_dir.glob("**/*"):
@@ -140,10 +147,14 @@ class TestFileModelE2E(unittest.TestCase):
     def tearDown(self):
         """Tear down test fixtures.
 
-        Removes the temporary directory.
+        Clears the contents of the temporary directory.
         """
-        # Remove the temporary directory
-        shutil.rmtree(self.temp_dir)
+        # Clear the contents of the temporary directory
+        for item in self.temp_dir.glob("*"):
+            if item.is_file():
+                item.unlink()
+            elif item.is_dir():
+                shutil.rmtree(item)
 
     def test_load_simple_file(self):
         """Test loading a simple file.
@@ -226,6 +237,9 @@ class TestFileModelE2E(unittest.TestCase):
         # Set the child model's filepath before assigning it to the parent
         child_save_path = self.temp_dir / "child_save.txt"
         child_model.filepath = child_save_path
+        print(f"Child model filepath: {child_model.filepath} (absolute: {child_model.filepath.is_absolute()})")
+        print(f"Child model save_location: {child_model.save_location} (absolute: {child_model.save_location.is_absolute()})")
+        print(f"Child model _absolute_anchor_path: {child_model._absolute_anchor_path} (absolute: {child_model._absolute_anchor_path.is_absolute()})")
 
         # Create the parent model with the child model
         parent_model = SimpleFileModel(name="parent_save", value=200, child_file=child_model)
@@ -233,9 +247,18 @@ class TestFileModelE2E(unittest.TestCase):
         # Set the parent model's filepath
         parent_save_path = self.temp_dir / "parent_save.txt"
         parent_model.filepath = parent_save_path
+        print(f"Parent model filepath: {parent_model.filepath} (absolute: {parent_model.filepath.is_absolute()})")
+        print(f"Parent model save_location: {parent_model.save_location} (absolute: {parent_model.save_location.is_absolute()})")
+        print(f"Parent model _absolute_anchor_path: {parent_model._absolute_anchor_path} (absolute: {parent_model._absolute_anchor_path.is_absolute()})")
 
         # Save the parent model recursively
         parent_model.save(recurse=True)
+        print(f"After save - Child model filepath: {child_model.filepath} (absolute: {child_model.filepath.is_absolute()})")
+        print(f"After save - Child model save_location: {child_model.save_location} (absolute: {child_model.save_location.is_absolute()})")
+        print(f"After save - Child model _absolute_anchor_path: {child_model._absolute_anchor_path} (absolute: {child_model._absolute_anchor_path.is_absolute()})")
+        print(f"After save - Parent model filepath: {parent_model.filepath} (absolute: {parent_model.filepath.is_absolute()})")
+        print(f"After save - Parent model save_location: {parent_model.save_location} (absolute: {parent_model.save_location.is_absolute()})")
+        print(f"After save - Parent model _absolute_anchor_path: {parent_model._absolute_anchor_path} (absolute: {parent_model._absolute_anchor_path.is_absolute()})")
 
         # Verify both files were created
         self.assertTrue(parent_save_path.exists())
@@ -270,9 +293,21 @@ class TestFileModelE2E(unittest.TestCase):
         child_save_path = self.temp_dir / "child_save_unrelated.txt"
         parent_model.filepath = parent_save_path
         child_model.filepath = child_save_path
+        print(f"Unrelated - Child model filepath: {child_model.filepath} (absolute: {child_model.filepath.is_absolute()})")
+        print(f"Unrelated - Child model save_location: {child_model.save_location} (absolute: {child_model.save_location.is_absolute()})")
+        print(f"Unrelated - Child model _absolute_anchor_path: {child_model._absolute_anchor_path} (absolute: {child_model._absolute_anchor_path.is_absolute()})")
+        print(f"Unrelated - Parent model filepath: {parent_model.filepath} (absolute: {parent_model.filepath.is_absolute()})")
+        print(f"Unrelated - Parent model save_location: {parent_model.save_location} (absolute: {parent_model.save_location.is_absolute()})")
+        print(f"Unrelated - Parent model _absolute_anchor_path: {parent_model._absolute_anchor_path} (absolute: {parent_model._absolute_anchor_path.is_absolute()})")
 
         # Save the parent model recursively
         parent_model.save(recurse=True)
+        print(f"Unrelated - After save - Child model filepath: {child_model.filepath} (absolute: {child_model.filepath.is_absolute()})")
+        print(f"Unrelated - After save - Child model save_location: {child_model.save_location} (absolute: {child_model.save_location.is_absolute()})")
+        print(f"Unrelated - After save - Child model _absolute_anchor_path: {child_model._absolute_anchor_path} (absolute: {child_model._absolute_anchor_path.is_absolute()})")
+        print(f"Unrelated - After save - Parent model filepath: {parent_model.filepath} (absolute: {parent_model.filepath.is_absolute()})")
+        print(f"Unrelated - After save - Parent model save_location: {parent_model.save_location} (absolute: {parent_model.save_location.is_absolute()})")
+        print(f"Unrelated - After save - Parent model _absolute_anchor_path: {parent_model._absolute_anchor_path} (absolute: {parent_model._absolute_anchor_path.is_absolute()})")
 
         # Verify the parent file was created
         self.assertTrue(parent_save_path.exists())
@@ -282,6 +317,9 @@ class TestFileModelE2E(unittest.TestCase):
 
         # Now save the child model directly
         child_model.save()
+        print(f"Unrelated - After direct save - Child model filepath: {child_model.filepath} (absolute: {child_model.filepath.is_absolute()})")
+        print(f"Unrelated - After direct save - Child model save_location: {child_model.save_location} (absolute: {child_model.save_location.is_absolute()})")
+        print(f"Unrelated - After direct save - Child model _absolute_anchor_path: {child_model._absolute_anchor_path} (absolute: {child_model._absolute_anchor_path.is_absolute()})")
 
         # Verify the child file was created now
         self.assertTrue(child_save_path.exists())
