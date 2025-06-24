@@ -1,6 +1,7 @@
+from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import Field, model_validator
+from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
@@ -1006,6 +1007,16 @@ class ResearchSedtrails(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "research_sedtrailsinterval",
     )
+
+    @field_validator(
+        "research_sedtrailsgrid", "research_sedtrailsoutputfile", mode="before"
+    )
+    @classmethod
+    def resolve_research_sed_trails_model(cls, value, info: ValidationInfo) -> Any:
+        """Resolve disk-only file models and split string on delimiter."""
+        if isinstance(value, (str, Path)):
+            return ModelFieldResolver.resolve_field(cls, info.field_name, value)
+        return value
 
     @model_validator(mode="before")
     @classmethod
