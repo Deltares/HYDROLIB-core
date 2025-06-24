@@ -305,9 +305,12 @@ class Start(ControlModel):
     _type: Literal["start"] = "start"
     name: str
 
+
 ComponentUnion = Annotated[
     Union[RRComponent, FMComponent], Field(discriminator="library")
 ]
+
+
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
