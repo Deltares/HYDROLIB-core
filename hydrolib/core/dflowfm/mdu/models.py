@@ -2731,8 +2731,14 @@ class ModelFieldResolver:
         Returns:
             dict: The resolved dictionary with model instances.
         """
+        alias_to_field = {
+            field.alias: name
+            for name, field in model_cls.model_fields.items()
+            if field.alias is not None
+        }
         for key, value in list(values.items()):
-            field = model_cls.model_fields.get(key)
+            actual_field_name = alias_to_field.get(key, key)
+            field = model_cls.model_fields.get(actual_field_name)
             if field is None:
                 continue
             # Handle List[Model] and Optional[List[Model]]
