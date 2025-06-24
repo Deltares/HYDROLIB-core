@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Callable, Dict, Union
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
