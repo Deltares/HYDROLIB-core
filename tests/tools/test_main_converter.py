@@ -256,7 +256,7 @@ class TestExternalFocingConverter:
         assert converter.inifield_model.filepath == new_initial_file
         assert converter.structure_model.filepath == new_structure_file
 
-    def test_save(self, old_forcing_file_initial_condition: Dict[str, str]):
+    def test_save_mock(self, old_forcing_file_initial_condition: Dict[str, str]):
         """
         Mock test to test only the save method of the ExternalForcingConverter class.
 
