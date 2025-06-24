@@ -795,7 +795,7 @@ class ResearchTrachytopes(Trachytopes):
 
     @model_validator(mode="before")
     @classmethod
-    def resolve_ResearchTrachytopes_model(
+    def resolve_research_trachytopes_model(
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Resolve disk-only file models."""
