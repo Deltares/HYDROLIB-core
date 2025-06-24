@@ -235,10 +235,14 @@ class ExternalForcingConverter:
         self._log_conversion_details()
         num_quantities = len(self.extold_model.forcing)
 
-        with tqdm(total=num_quantities, desc="Converting forcings", unit="forcing") as progress_bar:
+        with tqdm(
+            total=num_quantities, desc="Converting forcings", unit="forcing"
+        ) as progress_bar:
             for forcing in self.extold_model.forcing:
                 # Update the description of tqdm to include the current forcing's filepath
-                progress_bar.set_description(f"Processing: {forcing.quantity} - {forcing.filename.filepath}")
+                progress_bar.set_description(
+                    f"Processing: {forcing.quantity} - {forcing.filename.filepath}"
+                )
 
                 new_quantity_block = self._convert_forcing(forcing)
 
@@ -263,7 +267,6 @@ class ExternalForcingConverter:
                     )
                 # Manually update the progress bar after processing each item.
                 progress_bar.update(1)
-
 
         if self.mdu_parser is not None:
             self._update_mdu_file()
