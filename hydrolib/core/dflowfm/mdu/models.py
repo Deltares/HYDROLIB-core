@@ -2752,3 +2752,34 @@ class ModelFieldResolver:
             if model_cls_ and isinstance(value, (str, Path)):
                 values[key] = model_cls_(value)
         return values
+
+    @classmethod
+    def resolve_field(cls, model_cls, field: str, value: Union[str, Path]) -> dict:
+        """
+        Resolve a single field value to ensure that the correct pydantic model.
+
+        Args:
+            model_cls (BaseModel): The pydantic model class to resolve.
+            values (dict): The dictionary of field values to resolve.
+        Returns:
+            dict: The resolved dictionary with model instances.
+        """
+        alias_to_field = {
+            field.alias: name
+            for name, field in model_cls.model_fields.items()
+            if field.alias is not None
+        }
+        actual_field_name = alias_to_field.get(field, field)
+        field = model_cls.model_fields.get(actual_field_name)
+        if field is None:
+            return value
+        # Handle List[Model] and Optional[List[Model]]
+        list_model_cls = cls.get_list_model_class(field.annotation)
+        if list_model_cls:
+            return cls.resolve_list_field(list_model_cls, field, value)
+
+        # Handle Model and Optional[Model]
+        model_cls_ = cls.get_model_class(field.annotation)
+        if model_cls_ and isinstance(value, (str, Path)):
+            return model_cls_(value)
+        return value
