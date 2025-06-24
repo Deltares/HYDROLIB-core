@@ -54,12 +54,12 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[int]
+    process: Optional[int] = Field(default=None)
     setting: Optional[List[KeyValuePair]] = Field(default_factory=list)
     parameter: Optional[List[KeyValuePair]] = Field(default_factory=list)
-    mpiCommunicator: Optional[str]
+    mpiCommunicator: Optional[str] = Field(default=None)
 
-    model: Optional[FileModel]
+    model: Optional[FileModel] = Field(default=None)
 
     @property
     def filepath(self):
