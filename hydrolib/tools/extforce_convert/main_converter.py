@@ -1,6 +1,8 @@
+"""Converter for old external forcing files to the new format."""
+
 import os
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from tqdm import tqdm
 
@@ -28,6 +30,7 @@ from hydrolib.tools.extforce_convert.utils import (
 
 
 class ExternalForcingConverter:
+    """Converter for old external forcing files to the new format."""
 
     def __init__(
         self,
@@ -38,7 +41,7 @@ class ExternalForcingConverter:
         mdu_parser: MDUParser = None,
         verbose: bool = False,
     ):
-        """Initialize the converter.
+        r"""Initialize the converter.
 
         The converter will create new external forcing, initial field and structure files in the same directory as the
         old external forcing file, if no paths were given by the user for the new models.
@@ -67,18 +70,18 @@ class ExternalForcingConverter:
             >>> from hydrolib.core.dflowfm.extold.models import ExtOldModel
             >>> root_dir = Path("path/to/your/root/dir")
             >>> forcing_data = {
-            ... 'QUANTITY': 'windspeedfactor',
-            ... 'FILENAME': rf'{root_dir}\my-poly-file.pol',
-            ... 'FILETYPE': '11',
-            ... 'METHOD': '4',
-            ... 'OPERAND': 'O',
+            ...     'QUANTITY': 'windspeedfactor',
+            ...     'FILENAME': rf'{root_dir}/my-poly-file.pol',
+            ...     'FILETYPE': '11',
+            ...     'METHOD': '4',
+            ...     'OPERAND': 'O',
             ... }
-            ... forcing_model_data = {
+            >>> forcing_model_data = {
             ... 'comment': [' Example (old-style) external forcings file'],
             ... 'forcing': [forcing_data]
             ... }
-            >>> old_model = ExtOldModel(**forcing_model_data)
-            >>> converter = ExternalForcingConverter(extold_model=old_model)
+            >>> old_model = ExtOldModel(**forcing_model_data) #doctest: +SKIP
+            >>> converter = ExternalForcingConverter(extold_model=old_model) #doctest: +SKIP
 
             ```
             - Create a converter from an old external forcing file:
@@ -147,7 +150,7 @@ class ExternalForcingConverter:
 
     @property
     def extold_model(self) -> ExtOldModel:
-        """old external forcing model."""
+        """Old external forcing model."""
         return self._extold_model
 
     @property
@@ -198,11 +201,11 @@ class ExternalForcingConverter:
 
     @staticmethod
     def _read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
-        """Read a legacy D-Flow FM external forcings file (.ext) into an
-               ExtOldModel object.
+        """Read a legacy D-Flow FM external forcings file (.ext) into an ExtOldModel object.
 
         Args:
-            extoldfile (PathOrStr): path to the external forcings file (.ext)
+            extoldfile (PathOrStr):
+                path to the external forcings file (.ext)
 
             Returns:
                 ExtOldModel: object with all forcing blocks.
@@ -220,12 +223,24 @@ class ExternalForcingConverter:
 
         return extold_model
 
+    def _type_field_map(self) -> dict[type, tuple[Any, str]]:
+        return {
+            Boundary: (self.ext_model, "boundary"),
+            Lateral: (self.ext_model, "lateral"),
+            SourceSink: (self.ext_model, "sourcesink"),
+            Meteo: (self.ext_model, "meteo"),
+            InitialField: (self.inifield_model, "initial"),
+            ParameterField: (self.inifield_model, "parameter"),
+            Structure: (self.structure_model, "structure"),
+        }
+
     def update(
         self,
     ) -> Union[Tuple[ExtModel, IniFieldModel, StructureModel], None]:
-        """
-        Convert the old external forcing file to a new format files.
-        When the output files are existing, output will be appended to them.
+        """Convert the old external forcing file to a new format files.
+
+        Notes:
+            When the output files exist, output will be appended to them.
 
         Returns:
             Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
@@ -234,6 +249,8 @@ class ExternalForcingConverter:
         """
         self._log_conversion_details()
         num_quantities = len(self.extold_model.forcing)
+
+        type_field_map = self._type_field_map()
 
         with tqdm(
             total=num_quantities, desc="Converting forcings", unit="forcing"
@@ -245,27 +262,17 @@ class ExternalForcingConverter:
                 )
 
                 new_quantity_block = self._convert_forcing(forcing)
+                model_field = type_field_map.get(type(new_quantity_block))
 
-                if isinstance(new_quantity_block, Boundary):
-                    self.ext_model.boundary.append(new_quantity_block)
-                elif isinstance(new_quantity_block, Lateral):
-                    self.ext_model.lateral.append(new_quantity_block)
-                elif isinstance(new_quantity_block, SourceSink):
-                    self.ext_model.sourcesink.append(new_quantity_block)
-                elif isinstance(new_quantity_block, Meteo):
-                    self.ext_model.meteo.append(new_quantity_block)
-                elif isinstance(new_quantity_block, InitialField):
-                    self.inifield_model.initial.append(new_quantity_block)
-                elif isinstance(new_quantity_block, ParameterField):
-                    self.inifield_model.parameter.append(new_quantity_block)
-                elif isinstance(new_quantity_block, Structure):
-                    self.structure_model.structure.append(new_quantity_block)
-                else:
+                if model_field is None:
                     raise NotImplementedError(
                         f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
                         f"{self.extold_model.filepath}."
                     )
-                # Manually update the progress bar after processing each item.
+
+                model, attr = model_field
+                setattr(model, attr, getattr(model, attr) + [new_quantity_block])
+
                 progress_bar.update(1)
 
         if self.mdu_parser is not None:
@@ -280,7 +287,6 @@ class ExternalForcingConverter:
             - The SourceSink converter needs the salinity and temperature from the FM model.
             - The BoundaryCondition converter needs the start time from the FM model.
         """
-
         converter_class = ConverterFactory.create_converter(forcing.quantity)
         converter_class.root_dir = self.root_dir
 
@@ -353,9 +359,7 @@ class ExternalForcingConverter:
         self.structure_model.save(recurse=recursive)
 
     def clean(self):
-        """
-        Clean the directory from the old external forcing file and the time file.
-        """
+        """Clean the directory from the old external forcing file and the time file."""
         root_dir = self.root_dir
         time_files = list(root_dir.glob("*.tim"))
         if len(time_files) > 0:
@@ -372,7 +376,7 @@ class ExternalForcingConverter:
         inifield_file: Optional[PathOrStr] = None,
         structure_file: Optional[PathOrStr] = None,
     ) -> "ExternalForcingConverter":
-        """class method to create the converter from MDU file.
+        """Create the converter from the MDU file.
 
         Args:
             mdu_file (PathOrStr): Path to the D-Flow FM main input file (.mdu).
