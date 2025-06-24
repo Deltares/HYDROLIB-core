@@ -233,8 +233,10 @@ class ExternalForcingConverter:
                 at call site to inspect the updated models.
         """
         self._log_conversion_details()
+        num_quantities = len(self.extold_model.forcing)
 
-        for forcing in self.extold_model.forcing:
+        for ind, forcing in enumerate(self.extold_model.forcing):
+            print(f"{ind + 1}/{num_quantities} - {forcing.quantity} - {forcing.filename.filepath}")
 
             new_quantity_block = self._convert_forcing(forcing)
 
