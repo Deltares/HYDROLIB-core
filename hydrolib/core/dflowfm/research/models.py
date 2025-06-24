@@ -1,6 +1,6 @@
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
@@ -20,6 +20,7 @@ from hydrolib.core.dflowfm.mdu import (
     Waves,
     Wind,
 )
+from hydrolib.core.dflowfm.mdu.models import ModelFieldResolver
 from hydrolib.core.dflowfm.polyfile import PolyFile
 
 DEPRECATED_VARIABLE = "Deprecated variable."
@@ -791,6 +792,14 @@ class ResearchTrachytopes(Trachytopes):
     research_trtmnh: Optional[float] = Field(None, alias="trtmnh")
     research_trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_ResearchTrachytopes_model(
+        cls, values: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Resolve disk-only file models."""
+        return ModelFieldResolver.resolve(cls, values)
+
 
 class ResearchOutput(Output):
     """An extended [output] section that includes highly experimental research keywords."""
@@ -936,6 +945,12 @@ class ResearchOutput(Output):
     research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_ResearchOutput_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Resolve disk-only file models."""
+        return ModelFieldResolver.resolve(cls, values)
+
 
 class ResearchProcesses(Processes):
     """An extended [processes] section that includes highly experimental research keywords."""
@@ -991,6 +1006,12 @@ class ResearchSedtrails(INIBasedModel):
     _split_to_list = get_split_string_on_delimiter_validator(
         "research_sedtrailsinterval",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def resolve_ResearchSedtrails_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Resolve disk-only file models."""
+        return ModelFieldResolver.resolve(cls, values)
 
 
 class ResearchFMModel(FMModel):
