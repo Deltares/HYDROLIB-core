@@ -1,5 +1,3 @@
-# written by HYDROLIB-core 0.7.0
-
 [General]
 
 fileType              = modelDef      # File type. Do not edit this
@@ -25,6 +23,5 @@ Tunit                               = M                                      # T
 
 [external forcing]
 
-# Editable
 extForceFile                        = relative-path.ext                       # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.
 extForceFileNew                     =                                                   # New format for external forcings file *.ext, link with bcformat boundary conditions specification.
