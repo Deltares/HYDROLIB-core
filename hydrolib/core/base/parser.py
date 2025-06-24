@@ -1,4 +1,5 @@
-from typing import List, Tuple
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 class BaseParser:
@@ -39,3 +40,9 @@ class BaseParser:
             raise ValueError(
                 f"Line {line_index}: comments are only supported at the start of the file, before the data."
             )
+
+
+class DummmyParser:
+    @staticmethod
+    def parse(filepath: Path) -> Dict:
+        return {}

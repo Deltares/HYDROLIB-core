@@ -1,3 +1,5 @@
+"""Dimr models."""
+
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
@@ -6,18 +8,18 @@ from typing import Callable, Dict, List, Literal, Optional, Type, Union
 from pydantic.v1 import Field, validator
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     BaseModel,
     FileModel,
     ModelSaveSettings,
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dimr.parser import DIMRParser
 from hydrolib.core.dimr.serializer import DIMRSerializer
 from hydrolib.core.rr.models import RainfallRunoffModel
-from hydrolib.core.utils import to_list
 
 
 class KeyValuePair(BaseModel):
@@ -198,7 +200,8 @@ class CoupledItem(BaseModel):
 
 
 class Logger(BaseModel):
-    """
+    """Logger.
+
     Used to log values to the specified file in workingdir for each timestep
 
     Attributes:
@@ -261,9 +264,9 @@ class StartGroup(BaseModel):
 
 
 class ControlModel(BaseModel):
-    """
-    Overrides to make sure that the control elements in the DIMR
-    are parsed and serialized correctly.
+    """Control Model.
+
+    Overrides to make sure that the control elements in the DIMR are parsed and serialized correctly.
     """
 
     _type: str
@@ -277,7 +280,6 @@ class ControlModel(BaseModel):
     @classmethod
     def validate(cls, v):
         """Remove control element prefixes from parsed data."""
-
         # should be replaced by discriminated unions once merged
         # https://github.com/samuelcolvin/pydantic/pull/2336
         if isinstance(v, dict) and len(v.keys()) == 1:
@@ -287,7 +289,8 @@ class ControlModel(BaseModel):
 
 
 class Parallel(ControlModel):
-    """
+    """Parallel control flow.
+
     Specification of a parallel control flow: one main component and a group of related components and couplers.
     Step wise execution order according to order in parallel control flow.
 
@@ -353,9 +356,7 @@ class DIMR(ParsableFileModel):
         return super().dict(*args, **kwargs)
 
     def _post_init_load(self) -> None:
-        """
-        Load the component models of this DIMR model.
-        """
+        """Load the component models of this DIMR model."""
         super()._post_init_load()
 
         for comp in self.component:
@@ -401,16 +402,12 @@ class DIMR(ParsableFileModel):
             if fmcomponent is None or fmcomponent.process is None:
                 continue
 
-            if fmcomponent.process == 1:
-                fmcomponent_as_dict = fmcomponent.dict()
-                fmcomponent_as_dict.pop("process", None)
-            else:
-                fmcomponent_process_value = " ".join(
-                    str(i) for i in range(fmcomponent.process)
-                )
-                fmcomponent_as_dict = self._update_component_dictonary(
-                    fmcomponent, fmcomponent_process_value
-                )
+            fmcomponent_process_value = " ".join(
+                str(i) for i in range(fmcomponent.process)
+            )
+            fmcomponent_as_dict = self._update_component_dictonary(
+                fmcomponent, fmcomponent_process_value
+            )
 
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
 

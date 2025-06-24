@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from hydrolib.core.baseparser import BaseParser
+from hydrolib.core.base.parser import BaseParser
 
 AstronomicData = Dict[str, Tuple[float, float, float]]
 HarmonicData = Dict[str, Tuple[str, float, float]]

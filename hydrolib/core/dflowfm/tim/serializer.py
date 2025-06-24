@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from hydrolib.core.basemodel import ModelSaveSettings, SerializerConfig
+from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 TimeSeriesRow = List[str]
 TimeSeriesBlock = List[TimeSeriesRow]

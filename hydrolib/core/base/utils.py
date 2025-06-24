@@ -9,19 +9,6 @@ from typing import Any, Callable, List, Optional
 from strenum import StrEnum
 
 
-def example(a: float, b: float = 1.0) -> float:
-    """[summary]
-
-    Args:
-        a (float): [description]
-        b (float): [description]
-
-    Returns:
-        float: [description]
-    """
-    return a * b
-
-
 def to_key(string: str) -> str:
     """
     Construct a key name from a given field name.
@@ -207,14 +194,18 @@ def get_path_style_for_current_operating_system() -> PathStyle:
 class FilePathStyleConverter:
     """Class for converting file paths between different path styles."""
 
-    _os_path_style = get_path_style_for_current_operating_system()
+    def __init__(self):
+        """Initialize the converter with the current operating system's path style."""
+        self._os_path_style = get_path_style_for_current_operating_system()
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Convert the file path from the source path style to the path style of the current operating system.
 
         Args:
-            file_path (Path): The file path to convert to the OS path style.
-            source_path_style (PathStyle): The file path style of the given file path.
+            file_path (Path):
+                The file path to convert to the OS path style.
+            source_path_style (PathStyle):
+                The file path style of the given file path.
 
         Returns:
             str: The converted file path with OS path style.

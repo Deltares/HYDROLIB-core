@@ -8,7 +8,7 @@ import netCDF4 as nc
 import numpy as np
 
 from hydrolib.core import __version__
-from hydrolib.core.basemodel import BaseModel
+from hydrolib.core.base.models import BaseModel
 
 if TYPE_CHECKING:
     from hydrolib.core.dflowfm.net.models import Link1d2d, Mesh1d, Mesh2d, NetworkModel

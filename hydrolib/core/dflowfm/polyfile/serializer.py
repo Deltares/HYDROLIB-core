@@ -2,7 +2,7 @@ from itertools import chain
 from pathlib import Path
 from typing import Generator, Iterable, Optional, Sequence
 
-from hydrolib.core.basemodel import SerializerConfig
+from hydrolib.core.base.models import SerializerConfig
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,

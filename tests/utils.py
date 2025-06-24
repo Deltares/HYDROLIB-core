@@ -10,7 +10,7 @@ from typing import Callable, Generator, Generic, List, Optional, TypeVar
 
 from pydantic.v1.generics import GenericModel
 
-from hydrolib.core.basemodel import PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
 VERSION_LINE_PATTERN = (

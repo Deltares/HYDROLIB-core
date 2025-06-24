@@ -1,3 +1,25 @@
+## 0.9.1 (2025-05-30)
+
+### Feat
+
+- **parser**: refactor and enhance `read_polyfile` functionality (#550) (#828)
+- **parser**: refactor and enhance `read_polyfile` functionality
+- **CrossLocModel**:  extend CrossLocModel to accept a single cross-section (#820)
+- **crossloc**: improve validation and test support for single cross-section use
+
+### Fix
+
+- **path**: improve relative and case-insensitive path resolution (#829)
+- **path**: improve relative and case-insensitive path resolution
+- **test**: ignore version lines in file comparison to prevent test failures (#819)
+- **test**: ignore version lines in file comparison to prevent test failures
+
+### Refactor
+
+- **core**: restructure base and model modules, improve test coverage (#834)
+- **core**: restructure base and model modules, improve test coverage (#834)
+- **dimr**: refactor dirm tests and modules (#826)
+
 ## 0.9.0 (2025-05-16)
 
 ### Feat
@@ -214,8 +236,8 @@
     * 1D Roughness INI files: [FrictionModel][hydrolib.core.io.friction.models.FrictionModel] ({{gh_issue(118)}}).
     * Storage node files: [StorageNodeModel][hydrolib.core.io.storagenode.models.StorageNodeModel] ({{gh_issue(131)}}).
     * General structure:  [GeneralStructure][hydrolib.core.io.structure.models.GeneralStructure] ({{gh_issue(79)}}).
-* Many additions to the [API documentation](reference/api.md).
-    
+* Many additions to the [API documentation](reference/base/api.md).
+
 
 ### Changed
 * All classes that have fields with "keyword values" (such as `frictionType = WhiteColebrook`) now use Enum classes for those values.
@@ -227,7 +249,7 @@
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).
   More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/loading_and_saving_a_model.md).
-  
+
 
 ### Fixed
 * Too strict validation of optional fields in culvert ({{gh_issue(75)}}), pump ({{gh_issue(76)}}),

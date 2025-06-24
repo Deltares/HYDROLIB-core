@@ -1,14 +1,14 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.basemodel import (
+from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     FileModel,
     ModelSaveSettings,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import FilePathStyleConverter
 from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
-from hydrolib.core.utils import FilePathStyleConverter
 
 
 class Serializer:

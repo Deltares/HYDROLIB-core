@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple, Union
 
 from tqdm import tqdm
 
-from hydrolib.core.basemodel import PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,

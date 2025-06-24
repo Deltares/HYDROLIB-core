@@ -100,26 +100,32 @@ nav:
   - API Reference:
       - Introduction:
           - reference/glossary.md
-          - reference/api.md
           - reference/ini.md
-      - DIMR:
-          - reference/dimr.md
+          - base:
+              - reference/base/base.md
+              - reference/base/api.md
+              - reference/base/model-tree-traverser.md
       - D-Flow FM:
-          - reference/mdu.md
-          - reference/net.md
-          - reference/ext.md
-          - reference/forcing.md
-          - reference/structure.md
-          - reference/friction.md
-          - reference/crosssection.md
-          - reference/storagenode.md
-          - reference/inifield.md
-          - reference/onedfield.md
-          - reference/polyfile.md
-          - reference/xyz.md
-          - reference/observationpoint.md
-          - reference/observationcrosssection.md
+          - Models:
+              - reference/models/mdu.md
+              - reference/models/net.md
+              - reference/models/ext.md
+              - reference/models/forcing.md
+              - reference/models/structure.md
+              - reference/models/friction.md
+              - reference/models/crosssection.md
+              - reference/models/storagenode.md
+              - reference/models/inifield.md
+              - reference/models/onedfield.md
+              - reference/models/polyfile.md
+              - reference/models/xyz.md
+              - reference/models/observationpoint.md
+              - reference/models/observationcrosssection.md
+          - DIMR:
+              - reference/models/dimr.md
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
+      - GUI:
+          - reference/gui.md
   - Release notes: "releasenotes.md"

@@ -1,3 +1,5 @@
+"""DIMR Parser."""
+
 from pathlib import Path
 from warnings import warn
 
@@ -27,16 +29,17 @@ class DIMRParser:
 
     @staticmethod
     def _node_to_dictionary(node: etree, ignore_attributes: bool = False):
-        """
+        """Convert a node to a dictionary.
+
         Convert an lxml.etree node tree recursively into a nested dictionary.
         The node's attributes and child items will be added to it's dictionary.
 
         Args:
-            node (etree): The etree node
-            ignore_attributes (bool): Optional parameter; whether or not to
-                                      skip the node's attributes. Default is False.
+            node (etree):
+                The etree node
+            ignore_attributes (bool, Optional):
+                parameter; whether or not to skip the node's attributes. Default is False.
         """
-
         result = {} if ignore_attributes else dict(node.attrib)
 
         for child_node in node.iterchildren():

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.mdu.models import (
     FMModel,
     Geometry,

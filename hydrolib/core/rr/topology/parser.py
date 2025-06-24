@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Iterable
 from warnings import warn
 
-from hydrolib.core.utils import get_substring_between
+from hydrolib.core.base.utils import get_substring_between
 
 
 class NetworkTopologyFileParser:

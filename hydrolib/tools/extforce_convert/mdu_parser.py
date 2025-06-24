@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
-from hydrolib.core.basemodel import PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
 
