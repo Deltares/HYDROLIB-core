@@ -542,6 +542,7 @@ class Test:
     class MockField:
         def __init__(self, annotation):
             self.annotation = annotation
+            self.alias = None
 
     @pytest.mark.parametrize(
         "input_values,field_definitions,expected_output",
