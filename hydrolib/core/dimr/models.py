@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Type, Union
 
-from pydantic import Field, field_validator
+from pydantic import Field, ValidationInfo, field_validator
 
 from hydrolib.core import __version__
 from hydrolib.core.base.models import (
@@ -91,7 +91,7 @@ class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
 
     @field_validator("process", mode="before")
-    def validate_process(cls, value, values: dict) -> Union[None, int]:
+    def validate_process(cls, value, info: ValidationInfo) -> Union[None, int]:
         """
         Validation for the process Attribute.
 
@@ -110,12 +110,12 @@ class FMComponent(Component):
             return value
 
         if isinstance(value, int) and cls._is_valid_process_int(
-            value, values.get("name")
+            value, info.data.get("name")
         ):
             return value
 
         raise ValueError(
-            f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
+            f"In component '{info.data.get('name')}', the keyword process '{value}', is incorrect."
         )
 
     @classmethod
