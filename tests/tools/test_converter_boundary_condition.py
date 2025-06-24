@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-from tests.utils import compare_two_files, is_macos, ignore_version_lines
+from tests.utils import compare_two_files, ignore_version_lines, is_macos
 
 
 @pytest.fixture
@@ -330,6 +330,10 @@ class TestMainConverter:
             files = ["new-external-forcing.ext", "tfl_01.bc"]
             for i in range(2):
                 assert (r_dir / files[i]).exists()
-                diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i], ignore_line=ignore_version_lines)
+                diff = compare_two_files(
+                    r_dir / reference_files[i],
+                    r_dir / files[i],
+                    ignore_line=ignore_version_lines,
+                )
                 assert diff == []
                 (r_dir / files[i]).unlink()

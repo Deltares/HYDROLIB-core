@@ -1122,7 +1122,11 @@ class T3DToForcingConverter:
             "name": user_defined_name,
             "function": "t3d",
             "vertpositions": t3d_model.layers,
-            "vertpositiontype": "percBed" if not hasattr(t3d_model,"vertpositiontype") else t3d_model.vertpositiontype
+            "vertpositiontype": (
+                "percBed"
+                if not hasattr(t3d_model, "vertpositiontype")
+                else t3d_model.vertpositiontype
+            ),
         }
 
         if hasattr(t3d_model, "vertinterpolation"):
