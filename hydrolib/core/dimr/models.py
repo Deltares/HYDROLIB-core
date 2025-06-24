@@ -79,10 +79,10 @@ class Component(BaseModel, ABC):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         # Exclude the FileModel from any DIMR serialization.
         kwargs["exclude"] = {"model"}
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
 
 class FMComponent(Component):
@@ -340,6 +340,18 @@ class DIMR(ParsableFileModel):
     @field_validator("component", "coupler", "control", mode="before")
     def validate_component(cls, v):
         return to_list(v)
+
+    @field_validator("control", mode="before")
+    def validate_control(cls, v):
+        if isinstance(v, list):
+            return [
+                Start(**item) if next(iter(item)) == "start" else Parallel(**item)
+                for item in v
+            ]
+        elif isinstance(v, dict):
+            val = Start(**v) if next(iter(v)) == "start" else Parallel(**v)
+            return val
+        return v
 
     def dict(self, *args, **kwargs):
         kwargs["exclude_none"] = True
