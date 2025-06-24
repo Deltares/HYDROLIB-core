@@ -1,6 +1,6 @@
 from typing import List, Literal, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
