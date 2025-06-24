@@ -1120,9 +1120,17 @@ class T3DToForcingConverter:
         """
         data = {
             "name": user_defined_name,
+            "function": "t3d",
             "vertpositions": t3d_model.layers,
-            "vertpositiontype": "percBed",
+            "vertpositiontype": "percBed" if not hasattr(t3d_model,"vertpositiontype") else t3d_model.vertpositiontype
         }
+
+        if hasattr(t3d_model, "vertinterpolation"):
+            data["vertinterpolation"] = t3d_model.vertinterpolation
+
+        if hasattr(t3d_model, "timeinterpolation"):
+            data["timeinterpolation"] = t3d_model.timeinterpolation
+
         data_dict = t3d_model.as_dict()
         updated = [[k] + v for k, v in data_dict.items()]
         data["datablock"] = updated
