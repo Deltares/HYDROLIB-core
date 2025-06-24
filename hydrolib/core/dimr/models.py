@@ -345,11 +345,19 @@ class DIMR(ParsableFileModel):
     def validate_control(cls, v):
         if isinstance(v, list):
             return [
-                Start(**item) if next(iter(item)) == "start" else Parallel(**item)
+                (
+                    Start(**item["start"])
+                    if next(iter(item)) == "start"
+                    else Parallel(**item["parallel"])
+                )
                 for item in v
             ]
         elif isinstance(v, dict):
-            val = Start(**v) if next(iter(v)) == "start" else Parallel(**v)
+            val = (
+                Start(**v["start"])
+                if next(iter(v)) == "start"
+                else Parallel(**v["parallel"])
+            )
             return val
         return v
 
