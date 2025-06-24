@@ -361,9 +361,9 @@ class DIMR(ParsableFileModel):
             return val
         return v
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["exclude_none"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     def _post_init_load(self) -> None:
         """Load the component models of this DIMR model."""
@@ -413,7 +413,7 @@ class DIMR(ParsableFileModel):
                 continue
 
             if fmcomponent.process == 1:
-                fmcomponent_as_dict = fmcomponent.dict()
+                fmcomponent_as_dict = fmcomponent.model_dump()
                 fmcomponent_as_dict.pop("process", None)
             else:
                 fmcomponent_process_value = " ".join(
@@ -430,7 +430,7 @@ class DIMR(ParsableFileModel):
     def _update_component_dictonary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
     ) -> Dict:
-        fmcomponent_as_dict = fmcomponent.dict()
+        fmcomponent_as_dict = fmcomponent.model_dump()
         fmcomponent_as_dict.update({"process": fmcomponent_process_value})
         return fmcomponent_as_dict
 
