@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Dict, List, Literal, Optional, Type, Union
 
-from pydantic.v1 import Field, validator
+from pydantic import Field, field_validator
 
 from hydrolib.core import __version__
 from hydrolib.core.base.models import (
@@ -69,7 +69,7 @@ class Component(BaseModel, ABC):
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
-    @validator("setting", "parameter", pre=True, allow_reuse=True)
+    @field_validator("setting", "parameter", mode="before")
     def validate_setting(cls, v):
         return to_list(v)
 
@@ -90,7 +90,7 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
-    @validator("process", pre=True)
+    @field_validator("process", mode="before")
     def validate_process(cls, value, values: dict) -> Union[None, int]:
         """
         Validation for the process Attribute.
@@ -231,7 +231,7 @@ class Coupler(BaseModel):
     item: List[CoupledItem] = Field(default_factory=list)
     logger: Optional[Logger]
 
-    @validator("item", pre=True)
+    @field_validator("item", mode="before")
     def validate_item(cls, v):
         return to_list(v)
 
@@ -258,7 +258,7 @@ class StartGroup(BaseModel):
     start: List[ComponentOrCouplerRef] = Field(default_factory=list)
     coupler: List[ComponentOrCouplerRef] = Field(default_factory=list)
 
-    @validator("start", "coupler", pre=True)
+    @field_validator("start", "coupler", mode="before")
     def validate_start(cls, v):
         return to_list(v)
 
@@ -347,7 +347,7 @@ class DIMR(ParsableFileModel):
     waitFile: Optional[str]
     global_settings: Optional[GlobalSettings]
 
-    @validator("component", "coupler", "control", pre=True)
+    @field_validator("component", "coupler", "control", mode="before")
     def validate_component(cls, v):
         return to_list(v)
 
