@@ -3,7 +3,7 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Type, Union
+from typing import Annotated, Callable, Dict, List, Literal, Optional, Type, Union
 
 from pydantic import Field, ValidationInfo, field_validator
 
@@ -229,7 +229,7 @@ class Coupler(BaseModel):
     sourceComponent: str
     targetComponent: str
     item: List[CoupledItem] = Field(default_factory=list)
-    logger: Optional[Logger]
+    logger: Optional[Logger] = Field(default=None)
 
     @field_validator("item", mode="before")
     def validate_item(cls, v):
@@ -271,21 +271,11 @@ class ControlModel(BaseModel):
 
     _type: str
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         """Add control element prefixes for serialized data."""
         return {
-            str(self._type): super().dict(*args, **kwargs),
+            str(self._type): super().model_dump(*args, **kwargs),
         }
-
-    @classmethod
-    def validate(cls, v):
-        """Remove control element prefixes from parsed data."""
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict) and len(v.keys()) == 1:
-            key = list(v.keys())[0]
-            v = v[key]
-        return super().validate(v)
 
 
 class Parallel(ControlModel):
@@ -315,7 +305,9 @@ class Start(ControlModel):
     _type: Literal["start"] = "start"
     name: str
 
-
+ComponentUnion = Annotated[
+    Union[RRComponent, FMComponent], Field(discriminator="library")
+]
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
@@ -340,12 +332,10 @@ class DIMR(ParsableFileModel):
 
     documentation: Documentation = Documentation()
     control: List[Union[Start, Parallel]] = Field(default_factory=list)
-    component: List[Union[RRComponent, FMComponent, Component]] = Field(
-        default_factory=list
-    )
+    component: List[ComponentUnion] = Field(default_factory=list)
     coupler: Optional[List[Coupler]] = Field(default_factory=list)
-    waitFile: Optional[str]
-    global_settings: Optional[GlobalSettings]
+    waitFile: Optional[str] = Field(default=None)
+    global_settings: Optional[GlobalSettings] = Field(default=None)
 
     @field_validator("component", "coupler", "control", mode="before")
     def validate_component(cls, v):
