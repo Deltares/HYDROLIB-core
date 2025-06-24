@@ -412,9 +412,15 @@ class FortranScientificNotationConverter:
             dict:
                 The updated dictionary with converted float fields.
         """
+        alias_to_field = {
+            field.alias: name
+            for name, field in field_definitions.items()
+            if field.alias is not None
+        }
         new_values = {}
         for field_name, value in values.items():
-            field: FieldInfo = field_definitions.get(field_name)
+            actual_field_name = alias_to_field.get(field_name, field_name)
+            field: FieldInfo = field_definitions.get(actual_field_name)
             if field:
                 field_type = field.annotation
                 if field_type not in valid_types:
