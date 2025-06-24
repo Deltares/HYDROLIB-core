@@ -235,30 +235,35 @@ class ExternalForcingConverter:
         self._log_conversion_details()
         num_quantities = len(self.extold_model.forcing)
 
-        for ind, forcing in enumerate(self.extold_model.forcing):
-            print(f"{ind + 1}/{num_quantities} - {forcing.quantity} - {forcing.filename.filepath}")
+        with tqdm(total=num_quantities, desc="Converting forcings", unit="forcing") as progress_bar:
+            for forcing in self.extold_model.forcing:
+                # Update the description of tqdm to include the current forcing's filepath
+                progress_bar.set_description(f"Processing: {forcing.quantity} - {forcing.filename.filepath}")
 
-            new_quantity_block = self._convert_forcing(forcing)
+                new_quantity_block = self._convert_forcing(forcing)
 
-            if isinstance(new_quantity_block, Boundary):
-                self.ext_model.boundary.append(new_quantity_block)
-            elif isinstance(new_quantity_block, Lateral):
-                self.ext_model.lateral.append(new_quantity_block)
-            elif isinstance(new_quantity_block, SourceSink):
-                self.ext_model.sourcesink.append(new_quantity_block)
-            elif isinstance(new_quantity_block, Meteo):
-                self.ext_model.meteo.append(new_quantity_block)
-            elif isinstance(new_quantity_block, InitialField):
-                self.inifield_model.initial.append(new_quantity_block)
-            elif isinstance(new_quantity_block, ParameterField):
-                self.inifield_model.parameter.append(new_quantity_block)
-            elif isinstance(new_quantity_block, Structure):
-                self.structure_model.structure.append(new_quantity_block)
-            else:
-                raise NotImplementedError(
-                    f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
-                    f"{self.extold_model.filepath}."
-                )
+                if isinstance(new_quantity_block, Boundary):
+                    self.ext_model.boundary.append(new_quantity_block)
+                elif isinstance(new_quantity_block, Lateral):
+                    self.ext_model.lateral.append(new_quantity_block)
+                elif isinstance(new_quantity_block, SourceSink):
+                    self.ext_model.sourcesink.append(new_quantity_block)
+                elif isinstance(new_quantity_block, Meteo):
+                    self.ext_model.meteo.append(new_quantity_block)
+                elif isinstance(new_quantity_block, InitialField):
+                    self.inifield_model.initial.append(new_quantity_block)
+                elif isinstance(new_quantity_block, ParameterField):
+                    self.inifield_model.parameter.append(new_quantity_block)
+                elif isinstance(new_quantity_block, Structure):
+                    self.structure_model.structure.append(new_quantity_block)
+                else:
+                    raise NotImplementedError(
+                        f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
+                        f"{self.extold_model.filepath}."
+                    )
+                # Manually update the progress bar after processing each item.
+                progress_bar.update(1)
+
 
         if self.mdu_parser is not None:
             self._update_mdu_file()
