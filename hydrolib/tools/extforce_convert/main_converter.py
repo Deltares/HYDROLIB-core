@@ -337,7 +337,7 @@ class ExternalForcingConverter:
         if num_quantities_ext:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
-            self.ext_model.save(recurse=recursive)
+            self.ext_model.save(recurse=recursive, exclude_unset=True)
 
         if self.mdu_parser is not None:
             self.mdu_parser.save(backup=True)
