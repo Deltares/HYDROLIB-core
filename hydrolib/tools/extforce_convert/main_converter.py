@@ -441,7 +441,7 @@ class ExternalForcingConverter:
         extoldfile = root_dir / old_ext_force_file
 
         if new_ext_force_file:
-            ext_file = new_ext_force_file.resolve()
+            ext_file = (root_dir / new_ext_force_file).resolve()
         else:
             if ext_file is None:
                 old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
