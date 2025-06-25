@@ -609,17 +609,6 @@ class SourceSinkConverter(BaseConverter):
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
-    @property
-    def root_dir(self) -> Path:
-        """Root directory of the external forcing files."""
-        return self._root_dir
-
-    @root_dir.setter
-    def root_dir(self, value: Union[Path, str]):
-        if isinstance(value, str):
-            value = Path(value)
-        self._root_dir = value
-
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
