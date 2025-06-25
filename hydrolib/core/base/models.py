@@ -493,6 +493,11 @@ class FileModel(BaseModel, ABC):
     def validate(cls: Type["FileModel"], value: Any):
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
+            # Check if we're in a file load context and if recurse is False
+            with file_load_context() as context:
+                if hasattr(context, "load_settings") and context.load_settings is not None and not context.load_settings.recurse:
+                    # If recurse is False, return the Path object as-is
+                    return Path(value)
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
         elif value is None:

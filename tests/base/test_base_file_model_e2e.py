@@ -123,7 +123,6 @@ class TestFileModelE2E(unittest.TestCase):
         Creates a temporary directory for test output and copies test input files.
         """
         # Create a temporary directory for test output
-        # self.temp_dir = Path("tests/data/output/delete_me").absolute()
         self.temp_dir = Path(tempfile.mkdtemp())
         # Ensure the directory exists and is empty
         if self.temp_dir.exists():
@@ -516,3 +515,20 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertIsNotNone(loaded_parent_relative.child_file)
         self.assertEqual(loaded_parent_relative.child_file.name, "relative_child")
         self.assertEqual(loaded_parent_relative.child_file.value, 800)
+
+    def test_recursive_load_disabled(self):
+        """Test loading with recursion disabled.
+
+        This test verifies that when recurse=False, child models are not loaded.
+        The expected behavior is that the parent model is loaded, but child models are not.
+        """
+        parent_path = self.temp_dir / "parent_file.txt"
+
+        # Load the parent file with recurse=False
+        parent_model = SimpleFileModel(filepath=parent_path, recurse=False)
+
+        self.assertEqual(parent_model.name, "parent_file")
+        self.assertEqual(parent_model.value, 5)
+
+        # Verify the child model was not loaded (it's a Path, not a SimpleFileModel)
+        self.assertIsInstance(parent_model.child_file, Path)
