@@ -7,7 +7,12 @@ import pytest
 from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingBase, ForcingModel, QuantityUnitPair
+from hydrolib.core.dflowfm.bc.models import (
+    ForcingBase,
+    ForcingModel,
+    Harmonic,
+    QuantityUnitPair,
+)
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
 from hydrolib.core.dflowfm.mdu.models import (
@@ -345,10 +350,11 @@ def test_boundary_with_forcing_file_without_match_returns_none():
 
 
 def _create_forcing(name: str, quantity: str) -> ForcingBase:
-    return ForcingBase(
+    return Harmonic(
         name=name,
         quantityunitpair=[QuantityUnitPair(quantity=quantity, unit="")],
-        function="",
+        function="harmonic",
+        datablock=[],
     )
 
 

@@ -131,7 +131,7 @@ class Boundary(INIBasedModel):
         """
         result = None
         if self.forcingfile is not None:
-            for forcing in self.forcingfile.forcing:
+            for forcing in self.forcingfile[0].forcing:
 
                 if self.nodeid == forcing.name and any(
                     quantity.quantity.startswith(self.quantity)
