@@ -148,22 +148,13 @@ class TestExtModel:
         assert boundary.nodeid == "bnd3"
         assert boundary.quantity == "qhbnd"
 
-    def _create_forcing(name: str, quantity: str) -> ForcingBase:
+    def _create_forcing(self, name: str, quantity: str) -> ForcingBase:
         return Harmonic(
             name=name,
             quantityunitpair=[QuantityUnitPair(quantity=quantity, unit="")],
             function="harmonic",
             datablock=[],
         )
-
-    def _create_boundary(data: Dict) -> Boundary:
-        data["quantity"] = ""
-        data["forcingfile"] = ForcingModel()
-
-        if data["locationfile"] is None:
-            data["nodeid"] = "id"
-
-        return Boundary(**data)
 
 
 class TestMeteo:
