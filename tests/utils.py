@@ -238,6 +238,7 @@ def compare_two_files(
         ```python
         >>> compare_two_files("file1.txt", "file2.txt") # doctest +SKIP
         ```
+
     Notes:
         - The function ignores the trailing blank lines.
     """
