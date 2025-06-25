@@ -70,7 +70,7 @@ def verify_boundary_conditions(
 ):
     assert isinstance(new_quantity_block, Boundary)
     assert new_quantity_block.quantity == expected_quantity
-    forcing_model = new_quantity_block.forcingfile
+    forcing_model = new_quantity_block.forcingfile[0]
     assert forcing_model.filepath.name == forcing_model_filename
     names = ["L1_0001", "L1_0002"]
     assert all(f.name == name for f, name in zip(forcing_model.forcing, names))
@@ -161,7 +161,7 @@ class TestBoundaryConverter:
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
 
-        forcing_model = new_quantity_block.forcingfile
+        forcing_model = new_quantity_block.forcingfile[0]
         for forcing, content in zip(forcing_model.forcing, contents):
             assert forcing.datablock == content
 
@@ -185,7 +185,7 @@ class TestBoundaryConverter:
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
 
-        forcing_model = new_quantity_block.forcingfile
+        forcing_model = new_quantity_block.forcingfile[0]
         assert forcing_model.forcing[0].quantityunitpair[0].quantity == "time"
         assert all(
             [
@@ -214,7 +214,7 @@ class TestBoundaryConverter:
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
 
-        forcing_model = new_quantity_block.forcingfile
+        forcing_model = new_quantity_block.forcingfile[0]
         assert all(
             [
                 forcing_model.forcing[i].quantityunitpair[1].quantity
@@ -251,7 +251,7 @@ class TestBoundaryConverter:
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
 
-        forcing_model = new_quantity_block.forcingfile
+        forcing_model = new_quantity_block.forcingfile[0]
 
         assert all(
             len(forcing_model.forcing[i].quantityunitpair) == 6 for i in range(2)
