@@ -377,6 +377,15 @@ class DIMR(ParsableFileModel):
                 )
                 for item in self.control
             ]
+        if "component" in data:
+            data["component"] = [
+                (
+                    item.model_dump(*args, **kwargs)
+                    if isinstance(item, Component)
+                    else item
+                )
+                for item in self.component
+            ]
         return data
 
     def _post_init_load(self) -> None:
