@@ -271,57 +271,49 @@ def test_mdu_from_scratch():
 @pytest.mark.filterwarnings("ignore:File.*not found:UserWarning")
 def test_read_ext_missing_boundary_field_raises_correct_error():
     file = "missing_boundary_field.ext"
-    identifier = "Boundary2"
-    field = "quantity"
 
     filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
 
-    expected_message = f"{file} -> boundary -> 1 -> {identifier} -> {field}"
+    expected_message = f"`{file}`.general.filetype"
     assert expected_message in str(error.value)
 
 
 def test_read_ext_missing_lateral_field_raises_correct_error():
     file = "missing_lateral_field.ext"
-    identifier = "Lateral2"
-    field = "discharge"
 
     filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         ExtModel(filepath)
 
-    expected_message = f"{file} -> lateral -> 1 -> {identifier} -> {field}"
+    expected_message = f"`{file}`.lateral.1.Lateral2.discharge"
     assert expected_message in str(error.value)
 
 
 def test_read_dimr_missing_component_field_raises_correct_error():
     file = "missing_dimr_component_field.xml"
-    identifier = "FlowFM"
-    field = "workingdir"
 
     filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
 
-    expected_message = f"{file} -> component -> 1 -> {identifier} -> {field}"
+    expected_message = f"`{file}`.component.1.dflowfm.FlowFM.workingdir"
     assert expected_message in str(error.value)
 
 
 def test_read_dimr_missing_coupler_field_raises_correct_error():
     file = "missing_dimr_coupler_field.xml"
-    identifier = "rr_to_flow"
-    field = "targetcomponent"
 
     filepath = invalid_test_data_dir / file
 
     with pytest.raises(ValidationError) as error:
         DIMR(filepath)
 
-    expected_message = f"{file} -> coupler -> 0 -> {identifier} -> {field}"
+    expected_message = f"`{file}`.coupler.0.rr_to_flow.targetcomponent"
     assert expected_message in str(error.value)
 
 
