@@ -256,7 +256,6 @@ class BoundaryConditionConverter(BaseConverter):
 
     def locate_files(self, location_file: Path):
         """Locate the tim, t3d, and cmp files related to the location file.
-        for the given boundary condition.
 
         Args:
             location_file(Path):
@@ -270,23 +269,13 @@ class BoundaryConditionConverter(BaseConverter):
             cmp_files (List[Path]):
                 list of all the cmp files related to the location file.
         """
-
-        forcings_local_dir = resolve_relative_to_root(
-            location_file, self.root_dir
-        )
-        tim_files = list(
-            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9].tim")
-        )
-
-        t3d_files = list(
-            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9]*.t3d")
-        )
-
-        cmp_files = list(
-            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9]*.cmp")
-        )
+        forcings_local_dir = resolve_relative_to_root(location_file, self.root_dir)
+        FILE_NUMBERING_PATTERN = "[0-9][0-9][0-9][0-9]*"
+        stem_pattern = f"{location_file.stem}_{FILE_NUMBERING_PATTERN}"
+        tim_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.tim"))
+        t3d_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.t3d"))
+        cmp_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.cmp"))
         return tim_files, t3d_files, cmp_files
-
 
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
