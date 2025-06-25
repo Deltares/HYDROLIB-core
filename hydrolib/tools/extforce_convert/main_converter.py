@@ -126,6 +126,8 @@ class ExternalForcingConverter:
             )
             self._mdu_parser = mdu_parser
 
+        self._legacy_files = []
+
     @property
     def verbose(self) -> bool:
         """bool: Enable verbose output."""
@@ -314,6 +316,9 @@ class ExternalForcingConverter:
         else:
             new_quantity_block = converter_class.convert(forcing)
 
+        if hasattr(converter_class, "legacy_files"):
+            self._legacy_files += converter_class.legacy_files
+
         return new_quantity_block
 
     def save(self, backup: bool = True, recursive: bool = True):
@@ -346,7 +351,7 @@ class ExternalForcingConverter:
             self.ext_model.save(recurse=recursive, exclude_unset=True)
 
         if self.mdu_parser is not None:
-            self.mdu_parser.save(backup=True)
+            self.mdu_parser.save(backup=backup)
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
         if backup and self.inifield_model.filepath.exists():
@@ -360,10 +365,9 @@ class ExternalForcingConverter:
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
-        root_dir = self.root_dir
-        time_files = list(root_dir.glob("*.tim"))
-        if len(time_files) > 0:
-            for file in time_files:
+        if len(self._legacy_files) > 0:
+            for file in self._legacy_files:
+                print(f"Removing legacy file:{file}")
                 file.unlink()
 
         self.extold_model.filepath.unlink()
