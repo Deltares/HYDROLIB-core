@@ -62,6 +62,7 @@ class BaseConverter(ABC):
     def __init__(self):
         """Initializes the BaseConverter object."""
         self._root_dir = None
+        self._legacy_files = []
 
     @property
     def root_dir(self) -> Path:
@@ -73,6 +74,18 @@ class BaseConverter(ABC):
         if isinstance(value, str):
             value = Path(value)
         self._root_dir = value
+
+    @property
+    def legacy_files(self) -> List[Path]:
+        return self._legacy_files
+
+    @legacy_files.setter
+    def legacy_files(self, value: Union[PathOrStr, List[PathOrStr]]):
+        """Set the legacy files to be cleaned up after conversion."""
+        if isinstance(value, list):
+            self._legacy_files += [Path(file) for file in value]
+        else:
+            self._legacy_files += [Path(value)]
 
     @abstractmethod
     def convert(self, forcing: ExtOldForcing) -> Any:
@@ -726,6 +739,8 @@ class SourceSinkConverter(BaseConverter):
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
+
+        self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu

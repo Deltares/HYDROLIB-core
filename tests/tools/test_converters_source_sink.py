@@ -268,11 +268,11 @@ class TestConverter:
               63.350456 12.950216 -4.200000
               45.200344 6.350155 -3.000
         ```
-
         """
+        location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename=Path("tests/data/input/source-sink/leftsor.pliz").resolve(),
+            filename=location_file,
             filetype=9,
             method="1",
             operand="O",
@@ -291,6 +291,7 @@ class TestConverter:
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+        assert converter.legacy_files == [location_file.with_suffix(".tim")]
 
         # check the converted bc_forcing
         compare_data(new_quantity_block)
@@ -330,9 +331,10 @@ class TestConverter:
         ```
 
         """
+        location_file = Path("tests/data/input/source-sink/leftsor-5-columns.pliz")
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor-5-columns.pliz",
+            filename=location_file,
             filetype=9,
             method="1",
             operand="O",
