@@ -6,8 +6,14 @@ import pytest
 from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import (
+    ForcingBase,
+    ForcingModel,
+    Harmonic,
+    QuantityUnitPair,
+)
 from hydrolib.core.dflowfm.ext.models import (
+    Boundary,
     ExtModel,
     Meteo,
     MeteoForcingFileType,
@@ -15,6 +21,7 @@ from hydrolib.core.dflowfm.ext.models import (
     SourceSink,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
+from tests.utils import invalid_test_data_dir, test_data_dir
 
 
 class TestExtModel:
@@ -70,6 +77,93 @@ class TestExtModel:
         assert model.serializer_config.datablock_spacing == 2
         assert model.serializer_config.comment_delimiter == "#"
         assert model.serializer_config.skip_empty_properties == True
+
+    def test_model_with_duplicate_file_references_use_same_instances(self):
+        model = ExtModel(
+            filepath=(
+                test_data_dir
+                / "input"
+                / "e02"
+                / "c11_korte-woerden-1d"
+                / "dimr_model"
+                / "dflowfm"
+                / "FlowFM_bnd.ext"
+            )
+        )
+
+        boundary1 = model.boundary[0]
+        boundary2 = model.boundary[1]
+
+        # Set a field for first boundary
+        boundary1.forcingfile[0].forcing[0].name = "some_new_value"
+
+        # Field for second boundary is also updated (same instance)
+        assert boundary2.forcingfile[0].forcing[0].name == "some_new_value"
+
+    @pytest.mark.filterwarnings("ignore:File.*not found:UserWarning")
+    def test_read_ext_missing_boundary_field_raises_correct_error(self):
+        file = "missing_boundary_field.ext"
+
+        filepath = invalid_test_data_dir / file
+
+        with pytest.raises(ValidationError) as error:
+            ExtModel(filepath)
+
+        expected_message = f"`{file}`.general.filetype"
+        assert expected_message in str(error.value)
+
+    def test_read_ext_missing_lateral_field_raises_correct_error(self):
+        file = "missing_lateral_field.ext"
+
+        filepath = invalid_test_data_dir / file
+
+        with pytest.raises(ValidationError) as error:
+            ExtModel(filepath)
+
+        expected_message = f"`{file}`.lateral.1.Lateral2.discharge"
+        assert expected_message in str(error.value)
+
+    def test_boundary_with_forcing_file_returns_forcing(self):
+        forcing1 = self._create_forcing("bnd1", "waterlevelbnd")
+        forcing2 = self._create_forcing("bnd2", "dischargebnd")
+        forcing3 = self._create_forcing("bnd3", "qhbnd discharge")
+
+        forcing_file = ForcingModel(forcing=[forcing1, forcing2, forcing3])
+
+        boundary2 = Boundary(
+            nodeid="bnd2", quantity="dischargebnd", forcingfile=forcing_file
+        )
+
+        assert boundary2.forcing is forcing2
+
+    def test_boundary_with_forcing_file_without_match_returns_none(self):
+        forcing1 = self._create_forcing("bnd1", "waterlevelbnd")
+        forcing2 = self._create_forcing("bnd2", "dischargebnd")
+
+        forcing_file = ForcingModel(forcing=[forcing1, forcing2])
+
+        boundary = Boundary(nodeid="bnd3", quantity="qhbnd", forcingfile=forcing_file)
+
+        assert boundary.forcing is None
+        assert boundary.nodeid == "bnd3"
+        assert boundary.quantity == "qhbnd"
+
+    def _create_forcing(name: str, quantity: str) -> ForcingBase:
+        return Harmonic(
+            name=name,
+            quantityunitpair=[QuantityUnitPair(quantity=quantity, unit="")],
+            function="harmonic",
+            datablock=[],
+        )
+
+    def _create_boundary(data: Dict) -> Boundary:
+        data["quantity"] = ""
+        data["forcingfile"] = ForcingModel()
+
+        if data["locationfile"] is None:
+            data["nodeid"] = "id"
+
+        return Boundary(**data)
 
 
 class TestMeteo:
