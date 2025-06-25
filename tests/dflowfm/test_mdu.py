@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 import pytest
@@ -28,6 +29,7 @@ from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 from tests.utils import (
     assert_files_equal,
     assert_objects_equal,
+    test_data_dir,
     test_input_dir,
     test_output_dir,
     test_reference_dir,
@@ -164,6 +166,76 @@ class TestModels:
         assert model.landboundaryfile is not None
         assert len(model.landboundaryfile) == 1
         assert isinstance(model.landboundaryfile[0], DiskOnlyFileModel)
+
+    def test_mdu_model(self):
+        model = FMModel(
+            filepath=Path(
+                test_data_dir
+                / "input"
+                / "e02"
+                / "c11_korte-woerden-1d"
+                / "dimr_model"
+                / "dflowfm"
+                / "FlowFM.mdu"
+            )
+        )
+        assert model.geometry.comments.uniformwidth1d == "test"
+
+        output_dir = test_output_dir / self.test_mdu_model.__name__
+        output_fn = output_dir / FMModel._generate_name()
+
+        if output_dir.exists():
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                pass
+
+        model.save(filepath=output_fn, recurse=True)
+
+        assert model.save_location == output_fn
+        assert model.save_location.is_file()
+
+        assert model.geometry.frictfile is not None
+        frictfile = model.geometry.frictfile[0]
+        assert model.geometry.frictfile[0] is not None
+        assert model.geometry.frictfile[0].filepath is not None
+
+        assert frictfile.save_location == output_dir / frictfile.filepath
+        assert frictfile.save_location.is_file()
+
+        assert model.geometry.structurefile is not None
+        structurefile = model.geometry.structurefile[0]
+        assert structurefile is not None
+        assert structurefile.filepath is not None
+
+        assert structurefile.save_location == output_dir / structurefile.filepath
+        assert structurefile.save_location.is_file()
+
+    def test_load_model_recurse_false():
+        model = FMModel(
+            filepath=Path(
+                test_data_dir
+                / "input"
+                / "e02"
+                / "c11_korte-woerden-1d"
+                / "dimr_model"
+                / "dflowfm"
+                / "FlowFM.mdu"
+            ),
+            recurse=False,
+        )
+
+        # Assert that references to child models are preserved, but child models are not loaded
+        assert model.geometry.structurefile is not None
+        assert len(model.geometry.structurefile) == 1
+        assert model.geometry.structurefile[0].filepath == Path("structures.ini")
+        assert not any(model.geometry.structurefile[0].structure)
+
+    def test_mdu_from_scratch(self):
+        output_fn = Path(test_output_dir / "scratch.mdu")
+        model = FMModel()
+        model.filepath = output_fn
+        model.save()
 
 
 class PyTestMatchAny:
