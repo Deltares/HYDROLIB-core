@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import List, Literal, Optional
 
 from pydantic import Field, ValidationInfo, field_validator, model_validator
@@ -78,6 +79,14 @@ class FrictGeneral(INIGeneral):
     _disk_only_file_model_should_not_be_none = (
         validator_set_default_disk_only_file_model_when_none()
     )
+
+    @field_validator("frictionvaluesfile", mode="before")
+    @classmethod
+    def _validate_frictionvaluesfile(cls, v: Optional[DiskOnlyFileModel]):
+        """Validate the frictionValuesFile field to ensure it is a DiskOnlyFileModel."""
+        if isinstance(v, (str, Path)):
+            return DiskOnlyFileModel(v)
+        return v
 
 
 class FrictGlobal(INIBasedModel):
