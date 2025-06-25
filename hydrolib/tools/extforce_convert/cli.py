@@ -164,7 +164,7 @@ def convert(converter: ExternalForcingConverter, args: Namespace):
     converter.verbose = args.verbose
     converter.update()
     print("Converting the old external forcing file to the new format files is done.")
-    converter.save(backup=args.backup)
+    converter.save(backup=args.backup, recursive=True)
     print("The new files are saved.")
     if args.remove_legacy:
         print("Cleaning legacy tim files ...")
