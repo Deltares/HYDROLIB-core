@@ -46,6 +46,16 @@ from tests.utils import (
 )
 
 
+def _create_boundary(data: Dict) -> Boundary:
+    data["quantity"] = ""
+    data["forcingfile"] = ForcingModel()
+
+    if data["locationfile"] is None:
+        data["nodeid"] = "id"
+
+    return Boundary(**data)
+
+
 class TestModels:
     """Test class to test all classes and methods contained in the
     hydrolib.core.dflowfm.mdu.models.py module"""
@@ -221,7 +231,7 @@ class TestModels:
         assert structurefile.save_location == output_dir / structurefile.filepath
         assert structurefile.save_location.is_file()
 
-    def test_load_model_recurse_false():
+    def test_load_model_recurse_false(self):
         model = FMModel(
             filepath=Path(
                 test_data_dir
@@ -246,15 +256,6 @@ class TestModels:
         model = FMModel()
         model.filepath = output_fn
         model.save()
-
-    def _create_boundary(self, data: Dict) -> Boundary:
-        data["quantity"] = ""
-        data["forcingfile"] = ForcingModel()
-
-        if data["locationfile"] is None:
-            data["nodeid"] = "id"
-
-        return Boundary(**data)
 
     @pytest.mark.parametrize(
         "input",
