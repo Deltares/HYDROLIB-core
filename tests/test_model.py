@@ -255,10 +255,10 @@ def test_model_with_duplicate_file_references_use_same_instances():
     boundary2 = model.boundary[1]
 
     # Set a field for first boundary
-    boundary1.forcingfile.forcing[0].name = "some_new_value"
+    boundary1.forcingfile[0].forcing[0].name = "some_new_value"
 
     # Field for second boundary is also updated (same instance)
-    assert boundary2.forcingfile.forcing[0].name == "some_new_value"
+    assert boundary2.forcingfile[0].forcing[0].name == "some_new_value"
 
 
 def test_mdu_from_scratch():

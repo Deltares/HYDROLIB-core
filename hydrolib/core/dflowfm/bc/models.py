@@ -294,6 +294,8 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @classmethod
     def preprocess_quantities(cls, values):
+        if not isinstance(values, dict):
+            return values
         quantityunitpairkey = "quantityunitpair"
 
         if values.get(quantityunitpairkey) is not None:
