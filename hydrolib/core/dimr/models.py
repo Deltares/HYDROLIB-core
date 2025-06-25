@@ -366,7 +366,18 @@ class DIMR(ParsableFileModel):
 
     def model_dump(self, *args, **kwargs):
         kwargs["exclude_none"] = True
-        return super().model_dump(*args, **kwargs)
+        data = super().model_dump(*args, **kwargs)
+        # Manually apply custom model_dump for control items
+        if "control" in data:
+            data["control"] = [
+                (
+                    item.model_dump(*args, **kwargs)
+                    if isinstance(item, ControlModel)
+                    else item
+                )
+                for item in self.control
+            ]
+        return data
 
     def _post_init_load(self) -> None:
         """Load the component models of this DIMR model."""
