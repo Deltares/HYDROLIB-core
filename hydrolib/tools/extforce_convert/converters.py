@@ -254,6 +254,40 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return time_series_list
 
+    def locate_files(self, location_file: Path):
+        """Locate the tim, t3d, and cmp files related to the location file.
+        for the given boundary condition.
+
+        Args:
+            location_file(Path):
+                the pli file that contains the location of the boundary condition.
+
+        Returns:
+            tim_files (List[Path]):
+                list of all the tim files related to the location file.
+            t3d_files (List[Path]):
+                list of all the t3d files related to the location file.
+            cmp_files (List[Path]):
+                list of all the cmp files related to the location file.
+        """
+
+        forcings_local_dir = resolve_relative_to_root(
+            location_file, self.root_dir
+        )
+        tim_files = list(
+            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9].tim")
+        )
+
+        t3d_files = list(
+            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9]*.t3d")
+        )
+
+        cmp_files = list(
+            forcings_local_dir.parent.glob(f"{location_file.stem}_[0-9][0-9][0-9][0-9]*.cmp")
+        )
+        return tim_files, t3d_files, cmp_files
+
+
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
     ) -> Boundary:
@@ -306,10 +340,9 @@ class BoundaryConditionConverter(BaseConverter):
                 "The 'root_dir' property must be set before calling this method."
             )
 
+        tim_files, t3d_files, cmp_files = self.locate_files(location_file)
         forcings_list = []
-        tim_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9].tim")
-        )
+
         if len(tim_files) > 0:
             time_series_list = self.convert_tim_to_bc(
                 tim_files, time_unit, quantity=quantity, label=label
@@ -318,9 +351,6 @@ class BoundaryConditionConverter(BaseConverter):
             self.legacy_files = tim_files
 
         # check t3d files
-        t3d_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.t3d")
-        )
         if len(t3d_files) > 0:
             t3d_models = [T3DModel(path) for path in t3d_files]
             # this line assumed that the two t3d files will have the same number of layers and same number of quantities
@@ -335,9 +365,6 @@ class BoundaryConditionConverter(BaseConverter):
             self.legacy_files = t3d_files
 
         # check cmp files
-        cmp_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.cmp")
-        )
         if len(cmp_files) > 0:
             cmp_models = [CMPModel(path) for path in cmp_files]
             for cmp_model in cmp_models:

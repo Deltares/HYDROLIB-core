@@ -1,6 +1,13 @@
 QUANTITY     =discharge_salinity_temperature_sorsin
-FILENAME     =./../model-inputs/relative-path.pli
+FILENAME     =./../model-inputs/source-sink/source-sink-relative-path.pli
 FILETYPE     =9
 METHOD       =3
 OPERAND      =O
 AREA         =0
+
+
+QUANTITY     =waterlevelbnd
+FILENAME     =./../model-inputs/boundary-condition/boundary-condition-relative-path.pli
+FILETYPE     =9
+METHOD       =3
+OPERAND      =O
