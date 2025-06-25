@@ -673,6 +673,8 @@ def rename_keys_for_backwards_compatibility(
     Returns:
         Dict: Dictionary where the provided keys are renamed.
     """
+    if not isinstance(values, dict):
+        return values
     for current_keyword, old_keywords in keys_to_rename.items():
         if current_keyword in values:
             continue

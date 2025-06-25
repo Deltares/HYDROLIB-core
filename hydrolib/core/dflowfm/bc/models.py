@@ -374,6 +374,8 @@ class VectorForcingBase(ForcingBase):
         Returns:
             Dict: Dictionary of validates values.
         """
+        if not isinstance(values, dict):
+            return values
         quantityunitpairs = values["quantityunitpair"]
         vector = values.get("vector")
         number_of_element_repetitions = cls.get_number_of_repetitions(values)
@@ -802,6 +804,8 @@ class T3D(VectorForcingBase):
 
     @model_validator(mode="before")
     def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
+        if not isinstance(values, dict):
+            return values
         quantityunitpairs = values["quantityunitpair"]
 
         T3D._validate_that_first_unit_is_time_and_has_no_verticalposition(

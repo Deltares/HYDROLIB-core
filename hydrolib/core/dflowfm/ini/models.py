@@ -256,6 +256,8 @@ class INIBasedModel(BaseModel, ABC):
         """
         # Convert Section to dictionary if needed
         values = cls._convert_section_to_dict(values)
+        if not isinstance(values, dict):
+            return values
 
         dropkeys = []
         for k, v in values.items():
