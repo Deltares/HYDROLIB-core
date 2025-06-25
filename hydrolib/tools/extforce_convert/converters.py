@@ -315,6 +315,7 @@ class BoundaryConditionConverter(BaseConverter):
                 tim_files, time_unit, quantity=quantity, label=label
             )
             forcings_list.extend(time_series_list)
+            self.legacy_files = tim_files
 
         # check t3d files
         t3d_files = list(
@@ -331,6 +332,7 @@ class BoundaryConditionConverter(BaseConverter):
                 t3d_models, quantities_names, user_defined_names
             )
             forcings_list.extend(t3d_forcing_list)
+            self.legacy_files = t3d_files
 
         # check cmp files
         cmp_files = list(
@@ -345,6 +347,7 @@ class BoundaryConditionConverter(BaseConverter):
                 ]
             forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
             forcings_list.extend(forcing_list)
+            self.legacy_files = cmp_files
 
         forcing_model = ForcingModel(forcing=forcings_list)
 

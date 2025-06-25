@@ -184,7 +184,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == tim_files
         forcing_model = new_quantity_block.forcingfile
         assert forcing_model.forcing[0].quantityunitpair[0].quantity == "time"
         assert all(
@@ -213,7 +213,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == cmp_files
         forcing_model = new_quantity_block.forcingfile
         assert all(
             [
@@ -250,7 +250,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == t3d_files
         forcing_model = new_quantity_block.forcingfile
 
         assert all(
