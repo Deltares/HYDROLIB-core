@@ -5,7 +5,7 @@ from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
-from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 from hydrolib.core.dflowfm.mdu import (
     FMModel,
     General,
@@ -1004,9 +1004,10 @@ class ResearchSedtrails(INIBasedModel):
         None, alias="sedtrailsoutputfile"
     )
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "research_sedtrailsinterval",
-    )
+    @field_validator("research_sedtrailsinterval", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
     @field_validator(
         "research_sedtrailsgrid", "research_sedtrailsoutputfile", mode="before"
