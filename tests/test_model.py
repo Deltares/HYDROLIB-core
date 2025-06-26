@@ -226,7 +226,8 @@ def test_load_model_recurse_false():
     # Assert that references to child models are preserved, but child models are not loaded
     assert model.geometry.structurefile is not None
     assert len(model.geometry.structurefile) == 1
-    assert model.geometry.structurefile[0] == DiskOnlyFileModel("structures.ini")
+    assert model.geometry.structurefile[0].filepath.name == "structures.ini"
+    assert isinstance(model.geometry.structurefile[0], DiskOnlyFileModel)
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
