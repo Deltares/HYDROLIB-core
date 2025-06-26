@@ -14,7 +14,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
-    validator_set_default_disk_only_file_model_when_none,
+    set_default_disk_only_file_model,
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -78,12 +78,10 @@ class FrictGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-    frictionvaluesfile: DiskOnlyFileModel = Field(
+    frictionvaluesfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="frictionValuesFile"
-    )
-
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
     )
 
     @field_validator("frictionvaluesfile", mode="before")

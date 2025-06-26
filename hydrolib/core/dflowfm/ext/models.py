@@ -13,7 +13,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
-    validator_set_default_disk_only_file_model_when_none,
+    set_default_disk_only_file_model,
 )
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import (
@@ -53,16 +53,12 @@ class Boundary(INIBasedModel):
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
     """
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
     nodeid: Optional[str] = Field(None, alias="nodeId")
-    locationfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
-    )
+    locationfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
     forcingfile: List[ForcingModel] = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
@@ -451,10 +447,6 @@ class Meteo(INIBasedModel):
         The Meteo does not currently support raising an error on unknown keywords.
         """
         return None
-
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
