@@ -491,13 +491,19 @@ class FileModel(BaseModel, ABC):
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any):
-        from hydrolib.core.base.models import DiskOnlyFileModel  # because of circular import
+        from hydrolib.core.base.models import (
+            DiskOnlyFileModel,  # because of circular import
+        )
 
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
             # Check if we're in a file load context and if recurse is False
-            with (file_load_context() as context):
-                if hasattr(context, "_load_settings") and context._load_settings is not None and not context._load_settings.recurse:
+            with file_load_context() as context:
+                if (
+                    hasattr(context, "_load_settings")
+                    and context._load_settings is not None
+                    and not context._load_settings.recurse
+                ):
                     # If recurse is False, return the Path object as-is
                     return DiskOnlyFileModel(value)
             # Pydantic Model init requires a dict

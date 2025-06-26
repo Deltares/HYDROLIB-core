@@ -230,7 +230,10 @@ def test_load_model_recurse_false():
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
-    file_path = test_data_dir / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_bnd.ext"
+    file_path = (
+        test_data_dir
+        / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_bnd.ext"
+    )
 
     model = ExtModel(filepath=file_path)
 

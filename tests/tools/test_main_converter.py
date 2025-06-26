@@ -352,9 +352,7 @@ def test_clean():
     - The glob method is mocked to return two files with the extension .tim.
     - The unlink method is mocked to return True.
     """
-    with (
-        patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
-    ):
+    with (patch("pathlib.Path.unlink", return_value=True) as mock_unlink,):
         converter = ExternalForcingConverter(
             "tests/data/input/old-external-forcing.ext"
         )

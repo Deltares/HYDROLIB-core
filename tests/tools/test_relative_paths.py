@@ -11,12 +11,18 @@ class TestSourceSinks:
         """
         mdu_file = models_dir / "relative-path-model/model-config/relative-path.mdu"
         source_sink_paths = {
-            "bc_relative_path": Path("../model-inputs/source-sink/source-sink-relative-path.bc"),
-            "bc_abs_path": models_dir / "relative-path-model/model-inputs/source-sink/source-sink-relative-path.bc"
+            "bc_relative_path": Path(
+                "../model-inputs/source-sink/source-sink-relative-path.bc"
+            ),
+            "bc_abs_path": models_dir
+            / "relative-path-model/model-inputs/source-sink/source-sink-relative-path.bc",
         }
         boundary_paths = {
-            "bc_relative_path": Path("../model-inputs/boundary-condition/boundary-condition-relative-path.bc"),
-            "bc_abs_path": models_dir / "relative-path-model/model-inputs/boundary-condition/boundary-condition-relative-path.bc"
+            "bc_relative_path": Path(
+                "../model-inputs/boundary-condition/boundary-condition-relative-path.bc"
+            ),
+            "bc_abs_path": models_dir
+            / "relative-path-model/model-inputs/boundary-condition/boundary-condition-relative-path.bc",
         }
 
         converter = ExternalForcingConverter.from_mdu(mdu_file)
@@ -26,8 +32,13 @@ class TestSourceSinks:
 
         source_sink = ext_model.sourcesink[0]
         assert source_sink.discharge.filepath == source_sink_paths["bc_relative_path"]
-        assert source_sink.salinitydelta.filepath == source_sink_paths["bc_relative_path"]
-        assert source_sink.temperaturedelta.filepath == source_sink_paths["bc_relative_path"]
+        assert (
+            source_sink.salinitydelta.filepath == source_sink_paths["bc_relative_path"]
+        )
+        assert (
+            source_sink.temperaturedelta.filepath
+            == source_sink_paths["bc_relative_path"]
+        )
 
         assert len(ext_model.boundary) == 1
         boundary = ext_model.boundary[0]
