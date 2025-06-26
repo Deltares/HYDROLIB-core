@@ -1,14 +1,20 @@
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import Field, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from strenum import StrEnum
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
     validate_correct_length,
     validate_required_fields,
 )
@@ -169,15 +175,28 @@ class StorageNode(INIBasedModel):
         """
         return None
 
-    _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)
-    _nodetype_validator = get_enum_validator("nodetype", enum=NodeType)
-    _storagetype_validator = get_enum_validator("storagetype", enum=StorageType)
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "levels",
-        "storagearea",
-    )
+    @field_validator("interpolate", mode="before")
+    @classmethod
+    def _interpolate_validator(cls, v) -> Interpolation:
+        return enum_value_parser(Interpolation)(v)
+
+    @field_validator("nodetype", mode="before")
+    @classmethod
+    def _nodetype_validator(cls, v) -> NodeType:
+        return enum_value_parser(NodeType)(v)
+
+    @field_validator("storagetype", mode="before")
+    @classmethod
+    def _storagetype_validator(cls, v) -> StorageType:
+        return enum_value_parser(StorageType)(v)
+
+    @field_validator("levels", "storagearea", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
+    @classmethod
     def check_list_length_levels(cls, values: "StorageNode") -> "StorageNode":
         """Validates that the length of the levels field is as expected."""
         validate_correct_length(
@@ -190,6 +209,7 @@ class StorageNode(INIBasedModel):
         return values
 
     @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_using_tables(
         cls, values: "StorageNode"
     ) -> "StorageNode":
@@ -205,6 +225,7 @@ class StorageNode(INIBasedModel):
         return values
 
     @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_not_using_tables(
         cls, values: "StorageNode"
     ) -> "StorageNode":
@@ -235,9 +256,7 @@ class StorageNodeModel(INIModel):
     """
 
     general: StorageNodeGeneral = StorageNodeGeneral()
-    storagenode: List[StorageNode] = []
-
-    _make_list = make_list_validator("storagenode")
+    storagenode: Annotated[List[StorageNode], BeforeValidator(make_list)] = []
 
     @classmethod
     def _filename(cls) -> str:
