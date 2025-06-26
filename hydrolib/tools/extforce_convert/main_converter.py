@@ -142,7 +142,7 @@ class ExternalForcingConverter:
         """Set the legacy files."""
         if not isinstance(value, list):
             raise TypeError("legacy_files must be a list of Path objects.")
-        self._legacy_files = value
+        self._legacy_files += value
 
     @property
     def verbose(self) -> bool:
@@ -333,7 +333,7 @@ class ExternalForcingConverter:
             new_quantity_block = converter_class.convert(forcing)
 
         if hasattr(converter_class, "legacy_files"):
-            self.legacy_files += converter_class.legacy_files
+            self.legacy_files = converter_class.legacy_files
 
         return new_quantity_block
 
