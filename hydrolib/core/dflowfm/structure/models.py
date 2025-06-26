@@ -1099,7 +1099,10 @@ class Dambreak(Structure):
             Optional[Union[TimModel, ForcingModel]]: The value given for dambreakLevelsAndwidths.
         """
         # Retrieve the algorithm value (if not found use 0).
-        algorithm_value = info.data.get("algorithm", 0)
+        if isinstance(info, dict):
+            algorithm_value = info.get("algorithm", 0)
+        else:
+            algorithm_value = info.data.get("algorithm", 0)
         if field_value is not None and algorithm_value != 3:
             # dambreakLevelsAndWidths can only be set when algorithm = 3
             raise ValueError(
