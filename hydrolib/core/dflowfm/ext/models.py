@@ -1,7 +1,14 @@
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Set, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
-from pydantic import ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -21,9 +28,9 @@ from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     UnknownKeywordErrorManager,
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
     validate_location_specification,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
@@ -178,9 +185,10 @@ class Lateral(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "xcoordinates", "ycoordinates"
-    )
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
     @field_validator("discharge", mode="before")
     @classmethod
@@ -472,12 +480,15 @@ class Meteo(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    forcingfiletype_validator = get_enum_validator(
-        "forcingfiletype", enum=MeteoForcingFileType
-    )
-    interpolationmethod_validator = get_enum_validator(
-        "interpolationmethod", enum=MeteoInterpolationMethod
-    )
+    @field_validator("forcingfiletype", mode="before")
+    @classmethod
+    def forcingfiletype_validator(cls, v):
+        return enum_value_parser(MeteoForcingFileType)(v)
+
+    @field_validator("interpolationmethod", mode="before")
+    @classmethod
+    def interpolationmethod_validator(cls, v):
+        return enum_value_parser(MeteoInterpolationMethod)(v)
 
     @field_validator("forcingfile", mode="before")
     @classmethod
@@ -517,14 +528,21 @@ class ExtModel(INIModel):
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: List[Boundary] = Field(default_factory=list)
-    lateral: List[Lateral] = Field(default_factory=list)
-    sourcesink: List[SourceSink] = Field(default_factory=list)
-    meteo: List[Meteo] = Field(default_factory=list)
+    boundary: Annotated[List[Boundary], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    lateral: Annotated[List[Lateral], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    sourcesink: Annotated[List[SourceSink], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
-    _split_to_list = make_list_validator("boundary", "lateral", "meteo", "sourcesink")
 
     @classmethod
     def _ext(cls) -> str:
