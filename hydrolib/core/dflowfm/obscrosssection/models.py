@@ -71,17 +71,20 @@ class ObservationCrossSection(INIBasedModel):
         "xcoordinates", "ycoordinates"
     )
 
-    @model_validator(mode="before")
-    def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
+    @model_validator(mode="after")
+    def validate_that_location_specification_is_correct(
+        cls, values: "ObservationCrossSection"
+    ) -> "ObservationCrossSection":
         """Validates that the correct location specification is given."""
-        return validate_location_specification(
-            values,
+        validate_location_specification(
+            values.model_dump(),
             config=LocationValidationConfiguration(
                 validate_node=False,
                 minimum_num_coordinates=2,
                 validate_location_type=False,
             ),
         )
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
