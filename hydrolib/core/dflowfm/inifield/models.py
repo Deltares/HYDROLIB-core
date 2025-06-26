@@ -1,9 +1,9 @@
 import logging
 from abc import ABC
 from pathlib import Path
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import BeforeValidator, Field, field_validator, model_validator
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
@@ -14,7 +14,7 @@ from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
-    make_list_validator,
+    make_list,
     validate_required_fields,
 )
 
@@ -289,10 +289,12 @@ class IniFieldModel(INIModel):
     """
 
     general: IniFieldGeneral = IniFieldGeneral()
-    initial: List[InitialField] = Field(default_factory=list)
-    parameter: List[ParameterField] = Field(default_factory=list)
-
-    _split_to_list = make_list_validator("initial", "parameter")
+    initial: Annotated[List[InitialField], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    parameter: Annotated[List[ParameterField], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
 
     @classmethod
     def _ext(cls) -> str:
