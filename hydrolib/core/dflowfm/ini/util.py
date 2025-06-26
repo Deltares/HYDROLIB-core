@@ -6,7 +6,7 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic import BaseModel, ValidationInfo, field_validator
+from pydantic import BaseModel, ValidationInfo
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
