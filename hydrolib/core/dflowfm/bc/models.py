@@ -49,10 +49,10 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
+    enum_value_parser,
     make_list,
     rename_keys_for_backwards_compatibility,
     split_string_on_delimiter,
-    validate_enum,
 )
 
 logger = logging.getLogger(__name__)
@@ -664,7 +664,7 @@ class TimeSeries(VectorForcingBase):
     @field_validator("timeinterpolation", mode="before")
     @classmethod
     def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
-        return validate_enum(value, enum=TimeInterpolation)
+        return enum_value_parser(TimeInterpolation)(value)
 
     @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
@@ -771,23 +771,22 @@ class T3D(VectorForcingBase):
     @field_validator("vertinterpolation", mode="before")
     @classmethod
     def _validate_vertinterpolation(cls, value: Any) -> VerticalInterpolation:
-        return validate_enum(value, enum=VerticalInterpolation)
+        return enum_value_parser(enum=VerticalInterpolation)(value)
 
     @field_validator("vertpositiontype", mode="before")
     @classmethod
     def _validate_vertpositiontype(cls, value: Any) -> VerticalPositionType:
-        return validate_enum(
-            value,
+        return enum_value_parser(
             enum=VerticalPositionType,
             alternative_enum_values={
                 VerticalPositionType.percentage_bed: ["percentage from bed"]
             },
-        )
+        )(value)
 
     @field_validator("timeinterpolation", mode="before")
     @classmethod
     def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
-        return validate_enum(value, enum=TimeInterpolation)
+        return enum_value_parser(enum=TimeInterpolation)(value)
 
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
