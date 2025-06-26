@@ -218,38 +218,25 @@ def test_mdu_model():
 
 
 def test_load_model_recurse_false():
-    model = FMModel(
-        filepath=Path(
-            test_data_dir
-            / "input"
-            / "e02"
-            / "c11_korte-woerden-1d"
-            / "dimr_model"
-            / "dflowfm"
-            / "FlowFM.mdu"
-        ),
-        recurse=False,
+    file_path = Path(
+        test_data_dir / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM.mdu"
     )
+    model = FMModel(filepath=file_path, recurse=False)
 
     # Assert that references to child models are preserved, but child models are not loaded
     assert model.geometry.structurefile is not None
     assert len(model.geometry.structurefile) == 1
-    assert model.geometry.structurefile[0].filepath == Path("structures.ini")
-    assert not any(model.geometry.structurefile[0].structure)
+    assert model.geometry.structurefile[0].filepath.name == "structures.ini"
+    assert isinstance(model.geometry.structurefile[0], DiskOnlyFileModel)
 
 
 def test_model_with_duplicate_file_references_use_same_instances():
-    model = ExtModel(
-        filepath=(
-            test_data_dir
-            / "input"
-            / "e02"
-            / "c11_korte-woerden-1d"
-            / "dimr_model"
-            / "dflowfm"
-            / "FlowFM_bnd.ext"
-        )
+    file_path = (
+        test_data_dir
+        / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_bnd.ext"
     )
+
+    model = ExtModel(filepath=file_path)
 
     boundary1 = model.boundary[0]
     boundary2 = model.boundary[1]

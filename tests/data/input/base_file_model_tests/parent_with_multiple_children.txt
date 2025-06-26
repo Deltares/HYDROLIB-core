@@ -1,0 +1,5 @@
+name=parent_with_multiple_children
+value=30
+child_file1=simple_file.txt
+child_file2=MixedCase_FILE.txt
+child_file3=nested/nested_file.txt

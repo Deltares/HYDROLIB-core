@@ -14,7 +14,9 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoInterpolationMethod,
     SourceSink,
 )
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
+from tests.test_utils import enum_checker
 
 
 class TestExtModel:
@@ -74,19 +76,11 @@ class TestExtModel:
 
 class TestMeteo:
 
-    def test_meteo_interpolation_methods(self, meteo_interpolation_methods: List[str]):
-        assert len(MeteoInterpolationMethod) == 3
-        assert all(
-            quantity.value in meteo_interpolation_methods
-            for quantity in MeteoInterpolationMethod.__members__.values()
-        )
+    def test_meteo_interpolation_methods(self):
+        enum_checker(MeteoInterpolationMethod)
 
-    def test_meteo_forcing_file_type(self, meteo_forcing_file_type: List[str]):
-        assert len(MeteoForcingFileType) == 8
-        assert all(
-            quantity.value in meteo_forcing_file_type
-            for quantity in MeteoForcingFileType.__members__.values()
-        )
+    def test_meteo_forcing_file_type(self):
+        enum_checker(MeteoForcingFileType)
 
     def test_meteo_initialization(self):
         data = {
@@ -209,11 +203,22 @@ class TestMeteo:
         meteo = Meteo(
             quantity="rainfall",
             forcingfile=time_series_file,
-            forcingfiletype=MeteoForcingFileType.bcascii,
+            forcingfiletype=MeteoForcingFileType.uniform,
         )
         assert isinstance(meteo.forcingfile, TimModel)
         assert meteo.forcingfile.filepath == time_series_file
-        assert meteo.forcingfiletype == MeteoForcingFileType.bcascii
+        assert meteo.forcingfiletype == MeteoForcingFileType.uniform
+
+    def test_polyfile_as_forcingfile(self, polylines_dir: Path):
+        poly_file_path = polylines_dir / "boundary-polyline-no-z-no-label.pli"
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=poly_file_path,
+            forcingfiletype=MeteoForcingFileType.polygon,
+        )
+        assert isinstance(meteo.forcingfile, PolyFile)
+        assert meteo.forcingfile.filepath == poly_file_path
+        assert meteo.forcingfiletype == MeteoForcingFileType.polygon
 
 
 forcing_base_list = [

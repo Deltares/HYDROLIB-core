@@ -32,6 +32,18 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
 )
 
 
+FILETYPE_FILEMODEL_MAPPING = {
+    "bcascii": ForcingModel,
+    "uniform": TimModel,
+    "unimagdir": TimModel,
+    "arcinfo": DiskOnlyFileModel,
+    "spiderweb": DiskOnlyFileModel,
+    "curvigrid": DiskOnlyFileModel,
+    "netcdf": DiskOnlyFileModel,
+    "polygon": PolyFile,
+}
+
+
 class Boundary(INIBasedModel):
     """
     A `[Boundary]` block for use inside an external forcings file,
@@ -314,7 +326,10 @@ class MeteoForcingFileType(StrEnum):
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
+    polygon = "polygon"
+    """str: Polygon-based time series in <*.pol> file."""
+
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf, polygon."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -327,7 +342,8 @@ class MeteoInterpolationMethod(StrEnum):
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
     linearSpaceTime = "linearSpaceTime"
     """str: Linear interpolation in space and time."""
-    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
+    constant = "constant"
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
 
 
 class Meteo(INIBasedModel):
@@ -393,7 +409,7 @@ class Meteo(INIBasedModel):
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
+    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
     forcingVariableName: Optional[str] = Field(alias="forcingVariableName")
@@ -411,6 +427,45 @@ class Meteo(INIBasedModel):
     averagingType: Optional[int] = Field(alias="averagingType")
     averagingNumMin: Optional[float] = Field(alias="averagingNumMin")
     averagingPercentile: Optional[float] = Field(alias="averagingPercentile")
+
+    @root_validator(pre=True)
+    def choose_file_model(cls, values):
+        """Root-level validator to the right class for the filename parameter based on the filetype.
+
+        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
+        dictionary.
+
+        FILETYPE_FILEMODEL_MAPPING = {
+            "bcascii": ForcingModel,
+            "uniform": TimModel,
+            "unimagdir": TimModel,
+            "arcinfo": DiskOnlyFileModel,
+            "spiderweb": DiskOnlyFileModel,
+            "curvigrid": DiskOnlyFileModel,
+            "netcdf": DiskOnlyFileModel,
+            "polygon": PolyFile,
+        }
+        """
+        # if the filetype and the filename are present in the values
+        if any(par in values for par in ["forcingfiletype", "forcingFileType"]) and any(
+            par in values for par in ["forcingfile", "forcingFile"]
+        ):
+            file_type_var_name = (
+                "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
+            )
+            filename_var_name = (
+                "forcingfile" if "forcingfile" in values else "forcingFile"
+            )
+            file_type = values.get(file_type_var_name)
+            file_type = str(file_type).lower() if file_type is not None else None
+            forcing_file = values.get(filename_var_name)
+            if isinstance(forcing_file, (Path, str)):
+                raw_path = values.get(filename_var_name)
+                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
+
+                values[filename_var_name] = model(raw_path)
+
+        return values
 
     def is_intermediate_link(self) -> bool:
         return True

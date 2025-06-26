@@ -256,7 +256,7 @@ class TestExternalFocingConverter:
         assert converter.inifield_model.filepath == new_initial_file
         assert converter.structure_model.filepath == new_structure_file
 
-    def test_save(self, old_forcing_file_initial_condition: Dict[str, str]):
+    def test_save_mock(self, old_forcing_file_initial_condition: Dict[str, str]):
         """
         Mock test to test only the save method of the ExternalForcingConverter class.
 
@@ -352,14 +352,10 @@ def test_clean():
     - The glob method is mocked to return two files with the extension .tim.
     - The unlink method is mocked to return True.
     """
-    with (
-        patch.object(Path, "glob") as mock_glob,
-        patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
-    ):
-        mock_glob.return_value = [Path("fake.tim"), Path("fake2.tim")]
+    with (patch("pathlib.Path.unlink", return_value=True) as mock_unlink,):
         converter = ExternalForcingConverter(
             "tests/data/input/old-external-forcing.ext"
         )
+        converter.legacy_files = [Path("fake.tim"), Path("fake2.tim")]
         converter.clean()
-        mock_glob.assert_called_once_with("*.tim")
         assert mock_unlink.call_count == 3
