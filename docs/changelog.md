@@ -1,3 +1,11 @@
+## 0.9.2 (2025-06-26)
+
+### Feat
+
+- **converter**: support relative paths, polygon meteo files, and extend boundary condition handling (#861)
+- **converter**: support relative paths, polygon meteo files, and extend boundary condition handling
+- also write <process> in case of fmcomponent.process==1 (#854)
+
 ## 0.9.1 (2025-05-30)
 
 ### Feat
