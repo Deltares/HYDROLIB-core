@@ -60,6 +60,12 @@ def validator_set_default_disk_only_file_model_when_none() -> classmethod:
     return adjust_none
 
 
+def set_default_disk_only_file_model(v: Any):
+    if v is None:
+        return {"filepath": None}
+    return v
+
+
 class BaseModel(PydanticBaseModel):
     model_config = {
         "arbitrary_types_allowed": True,
