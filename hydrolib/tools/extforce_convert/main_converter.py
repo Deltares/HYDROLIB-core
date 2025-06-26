@@ -129,6 +129,18 @@ class ExternalForcingConverter:
         self._legacy_files = []
 
     @property
+    def legacy_files(self) -> list[Path]:
+        """List of legacy files that were created during the conversion."""
+        return self._legacy_files
+
+    @legacy_files.setter
+    def legacy_files(self, value: list[Path]):
+        """Set the legacy files."""
+        if not isinstance(value, list):
+            raise TypeError("legacy_files must be a list of Path objects.")
+        self._legacy_files = value
+
+    @property
     def verbose(self) -> bool:
         """bool: Enable verbose output."""
         return self._verbose
@@ -317,7 +329,7 @@ class ExternalForcingConverter:
             new_quantity_block = converter_class.convert(forcing)
 
         if hasattr(converter_class, "legacy_files"):
-            self._legacy_files += converter_class.legacy_files
+            self.legacy_files += converter_class.legacy_files
 
         return new_quantity_block
 
@@ -365,8 +377,8 @@ class ExternalForcingConverter:
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
-        if len(self._legacy_files) > 0:
-            for file in self._legacy_files:
+        if len(self.legacy_files) > 0:
+            for file in self.legacy_files:
                 print(f"Removing legacy file:{file}")
                 file.unlink()
 

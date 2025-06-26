@@ -353,13 +353,11 @@ def test_clean():
     - The unlink method is mocked to return True.
     """
     with (
-        patch.object(Path, "glob") as mock_glob,
         patch("pathlib.Path.unlink", return_value=True) as mock_unlink,
     ):
-        mock_glob.return_value = [Path("fake.tim"), Path("fake2.tim")]
         converter = ExternalForcingConverter(
             "tests/data/input/old-external-forcing.ext"
         )
+        converter.legacy_files = [Path("fake.tim"), Path("fake2.tim")]
         converter.clean()
-        mock_glob.assert_called_once_with("*.tim")
         assert mock_unlink.call_count == 3
