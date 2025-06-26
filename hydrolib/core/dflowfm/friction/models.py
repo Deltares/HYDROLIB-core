@@ -1,8 +1,14 @@
 import logging
 from pathlib import Path
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import Field, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from pydantic.types import NonNegativeInt, PositiveInt
 from strenum import StrEnum
 
@@ -12,9 +18,9 @@ from hydrolib.core.base.models import (
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,7 +121,10 @@ class FrictGlobal(INIBasedModel):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _validate_frictiontype(cls, v: str) -> FrictionType:
+        return enum_value_parser(FrictionType)(v)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("frictionid")
@@ -181,13 +190,15 @@ class FrictBranch(INIBasedModel):
         None, alias="frictionValues"
     )  # TODO: turn this into List[List[float]], see issue #143.
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "levels",
-        "chainage",
-        "frictionvalues",
-    )
+    @field_validator("levels", "chainage", "frictionvalues", mode="before")
+    @classmethod
+    def split_field_values(cls, v, info: ValidationInfo) -> Optional[List[float]]:
+        return split_string_on_delimiter(cls, v, info)
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _validate_frictiontype(cls, v: str) -> FrictionType:
+        return enum_value_parser(FrictionType)(v)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")
@@ -233,6 +244,7 @@ class FrictBranch(INIBasedModel):
         return v
 
     @model_validator(mode="after")
+    @classmethod
     def validate_all(cls, values):
         v = values
         if v.levels is not None:
@@ -270,15 +282,10 @@ class FrictionModel(INIModel):
     """
 
     general: FrictGeneral = FrictGeneral()
-    global_: List[FrictGlobal] = Field(
+    global_: Annotated[List[FrictGlobal], BeforeValidator(make_list)] = Field(
         default_factory=list, alias="global"
     )  # to circumvent built-in kw
-    branch: List[FrictBranch] = []
-
-    _split_to_list = make_list_validator(
-        "global_",
-        "branch",
-    )
+    branch: Annotated[List[FrictBranch], BeforeValidator(make_list)] = []
 
     @classmethod
     def _ext(cls) -> str:
