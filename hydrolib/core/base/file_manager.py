@@ -832,7 +832,7 @@ def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
     """
     root_dir = root_dir.resolve()
     if not file_path.is_absolute():
-        # Always resolve relative paths *relative to root_dir*, never cwd
+        # Always resolve relative paths *relative to root_dir*
         file_path_resolved = (root_dir / file_path).resolve()
     else:
         file_path_resolved = file_path.resolve()
