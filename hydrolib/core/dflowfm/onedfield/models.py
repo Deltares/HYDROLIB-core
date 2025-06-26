@@ -1,12 +1,19 @@
 import logging
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic import Field, NonNegativeInt, model_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    NonNegativeInt,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    make_list,
+    split_string_on_delimiter,
     validate_correct_length,
 )
 
@@ -80,12 +87,13 @@ class OneDFieldBranch(INIBasedModel):
     chainage: Optional[List[float]] = Field(None, alias="chainage")
     values: List[float] = Field(alias="values")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "chainage",
-        "values",
-    )
+    @field_validator("chainage", "values", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
+    @classmethod
     def check_list_length_values(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
         """Validates that the length of the values field is as expected."""
         validate_correct_length(
@@ -98,6 +106,7 @@ class OneDFieldBranch(INIBasedModel):
         return values
 
     @model_validator(mode="after")
+    @classmethod
     def check_list_length_chainage(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
         """Validates that the length of the chainage field is as expected."""
         validate_correct_length(
@@ -128,11 +137,7 @@ class OneDFieldModel(INIModel):
     global_: Optional[OneDFieldGlobal] = Field(
         alias="global"
     )  # to circumvent built-in kw
-    branch: List[OneDFieldBranch] = []
-
-    _split_to_list = make_list_validator(
-        "branch",
-    )
+    branch: Annotated[List[OneDFieldBranch], BeforeValidator(make_list)] = []
 
     @classmethod
     def _ext(cls) -> str:
