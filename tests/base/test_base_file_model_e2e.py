@@ -10,8 +10,9 @@ import unittest
 from pathlib import Path
 from typing import Dict, Optional
 
-from hydrolib.core.base.file_manager import ResolveRelativeMode, file_load_context
+from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
+from hydrolib.core.base.models import DiskOnlyFileModel
 
 
 class SimpleFileModel(FileModel):
@@ -531,4 +532,4 @@ class TestFileModelE2E(unittest.TestCase):
         self.assertEqual(parent_model.value, 5)
 
         # Verify the child model was not loaded (it's a Path, not a SimpleFileModel)
-        self.assertIsInstance(parent_model.child_file, Path)
+        self.assertIsInstance(parent_model.child_file, DiskOnlyFileModel)
