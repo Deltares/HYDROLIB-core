@@ -106,26 +106,6 @@ def get_enum_validator(
     return field_validator(*field_name, mode="before")(get_enum)
 
 
-def validate_enum(
-    v,
-    enum: Type[Enum],
-    alternative_enum_values: Optional[Dict[str, List[str]]] = None,
-):
-    if isinstance(v, list):
-        return [validate_enum(item, enum, alternative_enum_values) for item in v]
-    for entry in enum:
-        if entry.lower() == v.lower():
-            return entry
-        if (
-            alternative_enum_values is not None
-            and (alt_values := alternative_enum_values.get(entry.value)) is not None
-            and v.lower() in (altval.lower() for altval in alt_values)
-        ):
-            return entry
-
-    return v
-
-
 def ensure_list(v: Any):
     # Convert single object to a list if needed
     if isinstance(v, dict):
