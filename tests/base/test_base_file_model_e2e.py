@@ -11,8 +11,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from hydrolib.core.base.file_manager import file_load_context
-from hydrolib.core.base.models import FileModel, ModelSaveSettings
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, FileModel, ModelSaveSettings
 
 
 class SimpleFileModel(FileModel):

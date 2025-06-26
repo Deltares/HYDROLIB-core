@@ -106,14 +106,18 @@ class ExternalForcingConverter:
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
-        self._ext_model = construct_filemodel_new_or_existing(ExtModel, path, recurse=False)
+        self._ext_model = construct_filemodel_new_or_existing(
+            ExtModel, path, recurse=False
+        )
 
         path = (
             rdir / "new-initial-conditions.ini"
             if inifield_file is None
             else inifield_file
         )
-        self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path, recurse=False)
+        self._inifield_model = construct_filemodel_new_or_existing(
+            IniFieldModel, path, recurse=False
+        )
 
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
         self._structure_model = construct_filemodel_new_or_existing(
