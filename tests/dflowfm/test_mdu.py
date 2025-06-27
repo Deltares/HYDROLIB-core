@@ -67,7 +67,7 @@ class TestModels:
         fmmodel.geometry.netfile.network = network
         importfm.geometry.netfile.network = network
 
-        assert importfm == fmmodel
+        assert importfm.model_dump() == fmmodel.model_dump()
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
@@ -407,7 +407,7 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
 
         expected_message = (
@@ -437,12 +437,14 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
         name2 = "unknownkey2"
 
-        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
-
+        expected_message = (
+            "Unknown keywords are detected in section: "
+            f"'{section_header}', '{[name, name2]}'"
+        )
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 
