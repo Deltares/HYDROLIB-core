@@ -189,8 +189,8 @@ class TestFileModel:
         extforce = reference_model.external_forcing.extforcefilenew
 
         extforce.filepath = extforcefile  # type: ignore[arg-type]
-        extforce.boundary[0].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
-        extforce.boundary[1].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
+        extforce.boundary[0].forcingfile[0].filepath = forcingfile  # type: ignore[arg-type]
+        extforce.boundary[1].forcingfile[0].filepath = forcingfile  # type: ignore[arg-type]
 
         reference_model.save(recurse=True)
 
@@ -209,8 +209,8 @@ class TestFileModel:
         read_extforce = read_model.external_forcing.extforcefilenew
 
         assert read_extforce.filepath == extforcefile  # type: ignore[arg-type]
-        assert Path(read_extforce.boundary[0].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
-        assert Path(read_extforce.boundary[1].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[0].forcingfile[0].filepath) == forcingfile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[1].forcingfile[0].filepath) == forcingfile  # type: ignore[arg-type]
 
         # We assume that if the file exists it is read correctly.
         # The contents should be verified in the specific models.
@@ -309,7 +309,7 @@ class TestFileModel:
         assert extforcefile.save_location == self._resolve(extforcefile.filepath, other_dir)  # type: ignore
         assert not extforcefile.save_location.is_file()  # type: ignore
 
-        forcing = extforcefile.boundary[0].forcingfile  # type: ignore
+        forcing = extforcefile.boundary[0].forcingfile[0]  # type: ignore
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
