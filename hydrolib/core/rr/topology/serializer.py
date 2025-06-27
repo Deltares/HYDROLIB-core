@@ -36,7 +36,7 @@ class NodeFileSerializer:
     def _to_line(node: Dict[str, Any], config: SerializerConfig) -> str:
 
         identifier = node["id"]
-        nm = node["nm"]
+        nm = node.get("nm")
         ri = node["ri"]
         mt = node["mt"]
         nt = node["nt"]
@@ -44,8 +44,9 @@ class NodeFileSerializer:
         px = node["px"]
         py = node["py"]
 
+        nm_entry = f"nm '{nm}'" if nm else ""
         float_format = lambda v: f"{v:{config.float_format}}"
-        return f"id '{identifier}' nm '{nm}' ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {float_format(px)} py {float_format(py)}"
+        return f"id '{identifier}' {nm_entry} ri '{ri}' mt 1 '{mt}' nt {nt} ObID '{obid}' px {float_format(px)} py {float_format(py)}"
 
 
 class LinkFileSerializer:
@@ -71,14 +72,14 @@ class LinkFileSerializer:
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with path.open("w", encoding="utf8") as f:
-            for link in data["link"]:
+            for link in data["brch"]:
                 line = f"BRCH {LinkFileSerializer._to_line(link)} brch\n"
                 f.write(line)
 
     @staticmethod
     def _to_line(link: Dict[str, Any]) -> str:
         identifier = link["id"]
-        nm = link["nm"]
+        nm = link.get("nm")
         ri = link["ri"]
         mt = link["mt"]
         bt = link["bt"]
@@ -86,4 +87,5 @@ class LinkFileSerializer:
         bn = link["bn"]
         en = link["en"]
 
-        return f"id '{identifier}' nm '{nm}' ri '{ri}' mt 1 '{mt}' bt {bt} ObID '{obid}' bn '{bn}' en '{en}'"
+        nm_entry = f"nm '{nm}'" if nm else ""
+        return f"id '{identifier}' {nm_entry} ri '{ri}' mt 1 '{mt}' bt {bt} ObID '{obid}' bn '{bn}' en '{en}'"

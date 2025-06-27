@@ -1,8 +1,7 @@
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Callable, ClassVar, Dict, List, Optional
 
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.fields import Field
+from pydantic import Field, model_validator
 
 from hydrolib.core.base.models import (
     BaseModel,
@@ -43,7 +42,7 @@ class Node(BaseModel):
     """Represents a node from the topology node file."""
 
     id: str = Field(alias="id")
-    name: Optional[str] = Field(alias="nm")
+    name: Optional[str] = Field(None, alias="nm")
     branchid: int = Field(alias="ri")
     modelnodetype: int = Field(alias="mt")
     netternodetype: int = Field(alias="nt")
@@ -54,22 +53,22 @@ class Node(BaseModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("nm")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
-    @root_validator()
+    @model_validator(mode="after")
     @classmethod
-    def _validate_node_type(cls, values):
-
+    def _validate_node_type(cls, values: "Node") -> "Node":
+        values_dict = values.model_dump()
         cls._raise_if_invalid_type(
-            values,
-            "modelnodetype",
+            values_dict,
+            "mt",
             set(nodetypes_netter_to_rr.values()),
             "model node type (mt)",
         )
 
-        modelnodetype = values.get("modelnodetype")
+        modelnodetype = values_dict.get("mt")
 
         # modelnodetype=6 ("boundary node") is a special case that allows various netter nodetypes,
         # so therefore it always validates well.
@@ -77,13 +76,13 @@ class Node(BaseModel):
             return values
 
         cls._raise_if_invalid_type(
-            values,
-            "netternodetype",
+            values_dict,
+            "nt",
             set(nodetypes_netter_to_rr.keys()),
             "netter node type (nt)",
         )
 
-        netternodetype = values.get("netternodetype")
+        netternodetype = values_dict.get("nt")
         modelnodetype_expected = nodetypes_netter_to_rr[netternodetype]
 
         if modelnodetype != modelnodetype_expected:
@@ -123,8 +122,14 @@ class Node(BaseModel):
 class NodeFile(ParsableFileModel):
     """Represents the file with the RR node topology data."""
 
-    _parser = NetworkTopologyFileParser(enclosing_tag="node")
-    node: List[Node] = Field([], alias="node")
+    _parser: ClassVar[NetworkTopologyFileParser] = NetworkTopologyFileParser(
+        enclosing_tag="node"
+    )
+    node: List[Node] = Field(default_factory=list, alias="node")
+
+    def model_dump(self, *args, **kwargs):
+        kwargs["by_alias"] = True
+        return super().model_dump(*args, **kwargs)
 
     @classmethod
     def _ext(cls) -> str:
@@ -149,7 +154,7 @@ class Link(BaseModel):
     """Represents a link from the topology link file."""
 
     id: str = Field(alias="id")
-    name: Optional[str] = Field(alias="nm")
+    name: Optional[str] = Field(None, alias="nm")
     branchid: int = Field(alias="ri")
     modellinktype: int = Field(alias="mt")
     branchtype: int = Field(alias="bt")
@@ -160,16 +165,22 @@ class Link(BaseModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("nm")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
 
 class LinkFile(ParsableFileModel):
     """Represents the file with the RR link topology data."""
 
-    _parser = NetworkTopologyFileParser(enclosing_tag="brch")
+    _parser: ClassVar[NetworkTopologyFileParser] = NetworkTopologyFileParser(
+        enclosing_tag="brch"
+    )
     link: List[Link] = Field([], alias="brch")
+
+    def model_dump(self, *args, **kwargs):
+        kwargs["by_alias"] = True
+        return super().model_dump(*args, **kwargs)
 
     @classmethod
     def _ext(cls) -> str:

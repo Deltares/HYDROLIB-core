@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.rr.topology.models import Node, NodeFile
 from tests.utils import (
@@ -117,7 +117,7 @@ class TestNodeFile:
         data = create_node_values()
         node = Node(**data)
 
-        result = node.dict()
+        result = node.model_dump()
 
         assert result == data
 
