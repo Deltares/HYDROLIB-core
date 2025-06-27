@@ -4,6 +4,7 @@ from enum import Enum
 from inspect import isclass
 from math import isnan
 from typing import (
+    Annotated,
     Any,
     Callable,
     List,
@@ -18,6 +19,7 @@ from typing import (
 
 from pandas import DataFrame
 from pydantic import (
+    BeforeValidator,
     ConfigDict,
     Field,
     GetCoreSchemaHandler,
@@ -48,10 +50,7 @@ from hydrolib.core.dflowfm.ini.serializer import (
     INISerializerConfig,
     write_ini,
 )
-from hydrolib.core.dflowfm.ini.util import (
-    UnknownKeywordErrorManager,
-    make_list_validator,
-)
+from hydrolib.core.dflowfm.ini.util import UnknownKeywordErrorManager, make_list
 
 logger = logging.getLogger(__name__)
 
@@ -625,9 +624,9 @@ class DataBlockINIBasedModel(INIBasedModel):
         - Data blocks are converted to a serialized format for writing to INI files.
     """
 
-    datablock: Datablock = Field(default_factory=list)
-
-    _make_lists = make_list_validator("datablock")
+    datablock: Annotated[Datablock, BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
 
     @staticmethod
     def _is_float(value: str) -> bool:
@@ -647,6 +646,7 @@ class DataBlockINIBasedModel(INIBasedModel):
             return False
 
     @field_validator("datablock", mode="before")
+    @classmethod
     def _convert_to_float(cls, datablock: Datablock) -> Datablock:
         """
         Validates that all values in the datablock are either floats or strings.

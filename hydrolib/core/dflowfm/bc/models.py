@@ -27,6 +27,7 @@ from typing import (
 )
 
 from pydantic import (
+    BeforeValidator,
     ConfigDict,
     Field,
     GetCoreSchemaHandler,
@@ -48,10 +49,10 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
     rename_keys_for_backwards_compatibility,
+    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -660,9 +661,10 @@ class TimeSeries(VectorForcingBase):
     factor: float = Field(1.0, alias="factor")
     """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
-    _timeinterpolation_validator = get_enum_validator(
-        "timeinterpolation", enum=TimeInterpolation
-    )
+    @field_validator("timeinterpolation", mode="before")
+    @classmethod
+    def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
+        return enum_value_parser(TimeInterpolation)(value)
 
     @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
@@ -761,23 +763,30 @@ class T3D(VectorForcingBase):
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "vertpositions",
-    )
+    @field_validator("vertpositions", mode="before")
+    @classmethod
+    def _split_vertpositions(cls, value: Any, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, value, info)
 
-    _verticalinterpolation_validator = get_enum_validator(
-        "vertinterpolation", enum=VerticalInterpolation
-    )
-    _verticalpositiontype_validator = get_enum_validator(
-        "vertpositiontype",
-        enum=VerticalPositionType,
-        alternative_enum_values={
-            VerticalPositionType.percentage_bed: ["percentage from bed"],
-        },
-    )
-    _timeinterpolation_validator = get_enum_validator(
-        "timeinterpolation", enum=TimeInterpolation
-    )
+    @field_validator("vertinterpolation", mode="before")
+    @classmethod
+    def _validate_vertinterpolation(cls, value: Any) -> VerticalInterpolation:
+        return enum_value_parser(enum=VerticalInterpolation)(value)
+
+    @field_validator("vertpositiontype", mode="before")
+    @classmethod
+    def _validate_vertpositiontype(cls, value: Any) -> VerticalPositionType:
+        return enum_value_parser(
+            enum=VerticalPositionType,
+            alternative_enum_values={
+                VerticalPositionType.percentage_bed: ["percentage from bed"]
+            },
+        )(value)
+
+    @field_validator("timeinterpolation", mode="before")
+    @classmethod
+    def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
+        return enum_value_parser(enum=TimeInterpolation)(value)
 
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
@@ -1108,14 +1117,13 @@ class ForcingModel(INIModel):
     general: ForcingGeneral = ForcingGeneral()
     """ForcingGeneral: `[General]` block with file metadata."""
 
-    forcing: list[Annotated[FORCINGS, Field(discriminator="function")]] = Field(
-        default_factory=list
-    )
+    forcing: Annotated[
+        list[Annotated[FORCINGS, Field(discriminator="function")]],
+        BeforeValidator(make_list),
+    ] = Field(default_factory=list)
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
     forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
-
-    _split_to_list = make_list_validator("forcing")
 
     serializer_config: DataBlockINIBasedSerializerConfig = (
         DataBlockINIBasedSerializerConfig(

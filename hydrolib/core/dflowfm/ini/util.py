@@ -6,34 +6,18 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic import BaseModel, ValidationInfo, field_validator
+from pydantic import BaseModel, ValidationInfo
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
 from hydrolib.core.dflowfm.common.models import LocationType
 
 
-def get_split_string_on_delimiter_validator(*field_name: str):
-    """Get a validator to split strings passed to the specified field_name.
-
-    Strings are split based on an automatically selected provided delimiter.
-    The delimiter is the field's own delimiter, if that was defined using
-    Field(.., delimiter=".."). Otherwise, the delimiter is the field's parent
-    class's delimiter (which should be (subclass of) INIBasedModel.)
-    The validator splits a string value into a list of substrings before any
-    other validation takes place.
-
-    Returns:
-        the validator which splits strings on the provided delimiter.
-    """
-
-    def split(cls, v: Any, field: ValidationInfo):
-        if isinstance(v, str):
-            v = v.split(cls.get_list_field_delimiter(field.field_name))
-            v = [item.strip() for item in v if item != ""]
-        return v
-
-    return field_validator(*field_name, mode="before")(split)
+def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
+    if isinstance(v, str):
+        v = v.split(cls.get_list_field_delimiter(field.field_name))
+        v = [item.strip() for item in v if item != ""]
+    return v
 
 
 def enum_value_parser(
@@ -64,41 +48,6 @@ def enum_value_parser(
     return parser
 
 
-def get_enum_validator(
-    *field_name: str,
-    enum: Type[Enum],
-    alternative_enum_values: Optional[Dict[str, List[str]]] = None,
-):
-    """
-    Get a case-insensitive enum validator that will returns the corresponding enum value.
-    If the input is a list, then each list value is checked individually.
-
-    Args:
-        enum (Type[Enum]): The enum type for which to validate.
-        alternative_enum_values (Dict[str, List[str]], optional): Dictionary with alternative
-            allowed values for one or more of the enum keys. Dict key must be a valid current
-            key of enum (case sensitive). Use this to backwards support and convert old enum
-            values in user input. For example: {SomeEnum.current_value: ["old value"]}.
-    """
-
-    def get_enum(v):
-        if isinstance(v, list):
-            return [get_enum(item) for item in v]
-        for entry in enum:
-            if entry.lower() == v.lower():
-                return entry
-            if (
-                alternative_enum_values is not None
-                and (alt_values := alternative_enum_values.get(entry.value)) is not None
-                and v.lower() in (altval.lower() for altval in alt_values)
-            ):
-                return entry
-
-        return v
-
-    return field_validator(*field_name, mode="before")(get_enum)
-
-
 def ensure_list(v: Any):
     # Convert single object to a list if needed
     if isinstance(v, dict):
@@ -108,15 +57,10 @@ def ensure_list(v: Any):
     return v
 
 
-def make_list_validator(*field_name: str):
-    """Get a validator make a list of object if a single object is passed."""
-
-    def split(v: Any):
-        if not isinstance(v, list):
-            v = [v]
-        return v
-
-    return field_validator(*field_name, mode="before")(split)
+def make_list(v: Any):
+    if not isinstance(v, list):
+        v = [v]
+    return v
 
 
 def validate_correct_length(

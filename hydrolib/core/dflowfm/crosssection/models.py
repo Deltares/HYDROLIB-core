@@ -3,7 +3,13 @@
 import logging
 from typing import Annotated, List, Literal, Optional, Union
 
-from pydantic import Field, ValidationInfo, field_validator, model_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -12,8 +18,8 @@ from hydrolib.core.dflowfm.ini.util import (
     LocationValidationFieldNames,
     UnknownKeywordErrorManager,
     enum_value_parser,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    make_list,
+    split_string_on_delimiter,
     validate_correct_length,
     validate_location_specification,
 )
@@ -309,14 +315,18 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "levels",
         "flowwidths",
         "totalwidths",
         "frictionvalues",
         "frictionids",
         "frictiontypes",
+        mode="before",
     )
+    @classmethod
+    def split_string_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -399,11 +409,15 @@ class ZWCrsDef(CrossSectionDefinition):
     frictiontype: Optional[FrictionType] = Field(None, alias="frictionType")
     frictionvalue: Optional[float] = Field(None, alias="frictionValue")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "levels",
         "flowwidths",
         "totalwidths",
+        mode="before",
     )
+    @classmethod
+    def split_string_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -505,14 +519,18 @@ class YZCrsDef(CrossSectionDefinition):
     )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "ycoordinates",
         "zcoordinates",
         "frictionpositions",
         "frictionvalues",
         "frictionids",
         "frictiontypes",
+        mode="before",
     )
+    @classmethod
+    def split_string_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -611,9 +629,9 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     xyzcount: int = Field(alias="xyzCount")
     xcoordinates: List[float] = Field(alias="xCoordinates")
 
-    _split_to_list0 = get_split_string_on_delimiter_validator(
-        "xcoordinates",
-    )
+    @field_validator("xcoordinates", mode="before")
+    def split_string_xcoordinates(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @field_validator("xyzcount")
     @classmethod
@@ -831,9 +849,9 @@ class CrossDefModel(INIModel):
     """
 
     general: CrossDefGeneral = CrossDefGeneral()
-    definition: List[CrossSectionDefinitionUnion] = []
-
-    _make_list = make_list_validator("definition")
+    definition: Annotated[
+        List[CrossSectionDefinitionUnion], BeforeValidator(make_list)
+    ] = []
 
     @classmethod
     def _filename(cls) -> str:

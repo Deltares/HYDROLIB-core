@@ -42,22 +42,10 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
     return model.is_file_link()
 
 
-def validator_set_default_disk_only_file_model_when_none() -> classmethod:
-    """Validator to ensure a default empty DiskOnlyFileModel is created
-    when the corresponding field is initialized with None.
-
-    Returns:
-        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
-    """
-
-    @field_validator("*", mode="before")
-    def adjust_none(cls, v: Any, info: ValidationInfo):
-        field_type = cls.model_fields.get(info.field_name).annotation
-        if field_type is DiskOnlyFileModel and v is None:
-            return {"filepath": None}
-        return v
-
-    return adjust_none
+def set_default_disk_only_file_model(v: Any):
+    if v is None:
+        return {"filepath": None}
+    return v
 
 
 class BaseModel(PydanticBaseModel):

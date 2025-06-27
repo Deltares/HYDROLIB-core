@@ -25,9 +25,9 @@ from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
     validate_conditionally,
     validate_correct_length,
     validate_forbidden_fields,
@@ -110,9 +110,10 @@ class Structure(INIBasedModel):
         """
         return None
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "xcoordinates", "ycoordinates"
-    )
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
     @field_validator("type", mode="after")
     @classmethod
@@ -354,7 +355,10 @@ class Weir(Structure):
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
-    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    @field_validator("allowedflowdir", mode="before")
+    @classmethod
+    def _flowdirection_validator(cls, v) -> FlowDirection:
+        return enum_value_parser(FlowDirection)(v)
 
 
 class UniversalWeir(Structure):
@@ -402,8 +406,15 @@ class UniversalWeir(Structure):
     crestlevel: float = Field(alias="crestLevel")
     dischargecoeff: float = Field(alias="dischargeCoeff")
 
-    _split_to_list = get_split_string_on_delimiter_validator("yvalues", "zvalues")
-    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    @field_validator("yvalues", "zvalues", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
+
+    @field_validator("allowedflowdir", mode="before")
+    @classmethod
+    def _flowdirection_validator(cls, v) -> FlowDirection:
+        return enum_value_parser(FlowDirection)(v)
 
 
 class CulvertSubType(StrEnum):
@@ -446,10 +457,25 @@ class Culvert(Structure):
     )
     bendlosscoeff: Optional[float] = Field(None, alias="bendLossCoeff")
 
-    _split_to_list = get_split_string_on_delimiter_validator("relopening", "losscoeff")
-    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
-    _subtype_validator = get_enum_validator("subtype", enum=CulvertSubType)
-    _frictiontype_validator = get_enum_validator("bedfrictiontype", enum=FrictionType)
+    @field_validator("relopening", "losscoeff", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
+
+    @field_validator("allowedflowdir", mode="before")
+    @classmethod
+    def _flowdirection_validator(cls, v) -> FlowDirection:
+        return enum_value_parser(FlowDirection)(v)
+
+    @field_validator("subtype", mode="before")
+    @classmethod
+    def _subtype_validator(cls, v) -> CulvertSubType:
+        return enum_value_parser(CulvertSubType)(v)
+
+    @field_validator("bedfrictiontype", mode="before")
+    @classmethod
+    def _frictiontype_validator(cls, v) -> FrictionType:
+        return enum_value_parser(FrictionType)(v)
 
     @model_validator(mode="after")
     def validate_that_valve_related_fields_are_present_for_culverts_with_valves(self):
@@ -521,10 +547,20 @@ class LongCulvert(Structure):
     valverelativeopening: float = Field(alias="valveRelativeOpening")
     csdefid: Optional[str] = Field(None, alias="csDefId")
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
-    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _frictiontype_validator(cls, v) -> FrictionType:
+        return enum_value_parser(FrictionType)(v)
 
-    _split_to_list = get_split_string_on_delimiter_validator("zcoordinates")
+    @field_validator("allowedflowdir", mode="before")
+    @classmethod
+    def _flowdirection_validator(cls, v) -> FlowDirection:
+        return enum_value_parser(FlowDirection)(v)
+
+    @field_validator("zcoordinates", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
     @field_validator("zcoordinates", mode="after")
     @classmethod
@@ -573,16 +609,24 @@ class Pump(Structure):
     head: Optional[List[float]] = Field(None, alias="head")
     reductionfactor: Optional[List[float]] = Field(None, alias="reductionFactor")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "startlevelsuctionside",
         "stoplevelsuctionside",
         "startleveldeliveryside",
         "stopleveldeliveryside",
         "head",
         "reductionfactor",
+        mode="before",
     )
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        """Split the string on the delimiter and return a list of floats."""
+        return split_string_on_delimiter(cls, v, info)
 
-    _orientation_validator = get_enum_validator("orientation", enum=Orientation)
+    @field_validator("orientation", mode="before")
+    @classmethod
+    def _orientation_validator(cls, v) -> Orientation:
+        return enum_value_parser(Orientation)(v)
 
     @model_validator(mode="after")
     def validate_that_controlside_is_provided_when_numstages_is_provided(self):
@@ -676,9 +720,11 @@ class Compound(Structure):
     numstructures: int = Field(alias="numStructures")
     structureids: List[str] = Field(alias="structureIds", delimiter=";")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "structureids",
-    )
+    @field_validator("structureids", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[str]:
+        """Split the string on the delimiter and return a list of strings."""
+        return split_string_on_delimiter(cls, v, info)
 
 
 class Orifice(Structure):
@@ -708,7 +754,10 @@ class Orifice(Structure):
     uselimitflowneg: Optional[bool] = Field(False, alias="useLimitFlowNeg")
     limitflowneg: Optional[float] = Field(None, alias="limitFlowNeg")
 
-    _flowdirection_validator = get_enum_validator("allowedflowdir", enum=FlowDirection)
+    @field_validator("allowedflowdir", mode="before")
+    @classmethod
+    def _flowdirection_validator(cls, v) -> FlowDirection:
+        return enum_value_parser(FlowDirection)(v)
 
     @model_validator(mode="after")
     def _validate_limitflowpos(self):
@@ -1148,7 +1197,10 @@ class Bridge(Structure):
     friction: float
     length: float
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _frictiontype_validator(cls, v) -> FrictionType:
+        return enum_value_parser(FrictionType)(v)
 
 
 class StructureGeneral(INIGeneral):
@@ -1190,7 +1242,7 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: List[StructureUnion] = []
+    structure: Annotated[List[StructureUnion], BeforeValidator(make_list)] = []
 
     @classmethod
     def _ext(cls) -> str:
@@ -1199,5 +1251,3 @@ class StructureModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "structures"
-
-    _split_to_list = make_list_validator("structure")
