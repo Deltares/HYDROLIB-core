@@ -11,11 +11,8 @@ pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to reso
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
 bathymetryFile                 =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
-structureFile                  =                   # Hydraulic structure file (*.ini)
 iniFieldFile                   =                   # Initial and parameter field file <*.ini>.
 waterLevIniFile                =                   # Initial water levels sample file <*.xyz>.
-thinDamFile                    =                   # Polyline file *_thd.pli, containing thin dams
-fixedWeirFile                  =                   # Polyline file *_fxw.pliz, containing fixed weirs with rows x, y, crest level, left ground level, right ground level
 useCaching                     = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)
 vertPlizFile                   =                   # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
 crossDefFile                   =                   # Cross section definitions for all cross section shapes.
