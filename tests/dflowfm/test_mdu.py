@@ -417,6 +417,7 @@ class TestOutput:
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 
+        print(str(exc_err.value))
         assert expected_message in str(exc_err.value)
 
     def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(

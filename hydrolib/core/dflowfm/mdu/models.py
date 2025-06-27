@@ -2746,3 +2746,170 @@ class ModelFieldResolver:
             if model_cls_ and isinstance(value, (str, Path)):
                 values[key] = model_cls_(value)
         return values
+
+
+class ModelFieldResolver:
+
+    @staticmethod
+    def determine_model_type(models: dict, value, field: FieldInfo) -> List[dict]:
+        """Determine the model type based on the value and field information.
+
+        Args:
+            models (dict): A dictionary mapping file extensions to model classes.
+            value (str or Path): The value to determine the model type for.
+            field (FieldInfo): The field information containing metadata about the field.
+        Returns:
+            List[dict]: A list of dictionaries where each dictionary contains a single key-value pair
+                with the value being the model class to instantiate.
+        """
+        if isinstance(value, str):
+            value = ModelFieldResolver.split(value, field)
+        results = []
+        if not value:
+            return [{"": models.values()[0]}]
+        for item in value:
+            if isinstance(item, str):
+                results.append({f"{item}": models[item.split(".")[-1]]})
+            if isinstance(item, Path):
+                results.append({f"{item}": models[item.suffix[1:]]})
+        return results
+
+    @staticmethod
+    def init_modelclass(modelclass_dicts):
+        """Instantiate each modelclass with its value. Using the modelclass_dicts.
+
+        Args:
+            modelclass_dicts (List[Dict[str, Type[BaseModel]]]): A list of dictionaries
+                where each dictionary contains a single key-value pair with the value
+                being the model class to instantiate."""
+        return [
+            modelclass(value)
+            for d in modelclass_dicts
+            for value, modelclass in d.items()
+        ]
+
+    @staticmethod
+    def split(v: str, field: FieldInfo) -> List[str]:
+        if isinstance(v, str):
+            delimiter = (
+                field.json_schema_extra.get("delimiter")
+                if field.json_schema_extra
+                else " "
+            )
+            v = v.split(delimiter)
+            v = [item.strip() for item in v if item != ""]
+        return v
+
+    @staticmethod
+    def get_model_class(annotation):
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return annotation
+        origin = get_origin(annotation)
+        if origin is Union:
+            args = [a for a in get_args(annotation) if a is not type(None)]
+            if (
+                len(args) == 1
+                and isinstance(args[0], type)
+                and issubclass(args[0], BaseModel)
+            ):
+                return args[0]
+        return None
+
+    @staticmethod
+    def get_list_model_class(annotation):
+        origin = get_origin(annotation)
+        if origin is list or origin is List:
+            args = get_args(annotation)
+            if (
+                len(args) == 1
+                and isinstance(args[0], type)
+                and issubclass(args[0], BaseModel)
+            ):
+                return args[0]
+        if origin is Union:
+            args = [a for a in get_args(annotation) if a is not type(None)]
+            if len(args) == 1:
+                return ModelFieldResolver.get_list_model_class(args[0])
+        return None
+
+    @staticmethod
+    def resolve_list_field(list_model_cls, field: FieldInfo, value):
+        """Convert value to a list of model instances if needed."""
+        if isinstance(value, list):
+            return [
+                v if isinstance(v, list_model_cls) else list_model_cls(v) for v in value
+            ]
+        elif isinstance(value, str):
+            # Split the string into a list and convert each item to the model class
+            return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
+        elif isinstance(value, Path):
+            return [list_model_cls(value)]
+        elif value is None:
+            return [list_model_cls(None)]
+        return value
+
+    @classmethod
+    def resolve(cls, model_cls, values: dict) -> dict:
+        """
+        Resolve the model fields to ensure that the correct pydantic model.
+
+        The method will convert the values of the model fields to their respective model classes
+        based on the field annotations. It handles both single model instances and lists of model instances.
+        Args:
+            model_cls (BaseModel): The pydantic model class to resolve.
+            values (dict): The dictionary of field values to resolve.
+        Returns:
+            dict: The resolved dictionary with model instances.
+        """
+        alias_to_field = {
+            field.alias: name
+            for name, field in model_cls.model_fields.items()
+            if field.alias is not None
+        }
+        for key, value in list(values.items()):
+            actual_field_name = alias_to_field.get(key, key)
+            field = model_cls.model_fields.get(actual_field_name)
+            if field is None:
+                continue
+            # Handle List[Model] and Optional[List[Model]]
+            list_model_cls = cls.get_list_model_class(field.annotation)
+            if list_model_cls:
+                values[key] = cls.resolve_list_field(list_model_cls, field, value)
+                continue
+
+            # Handle Model and Optional[Model]
+            model_cls_ = cls.get_model_class(field.annotation)
+            if model_cls_ and isinstance(value, (str, Path)):
+                values[key] = model_cls_(value)
+        return values
+
+    @classmethod
+    def resolve_field(cls, model_cls, field: str, value: Union[str, Path]) -> dict:
+        """
+        Resolve a single field value to ensure that the correct pydantic model.
+
+        Args:
+            model_cls (BaseModel): The pydantic model class to resolve.
+            values (dict): The dictionary of field values to resolve.
+        Returns:
+            dict: The resolved dictionary with model instances.
+        """
+        alias_to_field = {
+            field.alias: name
+            for name, field in model_cls.model_fields.items()
+            if field.alias is not None
+        }
+        actual_field_name = alias_to_field.get(field, field)
+        field = model_cls.model_fields.get(actual_field_name)
+        if field is None:
+            return value
+        # Handle List[Model] and Optional[List[Model]]
+        list_model_cls = cls.get_list_model_class(field.annotation)
+        if list_model_cls:
+            return cls.resolve_list_field(list_model_cls, field, value)
+
+        # Handle Model and Optional[Model]
+        model_cls_ = cls.get_model_class(field.annotation)
+        if model_cls_ and isinstance(value, (str, Path)):
+            return model_cls_(value)
+        return value

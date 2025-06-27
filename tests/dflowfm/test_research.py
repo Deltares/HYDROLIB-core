@@ -59,7 +59,7 @@ class TestResearchFMModel:
         model = ResearchFMModel()
         model.geometry.research_waterdepthini1d = 12.34  # a random research keyword
 
-        save_path = tmpdir / "test.mdu"
+        save_path = str(tmpdir / "test.mdu")
         model.save(filepath=save_path)
 
         # I picked 5 random research keywords to check
