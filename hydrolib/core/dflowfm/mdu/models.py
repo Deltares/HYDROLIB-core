@@ -2719,8 +2719,6 @@ class ModelFieldResolver:
             return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
         elif isinstance(value, Path):
             return [list_model_cls(value)]
-        elif value is None:
-            return [list_model_cls(None)]
         return value
 
     @classmethod
