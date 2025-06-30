@@ -104,7 +104,7 @@ class Section(BaseModel):
         return {**underlying_dict, **converted_content}
 
     def _convert_section_to_dict(self) -> Dict:
-        return self.dict(
+        return self.model_dump(
             exclude={
                 "start_line",
                 "end_line",
