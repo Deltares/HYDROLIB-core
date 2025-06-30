@@ -160,7 +160,7 @@ def test_serialize_parse_should_return_same_result():
     deserialized_model = parse(
         RainfallRunoffModel.property_keys(), serialized_model.splitlines()
     )
-    result = RainfallRunoffModel.parse_obj(deserialized_model)
+    result = RainfallRunoffModel.model_validate(deserialized_model)
 
     assert_same_fnm_model(result, model)
 
