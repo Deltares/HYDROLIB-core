@@ -485,21 +485,6 @@ class Meteo(INIBasedModel):
     averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
     averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
-    # @field_validator("forcingfile", mode="before")
-    # @classmethod
-    # def validate_forcingfile(cls, data: Any) -> Any:
-    #     """Validates the forcingfile field to ensure it is a valid type."""
-    #     if isinstance(data, (str, Path)):
-    #         data = str(data)
-    #         if data.endswith(".tim"):
-    #             return TimModel(filepath=data)
-    #         elif data.endswith(".bc"):
-    #             return ForcingModel(filepath=data)
-    #         else:
-    #             return DiskOnlyFileModel(data)
-    #     return data
-
-    # @root_validator(pre=True)
     @model_validator(mode="before")
     @classmethod
     def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
