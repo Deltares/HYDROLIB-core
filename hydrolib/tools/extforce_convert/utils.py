@@ -18,6 +18,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     InterpolationMethod,
 )
+from pydantic import ConfigDict
 
 
 def construct_filemodel_new_or_existing(
@@ -266,8 +267,7 @@ class IgnoreUnknownKeyWord(type):
         """Dynamically create and instantiate a subclass of base_class."""
 
         class DynamicClass(base_class):
-            class Config:
-                extra = Extra.ignore
+            model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
                 valid_fields = self.__annotations__.keys()
