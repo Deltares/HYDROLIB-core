@@ -260,7 +260,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_paved_area_sewage_storage: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_paved_area_sewage_storage_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_paved_area_flow_rates", mode="before")
@@ -274,7 +274,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_paved_area_flow_rates: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_paved_area_flow_rates_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_unpaved_area_flow_rates", mode="before")
@@ -288,7 +288,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_unpaved_area_flow_rates: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_unpaved_area_flow_rates_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_ground_water_levels", mode="before")
@@ -300,7 +300,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_ground_water_levels: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_ground_water_levels_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_green_house_bassins_storage", mode="before")
@@ -314,7 +314,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_green_house_bassins_storage: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_green_house_bassins_storage_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_green_house_bassins_results", mode="before")
@@ -328,7 +328,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_green_house_bassins_results: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_green_house_bassins_results_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_open_water_details", mode="before")
@@ -340,7 +340,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_open_water_details: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_open_water_details_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_exceedance_time_reference_levels", mode="before")
@@ -354,7 +354,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_exceedance_time_reference_levels: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_exceedance_time_reference_levels_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_flow_rates_over_structures", mode="before")
@@ -368,7 +368,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_flow_rates_over_structures: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_flow_rates_over_structures_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_flow_rates_to_edge", mode="before")
@@ -380,7 +380,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_flow_rates_to_edge: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_flow_rates_to_edge_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_pluvius_max_sewage_storage", mode="before")
@@ -394,7 +394,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_pluvius_max_sewage_storage: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_pluvius_max_sewage_storage_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_pluvius_max_flow_rates", mode="before")
@@ -408,7 +408,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_pluvius_max_flow_rates: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_pluvius_max_flow_rates_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_balance", mode="before")
@@ -418,7 +418,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_balance: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_balance_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_cumulative_balance", mode="before")
@@ -430,7 +430,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_cumulative_balance: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_cumulative_balance_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     @field_validator("mappix_salt_concentrations", mode="before")
@@ -442,7 +442,7 @@ class RainfallRunoffModel(ParsableFileModel):
 
     mappix_salt_concentrations: ImmutableDiskOnlyFileModel = Field(
         ImmutableDiskOnlyFileModel(Path(_mappix_salt_concentrations_name)),
-        allow_mutation=False,
+        frozen=True,
     )
 
     industry_tables: Annotated[
