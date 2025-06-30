@@ -11,7 +11,6 @@ from hydrolib.core.dflowfm.ini.util import (
     LocationValidationFieldNames,
     UnknownKeywordErrorManager,
     get_from_subclass_defaults,
-    get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
     validate_location_specification,
 )
@@ -339,51 +338,6 @@ class TestGetFromSubclassDefaults:
 
         assert default == value
 
-
-class TestGetTypeBasedOnSubclassDefaultValue:
-    def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_child(
-        self,
-    ):
-        subclass_type = get_type_based_on_subclass_default_value(
-            BaseClass,
-            "name",
-            "WithDefaultProperty",
-        )
-
-        assert subclass_type == WithDefaultProperty
-
-    def test_get_type_based_on_subclass_default_value__correctly_gets_type_from_grandchild(
-        self,
-    ):
-        subclass_type = get_type_based_on_subclass_default_value(
-            BaseClass,
-            "name",
-            "GrandChildWithDefaultProperty",
-        )
-
-        assert subclass_type == GrandChildWithDefaultProperty
-
-    def test_get_type_based_on_subclass_default_value__returns_none_if_no_corresponding_defaults_found(
-        self,
-    ):
-        subclass_type = get_type_based_on_subclass_default_value(
-            BaseClass,
-            "name",
-            "ThisDefaultValueDoesNotExist",
-        )
-
-        assert subclass_type is None
-
-    def test_get_type_based_on_subclass_default_value__property_not_found__returns_none(
-        self,
-    ):
-        subclass_type = get_type_based_on_subclass_default_value(
-            BaseClass,
-            "unknownProperty",
-            "randomValue",
-        )
-
-        assert subclass_type is None
 
 
 class BaseClass(BaseModel):
