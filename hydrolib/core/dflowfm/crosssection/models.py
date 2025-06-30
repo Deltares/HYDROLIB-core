@@ -93,9 +93,9 @@ class CrossSectionDefinition(INIBasedModel):
 
     @staticmethod
     def _check_friction_fields(frictionid, frictiontype, frictionvalue, label=""):
-        """Get a root_validator for the friction specification.
+        """Check the friction specification.
 
-        Make a root_validator that verifies whether the crosssection definition (subclass)
+        Make a model_validator that verifies whether the crosssection definition (subclass)
         has a valid friction specification.
         Supposed to be embedded in subclasses for their friction fields.
 
@@ -107,8 +107,9 @@ class CrossSectionDefinition(INIBasedModel):
             frictionvalue:
                 name of the frictionvalue attribute in the subclass.
 
-        Returns:
-            root_validator: to be embedded in the subclass that needs it.
+        Raises:
+            ValueError:
+                If both frictionid and frictiontype/frictionvalue are specified.
         """
         if frictionid and (frictiontype or frictionvalue):
             raise ValueError(
