@@ -32,6 +32,7 @@ from hydrolib.core.base.utils import (
     get_path_style_for_current_operating_system,
     to_key,
 )
+from pydantic import field_validator, ConfigDict
 
 TAcc = TypeVar("TAcc")
 logger = logging.getLogger(__name__)
@@ -52,15 +53,14 @@ def set_default_disk_only_file_model(v: Any):
 
 
 class BaseModel(PydanticBaseModel):
-    model_config = {
-        "arbitrary_types_allowed": True,
-        "validate_assignment": True,
-        "use_enum_values": True,
-        "extra": "forbid",  # will throw errors so we can fix our models
-        "populate_by_name": True,
-        "alias_generator": to_key,
-        "error_url_template": None,
-    }
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_assignment=True,
+        use_enum_values=True,
+        extra="forbid",
+        populate_by_name=True,
+        alias_generator=to_key
+    )
 
     def __init__(self, **data: Any) -> None:
         """Initialize a BaseModel with the provided data.
