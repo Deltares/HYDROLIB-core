@@ -342,7 +342,7 @@ def create_structure_values(struture_type: str) -> dict:
 
 class TestRootValidator:
     """
-    Wrapper class to validate the paradigms that point to root_validators
+    Wrapper class to validate the paradigms that point to model_validators
     in the Structure class
     """
 
