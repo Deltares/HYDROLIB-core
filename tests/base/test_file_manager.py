@@ -19,6 +19,7 @@ from hydrolib.core.base.file_manager import (
     context_file_loading,
     file_load_context,
     path_style_validator,
+    resolve_relative_to_root,
 )
 from hydrolib.core.base.models import FileModel, ModelSaveSettings
 from hydrolib.core.base.utils import PathStyle
@@ -701,3 +702,71 @@ class TestPathStyleValidatorGlobal:
     def test_path_style_validator_validate_works(self):
         """Test that path_style_validator.validate works."""
         assert path_style_validator.validate("windows") == PathStyle.WINDOWSLIKE
+
+
+@pytest.fixture
+def root_dir(tmp_path):
+    """Fixture: /tmp/.../data/input/root"""
+    return tmp_path / "data" / "input" / "root"
+
+
+@pytest.fixture
+def setup_files(root_dir):
+    """Create test files to cover all resolution scenarios."""
+    root_dir.mkdir(parents=True, exist_ok=True)
+    (root_dir / "input.txt").write_text("inside root")
+
+    # Create a fake longer relative path that includes root_dir segments
+    redundant_path = Path("data/input/root/input.txt")
+
+    # Outside root_dir
+    outside_dir = root_dir.parent.parent / "external"
+    outside_dir.mkdir(parents=True, exist_ok=True)
+    (outside_dir / "input.txt").write_text("outside root")
+
+    return {
+        "relative_file": Path("input.txt"),
+        "relative_path_with_root": redundant_path,
+        "absolute_inside": (root_dir / "input.txt").resolve(),
+        "absolute_outside": (outside_dir / "input.txt").resolve(),
+        "root_dir": root_dir,
+    }
+
+
+class TestResolveRelativeToRoot:
+
+    def test_relative_filename(self, setup_files):
+        """
+        Case 1: file_path is just a filename ('input.txt').
+        Should be resolved under root_dir.
+        """
+        fp = setup_files["relative_file"]
+        root = setup_files["root_dir"]
+        expected = (root / "input.txt").resolve()
+        assert resolve_relative_to_root(fp, root) == expected
+
+    def test_absolute_path_inside_root(self, setup_files):
+        """
+        Case 3: file_path is an absolute path within root_dir.
+        Should return resolved absolute path, not duplicated.
+        """
+        fp = setup_files["absolute_inside"]
+        root = setup_files["root_dir"]
+        assert resolve_relative_to_root(fp, root) == fp.resolve()
+
+    def test_absolute_path_outside_root(self, setup_files):
+        """
+        Case 4: file_path is an absolute path outside root_dir.
+        Should return as-is, resolved, not joined to root_dir.
+        """
+        fp = setup_files["absolute_outside"]
+        root = setup_files["root_dir"]
+        assert resolve_relative_to_root(fp, root) == fp.resolve()
+
+    def test_root_dir_as_file_path(self, setup_files):
+        """
+        Edge Case: file_path == root_dir itself.
+        Should return the resolved root_dir.
+        """
+        root = setup_files["root_dir"]
+        assert resolve_relative_to_root(root, root) == root.resolve()

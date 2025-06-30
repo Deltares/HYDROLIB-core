@@ -282,6 +282,8 @@ class ExtOldMeteoQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
+
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -444,6 +446,7 @@ class ExtOldQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -656,7 +659,6 @@ class ExtOldForcing(BaseModel):
         nummin (Optional[int]):
             The minimum required number of source data points in each target cell.
     """
-
     quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
@@ -879,7 +881,7 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def chooce_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Root-level validator to the right class for the filename parameter based on the filetype.
 
         The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
