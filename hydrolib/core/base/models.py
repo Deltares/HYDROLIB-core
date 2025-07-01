@@ -9,20 +9,7 @@ import logging
 import shutil
 from abc import ABC, abstractclassmethod, abstractmethod
 from pathlib import Path
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Set,
-    Type,
-    TypeVar,
-    Union,
-    get_args,
-    get_origin,
-)
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -39,10 +26,10 @@ from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
 from hydrolib.core.base.utils import (
     PathStyle,
+    PathToDictionaryConverter,
     get_path_style_for_current_operating_system,
     to_key,
 )
-from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
 TAcc = TypeVar("TAcc")
 logger = logging.getLogger(__name__)
@@ -526,67 +513,10 @@ class FileModel(BaseModel, ABC):
 
     @field_validator("*", mode="before")
     @classmethod
-    def parse_model_dicts_from_path(cls, value: Any, info: ValidationInfo) -> dict:
-        fields = cls.model_fields
-        key = info.field_name
-        if fields.get(key) is None:
-            return value
-        if cls.is_file_model_type(fields[key].annotation):
-            if isinstance(value, (Path, str)):
-                with file_load_context() as context:
-                    if (
-                        hasattr(context, "_load_settings")
-                        and context._load_settings is not None
-                        and not context._load_settings.recurse
-                    ):
-                        return DiskOnlyFileModel(value)
-                return {"filepath": Path(value)}
-        if cls.is_list_file_model_type(fields[key].annotation):
-            if isinstance(value, list):
-                # Convert each item in the list to a FileModel
-                return [cls.parse_model_dicts_from_path(v, info) for v in value]
-            elif isinstance(value, str):
-                return [
-                    cls.parse_model_dicts_from_path(v, info)
-                    for v in split_string_on_delimiter(cls, value, info)
-                ]
-            elif isinstance(value, Path):
-                return [cls.parse_model_dicts_from_path(value, info)]
-
-        return value
-
-    @classmethod
-    def is_file_model_type(cls, annotation: Any) -> bool:
-        """Check if the given annotation is a FileModel type.
-
-        Args:
-            annotation (Any): The annotation to check.
-
-        Returns:
-            bool: True if the annotation is a FileModel type, False otherwise.
-        """
-        if get_origin(annotation) is Union:
-            # Check if the annotation is a union type that contains FileModel
-            return any(
-                FileModel.is_file_model_type(arg) for arg in get_args(annotation)
-            )
-        return isinstance(annotation, type) and issubclass(annotation, FileModel)
-
-    @classmethod
-    def is_list_file_model_type(cls, annotation: Any) -> bool:
-        """Check if the given annotation is a list of FileModel types.
-
-        Args:
-            annotation (Any): The annotation to check.
-
-        Returns:
-            bool: True if the annotation is a list of FileModel types, False otherwise.
-        """
-        origin = get_origin(annotation)
-        if origin is list:
-            # Check if the item type in the list is a FileModel type
-            return cls.is_file_model_type(get_args(annotation)[0])
-        return False
+    def convert_path_to_dictionary(
+        cls, value: Any, info: ValidationInfo
+    ) -> Dict[str, Any]:
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     def save(
         self,
