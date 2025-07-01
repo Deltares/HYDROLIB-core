@@ -172,7 +172,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for levels should be equal to the numlevels value."
+            "Number of values for levels should be equal to the numlevels value."
         )
 
         assert expected_message in str(error.value)
@@ -205,7 +205,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for zcoordinates should be equal to the yzcount value."
+            "Number of values for zcoordinates should be equal to the yzcount value."
         )
 
         assert expected_message in str(error.value)
@@ -223,7 +223,7 @@ class TestCrossSectionDefinition:
                 frictiontypes=[FrictionType.manning, FrictionType.manning],
                 frictionvalues=[0.03],  # Intentional wrong list length
             )
-        expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value."
+        expected_message0 = "Number of values for frictionvalues should be equal to the sectioncount value."
 
         assert expected_message0 in str(error.value)
 
@@ -258,7 +258,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for zcoordinates should be equal to the xyzcount value."
+            "Number of values for zcoordinates should be equal to the xyzcount value."
         )
 
         assert expected_message in str(error.value)
@@ -276,7 +276,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for xcoordinates should be equal to the xyzcount value."
+            "Number of values for xcoordinates should be equal to the xyzcount value."
         )
 
         assert expected_message in str(error.value)
