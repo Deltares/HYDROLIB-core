@@ -28,6 +28,7 @@ from hydrolib.core.base.models import (
     FileModel,
     set_default_disk_only_file_model,
 )
+from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -671,14 +672,6 @@ class Sediment(INIBasedModel):
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_sediment_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the sediment model based on the sedimentmodelnr.
-        """
-        return ModelFieldResolver.resolve(cls, values)
-
 
 class Wind(INIBasedModel):
     """
@@ -902,14 +895,6 @@ class Restart(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile")
     restartdatetime: Optional[str] = Field("", alias="restartDateTime")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_restart_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the restartfile field to the correct type.
-        """
-        return ModelFieldResolver.resolve(cls, values)
-
     @field_validator("restartdatetime", mode="before")
     @classmethod
     def _validate_datetime(cls, value, field):
@@ -952,8 +937,12 @@ class ExternalForcing(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: Optional[ExtOldModel] = Field(None, alias="extForceFile")
-    extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
+    extforcefile: Optional[Union[ExtOldModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFile"
+    )
+    extforcefilenew: Optional[Union[ExtModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFileNew"
+    )
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
     evaporation: Optional[bool] = Field(None, alias="evaporation")
@@ -962,13 +951,10 @@ class ExternalForcing(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @model_validator(mode="before")
+    @field_validator("extforcefile", "extforcefilenew", mode="before")
     @classmethod
-    def resolve_ext_force_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the extforcefile and extforcefilenew fields to the correct type.
-        """
-        return ModelFieldResolver.resolve(cls, values)
+    def _validate_ext_force_file(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
 
 class Hydrology(INIBasedModel):
@@ -1748,11 +1734,6 @@ class Output(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
-    def resolve_output_fields(cls, values: dict) -> dict:
-        return ModelFieldResolver.resolve(cls, values)
-
-    @model_validator(mode="before")
-    @classmethod
     def resolve_obs_files(cls, values: dict) -> dict:
         obs_files = values.get("obsfile", None)
         classes = {"ini": ObservationPointModel, "xyn": XYNModel}
@@ -2066,14 +2047,16 @@ class Geometry(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["Geometry"] = "Geometry"
-    netfile: Optional[NetworkModel] = Field(
+    netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
     )
-    bathymetryfile: Optional[XYZModel] = Field(None, alias="bathymetryFile")
+    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
+        None, alias="bathymetryFile"
+    )
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
-    structurefile: Optional[List[StructureModel]] = Field(
+    structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", delimiter=";"
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
@@ -2083,17 +2066,31 @@ class Geometry(INIBasedModel):
     landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
         None, alias="landBoundaryFile"
     )
-    thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
-    fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
-    pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
+    thindamfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="thinDamFile"
+    )
+    fixedweirfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="fixedWeirFile"
+    )
+    pillarfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="pillarFile"
+    )
     usecaching: bool = Field(True, alias="useCaching")
-    vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
-    frictfile: Optional[List[FrictionModel]] = Field(
+    vertplizfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="vertPlizFile"
+    )
+    frictfile: Optional[List[Union[FrictionModel, DiskOnlyFileModel]]] = Field(
         None, alias="frictFile", delimiter=";"
     )
-    crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
-    crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
-    storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
+    crossdeffile: Optional[Union[CrossDefModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossDefFile"
+    )
+    crosslocfile: Optional[Union[CrossLocModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossLocFile"
+    )
+    storagenodefile: Optional[Union[StorageNodeModel, DiskOnlyFileModel]] = Field(
+        None, alias="storageNodeFile"
+    )
     oned2dlinkfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile")
@@ -2109,7 +2106,9 @@ class Geometry(INIBasedModel):
     manholefile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile")
-    partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
+    partitionfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="partitionFile"
+    )
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     dxwuimin2d: float = Field(0.0, alias="dxWuiMin2D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -2154,22 +2153,18 @@ class Geometry(INIBasedModel):
     zlaybot: float = Field(-999.0, alias="zlayBot")
     zlaytop: float = Field(-999.0, alias="zlayTop")
     uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
-    roofsfile: Optional[PolyFile] = Field(None, alias="roofsFile")
-    gulliesfile: Optional[PolyFile] = Field(None, alias="gulliesFile")
+    roofsfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="roofsFile"
+    )
+    gulliesfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="gulliesFile"
+    )
     uniformwidth1dstreetinlets: float = Field(0.2, alias="uniformWidth1DStreetInlets")
     uniformheight1dstreetinlets: float = Field(0.1, alias="uniformHeight1DStreetInlets")
     uniformtyp1droofgutterpipes: int = Field(-2, alias="uniformTyp1DRoofGutterPipes")
     uniformwidth1droofgutterpipes: float = Field(
         0.1, alias="uniformWidth1DRoofGutterPipes"
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_geometry_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the geometry fields to ensure that the correct types are used.
-        """
-        return ModelFieldResolver.resolve(cls, values)
 
     @model_validator(mode="before")
     @classmethod
@@ -2190,6 +2185,11 @@ class Geometry(INIBasedModel):
             values["drypointsfile"] = ModelFieldResolver.init_modelclass(cls_model)
 
         return values
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def parse_file_model_paths(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     @field_validator(
         "frictfile",
@@ -2243,11 +2243,6 @@ class Calibration(INIBasedModel):
     areafile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile")
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_calibration_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        return ModelFieldResolver.resolve(cls, values)
 
 
 class InfiltrationMethod(IntEnum):
@@ -2409,12 +2404,6 @@ class Processes(INIBasedModel):
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_processes_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
-
 
 class ParticlesThreeDType(IntEnum):
     """
@@ -2471,12 +2460,6 @@ class Particles(INIBasedModel):
     threedtype: Optional[ParticlesThreeDType] = Field(
         ParticlesThreeDType.DepthAveraged, alias="3Dtype"
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_particles_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
 
 
 class VegetationModelNr(IntEnum):
@@ -2574,12 +2557,6 @@ class FMModel(INIModel):
     def _filename(cls) -> str:
         return "fm"
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_fmmodel_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
-
     @FileModel._relative_mode.getter
     def _relative_mode(self) -> ResolveRelativeMode:
         # This method overrides the _relative_mode property of the FileModel:
@@ -2674,115 +2651,3 @@ class ModelFieldResolver:
             v = v.split(delimiter)
             v = [item.strip() for item in v if item != ""]
         return v
-
-    @staticmethod
-    def get_model_class(annotation):
-        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-            return annotation
-        origin = get_origin(annotation)
-        if origin is Union:
-            args = [a for a in get_args(annotation) if a is not type(None)]
-            if (
-                len(args) == 1
-                and isinstance(args[0], type)
-                and issubclass(args[0], BaseModel)
-            ):
-                return args[0]
-        return None
-
-    @staticmethod
-    def get_list_model_class(annotation):
-        origin = get_origin(annotation)
-        if origin is list or origin is List:
-            args = get_args(annotation)
-            if (
-                len(args) == 1
-                and isinstance(args[0], type)
-                and issubclass(args[0], BaseModel)
-            ):
-                return args[0]
-        if origin is Union:
-            args = [a for a in get_args(annotation) if a is not type(None)]
-            if len(args) == 1:
-                return ModelFieldResolver.get_list_model_class(args[0])
-        return None
-
-    @staticmethod
-    def resolve_list_field(list_model_cls, field: FieldInfo, value):
-        """Convert value to a list of model instances if needed."""
-        if isinstance(value, list):
-            return [
-                v if isinstance(v, list_model_cls) else list_model_cls(v) for v in value
-            ]
-        elif isinstance(value, str):
-            # Split the string into a list and convert each item to the model class
-            return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
-        elif isinstance(value, Path):
-            return [list_model_cls(value)]
-        return value
-
-    @classmethod
-    def resolve(cls, model_cls, values: dict) -> dict:
-        """
-        Resolve the model fields to ensure that the correct pydantic model.
-
-        The method will convert the values of the model fields to their respective model classes
-        based on the field annotations. It handles both single model instances and lists of model instances.
-        Args:
-            model_cls (BaseModel): The pydantic model class to resolve.
-            values (dict): The dictionary of field values to resolve.
-        Returns:
-            dict: The resolved dictionary with model instances.
-        """
-        alias_to_field = {
-            field.alias: name
-            for name, field in model_cls.model_fields.items()
-            if field.alias is not None
-        }
-        for key, value in list(values.items()):
-            actual_field_name = alias_to_field.get(key, key)
-            field = model_cls.model_fields.get(actual_field_name)
-            if field is None:
-                continue
-            # Handle List[Model] and Optional[List[Model]]
-            list_model_cls = cls.get_list_model_class(field.annotation)
-            if list_model_cls:
-                values[key] = cls.resolve_list_field(list_model_cls, field, value)
-                continue
-
-            # Handle Model and Optional[Model]
-            model_cls_ = cls.get_model_class(field.annotation)
-            if model_cls_ and isinstance(value, (str, Path)):
-                values[key] = model_cls_(value)
-        return values
-
-    @classmethod
-    def resolve_field(cls, model_cls, field: str, value: Union[str, Path]) -> dict:
-        """
-        Resolve a single field value to ensure that the correct pydantic model.
-
-        Args:
-            model_cls (BaseModel): The pydantic model class to resolve.
-            values (dict): The dictionary of field values to resolve.
-        Returns:
-            dict: The resolved dictionary with model instances.
-        """
-        alias_to_field = {
-            field.alias: name
-            for name, field in model_cls.model_fields.items()
-            if field.alias is not None
-        }
-        actual_field_name = alias_to_field.get(field, field)
-        field = model_cls.model_fields.get(actual_field_name)
-        if field is None:
-            return value
-        # Handle List[Model] and Optional[List[Model]]
-        list_model_cls = cls.get_list_model_class(field.annotation)
-        if list_model_cls:
-            return cls.resolve_list_field(list_model_cls, field, value)
-
-        # Handle Model and Optional[Model]
-        model_cls_ = cls.get_model_class(field.annotation)
-        if model_cls_ and isinstance(value, (str, Path)):
-            return model_cls_(value)
-        return value

@@ -13,10 +13,7 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, Type
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import PrivateAttr, ValidationError, field_validator
-
-from pydantic import GetCoreSchemaHandler
-from pydantic_core import core_schema
+from pydantic import PrivateAttr, ValidationError, ValidationInfo, field_validator
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -29,6 +26,7 @@ from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
 from hydrolib.core.base.utils import (
     PathStyle,
+    PathToDictionaryConverter,
     get_path_style_for_current_operating_system,
     to_key,
 )
@@ -49,6 +47,8 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
 def set_default_disk_only_file_model(v: Any):
     if v is None:
         return {"filepath": None}
+    elif isinstance(v, (Path, str)):
+        return {"filepath": Path(v)}
     return v
 
 
@@ -488,7 +488,9 @@ class FileModel(BaseModel, ABC):
 
     @classmethod
     def model_validate(cls: Type["FileModel"], value: Any):
-        from hydrolib.core.base.models import DiskOnlyFileModel  # because of circular import
+        from hydrolib.core.base.models import (
+            DiskOnlyFileModel,  # because of circular import
+        )
 
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
@@ -510,6 +512,13 @@ class FileModel(BaseModel, ABC):
                 f"Expected {cls.__name__} or dict, got {type(value).__name__}"
             )
         return super().model_validate(value)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def convert_path_to_dictionary(
+        cls, value: Any, info: ValidationInfo
+    ) -> Dict[str, Any]:
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     def save(
         self,
@@ -955,3 +964,5 @@ class DiskOnlyFileModel(FileModel):
         # If the filepath is not None, there is an underlying file, and as such we need
         # to traverse it.
         return self.filepath is not None
+
+FileModel.model_rebuild()
