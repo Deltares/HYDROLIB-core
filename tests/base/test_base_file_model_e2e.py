@@ -468,8 +468,8 @@ class TestFileModelE2E(unittest.TestCase):
         child_path = "absolute_child.txt"
 
         # Create and save the child model first
-        child_model = SimpleFileModel(filepath=child_path, name="absolute_child", value=600)
-
+        child_model = SimpleFileModel(name="absolute_child", value=600)
+        child_model.filepath = child_path
         # Create the parent model with a reference to the child
         parent_model = SimpleFileModel(
             name="parent_with_absolute_child", value=700, child_file=child_model
