@@ -123,8 +123,7 @@ class TestFileModelE2E(unittest.TestCase):
         Creates a temporary directory for test output and copies test input files.
         """
         # Create a temporary directory for test output
-        # self.temp_dir = Path(tempfile.mkdtemp())
-        self.temp_dir = Path("tests/data/output/delete_me")
+        self.temp_dir = Path(tempfile.mkdtemp())
         # Ensure the directory exists and is empty
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
