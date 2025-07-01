@@ -46,6 +46,8 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
 def set_default_disk_only_file_model(v: Any):
     if v is None:
         return {"filepath": None}
+    elif isinstance(v, (Path, str)):
+        return {"filepath": Path(v)}
     return v
 
 
