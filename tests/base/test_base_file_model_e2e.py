@@ -8,7 +8,7 @@ import shutil
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel, ModelSaveSettings
@@ -23,10 +23,10 @@ class SimpleFileModel(FileModel):
     name: str = "default"
     value: int = 0
     description: Optional[str] = None
-    child_file: Optional["SimpleFileModel"] = None
-    child_file1: Optional["SimpleFileModel"] = None
-    child_file2: Optional["SimpleFileModel"] = None
-    child_file3: Optional["SimpleFileModel"] = None
+    child_file: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file1: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file2: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file3: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
 
     def _post_init_load(self) -> None:
         """Post-initialization load method."""
