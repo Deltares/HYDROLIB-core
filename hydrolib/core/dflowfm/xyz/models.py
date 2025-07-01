@@ -47,10 +47,6 @@ class XYZModel(ParsableFileModel):
 
     points: List[XYZPoint] = []
 
-    def dict(self, *args, **kwargs):
-        # speed up serializing by not converting these lowest models to dict
-        return dict(points=self.points)
-
     @classmethod
     def _ext(cls) -> str:
         return ".xyz"
