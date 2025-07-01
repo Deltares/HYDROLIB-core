@@ -204,9 +204,9 @@ class TestValidateOperand:
                 operand=operand_str,
             )
 
-        supported_values_str = ", ".join(([x.value for x in Operand]))
+        supported_values_str = "', '".join(([x.value for x in Operand]))
         assert (
-            f"OPERAND 'invalid' not supported. Supported values: {supported_values_str}"
+            f"Invalid enum value: 'invalid'. Expected one of: ['{supported_values_str}']"
             in str(error.value)
         )
 
