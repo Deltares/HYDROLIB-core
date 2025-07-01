@@ -357,6 +357,8 @@ class SourceSink(INIBasedModel):
         # Convert string to DiskOnlyFileModel if needed
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
+        else:
+            data["locationfile"] = file_location
         return data
 
 
