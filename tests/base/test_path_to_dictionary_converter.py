@@ -79,7 +79,7 @@ class TestPathToDictionaryConverter:
         return mock_validation_info
 
     def test_convert(self, mock_cls, mock_validation_info):
-        with patch("hydrolib.core.base.file_manager.file_load_context") as mock_context:
+        with patch("hydrolib.core.base.file_manager.file_load_context"):
             result = PathToDictionaryConverter.convert(mock_cls, "test/path/to/file", mock_validation_info)
 
         assert result == {"filepath": Path("test/path/to/file")}
