@@ -169,7 +169,11 @@ class PathToDictionaryConverter:
             return PathToDictionaryConverter.make_dict(value)
         if PathToDictionaryConverter.is_list_file_model_type(fields[key].annotation):
             return [
-                PathToDictionaryConverter.make_dict(v)
+                (
+                    PathToDictionaryConverter.make_dict(v)
+                    if isinstance(v, (str, Path))
+                    else v
+                )
                 for v in split_string_on_delimiter(cls, value, info)
             ]
 
