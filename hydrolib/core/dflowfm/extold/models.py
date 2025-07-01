@@ -962,11 +962,6 @@ class ExtOldModel(ParsableFileModel):
     def _filename(cls) -> str:
         return "externalforcings"
 
-    def dict(self, *args, **kwargs):
-        return dict(
-            comment=self.comment, forcing=[f.model_dump() for f in self.forcing]
-        )
-
     @classmethod
     def _get_serializer(
         cls,
