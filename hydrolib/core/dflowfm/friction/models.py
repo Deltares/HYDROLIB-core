@@ -181,9 +181,9 @@ class FrictBranch(INIBasedModel):
     functiontype: Optional[str] = Field("constant", alias="functionType")
     timeseriesid: Optional[str] = Field(None, alias="timeSeriesId")
     numlevels: Optional[PositiveInt] = Field(None, alias="numLevels")
-    levels: Optional[List[float]] = Field(None, alias="levels")
+    levels: Optional[List[float]] = Field(None)
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
-    chainage: Optional[List[float]] = Field(None, alias="chainage")
+    chainage: Optional[List[float]] = Field(None)
     frictionvalues: Optional[List[float]] = Field(
         None, alias="frictionValues"
     )  # TODO: turn this into List[List[float]], see issue #143.
