@@ -937,8 +937,12 @@ class ExternalForcing(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: Optional[ExtOldModel] = Field(None, alias="extForceFile")
-    extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
+    extforcefile: Optional[Union[ExtOldModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFile"
+    )
+    extforcefilenew: Optional[Union[ExtModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFileNew"
+    )
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
     evaporation: Optional[bool] = Field(None, alias="evaporation")
@@ -2048,10 +2052,12 @@ class Geometry(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["Geometry"] = "Geometry"
-    netfile: Optional[NetworkModel] = Field(
+    netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
     )
-    bathymetryfile: Optional[XYZModel] = Field(None, alias="bathymetryFile")
+    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
+        None, alias="bathymetryFile"
+    )
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
@@ -2065,17 +2071,31 @@ class Geometry(INIBasedModel):
     landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
         None, alias="landBoundaryFile"
     )
-    thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
-    fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
-    pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
+    thindamfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="thinDamFile"
+    )
+    fixedweirfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="fixedWeirFile"
+    )
+    pillarfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="pillarFile"
+    )
     usecaching: bool = Field(True, alias="useCaching")
-    vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
-    frictfile: Optional[List[FrictionModel]] = Field(
+    vertplizfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="vertPlizFile"
+    )
+    frictfile: Optional[List[Union[FrictionModel, DiskOnlyFileModel]]] = Field(
         None, alias="frictFile", delimiter=";"
     )
-    crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
-    crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
-    storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
+    crossdeffile: Optional[Union[CrossDefModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossDefFile"
+    )
+    crosslocfile: Optional[Union[CrossLocModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossLocFile"
+    )
+    storagenodefile: Optional[Union[StorageNodeModel, DiskOnlyFileModel]] = Field(
+        None, alias="storageNodeFile"
+    )
     oned2dlinkfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile")
@@ -2091,7 +2111,9 @@ class Geometry(INIBasedModel):
     manholefile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile")
-    partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
+    partitionfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="partitionFile"
+    )
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     dxwuimin2d: float = Field(0.0, alias="dxWuiMin2D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -2136,8 +2158,12 @@ class Geometry(INIBasedModel):
     zlaybot: float = Field(-999.0, alias="zlayBot")
     zlaytop: float = Field(-999.0, alias="zlayTop")
     uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
-    roofsfile: Optional[PolyFile] = Field(None, alias="roofsFile")
-    gulliesfile: Optional[PolyFile] = Field(None, alias="gulliesFile")
+    roofsfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="roofsFile"
+    )
+    gulliesfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="gulliesFile"
+    )
     uniformwidth1dstreetinlets: float = Field(0.2, alias="uniformWidth1DStreetInlets")
     uniformheight1dstreetinlets: float = Field(0.1, alias="uniformHeight1DStreetInlets")
     uniformtyp1droofgutterpipes: int = Field(-2, alias="uniformTyp1DRoofGutterPipes")
