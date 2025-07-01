@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import Field, ValidationInfo, field_validator, model_validator
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 from hydrolib.core.dflowfm.mdu import (
@@ -793,13 +794,13 @@ class ResearchTrachytopes(Trachytopes):
     research_trtmnh: Optional[float] = Field(None, alias="trtmnh")
     research_trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
 
-    @model_validator(mode="before")
+    @field_validator("research_trtcll", mode="before")
     @classmethod
-    def resolve_research_trachytopes_model(
-        cls, values: Dict[str, Any]
+    def resolve_trachytopes_file_model(
+        cls, value, info: ValidationInfo
     ) -> Dict[str, Any]:
         """Resolve disk-only file models."""
-        return ModelFieldResolver.resolve(cls, values)
+        return PathToDictionaryConverter.convert(cls, value, info)
 
 
 class ResearchOutput(Output):
@@ -946,11 +947,15 @@ class ResearchOutput(Output):
     research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
-    @model_validator(mode="before")
+    @field_validator(
+        "research_waqhoraggr",
+        "research_waqvertaggr",
+        "research_metadatafile",
+        mode="before",
+    )
     @classmethod
-    def resolve_ResearchOutput_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Resolve disk-only file models."""
-        return ModelFieldResolver.resolve(cls, values)
+    def _resolve_output_file_model(cls, v, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, v, info)
 
 
 class ResearchProcesses(Processes):
@@ -1004,26 +1009,17 @@ class ResearchSedtrails(INIBasedModel):
         None, alias="sedtrailsoutputfile"
     )
 
-    @field_validator("research_sedtrailsinterval", mode="before")
-    @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
-
     @field_validator(
         "research_sedtrailsgrid", "research_sedtrailsoutputfile", mode="before"
     )
     @classmethod
-    def resolve_research_sed_trails_model(cls, value, info: ValidationInfo) -> Any:
-        """Resolve disk-only file models and split string on delimiter."""
-        if isinstance(value, (str, Path)):
-            return ModelFieldResolver.resolve_field(cls, info.field_name, value)
-        return value
+    def _resolve_sedtrails_file_model(cls, v, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, v, info)
 
-    @model_validator(mode="before")
+    @field_validator("research_sedtrailsinterval", mode="before")
     @classmethod
-    def resolve_ResearchSedtrails_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Resolve disk-only file models."""
-        return ModelFieldResolver.resolve(cls, values)
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
 
 class ResearchFMModel(FMModel):
