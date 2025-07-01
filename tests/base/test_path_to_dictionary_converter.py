@@ -47,7 +47,7 @@ class TestPathToDictionaryConverter:
 
     @pytest.mark.parametrize("path", ["test/path/to/file", Path("another/test/path")])
     def test_make_dict(self, path):
-        with patch("hydrolib.core.base.file_manager.file_load_context") as mock_context:
+        with patch("hydrolib.core.base.file_manager.file_load_context"):
             result = PathToDictionaryConverter.make_dict(path)
 
         assert result == {"filepath": Path(path)}
