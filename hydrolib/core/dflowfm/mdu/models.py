@@ -1734,11 +1734,6 @@ class Output(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
-    def resolve_output_fields(cls, values: dict) -> dict:
-        return ModelFieldResolver.resolve(cls, values)
-
-    @model_validator(mode="before")
-    @classmethod
     def resolve_obs_files(cls, values: dict) -> dict:
         obs_files = values.get("obsfile", None)
         classes = {"ini": ObservationPointModel, "xyn": XYNModel}
@@ -2173,14 +2168,6 @@ class Geometry(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
-    def resolve_geometry_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the geometry fields to ensure that the correct types are used.
-        """
-        return ModelFieldResolver.resolve(cls, values)
-
-    @model_validator(mode="before")
-    @classmethod
     def resolve_drypointsfile_files(cls, values: dict) -> dict:
         drypointsfile_files = values.get("drypointsfile", None)
         classes = {"xyz": XYZModel, "pli": PolyFile}
@@ -2256,11 +2243,6 @@ class Calibration(INIBasedModel):
     areafile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile")
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_calibration_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        return ModelFieldResolver.resolve(cls, values)
 
 
 class InfiltrationMethod(IntEnum):
@@ -2422,12 +2404,6 @@ class Processes(INIBasedModel):
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_processes_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
-
 
 class ParticlesThreeDType(IntEnum):
     """
@@ -2484,12 +2460,6 @@ class Particles(INIBasedModel):
     threedtype: Optional[ParticlesThreeDType] = Field(
         ParticlesThreeDType.DepthAveraged, alias="3Dtype"
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_particles_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
 
 
 class VegetationModelNr(IntEnum):
@@ -2587,12 +2557,6 @@ class FMModel(INIModel):
     def _filename(cls) -> str:
         return "fm"
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_fmmodel_fields(cls, values: dict) -> dict:
-        """Resolve model fields to their respective model classes."""
-        return ModelFieldResolver.resolve(cls, values)
-
     @FileModel._relative_mode.getter
     def _relative_mode(self) -> ResolveRelativeMode:
         # This method overrides the _relative_mode property of the FileModel:
@@ -2687,115 +2651,3 @@ class ModelFieldResolver:
             v = v.split(delimiter)
             v = [item.strip() for item in v if item != ""]
         return v
-
-    @staticmethod
-    def get_model_class(annotation):
-        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
-            return annotation
-        origin = get_origin(annotation)
-        if origin is Union:
-            args = [a for a in get_args(annotation) if a is not type(None)]
-            if (
-                len(args) == 1
-                and isinstance(args[0], type)
-                and issubclass(args[0], BaseModel)
-            ):
-                return args[0]
-        return None
-
-    @staticmethod
-    def get_list_model_class(annotation):
-        origin = get_origin(annotation)
-        if origin is list or origin is List:
-            args = get_args(annotation)
-            if (
-                len(args) == 1
-                and isinstance(args[0], type)
-                and issubclass(args[0], BaseModel)
-            ):
-                return args[0]
-        if origin is Union:
-            args = [a for a in get_args(annotation) if a is not type(None)]
-            if len(args) == 1:
-                return ModelFieldResolver.get_list_model_class(args[0])
-        return None
-
-    @staticmethod
-    def resolve_list_field(list_model_cls, field: FieldInfo, value):
-        """Convert value to a list of model instances if needed."""
-        if isinstance(value, list):
-            return [
-                v if isinstance(v, list_model_cls) else list_model_cls(v) for v in value
-            ]
-        elif isinstance(value, str):
-            # Split the string into a list and convert each item to the model class
-            return [list_model_cls(v) for v in ModelFieldResolver.split(value, field)]
-        elif isinstance(value, Path):
-            return [list_model_cls(value)]
-        return value
-
-    @classmethod
-    def resolve(cls, model_cls, values: dict) -> dict:
-        """
-        Resolve the model fields to ensure that the correct pydantic model.
-
-        The method will convert the values of the model fields to their respective model classes
-        based on the field annotations. It handles both single model instances and lists of model instances.
-        Args:
-            model_cls (BaseModel): The pydantic model class to resolve.
-            values (dict): The dictionary of field values to resolve.
-        Returns:
-            dict: The resolved dictionary with model instances.
-        """
-        # alias_to_field = {
-        #     field.alias: name
-        #     for name, field in model_cls.model_fields.items()
-        #     if field.alias is not None
-        # }
-        # for key, value in list(values.items()):
-        #     actual_field_name = alias_to_field.get(key, key)
-        #     field = model_cls.model_fields.get(actual_field_name)
-        #     if field is None:
-        #         continue
-        #     # Handle List[Model] and Optional[List[Model]]
-        #     list_model_cls = cls.get_list_model_class(field.annotation)
-        #     if list_model_cls:
-        #         values[key] = cls.resolve_list_field(list_model_cls, field, value)
-        #         continue
-
-        #     # Handle Model and Optional[Model]
-        #     model_cls_ = cls.get_model_class(field.annotation)
-        #     if model_cls_ and isinstance(value, (str, Path)):
-        #         values[key] = model_cls_(value)
-        return values
-
-    @classmethod
-    def resolve_field(cls, model_cls, field: str, value: Union[str, Path]) -> dict:
-        """
-        Resolve a single field value to ensure that the correct pydantic model.
-
-        Args:
-            model_cls (BaseModel): The pydantic model class to resolve.
-            values (dict): The dictionary of field values to resolve.
-        Returns:
-            dict: The resolved dictionary with model instances.
-        """
-        # alias_to_field = {
-        #     field.alias: name
-        #     for name, field in model_cls.model_fields.items()
-        #     if field.alias is not None
-        # }
-        # actual_field_name = alias_to_field.get(field, field)
-        # field = model_cls.model_fields.get(actual_field_name)
-        # if field is None:
-        #     return value
-        # # Handle List[Model] and Optional[List[Model]]
-        # list_model_cls = cls.get_list_model_class(field.annotation)
-        # if list_model_cls:
-        #     return cls.resolve_list_field(list_model_cls, field, value)
-
-        # # Handle Model and Optional[Model]
-        # model_cls_ = cls.get_model_class(field.annotation)
-        # if model_cls_ and isinstance(value, (str, Path)):
-        #     return model_cls_(value)
-        return value
