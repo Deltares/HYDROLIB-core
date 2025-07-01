@@ -156,7 +156,7 @@ def operator_str(operator_func: Callable) -> str:
 class PathToDictionaryConverter:
 
     @staticmethod
-    def convert(cls, value: Any, info: ValidationInfo) -> dict:
+    def convert(cls, value: Any, info: ValidationInfo):
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
         if not isinstance(value, (str, Path, list)):
