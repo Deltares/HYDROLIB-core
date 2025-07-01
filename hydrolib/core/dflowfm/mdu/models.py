@@ -28,6 +28,7 @@ from hydrolib.core.base.models import (
     FileModel,
     set_default_disk_only_file_model,
 )
+from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -671,14 +672,6 @@ class Sediment(INIBasedModel):
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_sediment_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the sediment model based on the sedimentmodelnr.
-        """
-        return ModelFieldResolver.resolve(cls, values)
-
 
 class Wind(INIBasedModel):
     """
@@ -902,14 +895,6 @@ class Restart(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile")
     restartdatetime: Optional[str] = Field("", alias="restartDateTime")
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_restart_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the restartfile field to the correct type.
-        """
-        return ModelFieldResolver.resolve(cls, values)
-
     @field_validator("restartdatetime", mode="before")
     @classmethod
     def _validate_datetime(cls, value, field):
@@ -962,13 +947,10 @@ class ExternalForcing(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @model_validator(mode="before")
+    @field_validator("extforcefile", "extforcefilenew", mode="before")
     @classmethod
-    def resolve_ext_force_file(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Resolve the extforcefile and extforcefilenew fields to the correct type.
-        """
-        return ModelFieldResolver.resolve(cls, values)
+    def _validate_ext_force_file(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
 
 class Hydrology(INIBasedModel):
@@ -2073,7 +2055,7 @@ class Geometry(INIBasedModel):
     drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
-    structurefile: Optional[List[StructureModel]] = Field(
+    structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", delimiter=";"
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
@@ -2190,6 +2172,11 @@ class Geometry(INIBasedModel):
             values["drypointsfile"] = ModelFieldResolver.init_modelclass(cls_model)
 
         return values
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def parse_file_model_paths(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     @field_validator(
         "frictfile",
@@ -2734,26 +2721,26 @@ class ModelFieldResolver:
         Returns:
             dict: The resolved dictionary with model instances.
         """
-        alias_to_field = {
-            field.alias: name
-            for name, field in model_cls.model_fields.items()
-            if field.alias is not None
-        }
-        for key, value in list(values.items()):
-            actual_field_name = alias_to_field.get(key, key)
-            field = model_cls.model_fields.get(actual_field_name)
-            if field is None:
-                continue
-            # Handle List[Model] and Optional[List[Model]]
-            list_model_cls = cls.get_list_model_class(field.annotation)
-            if list_model_cls:
-                values[key] = cls.resolve_list_field(list_model_cls, field, value)
-                continue
+        # alias_to_field = {
+        #     field.alias: name
+        #     for name, field in model_cls.model_fields.items()
+        #     if field.alias is not None
+        # }
+        # for key, value in list(values.items()):
+        #     actual_field_name = alias_to_field.get(key, key)
+        #     field = model_cls.model_fields.get(actual_field_name)
+        #     if field is None:
+        #         continue
+        #     # Handle List[Model] and Optional[List[Model]]
+        #     list_model_cls = cls.get_list_model_class(field.annotation)
+        #     if list_model_cls:
+        #         values[key] = cls.resolve_list_field(list_model_cls, field, value)
+        #         continue
 
-            # Handle Model and Optional[Model]
-            model_cls_ = cls.get_model_class(field.annotation)
-            if model_cls_ and isinstance(value, (str, Path)):
-                values[key] = model_cls_(value)
+        #     # Handle Model and Optional[Model]
+        #     model_cls_ = cls.get_model_class(field.annotation)
+        #     if model_cls_ and isinstance(value, (str, Path)):
+        #         values[key] = model_cls_(value)
         return values
 
     @classmethod
@@ -2767,22 +2754,22 @@ class ModelFieldResolver:
         Returns:
             dict: The resolved dictionary with model instances.
         """
-        alias_to_field = {
-            field.alias: name
-            for name, field in model_cls.model_fields.items()
-            if field.alias is not None
-        }
-        actual_field_name = alias_to_field.get(field, field)
-        field = model_cls.model_fields.get(actual_field_name)
-        if field is None:
-            return value
-        # Handle List[Model] and Optional[List[Model]]
-        list_model_cls = cls.get_list_model_class(field.annotation)
-        if list_model_cls:
-            return cls.resolve_list_field(list_model_cls, field, value)
+        # alias_to_field = {
+        #     field.alias: name
+        #     for name, field in model_cls.model_fields.items()
+        #     if field.alias is not None
+        # }
+        # actual_field_name = alias_to_field.get(field, field)
+        # field = model_cls.model_fields.get(actual_field_name)
+        # if field is None:
+        #     return value
+        # # Handle List[Model] and Optional[List[Model]]
+        # list_model_cls = cls.get_list_model_class(field.annotation)
+        # if list_model_cls:
+        #     return cls.resolve_list_field(list_model_cls, field, value)
 
-        # Handle Model and Optional[Model]
-        model_cls_ = cls.get_model_class(field.annotation)
-        if model_cls_ and isinstance(value, (str, Path)):
-            return model_cls_(value)
+        # # Handle Model and Optional[Model]
+        # model_cls_ = cls.get_model_class(field.annotation)
+        # if model_cls_ and isinstance(value, (str, Path)):
+        #     return model_cls_(value)
         return value
