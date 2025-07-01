@@ -156,7 +156,17 @@ def operator_str(operator_func: Callable) -> str:
 class PathToDictionaryConverter:
 
     @staticmethod
-    def convert(cls, value: Any, info: ValidationInfo) -> dict:
+    def convert(cls, value: Any, info: ValidationInfo):
+        """Convert a value to a dictionary if it is a file model type.
+
+        Args:
+            cls (Type): The class to which the value belongs.
+            value (Any): The value to convert.
+            info (ValidationInfo): Validation information.
+
+        Returns:
+            Any: The converted value, which is a dictionary if the value is a file model type.
+        """
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
         if not isinstance(value, (str, Path, list)):
@@ -180,7 +190,16 @@ class PathToDictionaryConverter:
         return value
 
     @staticmethod
-    def make_dict(value: Any):
+    def make_dict(value: Union[str, Path]):
+        """Convert a value to a dictionary with a 'filepath' key.
+
+        Args:
+            value (Union[str, Path]): The value to convert, which can be a string or a Path object.
+
+        Returns:
+            dict: A dictionary with a 'filepath' key containing the Path object.
+            DiskOnlyFileModel: If the context's load settings do not recurse, return a DiskOnlyFileModel.
+        """
         from hydrolib.core.base.file_manager import file_load_context
         from hydrolib.core.base.models import DiskOnlyFileModel
 
