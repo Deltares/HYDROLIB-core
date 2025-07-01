@@ -647,8 +647,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         Args:
             field_value (Optional[Path]):
                 Value given for xyzcount.
-            values (dict):
-                Dictionary of values already validated.
+            value (int):
+                The validated value of xyzcount.
 
         Raises:
             ValueError:
