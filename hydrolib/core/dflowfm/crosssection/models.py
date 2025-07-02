@@ -345,7 +345,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     def check_list_lengths(self):
         """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "levels",
             "flowwidths",
             "totalwidths",
@@ -424,7 +424,7 @@ class ZWCrsDef(CrossSectionDefinition):
     def check_list_lengths(self):
         """Validate that the length of the levels, flowwidths and totalwidths fields are as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "levels",
             "flowwidths",
             "totalwidths",
@@ -549,7 +549,7 @@ class YZCrsDef(CrossSectionDefinition):
     def check_list_lengths_coordinates(self):
         """Validate that the length of the ycoordinates and zcoordinates fields are as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "ycoordinates",
             "zcoordinates",
             length_name="yzcount",
@@ -560,7 +560,7 @@ class YZCrsDef(CrossSectionDefinition):
     def check_list_lengths_friction(self):
         """Validate that the length of the frictionids, frictiontypes and frictionvalues field are as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "frictionids",
             "frictiontypes",
             "frictionvalues",
@@ -572,7 +572,7 @@ class YZCrsDef(CrossSectionDefinition):
     def check_list_length_frictionpositions(self):
         """Validate that the length of the frictionpositions field is as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "frictionpositions",
             length_name="sectioncount",
             length_incr=1,  # 1 extra for frictionpositions
@@ -647,8 +647,8 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
         Args:
             field_value (Optional[Path]):
                 Value given for xyzcount.
-            values (dict):
-                Dictionary of values already validated.
+            value (int):
+                The validated value of xyzcount.
 
         Raises:
             ValueError:
@@ -671,7 +671,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
     def check_list_lengths_coordinates(self):
         """Validate that the length of the xcoordinates, ycoordinates and zcoordinates field are as expected."""
         validate_correct_length(
-            self.__dict__,
+            self.model_dump(),
             "xcoordinates",
             "ycoordinates",
             "zcoordinates",
@@ -735,7 +735,7 @@ class CrossSection(INIBasedModel):
     def validate_that_location_specification_is_correct(self):
         """Validate that the correct location specification is given."""
         validate_location_specification(
-            self.__dict__,
+            self.model_dump(),
             config=LocationValidationConfiguration(
                 validate_node=False,
                 validate_num_coordinates=False,

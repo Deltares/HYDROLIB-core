@@ -5,6 +5,7 @@ from typing import Annotated, Any, Callable, Dict, Iterable, Optional
 
 from pydantic import (
     BeforeValidator,
+    ConfigDict,
     Field,
     FilePath,
     ValidationInfo,
@@ -35,7 +36,7 @@ class ImmutableDiskOnlyFileModel(DiskOnlyFileModel):
     have the same name and path and should not be modified by users.
     """
 
-    model_config = {"frozen": True}
+    model_config = ConfigDict(frozen=True)
 
 
 _mappix_paved_area_sewage_storage_name = "pvstordt.his"

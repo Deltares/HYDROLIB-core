@@ -1,29 +1,12 @@
 from enum import IntEnum
 from pathlib import Path
-from typing import (
-    Annotated,
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Union,
-    get_args,
-    get_origin,
-)
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
-from pydantic import (
-    BeforeValidator,
-    Field,
-    ValidationInfo,
-    field_validator,
-    model_validator,
-)
+from pydantic import BeforeValidator, Field, ValidationInfo, field_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
-    BaseModel,
     DiskOnlyFileModel,
     FileModel,
     set_default_disk_only_file_model,
@@ -48,6 +31,39 @@ from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
+
+
+def load_crs(value):
+    file_suffix_model_map = {
+        ".pli": PolyFile,
+        ".ini": ObservationCrossSectionModel,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_point(value):
+    file_suffix_model_map = {
+        ".ini": ObservationPointModel,
+        ".xyn": XYNModel,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_dry(value):
+    file_suffix_model_map = {
+        ".xyz": XYZModel,
+        ".pli": PolyFile,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_model(value, file_suffix_model_map):
+    """Load a model from a file path or return the value as is."""
+    if isinstance(value, (str, Path)):
+        path = Path(value)
+        if file_suffix_model_map.get(path.suffix):
+            return file_suffix_model_map[path.suffix](path)
+    return value
 
 
 class AutoStartOption(IntEnum):
@@ -1019,8 +1035,11 @@ class Trachytopes(INIBasedModel):
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
 
-ObsFile = Union[XYNModel, ObservationPointModel]
-ObsCrsFile = Union[PolyFile, ObservationCrossSectionModel]
+ObsFile = Annotated[Union[XYNModel, ObservationPointModel], BeforeValidator(load_point)]
+ObsCrsFile = Annotated[
+    Union[PolyFile, ObservationCrossSectionModel], BeforeValidator(load_crs)
+]
+DryPointsFile = Annotated[Union[XYZModel, PolyFile], BeforeValidator(load_dry)]
 
 
 class Output(INIBasedModel):
@@ -1732,38 +1751,6 @@ class Output(INIBasedModel):
         [0.0], alias="VelocityMagnitudeClasses"
     )
 
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_obs_files(cls, values: dict) -> dict:
-        obs_files = values.get("obsfile", None)
-        classes = {"ini": ObservationPointModel, "xyn": XYNModel}
-
-        if obs_files is not None and not isinstance(obs_files, list):
-
-            cls_model = ModelFieldResolver.determine_model_type(
-                classes, obs_files, cls.model_fields.get("obsfile")
-            )
-
-            values["obsfile"] = ModelFieldResolver.init_modelclass(cls_model)
-
-        return values
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_crs_files(cls, values: dict) -> dict:
-        crs_files = values.get("crsfile", None)
-        classes = {"ini": ObservationCrossSectionModel, "pli": PolyFile}
-
-        if crs_files is not None and not isinstance(crs_files, list):
-
-            cls_model = ModelFieldResolver.determine_model_type(
-                classes, crs_files, cls.model_fields.get("crsfile")
-            )
-
-            values["crsfile"] = ModelFieldResolver.init_modelclass(cls_model)
-
-        return values
-
     @field_validator(
         "waterlevelclasses",
         "waterdepthclasses",
@@ -2053,7 +2040,7 @@ class Geometry(INIBasedModel):
     bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
         None, alias="bathymetryFile"
     )
-    drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
+    drypointsfile: Optional[List[DryPointsFile]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
     structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
@@ -2165,26 +2152,6 @@ class Geometry(INIBasedModel):
     uniformwidth1droofgutterpipes: float = Field(
         0.1, alias="uniformWidth1DRoofGutterPipes"
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def resolve_drypointsfile_files(cls, values: dict) -> dict:
-        drypointsfile_files = values.get("drypointsfile", None)
-        classes = {"xyz": XYZModel, "pli": PolyFile}
-
-        if drypointsfile_files is not None and not isinstance(
-            drypointsfile_files, list
-        ):
-
-            cls_model = ModelFieldResolver.determine_model_type(
-                classes,
-                drypointsfile_files,
-                cls.model_fields.get("drypointsfile", None),
-            )
-
-            values["drypointsfile"] = ModelFieldResolver.init_modelclass(cls_model)
-
-        return values
 
     @field_validator("*", mode="before")
     @classmethod
@@ -2598,56 +2565,3 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToAnchor
         else:
             return ResolveRelativeMode.ToParent
-
-
-class ModelFieldResolver:
-
-    @staticmethod
-    def determine_model_type(models: dict, value, field: FieldInfo) -> List[dict]:
-        """Determine the model type based on the value and field information.
-
-        Args:
-            models (dict): A dictionary mapping file extensions to model classes.
-            value (str or Path): The value to determine the model type for.
-            field (FieldInfo): The field information containing metadata about the field.
-        Returns:
-            List[dict]: A list of dictionaries where each dictionary contains a single key-value pair
-                with the value being the model class to instantiate.
-        """
-        if isinstance(value, str):
-            value = ModelFieldResolver.split(value, field)
-        results = []
-        if not value:
-            return [{"": models.values()[0]}]
-        for item in value:
-            if isinstance(item, str):
-                results.append({f"{item}": models[item.split(".")[-1]]})
-            if isinstance(item, Path):
-                results.append({f"{item}": models[item.suffix[1:]]})
-        return results
-
-    @staticmethod
-    def init_modelclass(modelclass_dicts):
-        """Instantiate each modelclass with its value. Using the modelclass_dicts.
-
-        Args:
-            modelclass_dicts (List[Dict[str, Type[BaseModel]]]): A list of dictionaries
-                where each dictionary contains a single key-value pair with the value
-                being the model class to instantiate."""
-        return [
-            modelclass(value)
-            for d in modelclass_dicts
-            for value, modelclass in d.items()
-        ]
-
-    @staticmethod
-    def split(v: str, field: FieldInfo) -> List[str]:
-        if isinstance(v, str):
-            delimiter = (
-                field.json_schema_extra.get("delimiter")
-                if field.json_schema_extra
-                else " "
-            )
-            v = v.split(delimiter)
-            v = [item.strip() for item in v if item != ""]
-        return v

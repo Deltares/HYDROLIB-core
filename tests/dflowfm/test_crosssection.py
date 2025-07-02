@@ -138,7 +138,7 @@ class TestCrossSectionDefinition:
     def test_create_a_circlecrsdef_with_duplicate_frictionspec(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            d = CircleCrsDef(
+            CircleCrsDef(
                 id=csdefid,
                 diameter=3.14,
                 frictionid="Brick",
@@ -163,7 +163,7 @@ class TestCrossSectionDefinition:
     def test_create_a_zwrivercrsdef_with_wrong_list_lengths(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = ZWRiverCrsDef(
+            ZWRiverCrsDef(
                 id=csdefid,
                 numlevels=2,
                 levels=[-2, 3, 13],  # Intentional wrong list length
@@ -172,7 +172,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for levels should be equal to the numlevels value."
+            "Number of values for levels should be equal to the numlevels value."
         )
 
         assert expected_message in str(error.value)
@@ -196,7 +196,7 @@ class TestCrossSectionDefinition:
     def test_create_a_yzcrsdef_with_wrong_list_length_yz(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = YZCrsDef(
+            YZCrsDef(
                 id=csdefid,
                 yzcount=4,
                 ycoordinates=[-10, -2, 3, 12],
@@ -205,7 +205,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for zcoordinates should be equal to the yzcount value."
+            "Number of values for zcoordinates should be equal to the yzcount value."
         )
 
         assert expected_message in str(error.value)
@@ -213,7 +213,7 @@ class TestCrossSectionDefinition:
     def test_create_a_yzcrsdef_with_wrong_list_length_frict(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = YZCrsDef(
+            YZCrsDef(
                 id=csdefid,
                 yzcount=4,
                 ycoordinates=[-10, -2, 3, 12],
@@ -223,7 +223,7 @@ class TestCrossSectionDefinition:
                 frictiontypes=[FrictionType.manning, FrictionType.manning],
                 frictionvalues=[0.03],  # Intentional wrong list length
             )
-        expected_message0 = f"Number of values for frictionvalues should be equal to the sectioncount value."
+        expected_message0 = "Number of values for frictionvalues should be equal to the sectioncount value."
 
         assert expected_message0 in str(error.value)
 
@@ -248,7 +248,7 @@ class TestCrossSectionDefinition:
     def test_create_a_xyzcrsdef_with_wrong_list_length_yz(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = XYZCrsDef(
+            XYZCrsDef(
                 id=csdefid,
                 xyzcount=4,
                 xcoordinates=[10, 20, 30, 40],
@@ -258,7 +258,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for zcoordinates should be equal to the xyzcount value."
+            "Number of values for zcoordinates should be equal to the xyzcount value."
         )
 
         assert expected_message in str(error.value)
@@ -266,7 +266,7 @@ class TestCrossSectionDefinition:
     def test_create_a_xyzcrsdef_with_wrong_list_length_x(self):
         csdefid = "Prof1"
         with pytest.raises(ValidationError) as error:
-            _ = XYZCrsDef(
+            XYZCrsDef(
                 id=csdefid,
                 xyzcount=4,
                 xcoordinates=[10, 20, 30],  # Intentional wrong list length
@@ -276,7 +276,7 @@ class TestCrossSectionDefinition:
                 frictionvalues=[0.03],
             )
         expected_message = (
-            f"Number of values for xcoordinates should be equal to the xyzcount value."
+            "Number of values for xcoordinates should be equal to the xyzcount value."
         )
 
         assert expected_message in str(error.value)

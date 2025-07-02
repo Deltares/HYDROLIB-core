@@ -1049,7 +1049,7 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         None, alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
+    dambreaklevelsandwidths: Optional[ForcingDataUnion] = Field(
         None, alias="dambreakLevelsAndWidths"
     )
 
@@ -1152,21 +1152,6 @@ class Dambreak(Structure):
             raise ValueError(
                 f"Either `{node_key}` should be specified or `{x_key}` and `{y_key}`."
             )
-
-    @field_validator("dambreaklevelsandwidths", mode="before")
-    @classmethod
-    def resolve_dambreak_levels_and_widths(cls, v):
-        if isinstance(v, str):
-            if v.endswith(".tim"):
-                return TimModel(v)
-            else:
-                return ForcingModel(v)
-        if isinstance(v, Path):
-            if v.suffix == ".tim":
-                return TimModel(v)
-            else:
-                return ForcingModel(v)
-        return v
 
 
 class Bridge(Structure):
