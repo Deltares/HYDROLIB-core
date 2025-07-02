@@ -233,7 +233,8 @@ class TestModels:
 
     def test_load_model_recurse_false(self):
         file_path = Path(
-            test_data_dir / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM.mdu"
+            test_data_dir
+            / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM.mdu"
         )
         model = FMModel(filepath=file_path, recurse=False)
 

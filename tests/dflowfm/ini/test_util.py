@@ -339,7 +339,6 @@ class TestGetFromSubclassDefaults:
         assert default == value
 
 
-
 class BaseClass(BaseModel):
     name: str
 

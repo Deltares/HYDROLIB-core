@@ -13,7 +13,13 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, Type
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import PrivateAttr, ValidationError, ValidationInfo, field_validator
+from pydantic import (
+    ConfigDict,
+    PrivateAttr,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+)
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -30,7 +36,6 @@ from hydrolib.core.base.utils import (
     get_path_style_for_current_operating_system,
     to_key,
 )
-from pydantic import field_validator, ConfigDict
 
 TAcc = TypeVar("TAcc")
 logger = logging.getLogger(__name__)
@@ -59,7 +64,7 @@ class BaseModel(PydanticBaseModel):
         use_enum_values=True,
         extra="forbid",
         populate_by_name=True,
-        alias_generator=to_key
+        alias_generator=to_key,
     )
 
     def __init__(self, **data: Any) -> None:
@@ -964,5 +969,6 @@ class DiskOnlyFileModel(FileModel):
         # If the filepath is not None, there is an underlying file, and as such we need
         # to traverse it.
         return self.filepath is not None
+
 
 FileModel.model_rebuild()

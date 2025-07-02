@@ -342,10 +342,6 @@ def _try_get_default_value(
     return None
 
 
-
-
-
-
 class LocationValidationConfiguration(BaseModel):
     """Class that holds the various configuration settings needed for location validation."""
 

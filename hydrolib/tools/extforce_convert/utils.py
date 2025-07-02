@@ -4,6 +4,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+from pydantic import ConfigDict
 from pydantic.v1 import Extra
 
 from hydrolib.core.base.file_manager import PathOrStr
@@ -18,7 +19,6 @@ from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     InterpolationMethod,
 )
-from pydantic import ConfigDict
 
 
 def construct_filemodel_new_or_existing(

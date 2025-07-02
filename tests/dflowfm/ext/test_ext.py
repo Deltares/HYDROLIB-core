@@ -22,8 +22,8 @@ from hydrolib.core.dflowfm.ext.models import (
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-from tests.utils import invalid_test_data_dir, test_data_dir
 from tests.test_utils import enum_checker
+from tests.utils import invalid_test_data_dir, test_data_dir
 
 
 class TestExtModel:
@@ -82,8 +82,8 @@ class TestExtModel:
 
     def test_model_with_duplicate_file_references_use_same_instances(self):
         file_path = (
-                test_data_dir
-                / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_bnd.ext"
+            test_data_dir
+            / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM_bnd.ext"
         )
         model = ExtModel(filepath=file_path)
 

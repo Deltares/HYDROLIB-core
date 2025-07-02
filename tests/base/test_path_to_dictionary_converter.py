@@ -21,7 +21,7 @@ class TestPathToDictionaryConverter:
             (Optional[DiskOnlyFileModel], True),
             (Optional[List[FileModel]], False),
             (dict[str, int], False),
-        ]
+        ],
     )
     def test_is_file_model_type(self, annotation, expected):
         assert PathToDictionaryConverter.is_file_model_type(annotation) == expected
@@ -57,8 +57,13 @@ class TestPathToDictionaryConverter:
         mock_load_settings = MagicMock()
         mock_load_settings.recurse = False
         mock_context_manager = MagicMock()
-        mock_context_manager.__enter__.return_value = MagicMock(_load_settings=mock_load_settings)
-        with patch("hydrolib.core.base.file_manager.file_load_context", return_value=mock_context_manager):
+        mock_context_manager.__enter__.return_value = MagicMock(
+            _load_settings=mock_load_settings
+        )
+        with patch(
+            "hydrolib.core.base.file_manager.file_load_context",
+            return_value=mock_context_manager,
+        ):
             result = PathToDictionaryConverter.make_dict(path)
 
         assert isinstance(result, DiskOnlyFileModel)
@@ -80,7 +85,9 @@ class TestPathToDictionaryConverter:
 
     def test_convert(self, mock_cls, mock_validation_info):
         with patch("hydrolib.core.base.file_manager.file_load_context"):
-            result = PathToDictionaryConverter.convert(mock_cls, "test/path/to/file", mock_validation_info)
+            result = PathToDictionaryConverter.convert(
+                mock_cls, "test/path/to/file", mock_validation_info
+            )
 
         assert result == {"filepath": Path("test/path/to/file")}
 
@@ -88,9 +95,16 @@ class TestPathToDictionaryConverter:
         mock_load_settings = MagicMock()
         mock_load_settings.recurse = False
         mock_context_manager = MagicMock()
-        mock_context_manager.__enter__.return_value = MagicMock(_load_settings=mock_load_settings)
-        with patch("hydrolib.core.base.file_manager.file_load_context", return_value=mock_context_manager):
-            result = PathToDictionaryConverter.convert(mock_cls, "test/path/to/file", mock_validation_info)
+        mock_context_manager.__enter__.return_value = MagicMock(
+            _load_settings=mock_load_settings
+        )
+        with patch(
+            "hydrolib.core.base.file_manager.file_load_context",
+            return_value=mock_context_manager,
+        ):
+            result = PathToDictionaryConverter.convert(
+                mock_cls, "test/path/to/file", mock_validation_info
+            )
 
         assert isinstance(result, DiskOnlyFileModel)
         assert result.filepath == Path("test/path/to/file")

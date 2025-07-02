@@ -660,6 +660,7 @@ class ExtOldForcing(BaseModel):
         nummin (Optional[int]):
             The minimum required number of source data points in each target cell.
     """
+
     quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
