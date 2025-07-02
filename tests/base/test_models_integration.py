@@ -385,10 +385,10 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
 
         model = ExtModel(ext_file)
 
-        assert model.boundary[0].forcingfile is model.boundary[1].forcingfile
-        assert model.boundary[1].forcingfile is model.boundary[2].forcingfile
-        assert model.boundary[2].forcingfile is model.boundary[3].forcingfile
-        assert model.boundary[3].forcingfile is model.boundary[4].forcingfile
+        assert model.boundary[0].forcingfile[0] is model.boundary[1].forcingfile[0]
+        assert model.boundary[1].forcingfile[0] is model.boundary[2].forcingfile[0]
+        assert model.boundary[2].forcingfile[0] is model.boundary[3].forcingfile[0]
+        assert model.boundary[3].forcingfile[0] is model.boundary[4].forcingfile[0]
 
     def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(
         self, tmp_path: Path
