@@ -1,0 +1,3 @@
+name=parent_with_nested_child
+value=25
+child_file=nested/nested_file.txt

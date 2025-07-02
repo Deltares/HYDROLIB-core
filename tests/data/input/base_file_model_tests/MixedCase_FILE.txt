@@ -1,0 +1,3 @@
+name=mixed_case_file
+value=15
+description=This file has mixed casing in its name

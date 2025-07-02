@@ -131,8 +131,8 @@ class TestRainFallRunoffModel:
 def assert_same_fnm_model(
     input_model: RainfallRunoffModel, reference_model: RainfallRunoffModel
 ) -> None:
-    input_values = input_model.dict()
-    reference_values = reference_model.dict()
+    input_values = input_model.model_dump()
+    reference_values = reference_model.model_dump()
 
     assert len(input_values) == len(reference_values)
 
@@ -156,11 +156,11 @@ def test_serialize_parse_should_return_same_result():
     model.restart_file_input.filepath = Path("aa_res.res")
     model.meteo_input_file_rainfall.filepath = Path("some_path.ini")
 
-    serialized_model = serialize(model.dict(), ModelSaveSettings())
+    serialized_model = serialize(model.model_dump(), ModelSaveSettings())
     deserialized_model = parse(
         RainfallRunoffModel.property_keys(), serialized_model.splitlines()
     )
-    result = RainfallRunoffModel.parse_obj(deserialized_model)
+    result = RainfallRunoffModel.model_validate(deserialized_model)
 
     assert_same_fnm_model(result, model)
 

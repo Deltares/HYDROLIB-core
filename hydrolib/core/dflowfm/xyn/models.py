@@ -52,10 +52,6 @@ class XYNModel(ParsableFileModel):
     points: List[XYNPoint] = []
     """List[`XYNPoint`]: List of XYN points."""
 
-    def dict(self, *args, **kwargs):
-        # speed up serializing by not converting these lowest models to dict
-        return dict(points=self.points)
-
     @classmethod
     def _filename(cls) -> str:
         return "stations_obs"

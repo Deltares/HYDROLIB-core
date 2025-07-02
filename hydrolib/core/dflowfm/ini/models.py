@@ -95,7 +95,7 @@ class INIBasedModel(BaseModel, ABC):
             ```python
             >>> from hydrolib.core.dflowfm.ini.io_models import Section
             >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
-            >>> model = MyModel.parse_obj(section.flatten())
+            >>> model = MyModel.model_validate(section.flatten())
             >>> print(model.field_a)
             value
 

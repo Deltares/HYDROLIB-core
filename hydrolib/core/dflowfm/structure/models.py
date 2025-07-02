@@ -207,6 +207,13 @@ class Structure(INIBasedModel):
 
         return self
 
+    @field_validator("polylinefile", mode="before")
+    @classmethod
+    def resolve_polylinefile(cls, value) -> dict:
+        if isinstance(value, (str, Path)):
+            return DiskOnlyFileModel(filepath=Path(value))
+        return value
+
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
         """Validate branch and chainage in model.
@@ -1042,7 +1049,7 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         None, alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[Union[TimModel, ForcingModel]] = Field(
+    dambreaklevelsandwidths: Optional[ForcingDataUnion] = Field(
         None, alias="dambreakLevelsAndWidths"
     )
 
@@ -1074,7 +1081,7 @@ class Dambreak(Structure):
     @field_validator("dambreaklevelsandwidths", mode="after")
     @classmethod
     def validate_dambreak_levels_and_widths(
-        cls, field_value: Optional[Union[TimModel, ForcingModel]], values: dict
+        cls, field_value: Optional[Union[TimModel, ForcingModel]], info: ValidationInfo
     ) -> Optional[Union[TimModel, ForcingModel]]:
         """Validate dambreak levels and widths.
 
@@ -1092,7 +1099,10 @@ class Dambreak(Structure):
             Optional[Union[TimModel, ForcingModel]]: The value given for dambreakLevelsAndwidths.
         """
         # Retrieve the algorithm value (if not found use 0).
-        algorithm_value = values.get("algorithm", 0)
+        if isinstance(info, dict):
+            algorithm_value = info.get("algorithm", 0)
+        else:
+            algorithm_value = info.data.get("algorithm", 0)
         if field_value is not None and algorithm_value != 3:
             # dambreakLevelsAndWidths can only be set when algorithm = 3
             raise ValueError(

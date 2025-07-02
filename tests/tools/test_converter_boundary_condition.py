@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-from tests.utils import compare_two_files, is_macos
+from tests.utils import compare_two_files, ignore_version_lines, is_macos
 
 
 @pytest.fixture
@@ -184,7 +184,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == tim_files
         forcing_model = new_quantity_block.forcingfile[0]
         assert forcing_model.forcing[0].quantityunitpair[0].quantity == "time"
         assert all(
@@ -213,7 +213,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == cmp_files
         forcing_model = new_quantity_block.forcingfile[0]
         assert all(
             [
@@ -250,7 +250,7 @@ class TestBoundaryConverter:
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
         )
-
+        assert converter.legacy_files == t3d_files
         forcing_model = new_quantity_block.forcingfile[0]
 
         assert all(
@@ -319,9 +319,9 @@ class TestMainConverter:
         ] == old_forcing_file_boundary["locationfile"]
         r_dir = converter.root_dir
 
-        if not is_macos:
+        if not is_macos():
             # test save files
-            ext_model.save(recurse=True)
+            ext_model.save(recurse=True, exclude_unset=True)
 
             reference_files = [
                 "new-external-forcing-reference.ext",
@@ -330,6 +330,10 @@ class TestMainConverter:
             files = ["new-external-forcing.ext", "tfl_01.bc"]
             for i in range(2):
                 assert (r_dir / files[i]).exists()
-                diff = compare_two_files(r_dir / reference_files[i], r_dir / files[i])
+                diff = compare_two_files(
+                    r_dir / reference_files[i],
+                    r_dir / files[i],
+                    ignore_line=ignore_version_lines,
+                )
                 assert diff == []
                 (r_dir / files[i]).unlink()

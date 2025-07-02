@@ -92,7 +92,7 @@ class Section(BaseModel):
     # these are primarily relevant for bc files
     datablock: Optional[Datablock] = None
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
         return super().model_dump(*args, **kwargs)
 
@@ -104,7 +104,7 @@ class Section(BaseModel):
         return {**underlying_dict, **converted_content}
 
     def _convert_section_to_dict(self) -> Dict:
-        return self.dict(
+        return self.model_dump(
             exclude={
                 "start_line",
                 "end_line",

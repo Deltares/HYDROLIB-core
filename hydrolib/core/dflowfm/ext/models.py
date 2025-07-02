@@ -44,6 +44,18 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
 )
 
 
+FILETYPE_FILEMODEL_MAPPING = {
+    "bcascii": ForcingModel,
+    "uniform": TimModel,
+    "unimagdir": TimModel,
+    "arcinfo": DiskOnlyFileModel,
+    "spiderweb": DiskOnlyFileModel,
+    "curvigrid": DiskOnlyFileModel,
+    "netcdf": DiskOnlyFileModel,
+    "polygon": PolyFile,
+}
+
+
 class Boundary(INIBasedModel):
     """
     A `[Boundary]` block for use inside an external forcings file,
@@ -345,6 +357,8 @@ class SourceSink(INIBasedModel):
         # Convert string to DiskOnlyFileModel if needed
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
+        else:
+            data["locationfile"] = file_location
         return data
 
 
@@ -375,7 +389,10 @@ class MeteoForcingFileType(StrEnum):
     netcdf = "netcdf"
     """str: NetCDF, either with gridded data, or multiple station time series."""
 
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf."
+    polygon = "polygon"
+    """str: Polygon-based time series in <*.pol> file."""
+
+    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf, polygon."
 
 
 class MeteoInterpolationMethod(StrEnum):
@@ -388,7 +405,8 @@ class MeteoInterpolationMethod(StrEnum):
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
     linearSpaceTime = "linearSpaceTime"
     """str: Linear interpolation in space and time."""
-    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime."
+    constant = "constant"
+    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
 
 
 class Meteo(INIBasedModel):
@@ -450,7 +468,7 @@ class Meteo(INIBasedModel):
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel] = Field(
+    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
     forcingVariableName: Optional[str] = Field(None, alias="forcingVariableName")
@@ -469,6 +487,46 @@ class Meteo(INIBasedModel):
     averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
     averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
+    @model_validator(mode="before")
+    @classmethod
+    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Root-level validator to the right class for the filename parameter based on the filetype.
+
+        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
+        dictionary.
+
+        FILETYPE_FILEMODEL_MAPPING = {
+            "bcascii": ForcingModel,
+            "uniform": TimModel,
+            "unimagdir": TimModel,
+            "arcinfo": DiskOnlyFileModel,
+            "spiderweb": DiskOnlyFileModel,
+            "curvigrid": DiskOnlyFileModel,
+            "netcdf": DiskOnlyFileModel,
+            "polygon": PolyFile,
+        }
+        """
+        # if the filetype and the filename are present in the values
+        if any(par in values for par in ["forcingfiletype", "forcingFileType"]) and any(
+            par in values for par in ["forcingfile", "forcingFile"]
+        ):
+            file_type_var_name = (
+                "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
+            )
+            filename_var_name = (
+                "forcingfile" if "forcingfile" in values else "forcingFile"
+            )
+            file_type = values.get(file_type_var_name)
+            file_type = str(file_type).lower() if file_type is not None else None
+            forcing_file = values.get(filename_var_name)
+            if isinstance(forcing_file, (Path, str)):
+                raw_path = values.get(filename_var_name)
+                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
+
+                values[filename_var_name] = model(raw_path)
+
+        return values
+
     def is_intermediate_link(self) -> bool:
         return True
 
@@ -481,20 +539,6 @@ class Meteo(INIBasedModel):
     @classmethod
     def interpolationmethod_validator(cls, v):
         return enum_value_parser(MeteoInterpolationMethod)(v)
-
-    @field_validator("forcingfile", mode="before")
-    @classmethod
-    def validate_forcingfile(cls, data: Any) -> Any:
-        """Validates the forcingfile field to ensure it is a valid type."""
-        if isinstance(data, (str, Path)):
-            data = str(data)
-            if data.endswith(".tim"):
-                return TimModel(filepath=data)
-            elif data.endswith(".bc"):
-                return ForcingModel(filepath=data)
-            else:
-                return DiskOnlyFileModel(data)
-        return data
 
 
 class ExtGeneral(INIGeneral):

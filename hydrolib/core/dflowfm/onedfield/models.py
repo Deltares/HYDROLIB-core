@@ -135,7 +135,7 @@ class OneDFieldModel(INIModel):
 
     general: OneDFieldGeneral = OneDFieldGeneral()
     global_: Optional[OneDFieldGlobal] = Field(
-        alias="global"
+        None, alias="global"
     )  # to circumvent built-in kw
     branch: Annotated[List[OneDFieldBranch], BeforeValidator(make_list)] = []
 

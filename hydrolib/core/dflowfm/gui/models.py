@@ -5,9 +5,9 @@ namespace for storing the branches as branches.gui file
 # TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
 
 import logging
-from typing import Any, List, Literal, Optional
+from typing import Annotated, Any, List, Literal, Optional
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import BeforeValidator, Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import ensure_list
@@ -121,7 +121,7 @@ class BranchModel(INIModel):
     """
 
     general: BranchGeneral = BranchGeneral()
-    branch: List[Branch] = []
+    branch: Annotated[List[Branch], BeforeValidator(ensure_list)]
 
     @classmethod
     def _ext(cls) -> str:
@@ -130,8 +130,3 @@ class BranchModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "branches"
-
-    @field_validator("branch", mode="before")
-    @classmethod
-    def _ensure_list(cls, v):
-        return ensure_list(v)

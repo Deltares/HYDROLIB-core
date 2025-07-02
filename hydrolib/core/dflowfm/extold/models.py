@@ -15,6 +15,7 @@ from hydrolib.core.base.models import (
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
+from hydrolib.core.dflowfm.ini.util import enum_value_parser
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
@@ -282,6 +283,8 @@ class ExtOldMeteoQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
+
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -444,6 +447,7 @@ class ExtOldQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -724,18 +728,7 @@ class ExtOldForcing(BaseModel):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
-        if isinstance(value, Operand):
-            return value
-        if isinstance(value, str):
-            for operand in Operand:
-                if value.lower() == operand.value.lower():
-                    return operand
-            supported_value_str = ", ".join(([x.value for x in Operand]))
-            raise ValueError(
-                f"OPERAND '{value}' not supported. Supported values: {supported_value_str}"
-            )
-
-        return value
+        return enum_value_parser(Operand)(value)
 
     @model_validator(mode="after")
     def validate_varname(self):
@@ -879,7 +872,7 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def chooce_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Root-level validator to the right class for the filename parameter based on the filetype.
 
         The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
@@ -959,11 +952,6 @@ class ExtOldModel(ParsableFileModel):
     @classmethod
     def _filename(cls) -> str:
         return "externalforcings"
-
-    def dict(self, *args, **kwargs):
-        return dict(
-            comment=self.comment, forcing=[f.model_dump() for f in self.forcing]
-        )
 
     @classmethod
     def _get_serializer(

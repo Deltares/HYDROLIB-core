@@ -270,11 +270,11 @@ class TestConverter:
               63.350456 12.950216 -4.200000
               45.200344 6.350155 -3.000
         ```
-
         """
+        location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor.pliz",
+            filename=location_file,
             filetype=9,
             method="1",
             operand="O",
@@ -293,6 +293,7 @@ class TestConverter:
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
+        assert converter.legacy_files == [location_file.with_suffix(".tim")]
 
         # check the converted bc_forcing
         compare_data(new_quantity_block)
@@ -332,9 +333,10 @@ class TestConverter:
         ```
 
         """
+        location_file = Path("tests/data/input/source-sink/leftsor-5-columns.pliz")
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor-5-columns.pliz",
+            filename=location_file,
             filetype=9,
             method="1",
             operand="O",
@@ -346,9 +348,21 @@ class TestConverter:
             "temperature",
             "initialtracer_anyname",
         ]
+        _real_with_suffix = Path.with_suffix  # Save the real method before patching
 
-        tim_file = Path("leftsor.tim")
-        with patch("pathlib.Path.with_suffix", return_value=tim_file):
+        def make_side_effect():
+            call_count = {"count": 0}  # mutable counter in closure
+
+            def side_effect(self, suffix):
+                if call_count["count"] == 0:
+                    call_count["count"] += 1
+                    return tim_file
+                return _real_with_suffix(self, suffix)
+
+            return side_effect
+
+        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        with patch("pathlib.Path.with_suffix", new=make_side_effect()):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
             )
@@ -392,7 +406,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        tim_file = Path("no_temperature_no_salinity.tim")
+        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
@@ -432,7 +446,7 @@ class TestMainConverter:
     temperature_and_salinity_info = {
         "refdate": "minutes since 2015-01-01 00:00:00",
     }
-    tim_file = Path("tim-3-columns.tim")
+    tim_file = Path("tests/data/input/source-sink/tim-3-columns.tim")
     mdu_parser = MagicMock(spec=MDUParser)
     mdu_parser.temperature_salinity_data = temperature_and_salinity_info
 

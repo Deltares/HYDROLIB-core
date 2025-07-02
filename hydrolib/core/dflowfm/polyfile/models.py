@@ -74,7 +74,7 @@ class PolyObject(BaseModel):
             The points describing this PolyObject, structured according to the Metadata
     """
 
-    description: Optional[Description]
+    description: Optional[Description] = None
     metadata: Metadata
     points: List[Point]
 

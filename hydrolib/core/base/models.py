@@ -13,7 +13,13 @@ from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, Type
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import PrivateAttr, ValidationError, ValidationInfo, field_validator
+from pydantic import (
+    ConfigDict,
+    PrivateAttr,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+)
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -26,6 +32,7 @@ from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
 from hydrolib.core.base.utils import (
     PathStyle,
+    PathToDictionaryConverter,
     get_path_style_for_current_operating_system,
     to_key,
 )
@@ -45,19 +52,20 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
 def set_default_disk_only_file_model(v: Any):
     if v is None:
         return {"filepath": None}
+    elif isinstance(v, (Path, str)):
+        return {"filepath": Path(v)}
     return v
 
 
 class BaseModel(PydanticBaseModel):
-    model_config = {
-        "arbitrary_types_allowed": True,
-        "validate_assignment": True,
-        "use_enum_values": True,
-        "extra": "forbid",  # will throw errors so we can fix our models
-        "populate_by_name": True,
-        "alias_generator": to_key,
-        "error_url_template": None,
-    }
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_assignment=True,
+        use_enum_values=True,
+        extra="forbid",
+        populate_by_name=True,
+        alias_generator=to_key,
+    )
 
     def __init__(self, **data: Any) -> None:
         """Initialize a BaseModel with the provided data.
@@ -348,10 +356,14 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[PathOrStr], optional): The file path. Defaults to None.
-            resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
-            recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
-            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
+            filepath (Optional[PathOrStr], optional):
+                The file path. Defaults to None.
+            resolve_casing (bool, optional):
+                Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
+            recurse (bool, optional):
+                Whether or not to recursively load the model. Defaults to True.
+            path_style (Optional[str], optional):
+                Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
 
         Raises:
             ValueError: When an unsupported path style is passed.
@@ -481,8 +493,21 @@ class FileModel(BaseModel, ABC):
 
     @classmethod
     def model_validate(cls: Type["FileModel"], value: Any):
+        from hydrolib.core.base.models import (
+            DiskOnlyFileModel,  # because of circular import
+        )
+
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
+            # Check if we're in a file load context and if recurse is False
+            with file_load_context() as context:
+                if (
+                    hasattr(context, "_load_settings")
+                    and context._load_settings is not None
+                    and not context._load_settings.recurse
+                ):
+                    # If recurse is False, return the Path object as-is
+                    return DiskOnlyFileModel(value)
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
         elif value is None:
@@ -492,6 +517,13 @@ class FileModel(BaseModel, ABC):
                 f"Expected {cls.__name__} or dict, got {type(value).__name__}"
             )
         return super().model_validate(value)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def convert_path_to_dictionary(
+        cls, value: Any, info: ValidationInfo
+    ) -> Dict[str, Any]:
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     def save(
         self,
@@ -906,7 +938,7 @@ class DiskOnlyFileModel(FileModel):
 
     def _load(self, filepath: Path) -> Dict:
         # We de not load any additional data, as such we return an empty dict.
-        return dict()
+        return {}
 
     def _save(self, save_settings: ModelSaveSettings) -> None:
         # The target_file_path contains the new path to write to, while the
@@ -937,3 +969,6 @@ class DiskOnlyFileModel(FileModel):
         # If the filepath is not None, there is an underlying file, and as such we need
         # to traverse it.
         return self.filepath is not None
+
+
+FileModel.model_rebuild()

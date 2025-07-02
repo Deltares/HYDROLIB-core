@@ -1,7 +1,10 @@
+"""Utility functions for converting old external forcing files to new format."""
+
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+from pydantic import ConfigDict
 from pydantic.v1 import Extra
 
 from hydrolib.core.base.file_manager import PathOrStr
@@ -21,8 +24,7 @@ from hydrolib.core.dflowfm.inifield.models import (
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
 ) -> FileModel:
-    """Construct a new instance of a FileModel subclass, either loading an
-    existing model file, or starting a blank one.
+    """Construct a new instance of a FileModel subclass, either loading an existing model file, or starting a blank one.
 
     If the given filepath exists, it will be loaded, as if the constructor
     was directly called. If it does not exist, the blank model instance
@@ -44,8 +46,7 @@ def construct_filemodel_new_or_existing(
 
 
 def backup_file(filepath: PathOrStr) -> None:
-    """Create a backup of the given file by copying it to a new file with a
-    '.bak' extension.
+    """Create a backup of the given file by copying it to a new file with a '.bak' extension.
 
     Args:
         filepath (PathOrStr): The path to the file to back up.
@@ -56,33 +57,10 @@ def backup_file(filepath: PathOrStr) -> None:
         filepath.replace(backup_path)
 
 
-def construct_filepath_with_postfix(filepath: PathOrStr, postfix: str) -> Path:
-    """Construct a new filepath by adding a postfix to the existing
-    filepath, still keeping the original file suffix.
-    For example, 'file.txt' with postfix '_new' will become 'file_new.txt'.
-
-    Args:
-        filepath (PathOrStr): The path to the file.
-        postfix (str): The postfix to add to the filename.
-
-    Returns:
-        Path: The new filepath with the postfix included.
-
-    Examples:
-        ```python
-        >>> construct_filepath_with_postfix("file.txt", "_new") # doctest: +SKIP
-        Path("file_new.txt")
-        ```
-    """
-    file_as_path = Path(filepath)
-    return file_as_path.with_stem(file_as_path.stem + postfix)
-
-
 def oldfiletype_to_forcing_file_type(
     oldfiletype: int,
 ) -> Union[MeteoForcingFileType, str]:
-    """Convert old external forcing `FILETYPE` integer value to valid
-        `forcingFileType` string value.
+    """Convert old external forcing `FILETYPE` integer value to valid `forcingFileType` string value.
 
     Args:
         oldfiletype (int): The FILETYPE value in an old external forcings file.
@@ -91,7 +69,6 @@ def oldfiletype_to_forcing_file_type(
         Union[MeteoForcingFileType,str]: Corresponding value for `forcingFileType`,
             or "unknown" for invalid input.
     """
-
     forcing_file_type = "unknown"
 
     if oldfiletype == ExtOldFileType.TimeSeries:  # 1
@@ -128,8 +105,7 @@ def oldfiletype_to_forcing_file_type(
 def oldmethod_to_interpolation_method(
     oldmethod: int,
 ) -> Union[InterpolationMethod, MeteoInterpolationMethod, str]:
-    """Convert old external forcing `METHOD` integer value to valid
-        `interpolationMethod` string value.
+    """Convert old external forcing `METHOD` integer value to valid `interpolationMethod` string value.
 
     Args:
         oldmethod (int): The METHOD value in an old external forcings file.
@@ -138,7 +114,6 @@ def oldmethod_to_interpolation_method(
         Union[InterpolationMethod,str]: Corresponding value for `interpolationMethod`,
             or "unknown" for invalid input.
     """
-
     if oldmethod in [1, 2, 3, 11]:
         interpolation_method = MeteoInterpolationMethod.linearSpaceTime
     elif oldmethod == 5:
@@ -155,8 +130,7 @@ def oldmethod_to_interpolation_method(
 def oldmethod_to_averaging_type(
     oldmethod: int,
 ) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid
-        `averagingType` string value.
+    """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
 
     Args:
         oldmethod (int): The METHOD value in an old external forcings file.
@@ -165,7 +139,6 @@ def oldmethod_to_averaging_type(
         Union[AveragingType,str]: Corresponding value for `averagingType`,
             or "unknown" for invalid input.
     """
-
     if oldmethod == 6:
         averaging_type = AveragingType.mean
     else:
@@ -202,7 +175,7 @@ def convert_interpolation_data(
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
 ) -> Dict[str, str]:
-    """Create the input dictionary for the `InitialField` or `ParameterField`
+    """Create the input dictionary for the `InitialField` or `ParameterField`.
 
     Args:
         forcing: [ExtOldForcing]
@@ -238,7 +211,8 @@ def create_initial_cond_and_parameter_input_dict(
 
 
 def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int]:
-    """
+    """Find temperature and salinity in quantities.
+
     Searches for keywords "temperature" and "salinity" in a list of strings
     and returns a dictionary with associated values.
 
@@ -287,14 +261,13 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
 
 
 class IgnoreUnknownKeyWord(type):
-    """Metaclass to ignore unknown keyword arguments when creating a new class instance"""
+    """Metaclass to ignore unknown keyword arguments when creating a new class instance."""
 
     def __call__(cls, base_class, **data):
         """Dynamically create and instantiate a subclass of base_class."""
 
         class DynamicClass(base_class):
-            class Config:
-                extra = Extra.ignore
+            model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
                 valid_fields = self.__annotations__.keys()
@@ -305,4 +278,6 @@ class IgnoreUnknownKeyWord(type):
 
 
 class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
+    """Base class to ignore unknown keyword arguments when creating a new class instance."""
+
     pass

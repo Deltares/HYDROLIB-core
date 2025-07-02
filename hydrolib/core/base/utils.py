@@ -4,8 +4,9 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Union
+from typing import Annotated, Any, Callable, List, Optional, Union, get_args, get_origin
 
+from pydantic import ValidationInfo
 from pydantic.fields import FieldInfo
 from strenum import StrEnum
 
@@ -150,6 +151,108 @@ def operator_str(operator_func: Callable) -> str:
         return "is greater than or equal to"
     else:
         return str(operator_func)
+
+
+class PathToDictionaryConverter:
+
+    @staticmethod
+    def convert(cls, value: Any, info: ValidationInfo):
+        """Convert a value to a dictionary if it is a file model type.
+
+        Args:
+            cls (Type): The class to which the value belongs.
+            value (Any): The value to convert.
+            info (ValidationInfo): Validation information.
+
+        Returns:
+            Any: The converted value, which is a dictionary if the value is a file model type.
+        """
+        from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
+
+        if not isinstance(value, (str, Path, list)):
+            return value
+        fields = cls.model_fields
+        key = info.field_name
+        if fields.get(key) is None:
+            return value
+        if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
+            return PathToDictionaryConverter.make_dict(value)
+        if PathToDictionaryConverter.is_list_file_model_type(fields[key].annotation):
+            return [
+                (
+                    PathToDictionaryConverter.make_dict(v)
+                    if isinstance(v, (str, Path))
+                    else v
+                )
+                for v in split_string_on_delimiter(cls, value, info)
+            ]
+
+        return value
+
+    @staticmethod
+    def make_dict(value: Union[str, Path]):
+        """Convert a value to a dictionary with a 'filepath' key.
+
+        Args:
+            value (Union[str, Path]): The value to convert, which can be a string or a Path object.
+
+        Returns:
+            dict: A dictionary with a 'filepath' key containing the Path object.
+            DiskOnlyFileModel: If the context's load settings do not recurse, return a DiskOnlyFileModel.
+        """
+        from hydrolib.core.base.file_manager import file_load_context
+        from hydrolib.core.base.models import DiskOnlyFileModel
+
+        with file_load_context() as context:
+            if (
+                hasattr(context, "_load_settings")
+                and context._load_settings is not None
+                and not context._load_settings.recurse
+            ):
+                return DiskOnlyFileModel(value)
+            return {"filepath": Path(value)}
+
+    @staticmethod
+    def is_file_model_type(annotation: Any) -> bool:
+        """Check if the given annotation is a FileModel type.
+
+        Args:
+            annotation (Any): The annotation to check.
+
+        Returns:
+            bool: True if the annotation is a FileModel type, False otherwise.
+        """
+        from hydrolib.core.base.models import FileModel
+
+        origin = get_origin(annotation)
+        if origin is Union:
+            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
+        if origin is Annotated:
+            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
+        return isinstance(annotation, type) and issubclass(annotation, FileModel)
+
+    @staticmethod
+    def is_list_file_model_type(annotation: Any) -> bool:
+        """Check if the given annotation is a list of FileModel types.
+
+        Args:
+            annotation (Any): The annotation to check.
+
+        Returns:
+            bool: True if the annotation is a list of FileModel types, False otherwise.
+        """
+        origin = get_origin(annotation)
+        if origin is Union:
+            return PathToDictionaryConverter.is_list_file_model_type(
+                get_args(annotation)[0]
+            )
+        if origin is Annotated:
+            return PathToDictionaryConverter.is_list_file_model_type(
+                get_args(annotation)[0]
+            )
+        if origin is list:
+            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
+        return False
 
 
 class OperatingSystem(Enum):

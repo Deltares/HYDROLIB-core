@@ -189,8 +189,8 @@ class TestFileModel:
         extforce = reference_model.external_forcing.extforcefilenew
 
         extforce.filepath = extforcefile  # type: ignore[arg-type]
-        extforce.boundary[0].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
-        extforce.boundary[1].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
+        extforce.boundary[0].forcingfile[0].filepath = forcingfile  # type: ignore[arg-type]
+        extforce.boundary[1].forcingfile[0].filepath = forcingfile  # type: ignore[arg-type]
 
         reference_model.save(recurse=True)
 
@@ -209,8 +209,8 @@ class TestFileModel:
         read_extforce = read_model.external_forcing.extforcefilenew
 
         assert read_extforce.filepath == extforcefile  # type: ignore[arg-type]
-        assert Path(read_extforce.boundary[0].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
-        assert Path(read_extforce.boundary[1].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[0].forcingfile[0].filepath) == forcingfile  # type: ignore[arg-type]
+        assert Path(read_extforce.boundary[1].forcingfile[0].filepath) == forcingfile  # type: ignore[arg-type]
 
         # We assume that if the file exists it is read correctly.
         # The contents should be verified in the specific models.
@@ -309,7 +309,7 @@ class TestFileModel:
         assert extforcefile.save_location == self._resolve(extforcefile.filepath, other_dir)  # type: ignore
         assert not extforcefile.save_location.is_file()  # type: ignore
 
-        forcing = extforcefile.boundary[0].forcingfile  # type: ignore
+        forcing = extforcefile.boundary[0].forcingfile[0]  # type: ignore
         assert forcing.save_location == self._resolve(forcing.filepath, other_dir)  # type: ignore
         assert not forcing.save_location.is_file()  # type: ignore
 
@@ -385,10 +385,10 @@ class TestFileLoadContextReusingCachedFilesDuringInit:
 
         model = ExtModel(ext_file)
 
-        assert model.boundary[0].forcingfile is model.boundary[1].forcingfile
-        assert model.boundary[1].forcingfile is model.boundary[2].forcingfile
-        assert model.boundary[2].forcingfile is model.boundary[3].forcingfile
-        assert model.boundary[3].forcingfile is model.boundary[4].forcingfile
+        assert model.boundary[0].forcingfile[0] is model.boundary[1].forcingfile[0]
+        assert model.boundary[1].forcingfile[0] is model.boundary[2].forcingfile[0]
+        assert model.boundary[2].forcingfile[0] is model.boundary[3].forcingfile[0]
+        assert model.boundary[3].forcingfile[0] is model.boundary[4].forcingfile[0]
 
     def test_loading_multiple_files_referenced_multiple_times_only_loads_the_respective_files_once(
         self, tmp_path: Path
@@ -980,18 +980,27 @@ class TestDiskOnlyFileModel:
 
 
 class TestFileCasingResolver:
+
     @pytest.mark.parametrize(
-        "input_file, expected_file",
+        "input_file, expected_file, exist",
         [
             pytest.param(
                 Path("DFLOWFM_INDIVIDUAL_FILES/FLOWFM_BOUNDARYCONDITIONS1D.BC"),
                 Path("dflowfm_individual_files/FlowFM_boundaryconditions1d.bc"),
+                True,
                 id="resolve_casing True: Matching file exists with different casing",
             ),
             pytest.param(
                 Path("DFLOWFM_INDIVIDUAL_FILES/beepboop.robot"),
                 Path("dflowfm_individual_files/beepboop.robot"),
+                False,
                 id="resolve_casing True: No matching file",
+            ),
+            pytest.param(
+                Path("DFLOWFM_INDIVIDUAL_FILES/../BOUNDARY-CONDITIONS/TFL_01.pli"),
+                Path("dflowfm_individual_files/../boundary-conditions/tfl_01.pli"),
+                True,
+                id="resolve_casing relative: Matching file exists with different casing",
             ),
         ],
     )
@@ -1000,7 +1009,7 @@ class TestFileCasingResolver:
         reason="Paths are case-insensitive while running from a Docker container (Linux) on a Windows machine, so this test will fail locally.",
     )
     def test_resolve_returns_correct_result(
-        self, input_file: str, expected_file: str
+        self, input_file: str, expected_file: str, exist: bool
     ) -> None:
         resolver = FileCasingResolver()
 
@@ -1010,6 +1019,8 @@ class TestFileCasingResolver:
         actual_file_path = resolver.resolve(file_path)
 
         assert actual_file_path == expected_file_path
+        if exist:
+            assert actual_file_path.exists()
 
 
 class TestModelSaveSettings:
