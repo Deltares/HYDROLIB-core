@@ -465,11 +465,11 @@ class TestFileModelE2E(unittest.TestCase):
         resolved relative to the parent model's location.
         """
         # Create a parent model with a child using an absolute path
-        absolute_path = "absolute_child.txt"
+        child_path = "absolute_child.txt"
 
         # Create and save the child model first
-        child_model = SimpleFileModel(filepath=absolute_path, name="absolute_child", value=600)
-
+        child_model = SimpleFileModel(name="absolute_child", value=600)
+        child_model.filepath = child_path
         # Create the parent model with a reference to the child
         parent_model = SimpleFileModel(
             name="parent_with_absolute_child", value=700, child_file=child_model
@@ -478,6 +478,8 @@ class TestFileModelE2E(unittest.TestCase):
 
         # Save the parent model
         parent_model.save(filepath=parent_save_path, recurse=True)
+        # check if the child model is saved correctly
+        assert Path(self.temp_dir / child_path).exists()
 
         # Load the parent model again
         loaded_parent = SimpleFileModel(filepath=parent_save_path)
