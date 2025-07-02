@@ -533,3 +533,24 @@ class TestFileModelE2E(unittest.TestCase):
 
         # Verify the child model was not loaded (it's a Path, not a SimpleFileModel)
         self.assertIsInstance(parent_model.child_file, DiskOnlyFileModel)
+
+    def test_file_caching(self):
+        """Test file caching behavior.
+
+        This test verifies that when the same file is loaded multiple times, the same model instance is returned.
+        The expected behavior is that the second load operation returns the cached model from the first load.
+        """
+        # Path to the test file
+        file_path = self.temp_dir / "parent_with_multiple_same_children.txt"
+
+        # Load the file twice
+        parent = SimpleFileModel(filepath=file_path)
+
+        # Verify that both variables reference the same object (caching worked)
+        self.assertIs(parent.child_file1, parent.child_file2)
+
+        # Modify the first model
+        parent.child_file1.value = 999
+
+        # Verify that the change is reflected in the second model (same object)
+        self.assertEqual(parent.child_file2.value, 999)
