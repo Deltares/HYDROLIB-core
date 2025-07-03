@@ -14,6 +14,20 @@ from hydrolib.core.dflowfm.common.models import LocationType
 
 
 def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
+    """Split a string on the list field delimiter, and return a list of strings.
+
+    If the input is a string, it is split on the delimiter defined in the class.
+    If the input is anything else, it is returned as is.
+
+    Args:
+        cls (Type[BaseModel]): The class that contains the field.
+        v (Any): The value to split.
+        field (ValidationInfo): The field information.
+
+    Returns:
+        List[str] or Any: A list of strings if the input was a string, otherwise
+            the input value as is.
+    """
     if isinstance(v, str):
         v = v.split(cls.get_list_field_delimiter(field.field_name))
         v = [item.strip() for item in v if item != ""]
@@ -24,26 +38,48 @@ def enum_value_parser(
     enum: Type[Enum],
     alternative_enum_values: Optional[Dict[str, List[str]]] = None,
 ):
-    """Return a function that converts strings (and string lists) to Enum values."""
+    """Return a function that converts strings (and string lists) to Enum values.
+
+    Args:
+        enum (Type[Enum]): The Enum type to parse values into.
+        alternative_enum_values (Optional[Dict[str, List[str]]]): A dictionary mapping enum values
+            to alternative string representations. If provided, the parser will also accept these
+            alternative strings as valid inputs for the corresponding enum values.
+
+    Returns:
+        Callable: A function that takes a value (or list of values) and returns the corresponding
+            Enum value or raises a ValueError if the value is invalid.
+
+    Raises:
+        ValueError: If the input value is not a valid Enum value or does not match any
+            alternative string representations.
+    """
 
     def parser(v):
+        result = None
         if isinstance(v, list):
-            return [parser(item) for item in v]
-        if isinstance(v, enum):
-            return v
-        if isinstance(v, str):
+            result = [parser(item) for item in v]
+        elif isinstance(v, enum):
+            result = v
+        elif isinstance(v, str):
+            v_lower = v.lower()
             for entry in enum:
-                if entry.value.lower() == v.lower():
-                    return entry
+                if entry.value.lower() == v_lower:
+                    result = entry
+                    break
                 if (
                     alternative_enum_values
                     and (alts := alternative_enum_values.get(entry.value))
-                    and v.lower() in (alt.lower() for alt in alts)
+                    and any(v_lower == alt.lower() for alt in alts)
                 ):
-                    return entry
-        raise ValueError(
-            f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}"
-        )
+                    result = entry
+                    break
+        if result is None:
+            valid_values = [e.value for e in enum]
+            raise ValueError(
+                f"Invalid enum value: {v!r}. Expected one of: {valid_values}"
+            )
+        return result
 
     return parser
 
