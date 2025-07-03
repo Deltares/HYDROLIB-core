@@ -85,9 +85,20 @@ def enum_value_parser(
 
 
 def ensure_list(v: Any):
-    # Convert single object to a list if needed
+    """Ensure that the input is a list.
+
+    Args:
+        v (Any): The value to ensure is a list.
+
+    Returns:
+        List[Any]: A list containing the input value if it was a dictionary,
+            or the input value itself if it was already a list.
+
+    Raises:
+        TypeError: If the input is not a list or a dictionary.
+    """
     if isinstance(v, dict):
-        return [v]
+        v = [v]
     if not isinstance(v, list):
         raise TypeError("Expected a list or a single dictionary")
     return v
