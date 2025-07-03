@@ -186,7 +186,7 @@ class FrictBranch(INIBasedModel):
     chainage: Optional[List[float]] = Field(None)
     frictionvalues: Optional[List[float]] = Field(
         None, alias="frictionValues"
-    )  # TODO: turn this into List[List[float]], see issue #143.
+    )
 
     @field_validator("levels", "chainage", "frictionvalues", mode="before")
     @classmethod
