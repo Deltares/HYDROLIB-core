@@ -629,9 +629,12 @@ class UnknownKeywordErrorManager:
         Get all unknown keywords in the data.
 
         Args:
-            data: Dict[str, Any]: Input data containing all properties which are checked on unknown keywords.
-            fields: Dict[str, FieldInfo]: Known fields of the Model.
-            excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
+            data: Dict[str, Any]:
+                Input data containing all properties which are checked on unknown keywords.
+            fields: Dict[str, FieldInfo]:
+                Known fields of the Model.
+            excluded_fields: Set[str]:
+                Fields which should be excluded from the check for unknown keywords.
 
         Returns:
             List[str]: List of unknown keywords.
