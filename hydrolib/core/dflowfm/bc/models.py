@@ -1139,10 +1139,12 @@ class ForcingModel(INIModel):
         Validate and convert forcing definitions to ForcingBase subclasses.
 
         Args:
-            values (List[Dict]): List of forcing definitions.
+            values (List[Dict]):
+                List of forcing definitions.
 
         Returns:
-            List[ForcingBase]: List of validated and converted forcing definitions.
+            List[ForcingBase]:
+                List of validated and converted forcing definitions.
         """
         for v in values:
             if (
