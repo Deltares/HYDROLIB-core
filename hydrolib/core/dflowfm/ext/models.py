@@ -201,25 +201,23 @@ class Lateral(INIBasedModel):
     @field_validator("discharge", mode="before")
     @classmethod
     def validate_discharge(cls, v):
-        if isinstance(v, (float, ForcingModel, RealTime)):
-            return v
+        result = v
         if isinstance(v, str):
             # Try float
             try:
-                return float(v)
+                result = float(v)
             except ValueError:
-                pass
-            # Try RealTime enum (case-insensitive)
-            try:
-                return RealTime(v.lower())
-            except ValueError:
-                pass
-            return ForcingModel(filepath=v)
-        if isinstance(v, Path):
-            return ForcingModel(filepath=str(v))
-        if isinstance(v, dict):
+                # Try RealTime enum (case-insensitive)
+                try:
+                    result = RealTime(v.lower())
+                except ValueError:
+                    result = ForcingModel(filepath=v)
+        elif isinstance(v, Path):
+            result = ForcingModel(filepath=str(v))
+        elif isinstance(v, dict):
             # Try to instantiate ForcingModel from dict
-            return ForcingModel(**v)
+            result = ForcingModel(**v)
+        return result
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
