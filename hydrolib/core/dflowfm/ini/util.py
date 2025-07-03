@@ -371,33 +371,30 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if (
-        not hasattr(c, "model_fields")
-        or (field := c.model_fields.get(fieldname)) is None
-    ):
-        return None
+    stack = [c]
+    result = None
+    while stack:
+        current_class = stack.pop()
+        if not hasattr(current_class, "model_fields"):
+            continue
+        field = current_class.model_fields.get(fieldname)
+        if field is not None:
+            # In pydantic v2, default is accessed through default_factory or directly
+            if hasattr(field, "default_factory") and field.default_factory is not None:
+                default = field.default_factory()
+            else:
+                default = field.default
 
-    # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, "default_factory") and field.default_factory is not None:
-        default = field.default_factory()
-    else:
-        default = field.default
-
-    if (
-        default is not None
-        and hasattr(default, "lower")
-        and default.lower() == value.lower()
-    ):
-        # If this class's default matches, directly return it to end the recursion.
-        return default
-
-    for sc in c.__subclasses__():
-        default = _try_get_default_value(sc, fieldname, value)
-        if default is not None:
-            return default
-
-    # Nothing found under c, return None to caller (e.g., to continue recursion).
-    return None
+            if (
+                default is not None
+                and hasattr(default, "lower")
+                and default.lower() == value.lower()
+            ):
+                result = default
+                break
+        # Add subclasses to stack for further checking
+        stack.extend(current_class.__subclasses__())
+    return result
 
 
 class LocationValidationConfiguration(BaseModel):
