@@ -657,7 +657,7 @@ class TimeSeries(VectorForcingBase):
     @field_validator("timeinterpolation", mode="before")
     @classmethod
     def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
-        return enum_value_parser(TimeInterpolation)(value)
+        return enum_value_parser(value, TimeInterpolation)
 
     @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
@@ -764,22 +764,23 @@ class T3D(VectorForcingBase):
     @field_validator("vertinterpolation", mode="before")
     @classmethod
     def _validate_vertinterpolation(cls, value: Any) -> VerticalInterpolation:
-        return enum_value_parser(enum=VerticalInterpolation)(value)
+        return enum_value_parser(value, enum=VerticalInterpolation)
 
     @field_validator("vertpositiontype", mode="before")
     @classmethod
     def _validate_vertpositiontype(cls, value: Any) -> VerticalPositionType:
         return enum_value_parser(
+            value,
             enum=VerticalPositionType,
             alternative_enum_values={
                 VerticalPositionType.percentage_bed: ["percentage from bed"]
             },
-        )(value)
+        )
 
     @field_validator("timeinterpolation", mode="before")
     @classmethod
     def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
-        return enum_value_parser(enum=TimeInterpolation)(value)
+        return enum_value_parser(value, enum=TimeInterpolation)
 
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:

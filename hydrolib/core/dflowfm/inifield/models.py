@@ -222,27 +222,27 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @field_validator("locationtype", mode="before")
     @classmethod
     def validate_location_type(cls, v):
-        return enum_value_parser(LocationType)(v)
+        return enum_value_parser(v, LocationType)
 
     @field_validator("averagingtype", mode="before")
     @classmethod
     def validate_average_type(cls, v):
-        return enum_value_parser(AveragingType)(v)
+        return enum_value_parser(v, AveragingType)
 
     @field_validator("datafiletype", mode="before")
     @classmethod
     def validate_data_file_type(cls, v):
-        return enum_value_parser(DataFileType)(v)
+        return enum_value_parser(v, DataFileType)
 
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v):
-        return enum_value_parser(Operand)(v)
+        return enum_value_parser(v, Operand)
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod
     def validate_interpolation_method(cls, v):
-        return enum_value_parser(InterpolationMethod)(v)
+        return enum_value_parser(v, InterpolationMethod)
 
     @field_validator("datafile", mode="before")
     @classmethod

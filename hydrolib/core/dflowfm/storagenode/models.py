@@ -178,17 +178,17 @@ class StorageNode(INIBasedModel):
     @field_validator("interpolate", mode="before")
     @classmethod
     def _interpolate_validator(cls, v) -> Interpolation:
-        return enum_value_parser(Interpolation)(v)
+        return enum_value_parser(v, Interpolation)
 
     @field_validator("nodetype", mode="before")
     @classmethod
     def _nodetype_validator(cls, v) -> NodeType:
-        return enum_value_parser(NodeType)(v)
+        return enum_value_parser(v, NodeType)
 
     @field_validator("storagetype", mode="before")
     @classmethod
     def _storagetype_validator(cls, v) -> StorageType:
-        return enum_value_parser(StorageType)(v)
+        return enum_value_parser(v, StorageType)
 
     @field_validator("levels", "storagearea", mode="before")
     @classmethod

@@ -122,7 +122,7 @@ class FrictGlobal(INIBasedModel):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def _validate_frictiontype(cls, v: str) -> FrictionType:
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("frictionid")
@@ -196,7 +196,7 @@ class FrictBranch(INIBasedModel):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def _validate_frictiontype(cls, v: str) -> FrictionType:
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")

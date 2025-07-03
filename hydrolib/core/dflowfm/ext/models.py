@@ -533,12 +533,12 @@ class Meteo(INIBasedModel):
     @field_validator("forcingfiletype", mode="before")
     @classmethod
     def forcingfiletype_validator(cls, v):
-        return enum_value_parser(MeteoForcingFileType)(v)
+        return enum_value_parser(v, MeteoForcingFileType)
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod
     def interpolationmethod_validator(cls, v):
-        return enum_value_parser(MeteoInterpolationMethod)(v)
+        return enum_value_parser(v, MeteoInterpolationMethod)
 
 
 class ExtGeneral(INIGeneral):

@@ -35,6 +35,7 @@ def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
 
 
 def enum_value_parser(
+    v,
     enum: Type[Enum],
     alternative_enum_values: Optional[Dict[str, List[str]]] = None,
 ):
@@ -54,34 +55,37 @@ def enum_value_parser(
         ValueError: If the input value is not a valid Enum value or does not match any
             alternative string representations.
     """
+    if isinstance(v, list):
+        result = [parse_enum(item, enum, alternative_enum_values) for item in v]
+    else:
+        result = parse_enum(v, enum, alternative_enum_values)
+    return result
 
-    def parser(v):
-        result = None
-        if isinstance(v, list):
-            result = [parser(item) for item in v]
-        elif isinstance(v, enum):
-            result = v
-        elif isinstance(v, str):
-            v_lower = v.lower()
-            for entry in enum:
-                if entry.value.lower() == v_lower:
-                    result = entry
-                    break
-                if (
-                    alternative_enum_values
-                    and (alts := alternative_enum_values.get(entry.value))
-                    and any(v_lower == alt.lower() for alt in alts)
-                ):
-                    result = entry
-                    break
-        if result is None:
-            valid_values = [e.value for e in enum]
-            raise ValueError(
-                f"Invalid enum value: {v!r}. Expected one of: {valid_values}"
-            )
-        return result
 
-    return parser
+def parse_enum(
+    v, enum: Type[Enum], alternative_enum_values: Optional[Dict[str, List[str]]] = None
+):
+    result = None
+
+    if isinstance(v, enum):
+        result = v
+    elif isinstance(v, str):
+        v_lower = v.lower()
+        for entry in enum:
+            if entry.value.lower() == v_lower:
+                result = entry
+                break
+            if (
+                alternative_enum_values
+                and (alts := alternative_enum_values.get(entry.value))
+                and any(v_lower == alt.lower() for alt in alts)
+            ):
+                result = entry
+                break
+    if result is None:
+        valid_values = [e.value for e in enum]
+        raise ValueError(f"Invalid enum value: {v!r}. Expected one of: {valid_values}")
+    return result
 
 
 def ensure_list(v: Any):
