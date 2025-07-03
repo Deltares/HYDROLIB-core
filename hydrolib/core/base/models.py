@@ -944,4 +944,4 @@ class DiskOnlyFileModel(FileModel):
         return self.filepath is not None
 
 
-FileModel.model_rebuild()
+# FileModel.model_rebuild()
