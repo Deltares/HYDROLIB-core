@@ -295,39 +295,32 @@ class ForcingBase(DataBlockINIBasedModel):
 
     @classmethod
     def preprocess_quantities(cls, values):
-        if not isinstance(values, dict):
+        if not isinstance(values, dict) or values.get("quantityunitpair") is not None:
             return values
         quantityunitpairkey = "quantityunitpair"
 
-        if values.get(quantityunitpairkey) is not None:
-            return values
-
         quantities = values.get("quantity")
+        units = values.get("unit")
         if quantities is None:
             raise ValueError("quantity is not provided")
-        units = values.get("unit")
         if units is None:
             raise ValueError("unit is not provided")
 
-        if isinstance(quantities, str) and isinstance(units, str):
-            values[quantityunitpairkey] = [
-                QuantityUnitPair(quantity=quantities, unit=units)
-            ]
-            return values
+        if isinstance(quantities, str):
+            quantities = [quantities]
+        if isinstance(units, str):
+            units = [units]
 
-        if isinstance(quantities, list) and isinstance(units, list):
-            if len(quantities) != len(units):
-                raise ValueError(
-                    "Number of quantities should be equal to number of units"
-                )
+        if not isinstance(quantities, list) or not isinstance(units, list):
+            raise ValueError("'quantity' and 'unit' must be a string or a list.")
 
-            values[quantityunitpairkey] = [
-                QuantityUnitPair(quantity=quantity, unit=unit)
-                for quantity, unit in zip(quantities, units)
-            ]
-            return values
-
-        raise ValueError("Number of quantities should be equal to number of units")
+        if len(quantities) != len(units):
+            raise ValueError("Number of quantities should be equal to number of units.")
+        values[quantityunitpairkey] = [
+            QuantityUnitPair(quantity=quantity, unit=unit)
+            for quantity, unit in zip(quantities, units)
+        ]
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
