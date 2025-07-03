@@ -491,33 +491,6 @@ class FileModel(BaseModel, ABC):
 
         return updated_file_path
 
-    @classmethod
-    def model_validate(cls: Type["FileModel"], value: Any):
-        from hydrolib.core.base.models import (
-            DiskOnlyFileModel,  # because of circular import
-        )
-
-        # Enable initialization with a Path.
-        if isinstance(value, (Path, str)):
-            # Check if we're in a file load context and if recurse is False
-            with file_load_context() as context:
-                if (
-                    hasattr(context, "_load_settings")
-                    and context._load_settings is not None
-                    and not context._load_settings.recurse
-                ):
-                    # If recurse is False, return the Path object as-is
-                    return DiskOnlyFileModel(value)
-            # Pydantic Model init requires a dict
-            value = {"filepath": Path(value)}
-        elif value is None:
-            return None
-        elif not isinstance(value, cls) and not isinstance(value, dict):
-            raise ValueError(
-                f"Expected {cls.__name__} or dict, got {type(value).__name__}"
-            )
-        return super().model_validate(value)
-
     @field_validator("*", mode="before")
     @classmethod
     def convert_path_to_dictionary(
