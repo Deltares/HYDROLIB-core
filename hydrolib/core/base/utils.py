@@ -221,10 +221,12 @@ class PathToDictionaryConverter:
         """Check if the given annotation is a FileModel type.
 
         Args:
-            annotation (Any): The annotation to check.
+            annotation (Any):
+                The annotation to check.
 
         Returns:
-            bool: True if the annotation is a FileModel type, False otherwise.
+            bool:
+                True if the annotation is a FileModel type, False otherwise.
         """
         from hydrolib.core.base.models import FileModel
 

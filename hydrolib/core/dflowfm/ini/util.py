@@ -75,21 +75,28 @@ def validate_correct_length(
     Validate the correct length (and presence) of several list fields in an object.
 
     Args:
-        values (Dict): dictionary of values to validate.
-        *field_names (str): names of the instance variables that are a list and need checking.
-        length_name (str): name of the instance variable that stores the expected length.
-        length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
-        list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
-            attribute is present (and > 0) in the input values. Default: False. If False, list length is only
-            checked for the lists that are not None.
-        min_length (int): minimum for list length value, overrides length_name value if that is smaller.
-            For example, to require list length 1 when length value is given as 0.
+        values (Dict):
+            dictionary of values to validate.
+        *field_names (str):
+            names of the instance variables that are a list and need checking.
+        length_name (str):
+            name of the instance variable that stores the expected length.
+        length_incr (int):
+            Optional extra increment of length value (e.g., to have +1 extra value in lists).
+        list_required_with_length (obj:`bool`, optional):
+            Whether each list *must* be present if the length attribute is present (and > 0) in the input values.
+            Default: False. If False, list length is only checked for the lists that are not None.
+        min_length (int):
+            minimum for list length value, overrides length_name value if that is smaller. For example, to require
+            list length 1 when length value is given as 0.
 
     Raises:
-        ValueError: When the number of values for any of the given field_names is not as expected.
+        ValueError:
+            When the number of values for any of the given field_names is not as expected.
 
     Returns:
-        Dict: Dictionary of validated values.
+        Dict:
+            Dictionary of validated values.
     """
 
     def _get_incorrect_length_validation_message() -> str:
@@ -596,10 +603,14 @@ class UnknownKeywordErrorManager:
         Notify the user of unknown keywords.
 
         Args:
-            data (Dict[str, Any])           : Input data containing all properties which are checked on unknown keywords.
-            section_header (str)            : Header of the section in which unknown keys might be detected.
-            fields (Dict[str, FieldInfo])  : Known fields of the section.
-            excluded_fields (Set[str])      : Fields which should be excluded from the check for unknown keywords.
+            data (Dict[str, Any]):
+                Input data containing all properties which are checked on unknown keywords.
+            section_header (str):
+                Header of the section in which unknown keys might be detected.
+            fields (Dict[str, FieldInfo]):
+                Known fields of the section.
+            excluded_fields (Set[str]):
+                Fields which should be excluded from the check for unknown keywords.
         """
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
 
