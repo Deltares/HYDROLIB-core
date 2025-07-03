@@ -160,12 +160,16 @@ class PathToDictionaryConverter:
         """Convert a value to a dictionary if it is a file model type.
 
         Args:
-            cls (Type): The class to which the value belongs.
-            value (Any): The value to convert.
-            info (ValidationInfo): Validation information.
+            cls (Type):
+                The class to which the value belongs.
+            value (Any):
+                The value to convert.
+            info (ValidationInfo):
+                Validation information.
 
         Returns:
-            Any: The converted value, which is a dictionary if the value is a file model type.
+            Any:
+                The converted value, which is a dictionary if the value is a file model type.
         """
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
