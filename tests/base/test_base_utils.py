@@ -1,10 +1,11 @@
 import unittest
 from operator import eq, ge, gt, le, lt, ne
-from typing import List, Optional
 from pathlib import Path
+from typing import List, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
@@ -13,6 +14,7 @@ from hydrolib.core.base.utils import (
     FortranUtils,
     OperatingSystem,
     PathStyle,
+    PathToDictionaryConverter,
     get_operating_system,
     get_path_style_for_current_operating_system,
     get_str_len,
@@ -21,7 +23,6 @@ from hydrolib.core.base.utils import (
     str_is_empty_or_none,
     to_key,
     to_list,
-    PathToDictionaryConverter
 )
 
 
@@ -642,8 +643,8 @@ class TestPathToDictionaryConverter:
             _load_settings=mock_load_settings
         )
         with patch(
-                "hydrolib.core.base.file_manager.file_load_context",
-                return_value=mock_context_manager,
+            "hydrolib.core.base.file_manager.file_load_context",
+            return_value=mock_context_manager,
         ):
             result = PathToDictionaryConverter.make_dict(path)
 
@@ -680,8 +681,8 @@ class TestPathToDictionaryConverter:
             _load_settings=mock_load_settings
         )
         with patch(
-                "hydrolib.core.base.file_manager.file_load_context",
-                return_value=mock_context_manager,
+            "hydrolib.core.base.file_manager.file_load_context",
+            return_value=mock_context_manager,
         ):
             result = PathToDictionaryConverter.convert(
                 mock_cls, "test/path/to/file", mock_validation_info
