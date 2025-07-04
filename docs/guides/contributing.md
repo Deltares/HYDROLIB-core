@@ -92,3 +92,70 @@ To prepare for releasing, please make sure you have a clean checkout of the late
 * Click on `Generate release notes`.
 * Click on `Publish release`.
 * Celebrate :partying_face:
+
+
+### Automatic release
+
+This section describes the purpose, structure, and usage of the `release.yml` GitHub Actions workflow.
+
+
+#### Workflow Overview
+**Name:** `Automated release workflow`
+
+This workflow is manually triggered to create a release of the Python package. It allows:
+- Releasing from a user-specified branch (default: `main`)
+- Manual or auto-generated version control (e.g. `1.0.0` or `1.0.0-beta.1`)
+- Conditional test mode to simulate the release process without tagging or publishing
+
+---
+
+###### Trigger
+```yaml
+on:
+  workflow_dispatch:
+```
+This workflow is triggered manually from the GitHub Actions UI.
+
+---
+
+###### Inputs
+| Name           | Description                                               | Required | Default |
+|----------------|-----------------------------------------------------------|----------|---------|
+| `release_branch` | Branch to create release from                           | ❌       | `main`  |
+| `version`        | Full version (e.g. `1.0.0`, `1.0.0-beta.1`)             | ❌       |         |
+| `major`          | Major version if not using `version`                   | ❌       |         |
+| `minor`          | Minor version if not using `version`                   | ❌       |         |
+| `patch`          | Patch version if not using `version`                   | ❌       |         |
+| `increment`      | Type of version bump (`MAJOR`, `MINOR`, `PATCH`)       | ❌       |         |
+| `test_mode`      | Run in test mode (skip tagging/publishing)             | ❌       | `false` |
+
+---
+
+###### Jobs and Steps
+####### `release` Job
+**Runs on:** `ubuntu-latest`
+
+####### Key steps:
+- **Validate branch**: Ensures `release_branch` exists in the remote repository
+- **Checkout**: Uses `actions/checkout@v4` to get code from the chosen branch
+- **Python/Poetry Setup**: Uses `actions/setup-python`, Poetry, and caching
+- **Dependency Installation**: Installs via `poetry install`
+- **Version Determination**: Resolves version from inputs
+- **Changelog Generation**: Creates changelog using `cz changelog`
+- **Version Bumping**: Uses `cz bump` with dry-run if `test_mode` is true
+- **Package Build and Publish**: Builds and optionally publishes to PyPI
+- **GitHub Release**: Tags and creates a GitHub Release if `test_mode` is false
+
+---
+
+#### Notes
+- This workflow uses `commitizen (cz)` for versioning and changelog management.
+- Secrets required: `PYPI_API_TOKEN` for publishing to PyPI.
+- Assumes `pyproject.toml` is configured correctly for Poetry and Commitizen.
+
+---
+
+#### Example Usage
+When manually triggering the workflow:
+- Fill in `version=1.0.0-beta.1` **or** `major=1`, `minor=0`, `patch=0`, `increment=PATCH`
+- Set `release_branch=release/1.0.0` or leave it blank to use `main`
