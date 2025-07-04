@@ -184,9 +184,7 @@ class FrictBranch(INIBasedModel):
     levels: Optional[List[float]] = Field(None)
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
     chainage: Optional[List[float]] = Field(None)
-    frictionvalues: Optional[List[float]] = Field(
-        None, alias="frictionValues"
-    )
+    frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
     @field_validator("levels", "chainage", "frictionvalues", mode="before")
     @classmethod
