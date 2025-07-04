@@ -81,7 +81,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Generate changelog
-        run: poetry run cz changelog --unreleased-version="${{ github.event.outputs.VERSION }}" --incremental
+        run: poetry run cz changelog --unreleased-version="${{ steps.get_version.outputs.VERSION }}" --incremental
 
       - name: Get user info
         id: user_info
@@ -99,9 +99,23 @@ jobs:
 
       - name: Bump version
         run: |
-          poetry run cz bump --yes --check-consistency --version ${{ github.event.outputs.VERSION }}
-          git push
-          git push --tags
+          set -e  # Exit immediately if a command exits with a non-zero status
+          echo "Bumping version to ${{ steps.get_version.outputs.VERSION }}"
+          poetry run cz bump --yes --check-consistency "${{ steps.get_version.outputs.VERSION }}"
+
+          echo "Pushing changes to repository"
+          if ! git push; then
+            echo "::error::Failed to push changes to repository"
+            exit 1
+          fi
+
+          echo "Pushing tags to repository"
+          if ! git push --tags; then
+            echo "::error::Failed to push tags to repository"
+            exit 1
+          fi
+
+          echo "Version bump completed successfully"
 
       - name: Build hydrolib-core package
         run: poetry build
@@ -114,7 +128,8 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release v${{ github.event.outputs.VERSION }}
-          tag_name: "${{ github.event.outputs.VERSION }}"
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          tag_name: "${{ steps.get_version.outputs.VERSION }}"
           generate_release_notes: true
+          prerelease: ${{ contains(steps.get_version.outputs.VERSION, 'b') }}
           token: ${{ secrets.GITHUB_TOKEN }}
