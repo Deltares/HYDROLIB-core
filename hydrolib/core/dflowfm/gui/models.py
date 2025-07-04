@@ -2,8 +2,6 @@
 namespace for storing the branches as branches.gui file
 """
 
-# TODO reconsider the definition and/or filename of the branches.gui (from Prisca)
-
 import logging
 from typing import Annotated, Any, List, Literal, Optional
 
