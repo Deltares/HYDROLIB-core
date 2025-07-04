@@ -3,26 +3,34 @@ name: Automated release workflow
 on:
   workflow_dispatch:
     inputs:
+      release_branch:
+        description: "Branch to create release from"
+        required: false
+        default: "main"
       major:
         description: "The new major version."
-        required: true
+        required: false
         type: string
       minor:
         description: "The new minor version."
-        required: true
+        required: false
         type: string
       patch:
         description: "The new patch version."
-        required: true
+        required: false
         type: string
       increment:
         description: "The type of increment."
-        required: true
+        required: false
         type: choice
         options:
           - MAJOR
           - MINOR
           - PATCH
+      version:
+        description: "Full version to release (e.g. 1.0.0 or 1.0.0-beta.1)"
+        required: false
+        type: string
 
 jobs:
   release:
@@ -32,6 +40,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.inputs.release_branch }}
+
+      - name: Determine release version
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "Using manual version input: ${{ github.event.inputs.version }}"
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            VERSION="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}"
+            echo "Using constructed version: $VERSION"
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up python
         uses: actions/setup-python@v5
@@ -60,7 +81,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Generate changelog
-        run: poetry run cz changelog --unreleased-version="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}" --incremental
+        run: poetry run cz changelog --unreleased-version="${{ steps.get_version.outputs.VERSION }}" --incremental
 
       - name: Get user info
         id: user_info
@@ -78,9 +99,23 @@ jobs:
 
       - name: Bump version
         run: |
-          poetry run cz bump --yes --increment ${{ github.event.inputs.increment }}
-          git push
-          git push --tags
+          set -e  # Exit immediately if a command exits with a non-zero status
+          echo "Bumping version to ${{ steps.get_version.outputs.VERSION }}"
+          poetry run cz bump --yes --check-consistency "${{ steps.get_version.outputs.VERSION }}"
+
+          echo "Pushing changes to repository"
+          if ! git push; then
+            echo "::error::Failed to push changes to repository"
+            exit 1
+          fi
+
+          echo "Pushing tags to repository"
+          if ! git push --tags; then
+            echo "::error::Failed to push tags to repository"
+            exit 1
+          fi
+
+          echo "Version bump completed successfully"
 
       - name: Build hydrolib-core package
         run: poetry build
@@ -93,7 +128,8 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release v${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
-          tag_name: ${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          tag_name: "${{ steps.get_version.outputs.VERSION }}"
           generate_release_notes: true
+          prerelease: ${{ contains(steps.get_version.outputs.VERSION, 'b') }}
           token: ${{ secrets.GITHUB_TOKEN }}
