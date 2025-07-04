@@ -74,7 +74,7 @@ class ObservationPoint(INIBasedModel):
     @field_validator("locationtype", mode="before")
     @classmethod
     def _type_validator(cls, v) -> LocationType:
-        return enum_value_parser(enum=LocationType)(v)
+        return enum_value_parser(v, enum=LocationType)
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:

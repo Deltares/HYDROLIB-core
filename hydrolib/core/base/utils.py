@@ -173,28 +173,27 @@ class PathToDictionaryConverter:
         """
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
-        if not isinstance(value, (str, Path, list)):
-            return value
         fields = cls.model_fields
         key = info.field_name
-        if fields.get(key) is None:
-            return value
-        if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
-            return PathToDictionaryConverter.make_dict(value)
-        if PathToDictionaryConverter.is_list_file_model_type(fields[key].annotation):
-            return [
-                (
-                    PathToDictionaryConverter.make_dict(v)
-                    if isinstance(v, (str, Path))
-                    else v
-                )
-                for v in split_string_on_delimiter(cls, value, info)
-            ]
+        if isinstance(value, (str, Path, list)) and fields.get(key) is not None:
+            if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
+                value = PathToDictionaryConverter.make_dict(value)
+            elif PathToDictionaryConverter.is_list_file_model_type(
+                fields[key].annotation
+            ):
+                value = [
+                    (
+                        PathToDictionaryConverter.make_dict(v)
+                        if isinstance(v, (str, Path))
+                        else v
+                    )
+                    for v in split_string_on_delimiter(cls, value, info)
+                ]
 
         return value
 
     @staticmethod
-    def make_dict(value: Union[str, Path]):
+    def make_dict(value: Union[str, Path]) -> Union[dict, "DiskOnlyFileModel"]:
         """Convert a value to a dictionary with a 'filepath' key.
 
         Args:
@@ -213,29 +212,37 @@ class PathToDictionaryConverter:
                 and context._load_settings is not None
                 and not context._load_settings.recurse
             ):
-                return DiskOnlyFileModel(value)
-            return {"filepath": Path(value)}
+                value = DiskOnlyFileModel(value)
+            else:
+                value = {"filepath": Path(value)}
+        return value
 
     @staticmethod
     def is_file_model_type(annotation: Any) -> bool:
         """Check if the given annotation is a FileModel type.
 
         Args:
-            annotation (Any):
-                The annotation to check.
+            annotation (Any): The annotation to check.
 
         Returns:
-            bool:
-                True if the annotation is a FileModel type, False otherwise.
+            bool: True if the annotation is a FileModel type, False otherwise.
         """
         from hydrolib.core.base.models import FileModel
 
-        origin = get_origin(annotation)
-        if origin is Union:
-            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
-        if origin is Annotated:
-            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
-        return isinstance(annotation, type) and issubclass(annotation, FileModel)
+        stack = [annotation]
+        result = False
+        while stack:
+            current = stack.pop()
+            origin = get_origin(current)
+            if origin is Union:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is Annotated:
+                stack.append(get_args(current)[0])
+                continue
+            if isinstance(current, type) and issubclass(current, FileModel):
+                result = True
+        return result
 
     @staticmethod
     def is_list_file_model_type(annotation: Any) -> bool:
@@ -247,18 +254,22 @@ class PathToDictionaryConverter:
         Returns:
             bool: True if the annotation is a list of FileModel types, False otherwise.
         """
-        origin = get_origin(annotation)
-        if origin is Union:
-            return PathToDictionaryConverter.is_list_file_model_type(
-                get_args(annotation)[0]
-            )
-        if origin is Annotated:
-            return PathToDictionaryConverter.is_list_file_model_type(
-                get_args(annotation)[0]
-            )
-        if origin is list:
-            return PathToDictionaryConverter.is_file_model_type(get_args(annotation)[0])
-        return False
+        stack = [annotation]
+        result = False
+        while stack:
+            current = stack.pop()
+            origin = get_origin(current)
+            if origin is Union:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is Annotated:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is list:
+                result = PathToDictionaryConverter.is_file_model_type(
+                    get_args(current)[0]
+                )
+        return result
 
 
 class OperatingSystem(Enum):

@@ -365,7 +365,7 @@ class Weir(Structure):
     @field_validator("allowedflowdir", mode="before")
     @classmethod
     def _flowdirection_validator(cls, v) -> FlowDirection:
-        return enum_value_parser(FlowDirection)(v)
+        return enum_value_parser(v, FlowDirection)
 
 
 class UniversalWeir(Structure):
@@ -421,7 +421,7 @@ class UniversalWeir(Structure):
     @field_validator("allowedflowdir", mode="before")
     @classmethod
     def _flowdirection_validator(cls, v) -> FlowDirection:
-        return enum_value_parser(FlowDirection)(v)
+        return enum_value_parser(v, FlowDirection)
 
 
 class CulvertSubType(StrEnum):
@@ -472,17 +472,17 @@ class Culvert(Structure):
     @field_validator("allowedflowdir", mode="before")
     @classmethod
     def _flowdirection_validator(cls, v) -> FlowDirection:
-        return enum_value_parser(FlowDirection)(v)
+        return enum_value_parser(v, FlowDirection)
 
     @field_validator("subtype", mode="before")
     @classmethod
     def _subtype_validator(cls, v) -> CulvertSubType:
-        return enum_value_parser(CulvertSubType)(v)
+        return enum_value_parser(v, CulvertSubType)
 
     @field_validator("bedfrictiontype", mode="before")
     @classmethod
     def _frictiontype_validator(cls, v) -> FrictionType:
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     @model_validator(mode="after")
     def validate_that_valve_related_fields_are_present_for_culverts_with_valves(self):
@@ -557,12 +557,12 @@ class LongCulvert(Structure):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def _frictiontype_validator(cls, v) -> FrictionType:
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
     def _flowdirection_validator(cls, v) -> FlowDirection:
-        return enum_value_parser(FlowDirection)(v)
+        return enum_value_parser(v, FlowDirection)
 
     @field_validator("zcoordinates", mode="before")
     @classmethod
@@ -633,7 +633,7 @@ class Pump(Structure):
     @field_validator("orientation", mode="before")
     @classmethod
     def _orientation_validator(cls, v) -> Orientation:
-        return enum_value_parser(Orientation)(v)
+        return enum_value_parser(v, Orientation)
 
     @model_validator(mode="after")
     def validate_that_controlside_is_provided_when_numstages_is_provided(self):
@@ -764,7 +764,7 @@ class Orifice(Structure):
     @field_validator("allowedflowdir", mode="before")
     @classmethod
     def _flowdirection_validator(cls, v) -> FlowDirection:
-        return enum_value_parser(FlowDirection)(v)
+        return enum_value_parser(v, FlowDirection)
 
     @model_validator(mode="after")
     def _validate_limitflowpos(self):
@@ -1210,7 +1210,7 @@ class Bridge(Structure):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def _frictiontype_validator(cls, v) -> FrictionType:
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
 
 class StructureGeneral(INIGeneral):

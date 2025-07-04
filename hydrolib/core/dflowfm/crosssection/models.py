@@ -164,7 +164,7 @@ class CircleCrsDef(CrossSectionDefinition):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
 
 class RectangleCrsDef(CrossSectionDefinition):
@@ -217,7 +217,7 @@ class RectangleCrsDef(CrossSectionDefinition):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
 
 class ZWRiverCrsDef(CrossSectionDefinition):
@@ -339,7 +339,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     @field_validator("frictiontypes", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -442,7 +442,7 @@ class ZWCrsDef(CrossSectionDefinition):
     @field_validator("frictiontype", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
 
 class YZCrsDef(CrossSectionDefinition):
@@ -543,7 +543,7 @@ class YZCrsDef(CrossSectionDefinition):
     @field_validator("frictiontypes", mode="before")
     @classmethod
     def validate_enum_frictiontype(cls, v):
-        return enum_value_parser(FrictionType)(v)
+        return enum_value_parser(v, FrictionType)
 
     @model_validator(mode="after")
     def check_list_lengths_coordinates(self):

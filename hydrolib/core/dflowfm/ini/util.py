@@ -14,6 +14,20 @@ from hydrolib.core.dflowfm.common.models import LocationType
 
 
 def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
+    """Split a string on the list field delimiter, and return a list of strings.
+
+    If the input is a string, it is split on the delimiter defined in the class.
+    If the input is anything else, it is returned as is.
+
+    Args:
+        cls (Type[BaseModel]): The class that contains the field.
+        v (Any): The value to split.
+        field (ValidationInfo): The field information.
+
+    Returns:
+        List[str] or Any: A list of strings if the input was a string, otherwise
+            the input value as is.
+    """
     if isinstance(v, str):
         v = v.split(cls.get_list_field_delimiter(field.field_name))
         v = [item.strip() for item in v if item != ""]
@@ -21,37 +35,74 @@ def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
 
 
 def enum_value_parser(
+    v,
     enum: Type[Enum],
     alternative_enum_values: Optional[Dict[str, List[str]]] = None,
 ):
-    """Return a function that converts strings (and string lists) to Enum values."""
+    """Return a function that converts strings (and string lists) to Enum values.
 
-    def parser(v):
-        if isinstance(v, list):
-            return [parser(item) for item in v]
-        if isinstance(v, enum):
-            return v
-        if isinstance(v, str):
-            for entry in enum:
-                if entry.value.lower() == v.lower():
-                    return entry
-                if (
-                    alternative_enum_values
-                    and (alts := alternative_enum_values.get(entry.value))
-                    and v.lower() in (alt.lower() for alt in alts)
-                ):
-                    return entry
-        raise ValueError(
-            f"Invalid enum value: {v!r}. Expected one of: {[e.value for e in enum]}"
-        )
+    Args:
+        enum (Type[Enum]): The Enum type to parse values into.
+        alternative_enum_values (Optional[Dict[str, List[str]]]): A dictionary mapping enum values
+            to alternative string representations. If provided, the parser will also accept these
+            alternative strings as valid inputs for the corresponding enum values.
 
-    return parser
+    Returns:
+        Callable: A function that takes a value (or list of values) and returns the corresponding
+            Enum value or raises a ValueError if the value is invalid.
+
+    Raises:
+        ValueError: If the input value is not a valid Enum value or does not match any
+            alternative string representations.
+    """
+    if isinstance(v, list):
+        result = [parse_enum(item, enum, alternative_enum_values) for item in v]
+    else:
+        result = parse_enum(v, enum, alternative_enum_values)
+    return result
+
+
+def parse_enum(
+    v, enum: Type[Enum], alternative_enum_values: Optional[Dict[str, List[str]]] = None
+):
+    result = None
+
+    if isinstance(v, enum):
+        result = v
+    elif isinstance(v, str):
+        v_lower = v.lower()
+        for entry in enum:
+            if entry.value.lower() == v_lower:
+                result = entry
+                break
+            if (
+                alternative_enum_values
+                and (alts := alternative_enum_values.get(entry.value))
+                and any(v_lower == alt.lower() for alt in alts)
+            ):
+                result = entry
+                break
+    if result is None:
+        valid_values = [e.value for e in enum]
+        raise ValueError(f"Invalid enum value: {v!r}. Expected one of: {valid_values}")
+    return result
 
 
 def ensure_list(v: Any):
-    # Convert single object to a list if needed
+    """Ensure that the input is a list.
+
+    Args:
+        v (Any): The value to ensure is a list.
+
+    Returns:
+        List[Any]: A list containing the input value if it was a dictionary,
+            or the input value itself if it was already a list.
+
+    Raises:
+        TypeError: If the input is not a list or a dictionary.
+    """
     if isinstance(v, dict):
-        return [v]
+        v = [v]
     if not isinstance(v, list):
         raise TypeError("Expected a list or a single dictionary")
     return v
@@ -320,33 +371,30 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if (
-        not hasattr(c, "model_fields")
-        or (field := c.model_fields.get(fieldname)) is None
-    ):
-        return None
+    stack = [c]
+    result = None
+    while stack:
+        current_class = stack.pop()
+        if not hasattr(current_class, "model_fields"):
+            continue
+        field = current_class.model_fields.get(fieldname)
+        if field is not None:
+            # In pydantic v2, default is accessed through default_factory or directly
+            if hasattr(field, "default_factory") and field.default_factory is not None:
+                default = field.default_factory()
+            else:
+                default = field.default
 
-    # In pydantic v2, default is accessed through default_factory or directly
-    if hasattr(field, "default_factory") and field.default_factory is not None:
-        default = field.default_factory()
-    else:
-        default = field.default
-
-    if (
-        default is not None
-        and hasattr(default, "lower")
-        and default.lower() == value.lower()
-    ):
-        # If this class's default matches, directly return it to end the recursion.
-        return default
-
-    for sc in c.__subclasses__():
-        default = _try_get_default_value(sc, fieldname, value)
-        if default is not None:
-            return default
-
-    # Nothing found under c, return None to caller (e.g., to continue recursion).
-    return None
+            if (
+                default is not None
+                and hasattr(default, "lower")
+                and default.lower() == value.lower()
+            ):
+                result = default
+                break
+        # Add subclasses to stack for further checking
+        stack.extend(current_class.__subclasses__())
+    return result
 
 
 class LocationValidationConfiguration(BaseModel):
