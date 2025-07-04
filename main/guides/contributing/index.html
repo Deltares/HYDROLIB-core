@@ -854,6 +854,99 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#automatic-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic release
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatic release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trigger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trigger
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jobs-and-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jobs and Steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      # release Job
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      # Key steps:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2567,6 +2660,99 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#automatic-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic release
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatic release">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workflow-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trigger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trigger
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inputs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jobs-and-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jobs and Steps
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#release-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      # release Job
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      # Key steps:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2669,6 +2855,104 @@ poetry publish --username __token__ --password [PYPI_API_TOKEN]
 <li>Click on <code>Publish release</code>.</li>
 <li>Celebrate <img alt="🥳" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f973.svg" title=":partying_face:" /></li>
 </ul>
+<h3 id="automatic-release">Automatic release<a class="headerlink" href="#automatic-release" title="Permanent link">&para;</a></h3>
+<p>This section describes the purpose, structure, and usage of the <code>release.yml</code> GitHub Actions workflow.</p>
+<h4 id="workflow-overview">Workflow Overview<a class="headerlink" href="#workflow-overview" title="Permanent link">&para;</a></h4>
+<p><strong>Name:</strong> <code>Automated release workflow</code></p>
+<p>This workflow is manually triggered to create a release of the Python package. It allows:
+- Releasing from a user-specified branch (default: <code>main</code>)
+- Manual or auto-generated version control (e.g. <code>1.0.0</code> or <code>1.0.0-beta.1</code>)
+- Conditional test mode to simulate the release process without tagging or publishing</p>
+<hr />
+<h6 id="trigger">Trigger<a class="headerlink" href="#trigger" title="Permanent link">&para;</a></h6>
+<p><div class="highlight"><pre><span></span><code><span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span>
+</code></pre></div>
+This workflow is triggered manually from the GitHub Actions UI.</p>
+<hr />
+<h6 id="inputs">Inputs<a class="headerlink" href="#inputs" title="Permanent link">&para;</a></h6>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Required</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>release_branch</code></td>
+<td>Branch to create release from</td>
+<td>❌</td>
+<td><code>main</code></td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>Full version (e.g. <code>1.0.0</code>, <code>1.0.0-beta.1</code>)</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td><code>major</code></td>
+<td>Major version if not using <code>version</code></td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td><code>minor</code></td>
+<td>Minor version if not using <code>version</code></td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td><code>patch</code></td>
+<td>Patch version if not using <code>version</code></td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td><code>increment</code></td>
+<td>Type of version bump (<code>MAJOR</code>, <code>MINOR</code>, <code>PATCH</code>)</td>
+<td>❌</td>
+<td></td>
+</tr>
+<tr>
+<td><code>test_mode</code></td>
+<td>Run in test mode (skip tagging/publishing)</td>
+<td>❌</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h6 id="jobs-and-steps">Jobs and Steps<a class="headerlink" href="#jobs-and-steps" title="Permanent link">&para;</a></h6>
+<h6 id="release-job"># <code>release</code> Job<a class="headerlink" href="#release-job" title="Permanent link">&para;</a></h6>
+<p><strong>Runs on:</strong> <code>ubuntu-latest</code></p>
+<h6 id="key-steps"># Key steps:<a class="headerlink" href="#key-steps" title="Permanent link">&para;</a></h6>
+<ul>
+<li><strong>Validate branch</strong>: Ensures <code>release_branch</code> exists in the remote repository</li>
+<li><strong>Checkout</strong>: Uses <code>actions/checkout@v4</code> to get code from the chosen branch</li>
+<li><strong>Python/Poetry Setup</strong>: Uses <code>actions/setup-python</code>, Poetry, and caching</li>
+<li><strong>Dependency Installation</strong>: Installs via <code>poetry install</code></li>
+<li><strong>Version Determination</strong>: Resolves version from inputs</li>
+<li><strong>Changelog Generation</strong>: Creates changelog using <code>cz changelog</code></li>
+<li><strong>Version Bumping</strong>: Uses <code>cz bump</code> with dry-run if <code>test_mode</code> is true</li>
+<li><strong>Package Build and Publish</strong>: Builds and optionally publishes to PyPI</li>
+<li><strong>GitHub Release</strong>: Tags and creates a GitHub Release if <code>test_mode</code> is false</li>
+</ul>
+<hr />
+<h4 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h4>
+<ul>
+<li>This workflow uses <code>commitizen (cz)</code> for versioning and changelog management.</li>
+<li>Secrets required: <code>PYPI_API_TOKEN</code> for publishing to PyPI.</li>
+<li>Assumes <code>pyproject.toml</code> is configured correctly for Poetry and Commitizen.</li>
+</ul>
+<hr />
+<h4 id="example-usage">Example Usage<a class="headerlink" href="#example-usage" title="Permanent link">&para;</a></h4>
+<p>When manually triggering the workflow:
+- Fill in <code>version=1.0.0-beta.1</code> <strong>or</strong> <code>major=1</code>, <code>minor=0</code>, <code>patch=0</code>, <code>increment=PATCH</code>
+- Set <code>release_branch=release/1.0.0</code> or leave it blank to use <code>main</code></p>
 
 
 
