@@ -4,6 +4,7 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+from pydantic import ConfigDict
 from pydantic.v1 import Extra
 
 from hydrolib.core.base.file_manager import PathOrStr
@@ -266,8 +267,7 @@ class IgnoreUnknownKeyWord(type):
         """Dynamically create and instantiate a subclass of base_class."""
 
         class DynamicClass(base_class):
-            class Config:
-                extra = Extra.ignore
+            model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
                 valid_fields = self.__annotations__.keys()

@@ -1,7 +1,7 @@
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
-from hydrolib.core.dflowfm.gui.models import Branch
+from hydrolib.core.dflowfm.gui.models import Branch, BranchModel
 
 
 def _create_branch_values():
@@ -62,3 +62,47 @@ class TestBranch:
         expected_message = "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
 
         assert expected_message in str(error.value)
+
+
+class TestBranchModelValidator:
+
+    def test_branchmodel_single_branch_dict(self):
+        single_branch_input = {
+            "branch": {
+                "name": "b1",
+                "branchType": 1,
+                "isLengthCustom": True,
+                "material": 2,
+            }
+        }
+
+        model = BranchModel(**single_branch_input)
+        assert isinstance(model.branch, list)
+        assert len(model.branch) == 1
+        assert model.branch[0].name == "b1"
+
+    def test_branchmodel_list_of_branches(self):
+        multi_branch_input = {
+            "branch": [
+                {"name": "b1", "branchType": 0, "material": 1},
+                {
+                    "name": "b2",
+                    "branchType": 2,
+                    "sourceCompartmentName": "sc1",
+                    "material": 3,
+                },
+            ]
+        }
+
+        model = BranchModel(**multi_branch_input)
+        assert isinstance(model.branch, list)
+        assert len(model.branch) == 2
+        assert model.branch[1].name == "b2"
+
+    def test_branchmodel_invalid_branch_type(self):
+        with pytest.raises(ValidationError):
+            BranchModel(branch={"name": "b1", "branchType": 99})
+
+    def test_branchmodel_invalid_branch_type_not_list_not_dict(self):
+        with pytest.raises(TypeError):
+            BranchModel(branch="anything else than a dict or list of dicts")
