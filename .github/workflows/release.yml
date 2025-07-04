@@ -80,8 +80,8 @@ jobs:
         run: poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
-#       - name: Generate changelog
-#         run: poetry run cz changelog --unreleased-version="${{ github.event.outputs.VERSION }}" --incremental
+      - name: Generate changelog
+        run: poetry run cz changelog --unreleased-version="${{ github.event.outputs.VERSION }}" --incremental
 
       - name: Get user info
         id: user_info
@@ -97,24 +97,24 @@ jobs:
           git config --local user.email "${{ steps.user_info.outputs.email }}"
           git config --local user.name "${{ steps.user_info.outputs.name }}"
 
-#       - name: Bump version
-#         run: |
-#           poetry run cz bump --yes --check-consistency --version ${{ github.event.outputs.VERSION }}
-#           git push
-#           git push --tags
+      - name: Bump version
+        run: |
+          poetry run cz bump --yes --check-consistency --version ${{ github.event.outputs.VERSION }}
+          git push
+          git push --tags
 
       - name: Build hydrolib-core package
         run: poetry build
 
-#       - name: Publish package to PyPI
-#         uses: pypa/gh-action-pypi-publish@release/v1
-#         with:
-#           password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
-#       - name: Create GitHub release
-#         uses: softprops/action-gh-release@v1
-#         with:
-#           name: Release v${{ github.event.outputs.VERSION }}
-#           tag_name: "${{ github.event.outputs.VERSION }}"
-#           generate_release_notes: true
-#           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ github.event.outputs.VERSION }}
+          tag_name: "${{ github.event.outputs.VERSION }}"
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
