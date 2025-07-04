@@ -31,6 +31,14 @@ on:
         description: "Full version to release (e.g. 1.0.0 or 1.0.0-beta.1)"
         required: false
         type: string
+      test_mode:
+        description: "Run in test mode (no tags or publishing)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
 
 jobs:
   release:
