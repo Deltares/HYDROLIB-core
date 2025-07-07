@@ -19,6 +19,8 @@ from hydrolib.core.dflowfm.ini.util import enum_value_parser
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
+VALID_ATTRIBUTES_PREFIXES = "tracer"
+
 INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "initialsedfrac",
@@ -690,6 +692,23 @@ class ExtOldForcing(BaseModel):
     area: Optional[float] = Field(None, alias="AREA")
     nummin: Optional[int] = Field(None, alias="NUMMIN")
 
+    class Config:
+        """
+        Config class to tell Pydantic to accept fields not explicitly declared in the model.
+        """
+
+        # Allow dynamic fields
+        extra = "allow"
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Add dynamic attributes for fields starting with 'tracer'
+        for key, value in data.items():
+            if isinstance(key, str) and key.lower().startswith(
+                VALID_ATTRIBUTES_PREFIXES
+            ):
+                setattr(self, key, value)
+
     def is_intermediate_link(self) -> bool:
         return True
 
@@ -783,7 +802,6 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="after")
     def validate_averagingtype(self):
-        # method = info.data.get("method")
         if (
             self.averagingtype is not None
             and self.method != ExtOldMethod.AveragingSpace
@@ -806,14 +824,12 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="after")
     def validate_extrapoltol(self):
-        # method = info.data.get("method")
         if self.extrapoltol is not None and self.method != ExtOldMethod.InterpolateTime:
             raise ValueError("EXTRAPOLTOL only allowed when METHOD is 5")
         return self
 
     @model_validator(mode="after")
     def validate_percentileminmax(self):
-        # method = info.data.get("method")
         if (
             self.percentileminmax is not None
             and self.method != ExtOldMethod.AveragingSpace
@@ -825,7 +841,6 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="after")
     def validate_area(self):
-        # quantity = info.data.get("quantity")
         if (
             self.area is not None
             and self.quantity != ExtOldQuantity.DischargeSalinityTemperatureSorSin
@@ -837,7 +852,6 @@ class ExtOldForcing(BaseModel):
 
     @model_validator(mode="after")
     def validate_nummin(self):
-        # method = info.data.get("method")
         if self.nummin is not None and self.method != ExtOldMethod.AveragingSpace:
             raise ValueError(
                 f"NUMMIN only allowed when METHOD is {ExtOldMethod.AveragingSpace}"
@@ -846,28 +860,26 @@ class ExtOldForcing(BaseModel):
 
     @field_validator("maxsearchradius")
     def validate_maxsearchradius(cls, v, info):
-        if v is None:
-            return v
-        extrap = info.data.get("extrapolation_method")
-        extrapolation_method_value = (
-            ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-        )
-        if extrap != extrapolation_method_value:
-            raise ValueError(
-                f"MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is {extrapolation_method_value}"
+        if v is not None:
+            extrap = info.data.get("extrapolation_method")
+            extrapolation_method_value = (
+                ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
             )
+            if extrap != extrapolation_method_value:
+                raise ValueError(
+                    f"MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is {extrapolation_method_value}"
+                )
         return v
 
     @field_validator("value")
     @classmethod
     def validate_value(cls, v, info):
-        if v is None:
-            return v
-        method = info.data.get("method")
-        if method != ExtOldMethod.InterpolateSpace:
-            raise ValueError(
-                f"VALUE only allowed when METHOD is {ExtOldMethod.InterpolateSpace} (InterpolateSpace)"
-            )
+        if v is not None:
+            method = info.data.get("method")
+            if method != ExtOldMethod.InterpolateSpace:
+                raise ValueError(
+                    f"VALUE only allowed when METHOD is {ExtOldMethod.InterpolateSpace} (InterpolateSpace)"
+                )
         return v
 
     @model_validator(mode="before")

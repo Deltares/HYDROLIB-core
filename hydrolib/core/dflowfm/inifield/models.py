@@ -1,9 +1,9 @@
 import logging
 from abc import ABC
 from pathlib import Path
-from typing import Annotated, Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional, Set
 
-from pydantic import BeforeValidator, Field, field_validator, model_validator
+from pydantic import BeforeValidator, Field, field_validator, model_validator, ConfigDict
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
@@ -18,6 +18,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_required_fields,
 )
 
+VALID_ATTRIBUTES_PREFIXES = "tracer"
 logger = logging.getLogger(__name__)
 
 
@@ -158,6 +159,8 @@ class AbstractSpatialField(INIBasedModel, ABC):
     )
     value: Optional[float] = Field(None, alias="value")
 
+    model_config = ConfigDict(extra="allow")
+
     @classmethod
     def _process_section_values(cls, values):
         """Process Section objects and extract/convert values as needed.
@@ -185,6 +188,25 @@ class AbstractSpatialField(INIBasedModel, ABC):
             return values_dict
 
         return values
+
+    @classmethod
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        fields = cls.model_fields
+        unknown_keywords = [
+            key
+            for key in input_data.keys()
+            if key not in fields and key.lower().startswith(VALID_ATTRIBUTES_PREFIXES)
+        ]
+        return set(unknown_keywords)
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Add dynamic attributes for fields starting with 'tracer'
+        for key, value in data.items():
+            if isinstance(key, str) and key.lower().startswith(
+                    VALID_ATTRIBUTES_PREFIXES
+            ):
+                setattr(self, key, value)
 
     @model_validator(mode="before")
     @classmethod
