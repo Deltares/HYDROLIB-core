@@ -367,3 +367,42 @@ class TestFileChecksumCalculator:
     def test_calculating_checksum_of_folder_gives_none(self, tmp_path: Path):
         calculated_checksum = FileChecksumCalculator.calculate_checksum(tmp_path)
         assert calculated_checksum is None
+
+
+def enum_checker(enum_instance):
+    """
+
+    Args:
+        enum_instance:
+            An instance of an Enum class to check.
+
+    Raises:
+        AssertionError: If the enum instance does not meet the expected criteria.
+
+    Examples:
+        ```python
+        >>> from enum import Enum
+        >>> class MyEnum(Enum):
+        ...     FIRST = "first_value"
+        ...     SECOND = "second_value"
+        >>> enum_checker(MyEnum)
+
+        ```
+    """
+
+    values = list(enum_instance)
+    value_strings = [e.value for e in values]
+
+    assert all(isinstance(v, str) for v in value_strings)
+    # check that all the values are unique
+    assert len(value_strings) == len(set(value_strings))
+
+    # check that the
+    for member in enum_instance:
+        assert (
+            enum_instance[member.name] == member
+        ), f"{member.name} is not in the provided {enum_instance.__name__}."
+
+    # test that all members are instances of the enum class
+    for name in enum_instance.__members__:
+        assert isinstance(enum_instance[name], enum_instance)

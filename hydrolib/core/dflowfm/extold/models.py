@@ -278,6 +278,8 @@ class ExtOldMeteoQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
+
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -440,6 +442,7 @@ class ExtOldQuantity(StrEnum):
     """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
     """WindSpeed"""
+    WindSpeedFactor = "windspeedfactor"
     WindFromDirection = "wind_from_direction"
     """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
@@ -834,7 +837,7 @@ class ExtOldForcing(BaseModel):
         return values
 
     @root_validator(pre=True)
-    def chooce_file_model(cls, values):
+    def choose_file_model(cls, values):
         """Root-level validator to the right class for the filename parameter based on the filetype.
 
         The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping

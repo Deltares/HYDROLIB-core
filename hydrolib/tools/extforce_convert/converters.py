@@ -1,11 +1,12 @@
 """External forcing converter."""
 
+import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
@@ -61,6 +62,7 @@ class BaseConverter(ABC):
     def __init__(self):
         """Initializes the BaseConverter object."""
         self._root_dir = None
+        self._legacy_files = []
 
     @property
     def root_dir(self) -> Path:
@@ -72,6 +74,18 @@ class BaseConverter(ABC):
         if isinstance(value, str):
             value = Path(value)
         self._root_dir = value
+
+    @property
+    def legacy_files(self) -> List[Path]:
+        return self._legacy_files
+
+    @legacy_files.setter
+    def legacy_files(self, value: Union[PathOrStr, List[PathOrStr]]):
+        """Set the legacy files to be cleaned up after conversion."""
+        if isinstance(value, list):
+            self._legacy_files += [Path(file) for file in value]
+        else:
+            self._legacy_files += [Path(value)]
 
     @abstractmethod
     def convert(self, forcing: ExtOldForcing) -> Any:
@@ -240,6 +254,29 @@ class BoundaryConditionConverter(BaseConverter):
         )
         return time_series_list
 
+    def locate_files(self, location_file: Path):
+        """Locate the tim, t3d, and cmp files related to the location file.
+
+        Args:
+            location_file(Path):
+                the pli file that contains the location of the boundary condition.
+
+        Returns:
+            tim_files (List[Path]):
+                list of all the tim files related to the location file.
+            t3d_files (List[Path]):
+                list of all the t3d files related to the location file.
+            cmp_files (List[Path]):
+                list of all the cmp files related to the location file.
+        """
+        forcings_local_dir = resolve_relative_to_root(location_file, self.root_dir)
+        FILE_NUMBERING_PATTERN = "[0-9][0-9][0-9][0-9]*"
+        stem_pattern = f"{location_file.stem}_{FILE_NUMBERING_PATTERN}"
+        tim_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.tim"))
+        t3d_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.t3d"))
+        cmp_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.cmp"))
+        return tim_files, t3d_files, cmp_files
+
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
     ) -> Boundary:
@@ -292,20 +329,17 @@ class BoundaryConditionConverter(BaseConverter):
                 "The 'root_dir' property must be set before calling this method."
             )
 
+        tim_files, t3d_files, cmp_files = self.locate_files(location_file)
         forcings_list = []
-        tim_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9].tim")
-        )
+
         if len(tim_files) > 0:
             time_series_list = self.convert_tim_to_bc(
                 tim_files, time_unit, quantity=quantity, label=label
             )
             forcings_list.extend(time_series_list)
+            self.legacy_files = tim_files
 
         # check t3d files
-        t3d_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.t3d")
-        )
         if len(t3d_files) > 0:
             t3d_models = [T3DModel(path) for path in t3d_files]
             # this line assumed that the two t3d files will have the same number of layers and same number of quantities
@@ -317,11 +351,9 @@ class BoundaryConditionConverter(BaseConverter):
                 t3d_models, quantities_names, user_defined_names
             )
             forcings_list.extend(t3d_forcing_list)
+            self.legacy_files = t3d_files
 
         # check cmp files
-        cmp_files = list(
-            self.root_dir.glob(f"{poly_line.filepath.stem}_[0-9][0-9][0-9][0-9]*.cmp")
-        )
         if len(cmp_files) > 0:
             cmp_models = [CMPModel(path) for path in cmp_files]
             for cmp_model in cmp_models:
@@ -331,6 +363,7 @@ class BoundaryConditionConverter(BaseConverter):
                 ]
             forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
             forcings_list.extend(forcing_list)
+            self.legacy_files = cmp_files
 
         forcing_model = ForcingModel(forcing=forcings_list)
 
@@ -608,17 +641,6 @@ class SourceSinkConverter(BaseConverter):
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
-    @property
-    def root_dir(self) -> Path:
-        """Root directory of the external forcing files."""
-        return self._root_dir
-
-    @root_dir.setter
-    def root_dir(self, value: Union[Path, str]):
-        if isinstance(value, str):
-            value = Path(value)
-        self._root_dir = value
-
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
@@ -729,11 +751,15 @@ class SourceSinkConverter(BaseConverter):
         z_source, z_sink = polyline.get_z_sources_sinks()
 
         # check the tim file
-        tim_file = self.root_dir / polyline.filepath.with_suffix(".tim").name
+        tim_file = resolve_relative_to_root(
+            polyline.filepath, self.root_dir
+        ).with_suffix(".tim")
         if not tim_file.exists():
             raise ValueError(
                 f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
             )
+
+        self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
             tim_file, ext_file_quantity_list, **temp_salinity_mdu
@@ -744,7 +770,9 @@ class SourceSinkConverter(BaseConverter):
             tim_model, start_time, user_defined_names=labels
         )
         # set the bc file names to the same names as the tim files.
-        forcing_model.filepath = location_file.with_suffix(".bc").name
+        forcing_model.filepath = Path(
+            os.path.relpath(tim_file, self.root_dir)
+        ).with_suffix(".bc")
 
         data = {
             "id": location_name,
@@ -1115,9 +1143,21 @@ class T3DToForcingConverter:
         """
         data = {
             "name": user_defined_name,
+            "function": "t3d",
             "vertpositions": t3d_model.layers,
-            "vertpositiontype": "percBed",
+            "vertpositiontype": (
+                "percBed"
+                if not hasattr(t3d_model, "vertpositiontype")
+                else t3d_model.vertpositiontype
+            ),
         }
+
+        if hasattr(t3d_model, "vertinterpolation"):
+            data["vertinterpolation"] = t3d_model.vertinterpolation
+
+        if hasattr(t3d_model, "timeinterpolation"):
+            data["timeinterpolation"] = t3d_model.timeinterpolation
+
         data_dict = t3d_model.as_dict()
         updated = [[k] + v for k, v in data_dict.items()]
         data["datablock"] = updated

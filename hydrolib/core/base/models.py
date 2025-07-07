@@ -354,10 +354,14 @@ class FileModel(BaseModel, ABC):
         If the filepath is provided, it is read from disk.
 
         Args:
-            filepath (Optional[PathOrStr], optional): The file path. Defaults to None.
-            resolve_casing (bool, optional): Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
-            recurse (bool, optional): Whether or not to recursively load the model. Defaults to True.
-            path_style (Optional[str], optional): Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
+            filepath (Optional[PathOrStr], optional):
+                The file path. Defaults to None.
+            resolve_casing (bool, optional):
+                Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
+            recurse (bool, optional):
+                Whether or not to recursively load the model. Defaults to True.
+            path_style (Optional[str], optional):
+                Which path style is used in the loaded files. Defaults to the path style that matches the current operating system. Options: 'unix', 'windows'.
 
         Raises:
             ValueError: When an unsupported path style is passed.
@@ -487,8 +491,21 @@ class FileModel(BaseModel, ABC):
 
     @classmethod
     def validate(cls: Type["FileModel"], value: Any):
+        from hydrolib.core.base.models import (
+            DiskOnlyFileModel,  # because of circular import
+        )
+
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
+            # Check if we're in a file load context and if recurse is False
+            with file_load_context() as context:
+                if (
+                    hasattr(context, "_load_settings")
+                    and context._load_settings is not None
+                    and not context._load_settings.recurse
+                ):
+                    # If recurse is False, return the Path object as-is
+                    return DiskOnlyFileModel(value)
             # Pydantic Model init requires a dict
             value = {"filepath": Path(value)}
         elif value is None:
@@ -911,7 +928,7 @@ class DiskOnlyFileModel(FileModel):
 
     def _load(self, filepath: Path) -> Dict:
         # We de not load any additional data, as such we return an empty dict.
-        return dict()
+        return {}
 
     def _save(self, save_settings: ModelSaveSettings) -> None:
         # The target_file_path contains the new path to write to, while the

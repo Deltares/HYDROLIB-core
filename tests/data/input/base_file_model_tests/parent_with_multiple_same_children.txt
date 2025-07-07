@@ -1,0 +1,5 @@
+name=parent_with_multiple_children
+value=30
+child_file1=simple_file.txt
+child_file2=simple_file.txt
+child_file3=simple_file.txt
