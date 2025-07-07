@@ -3,7 +3,13 @@ from abc import ABC
 from pathlib import Path
 from typing import Annotated, Dict, List, Literal, Optional, Set
 
-from pydantic import BeforeValidator, Field, field_validator, model_validator, ConfigDict
+from pydantic import (
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
@@ -204,7 +210,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
         # Add dynamic attributes for fields starting with 'tracer'
         for key, value in data.items():
             if isinstance(key, str) and key.lower().startswith(
-                    VALID_ATTRIBUTES_PREFIXES
+                VALID_ATTRIBUTES_PREFIXES
             ):
                 setattr(self, key, value)
 
