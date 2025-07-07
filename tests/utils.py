@@ -14,7 +14,7 @@ from hydrolib.core.base.file_manager import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
 VERSION_LINE_PATTERN = (
-    r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$"
+    r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:[a-zA-Z]+\d*)?(?:\.[\w]+)*\s*$"
 )
 
 
