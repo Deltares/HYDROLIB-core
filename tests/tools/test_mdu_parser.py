@@ -107,3 +107,13 @@ def test_is_section_header():
     # Test with external forcing section header (should return False)
     assert MDUParser.is_section_header("[external forcing]") is False
     assert MDUParser.is_section_header("[EXTERNAL FORCING]") is False
+
+
+class TestMduParser:
+
+    @pytest.mark.e2e
+    def test_constructor(self):
+        path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
+        parser = MDUParser(path)
+        assert parser.find_keyword_lines("ThinDamFile") == 13
+        assert parser.find_keyword_lines("ThinDamFile", case_sensitive=True) == 13

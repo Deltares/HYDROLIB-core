@@ -263,6 +263,29 @@ class MDUParser:
         }
         return temperature_and_salinity_info
 
+    def find_keyword_lines(self, keyword: str, case_sensitive: bool = False) -> int | None:
+        """Find line numbers in the MDU file where the keyword appears.
+
+        Args:
+            keyword: The keyword to search for.
+            case_sensitive: Whether the search should be case-sensitive.
+
+        Returns:
+            A list of line numbers (1-based index) where the keyword is found.
+        """
+        if not case_sensitive:
+            keyword = keyword.lower()
+        line_number = None
+        for i, line in enumerate(self._content, start=0):
+            haystack = line if case_sensitive else line.lower()
+            stripped_line = haystack.lstrip()
+            if_exist = stripped_line.startswith(keyword) if case_sensitive else stripped_line.lower().startswith(keyword.lower())
+            if if_exist:
+                line_number = i
+                break
+
+        return line_number
+
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
     """Save the updated MDU file content to disk.
