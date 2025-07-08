@@ -271,7 +271,7 @@ class MDUParser:
             case_sensitive: Whether the search should be case-sensitive.
 
         Returns:
-            A list of line numbers (1-based index) where the keyword is found.
+            A list of line number where the keyword is found.
         """
         if not case_sensitive:
             keyword = keyword.lower()
@@ -285,6 +285,59 @@ class MDUParser:
                 break
 
         return line_number
+
+    def insert_line(self, line: str, index: int) -> None:
+        """Insert a line at the specified index in the MDU file content.
+
+        Args:
+            index: The 0-based index where the line should be inserted.
+            line: The line to insert (a newline `\n` will be added if not present).
+
+        Raises:
+            IndexError: If the index is out of bounds.
+        """
+        if not line.endswith("\n"):
+            line += "\n"
+
+        if index < 0 or index > len(self._content):
+            raise IndexError("Index out of bounds for inserting line.")
+
+        self._content.insert(index, line)
+
+    def find_section_bounds(self, section_name: str) -> tuple[int, int]:
+        """Find the start and end line indices (0-based) of a section.
+
+        Args:
+            section_name: The name of the section, e.g., "geometry".
+
+        Returns:
+            A tuple (start_index, end_index), where:
+            - start_index is the index of the section header line.
+            - end_index is the index just before the next section header or end of file.
+
+        Raises:
+            ValueError: If the section is not found.
+        """
+        section_start = -1
+        section_end = len(self._content)
+
+        header = f"[{section_name.lower()}]"
+
+        for i, line in enumerate(self._content):
+            stripped = line.strip().lower()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                if stripped == header:
+                    section_start = i
+                elif section_start != -1:
+                    # We hit the start of a new section after finding our target
+                    section_end = i-1
+                    break
+
+        if section_start == -1:
+            section_start = None
+            section_end = None
+
+        return section_start, section_end
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
