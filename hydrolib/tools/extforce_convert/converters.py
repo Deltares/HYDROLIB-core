@@ -629,7 +629,9 @@ class SourceSinkConverter(BaseConverter):
             mdu_quantities, temp_salinity_from_ext
         )
         final_quantities_list = (
-            ["sourcesink_discharge"] + final_temp_salinity + required_quantities_from_ext
+            ["sourcesink_discharge"]
+            + final_temp_salinity
+            + required_quantities_from_ext
         )
 
         if len(time_series) != len(final_quantities_list):

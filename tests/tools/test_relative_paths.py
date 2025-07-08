@@ -31,7 +31,10 @@ class TestSourceSinks:
         assert len(ext_model.boundary) == 1
 
         source_sink = ext_model.sourcesink[0]
-        assert source_sink.sourcesink_discharge.filepath == source_sink_paths["bc_relative_path"]
+        assert (
+            source_sink.sourcesink_discharge.filepath
+            == source_sink_paths["bc_relative_path"]
+        )
         assert (
             source_sink.salinitydelta.filepath == source_sink_paths["bc_relative_path"]
         )

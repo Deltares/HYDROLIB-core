@@ -36,7 +36,12 @@ def start_time():
         # The tim file has 4 columns (plus the time column), and the list of ext quantities has 4 quantities.
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "temperature", "salinity", "initialtracer_anyname"],
+            [
+                "sourcesink_discharge",
+                "temperature",
+                "salinity",
+                "initialtracer_anyname",
+            ],
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
@@ -152,7 +157,12 @@ def test_parse_tim_model(
         ),
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "salinity", "temperature", "initialtracer_anyname"],
+            [
+                "sourcesink_discharge",
+                "salinity",
+                "temperature",
+                "initialtracer_anyname",
+            ],
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
