@@ -71,7 +71,7 @@ mkdocs-mermaid2-plugin = "^1.2.1"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.9.2"
+version = "1.0.0b1"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",
@@ -117,7 +117,10 @@ multi_line_output = 3
 line_length = 88
 
 [tool.pytest.ini_options]
-markers = ["plots", "docker"]
+markers = [
+    "plots", "docker",
+    "e2e: marks tests as end-to-end tests (deselect with '-m \"not e2e\"')",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
