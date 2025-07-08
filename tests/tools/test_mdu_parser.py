@@ -1,10 +1,14 @@
 from pathlib import Path
 from typing import Tuple
 from unittest.mock import MagicMock, patch
-import os
+
 import pytest
 
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, save_mdu_file, get_ref_time
+from hydrolib.tools.extforce_convert.mdu_parser import (
+    MDUParser,
+    get_ref_time,
+    save_mdu_file,
+)
 
 
 @pytest.mark.parametrize(
@@ -101,7 +105,7 @@ def test_replace_extforcefilenew(line, expected):
         patch("pathlib.Path.exists", return_value=True),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-            return_value=MagicMock(geometry = MagicMock()),
+            return_value=MagicMock(geometry=MagicMock()),
         ),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
@@ -223,7 +227,9 @@ class TestMduParser:
         temp_file = tmp_path / "test_save.mdu"
 
         # Save to the temporary file
-        with patch('hydrolib.tools.extforce_convert.mdu_parser.backup_file') as mock_backup:
+        with patch(
+            "hydrolib.tools.extforce_convert.mdu_parser.backup_file"
+        ) as mock_backup:
             # Save without backup
             parser.mdu_path = temp_file
             parser.save()
@@ -419,7 +425,9 @@ class TestMduParser:
     def test_update_extforce_file_new(self):
         """Test the update_extforce_file_new method."""
         # Test with a file that has an external forcing section
-        mdu_file = "tests/data/input/dflowfm_individual_files/with_optional_sections.mdu"
+        mdu_file = (
+            "tests/data/input/dflowfm_individual_files/with_optional_sections.mdu"
+        )
         parser = MDUParser(mdu_file)
         parser.new_forcing_file = "new_test.ext"
 
@@ -446,13 +454,26 @@ class TestMduParser:
 
         # Test with a file that doesn't have an external forcing section
         # We'll create a mock file without an external forcing section
-        with patch('pathlib.Path.exists', return_value=True), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file', 
-                   return_value=["[general]\n", "Name = Test\n", "[geometry]\n", "NetFile = test.nc\n"]), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model', 
-                   return_value={"geometry": {}}), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data', 
-                   return_value={}):
+        with (
+            patch("pathlib.Path.exists", return_value=True),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
+                return_value=[
+                    "[general]\n",
+                    "Name = Test\n",
+                    "[geometry]\n",
+                    "NetFile = test.nc\n",
+                ],
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
+                return_value={"geometry": {}},
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
+                return_value={},
+            ),
+        ):
 
             parser = MDUParser("dummy_path")
             parser.new_forcing_file = "new_test.ext"
@@ -462,16 +483,36 @@ class TestMduParser:
 
             # Check that the updated lines are the same as the original (no external forcing section to update)
             assert len(updated_lines) == 4
-            assert updated_lines == ["[general]\n", "Name = Test\n", "[geometry]\n", "NetFile = test.nc\n"]
+            assert updated_lines == [
+                "[general]\n",
+                "Name = Test\n",
+                "[geometry]\n",
+                "NetFile = test.nc\n",
+            ]
 
         # Test with a file that has an external forcing section but no ExtForceFileNew entry
-        with patch('pathlib.Path.exists', return_value=True), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file', 
-                   return_value=["[general]\n", "Name = Test\n", "[external forcing]\n", "ExtForceFile = old.ext\n", "[geometry]\n", "NetFile = test.nc\n"]), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model', 
-                   return_value={"geometry": {}}), \
-             patch('hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data', 
-                   return_value={}):
+        with (
+            patch("pathlib.Path.exists", return_value=True),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
+                return_value=[
+                    "[general]\n",
+                    "Name = Test\n",
+                    "[external forcing]\n",
+                    "ExtForceFile = old.ext\n",
+                    "[geometry]\n",
+                    "NetFile = test.nc\n",
+                ],
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
+                return_value={"geometry": {}},
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
+                return_value={},
+            ),
+        ):
 
             parser = MDUParser("dummy_path")
             parser.new_forcing_file = "new_test.ext"
