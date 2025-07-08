@@ -282,7 +282,9 @@ class MDUParser:
         }
         return temperature_and_salinity_info
 
-    def find_keyword_lines(self, keyword: str, case_sensitive: bool = False) -> int | None:
+    def find_keyword_lines(
+        self, keyword: str, case_sensitive: bool = False
+    ) -> int | None:
         """Find line numbers in the MDU file where the keyword appears.
 
         Args:
@@ -298,7 +300,11 @@ class MDUParser:
         for i, line in enumerate(self._content, start=0):
             haystack = line if case_sensitive else line.lower()
             stripped_line = haystack.lstrip()
-            if_exist = stripped_line.startswith(keyword) if case_sensitive else stripped_line.lower().startswith(keyword.lower())
+            if_exist = (
+                stripped_line.startswith(keyword)
+                if case_sensitive
+                else stripped_line.lower().startswith(keyword.lower())
+            )
             if if_exist:
                 line_number = i
                 break
@@ -349,7 +355,7 @@ class MDUParser:
                     section_start = i
                 elif section_start != -1:
                     # We hit the start of a new section after finding our target
-                    section_end = i-1
+                    section_end = i - 1
                     break
 
         if section_start == -1:
