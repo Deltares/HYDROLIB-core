@@ -24,8 +24,8 @@ class TestSourceSink:
         m = ExtModel(filepath)
         assert len(m.sourcesink) == 2
         assert m.sourcesink[0].id == "L1"
-        assert np.isclose(m.sourcesink[0].discharge, 10)
-        assert np.isclose(m.sourcesink[1].discharge, 20)
+        assert np.isclose(m.sourcesink[0].sourcesink_discharge, 10)
+        assert np.isclose(m.sourcesink[1].sourcesink_discharge, 20)
 
     def test_sourcesink_fromdict(self):
 
@@ -38,7 +38,7 @@ class TestSourceSink:
                     "zSink": 0.0,
                     "zSource": 0.0,
                     "area": 1.0,
-                    "discharge": 1.23,
+                    "sourcesink_discharge": 1.23,
                     "salinityDelta": 4.0,
                     "temperatureDelta": 5.0,
                 }
@@ -46,7 +46,7 @@ class TestSourceSink:
         }
         m = ExtModel(**data)
         assert len(m.sourcesink) == 1
-        assert np.isclose(m.sourcesink[0].discharge, 1.23)
+        assert np.isclose(m.sourcesink[0].sourcesink_discharge, 1.23)
 
 
 class TestSourceSinkValidator:
@@ -59,7 +59,7 @@ class TestSourceSinkValidator:
         source_sink = SourceSink(
             id="test1",
             locationfile=DiskOnlyFileModel(filepath=Path("locationfile.pli")),
-            discharge=5,
+            sourcesink_discharge=5,
         )
         assert source_sink.locationfile is not None
         assert source_sink.numcoordinates is None
@@ -73,7 +73,7 @@ class TestSourceSinkValidator:
             numcoordinates=2,
             xcoordinates=[1.0, 2.0],
             ycoordinates=[3.0, 4.0],
-            discharge=5,
+            sourcesink_discharge=5,
         )
         assert source_sink.numcoordinates == 2
         assert source_sink.xcoordinates == [1.0, 2.0]
@@ -86,7 +86,7 @@ class TestSourceSinkValidator:
             ValueError,
             match="Either `locationFile` or the combination of `numCoordinates`, `xCoordinates`, and `yCoordinates` must be provided.",
         ):
-            SourceSink(id="test3", discharge=None)
+            SourceSink(id="test3", sourcesink_discharge=None)
 
     def test_source_sink_with_incomplete_coordinates(self):
         """Test that creating a SourceSink with incomplete coordinates raises an error."""
@@ -98,7 +98,7 @@ class TestSourceSinkValidator:
                 id="test4",
                 numcoordinates=2,
                 xcoordinates=[1.0, 2.0],  # ycoordinates missing
-                discharge=None,
+                sourcesink_discharge=None,
             )
 
     def test_source_sink_with_mismatched_coordinates(self):
@@ -112,5 +112,5 @@ class TestSourceSinkValidator:
                 numcoordinates=2,
                 xcoordinates=[1.0, 2.0, 3.0],  # Too many x-coordinates
                 ycoordinates=[3.0, 4.0],
-                discharge=None,
+                sourcesink_discharge=None,
             )

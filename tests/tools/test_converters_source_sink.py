@@ -36,9 +36,9 @@ def start_time():
         # The tim file has 4 columns (plus the time column), and the list of ext quantities has 4 quantities.
         pytest.param(
             tim_file,
-            ["discharge", "temperature", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "temperature", "salinity", "initialtracer_anyname"],
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -48,16 +48,16 @@ def start_time():
         # The tim file has 4 columns (plus the time column), but the list of ext quantities has only 3 quantities.
         pytest.param(
             tim_file,
-            ["discharge", "temperature", "salinity"],
+            ["sourcesink_discharge", "temperature", "salinity"],
             None,
             id="test_list_of_ext_quantities_tim_column_mismatch",
         ),
         # The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
-            ["discharge", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "initialtracer_anyname"],
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
@@ -68,7 +68,7 @@ def start_time():
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
             ["discharge", "temperature", "initialtracer_anyname"],
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
@@ -79,7 +79,7 @@ def start_time():
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
             ["discharge", "initialtracer_anyname"],
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="no_temperature_no_salinity",
@@ -104,10 +104,10 @@ def test_parse_tim_model(
     [
         pytest.param(
             tim_file,
-            ["discharge", "initialtracer_anyname"],
+            ["sourcesink_discharge", "initialtracer_anyname"],
             {"salinity": True, "temperature": True},
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -116,10 +116,10 @@ def test_parse_tim_model(
         ),
         pytest.param(
             tim_file,
-            ["discharge", "temperature", "initialtracer_anyname"],
+            ["sourcesink_discharge", "temperature", "initialtracer_anyname"],
             {"salinity": True, "temperature": False},
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -128,10 +128,10 @@ def test_parse_tim_model(
         ),
         pytest.param(
             tim_file,
-            ["discharge", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "initialtracer_anyname"],
             {"salinity": False, "temperature": True},
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -140,10 +140,10 @@ def test_parse_tim_model(
         ),
         pytest.param(
             tim_file,
-            ["discharge", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "initialtracer_anyname"],
             {"salinity": True, "temperature": True},
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -152,10 +152,10 @@ def test_parse_tim_model(
         ),
         pytest.param(
             tim_file,
-            ["discharge", "salinity", "temperature", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "temperature", "initialtracer_anyname"],
             {"salinity": False, "temperature": True},
             {
-                "discharge": [1.0] * 5,
+                "sourcesink_discharge": [1.0] * 5,
                 "salinitydelta": [2.0] * 5,
                 "temperaturedelta": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -181,7 +181,7 @@ def test_parse_tim_model_with_mdu(
 def compare_data(new_quantity_block: SourceSink):
     # check the converted forcings
     quantity_list = [
-        "discharge",
+        "sourcesink_discharge",
         "salinitydelta",
         "temperaturedelta",
         "initialtracer_anyname",
@@ -191,7 +191,7 @@ def compare_data(new_quantity_block: SourceSink):
     # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
     # and this forcingModel is duplicated in the salinitydelta, temperaturedelta, and initialtracer_anyname
     # to be able to save them in the same .bc file.
-    quantity = "discharge"
+    quantity = "sourcesink_discharge"
     forcing_model = getattr(new_quantity_block, quantity)
     units = [
         forcing_model.forcing[i].quantityunitpair[1].unit
@@ -413,10 +413,10 @@ class TestConverter:
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
 
-        validation_list = ["discharge", "initialtracer_anyname"]
+        validation_list = ["sourcesink_discharge", "initialtracer_anyname"]
 
         # check the converted bc_forcing
-        quantity = "discharge"
+        quantity = "sourcesink_discharge"
         forcing_model = getattr(new_quantity_block, quantity)
         quantities_names = [
             forcing_model.forcing[i].quantityunitpair[1].quantity
