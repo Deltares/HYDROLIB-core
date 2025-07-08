@@ -10,9 +10,9 @@ forcingfile = BoundaryConditions.bc
 id               = L1
 name             = L1
 locationFile     = leftsor-2-columns.pli
-discharge        = 10
+sourcesink_discharge   = 10
 [SourceSink]
 id               = L2
 name             = L2
 locationFile     = leftsor-2-columns.pli
-discharge        = 20
+sourcesink_discharge        = 20
