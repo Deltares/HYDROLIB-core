@@ -347,12 +347,23 @@ class TestMduParser:
     def test_has_inifield_file(self):
         """Test the has_inifield_file method."""
         with (
-            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
-                return_value=["[general]\n", "Name = Test\n", "[geometry]\n", "IniFieldFile = new-inifield-file.ini\n"]),
-            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-                  return_value={}),
-            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
-                  return_value={}),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
+                return_value=[
+                    "[general]\n",
+                    "Name = Test\n",
+                    "[geometry]\n",
+                    "IniFieldFile = new-inifield-file.ini\n",
+                ],
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
+                return_value={},
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
+                return_value={},
+            ),
         ):
             parser = MDUParser(self.file_path)
 
@@ -360,7 +371,12 @@ class TestMduParser:
         assert parser.has_inifield_file() is True
 
         # Test with a file that does not have an inifield file
-        parser._content = ["[general]\n", "Name = Test\n", "[geometry]\n", "NetFile = test.nc\n"]
+        parser._content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
         assert parser.has_inifield_file() is False
 
     def test_handle_external_forcing_section(self):
