@@ -120,6 +120,7 @@ line_length = 88
 markers = [
     "plots", "docker",
     "e2e: marks tests as end-to-end tests (deselect with '-m \"not e2e\"')",
+    "unit: marks tests as unit (deselect with '-m \"not unit\"')",
 ]
 
 [build-system]

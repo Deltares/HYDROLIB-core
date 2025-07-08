@@ -152,6 +152,25 @@ class MDUParser:
 
         return self.updated_lines
 
+    def update_inifield_file(self, inifield_file: str) -> None:
+        """Update the IniFieldFile entry in the MDU file.
+
+        Args:
+            inifield_file (str):
+                The path to the new inifield file to set
+
+        Notes:
+            - The method adds the IniFieldFile entry at the end-1 of the geometry section, as some mdu files has
+            decorative lines (i.e. "#=========") around the section headers, and the function that detects the end of
+            the section detects the end of the section by looking for the next section header. and then this
+            decorative line will be considered as the last line in the section and adding the inifield file at
+            end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
+            inifield file line.
+        """
+        _, end_ind = self.find_section_bounds("geometry")
+        line = f"IniFieldFile = {inifield_file}\n"
+        self.insert_line(line, end_ind - 1)
+
     @staticmethod
     def is_section_header(line: str) -> bool:
         """Check if the line is a section header (e.g., '[...]').
