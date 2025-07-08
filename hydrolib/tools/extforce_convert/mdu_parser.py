@@ -102,6 +102,14 @@ class MDUParser:
         """
         self._content = new_content
 
+    def has_inifield_file(self) -> bool:
+        """Check if the MDU file has an inifield file defined.
+
+        Returns:
+            bool: True if an inifield file is defined, False otherwise
+        """
+        return True if self.find_keyword_lines("IniFieldFile") is not None else False
+
     def update_extforce_file_new(self) -> List[str]:
         """Update the ExtForceFileNew entry in the MDU file.
 
@@ -324,15 +332,15 @@ class MDUParser:
         self._content.insert(index, line)
 
     def find_section_bounds(self, section_name: str) -> tuple[int, int]:
-        """Find the start and end line indices (0-based) of a section.
+        """Find the start and end line indices of a section.
 
         Args:
             section_name: The name of the section, e.g., "geometry".
 
         Returns:
-            A tuple (start_index, end_index), where:
-            - start_index is the index of the section header line.
-            - end_index is the index just before the next section header or end of file.
+            A tuple (start_index, end_index):
+                - start_index is the index of the section header line.
+                - end_index is the index just before the next section header or end of file(index to the empty line).
 
         Raises:
             ValueError: If the section is not found.

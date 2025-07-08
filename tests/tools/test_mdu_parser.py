@@ -337,6 +337,25 @@ class TestMduParser:
         _, end_ind = parser.find_section_bounds("geometry")
         assert parser._content[end_ind - 2] == "IniFieldFile = new-inifield-file.ini\n"
 
+    @pytest.mark.unit
+    def test_has_inifield_file(self):
+        """Test the has_inifield_file method."""
+        with (
+            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
+                return_value=["[general]\n", "Name = Test\n", "[geometry]\n", "IniFieldFile = new-inifield-file.ini\n"]),
+            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
+                  return_value={}),
+            patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
+                  return_value={}),
+        ):
+            parser = MDUParser(self.file_path)
+
+        # Test with a file that has an inifield file
+        assert parser.has_inifield_file() is True
+
+        # Test with a file that does not have an inifield file
+        parser._content = ["[general]\n", "Name = Test\n", "[geometry]\n", "NetFile = test.nc\n"]
+        assert parser.has_inifield_file() is False
 
     def test_handle_external_forcing_section(self):
         """Test the _handle_external_forcing_section method."""
