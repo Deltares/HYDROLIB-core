@@ -80,7 +80,7 @@ def test_replace_extforcefilenew(line, expected):
         patch("pathlib.Path.exists", return_value=True),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-            return_value=None,
+            return_value=MagicMock(geometry = MagicMock()),
         ),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
