@@ -110,10 +110,30 @@ def test_is_section_header():
 
 
 class TestMduParser:
-
+    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
     @pytest.mark.e2e
-    def test_constructor(self):
-        path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
-        parser = MDUParser(path)
+    def test_find_keyword_lines(self):
+        parser = MDUParser(self.file_path)
         assert parser.find_keyword_lines("ThinDamFile") == 13
         assert parser.find_keyword_lines("ThinDamFile", case_sensitive=True) == 13
+
+    def test_insert_line(self):
+        parser = MDUParser(self.file_path)
+        new_line = "NewLine = value\n"
+        parser.insert_line(new_line, 5)
+        assert parser.content[5] == new_line
+
+        # Test inserting at the beginning
+        parser.insert_line("StartLine = value\n", 0)
+        assert parser.content[0] == "StartLine = value\n"
+
+    def test_find_section_bounds(self):
+        parser = MDUParser(self.file_path)
+        section_start, section_end = parser.find_section_bounds("geometry")
+        assert parser.content[section_start] == "[geometry]\n"
+        assert parser.content[section_end] == "\n"
+
+        # Test for a non-existing section
+        non_existing_section = parser.find_section_bounds("non-existing")
+        assert non_existing_section[0] is None
+        assert non_existing_section[1] is None
