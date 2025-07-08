@@ -29,6 +29,7 @@ class MDUParser:
         self._content = self._read_file()
         self.loaded_fm_data = self._load_with_fm_model()
         self.temperature_salinity_data = self.get_temperature_salinity_data()
+        self._geometry = self.loaded_fm_data.get("geometry")
 
     def _load_with_fm_model(self) -> Dict[str, Any]:
         """Load the MDU file using the FMModel class.
@@ -44,7 +45,7 @@ class MDUParser:
     @property
     def geometry(self) -> Dict[str, Any]:
         """Get the geometry data from the MDU file."""
-        return self.loaded_fm_data.get("geometry")
+        return self._geometry
 
     @property
     def new_forcing_file(self) -> Union[Path, str]:

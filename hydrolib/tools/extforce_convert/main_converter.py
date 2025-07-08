@@ -427,10 +427,8 @@ class ExternalForcingConverter:
         mdu_parser = MDUParser(mdu_file)
 
         external_forcing_data = mdu_parser.loaded_fm_data.get("external_forcing")
-        geometry = mdu_parser.loaded_fm_data.get("geometry")
-
-        inifieldfile_mdu = geometry.get("inifieldfile")
-        structurefile_mdu = geometry.get("structurefile")
+        inifieldfile_mdu = mdu_parser.geometry.get("inifieldfile")
+        structurefile_mdu = mdu_parser.geometry.get("structurefile")
 
         old_ext_force_file = external_forcing_data.get("extforcefile")
         if old_ext_force_file is None:
