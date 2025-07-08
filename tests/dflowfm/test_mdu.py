@@ -1,14 +1,25 @@
+import shutil
 from pathlib import Path
+from typing import Callable, Dict, Union
 
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.ext.models import Boundary
+from hydrolib.core.dflowfm.friction.models import FrictGeneral
 from hydrolib.core.dflowfm.mdu.models import (
+    Calibration,
     FMModel,
     Geometry,
     InfiltrationMethod,
+    Output,
+    Particles,
     ParticlesThreeDType,
+    Processes,
     ProcessFluxIntegration,
+    Restart,
+    Sediment,
     VegetationModelNr,
 )
 from hydrolib.core.dflowfm.net.models import Network
@@ -28,10 +39,21 @@ from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
 from tests.utils import (
     assert_files_equal,
     assert_objects_equal,
+    test_data_dir,
     test_input_dir,
     test_output_dir,
     test_reference_dir,
 )
+
+
+def _create_boundary(data: Dict) -> Boundary:
+    data["quantity"] = ""
+    data["forcingfile"] = ForcingModel()
+
+    if data["locationfile"] is None:
+        data["nodeid"] = "id"
+
+    return Boundary(**data)
 
 
 class TestModels:
@@ -67,7 +89,7 @@ class TestModels:
         fmmodel.geometry.netfile.network = network
         importfm.geometry.netfile.network = network
 
-        assert importfm == fmmodel
+        assert importfm.model_dump() == fmmodel.model_dump()
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
@@ -164,6 +186,222 @@ class TestModels:
         assert model.landboundaryfile is not None
         assert len(model.landboundaryfile) == 1
         assert isinstance(model.landboundaryfile[0], DiskOnlyFileModel)
+
+    def test_mdu_model(self):
+        model = FMModel(
+            filepath=Path(
+                test_data_dir
+                / "input"
+                / "e02"
+                / "c11_korte-woerden-1d"
+                / "dimr_model"
+                / "dflowfm"
+                / "FlowFM.mdu"
+            )
+        )
+        assert model.geometry.comments.uniformwidth1d == "test"
+
+        output_dir = test_output_dir / self.test_mdu_model.__name__
+        output_fn = output_dir / FMModel._generate_name()
+
+        if output_dir.exists():
+            try:
+                shutil.rmtree(output_dir)
+            except PermissionError:
+                pass
+
+        model.save(filepath=output_fn, recurse=True)
+
+        assert model.save_location == output_fn
+        assert model.save_location.is_file()
+
+        assert model.geometry.frictfile is not None
+        frictfile = model.geometry.frictfile[0]
+        assert model.geometry.frictfile[0] is not None
+        assert model.geometry.frictfile[0].filepath is not None
+
+        assert frictfile.save_location == output_dir / frictfile.filepath
+        assert frictfile.save_location.is_file()
+
+        assert model.geometry.structurefile is not None
+        structurefile = model.geometry.structurefile[0]
+        assert structurefile is not None
+        assert structurefile.filepath is not None
+
+        assert structurefile.save_location == output_dir / structurefile.filepath
+        assert structurefile.save_location.is_file()
+
+    def test_load_model_recurse_false(self):
+        file_path = Path(
+            test_data_dir
+            / "input/e02/c11_korte-woerden-1d/dimr_model/dflowfm/FlowFM.mdu"
+        )
+        model = FMModel(filepath=file_path, recurse=False)
+
+        # Assert that references to child models are preserved, but child models are not loaded
+        assert model.geometry.structurefile is not None
+        assert len(model.geometry.structurefile) == 1
+        assert model.geometry.structurefile[0].filepath.name == "structures.ini"
+        assert isinstance(model.geometry.structurefile[0], DiskOnlyFileModel)
+
+    def test_mdu_from_scratch(self):
+        output_fn = Path(test_output_dir / "scratch.mdu")
+        model = FMModel()
+        model.filepath = output_fn
+        model.save()
+
+    @pytest.mark.parametrize(
+        "input",
+        [
+            pytest.param(None, id="None"),
+            pytest.param(Path("some/path/extforce.file"), id="Path"),
+            pytest.param(
+                DiskOnlyFileModel(Path("some/other/path/extforce.file")), id="Model"
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "input_field, create_model, retrieve_field",
+        [
+            pytest.param(
+                "restartfile",
+                lambda d: Restart(**d),
+                lambda m: m.restartfile,
+                id="restartfile",
+            ),
+            pytest.param(
+                "morfile", lambda d: Sediment(**d), lambda m: m.morfile, id="morfile"
+            ),
+            pytest.param(
+                "sedfile", lambda d: Sediment(**d), lambda m: m.sedfile, id="sedfile"
+            ),
+            pytest.param(
+                "flowgeomfile",
+                lambda d: Output(**d),
+                lambda m: m.flowgeomfile,
+                id="flowgeomfile",
+            ),
+            pytest.param(
+                "hisfile", lambda d: Output(**d), lambda m: m.hisfile, id="hisfile"
+            ),
+            pytest.param(
+                "mapfile", lambda d: Output(**d), lambda m: m.mapfile, id="mapfile"
+            ),
+            pytest.param(
+                "mapoutputtimevector",
+                lambda d: Output(**d),
+                lambda m: m.mapoutputtimevector,
+                id="mapoutputtimevector",
+            ),
+            pytest.param(
+                "classmapfile",
+                lambda d: Output(**d),
+                lambda m: m.classmapfile,
+                id="classmapfile",
+            ),
+            pytest.param(
+                "waterlevinifile",
+                lambda d: Geometry(**d),
+                lambda m: m.waterlevinifile,
+                id="waterlevinifile",
+            ),
+            pytest.param(
+                "oned2dlinkfile",
+                lambda d: Geometry(**d),
+                lambda m: m.oned2dlinkfile,
+                id="oned2dlinkfile",
+            ),
+            pytest.param(
+                "proflocfile",
+                lambda d: Geometry(**d),
+                lambda m: m.proflocfile,
+                id="proflocfile",
+            ),
+            pytest.param(
+                "profdeffile",
+                lambda d: Geometry(**d),
+                lambda m: m.profdeffile,
+                id="profdeffile",
+            ),
+            pytest.param(
+                "profdefxyzfile",
+                lambda d: Geometry(**d),
+                lambda m: m.profdefxyzfile,
+                id="profdefxyzfile",
+            ),
+            pytest.param(
+                "manholefile",
+                lambda d: Geometry(**d),
+                lambda m: m.manholefile,
+                id="manholefile",
+            ),
+            pytest.param(
+                "definitionfile",
+                lambda d: Calibration(**d),
+                lambda m: m.definitionfile,
+                id="definitionfile",
+            ),
+            pytest.param(
+                "areafile",
+                lambda d: Calibration(**d),
+                lambda m: m.areafile,
+                id="definitionfile",
+            ),
+            pytest.param(
+                "substancefile",
+                lambda d: Processes(**d),
+                lambda m: m.substancefile,
+                id="substancefile",
+            ),
+            pytest.param(
+                "additionalhistoryoutputfile",
+                lambda d: Processes(**d),
+                lambda m: m.additionalhistoryoutputfile,
+                id="additionalhistoryoutputfile",
+            ),
+            pytest.param(
+                "statisticsfile",
+                lambda d: Processes(**d),
+                lambda m: m.statisticsfile,
+                id="statisticsfile",
+            ),
+            pytest.param(
+                "particlesreleasefile",
+                lambda d: Particles(**d),
+                lambda m: m.particlesreleasefile,
+                id="particlesreleasefile",
+            ),
+            pytest.param(
+                "locationfile",
+                _create_boundary,
+                lambda m: m.locationfile,
+                id="locationfile",
+            ),
+            pytest.param(
+                "frictionvaluesfile",
+                lambda d: FrictGeneral(**d),
+                lambda m: m.frictionvaluesfile,
+                id="frictionvaluesfile",
+            ),
+        ],
+    )
+    def test_model_diskonlyfilemodel_field_is_constructed_correctly(
+        self,
+        input: Union[None, Path, DiskOnlyFileModel],
+        input_field: str,
+        create_model: Callable[[Dict], object],
+        retrieve_field: Callable[[object], DiskOnlyFileModel],
+    ):
+        data = {input_field: input}
+        model = create_model(data)
+        relevant_field = retrieve_field(model)
+
+        assert isinstance(relevant_field, DiskOnlyFileModel)
+
+        if isinstance(input, DiskOnlyFileModel):
+            assert relevant_field == input
+        else:
+            assert relevant_field.filepath == input
 
 
 class PyTestMatchAny:
@@ -407,7 +645,7 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
 
         expected_message = (
@@ -417,6 +655,7 @@ class TestOutput:
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 
+        print(str(exc_err.value))
         assert expected_message in str(exc_err.value)
 
     def test_mdu_unknown_keywords_loading_throws_valueerror_for_unknown_keywords(
@@ -437,12 +676,14 @@ class TestOutput:
         tmp_mdu_path = tmp_path / "tmp.mdu"
         tmp_mdu_path.write_text(tmp_mdu)
 
-        section_header = "General"
+        section_header = "default='General'"
         name = "unknownkey"
         name2 = "unknownkey2"
 
-        expected_message = f"Unknown keywords are detected in section: '{section_header}', '{[name, name2]}'"
-
+        expected_message = (
+            "Unknown keywords are detected in section: "
+            f"'{section_header}', '{[name, name2]}'"
+        )
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
 

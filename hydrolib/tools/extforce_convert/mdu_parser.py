@@ -42,6 +42,11 @@ class MDUParser:
         return data
 
     @property
+    def geometry(self) -> Dict[str, Any]:
+        """Get the geometry data from the MDU file."""
+        return self.loaded_fm_data.get("geometry")
+
+    @property
     def new_forcing_file(self) -> Union[Path, str]:
         """Get the filename for the ExtForceFileNew entry."""
         if not hasattr(self, "_new_forcing_file"):
