@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -12,17 +13,18 @@ from hydrolib.core.dflowfm.ext.models import (
     SourceSink,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
-from hydrolib.core.dflowfm.inifield.models import IniFieldModel
-from hydrolib.core.dflowfm.structure.models import StructureModel
+from hydrolib.core.dflowfm.inifield.models import (
+    DataFileType,
+    IniFieldModel,
+    InitialField,
+)
+from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
 )
 
-from hydrolib.core.dflowfm.inifield.models import InitialField, DataFileType
-from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.structure.models import Structure
 
 class TestExtOldToNewFromMDU:
     def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
@@ -313,7 +315,10 @@ class TestExternalFocingConverter:
         mock_ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
 
         # Create the converter with the mock model
-        with patch("hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file", return_value=mock_ext_old_model):
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file",
+            return_value=mock_ext_old_model,
+        ):
             converter = ExternalForcingConverter(mock_ext_old_model)
 
         # Mock the MDU parser
@@ -323,16 +328,14 @@ class TestExternalFocingConverter:
         mock_mdu_parser.has_structure_file.return_value = False
         converter._mdu_parser = mock_mdu_parser
 
-        # Create a proper InitialField instance
-
         # Create a DiskOnlyFileModel for the datafile
-        datafile = DiskOnlyFileModel(filepath=Path("tests/data/input/mock_datafile.xyz"))
+        datafile = DiskOnlyFileModel(
+            filepath=Path("tests/data/input/mock_datafile.xyz")
+        )
 
         # Create an InitialField instance
         initial_field = InitialField(
-            quantity="waterlevel",
-            datafile=datafile,
-            datafiletype=DataFileType.arcinfo
+            quantity="waterlevel", datafile=datafile, datafiletype=DataFileType.arcinfo
         )
 
         # Add the initial field to the inifield model
@@ -346,7 +349,7 @@ class TestExternalFocingConverter:
             name="Test Structure",
             type="weir",
             branchid="branch1",
-            chainage=100.0
+            chainage=100.0,
         )
 
         # Add the structure to the structure model
