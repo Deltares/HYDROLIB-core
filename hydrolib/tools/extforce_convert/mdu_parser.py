@@ -46,7 +46,7 @@ class MDUParser:
 
         position = None
         if equal_sign_counter:
-            most_common_pos, _ = max(equal_sign_counter.items(), key=lambda x: x[1])
+            most_common_pos, _ = equal_sign_counter.most_common(1)[0]
             position =  most_common_pos
 
         return position
