@@ -545,3 +545,72 @@ class TestMduParser:
             assert "new_test.ext" in updated_lines[3]
             assert updated_lines[4] == "\n"
             assert updated_lines[5] == "[geometry]\n"
+            assert updated_lines[6] == "NetFile = test.nc\n"
+
+class TestGetEquaSignPosition:
+
+    parser = MagicMock(spec=MDUParser)
+
+    @pytest.mark.unit
+    def test_same_position_all_lines(self):
+        # All equal signs at the same position
+        content = [
+            "Param1    = value1\n",
+            "Param2    = value2\n",
+            "Param3    = value3\n",
+        ]
+
+        self.parser._content = content
+
+        pos = MDUParser._get_equa_sign_position(self.parser)
+        assert pos == content[0].find("=")
+
+    @pytest.mark.unit
+    def test_different_position(self):
+        # Equal signs at different positions, most common should be chosen
+        content = [
+            "A = 1\n",           # pos 2
+            "BB   = 2\n",        # pos 4
+            "CCC = 3\n",         # pos 4
+            "DDDD = 4\n",        # pos 5
+            "E = 5\n",           # pos 2
+            "F = 6\n",           # pos 2
+        ]
+        self.parser._content = content
+        pos = MDUParser._get_equa_sign_position(self.parser)
+        # pos 2 appears 3 times, pos 4 appears 2 times, pos 5 once
+        assert pos == 2
+
+    @pytest.mark.unit
+    def test_lines_with_decorative_equal_sign(self):
+        # Lines with comments and equal signs
+        content = [
+            "# This is a comment ==========\n",
+            "Param = value # comment\n",
+            "Another = something\n",
+        ]
+        self.parser._content = content
+        pos = MDUParser._get_equa_sign_position(self.parser)
+        assert pos == content[1].find("=")
+
+    @pytest.mark.unit
+    def test_no_equal_sign(self):
+        # No equal signs at all
+        content = [
+            "No equals here\n",
+            "Still no equals\n",
+        ]
+        self.parser._content = content
+        pos = MDUParser._get_equa_sign_position(self.parser)
+        assert pos is None
+
+    @pytest.mark.unit
+    def test_all_equal_sign_are_commented(self):
+        # Only commented lines with equal signs (should be ignored)
+        content = [
+            "# Param = value\n",
+            "# Another = something\n",
+        ]
+        self.parser._content = content
+        pos = MDUParser._get_equa_sign_position(self.parser)
+        assert pos is None

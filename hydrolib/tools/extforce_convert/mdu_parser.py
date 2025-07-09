@@ -3,6 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Union
+from collections import Counter
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
@@ -33,6 +34,22 @@ class MDUParser:
         self.loaded_fm_data = self._load_with_fm_model()
         self.temperature_salinity_data = self.get_temperature_salinity_data()
         self._geometry = self.loaded_fm_data.get("geometry")
+        self._equa_sign_position = self._get_equa_sign_position()
+
+    def _get_equa_sign_position(self) -> int:
+        """Get the position of the equal sign in the MDU file."""
+        equal_sign_counter = Counter()
+        for line in self._content:
+            if "=" in line and not line.strip().startswith("#"):
+                eq_index = line.find("=")
+                equal_sign_counter[eq_index] += 1
+
+        position = None
+        if equal_sign_counter:
+            most_common_pos, _ = max(equal_sign_counter.items(), key=lambda x: x[1])
+            position =  most_common_pos
+
+        return position
 
     def _load_with_fm_model(self) -> Dict[str, Any]:
         """Load the MDU file using the FMModel class.
