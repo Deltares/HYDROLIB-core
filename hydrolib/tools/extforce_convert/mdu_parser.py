@@ -1,9 +1,9 @@
 """MDU Parser."""
 
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Union
-from collections import Counter
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
@@ -47,7 +47,7 @@ class MDUParser:
         position = None
         if equal_sign_counter:
             most_common_pos, _ = equal_sign_counter.most_common(1)[0]
-            position =  most_common_pos
+            position = most_common_pos
 
         return position
 
@@ -439,7 +439,7 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     return f"MINUTES SINCE {date_object}"
 
 
-def _recenter_equal_sign( line: str, target_pos: int) -> str:
+def _recenter_equal_sign(line: str, target_pos: int) -> str:
     """
     Recenter the equal sign to a specific target column.
 
@@ -453,6 +453,6 @@ def _recenter_equal_sign( line: str, target_pos: int) -> str:
         str:
             Re-aligned line with equal sign at target_pos
     """
-    key, value = map(str.strip, line.split('=', 1))
+    key, value = map(str.strip, line.split("=", 1))
     aligned_key = key.ljust(target_pos)
     return f"{aligned_key}= {value}"
