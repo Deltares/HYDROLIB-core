@@ -3,11 +3,11 @@ from typing import Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from hydrolib.tools.extforce_convert.mdu_parser import (
     MDUParser,
     get_ref_time,
     save_mdu_file,
+    _recenter_equal_sign
 )
 
 
@@ -311,7 +311,7 @@ class TestMduParser:
 
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
-        assert parser._content[end_ind - 2] == "IniFieldFile = new-inifield-file.ini\n"
+        assert parser._content[end_ind - 2] == "IniFieldFile                        = new-inifield-file.ini\n"
 
     @pytest.mark.unit
     def test_update_inifield_file_with_decorative_lines(self):
@@ -341,7 +341,7 @@ class TestMduParser:
 
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
-        assert parser._content[end_ind - 2] == "IniFieldFile = new-inifield-file.ini\n"
+        assert parser._content[end_ind - 2] == "IniFieldFile                        = new-inifield-file.ini\n"
 
     @pytest.mark.unit
     def test_has_inifield_file(self):
@@ -614,3 +614,56 @@ class TestGetEquaSignPosition:
         self.parser._content = content
         pos = MDUParser._get_equa_sign_position(self.parser)
         assert pos is None
+
+class TestRecenterEqualSign:
+    """
+    Test the _recenter_equal_sign function for various behaviors:
+    - Aligns the equal sign at the specified column.
+    - Handles lines with/without spaces around the equal sign.
+    - Handles different target positions.
+    - Handles values with/without leading/trailing spaces.
+    - Handles empty value.
+    """
+
+    @pytest.mark.unit
+    def test_standard_alignment(self):
+        # Case 1: Standard alignment
+        line = "IniFieldFile=my-file.ini"
+        result = _recenter_equal_sign(line, 20)
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_already_aligned(self):
+        # Already aligned, target position matches
+        line = "IniFieldFile         = my-file.ini"
+        result = _recenter_equal_sign(line, 20)
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_value_with_leading_trailing_spaces(self):
+        # Case 3: Value with leading/trailing spaces
+        line = "IniFieldFile=   my-file.ini   "
+        result = _recenter_equal_sign(line, 20)
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_target_position_less_than_key_length(self):
+        # Case 4: Target position less than key length
+        line = "IniFieldFile=my-file.ini"
+        result = _recenter_equal_sign(line, 5)
+        assert result == "IniFieldFile= my-file.ini"
+
+    @pytest.mark.unit
+    def test_empty_value(self):
+        # Case 5: Empty value
+        line = "IniFieldFile="
+        result = _recenter_equal_sign(line, 15)
+        assert result == "IniFieldFile   = "
+
+    @pytest.mark.unit
+    def test_key_with_spaces_value_with_spaces(self):
+        # Case 6: Key with spaces, value with spaces
+        line = "IniFieldFile   =   my-file.ini   "
+        result = _recenter_equal_sign(line, 25)
+        assert result == "IniFieldFile             = my-file.ini"
+

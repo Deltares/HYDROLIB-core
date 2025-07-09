@@ -205,6 +205,7 @@ class MDUParser:
         """
         _, end_ind = self.find_section_bounds("geometry")
         line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+        line = _recenter_equal_sign(line, self._equa_sign_position)
         self.insert_line(line, end_ind - 1)
 
     def update_structure_file(self, file_name: str) -> None:
@@ -224,6 +225,7 @@ class MDUParser:
         """
         _, end_ind = self.find_section_bounds("geometry")
         line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
+        line = _recenter_equal_sign(line, self._equa_sign_position)
         self.insert_line(line, end_ind - 1)
 
     @staticmethod
@@ -435,3 +437,22 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     """Convert a date string to a datetime object."""
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
+
+
+def _recenter_equal_sign( line: str, target_pos: int) -> str:
+    """
+    Recenter the equal sign to a specific target column.
+
+    Args:
+        line (str):
+            Input line like "IniFieldFile=my-file.ini"
+        target_pos (int):
+            Target column index to align the equal sign
+
+    Returns:
+        str:
+            Re-aligned line with equal sign at target_pos
+    """
+    key, value = map(str.strip, line.split('=', 1))
+    aligned_key = key.ljust(target_pos)
+    return f"{aligned_key}= {value}"
