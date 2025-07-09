@@ -322,7 +322,7 @@ class MDUParser:
 
     def find_keyword_lines(
         self, keyword: str, case_sensitive: bool = False
-    ) -> Union[int , None]:
+    ) -> Union[int, None]:
         """Find line numbers in the MDU file where the keyword appears.
 
         Args:
