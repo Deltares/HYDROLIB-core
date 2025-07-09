@@ -7,6 +7,8 @@ from typing import Any, Dict, List, Union
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
+STRUCTURE_FILE_LINE = "StructureFile"
+INIFIELD_FILE_LINE = "IniFieldFile"
 
 
 class MDUParser:
@@ -110,6 +112,14 @@ class MDUParser:
         """
         return True if self.find_keyword_lines("IniFieldFile") is not None else False
 
+    def _has_structure_file(self) -> bool:
+        """Check if the MDU file has an inifield file defined.
+
+        Returns:
+            bool: True if an inifield file is defined, False otherwise
+        """
+        return True if self.find_keyword_lines("StructureFile") is not None else False
+
     def update_extforce_file_new(self) -> List[str]:
         """Update the ExtForceFileNew entry in the MDU file.
 
@@ -160,11 +170,11 @@ class MDUParser:
 
         return self.updated_lines
 
-    def update_inifield_file(self, inifield_file: str) -> None:
+    def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
 
         Args:
-            inifield_file (str):
+            file_name (str):
                 The path to the new inifield file to set
 
         Notes:
@@ -176,7 +186,26 @@ class MDUParser:
             inifield file line.
         """
         _, end_ind = self.find_section_bounds("geometry")
-        line = f"IniFieldFile = {inifield_file}\n"
+        line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+        self.insert_line(line, end_ind - 1)
+
+    def update_structure_file(self, file_name: str) -> None:
+        """Update the IniFieldFile entry in the MDU file.
+
+        Args:
+            file_name (str):
+                The path to the new inifield file to set
+
+        Notes:
+            - The method adds the IniFieldFile entry at the end-1 of the geometry section, as some mdu files has
+            decorative lines (i.e. "#=========") around the section headers, and the function that detects the end of
+            the section detects the end of the section by looking for the next section header. and then this
+            decorative line will be considered as the last line in the section and adding the inifield file at
+            end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
+            inifield file line.
+        """
+        _, end_ind = self.find_section_bounds("geometry")
+        line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
         self.insert_line(line, end_ind - 1)
 
     @staticmethod
