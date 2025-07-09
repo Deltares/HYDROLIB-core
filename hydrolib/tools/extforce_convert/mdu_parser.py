@@ -112,7 +112,7 @@ class MDUParser:
         """
         return True if self.find_keyword_lines("IniFieldFile") is not None else False
 
-    def _has_structure_file(self) -> bool:
+    def has_structure_file(self) -> bool:
         """Check if the MDU file has an inifield file defined.
 
         Returns:

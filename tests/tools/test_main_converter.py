@@ -296,6 +296,108 @@ class TestExternalFocingConverter:
         quantities = [forcing.quantity for forcing in converter.extold_model.forcing]
         assert all([quantity in old_forcing_file_quantities for quantity in quantities])
 
+    def test_update_mdu_file(self):
+        """
+        Test the _update_mdu_file method of the ExternalForcingConverter class.
+
+        This test verifies that:
+        1. The external forcing file is updated in the MDU file
+        2. An inifield file entry is added if it doesn't exist and there are initial fields or parameters
+        3. A structure file entry is added if it doesn't exist and there are structures
+        """
+        # Import required modules
+        from hydrolib.core.dflowfm.inifield.models import InitialField, DataFileType
+        from hydrolib.core.base.models import DiskOnlyFileModel
+        from hydrolib.core.dflowfm.structure.models import Structure
+
+        # Create a mock ExtOldModel
+        mock_ext_old_model = MagicMock(spec=ExtOldModel)
+        mock_ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+
+        # Create the converter with the mock model
+        with patch("hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file", return_value=mock_ext_old_model):
+            converter = ExternalForcingConverter(mock_ext_old_model)
+
+        # Mock the MDU parser
+        mock_mdu_parser = MagicMock()
+        mock_mdu_parser.update_extforce_file_new.return_value = ["updated content"]
+        mock_mdu_parser.has_inifield_file.return_value = False
+        mock_mdu_parser._has_structure_file.return_value = False
+        converter._mdu_parser = mock_mdu_parser
+
+        # Create a proper InitialField instance
+
+        # Create a DiskOnlyFileModel for the datafile
+        datafile = DiskOnlyFileModel(filepath=Path("tests/data/input/mock_datafile.xyz"))
+
+        # Create an InitialField instance
+        initial_field = InitialField(
+            quantity="waterlevel",
+            datafile=datafile,
+            datafiletype=DataFileType.arcinfo
+        )
+
+        # Add the initial field to the inifield model
+        converter.inifield_model.initial = [initial_field]
+
+        # Add some structures to the structure model
+
+        # Create a Structure instance
+        structure = Structure(
+            id="structure1",
+            name="Test Structure",
+            type="weir",
+            branchid="branch1",
+            chainage=100.0
+        )
+
+        # Add the structure to the structure model
+        converter.structure_model.structure = [structure]
+
+        # Call the method under test
+        converter._update_mdu_file()
+
+        # Verify that the external forcing file was updated
+        mock_mdu_parser.update_extforce_file_new.assert_called_once()
+        assert mock_mdu_parser.content == ["updated content"]
+
+        # Verify that the inifield file was added
+        mock_mdu_parser.update_inifield_file.assert_called_once_with(
+            converter.inifield_model.filepath.name
+        )
+
+        # Verify that the structure file was added
+        mock_mdu_parser.update_structure_file.assert_called_once_with(
+            converter.structure_model.filepath.name
+        )
+
+        # Test case: inifield file already exists
+        mock_mdu_parser.reset_mock()
+        mock_mdu_parser.has_inifield_file.return_value = True
+        converter._update_mdu_file()
+        mock_mdu_parser.update_inifield_file.assert_not_called()
+
+        # Test case: structure file already exists
+        mock_mdu_parser.reset_mock()
+        mock_mdu_parser._has_structure_file.return_value = True
+        converter._update_mdu_file()
+        mock_mdu_parser.update_structure_file.assert_not_called()
+
+        # Test case: no initial fields or parameters
+        mock_mdu_parser.reset_mock()
+        mock_mdu_parser.has_inifield_file.return_value = False
+        converter.inifield_model.initial = []
+        converter.inifield_model.parameter = []
+        converter._update_mdu_file()
+        mock_mdu_parser.update_inifield_file.assert_not_called()
+
+        # Test case: no structures
+        mock_mdu_parser.reset_mock()
+        mock_mdu_parser._has_structure_file.return_value = False
+        converter.structure_model.structure = []
+        converter._update_mdu_file()
+        mock_mdu_parser.update_structure_file.assert_not_called()
+
 
 class TestUpdate:
 
