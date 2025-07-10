@@ -3,7 +3,6 @@ from typing import Dict, List
 from unittest.mock import MagicMock, patch
 
 import pytest
-from coverage.files import python_reported_file
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import Boundary
