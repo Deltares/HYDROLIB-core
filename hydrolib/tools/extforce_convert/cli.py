@@ -94,12 +94,28 @@ def _get_parser() -> argparse.ArgumentParser:
 
 
 def main(args=None):
-    """Entry point for extforce_convert tool.
+    """
+    Entry point for extforce_convert tool.
 
-    Args:
-        args : list
-            A of arguments as if they were input in the command line. Leave it
-            None to use sys.argv.
+    CLI argument combinations:
+
+    Required (mutually exclusive, pick one):
+      --mdufile MDUFILE         Use MDUFILE to determine input/output files automatically.
+      --extoldfile EXTOLDFILE   Convert a specific legacy external forcing file.
+      --dir DIR                 Recursively find and convert all .mdu files in DIR.
+
+    Optional:
+      --outfiles EXTFILE INIFIELDFILE STRUCTUREFILE
+                              Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
+      --backup / --no-backup   Create (default) or skip creating a backup of overwritten files (mutually exclusive).
+      --remove-legacy-files    Remove legacy/old files (e.g. .tim) after conversion.
+      --verbose, -v            Print diagnostic information.
+      --version                Print version and exit.
+
+    Example usages:
+      extforce_convert --mdufile model.mdu
+      extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
+      extforce_convert --dir ./models --no-backup --remove-legacy-files
     """
     parser = _get_parser()
     args = parser.parse_args(args)
