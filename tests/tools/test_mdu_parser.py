@@ -3,11 +3,12 @@ from typing import Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from hydrolib.tools.extforce_convert.mdu_parser import (
     MDUParser,
+    _recenter_equal_sign,
     get_ref_time,
     save_mdu_file,
-    _recenter_equal_sign
 )
 
 
@@ -311,7 +312,10 @@ class TestMduParser:
 
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
-        assert parser._content[end_ind - 2] == "IniFieldFile                        = new-inifield-file.ini\n"
+        assert (
+            parser._content[end_ind - 2]
+            == "IniFieldFile                        = new-inifield-file.ini\n"
+        )
 
     @pytest.mark.unit
     def test_update_inifield_file_with_decorative_lines(self):
@@ -341,7 +345,10 @@ class TestMduParser:
 
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
-        assert parser._content[end_ind - 2] == "IniFieldFile                        = new-inifield-file.ini\n"
+        assert (
+            parser._content[end_ind - 2]
+            == "IniFieldFile                        = new-inifield-file.ini\n"
+        )
 
     @pytest.mark.unit
     def test_has_inifield_file(self):
@@ -547,6 +554,7 @@ class TestMduParser:
             assert updated_lines[5] == "[geometry]\n"
             assert updated_lines[6] == "NetFile = test.nc\n"
 
+
 class TestGetEquaSignPosition:
 
     parser = MagicMock(spec=MDUParser)
@@ -569,12 +577,12 @@ class TestGetEquaSignPosition:
     def test_different_position(self):
         # Equal signs at different positions, most common should be chosen
         content = [
-            "A = 1\n",           # pos 2
-            "BB   = 2\n",        # pos 4
-            "CCC = 3\n",         # pos 4
-            "DDDD = 4\n",        # pos 5
-            "E = 5\n",           # pos 2
-            "F = 6\n",           # pos 2
+            "A = 1\n",  # pos 2
+            "BB   = 2\n",  # pos 4
+            "CCC = 3\n",  # pos 4
+            "DDDD = 4\n",  # pos 5
+            "E = 5\n",  # pos 2
+            "F = 6\n",  # pos 2
         ]
         self.parser._content = content
         pos = MDUParser._get_equa_sign_position(self.parser)
@@ -614,6 +622,7 @@ class TestGetEquaSignPosition:
         self.parser._content = content
         pos = MDUParser._get_equa_sign_position(self.parser)
         assert pos is None
+
 
 class TestRecenterEqualSign:
     """
@@ -666,4 +675,3 @@ class TestRecenterEqualSign:
         line = "IniFieldFile   =   my-file.ini   "
         result = _recenter_equal_sign(line, 25)
         assert result == "IniFieldFile             = my-file.ini"
-
