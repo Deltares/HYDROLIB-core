@@ -128,7 +128,7 @@ class MDUParser:
         Returns:
             bool: True if an inifield file is defined, False otherwise
         """
-        return True if self.find_keyword_lines("IniFieldFile") is not None else False
+        return self.has_field("IniFieldFile")
 
     def has_structure_file(self) -> bool:
         """Check if the MDU file has an inifield file defined.
@@ -136,7 +136,16 @@ class MDUParser:
         Returns:
             bool: True if an inifield file is defined, False otherwise
         """
-        return True if self.find_keyword_lines("StructureFile") is not None else False
+        return self.has_field("StructureFile")
+
+    def has_field(self, field_name: str) -> bool:
+        """Check if the MDU file has a given file defined.
+
+        Returns:
+            bool:
+                True if an inifield file is defined, False otherwise
+        """
+        return True if self.find_keyword_lines(field_name) is not None else False
 
     def update_extforce_file_new(self) -> List[str]:
         """Update the ExtForceFileNew entry in the MDU file.
