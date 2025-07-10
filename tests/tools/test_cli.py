@@ -213,7 +213,7 @@ class TestGetParser:
         """
         Test that providing a non-existent file to --mdufile or --extoldfile raises ArgumentTypeError.
         """
-        with pytest.raises(argparse.ArgumentTypeError):
+        with pytest.raises(SystemExit):
             self.parser.parse_args(["--mdufile", str(self.tmp_path / "doesnotexist.mdu")])
-        with pytest.raises(argparse.ArgumentTypeError):
+        with pytest.raises(SystemExit):
             self.parser.parse_args(["--extoldfile", str(self.tmp_path / "doesnotexist.ext")])
