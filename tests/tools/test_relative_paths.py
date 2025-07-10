@@ -36,10 +36,10 @@ class TestSourceSinks:
             == source_sink_paths["bc_relative_path"]
         )
         assert (
-            source_sink.salinitydelta.filepath == source_sink_paths["bc_relative_path"]
+            source_sink.sourcesink_salinitydelta.filepath == source_sink_paths["bc_relative_path"]
         )
         assert (
-            source_sink.temperaturedelta.filepath
+            source_sink.sourcesink_temperaturedelta.filepath
             == source_sink_paths["bc_relative_path"]
         )
 

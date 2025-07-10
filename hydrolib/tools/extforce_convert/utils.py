@@ -218,26 +218,28 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     and returns a dictionary with associated values.
 
     Args:
-        strings (List[str]): A list of strings to search.
+        strings (List[str]):
+            A list of strings to search.
 
     Returns:
-        Dict[str, int]: A dictionary with keys as "salinity" or "temperature"
-                        and values 3 and 4 respectively.
+        Dict[str, int]:
+            A dictionary with keys as "salinity" or "temperature" and values 3 and 4 respectively.
 
      Examples:
-         ```python
+        ```python
+        >>> from hydrolib.tools.extforce_convert.utils import find_temperature_salinity_in_quantities
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({'salinitydelta': 3, 'temperaturedelta': 4})
+        OrderedDict({'sourcesink_salinitydelta': 3, 'sourcesink_temperaturedelta': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({'temperaturedelta': 3})
+        OrderedDict({'sourcesink_temperaturedelta': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({'salinitydelta': 3})
+        OrderedDict({'sourcesink_salinitydelta': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
-        OrderedDict({'salinitydelta': 3})
+        OrderedDict({'sourcesink_salinitydelta': 3})
 
         ```
 
@@ -252,10 +254,10 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         strings.remove("discharge_salinity_temperature_sorsin")
 
     if any("salinity" in string.lower() for string in strings):
-        result["salinitydelta"] = 3
+        result["sourcesink_salinitydelta"] = 3
     if any("temperature" in string.lower() for string in strings):
-        result["temperaturedelta"] = (
-            result.get("salinitydelta", 2) + 1
+        result["sourcesink_temperaturedelta"] = (
+            result.get("sourcesink_salinitydelta", 2) + 1
         )  # Default temperature value is 2
 
     return result
