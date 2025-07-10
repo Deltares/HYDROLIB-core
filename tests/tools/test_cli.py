@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-
+import argparse
 from hydrolib.core import __version__
 from hydrolib.tools.extforce_convert.cli import ExternalForcingConverter, main
 
@@ -93,3 +93,127 @@ def test_mdufile_ok(monkeypatch, capsys, input_files_dir: Path):
         in captured.out
     )
     assert "The new files are saved." in captured.out
+
+
+class TestGetParser:
+    """
+    Unit tests for the _get_parser function, covering all argument scenarios and error handling.
+    """
+
+    @pytest.fixture(autouse=True)
+    def setup_parser(self, tmp_path):
+        from hydrolib.tools.extforce_convert.cli import _get_parser
+
+        self.parser = _get_parser()
+        # Create dummy files for file arguments
+        self.mdu = tmp_path / "test.mdu"
+        self.ext = tmp_path / "test.ext"
+        self.mdu.write_text("")
+        self.ext.write_text("")
+        self.tmp_path = tmp_path
+
+    @pytest.mark.unit
+    def test_only_mdufile(self):
+        """
+        Test that only --mdufile is accepted and parsed correctly, and other mutually exclusive arguments are None.
+        """
+        args = self.parser.parse_args(["--mdufile", str(self.mdu)])
+        assert args.mdufile == self.mdu
+        assert args.extoldfile is None
+        assert args.dir is None
+
+    @pytest.mark.unit
+    def test_only_extoldfile(self):
+        """
+        Test that only --extoldfile is accepted and parsed correctly, and other mutually exclusive arguments are None.
+        """
+        args = self.parser.parse_args(["--extoldfile", str(self.ext)])
+        assert args.extoldfile == self.ext
+        assert args.mdufile is None
+        assert args.dir is None
+
+    @pytest.mark.unit
+    def test_only_dir(self):
+        """
+        Test that only --dir is accepted and parsed correctly, and other mutually exclusive arguments are None.
+        """
+        args = self.parser.parse_args(["--dir", str(self.tmp_path)])
+        assert args.dir == str(self.tmp_path)
+        assert args.mdufile is None
+        assert args.extoldfile is None
+
+    @pytest.mark.unit
+    def test_outfiles_with_three_values(self):
+        """
+        Test that --outfiles accepts exactly three values and parses them correctly.
+        """
+        args = self.parser.parse_args(
+            ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini", "c.str"]
+        )
+        assert args.outfiles == ["a.ext", "b.ini", "c.str"]
+
+    @pytest.mark.unit
+    def test_backup_and_no_backup(self):
+        """
+        Test that --backup and --no-backup flags are mutually exclusive and set the backup attribute correctly.
+        """
+        args = self.parser.parse_args(["--mdufile", str(self.mdu)])
+        assert args.backup is True
+        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--no-backup"])
+        assert args.backup is False
+        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--backup"])
+        assert args.backup is True
+
+    @pytest.mark.unit
+    def test_remove_legacy_files(self):
+        """
+        Test that --remove-legacy-files flag sets the remove_legacy attribute to True.
+        """
+        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--remove-legacy-files"])
+        assert args.remove_legacy is True
+
+    @pytest.mark.unit
+    def test_verbose(self):
+        """
+        Test that --verbose flag sets the verbose attribute to True.
+        """
+        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--verbose"])
+        assert args.verbose is True
+
+    @pytest.mark.unit
+    def test_mutually_exclusive_group(self):
+        """
+        Test that mutually exclusive arguments (--mdufile, --extoldfile, --dir) cannot be used together and raise SystemExit.
+        """
+        with pytest.raises(SystemExit):
+            self.parser.parse_args(["--mdufile", str(self.mdu), "--extoldfile", str(self.ext)])
+        with pytest.raises(SystemExit):
+            self.parser.parse_args(["--mdufile", str(self.mdu), "--dir", str(self.tmp_path)])
+        with pytest.raises(SystemExit):
+            self.parser.parse_args(["--extoldfile", str(self.ext), "--dir", str(self.tmp_path)])
+
+    @pytest.mark.unit
+    def test_missing_required_argument(self):
+        """
+        Test that missing all mutually exclusive required arguments raises SystemExit.
+        """
+        with pytest.raises(SystemExit):
+            self.parser.parse_args([])
+
+    @pytest.mark.unit
+    def test_wrong_number_of_outfiles(self):
+        """
+        Test that providing fewer than three values to --outfiles raises SystemExit.
+        """
+        with pytest.raises(SystemExit):
+            self.parser.parse_args(["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini"])  # only 2
+
+    @pytest.mark.unit
+    def test_nonexistent_file_argument(self):
+        """
+        Test that providing a non-existent file to --mdufile or --extoldfile raises ArgumentTypeError.
+        """
+        with pytest.raises(argparse.ArgumentTypeError):
+            self.parser.parse_args(["--mdufile", str(self.tmp_path / "doesnotexist.mdu")])
+        with pytest.raises(argparse.ArgumentTypeError):
+            self.parser.parse_args(["--extoldfile", str(self.tmp_path / "doesnotexist.ext")])
