@@ -1,9 +1,10 @@
+import argparse
 import sys
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-import argparse
+
 from hydrolib.core import __version__
 from hydrolib.tools.extforce_convert.cli import ExternalForcingConverter, main
 
@@ -169,7 +170,9 @@ class TestGetParser:
         """
         Test that --remove-legacy-files flag sets the remove_legacy attribute to True.
         """
-        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--remove-legacy-files"])
+        args = self.parser.parse_args(
+            ["--mdufile", str(self.mdu), "--remove-legacy-files"]
+        )
         assert args.remove_legacy is True
 
     @pytest.mark.unit
@@ -186,11 +189,17 @@ class TestGetParser:
         Test that mutually exclusive arguments (--mdufile, --extoldfile, --dir) cannot be used together and raise SystemExit.
         """
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--mdufile", str(self.mdu), "--extoldfile", str(self.ext)])
+            self.parser.parse_args(
+                ["--mdufile", str(self.mdu), "--extoldfile", str(self.ext)]
+            )
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--mdufile", str(self.mdu), "--dir", str(self.tmp_path)])
+            self.parser.parse_args(
+                ["--mdufile", str(self.mdu), "--dir", str(self.tmp_path)]
+            )
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--extoldfile", str(self.ext), "--dir", str(self.tmp_path)])
+            self.parser.parse_args(
+                ["--extoldfile", str(self.ext), "--dir", str(self.tmp_path)]
+            )
 
     @pytest.mark.unit
     def test_missing_required_argument(self):
@@ -206,7 +215,9 @@ class TestGetParser:
         Test that providing fewer than three values to --outfiles raises SystemExit.
         """
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini"])  # only 2
+            self.parser.parse_args(
+                ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini"]
+            )  # only 2
 
     @pytest.mark.unit
     def test_nonexistent_file_argument(self):
@@ -214,6 +225,10 @@ class TestGetParser:
         Test that providing a non-existent file to --mdufile or --extoldfile raises ArgumentTypeError.
         """
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--mdufile", str(self.tmp_path / "doesnotexist.mdu")])
+            self.parser.parse_args(
+                ["--mdufile", str(self.tmp_path / "doesnotexist.mdu")]
+            )
         with pytest.raises(SystemExit):
-            self.parser.parse_args(["--extoldfile", str(self.tmp_path / "doesnotexist.ext")])
+            self.parser.parse_args(
+                ["--extoldfile", str(self.tmp_path / "doesnotexist.ext")]
+            )

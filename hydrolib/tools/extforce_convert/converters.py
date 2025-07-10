@@ -509,9 +509,15 @@ class SourceSinkConverter(BaseConverter):
             # the kwargs will be provided only from the source and sink converter
             # Ensure 'temperature' comes before 'salinity'
             keys = list(final_temp_salinity.keys())
-            if "sourcesink_temperaturedelta" in keys and "sourcesink_salinitydelta" in keys:
+            if (
+                "sourcesink_temperaturedelta" in keys
+                and "sourcesink_salinitydelta" in keys
+            ):
                 keys.remove("sourcesink_salinitydelta")
-                keys.insert(keys.index("sourcesink_temperaturedelta"), "sourcesink_salinitydelta")
+                keys.insert(
+                    keys.index("sourcesink_temperaturedelta"),
+                    "sourcesink_salinitydelta",
+                )
         else:
             keys = list(temp_salinity_from_ext.keys())
 
