@@ -9,13 +9,15 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
-from hydrolib.tools.extforce_convert.utils import create_initial_cond_and_parameter_input_dict
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.extforce_convert.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
+)
+from hydrolib.tools.extforce_convert.utils import (
+    create_initial_cond_and_parameter_input_dict,
 )
 
 
@@ -64,7 +66,6 @@ class TestConvertParameters:
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
 
-
     def test_bed_rock_surface_elevation(self):
         """Test conversion of bedrock surface elevation forcing.
 
@@ -88,7 +89,6 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(forcing)
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
-
 
 
 class TestConvertMeteo:
