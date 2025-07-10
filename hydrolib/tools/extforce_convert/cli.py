@@ -26,6 +26,21 @@ def valid_file(path_str):
     return path
 
 
+def _validator(path_str, extension):
+    """Validate that the file exists and has the given extension."""
+    path = Path(path_str)
+    if not path.exists():
+        raise ArgumentTypeError(f"File not found: {path}")
+    if not str(path).lower().endswith(extension):
+        raise ArgumentTypeError(f"File must have a {extension} extension: {path}")
+    return path
+
+
+def valid_file_with_extension(extension):
+    """Create a validator for files with a specific extension for argparse."""
+    return lambda path_str: _validator(path_str, extension)
+
+
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="extforce_convert",
@@ -44,14 +59,14 @@ def _get_parser() -> argparse.ArgumentParser:
         "--mdufile",
         "-m",
         action="store",
-        type=valid_file,
+        type=valid_file_with_extension(".mdu"),
         help="Automatically take input and output filenames from MDUFILE",
     )
     group.add_argument(
         "--extoldfile",
         "-e",
         action="store",
-        type=valid_file,
+        type=valid_file_with_extension(".ext"),
         help="Input EXTOLDFILE to be converted.",
     )
     group.add_argument(
