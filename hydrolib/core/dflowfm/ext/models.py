@@ -224,12 +224,12 @@ class SourceSink(INIBasedModel):
     zsink: Optional[Union[float, List[float]]] = Field(alias="zSink")
     area: Optional[float] = Field(alias="Area")
 
-    sourcesink_discharge: ForcingData = Field(alias="sourcesink_discharge")
-    sourcesink_salinitydelta: Optional[ForcingData] = Field(
-        alias="sourcesink_salinityDelta"
+    discharge: ForcingData = Field(alias="discharge")
+    salinitydelta: Optional[ForcingData] = Field(
+        alias="salinityDelta"
     )
-    sourcesink_temperaturedelta: Optional[ForcingData] = Field(
-        alias="sourcesink_temperatureDelta"
+    temperaturedelta: Optional[ForcingData] = Field(
+        alias="temperatureDelta"
     )
 
     def is_intermediate_link(self) -> bool:

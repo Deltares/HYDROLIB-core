@@ -191,9 +191,9 @@ def test_parse_tim_model_with_mdu(
 def compare_data(new_quantity_block: SourceSink):
     # check the converted forcings
     quantity_list = [
-        "sourcesink_discharge",
-        "sourcesink_salinitydelta",
-        "sourcesink_temperaturedelta",
+        "discharge",
+        "salinitydelta",
+        "temperaturedelta",
         "initialtracer_anyname",
     ]
 
@@ -201,7 +201,7 @@ def compare_data(new_quantity_block: SourceSink):
     # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
     # and this forcingModel is duplicated in the sourcesink_salinitydelta, sourcesink_temperatureDelta, and initialtracer_anyname
     # to be able to save them in the same .bc file.
-    quantity = "sourcesink_discharge"
+    quantity = "discharge"
     forcing_model = getattr(new_quantity_block, quantity)
     units = [
         forcing_model.forcing[i].quantityunitpair[1].unit
@@ -426,7 +426,7 @@ class TestConverter:
         validation_list = ["sourcesink_discharge", "initialtracer_anyname"]
 
         # check the converted bc_forcing
-        quantity = "sourcesink_discharge"
+        quantity = "discharge"
         forcing_model = getattr(new_quantity_block, quantity)
         quantities_names = [
             forcing_model.forcing[i].quantityunitpair[1].quantity

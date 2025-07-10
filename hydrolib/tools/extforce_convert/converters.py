@@ -701,7 +701,8 @@ class SourceSinkConverter(BaseConverter):
             model.forcing = [forcing]
             forcing_model_list.append(model)
             name = forcing.quantityunitpair[1].quantity
-            forcings[name] = model
+            # remove the prefix 'sourcesink_' from the name as the extforce file will not have this prefix.
+            forcings[name.removeprefix("sourcesink_")] = model
 
         return forcings
 

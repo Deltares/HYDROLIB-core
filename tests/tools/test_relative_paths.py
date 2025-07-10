@@ -32,15 +32,15 @@ class TestSourceSinks:
 
         source_sink = ext_model.sourcesink[0]
         assert (
-            source_sink.sourcesink_discharge.filepath
+            source_sink.discharge.filepath
             == source_sink_paths["bc_relative_path"]
         )
         assert (
-            source_sink.sourcesink_salinitydelta.filepath
+            source_sink.salinitydelta.filepath
             == source_sink_paths["bc_relative_path"]
         )
         assert (
-            source_sink.sourcesink_temperaturedelta.filepath
+            source_sink.temperaturedelta.filepath
             == source_sink_paths["bc_relative_path"]
         )
 
