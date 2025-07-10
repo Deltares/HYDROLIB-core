@@ -16,8 +16,11 @@ from hydrolib.tools.extforce_convert.main_converter import (
 
 
 def valid_file(path_str):
-    """Check if the file exists and return its path."""
+    """Check if the file exists, has a .mdu extension, and return its path."""
     path = Path(path_str)
+    if not str(path).lower().endswith(".mdu"):
+        raise ArgumentTypeError(f"File must have a .mdu extension: {path}")
+
     if not path.exists():
         raise ArgumentTypeError(f"File not found: {path}")
     return path

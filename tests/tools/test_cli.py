@@ -232,3 +232,60 @@ class TestGetParser:
             self.parser.parse_args(
                 ["--extoldfile", str(self.tmp_path / "doesnotexist.ext")]
             )
+
+
+class TestValidFile:
+    """
+    Unit tests for the valid_file function, covering all validation scenarios for file extension and existence.
+    """
+
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path):
+        from hydrolib.tools.extforce_convert.cli import valid_file
+
+        self.valid_file = valid_file
+        self.tmp_path = tmp_path
+        self.mdu_file = tmp_path / "file.mdu"
+        self.ext_file = tmp_path / "file.ext"
+        self.mdu_file.write_text("")
+        self.ext_file.write_text("")
+
+    @pytest.mark.unit
+    def test_valid_mdu_file(self):
+        """
+        Test that valid_file returns the Path when the file exists and ends with .mdu.
+        """
+        result = self.valid_file(str(self.mdu_file))
+        assert result == self.mdu_file
+
+    @pytest.mark.unit
+    def test_wrong_extension(self):
+        """
+        Test that valid_file raises ArgumentTypeError when the file exists but does not end with .mdu.
+        """
+        with pytest.raises(argparse.ArgumentTypeError) as excinfo:
+            self.valid_file(str(self.ext_file))
+
+        assert ".mdu extension" in str(excinfo.value)
+
+    @pytest.mark.unit
+    def test_nonexistent_mdu_file(self):
+        """
+        Test that valid_file raises ArgumentTypeError when the file does not exist but ends with .mdu.
+        """
+        nonexist = self.tmp_path / "doesnotexist.mdu"
+        with pytest.raises(argparse.ArgumentTypeError) as excinfo:
+            self.valid_file(str(nonexist))
+        assert "File not found" in str(excinfo.value)
+
+    @pytest.mark.unit
+    def test_nonexistent_wrong_extension(self):
+        """
+        Test that valid_file raises ArgumentTypeError when the file does not exist and does not end with .mdu.
+        """
+        nonexist = self.tmp_path / "doesnotexist.txt"
+        with pytest.raises(argparse.ArgumentTypeError) as excinfo:
+            self.valid_file(str(nonexist))
+
+        assert ".mdu extension" in str(excinfo.value)
+
