@@ -1,16 +1,18 @@
 """MDU Parser."""
 
 from collections import Counter
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Union, Optional
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Union
+
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
+
 
 @dataclass
 class FileStyleProperties:
@@ -39,6 +41,7 @@ class FileStyleProperties:
         9
         ```
     """
+
     leading_spaces: int = 0
     equal_sign_position: int = 0
 
@@ -146,6 +149,7 @@ class FileStyleProperties:
         spaces = " " * self.leading_spaces
         return f"{spaces}{aligned_key}= {value}"
 
+
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
@@ -216,7 +220,9 @@ class MDUParser:
             # if the extforce_file_new does not exist in the MDU file
             if ext_file is None:
                 # if no ext_file is provided, we use the old extforce file name to create the new extforce file
-                ext_file = root_dir / self.extforce_file.with_stem(self.extforce_file.stem + "-new")
+                ext_file = root_dir / self.extforce_file.with_stem(
+                    self.extforce_file.stem + "-new"
+                )
             else:
                 # if an ext_file is provided, we use it
                 ext_file = Path(ext_file).resolve()
@@ -607,4 +613,3 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     """Convert a date string to a datetime object."""
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
-

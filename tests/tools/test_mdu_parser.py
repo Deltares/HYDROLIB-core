@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (
+    FileStyleProperties,
     MDUParser,
     get_ref_time,
     save_mdu_file,
-    FileStyleProperties,
 )
 
 
@@ -637,9 +637,9 @@ class TestGetLeadingSpaces:
     def test_all_lines_same_leading_spaces(self):
         """All lines have the same number of leading spaces."""
         content = [
-            '    Param1 = value1\n',
-            '    Param2 = value2\n',
-            '    Param3 = value3\n',
+            "    Param1 = value1\n",
+            "    Param2 = value2\n",
+            "    Param3 = value3\n",
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 4
@@ -648,10 +648,10 @@ class TestGetLeadingSpaces:
     def test_varying_leading_spaces(self):
         """Lines have varying numbers of leading spaces; most common is chosen."""
         content = [
-            '  Param1 = value1\n',  # 2 spaces
-            '    Param2 = value2\n',# 4 spaces
-            '  Param3 = value3\n',  # 2 spaces
-            'Param4 = value4\n',    # 0 spaces
+            "  Param1 = value1\n",  # 2 spaces
+            "    Param2 = value2\n",  # 4 spaces
+            "  Param3 = value3\n",  # 2 spaces
+            "Param4 = value4\n",  # 0 spaces
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 2
@@ -660,9 +660,9 @@ class TestGetLeadingSpaces:
     def test_no_leading_spaces(self):
         """Lines with no leading spaces."""
         content = [
-            'Param1 = value1\n',
-            'Param2 = value2\n',
-            'Param3 = value3\n',
+            "Param1 = value1\n",
+            "Param2 = value2\n",
+            "Param3 = value3\n",
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 0
@@ -677,9 +677,9 @@ class TestGetLeadingSpaces:
             - in this case it is 1 tab, and two tabs, but one tab is at the top of the list, so it will be used.
         """
         content = [
-            '\tParam1 = value1\n',
-            '\t\tParam2 = value2\n',
-            'Param3 = value3\n',
+            "\tParam1 = value1\n",
+            "\t\tParam2 = value2\n",
+            "Param3 = value3\n",
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 1  # 0 is most common (1 tab, 2 tabs, 0 spaces)
@@ -693,10 +693,10 @@ class TestGetLeadingSpaces:
             leading space is 2 spaces.
         """
         content = [
-            ' \tParam1 = value1\n',   # 1 space, 1 tab
-            '\t Param2 = value2\n',   # 1 tab, 1 space
-            '  Param3 = value3\n',    # 2 spaces
-            'Param4 = value4\n',      # 0 spaces
+            " \tParam1 = value1\n",  # 1 space, 1 tab
+            "\t Param2 = value2\n",  # 1 tab, 1 space
+            "  Param3 = value3\n",  # 2 spaces
+            "Param4 = value4\n",  # 0 spaces
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 2
@@ -705,9 +705,9 @@ class TestGetLeadingSpaces:
     def test_all_empty_or_whitespace_lines(self):
         """All lines are empty or whitespace only."""
         content = [
-            '',
-            '   ',
-            '\t',
+            "",
+            "   ",
+            "\t",
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result == 0
@@ -716,9 +716,9 @@ class TestGetLeadingSpaces:
     def test_all_commented_lines(self):
         """All lines are commented out; leading spaces return None."""
         content = [
-            '  # Comment 1\n',
-            '    # Comment 2\n',
-            '# Comment 3\n',
+            "  # Comment 1\n",
+            "    # Comment 2\n",
+            "# Comment 3\n",
         ]
         result = FileStyleProperties._get_leading_spaces(content)
         assert result is None
@@ -731,6 +731,7 @@ class TestGetLeadingSpaces:
 
         assert result is None
 
+
 class TestRecenterEqualSign:
     """
     Test the _recenter_equal_sign function for various behaviors:
@@ -740,29 +741,37 @@ class TestRecenterEqualSign:
     - Handles values with/without leading/trailing spaces.
     - Handles empty value.
     """
+
     file_style_properties = MagicMock(spec=FileStyleProperties)
     file_style_properties.equal_sign_position = 20
     file_style_properties.leading_spaces = 0
+
     @pytest.mark.unit
     def test_standard_alignment(self):
         # Case 1: Standard alignment
         line = "IniFieldFile=my-file.ini"
 
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
     def test_already_aligned(self):
         # Already aligned, target position matches
         line = "IniFieldFile         = my-file.ini"
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
     def test_value_with_leading_trailing_spaces(self):
         # Case 3: Value with leading/trailing spaces
         line = "IniFieldFile=   my-file.ini   "
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
@@ -770,7 +779,9 @@ class TestRecenterEqualSign:
         # Case 4: Target position less than key length
         line = "IniFieldFile=my-file.ini"
         self.file_style_properties.equal_sign_position = 5
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile= my-file.ini"
 
     @pytest.mark.unit
@@ -778,7 +789,9 @@ class TestRecenterEqualSign:
         # Case 5: Empty value
         line = "IniFieldFile="
         self.file_style_properties.equal_sign_position = 15
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile   = "
 
     @pytest.mark.unit
@@ -786,7 +799,9 @@ class TestRecenterEqualSign:
         # Case 6: Key with spaces, value with spaces
         line = "IniFieldFile   =   my-file.ini   "
         self.file_style_properties.equal_sign_position = 25
-        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
         assert result == "IniFieldFile             = my-file.ini"
 
 
@@ -801,9 +816,9 @@ class TestFileStyleProperties:
     def test_standard_content(self):
         """Integration: Consistent leading spaces and equal sign position."""
         content = [
-            'Param1    = value1\n',
-            'Param2    = value2\n',
-            'Param3    = value3\n',
+            "Param1    = value1\n",
+            "Param2    = value2\n",
+            "Param3    = value3\n",
         ]
         style = FileStyleProperties(content)
         assert style.leading_spaces == 0
@@ -812,12 +827,12 @@ class TestFileStyleProperties:
     def test_varying_equal_sign_positions(self):
         """Integration: Varying equal sign positions, most common is chosen."""
         content = [
-            'A = 1\n',      # pos 2
-            'BB   = 2\n',   # pos 4
-            'CCC = 3\n',    # pos 4
-            'DDDD = 4\n',   # pos 5
-            'E = 5\n',      # pos 2
-            'F = 6\n',      # pos 2
+            "A = 1\n",  # pos 2
+            "BB   = 2\n",  # pos 4
+            "CCC = 3\n",  # pos 4
+            "DDDD = 4\n",  # pos 5
+            "E = 5\n",  # pos 2
+            "F = 6\n",  # pos 2
         ]
         style = FileStyleProperties(content)
         assert style.leading_spaces == 0
@@ -826,10 +841,10 @@ class TestFileStyleProperties:
     def test_varying_leading_spaces(self):
         """Integration: Varying leading spaces, most common is chosen."""
         content = [
-            '  Param1 = value1\n',  # 2 spaces, position 8
-            '    Param2 = value2\n',# 4 spaces, position 11
-            '  Param3 = value3\n',  # 2 spaces, position 9
-            'Param4 = value4\n',    # 0 spaces, position 7
+            "  Param1 = value1\n",  # 2 spaces, position 8
+            "    Param2 = value2\n",  # 4 spaces, position 11
+            "  Param3 = value3\n",  # 2 spaces, position 9
+            "Param4 = value4\n",  # 0 spaces, position 7
         ]
         style = FileStyleProperties(content)
         assert style.leading_spaces == 2
@@ -838,8 +853,8 @@ class TestFileStyleProperties:
     def test_no_equal_signs(self):
         """Integration: No equal signs, equal_sign_position should be None."""
         content = [
-            'No equals here\n',
-            'Still no equals\n',
+            "No equals here\n",
+            "Still no equals\n",
         ]
         style = FileStyleProperties(content)
         assert style.leading_spaces == 0
@@ -848,8 +863,8 @@ class TestFileStyleProperties:
     def test_all_lines_commented(self):
         """Integration: All lines commented out; equal_sign_position should be None."""
         content = [
-            '# Param1 = value1\n',
-            '# Param2 = value2\n',
+            "# Param1 = value1\n",
+            "# Param2 = value2\n",
         ]
         style = FileStyleProperties(content)
         assert style.leading_spaces is None
@@ -865,9 +880,9 @@ class TestFileStyleProperties:
     def test_leading_spaces_with_tabs(self):
         """Integration: Lines with tabs as leading whitespace."""
         content = [
-            '\tParam1 = value1\n',
-            '\t\tParam2 = value2\n',
-            'Param3 = value3\n',
+            "\tParam1 = value1\n",
+            "\t\tParam2 = value2\n",
+            "Param3 = value3\n",
         ]
         style = FileStyleProperties(content)
         # Tabs count as 1 char each, so most common is 0 (no leading spaces)
