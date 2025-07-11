@@ -181,6 +181,10 @@ class MDUParser:
         return data
 
     @property
+    def external_forcing(self) -> Dict[str, Any]:
+        return self.loaded_fm_data.get("external_forcing")
+
+    @property
     def geometry(self) -> Dict[str, Any]:
         """Get the geometry data from the MDU file."""
         return self._geometry
