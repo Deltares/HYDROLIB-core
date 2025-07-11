@@ -185,6 +185,19 @@ class MDUParser:
         return self.loaded_fm_data.get("external_forcing")
 
     @property
+    def extforce_file(self) -> Path:
+        old_ext_force_file = self.external_forcing.get("extforcefile")
+        if old_ext_force_file is None:
+            raise ValueError(
+                "An old formatted external forcing file (.ext) could not be found in the mdu file.\n"
+                "Conversion is not possible or may not be necessary."
+            )
+        else:
+            old_ext_force_file = Path(old_ext_force_file)
+
+        return old_ext_force_file
+
+    @property
     def geometry(self) -> Dict[str, Any]:
         """Get the geometry data from the MDU file."""
         return self._geometry
