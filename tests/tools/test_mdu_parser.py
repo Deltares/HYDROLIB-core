@@ -783,3 +783,88 @@ class TestRecenterEqualSign:
         line = "IniFieldFile   =   my-file.ini   "
         result = _recenter_equal_sign(line, 25)
         assert result == "IniFieldFile             = my-file.ini"
+
+
+class TestFileStyleProperties:
+    """
+    Integration tests for the FileStyleProperties class.
+
+    These tests instantiate FileStyleProperties and check that both leading_spaces and
+    equal_sign_position are set correctly together, covering realistic scenarios.
+    """
+
+    def test_standard_content(self):
+        """Integration: Consistent leading spaces and equal sign position."""
+        content = [
+            'Param1    = value1\n',
+            'Param2    = value2\n',
+            'Param3    = value3\n',
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position == 10
+
+    def test_varying_equal_sign_positions(self):
+        """Integration: Varying equal sign positions, most common is chosen."""
+        content = [
+            'A = 1\n',      # pos 2
+            'BB   = 2\n',   # pos 4
+            'CCC = 3\n',    # pos 4
+            'DDDD = 4\n',   # pos 5
+            'E = 5\n',      # pos 2
+            'F = 6\n',      # pos 2
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position == 2
+
+    def test_varying_leading_spaces(self):
+        """Integration: Varying leading spaces, most common is chosen."""
+        content = [
+            '  Param1 = value1\n',  # 2 spaces, position 8
+            '    Param2 = value2\n',# 4 spaces, position 11
+            '  Param3 = value3\n',  # 2 spaces, position 9
+            'Param4 = value4\n',    # 0 spaces, position 7
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 2
+        assert style.equal_sign_position == 9
+
+    def test_no_equal_signs(self):
+        """Integration: No equal signs, equal_sign_position should be None."""
+        content = [
+            'No equals here\n',
+            'Still no equals\n',
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position is None
+
+    def test_all_lines_commented(self):
+        """Integration: All lines commented out; equal_sign_position should be None."""
+        content = [
+            '# Param1 = value1\n',
+            '# Param2 = value2\n',
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces is None
+        assert style.equal_sign_position is None
+
+    def test_empty_content(self):
+        """Integration: Empty content; both properties should be None."""
+        content = []
+        style = FileStyleProperties(content)
+        assert style.leading_spaces is None
+        assert style.equal_sign_position is None
+
+    def test_leading_spaces_with_tabs(self):
+        """Integration: Lines with tabs as leading whitespace."""
+        content = [
+            '\tParam1 = value1\n',
+            '\t\tParam2 = value2\n',
+            'Param3 = value3\n',
+        ]
+        style = FileStyleProperties(content)
+        # Tabs count as 1 char each, so most common is 0 (no leading spaces)
+        assert style.leading_spaces == 1
+        assert style.equal_sign_position == 8
