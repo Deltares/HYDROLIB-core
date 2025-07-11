@@ -3,8 +3,8 @@
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Union
-
+from typing import Any, Dict, List, Union, Optional
+from dataclasses import dataclass, field
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
@@ -12,6 +12,121 @@ from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, bac
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
+@dataclass
+class FileStyleProperties:
+    """
+    Detects and stores style properties of an MDU file, such as leading spaces and equal sign alignment.
+
+    This class analyzes the content of an MDU file to determine the most common number of leading spaces
+    and the most common position of the equal sign for key-value pairs. These properties can be used to
+    preserve formatting when updating or generating MDU files.
+
+    Attributes:
+        leading_spaces (int): The most common number of leading spaces at the start of lines.
+        equal_sign_position (int): The most common position (column index) of the equal sign in key-value lines.
+
+    Example:
+        ```python
+        >>> content = [
+        ...     'Param1    = value1\n',
+        ...     'Param2    = value2\n',
+        ...     'Param3    = value3\n',
+        ... ]
+        >>> style = FileStyleProperties(content)
+        >>> style.leading_spaces
+        0
+        >>> style.equal_sign_position
+        9
+        ```
+    """
+    leading_spaces: int = 0
+    equal_sign_position: int = 0
+
+    def __init__(self, content: List[str]):
+        """
+        Initialize the FileStyleProperties.
+
+        Args:
+            content (List[str]): List of strings representing the content of the MDU file.
+        """
+        self.leading_spaces = self._get_leading_spaces(content)
+        self.equal_sign_position = self._get_equal_sign_position(content)
+
+    @staticmethod
+    def _get_equal_sign_position(content: List[str]) -> Optional[int]:
+        """
+        Get the most common position (column index) of the equal sign in the MDU file.
+
+        Args:
+            content (List[str]): List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]: The most common index of the equal sign, or None if not found.
+
+        Example:
+            ```python
+            >>> FileStyleProperties._get_equal_sign_position(
+            ...     ['A = 1', 'BB   = 2', 'CCC = 3', '# Comment = 4']
+            ... )
+            2
+            ```
+        """
+        equal_sign_counter = Counter()
+        for line in content:
+            if "=" in line and not line.strip().startswith("#"):
+                eq_index = line.find("=")
+                equal_sign_counter[eq_index] += 1
+
+        position = None
+        if equal_sign_counter:
+            most_common_pos, _ = equal_sign_counter.most_common(1)[0]
+            position = most_common_pos
+
+        return position
+
+    @staticmethod
+    def _get_leading_spaces(content: List[str]) -> Optional[int]:
+        """Get Leading Spaces.
+
+        - Detect the most common number of leading spaces in each line of the MDU file.
+        - The function returns the most common leading space count, which can be used to maintain consistent formatting
+
+        Args:
+            content (List[str]):
+                List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]:
+                The most common number of leading spaces, or None if not found.
+
+        Notes:
+            - All the lines that start with a comment character `#` are ignored.
+            - The leading spaces are counted as the difference between the length of the line and the length of the line
+                after stripping leading whitespace.
+            - If no lines with leading spaces are found, returns None.
+            - The function uses a Counter to find the most common leading space count.
+            - tabs and spaces are treated the same, so if a line has 1 spaces and 1 tab, it will be counted as 2
+            leading spaces.
+
+        Example:
+            ```python
+            >>> FileStyleProperties._get_leading_spaces([
+            ...     '  Param1 = value1', '    Param2 = value2', '  Param3 = value3'])
+            2
+            ```
+        """
+        leading_spaces = Counter()
+        for line in content:
+            if not line.strip().startswith("#"):
+                num_spaces = len(line) - len(line.lstrip())
+                leading_spaces[num_spaces] += 1
+
+        spacing = None
+        if leading_spaces:
+            most_common_spacing, _ = leading_spaces.most_common(1)[0]
+            spacing = most_common_spacing
+
+        return spacing
 
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""

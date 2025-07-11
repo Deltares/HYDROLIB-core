@@ -9,6 +9,7 @@ from hydrolib.tools.extforce_convert.mdu_parser import (
     _recenter_equal_sign,
     get_ref_time,
     save_mdu_file,
+    FileStyleProperties,
 )
 
 
@@ -555,9 +556,7 @@ class TestMduParser:
             assert updated_lines[6] == "NetFile = test.nc\n"
 
 
-class TestGetEquaSignPosition:
-
-    parser = MagicMock(spec=MDUParser)
+class TestGetEqualSignPosition:
 
     @pytest.mark.unit
     def test_same_position_all_lines(self):
@@ -568,9 +567,7 @@ class TestGetEquaSignPosition:
             "Param3    = value3\n",
         ]
 
-        self.parser._content = content
-
-        pos = MDUParser._get_equa_sign_position(self.parser)
+        pos = FileStyleProperties._get_equal_sign_position(content)
         assert pos == content[0].find("=")
 
     @pytest.mark.unit
@@ -584,8 +581,7 @@ class TestGetEquaSignPosition:
             "E = 5\n",  # pos 2
             "F = 6\n",  # pos 2
         ]
-        self.parser._content = content
-        pos = MDUParser._get_equa_sign_position(self.parser)
+        pos = FileStyleProperties._get_equal_sign_position(content)
         # pos 2 appears 3 times, pos 4 appears 2 times, pos 5 once
         assert pos == 2
 
@@ -597,8 +593,7 @@ class TestGetEquaSignPosition:
             "Param = value # comment\n",
             "Another = something\n",
         ]
-        self.parser._content = content
-        pos = MDUParser._get_equa_sign_position(self.parser)
+        pos = FileStyleProperties._get_equal_sign_position(content)
         assert pos == content[1].find("=")
 
     @pytest.mark.unit
@@ -608,8 +603,8 @@ class TestGetEquaSignPosition:
             "No equals here\n",
             "Still no equals\n",
         ]
-        self.parser._content = content
-        pos = MDUParser._get_equa_sign_position(self.parser)
+
+        pos = FileStyleProperties._get_equal_sign_position(content)
         assert pos is None
 
     @pytest.mark.unit
@@ -619,10 +614,123 @@ class TestGetEquaSignPosition:
             "# Param = value\n",
             "# Another = something\n",
         ]
-        self.parser._content = content
-        pos = MDUParser._get_equa_sign_position(self.parser)
+
+        pos = FileStyleProperties._get_equal_sign_position(content)
         assert pos is None
 
+
+class TestGetLeadingSpaces:
+    """
+    Unit tests for FileStyleProperties._get_leading_spaces static method.
+
+    Scenarios covered:
+        - All lines have the same number of leading spaces.
+        - Lines have varying numbers of leading spaces (most common is chosen).
+        - Lines with no leading spaces.
+        - Lines with only tabs as leading whitespace.
+        - Lines with mixed tabs and spaces.
+        - All lines are empty or whitespace only.
+        - All lines are commented out.
+        - Empty content.
+    """
+
+    @pytest.mark.unit
+    def test_all_lines_same_leading_spaces(self):
+        """All lines have the same number of leading spaces."""
+        content = [
+            '    Param1 = value1\n',
+            '    Param2 = value2\n',
+            '    Param3 = value3\n',
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 4
+
+    @pytest.mark.unit
+    def test_varying_leading_spaces(self):
+        """Lines have varying numbers of leading spaces; most common is chosen."""
+        content = [
+            '  Param1 = value1\n',  # 2 spaces
+            '    Param2 = value2\n',# 4 spaces
+            '  Param3 = value3\n',  # 2 spaces
+            'Param4 = value4\n',    # 0 spaces
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 2
+
+    @pytest.mark.unit
+    def test_no_leading_spaces(self):
+        """Lines with no leading spaces."""
+        content = [
+            'Param1 = value1\n',
+            'Param2 = value2\n',
+            'Param3 = value3\n',
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 0
+
+    @pytest.mark.unit
+    def test_leading_tabs_only(self):
+        """Lines with only tabs as leading whitespace (tabs count as 1 char each).
+        Notes:
+            - the tab is counted as 1 leading space.
+            - the following content has 1 tab, 2 tabs, and 0 spaces.
+            - the most common leading space is the fist most frequent spacing.
+            - in this case it is 1 tab, and two tabs, but one tab is at the top of the list, so it will be used.
+        """
+        content = [
+            '\tParam1 = value1\n',
+            '\t\tParam2 = value2\n',
+            'Param3 = value3\n',
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 1  # 0 is most common (1 tab, 2 tabs, 0 spaces)
+
+    @pytest.mark.unit
+    def test_mixed_tabs_and_spaces(self):
+        """Lines with mixed tabs and spaces as leading whitespace.
+
+        Notes:
+            - the following content has [1 space + i tab, 1 tab + 1 space, 2 spaces, no spaces], so the most common
+            leading space is 2 spaces.
+        """
+        content = [
+            ' \tParam1 = value1\n',   # 1 space, 1 tab
+            '\t Param2 = value2\n',   # 1 tab, 1 space
+            '  Param3 = value3\n',    # 2 spaces
+            'Param4 = value4\n',      # 0 spaces
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 2
+
+    @pytest.mark.unit
+    def test_all_empty_or_whitespace_lines(self):
+        """All lines are empty or whitespace only."""
+        content = [
+            '',
+            '   ',
+            '\t',
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 0
+
+    @pytest.mark.unit
+    def test_all_commented_lines(self):
+        """All lines are commented out; leading spaces return None."""
+        content = [
+            '  # Comment 1\n',
+            '    # Comment 2\n',
+            '# Comment 3\n',
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result is None
+
+    @pytest.mark.unit
+    def test_empty_content(self):
+        """Empty content should return None."""
+        content = []
+        result = FileStyleProperties._get_leading_spaces(content)
+
+        assert result is None
 
 class TestRecenterEqualSign:
     """
