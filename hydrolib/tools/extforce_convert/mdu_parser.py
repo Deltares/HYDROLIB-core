@@ -198,6 +198,32 @@ class MDUParser:
         return old_ext_force_file
 
     @property
+    def extforce_file_new(self) -> Path:
+        new_ext_force_file = self.external_forcing.get("extforcefilenew")
+
+        if new_ext_force_file is not None:
+            new_ext_force_file = Path(new_ext_force_file)
+
+        return new_ext_force_file
+
+    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+        root_dir = self.mdu_path.parent
+
+        if self.extforce_file_new:
+            # if the extforce_file_new exist in the MDU file, we use it
+            ext_file = (root_dir / self.extforce_file_new).resolve()
+        else:
+            # if the extforce_file_new does not exist in the MDU file
+            if ext_file is None:
+                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
+                ext_file = root_dir / self.extforce_file.with_stem(self.extforce_file.stem + "-new")
+            else:
+                # if an ext_file is provided, we use it
+                ext_file = Path(ext_file).resolve()
+
+        return ext_file
+
+    @property
     def geometry(self) -> Dict[str, Any]:
         """Get the geometry data from the MDU file."""
         return self._geometry

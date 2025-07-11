@@ -426,32 +426,19 @@ class ExternalForcingConverter:
 
         mdu_parser = MDUParser(mdu_file)
 
-        external_forcing_data = mdu_parser.external_forcing
         old_ext_force_file = mdu_parser.extforce_file
-
-        new_ext_force_file = external_forcing_data.get("extforcefilenew")
-
-        new_ext_force_file = (
-            Path(new_ext_force_file)
-            if new_ext_force_file is not None
-            else new_ext_force_file
-        )
 
         root_dir = mdu_file.parent
         extoldfile = root_dir / old_ext_force_file
 
-        if new_ext_force_file:
-            ext_file = (root_dir / new_ext_force_file).resolve()
-        else:
-            if ext_file is None:
-                old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
-                ext_file = root_dir / old_ext
-            else:
-                ext_file = root_dir / ext_file
+        ext_file = mdu_parser.get_new_extforce_file(ext_file)
 
+        inifieldfile_mdu = mdu_parser.geometry.get("inifieldfile")
         inifield_file = ExternalForcingConverter._get_inifield_file(
             inifield_file, root_dir, inifieldfile_mdu
         )
+
+        structurefile_mdu = mdu_parser.geometry.get("structurefile")
         structure_file = ExternalForcingConverter._get_structure_file(
             structure_file, root_dir, structurefile_mdu
         )
