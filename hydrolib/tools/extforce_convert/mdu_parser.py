@@ -128,6 +128,26 @@ class FileStyleProperties:
 
         return spacing
 
+    def _recenter_equal_sign(self, line: str) -> str:
+        """Recenter Equal Sign.
+
+        Recenter the equal sign to a specific target column.
+
+        Args:
+            line (str):
+                Input line like "IniFieldFile=my-file.ini"
+            target_pos (int):
+                Target column index to align the equal sign
+
+        Returns:
+            str:
+                Re-aligned line with equal sign at target_pos
+        """
+        key, value = map(str.strip, line.split("=", 1))
+        aligned_key = key.ljust(self.equal_sign_position)
+        spaces = " " * self.leading_spaces
+        return f"{spaces}{aligned_key}= {value}"
+
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
