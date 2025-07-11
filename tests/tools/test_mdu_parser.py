@@ -314,7 +314,7 @@ class TestMduParser:
         _, end_ind = parser.find_section_bounds("geometry")
         assert (
             parser._content[end_ind - 2]
-            == "IniFieldFile                        = new-inifield-file.ini\n"
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
         )
 
     @pytest.mark.unit
@@ -347,7 +347,7 @@ class TestMduParser:
         _, end_ind = parser.find_section_bounds("geometry")
         assert (
             parser._content[end_ind - 2]
-            == "IniFieldFile                        = new-inifield-file.ini\n"
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
         )
 
     @pytest.mark.unit
@@ -748,21 +748,21 @@ class TestRecenterEqualSign:
         # Case 1: Standard alignment
         line = "IniFieldFile=my-file.ini"
 
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
     def test_already_aligned(self):
         # Already aligned, target position matches
         line = "IniFieldFile         = my-file.ini"
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
     def test_value_with_leading_trailing_spaces(self):
         # Case 3: Value with leading/trailing spaces
         line = "IniFieldFile=   my-file.ini   "
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile        = my-file.ini"
 
     @pytest.mark.unit
@@ -770,7 +770,7 @@ class TestRecenterEqualSign:
         # Case 4: Target position less than key length
         line = "IniFieldFile=my-file.ini"
         self.file_style_properties.equal_sign_position = 5
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile= my-file.ini"
 
     @pytest.mark.unit
@@ -778,7 +778,7 @@ class TestRecenterEqualSign:
         # Case 5: Empty value
         line = "IniFieldFile="
         self.file_style_properties.equal_sign_position = 15
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile   = "
 
     @pytest.mark.unit
@@ -786,7 +786,7 @@ class TestRecenterEqualSign:
         # Case 6: Key with spaces, value with spaces
         line = "IniFieldFile   =   my-file.ini   "
         self.file_style_properties.equal_sign_position = 25
-        result = FileStyleProperties._recenter_equal_sign(self.file_style_properties, line)
+        result = FileStyleProperties.recenter_equal_sign(self.file_style_properties, line)
         assert result == "IniFieldFile             = my-file.ini"
 
 

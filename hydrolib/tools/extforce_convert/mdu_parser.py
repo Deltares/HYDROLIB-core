@@ -28,9 +28,9 @@ class FileStyleProperties:
     Example:
         ```python
         >>> content = [
-        ...     'Param1    = value1\n',
-        ...     'Param2    = value2\n',
-        ...     'Param3    = value3\n',
+        ...     'Param1    = value1',
+        ...     'Param2    = value2',
+        ...     'Param3    = value3',
         ... ]
         >>> style = FileStyleProperties(content)
         >>> style.leading_spaces
@@ -128,7 +128,7 @@ class FileStyleProperties:
 
         return spacing
 
-    def _recenter_equal_sign(self, line: str) -> str:
+    def recenter_equal_sign(self, line: str) -> str:
         """Recenter Equal Sign.
 
         Recenter the equal sign to a specific target column.
@@ -136,15 +136,13 @@ class FileStyleProperties:
         Args:
             line (str):
                 Input line like "IniFieldFile=my-file.ini"
-            target_pos (int):
-                Target column index to align the equal sign
 
         Returns:
             str:
                 Re-aligned line with equal sign at target_pos
         """
         key, value = map(str.strip, line.split("=", 1))
-        aligned_key = key.ljust(self.equal_sign_position)
+        aligned_key = key.ljust(self.equal_sign_position - self.leading_spaces)
         spaces = " " * self.leading_spaces
         return f"{spaces}{aligned_key}= {value}"
 
@@ -169,22 +167,7 @@ class MDUParser:
         self.loaded_fm_data = self._load_with_fm_model()
         self.temperature_salinity_data = self.get_temperature_salinity_data()
         self._geometry = self.loaded_fm_data.get("geometry")
-        self._equa_sign_position = self._get_equa_sign_position()
-
-    def _get_equa_sign_position(self) -> int:
-        """Get the position of the equal sign in the MDU file."""
-        equal_sign_counter = Counter()
-        for line in self._content:
-            if "=" in line and not line.strip().startswith("#"):
-                eq_index = line.find("=")
-                equal_sign_counter[eq_index] += 1
-
-        position = None
-        if equal_sign_counter:
-            most_common_pos, _ = equal_sign_counter.most_common(1)[0]
-            position = most_common_pos
-
-        return position
+        self.file_style_properties = FileStyleProperties(self._content)
 
     def _load_with_fm_model(self) -> Dict[str, Any]:
         """Load the MDU file using the FMModel class.
@@ -349,7 +332,7 @@ class MDUParser:
         """
         _, end_ind = self.find_section_bounds("geometry")
         line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
-        line = _recenter_equal_sign(line, self._equa_sign_position)
+        line = self.file_style_properties.recenter_equal_sign(line)
         self.insert_line(line, end_ind - 1)
 
     def update_structure_file(self, file_name: str) -> None:
@@ -369,7 +352,7 @@ class MDUParser:
         """
         _, end_ind = self.find_section_bounds("geometry")
         line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
-        line = _recenter_equal_sign(line, self._equa_sign_position)
+        line = self.file_style_properties.recenter_equal_sign(line)
         self.insert_line(line, end_ind - 1)
 
     @staticmethod
@@ -582,21 +565,3 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
 
-
-def _recenter_equal_sign(line: str, target_pos: int) -> str:
-    """
-    Recenter the equal sign to a specific target column.
-
-    Args:
-        line (str):
-            Input line like "IniFieldFile=my-file.ini"
-        target_pos (int):
-            Target column index to align the equal sign
-
-    Returns:
-        str:
-            Re-aligned line with equal sign at target_pos
-    """
-    key, value = map(str.strip, line.split("=", 1))
-    aligned_key = key.ljust(target_pos)
-    return f"{aligned_key}= {value}"
