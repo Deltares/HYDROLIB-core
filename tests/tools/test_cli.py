@@ -288,4 +288,3 @@ class TestValidFile:
             self.valid_file(str(nonexist))
 
         assert ".mdu extension" in str(excinfo.value)
-

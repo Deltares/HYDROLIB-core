@@ -12,7 +12,11 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldFileType,
+    ExtOldForcing,
+    ExtOldQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
     DataFileType,
@@ -184,7 +188,11 @@ def create_initial_cond_and_parameter_input_dict(
         Dict[str, str]:
             the input dictionary to the `InitialField` or `ParameterField` constructor
     """
-    quantity_name = forcing.quantity if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation else "bedrockSurfaceElevation"
+    quantity_name = (
+        forcing.quantity
+        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
+        else "bedrockSurfaceElevation"
+    )
     block_data = {
         "quantity": quantity_name,
         "datafile": DiskOnlyFileModel(forcing.filename.filepath),
