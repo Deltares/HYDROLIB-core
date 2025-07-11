@@ -163,9 +163,9 @@ def convert_with_mdu_file(args: Namespace):
     """
     converter = ExternalForcingConverter.from_mdu(
         args.mdufile,
-        ext_file=(args.outfiles[0] if args.outfiles else None),
-        inifield_file=(args.outfiles[1] if args.outfiles else None),
-        structure_file=(args.outfiles[2] if args.outfiles else None),
+        ext_file_user=(args.outfiles[0] if args.outfiles else None),
+        inifield_file_user=(args.outfiles[1] if args.outfiles else None),
+        structure_file_user=(args.outfiles[2] if args.outfiles else None),
     )
     convert(converter, args)
 

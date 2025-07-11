@@ -392,9 +392,9 @@ class ExternalForcingConverter:
     def from_mdu(
         cls,
         mdu_file: PathOrStr,
-        ext_file: Optional[PathOrStr] = None,
-        inifield_file: Optional[PathOrStr] = None,
-        structure_file: Optional[PathOrStr] = None,
+        ext_file_user: Optional[PathOrStr] = None,
+        inifield_file_user: Optional[PathOrStr] = None,
+        structure_file_user: Optional[PathOrStr] = None,
     ) -> "ExternalForcingConverter":
         """Create the converter from the MDU file.
 
@@ -403,13 +403,13 @@ class ExternalForcingConverter:
                 Must be parsable into a standard FMModel.
                 When this contains a valid filename for ExtFile, conversion
                 will be performed.
-            ext_file (PathOrStr, optional): Path to the output external forcings
+            ext_file_user (PathOrStr, optional): Path to the output external forcings
                 file. Defaults to the given ExtForceFileNew in the MDU file, if
                 present, or forcings.ext otherwise.
-            inifield_file (PathOrStr, optional): Path to the output initial field
+            inifield_file_user (PathOrStr, optional): Path to the output initial field
                 file. Defaults to the given IniFieldFile in the MDU file, if
                 present, or inifields.ini otherwise.
-            structure_file (PathOrStr, optional): Path to the output structures.ini
+            structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
 
@@ -431,19 +431,19 @@ class ExternalForcingConverter:
         root_dir = mdu_file.parent
         extoldfile = root_dir / old_ext_force_file
 
-        ext_file = mdu_parser.get_new_extforce_file(ext_file)
+        ext_file_user = mdu_parser.get_new_extforce_file(ext_file_user)
 
         inifieldfile_mdu = mdu_parser.geometry.get("inifieldfile")
-        inifield_file = ExternalForcingConverter._get_inifield_file(
-            inifield_file, root_dir, inifieldfile_mdu
+        inifield_file_user = ExternalForcingConverter._get_inifield_file(
+            inifield_file_user, root_dir, inifieldfile_mdu
         )
 
         structurefile_mdu = mdu_parser.geometry.get("structurefile")
-        structure_file = ExternalForcingConverter._get_structure_file(
-            structure_file, root_dir, structurefile_mdu
+        structure_file_user = ExternalForcingConverter._get_structure_file(
+            structure_file_user, root_dir, structurefile_mdu
         )
 
-        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_parser)
+        return cls(extoldfile, ext_file_user, inifield_file_user, structure_file_user, mdu_parser)
 
     @staticmethod
     def _get_inifield_file(
