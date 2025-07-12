@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Tuple
+import types
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -353,29 +354,18 @@ class TestMduParser:
     @pytest.mark.unit
     def test_has_inifield_file(self):
         """Test the has_inifield_file method."""
-        with (
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
-                return_value=[
+
+        parser = MagicMock(spec=MDUParser)
+        parser.has_field = types.MethodType(MDUParser.has_field, parser)
+        parser.find_keyword_lines = types.MethodType(MDUParser.find_keyword_lines, parser)
+        parser._content = [
                     "[general]\n",
                     "Name = Test\n",
                     "[geometry]\n",
                     "IniFieldFile = new-inifield-file.ini\n",
-                ],
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-                return_value={},
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
-                return_value={},
-            ),
-        ):
-            parser = MDUParser(self.file_path)
-
+                ]
         # Test with a file that has an inifield file
-        assert parser.has_inifield_file() is True
+        assert MDUParser.has_inifield_file(parser) is True
 
         # Test with a file that does not have an inifield file
         parser._content = [
@@ -384,7 +374,7 @@ class TestMduParser:
             "[geometry]\n",
             "NetFile = test.nc\n",
         ]
-        assert parser.has_inifield_file() is False
+        assert MDUParser.has_inifield_file(parser) is False
 
     def test_handle_external_forcing_section(self):
         """Test the _handle_external_forcing_section method."""
@@ -475,84 +465,56 @@ class TestMduParser:
 
         assert found_extforcefilenew, "ExtForceFileNew entry not found in updated lines"
 
-        # Test with a file that doesn't have an external forcing section
-        # We'll create a mock file without an external forcing section
-        with (
-            patch("pathlib.Path.exists", return_value=True),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
-                return_value=[
-                    "[general]\n",
-                    "Name = Test\n",
-                    "[geometry]\n",
-                    "NetFile = test.nc\n",
-                ],
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-                return_value={"geometry": {}},
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
-                return_value={},
-            ),
-        ):
+        parser = MagicMock(spec=MDUParser)
+        parser.content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser.update_extforce_file_new = types.MethodType(MDUParser.update_extforce_file_new, parser)
+        parser._handle_external_forcing_section = types.MethodType(MDUParser._handle_external_forcing_section, parser)
+        parser.inside_external_forcing = False
+        parser.found_extforcefilenew = False
+        parser.updated_lines = []
+        parser.new_forcing_file = "new_test.ext"
 
-            parser = MDUParser("dummy_path")
-            parser.new_forcing_file = "new_test.ext"
+        # Update the file
+        updated_lines = MDUParser.update_extforce_file_new(parser)
 
-            # Update the file
-            updated_lines = parser.update_extforce_file_new()
-
-            # Check that the updated lines are the same as the original (no external forcing section to update)
-            assert len(updated_lines) == 4
-            assert updated_lines == [
-                "[general]\n",
-                "Name = Test\n",
-                "[geometry]\n",
-                "NetFile = test.nc\n",
-            ]
+        # Check that the updated lines are the same as the original (no external forcing section to update)
+        assert len(updated_lines) == 4
+        assert updated_lines == [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
 
         # Test with a file that has an external forcing section but no ExtForceFileNew entry
-        with (
-            patch("pathlib.Path.exists", return_value=True),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file",
-                return_value=[
-                    "[general]\n",
-                    "Name = Test\n",
-                    "[external forcing]\n",
-                    "ExtForceFile = old.ext\n",
-                    "[geometry]\n",
-                    "NetFile = test.nc\n",
-                ],
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-                return_value={"geometry": {}},
-            ),
-            patch(
-                "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
-                return_value={},
-            ),
-        ):
+        parser.content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[external forcing]\n",
+            "ExtForceFile = old.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser.updated_lines = []
 
-            parser = MDUParser("dummy_path")
-            parser.new_forcing_file = "new_test.ext"
+        # Update the file
+        updated_lines = MDUParser.update_extforce_file_new(parser)
 
-            # Update the file
-            updated_lines = parser.update_extforce_file_new()
-
-            # Check that the ExtForceFileNew entry was added and ExtForceFile was removed
-            assert len(updated_lines) == 7
-            assert updated_lines[0] == "[general]\n"
-            assert updated_lines[1] == "Name = Test\n"
-            assert updated_lines[2] == "[external forcing]\n"
-            assert "ExtForceFileNew" in updated_lines[3]
-            assert "new_test.ext" in updated_lines[3]
-            assert updated_lines[4] == "\n"
-            assert updated_lines[5] == "[geometry]\n"
-            assert updated_lines[6] == "NetFile = test.nc\n"
+        # Check that the ExtForceFileNew entry was added and ExtForceFile was removed
+        assert len(updated_lines) == 7
+        assert updated_lines[0] == "[general]\n"
+        assert updated_lines[1] == "Name = Test\n"
+        assert updated_lines[2] == "[external forcing]\n"
+        assert "ExtForceFileNew" in updated_lines[3]
+        assert "new_test.ext" in updated_lines[3]
+        assert updated_lines[4] == "\n"
+        assert updated_lines[5] == "[geometry]\n"
+        assert updated_lines[6] == "NetFile = test.nc\n"
 
 
 class TestGetEqualSignPosition:

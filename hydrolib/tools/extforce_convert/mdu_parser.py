@@ -15,6 +15,66 @@ INIFIELD_FILE_LINE = "IniFieldFile"
 
 
 @dataclass
+class ExternalForcingBlock:
+    extforcefile: Union[Path, str]
+    extforcefilenew: Optional[Union[Path, str]] = field(default=None)
+    comments: Optional[List[str]] = field(default=None)
+    _header: Optional= "[external forcing]"
+    root_dir: Optional[Path] = field(default=None)
+
+    def __init__(self, **kwargs):
+        valid_keys = {"extforcefile", "extforcefilenew", "comments", "_header"}
+        for key in valid_keys:
+            setattr(self, key, kwargs.get(key, None))
+
+    @property
+    def extforce_file(self) -> Path:
+        old_ext_force_file = self.extforcefile
+        if old_ext_force_file is None:
+            raise ValueError(
+                "An old formatted external forcing file (.ext) could not be found in the mdu file.\n"
+                "Conversion is not possible or may not be necessary."
+            )
+        else:
+            old_ext_force_file = Path(old_ext_force_file)
+
+        return old_ext_force_file
+
+    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+        """ Get the new external forcing file path.
+
+        Notes:
+            - If the `extforcefilenew` exists in the MDU file, it will be used.
+            - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
+            - If an `ext_file` is provided, it will be used as the new extforce file.
+
+        Args:
+            ext_file (Path):
+                Optional path to an external forcing file to use as the new extforce file.
+
+        Returns:
+            Path:
+                Path to the new external forcing file.
+        """
+        _extforce_file_new = Path(self.extforcefilenew) if self.extforcefilenew else None
+
+        if _extforce_file_new:
+            # if the extforce_file_new exist in the MDU file, we use it
+            ext_file = (self.root_dir / _extforce_file_new).resolve()
+        else:
+            # if the extforce_file_new does not exist in the MDU file
+            if ext_file is None:
+                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
+                ext_file = self.root_dir / self.extforce_file.with_stem(
+                    self.extforce_file.stem + "-new"
+                )
+            else:
+                # if an ext_file is provided, we use it
+                ext_file = Path(ext_file).resolve()
+
+        return ext_file
+
+@dataclass
 class FileStyleProperties:
     """
     Detects and stores style properties of an MDU file, such as leading spaces and equal sign alignment.
@@ -41,7 +101,6 @@ class FileStyleProperties:
         9
         ```
     """
-
     leading_spaces: int = 0
     equal_sign_position: int = 0
 
@@ -169,6 +228,8 @@ class MDUParser:
         self.found_extforcefilenew = False
         self._content = self._read_file()
         self.loaded_fm_data = self._load_with_fm_model()
+        self.extforce_block = ExternalForcingBlock(**self.external_forcing)
+        self.extforce_block.root_dir = self.mdu_path.parent
         self.temperature_salinity_data = self.get_temperature_salinity_data()
         self._geometry = self.loaded_fm_data.get("geometry")
         self.file_style_properties = FileStyleProperties(self._content)
@@ -188,46 +249,7 @@ class MDUParser:
     def external_forcing(self) -> Dict[str, Any]:
         return self.loaded_fm_data.get("external_forcing")
 
-    @property
-    def extforce_file(self) -> Path:
-        old_ext_force_file = self.external_forcing.get("extforcefile")
-        if old_ext_force_file is None:
-            raise ValueError(
-                "An old formatted external forcing file (.ext) could not be found in the mdu file.\n"
-                "Conversion is not possible or may not be necessary."
-            )
-        else:
-            old_ext_force_file = Path(old_ext_force_file)
 
-        return old_ext_force_file
-
-    @property
-    def extforce_file_new(self) -> Path:
-        new_ext_force_file = self.external_forcing.get("extforcefilenew")
-
-        if new_ext_force_file is not None:
-            new_ext_force_file = Path(new_ext_force_file)
-
-        return new_ext_force_file
-
-    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
-        root_dir = self.mdu_path.parent
-
-        if self.extforce_file_new:
-            # if the extforce_file_new exist in the MDU file, we use it
-            ext_file = (root_dir / self.extforce_file_new).resolve()
-        else:
-            # if the extforce_file_new does not exist in the MDU file
-            if ext_file is None:
-                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
-                ext_file = root_dir / self.extforce_file.with_stem(
-                    self.extforce_file.stem + "-new"
-                )
-            else:
-                # if an ext_file is provided, we use it
-                ext_file = Path(ext_file).resolve()
-
-        return ext_file
 
     @property
     def geometry(self) -> Dict[str, Any]:
@@ -597,6 +619,48 @@ class MDUParser:
 
         return section_start, section_end
 
+    def get_inifield_file(
+        self,
+        inifield_file: Optional[PathOrStr],
+    ) -> Path:
+        inifieldfile_mdu = self.geometry.get("inifieldfile")
+
+        if inifield_file is not None:
+            # user defined initial field file
+            inifield_file = self.mdu_path / inifield_file
+        elif isinstance(inifieldfile_mdu, Path):
+            # from the LegacyFMModel
+            inifield_file = inifieldfile_mdu.resolve()
+        elif isinstance(inifieldfile_mdu, str):
+            # from reading the geometry section
+            inifield_file = self.mdu_path / inifieldfile_mdu
+        else:
+            print(
+                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
+                f"given: {inifield_file}."
+            )
+        return inifield_file
+
+    def get_structure_file(
+        self,
+        structure_file: Optional[PathOrStr],
+    ) -> Path:
+        structurefile_mdu = self.geometry.get("structurefile")
+        if structure_file is not None:
+            # user defined structure file
+            structure_file = self.mdu_path / structure_file
+        elif isinstance(structurefile_mdu, Path):
+            # from the LegacyFMModel
+            structure_file = structurefile_mdu.resolve()
+        elif isinstance(structurefile_mdu, str):
+            # from reading the geometry section
+            structure_file = self.mdu_path / structurefile_mdu
+        else:
+            print(
+                "The structure file is not found in the mdu file, and not provide by the user. \n"
+                f"given: {structure_file}."
+            )
+        return structure_file
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
     """Save the updated MDU file content to disk.
@@ -613,3 +677,4 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     """Convert a date string to a datetime object."""
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
+

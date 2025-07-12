@@ -421,73 +421,21 @@ class ExternalForcingConverter:
             ValueError: If the old external forcing file is not found in the MDU file.
             DeprecationWarning: If the MDU file contains unknown keywords.
         """
-        if isinstance(mdu_file, str):
-            mdu_file = Path(mdu_file)
-
         mdu_parser = MDUParser(mdu_file)
 
-        old_ext_force_file = mdu_parser.extforce_file
+        extoldfile = mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
 
-        root_dir = mdu_file.parent
-        extoldfile = root_dir / old_ext_force_file
+        ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
+        inifield_file_user = mdu_parser.get_inifield_file(inifield_file_user)
+        structure_file_user = mdu_parser.get_structure_file(structure_file_user)
 
-        ext_file_user = mdu_parser.get_new_extforce_file(ext_file_user)
-
-        inifieldfile_mdu = mdu_parser.geometry.get("inifieldfile")
-        inifield_file_user = ExternalForcingConverter._get_inifield_file(
-            inifield_file_user, root_dir, inifieldfile_mdu
+        return cls(
+            extoldfile,
+            ext_file_user,
+            inifield_file_user,
+            structure_file_user,
+            mdu_parser,
         )
-
-        structurefile_mdu = mdu_parser.geometry.get("structurefile")
-        structure_file_user = ExternalForcingConverter._get_structure_file(
-            structure_file_user, root_dir, structurefile_mdu
-        )
-
-        return cls(extoldfile, ext_file_user, inifield_file_user, structure_file_user, mdu_parser)
-
-    @staticmethod
-    def _get_inifield_file(
-        inifield_file: Optional[PathOrStr],
-        root_dir: Path,
-        inifieldfile_mdu: Optional[PathOrStr],
-    ) -> Path:
-        if inifield_file is not None:
-            # user defined initial field file
-            inifield_file = root_dir / inifield_file
-        elif isinstance(inifieldfile_mdu, Path):
-            # from the LegacyFMModel
-            inifield_file = inifieldfile_mdu.resolve()
-        elif isinstance(inifieldfile_mdu, str):
-            # from reading the geometry section
-            inifield_file = root_dir / inifieldfile_mdu
-        else:
-            print(
-                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
-                f"given: {inifield_file}."
-            )
-        return inifield_file
-
-    @staticmethod
-    def _get_structure_file(
-        structure_file: Optional[PathOrStr],
-        root_dir: Path,
-        structurefile_mdu: Optional[PathOrStr],
-    ) -> Path:
-        if structure_file is not None:
-            # user defined structure file
-            structure_file = root_dir / structure_file
-        elif isinstance(structurefile_mdu, Path):
-            # from the LegacyFMModel
-            structure_file = structurefile_mdu.resolve()
-        elif isinstance(structurefile_mdu, str):
-            # from reading the geometry section
-            structure_file = root_dir / structurefile_mdu
-        else:
-            print(
-                "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {structure_file}."
-            )
-        return structure_file
 
     def _update_mdu_file(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
