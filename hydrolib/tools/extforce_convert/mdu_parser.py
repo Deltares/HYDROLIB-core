@@ -1,12 +1,216 @@
 """MDU Parser."""
 
+from collections import Counter
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
+
+STRUCTURE_FILE_LINE = "StructureFile"
+INIFIELD_FILE_LINE = "IniFieldFile"
+
+
+@dataclass
+class ExternalForcingBlock:
+    extforcefile: Union[Path, str]
+    extforcefilenew: Optional[Union[Path, str]] = field(default=None)
+    comments: Optional[List[str]] = field(default=None)
+    _header: Optional = "[external forcing]"
+    root_dir: Optional[Path] = field(default=None)
+
+    def __init__(self, **kwargs):
+        valid_keys = {"extforcefile", "extforcefilenew", "comments", "_header"}
+        for key in valid_keys:
+            setattr(self, key, kwargs.get(key, None))
+
+    @property
+    def extforce_file(self) -> Path:
+        old_ext_force_file = self.extforcefile
+        if old_ext_force_file is None:
+            raise ValueError(
+                "An old formatted external forcing file (.ext) could not be found in the mdu file.\n"
+                "Conversion is not possible or may not be necessary."
+            )
+        else:
+            old_ext_force_file = Path(old_ext_force_file)
+
+        return old_ext_force_file
+
+    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+        """Get the new external forcing file path.
+
+        Notes:
+            - If the `extforcefilenew` exists in the MDU file, it will be used.
+            - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
+            - If an `ext_file` is provided, it will be used as the new extforce file.
+
+        Args:
+            ext_file (Path):
+                Optional path to an external forcing file to use as the new extforce file.
+
+        Returns:
+            Path:
+                Path to the new external forcing file.
+        """
+        _extforce_file_new = (
+            Path(self.extforcefilenew) if self.extforcefilenew else None
+        )
+
+        if _extforce_file_new:
+            # if the extforce_file_new exist in the MDU file, we use it
+            ext_file = (self.root_dir / _extforce_file_new).resolve()
+        else:
+            # if the extforce_file_new does not exist in the MDU file
+            if ext_file is None:
+                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
+                ext_file = self.root_dir / self.extforce_file.with_stem(
+                    self.extforce_file.stem + "-new"
+                )
+            else:
+                # if an ext_file is provided, we use it
+                ext_file = Path(ext_file).resolve()
+
+        return ext_file
+
+
+@dataclass
+class FileStyleProperties:
+    """
+    Detects and stores style properties of an MDU file, such as leading spaces and equal sign alignment.
+
+    This class analyzes the content of an MDU file to determine the most common number of leading spaces
+    and the most common position of the equal sign for key-value pairs. These properties can be used to
+    preserve formatting when updating or generating MDU files.
+
+    Attributes:
+        leading_spaces (int): The most common number of leading spaces at the start of lines.
+        equal_sign_position (int): The most common position (column index) of the equal sign in key-value lines.
+
+    Example:
+        ```python
+        >>> content = [
+        ...     'Param1    = value1',
+        ...     'Param2    = value2',
+        ...     'Param3    = value3',
+        ... ]
+        >>> style = FileStyleProperties(content)
+        >>> style.leading_spaces
+        0
+        >>> style.equal_sign_position
+        9
+        ```
+    """
+
+    leading_spaces: int = 0
+    equal_sign_position: int = 0
+
+    def __init__(self, content: List[str]):
+        """
+        Initialize the FileStyleProperties.
+
+        Args:
+            content (List[str]): List of strings representing the content of the MDU file.
+        """
+        self.leading_spaces = self._get_leading_spaces(content)
+        self.equal_sign_position = self._get_equal_sign_position(content)
+
+    @staticmethod
+    def _get_equal_sign_position(content: List[str]) -> Optional[int]:
+        """
+        Get the most common position (column index) of the equal sign in the MDU file.
+
+        Args:
+            content (List[str]): List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]: The most common index of the equal sign, or None if not found.
+
+        Example:
+            ```python
+            >>> FileStyleProperties._get_equal_sign_position(
+            ...     ['A = 1', 'BB   = 2', 'CCC = 3', '# Comment = 4']
+            ... )
+            2
+            ```
+        """
+        equal_sign_counter = Counter()
+        for line in content:
+            if "=" in line and not line.strip().startswith("#"):
+                eq_index = line.find("=")
+                equal_sign_counter[eq_index] += 1
+
+        position = None
+        if equal_sign_counter:
+            most_common_pos, _ = equal_sign_counter.most_common(1)[0]
+            position = most_common_pos
+
+        return position
+
+    @staticmethod
+    def _get_leading_spaces(content: List[str]) -> Optional[int]:
+        """Get Leading Spaces.
+
+        - Detect the most common number of leading spaces in each line of the MDU file.
+        - The function returns the most common leading space count, which can be used to maintain consistent formatting
+
+        Args:
+            content (List[str]):
+                List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]:
+                The most common number of leading spaces, or None if not found.
+
+        Notes:
+            - All the lines that start with a comment character `#` are ignored.
+            - The leading spaces are counted as the difference between the length of the line and the length of the line
+                after stripping leading whitespace.
+            - If no lines with leading spaces are found, returns None.
+            - The function uses a Counter to find the most common leading space count.
+            - tabs and spaces are treated the same, so if a line has 1 spaces and 1 tab, it will be counted as 2
+            leading spaces.
+
+        Example:
+            ```python
+            >>> FileStyleProperties._get_leading_spaces([
+            ...     '  Param1 = value1', '    Param2 = value2', '  Param3 = value3'])
+            2
+            ```
+        """
+        leading_spaces = Counter()
+        for line in content:
+            if not line.strip().startswith("#"):
+                num_spaces = len(line) - len(line.lstrip())
+                leading_spaces[num_spaces] += 1
+
+        spacing = None
+        if leading_spaces:
+            most_common_spacing, _ = leading_spaces.most_common(1)[0]
+            spacing = most_common_spacing
+
+        return spacing
+
+    def recenter_equal_sign(self, line: str) -> str:
+        """Recenter Equal Sign.
+
+        Recenter the equal sign to a specific target column.
+
+        Args:
+            line (str):
+                Input line like "IniFieldFile=my-file.ini"
+
+        Returns:
+            str:
+                Re-aligned line with equal sign at target_pos
+        """
+        key, value = map(str.strip, line.split("=", 1))
+        aligned_key = key.ljust(self.equal_sign_position - self.leading_spaces)
+        spaces = " " * self.leading_spaces
+        return f"{spaces}{aligned_key}= {value}"
 
 
 class MDUParser:
@@ -28,7 +232,11 @@ class MDUParser:
         self.found_extforcefilenew = False
         self._content = self._read_file()
         self.loaded_fm_data = self._load_with_fm_model()
+        self.extforce_block = ExternalForcingBlock(**self.external_forcing)
+        self.extforce_block.root_dir = self.mdu_path.parent
         self.temperature_salinity_data = self.get_temperature_salinity_data()
+        self._geometry = self.loaded_fm_data.get("geometry")
+        self.file_style_properties = FileStyleProperties(self._content)
 
     def _load_with_fm_model(self) -> Dict[str, Any]:
         """Load the MDU file using the FMModel class.
@@ -40,6 +248,15 @@ class MDUParser:
         """
         data = FMModel._load(FMModel, self.mdu_path)
         return data
+
+    @property
+    def external_forcing(self) -> Dict[str, Any]:
+        return self.loaded_fm_data.get("external_forcing")
+
+    @property
+    def geometry(self) -> Dict[str, Any]:
+        """Get the geometry data from the MDU file."""
+        return self._geometry
 
     @property
     def new_forcing_file(self) -> Union[Path, str]:
@@ -96,6 +313,31 @@ class MDUParser:
         """
         self._content = new_content
 
+    def has_inifield_file(self) -> bool:
+        """Check if the MDU file has an inifield file defined.
+
+        Returns:
+            bool: True if an inifield file is defined, False otherwise
+        """
+        return self.has_field("IniFieldFile")
+
+    def has_structure_file(self) -> bool:
+        """Check if the MDU file has an inifield file defined.
+
+        Returns:
+            bool: True if an inifield file is defined, False otherwise
+        """
+        return self.has_field("StructureFile")
+
+    def has_field(self, field_name: str) -> bool:
+        """Check if the MDU file has a given file defined.
+
+        Returns:
+            bool:
+                True if an inifield file is defined, False otherwise
+        """
+        return True if self.find_keyword_lines(field_name) is not None else False
+
     def update_extforce_file_new(self) -> List[str]:
         """Update the ExtForceFileNew entry in the MDU file.
 
@@ -145,6 +387,46 @@ class MDUParser:
             self.updated_lines.append("\n")
 
         return self.updated_lines
+
+    def update_inifield_file(self, file_name: str) -> None:
+        """Update the IniFieldFile entry in the MDU file.
+
+        Args:
+            file_name (str):
+                The path to the new inifield file to set
+
+        Notes:
+            - The method adds the IniFieldFile entry at the end-1 of the geometry section, as some mdu files has
+            decorative lines (i.e. "#=========") around the section headers, and the function that detects the end of
+            the section detects the end of the section by looking for the next section header. and then this
+            decorative line will be considered as the last line in the section and adding the inifield file at
+            end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
+            inifield file line.
+        """
+        _, end_ind = self.find_section_bounds("geometry")
+        line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+        line = self.file_style_properties.recenter_equal_sign(line)
+        self.insert_line(line, end_ind - 1)
+
+    def update_structure_file(self, file_name: str) -> None:
+        """Update the IniFieldFile entry in the MDU file.
+
+        Args:
+            file_name (str):
+                The path to the new inifield file to set
+
+        Notes:
+            - The method adds the IniFieldFile entry at the end-1 of the geometry section, as some mdu files has
+            decorative lines (i.e. "#=========") around the section headers, and the function that detects the end of
+            the section detects the end of the section by looking for the next section header. and then this
+            decorative line will be considered as the last line in the section and adding the inifield file at
+            end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
+            inifield file line.
+        """
+        _, end_ind = self.find_section_bounds("geometry")
+        line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
+        line = self.file_style_properties.recenter_equal_sign(line)
+        self.insert_line(line, end_ind - 1)
 
     @staticmethod
     def is_section_header(line: str) -> bool:
@@ -256,6 +538,131 @@ class MDUParser:
             "salinity": mdu_physics.salinity,
         }
         return temperature_and_salinity_info
+
+    def find_keyword_lines(
+        self, keyword: str, case_sensitive: bool = False
+    ) -> Union[int, None]:
+        """Find line numbers in the MDU file where the keyword appears.
+
+        Args:
+            keyword: The keyword to search for.
+            case_sensitive: Whether the search should be case-sensitive.
+
+        Returns:
+            A list of line number where the keyword is found.
+        """
+        if not case_sensitive:
+            keyword = keyword.lower()
+        line_number = None
+        for i, line in enumerate(self._content, start=0):
+            haystack = line if case_sensitive else line.lower()
+            stripped_line = haystack.lstrip()
+            if_exist = (
+                stripped_line.startswith(keyword)
+                if case_sensitive
+                else stripped_line.lower().startswith(keyword.lower())
+            )
+            if if_exist:
+                line_number = i
+                break
+
+        return line_number
+
+    def insert_line(self, line: str, index: int) -> None:
+        """Insert a line at the specified index in the MDU file content.
+
+        Args:
+            index: The 0-based index where the line should be inserted.
+            line: The line to insert (a newline `\n` will be added if not present).
+
+        Raises:
+            IndexError: If the index is out of bounds.
+        """
+        if not line.endswith("\n"):
+            line += "\n"
+
+        if index < 0 or index > len(self._content):
+            raise IndexError("Index out of bounds for inserting line.")
+
+        self._content.insert(index, line)
+
+    def find_section_bounds(self, section_name: str) -> tuple[int, int]:
+        """Find the start and end line indices of a section.
+
+        Args:
+            section_name: The name of the section, e.g., "geometry".
+
+        Returns:
+            A tuple (start_index, end_index):
+                - start_index is the index of the section header line.
+                - end_index is the index just before the next section header or end of file(index to the empty line).
+
+        Raises:
+            ValueError: If the section is not found.
+        """
+        section_start = -1
+        section_end = len(self._content)
+
+        header = f"[{section_name.lower()}]"
+
+        for i, line in enumerate(self._content):
+            stripped = line.strip().lower()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                if stripped == header:
+                    section_start = i
+                elif section_start != -1:
+                    # We hit the start of a new section after finding our target
+                    section_end = i - 1
+                    break
+
+        if section_start == -1:
+            section_start = None
+            section_end = None
+
+        return section_start, section_end
+
+    def get_inifield_file(
+        self,
+        inifield_file: Optional[PathOrStr],
+    ) -> Path:
+        inifieldfile_mdu = self.geometry.get("inifieldfile")
+
+        if inifield_file is not None:
+            # user defined initial field file
+            inifield_file = self.mdu_path / inifield_file
+        elif isinstance(inifieldfile_mdu, Path):
+            # from the LegacyFMModel
+            inifield_file = inifieldfile_mdu.resolve()
+        elif isinstance(inifieldfile_mdu, str):
+            # from reading the geometry section
+            inifield_file = self.mdu_path / inifieldfile_mdu
+        else:
+            print(
+                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
+                f"given: {inifield_file}."
+            )
+        return inifield_file
+
+    def get_structure_file(
+        self,
+        structure_file: Optional[PathOrStr],
+    ) -> Path:
+        structurefile_mdu = self.geometry.get("structurefile")
+        if structure_file is not None:
+            # user defined structure file
+            structure_file = self.mdu_path / structure_file
+        elif isinstance(structurefile_mdu, Path):
+            # from the LegacyFMModel
+            structure_file = structurefile_mdu.resolve()
+        elif isinstance(structurefile_mdu, str):
+            # from reading the geometry section
+            structure_file = self.mdu_path / structurefile_mdu
+        else:
+            print(
+                "The structure file is not found in the mdu file, and not provide by the user. \n"
+                f"given: {structure_file}."
+            )
+        return structure_file
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:

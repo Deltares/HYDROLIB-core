@@ -1,10 +1,16 @@
+import types
 from pathlib import Path
 from typing import Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, save_mdu_file
+from hydrolib.tools.extforce_convert.mdu_parser import (
+    FileStyleProperties,
+    MDUParser,
+    get_ref_time,
+    save_mdu_file,
+)
 
 
 @pytest.mark.parametrize(
@@ -54,6 +60,27 @@ def test_update_mdu_on_the_fly(
         pass
 
 
+def test_save_mdu_file(tmp_path):
+    """Test the save_mdu_file function."""
+    # Create test content
+    content = ["[general]\n", "Name = Test\n", "[geometry]\n", "NetFile = test.nc\n"]
+
+    # Create a temporary file path
+    output_path = tmp_path / "test_save.mdu"
+
+    # Save the content to the file
+    save_mdu_file(content, output_path)
+
+    # Check that the file exists
+    assert output_path.exists()
+
+    # Check that the file contains the expected content
+    with open(output_path, "r", encoding="utf-8") as f:
+        saved_content = f.readlines()
+
+    assert saved_content == content
+
+
 @pytest.mark.parametrize(
     "line, expected",
     [
@@ -80,7 +107,7 @@ def test_replace_extforcefilenew(line, expected):
         patch("pathlib.Path.exists", return_value=True),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-            return_value=None,
+            return_value=MagicMock(geometry=MagicMock()),
         ),
         patch(
             "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
@@ -107,3 +134,725 @@ def test_is_section_header():
     # Test with external forcing section header (should return False)
     assert MDUParser.is_section_header("[external forcing]") is False
     assert MDUParser.is_section_header("[EXTERNAL FORCING]") is False
+
+
+def test_get_ref_time():
+    """Test the get_ref_time function."""
+    # Test with valid date
+    result = get_ref_time("20220101")
+    assert "MINUTES SINCE" in result
+    assert "2022-01-01" in result
+
+    # Test with custom format
+    result = get_ref_time("01-02-2022", date_format="%d-%m-%Y")
+    assert "MINUTES SINCE" in result
+    assert "2022-02-01" in result
+
+
+class TestMduParser:
+    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
+
+    def test_init(self):
+        """Test the initialization of MDUParser."""
+        # Test with a valid file path
+        parser = MDUParser(self.file_path)
+        assert parser.mdu_path == Path(self.file_path)
+        assert parser.updated_lines == []
+        assert parser.inside_external_forcing is False
+        assert parser.found_extforcefilenew is False
+        assert isinstance(parser._content, list)
+        assert isinstance(parser.loaded_fm_data, dict)
+        assert isinstance(parser.temperature_salinity_data, dict)
+
+    def test_init_with_nonexistent_file(self):
+        """Test initialization with a non-existent file."""
+        with pytest.raises(FileNotFoundError):
+            MDUParser("non_existent_file.mdu")
+
+    def test_new_forcing_file_property(self):
+        """Test the new_forcing_file property."""
+        parser = MDUParser(self.file_path)
+
+        # Test getting the property before it's set
+        with pytest.raises(AttributeError):
+            _ = parser.new_forcing_file
+
+        # Test setting with valid values
+        parser.new_forcing_file = "test.ext"
+        assert parser.new_forcing_file == "test.ext"
+
+        parser.new_forcing_file = Path("another_test.ext")
+        assert parser.new_forcing_file == Path("another_test.ext")
+
+        # Test setting with invalid value
+        with pytest.raises(ValueError):
+            parser.new_forcing_file = 123
+
+    def test_geometry_property(self):
+        """Test the geometry property."""
+        parser = MDUParser(self.file_path)
+        assert parser.geometry == parser._geometry
+
+    def test_content_property(self):
+        """Test the content property and setter."""
+        parser = MDUParser(self.file_path)
+        original_content = parser.content
+
+        # Test setting new content
+        new_content = ["New line 1\n", "New line 2\n"]
+        parser.content = new_content
+        assert parser.content == new_content
+
+        # Restore original content
+        parser.content = original_content
+
+    def test_read_file(self):
+        """Test the _read_file method."""
+        parser = MDUParser(self.file_path)
+        content = parser._read_file()
+        assert isinstance(content, list)
+        assert len(content) > 0
+        assert all(isinstance(line, str) for line in content)
+
+    def test_load_with_fm_model(self):
+        """Test the _load_with_fm_model method."""
+        parser = MDUParser(self.file_path)
+        data = parser._load_with_fm_model()
+        assert isinstance(data, dict)
+        assert "geometry" in data
+
+    def test_save(self, tmp_path):
+        """Test the save method."""
+        parser = MDUParser(self.file_path)
+
+        # Create a temporary file path
+        temp_file = tmp_path / "test_save.mdu"
+
+        # Save to the temporary file
+        with patch(
+            "hydrolib.tools.extforce_convert.mdu_parser.backup_file"
+        ) as mock_backup:
+            # Save without backup
+            parser.mdu_path = temp_file
+            parser.save()
+            mock_backup.assert_not_called()
+
+            # Save with backup
+            parser.save(backup=True)
+            mock_backup.assert_called_once_with(temp_file)
+
+    @pytest.mark.e2e
+    def test_find_keyword_lines(self):
+        parser = MDUParser(self.file_path)
+        assert parser.find_keyword_lines("ThinDamFile") == 13
+        assert parser.find_keyword_lines("ThinDamFile", case_sensitive=True) == 13
+
+        # Test with a keyword that doesn't exist
+        assert parser.find_keyword_lines("NonExistentKeyword") is None
+
+    def test_insert_line(self):
+        parser = MDUParser(self.file_path)
+        new_line = "NewLine = value\n"
+        parser.insert_line(new_line, 5)
+        assert parser.content[5] == new_line
+
+        # Test inserting at the beginning
+        parser.insert_line("StartLine = value\n", 0)
+        assert parser.content[0] == "StartLine = value\n"
+
+        # Test inserting at the end
+        end_index = len(parser.content)
+        parser.insert_line("EndLine = value", end_index)
+        assert parser.content[end_index] == "EndLine = value\n"
+
+        # Test inserting with out-of-bounds index
+        with pytest.raises(IndexError):
+            parser.insert_line("Invalid", len(parser.content) + 1)
+
+    def test_find_section_bounds(self):
+        parser = MDUParser(self.file_path)
+        section_start, section_end = parser.find_section_bounds("geometry")
+        assert parser.content[section_start] == "[geometry]\n"
+        assert parser.content[section_end] == "\n"
+
+        # Test for a non-existing section
+        non_existing_section = parser.find_section_bounds("non-existing")
+        assert non_existing_section[0] is None
+        assert non_existing_section[1] is None
+
+    @pytest.mark.unit
+    def test_update_inifield_file_without_decorative_line(self):
+        """
+        Test adding the inifield file path to the geometry section.
+        The mdu file does not have lines around the section header.
+        - Example mdu file content:
+        ```ini
+        [geometry]
+        ...
+        Dcenterinside                       = 1.
+        PartitionFile                       =
+
+        [numerics]
+        ...
+        ```
+
+        - The inifield file should be added as:
+        ```ini
+        [geometry]
+        ...
+        Dcenterinside                       = 1.
+        IniFieldFile = new-inifield-file.ini
+        PartitionFile                       =
+
+        [numerics]
+        ...
+        ```
+        """
+        parser = MDUParser(self.file_path)
+        parser.update_inifield_file("new-inifield-file.ini")
+
+        # Check if the inifield file was added to the geometry section
+        _, end_ind = parser.find_section_bounds("geometry")
+        assert (
+            parser._content[end_ind - 2]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
+
+    @pytest.mark.unit
+    def test_update_inifield_file_with_decorative_lines(self):
+        """
+        Test adding the inifield file path to the geometry section.
+
+        The mdu file have decorative lines around the section header.
+
+        ```ini
+        #============================
+        [geometry]
+        #============================
+        ...
+        Dcenterinside                       = 1.
+        PartitionFile                       =
+
+        #============================
+        [numerics]
+        #============================
+        ...
+        ```
+        """
+        parser = MDUParser(self.file_path)
+        # add the decorative lines at the upper line of the numerics section
+        parser._content.insert(29, "#============================\n")
+        parser.update_inifield_file("new-inifield-file.ini")
+
+        # Check if the inifield file was added to the geometry section
+        _, end_ind = parser.find_section_bounds("geometry")
+        assert (
+            parser._content[end_ind - 2]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
+
+    @pytest.mark.unit
+    def test_has_inifield_file(self):
+        """Test the has_inifield_file method."""
+
+        parser = MagicMock(spec=MDUParser)
+        parser.has_field = types.MethodType(MDUParser.has_field, parser)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
+        parser._content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "IniFieldFile = new-inifield-file.ini\n",
+        ]
+        # Test with a file that has an inifield file
+        assert MDUParser.has_inifield_file(parser) is True
+
+        # Test with a file that does not have an inifield file
+        parser._content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        assert MDUParser.has_inifield_file(parser) is False
+
+    def test_handle_external_forcing_section(self):
+        """Test the _handle_external_forcing_section method."""
+        parser = MDUParser(self.file_path)
+        parser.new_forcing_file = "test.ext"
+        parser.inside_external_forcing = True
+        parser.found_extforcefilenew = False
+        parser.updated_lines = []
+
+        # Test with a section header
+        parser._handle_external_forcing_section("[general]")
+        assert not parser.inside_external_forcing
+        assert len(parser.updated_lines) == 3  # New line + empty line
+        assert "ExtForceFileNew" in parser.updated_lines[0]
+
+        # Reset for next test
+        parser.inside_external_forcing = True
+        parser.found_extforcefilenew = False
+        parser.updated_lines = []
+
+        # Test with ExtForceFileNew line
+        parser._handle_external_forcing_section("ExtForceFileNew = old.ext")
+        assert parser.found_extforcefilenew
+        assert len(parser.updated_lines) == 1
+        assert "test.ext" in parser.updated_lines[0]
+
+        # Reset for next test
+        parser.inside_external_forcing = True
+        parser.found_extforcefilenew = False
+        parser.updated_lines = []
+
+        # Test with ExtForceFile line (should be skipped)
+        parser._handle_external_forcing_section("ExtForceFile = old.ext")
+        assert not parser.found_extforcefilenew
+        assert len(parser.updated_lines) == 0
+
+        # Test with regular line
+        parser._handle_external_forcing_section("RegularLine = value")
+        assert len(parser.updated_lines) == 1
+        assert "RegularLine = value" in parser.updated_lines[0]
+
+    def test_get_temperature_salinity_data(self):
+        """Test the get_temperature_salinity_data method."""
+        parser = MDUParser(self.file_path)
+        data = parser.get_temperature_salinity_data()
+
+        # Check that the returned data has the expected structure
+        assert isinstance(data, dict)
+        assert "file_path" in data
+        assert "refdate" in data
+        assert "temperature" in data
+        assert "salinity" in data
+
+        # Check that the file_path is correct
+        assert data["file_path"] == Path(self.file_path)
+
+        # Check that temperature and salinity are boolean values
+        assert isinstance(data["temperature"], bool)
+        assert isinstance(data["salinity"], (bool, int))
+
+    def test_update_extforce_file_new(self):
+        """Test the update_extforce_file_new method."""
+        # Test with a file that has an external forcing section
+        mdu_file = (
+            "tests/data/input/dflowfm_individual_files/with_optional_sections.mdu"
+        )
+        parser = MDUParser(mdu_file)
+        parser.new_forcing_file = "new_test.ext"
+
+        # Update the file
+        updated_lines = parser.update_extforce_file_new()
+
+        # Check that the updated lines contain the new forcing file
+        external_forcing_section = False
+        found_extforcefilenew = False
+
+        for line in updated_lines:
+            if "[external forcing]" in line.lower():
+                external_forcing_section = True
+                continue
+
+            if external_forcing_section and "extforcefilenew" in line.lower():
+                found_extforcefilenew = True
+                assert "new_test.ext" in line
+
+            if external_forcing_section and line.strip().startswith("["):
+                external_forcing_section = False
+
+        assert found_extforcefilenew, "ExtForceFileNew entry not found in updated lines"
+
+        parser = MagicMock(spec=MDUParser)
+        parser.content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser.update_extforce_file_new = types.MethodType(
+            MDUParser.update_extforce_file_new, parser
+        )
+        parser._handle_external_forcing_section = types.MethodType(
+            MDUParser._handle_external_forcing_section, parser
+        )
+        parser.inside_external_forcing = False
+        parser.found_extforcefilenew = False
+        parser.updated_lines = []
+        parser.new_forcing_file = "new_test.ext"
+
+        # Update the file
+        updated_lines = MDUParser.update_extforce_file_new(parser)
+
+        # Check that the updated lines are the same as the original (no external forcing section to update)
+        assert len(updated_lines) == 4
+        assert updated_lines == [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+
+        # Test with a file that has an external forcing section but no ExtForceFileNew entry
+        parser.content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[external forcing]\n",
+            "ExtForceFile = old.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser.updated_lines = []
+
+        # Update the file
+        updated_lines = MDUParser.update_extforce_file_new(parser)
+
+        # Check that the ExtForceFileNew entry was added and ExtForceFile was removed
+        assert len(updated_lines) == 7
+        assert updated_lines[0] == "[general]\n"
+        assert updated_lines[1] == "Name = Test\n"
+        assert updated_lines[2] == "[external forcing]\n"
+        assert "ExtForceFileNew" in updated_lines[3]
+        assert "new_test.ext" in updated_lines[3]
+        assert updated_lines[4] == "\n"
+        assert updated_lines[5] == "[geometry]\n"
+        assert updated_lines[6] == "NetFile = test.nc\n"
+
+
+class TestGetEqualSignPosition:
+
+    @pytest.mark.unit
+    def test_same_position_all_lines(self):
+        # All equal signs at the same position
+        content = [
+            "Param1    = value1\n",
+            "Param2    = value2\n",
+            "Param3    = value3\n",
+        ]
+
+        pos = FileStyleProperties._get_equal_sign_position(content)
+        assert pos == content[0].find("=")
+
+    @pytest.mark.unit
+    def test_different_position(self):
+        # Equal signs at different positions, most common should be chosen
+        content = [
+            "A = 1\n",  # pos 2
+            "BB   = 2\n",  # pos 4
+            "CCC = 3\n",  # pos 4
+            "DDDD = 4\n",  # pos 5
+            "E = 5\n",  # pos 2
+            "F = 6\n",  # pos 2
+        ]
+        pos = FileStyleProperties._get_equal_sign_position(content)
+        # pos 2 appears 3 times, pos 4 appears 2 times, pos 5 once
+        assert pos == 2
+
+    @pytest.mark.unit
+    def test_lines_with_decorative_equal_sign(self):
+        # Lines with comments and equal signs
+        content = [
+            "# This is a comment ==========\n",
+            "Param = value # comment\n",
+            "Another = something\n",
+        ]
+        pos = FileStyleProperties._get_equal_sign_position(content)
+        assert pos == content[1].find("=")
+
+    @pytest.mark.unit
+    def test_no_equal_sign(self):
+        # No equal signs at all
+        content = [
+            "No equals here\n",
+            "Still no equals\n",
+        ]
+
+        pos = FileStyleProperties._get_equal_sign_position(content)
+        assert pos is None
+
+    @pytest.mark.unit
+    def test_all_equal_sign_are_commented(self):
+        # Only commented lines with equal signs (should be ignored)
+        content = [
+            "# Param = value\n",
+            "# Another = something\n",
+        ]
+
+        pos = FileStyleProperties._get_equal_sign_position(content)
+        assert pos is None
+
+
+class TestGetLeadingSpaces:
+    """
+    Unit tests for FileStyleProperties._get_leading_spaces static method.
+
+    Scenarios covered:
+        - All lines have the same number of leading spaces.
+        - Lines have varying numbers of leading spaces (most common is chosen).
+        - Lines with no leading spaces.
+        - Lines with only tabs as leading whitespace.
+        - Lines with mixed tabs and spaces.
+        - All lines are empty or whitespace only.
+        - All lines are commented out.
+        - Empty content.
+    """
+
+    @pytest.mark.unit
+    def test_all_lines_same_leading_spaces(self):
+        """All lines have the same number of leading spaces."""
+        content = [
+            "    Param1 = value1\n",
+            "    Param2 = value2\n",
+            "    Param3 = value3\n",
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 4
+
+    @pytest.mark.unit
+    def test_varying_leading_spaces(self):
+        """Lines have varying numbers of leading spaces; most common is chosen."""
+        content = [
+            "  Param1 = value1\n",  # 2 spaces
+            "    Param2 = value2\n",  # 4 spaces
+            "  Param3 = value3\n",  # 2 spaces
+            "Param4 = value4\n",  # 0 spaces
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 2
+
+    @pytest.mark.unit
+    def test_no_leading_spaces(self):
+        """Lines with no leading spaces."""
+        content = [
+            "Param1 = value1\n",
+            "Param2 = value2\n",
+            "Param3 = value3\n",
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 0
+
+    @pytest.mark.unit
+    def test_leading_tabs_only(self):
+        """Lines with only tabs as leading whitespace (tabs count as 1 char each).
+        Notes:
+            - the tab is counted as 1 leading space.
+            - the following content has 1 tab, 2 tabs, and 0 spaces.
+            - the most common leading space is the fist most frequent spacing.
+            - in this case it is 1 tab, and two tabs, but one tab is at the top of the list, so it will be used.
+        """
+        content = [
+            "\tParam1 = value1\n",
+            "\t\tParam2 = value2\n",
+            "Param3 = value3\n",
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 1  # 0 is most common (1 tab, 2 tabs, 0 spaces)
+
+    @pytest.mark.unit
+    def test_mixed_tabs_and_spaces(self):
+        """Lines with mixed tabs and spaces as leading whitespace.
+
+        Notes:
+            - the following content has [1 space + i tab, 1 tab + 1 space, 2 spaces, no spaces], so the most common
+            leading space is 2 spaces.
+        """
+        content = [
+            " \tParam1 = value1\n",  # 1 space, 1 tab
+            "\t Param2 = value2\n",  # 1 tab, 1 space
+            "  Param3 = value3\n",  # 2 spaces
+            "Param4 = value4\n",  # 0 spaces
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 2
+
+    @pytest.mark.unit
+    def test_all_empty_or_whitespace_lines(self):
+        """All lines are empty or whitespace only."""
+        content = [
+            "",
+            "   ",
+            "\t",
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result == 0
+
+    @pytest.mark.unit
+    def test_all_commented_lines(self):
+        """All lines are commented out; leading spaces return None."""
+        content = [
+            "  # Comment 1\n",
+            "    # Comment 2\n",
+            "# Comment 3\n",
+        ]
+        result = FileStyleProperties._get_leading_spaces(content)
+        assert result is None
+
+    @pytest.mark.unit
+    def test_empty_content(self):
+        """Empty content should return None."""
+        content = []
+        result = FileStyleProperties._get_leading_spaces(content)
+
+        assert result is None
+
+
+class TestRecenterEqualSign:
+    """
+    Test the _recenter_equal_sign function for various behaviors:
+    - Aligns the equal sign at the specified column.
+    - Handles lines with/without spaces around the equal sign.
+    - Handles different target positions.
+    - Handles values with/without leading/trailing spaces.
+    - Handles empty value.
+    """
+
+    file_style_properties = MagicMock(spec=FileStyleProperties)
+    file_style_properties.equal_sign_position = 20
+    file_style_properties.leading_spaces = 0
+
+    @pytest.mark.unit
+    def test_standard_alignment(self):
+        # Case 1: Standard alignment
+        line = "IniFieldFile=my-file.ini"
+
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_already_aligned(self):
+        # Already aligned, target position matches
+        line = "IniFieldFile         = my-file.ini"
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_value_with_leading_trailing_spaces(self):
+        # Case 3: Value with leading/trailing spaces
+        line = "IniFieldFile=   my-file.ini   "
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile        = my-file.ini"
+
+    @pytest.mark.unit
+    def test_target_position_less_than_key_length(self):
+        # Case 4: Target position less than key length
+        line = "IniFieldFile=my-file.ini"
+        self.file_style_properties.equal_sign_position = 5
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile= my-file.ini"
+
+    @pytest.mark.unit
+    def test_empty_value(self):
+        # Case 5: Empty value
+        line = "IniFieldFile="
+        self.file_style_properties.equal_sign_position = 15
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile   = "
+
+    @pytest.mark.unit
+    def test_key_with_spaces_value_with_spaces(self):
+        # Case 6: Key with spaces, value with spaces
+        line = "IniFieldFile   =   my-file.ini   "
+        self.file_style_properties.equal_sign_position = 25
+        result = FileStyleProperties.recenter_equal_sign(
+            self.file_style_properties, line
+        )
+        assert result == "IniFieldFile             = my-file.ini"
+
+
+class TestFileStyleProperties:
+    """
+    Integration tests for the FileStyleProperties class.
+
+    These tests instantiate FileStyleProperties and check that both leading_spaces and
+    equal_sign_position are set correctly together, covering realistic scenarios.
+    """
+
+    def test_standard_content(self):
+        """Integration: Consistent leading spaces and equal sign position."""
+        content = [
+            "Param1    = value1\n",
+            "Param2    = value2\n",
+            "Param3    = value3\n",
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position == 10
+
+    def test_varying_equal_sign_positions(self):
+        """Integration: Varying equal sign positions, most common is chosen."""
+        content = [
+            "A = 1\n",  # pos 2
+            "BB   = 2\n",  # pos 4
+            "CCC = 3\n",  # pos 4
+            "DDDD = 4\n",  # pos 5
+            "E = 5\n",  # pos 2
+            "F = 6\n",  # pos 2
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position == 2
+
+    def test_varying_leading_spaces(self):
+        """Integration: Varying leading spaces, most common is chosen."""
+        content = [
+            "  Param1 = value1\n",  # 2 spaces, position 8
+            "    Param2 = value2\n",  # 4 spaces, position 11
+            "  Param3 = value3\n",  # 2 spaces, position 9
+            "Param4 = value4\n",  # 0 spaces, position 7
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 2
+        assert style.equal_sign_position == 9
+
+    def test_no_equal_signs(self):
+        """Integration: No equal signs, equal_sign_position should be None."""
+        content = [
+            "No equals here\n",
+            "Still no equals\n",
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position is None
+
+    def test_all_lines_commented(self):
+        """Integration: All lines commented out; equal_sign_position should be None."""
+        content = [
+            "# Param1 = value1\n",
+            "# Param2 = value2\n",
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces is None
+        assert style.equal_sign_position is None
+
+    def test_empty_content(self):
+        """Integration: Empty content; both properties should be None."""
+        content = []
+        style = FileStyleProperties(content)
+        assert style.leading_spaces is None
+        assert style.equal_sign_position is None
+
+    def test_leading_spaces_with_tabs(self):
+        """Integration: Lines with tabs as leading whitespace."""
+        content = [
+            "\tParam1 = value1\n",
+            "\t\tParam2 = value2\n",
+            "Param3 = value3\n",
+        ]
+        style = FileStyleProperties(content)
+        # Tabs count as 1 char each, so most common is 0 (no leading spaces)
+        assert style.leading_spaces == 1
+        assert style.equal_sign_position == 8

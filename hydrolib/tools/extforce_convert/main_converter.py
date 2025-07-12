@@ -392,9 +392,9 @@ class ExternalForcingConverter:
     def from_mdu(
         cls,
         mdu_file: PathOrStr,
-        ext_file: Optional[PathOrStr] = None,
-        inifield_file: Optional[PathOrStr] = None,
-        structure_file: Optional[PathOrStr] = None,
+        ext_file_user: Optional[PathOrStr] = None,
+        inifield_file_user: Optional[PathOrStr] = None,
+        structure_file_user: Optional[PathOrStr] = None,
     ) -> "ExternalForcingConverter":
         """Create the converter from the MDU file.
 
@@ -403,13 +403,13 @@ class ExternalForcingConverter:
                 Must be parsable into a standard FMModel.
                 When this contains a valid filename for ExtFile, conversion
                 will be performed.
-            ext_file (PathOrStr, optional): Path to the output external forcings
+            ext_file_user (PathOrStr, optional): Path to the output external forcings
                 file. Defaults to the given ExtForceFileNew in the MDU file, if
                 present, or forcings.ext otherwise.
-            inifield_file (PathOrStr, optional): Path to the output initial field
+            inifield_file_user (PathOrStr, optional): Path to the output initial field
                 file. Defaults to the given IniFieldFile in the MDU file, if
                 present, or inifields.ini otherwise.
-            structure_file (PathOrStr, optional): Path to the output structures.ini
+            structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
 
@@ -421,102 +421,23 @@ class ExternalForcingConverter:
             ValueError: If the old external forcing file is not found in the MDU file.
             DeprecationWarning: If the MDU file contains unknown keywords.
         """
-        if isinstance(mdu_file, str):
-            mdu_file = Path(mdu_file)
-
         mdu_parser = MDUParser(mdu_file)
 
-        external_forcing_data = mdu_parser.loaded_fm_data.get("external_forcing")
-        geometry = mdu_parser.loaded_fm_data.get("geometry")
-
-        inifieldfile_mdu = geometry.get("inifieldfile")
-        structurefile_mdu = geometry.get("structurefile")
-
-        old_ext_force_file = external_forcing_data.get("extforcefile")
-        if old_ext_force_file is None:
-            raise ValueError(
-                "An old formatted external forcing file (.ext) "
-                "could not be found in the mdu file.\n"
-                "Conversion is not possible or may not be necessary."
-            )
-
-        new_ext_force_file = external_forcing_data.get("extforcefilenew")
-
-        old_ext_force_file = (
-            Path(old_ext_force_file)
-            if old_ext_force_file is not None
-            else old_ext_force_file
-        )
-        new_ext_force_file = (
-            Path(new_ext_force_file)
-            if new_ext_force_file is not None
-            else new_ext_force_file
+        extoldfile = (
+            mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
         )
 
-        root_dir = mdu_file.parent
-        extoldfile = root_dir / old_ext_force_file
+        ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
+        inifield_file_user = mdu_parser.get_inifield_file(inifield_file_user)
+        structure_file_user = mdu_parser.get_structure_file(structure_file_user)
 
-        if new_ext_force_file:
-            ext_file = (root_dir / new_ext_force_file).resolve()
-        else:
-            if ext_file is None:
-                old_ext = old_ext_force_file.with_stem(old_ext_force_file.stem + "-new")
-                ext_file = root_dir / old_ext
-            else:
-                ext_file = root_dir / ext_file
-
-        inifield_file = ExternalForcingConverter._get_inifield_file(
-            inifield_file, root_dir, inifieldfile_mdu
+        return cls(
+            extoldfile,
+            ext_file_user,
+            inifield_file_user,
+            structure_file_user,
+            mdu_parser,
         )
-        structure_file = ExternalForcingConverter._get_structure_file(
-            structure_file, root_dir, structurefile_mdu
-        )
-
-        return cls(extoldfile, ext_file, inifield_file, structure_file, mdu_parser)
-
-    @staticmethod
-    def _get_inifield_file(
-        inifield_file: Optional[PathOrStr],
-        root_dir: Path,
-        inifieldfile_mdu: Optional[PathOrStr],
-    ) -> Path:
-        if inifield_file is not None:
-            # user defined initial field file
-            inifield_file = root_dir / inifield_file
-        elif isinstance(inifieldfile_mdu, Path):
-            # from the LegacyFMModel
-            inifield_file = inifieldfile_mdu.resolve()
-        elif isinstance(inifieldfile_mdu, str):
-            # from reading the geometry section
-            inifield_file = root_dir / inifieldfile_mdu
-        else:
-            print(
-                f"The initial field file is not found in the mdu file, and not provided by the user. \n "
-                f"given: {inifield_file}."
-            )
-        return inifield_file
-
-    @staticmethod
-    def _get_structure_file(
-        structure_file: Optional[PathOrStr],
-        root_dir: Path,
-        structurefile_mdu: Optional[PathOrStr],
-    ) -> Path:
-        if structure_file is not None:
-            # user defined structure file
-            structure_file = root_dir / structure_file
-        elif isinstance(structurefile_mdu, Path):
-            # from the LegacyFMModel
-            structure_file = structurefile_mdu.resolve()
-        elif isinstance(structurefile_mdu, str):
-            # from reading the geometry section
-            structure_file = root_dir / structurefile_mdu
-        else:
-            print(
-                "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {structure_file}."
-            )
-        return structure_file
 
     def _update_mdu_file(self):
         """Update the FM model with the new external forcings, initial fields and structures files.
@@ -532,6 +453,18 @@ class ExternalForcingConverter:
         new_ext_file = self.ext_model.filepath.name
         self.mdu_parser.new_forcing_file = new_ext_file
         self.mdu_parser.content = self.mdu_parser.update_extforce_file_new()
+        if (
+            len(self.inifield_model.parameter) > 0
+            or len(self.inifield_model.initial) > 0
+        ):
+            if not self.mdu_parser.has_inifield_file():
+                self.mdu_parser.update_inifield_file(self.inifield_model.filepath.name)
+
+        if len(self.structure_model.structure) > 0:
+            if not self.mdu_parser.has_structure_file():
+                self.mdu_parser.update_structure_file(
+                    self.structure_model.filepath.name
+                )
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
