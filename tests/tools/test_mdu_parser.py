@@ -1,6 +1,6 @@
+import types
 from pathlib import Path
 from typing import Tuple
-import types
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -357,13 +357,15 @@ class TestMduParser:
 
         parser = MagicMock(spec=MDUParser)
         parser.has_field = types.MethodType(MDUParser.has_field, parser)
-        parser.find_keyword_lines = types.MethodType(MDUParser.find_keyword_lines, parser)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
         parser._content = [
-                    "[general]\n",
-                    "Name = Test\n",
-                    "[geometry]\n",
-                    "IniFieldFile = new-inifield-file.ini\n",
-                ]
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "IniFieldFile = new-inifield-file.ini\n",
+        ]
         # Test with a file that has an inifield file
         assert MDUParser.has_inifield_file(parser) is True
 
@@ -472,8 +474,12 @@ class TestMduParser:
             "[geometry]\n",
             "NetFile = test.nc\n",
         ]
-        parser.update_extforce_file_new = types.MethodType(MDUParser.update_extforce_file_new, parser)
-        parser._handle_external_forcing_section = types.MethodType(MDUParser._handle_external_forcing_section, parser)
+        parser.update_extforce_file_new = types.MethodType(
+            MDUParser.update_extforce_file_new, parser
+        )
+        parser._handle_external_forcing_section = types.MethodType(
+            MDUParser._handle_external_forcing_section, parser
+        )
         parser.inside_external_forcing = False
         parser.found_extforcefilenew = False
         parser.updated_lines = []
