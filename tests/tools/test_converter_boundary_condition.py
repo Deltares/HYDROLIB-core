@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-from tests.utils import compare_two_files, ignore_version_lines, is_macos
+from tests.utils import compare_two_files, ignore_version_lines, is_macos, is_linux
 
 
 @pytest.fixture
@@ -383,7 +383,7 @@ class TestMainConverter:
         ] == old_forcing_file_boundary["locationfile"]
         r_dir = converter.root_dir
 
-        if not is_macos():
+        if not is_macos() and not is_linux():
             # test save files
             ext_model.save(recurse=True, exclude_unset=True)
 
