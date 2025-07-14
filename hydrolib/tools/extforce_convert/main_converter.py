@@ -423,7 +423,9 @@ class ExternalForcingConverter:
         """
         mdu_parser = MDUParser(mdu_file)
 
-        extoldfile = mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
+        extoldfile = (
+            mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
+        )
 
         ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
         inifield_file_user = mdu_parser.get_inifield_file(inifield_file_user)

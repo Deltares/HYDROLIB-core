@@ -19,7 +19,7 @@ class ExternalForcingBlock:
     extforcefile: Union[Path, str]
     extforcefilenew: Optional[Union[Path, str]] = field(default=None)
     comments: Optional[List[str]] = field(default=None)
-    _header: Optional= "[external forcing]"
+    _header: Optional = "[external forcing]"
     root_dir: Optional[Path] = field(default=None)
 
     def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class ExternalForcingBlock:
         return old_ext_force_file
 
     def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
-        """ Get the new external forcing file path.
+        """Get the new external forcing file path.
 
         Notes:
             - If the `extforcefilenew` exists in the MDU file, it will be used.
@@ -56,7 +56,9 @@ class ExternalForcingBlock:
             Path:
                 Path to the new external forcing file.
         """
-        _extforce_file_new = Path(self.extforcefilenew) if self.extforcefilenew else None
+        _extforce_file_new = (
+            Path(self.extforcefilenew) if self.extforcefilenew else None
+        )
 
         if _extforce_file_new:
             # if the extforce_file_new exist in the MDU file, we use it
@@ -73,6 +75,7 @@ class ExternalForcingBlock:
                 ext_file = Path(ext_file).resolve()
 
         return ext_file
+
 
 @dataclass
 class FileStyleProperties:
@@ -101,6 +104,7 @@ class FileStyleProperties:
         9
         ```
     """
+
     leading_spaces: int = 0
     equal_sign_position: int = 0
 
@@ -248,8 +252,6 @@ class MDUParser:
     @property
     def external_forcing(self) -> Dict[str, Any]:
         return self.loaded_fm_data.get("external_forcing")
-
-
 
     @property
     def geometry(self) -> Dict[str, Any]:
@@ -664,6 +666,7 @@ class MDUParser:
             )
         return structure_file
 
+
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
     """Save the updated MDU file content to disk.
 
@@ -679,4 +682,3 @@ def get_ref_time(input_date: str, date_format: str = "%Y%m%d"):
     """Convert a date string to a datetime object."""
     date_object = datetime.strptime(f"{input_date}", date_format)
     return f"MINUTES SINCE {date_object}"
-
