@@ -678,15 +678,16 @@ class MDUParser:
     ) -> Path:
         inifieldfile_mdu = self.geometry.get("inifieldfile")
 
+        root_dir = self.mdu_path.parent
         if inifield_file is not None:
             # user defined initial field file
-            inifield_file = self.mdu_path / inifield_file
+            inifield_file = root_dir / inifield_file
         elif isinstance(inifieldfile_mdu, Path):
             # from the LegacyFMModel
             inifield_file = inifieldfile_mdu.resolve()
         elif isinstance(inifieldfile_mdu, str):
             # from reading the geometry section
-            inifield_file = self.mdu_path / inifieldfile_mdu
+            inifield_file = root_dir / inifieldfile_mdu
         else:
             print(
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
