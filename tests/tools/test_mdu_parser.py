@@ -523,7 +523,7 @@ class TestMduParser:
         assert updated_lines[6] == "NetFile = test.nc\n"
 
 
-class TestGetEqualSignPosition:
+class TestLocate:
 
     @pytest.mark.unit
     def test_same_position_all_lines(self):
@@ -534,7 +534,7 @@ class TestGetEqualSignPosition:
             "Param3    = value3\n",
         ]
 
-        pos = FileStyleProperties._get_equal_sign_position(content)
+        pos = FileStyleProperties._locate(content, "=")
         assert pos == content[0].find("=")
 
     @pytest.mark.unit
@@ -548,7 +548,7 @@ class TestGetEqualSignPosition:
             "E = 5\n",  # pos 2
             "F = 6\n",  # pos 2
         ]
-        pos = FileStyleProperties._get_equal_sign_position(content)
+        pos = FileStyleProperties._locate(content, "=")
         # pos 2 appears 3 times, pos 4 appears 2 times, pos 5 once
         assert pos == 2
 
@@ -560,7 +560,7 @@ class TestGetEqualSignPosition:
             "Param = value # comment\n",
             "Another = something\n",
         ]
-        pos = FileStyleProperties._get_equal_sign_position(content)
+        pos = FileStyleProperties._locate(content, "=")
         assert pos == content[1].find("=")
 
     @pytest.mark.unit
@@ -571,7 +571,7 @@ class TestGetEqualSignPosition:
             "Still no equals\n",
         ]
 
-        pos = FileStyleProperties._get_equal_sign_position(content)
+        pos = FileStyleProperties._locate(content, "=")
         assert pos is None
 
     @pytest.mark.unit
@@ -582,7 +582,7 @@ class TestGetEqualSignPosition:
             "# Another = something\n",
         ]
 
-        pos = FileStyleProperties._get_equal_sign_position(content)
+        pos = FileStyleProperties._locate(content, "=")
         assert pos is None
 
 

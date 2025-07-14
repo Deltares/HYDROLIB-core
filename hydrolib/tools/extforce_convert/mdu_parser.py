@@ -137,11 +137,34 @@ class FileStyleProperties:
             2
             ```
         """
+        position = FileStyleProperties._locate(content,"=")
+
+        return position
+    @staticmethod
+    def _locate(content: List[str], keyword: str) -> Optional[int]:
+        """
+        Get the most common position (column index) of the equal sign in the MDU file.
+
+        Args:
+            content (List[str]): List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]: The most common index of the equal sign, or None if not found.
+
+        Example:
+            ```python
+            >>> FileStyleProperties._get_equal_sign_position(
+            ...     ['A = 1', 'BB   = 2', 'CCC = 3', '# Comment = 4']
+            ... )
+            2
+            ```
+        """
         equal_sign_counter = Counter()
         for line in content:
             if "=" in line and not line.strip().startswith("#"):
-                eq_index = line.find("=")
-                equal_sign_counter[eq_index] += 1
+                eq_index = line.find(keyword)
+                if eq_index != -1: # when the keyword is not found, eq_index will be -1
+                    equal_sign_counter[eq_index] += 1
 
         position = None
         if equal_sign_counter:
