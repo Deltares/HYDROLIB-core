@@ -139,7 +139,7 @@ class FileStyleProperties:
             2
             ```
         """
-        position = FileStyleProperties._locate(content,"=")
+        position = FileStyleProperties._locate(content, "=")
 
         return position
 
@@ -162,7 +162,7 @@ class FileStyleProperties:
             - If no lines with comments are found, it returns None.
             - if the line has multiple comment characters, it will only count the first one.
         """
-        position = FileStyleProperties._locate(content,"#")
+        position = FileStyleProperties._locate(content, "#")
 
         return position
 
@@ -189,7 +189,7 @@ class FileStyleProperties:
         for line in content:
             if "=" in line and not line.strip().startswith("#"):
                 eq_index = line.find(keyword)
-                if eq_index != -1: # when the keyword is not found, eq_index will be -1
+                if eq_index != -1:  # when the keyword is not found, eq_index will be -1
                     equal_sign_counter[eq_index] += 1
 
         position = None
