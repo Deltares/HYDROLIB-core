@@ -107,6 +107,7 @@ class FileStyleProperties:
 
     leading_spaces: int = 0
     equal_sign_position: int = 0
+    comments_position: Optional[int] = None
 
     def __init__(self, content: List[str]):
         """
@@ -117,6 +118,7 @@ class FileStyleProperties:
         """
         self.leading_spaces = self._get_leading_spaces(content)
         self.equal_sign_position = self._get_equal_sign_position(content)
+        self.comments_position = self._get_comments_position(content)
 
     @staticmethod
     def _get_equal_sign_position(content: List[str]) -> Optional[int]:

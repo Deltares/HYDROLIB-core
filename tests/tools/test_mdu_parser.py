@@ -791,6 +791,7 @@ class TestFileStyleProperties:
         style = FileStyleProperties(content)
         assert style.leading_spaces == 0
         assert style.equal_sign_position == 10
+        assert style.comments_position is None
 
     def test_varying_equal_sign_positions(self):
         """Integration: Varying equal sign positions, most common is chosen."""
@@ -805,6 +806,7 @@ class TestFileStyleProperties:
         style = FileStyleProperties(content)
         assert style.leading_spaces == 0
         assert style.equal_sign_position == 2
+        assert style.comments_position is None
 
     def test_varying_leading_spaces(self):
         """Integration: Varying leading spaces, most common is chosen."""
@@ -856,6 +858,18 @@ class TestFileStyleProperties:
         # Tabs count as 1 char each, so most common is 0 (no leading spaces)
         assert style.leading_spaces == 1
         assert style.equal_sign_position == 8
+
+    def test_lines_with_comments(self):
+        """Integration: Lines with comments; comments_position should be set."""
+        content = [
+            "Param1 = value1 # comment1\n",
+            "Param2 = value2 # comment2\n",
+            "Param3 = value3 # comment3\n",
+        ]
+        style = FileStyleProperties(content)
+        assert style.leading_spaces == 0
+        assert style.equal_sign_position == 7
+        assert style.comments_position == content[0].find("#")
 
 
 class TestGetCommentsPosition:
