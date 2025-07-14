@@ -401,9 +401,10 @@ class MDUParser:
             end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
             inifield file line.
         """
-        _, end_ind = self.find_section_bounds("geometry")
         line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
         line = self.file_style_properties.recenter_equal_sign(line)
+        # put the inifield file at the end of the geometry section
+        _, end_ind = self.find_section_bounds("geometry")
         self.insert_line(line, end_ind - 1)
 
     def update_structure_file(self, file_name: str) -> None:
@@ -421,9 +422,10 @@ class MDUParser:
             end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
             inifield file line.
         """
-        _, end_ind = self.find_section_bounds("geometry")
         line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
         line = self.file_style_properties.recenter_equal_sign(line)
+        # put the structure file at the end of the geometry section
+        _, end_ind = self.find_section_bounds("geometry")
         self.insert_line(line, end_ind - 1)
 
     @staticmethod
