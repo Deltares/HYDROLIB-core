@@ -140,6 +140,30 @@ class FileStyleProperties:
         position = FileStyleProperties._locate(content,"=")
 
         return position
+
+    def _get_comments_position(self, content: List[str]) -> Optional[int]:
+        """
+        Get the most common position (column index) of the comment character in the MDU file.
+
+        Args:
+            content (List[str]):
+                List of strings representing the content of the MDU file.
+
+        Returns:
+            Optional[int]:
+                The most common index of the comment character, or None if not found.
+
+        Notes:
+            - This function is used to determine where comments start in the MDU file.
+            - It ignores lines that start with the comment character `#` to avoid counting comments as part of the key-value pairs.
+            - The function uses a Counter to find the most common position of the comment character.
+            - If no lines with comments are found, it returns None.
+            - if the line has multiple comment characters, it will only count the first one.
+        """
+        position = FileStyleProperties._locate(content,"#")
+
+        return position
+
     @staticmethod
     def _locate(content: List[str], keyword: str) -> Optional[int]:
         """

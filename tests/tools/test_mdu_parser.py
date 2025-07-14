@@ -856,3 +856,98 @@ class TestFileStyleProperties:
         # Tabs count as 1 char each, so most common is 0 (no leading spaces)
         assert style.leading_spaces == 1
         assert style.equal_sign_position == 8
+
+
+class TestGetCommentsPosition:
+    """
+    Unit tests for FileStyleProperties._get_comments_position method.
+
+    Scenarios covered:
+        - All lines have comments at the same position.
+        - Lines have comments at different positions (most common is chosen).
+        - Lines with no comments.
+        - Lines with only commented lines.
+        - Lines with both commented and non-commented lines.
+        - Empty content.
+        - Lines with multiple '#' characters (first occurrence is used).
+    """
+
+    @pytest.mark.unit
+    def test_all_lines_same_comment_position(self):
+        """Test when all lines have a comment at the same position (should return that position)."""
+        content = [
+            "Param1 = value1 # comment1\n",
+            "Param2 = value2 # comment2\n",
+            "Param3 = value3 # comment3\n",
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        assert result == content[0].find("#")
+
+    @pytest.mark.unit
+    def test_varying_comment_positions(self):
+        """Test when comments appear at different positions; most common is chosen."""
+        content = [
+            "A = 1 # comment\n",  # pos 6
+            "BB   = 2 # comment\n",  # pos 9
+            "CCC = 3 # comment\n",  # pos 8
+            "DDDD = 4 # comment\n",  # pos 9
+            "E = 5 # comment\n",  # pos 6
+            "F = 6 # comment\n",  # pos 6
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        # pos 6 appears 3 times, pos 9 appears 2 times, pos 8 once
+        assert result == 6
+
+    @pytest.mark.unit
+    def test_no_comments(self):
+        """Test when no lines have comments (should return None)."""
+        content = [
+            "Param1 = value1\n",
+            "Param2 = value2\n",
+            "Param3 = value3\n",
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        assert result is None
+
+    @pytest.mark.unit
+    def test_all_commented_lines(self):
+        """Test when all lines are commented out (should return the most common position of '#')."""
+        content = [
+            "# Comment 1\n",
+            "    # Comment 2\n",
+            "# Comment 3\n",
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        # Most common is position 0
+        assert result is None
+
+    @pytest.mark.unit
+    def test_commented_and_non_commented_lines(self):
+        """Test with a mix of commented and non-commented lines (should return most common position among all)."""
+        content = [
+            "Param1 = value1 # comment1\n",
+            "# Only comment\n",
+            "Param2 = value2 # comment2\n",
+            "    # Indented comment\n",
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        # Most common is position 0 (for indented and non-indented comments)
+        assert result == content[0].find("#")
+
+    @pytest.mark.unit
+    def test_empty_content(self):
+        """Test with empty content (should return None)."""
+        content = []
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        assert result is None
+
+    @pytest.mark.unit
+    def test_multiple_hashes_in_line(self):
+        """Test when a line contains multiple '#' characters (should use the first occurrence)."""
+        content = [
+            "Param1 = value1 # comment # extra\n",
+            "Param2 = value2 # another # more\n",
+        ]
+        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        assert result == content[0].find("#")
+
