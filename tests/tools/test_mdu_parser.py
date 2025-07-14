@@ -894,7 +894,9 @@ class TestGetCommentsPosition:
             "Param2 = value2 # comment2\n",
             "Param3 = value3 # comment3\n",
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         assert result == content[0].find("#")
 
     @pytest.mark.unit
@@ -908,7 +910,9 @@ class TestGetCommentsPosition:
             "E = 5 # comment\n",  # pos 6
             "F = 6 # comment\n",  # pos 6
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         # pos 6 appears 3 times, pos 9 appears 2 times, pos 8 once
         assert result == 6
 
@@ -920,7 +924,9 @@ class TestGetCommentsPosition:
             "Param2 = value2\n",
             "Param3 = value3\n",
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         assert result is None
 
     @pytest.mark.unit
@@ -931,7 +937,9 @@ class TestGetCommentsPosition:
             "    # Comment 2\n",
             "# Comment 3\n",
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         # Most common is position 0
         assert result is None
 
@@ -944,7 +952,9 @@ class TestGetCommentsPosition:
             "Param2 = value2 # comment2\n",
             "    # Indented comment\n",
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         # Most common is position 0 (for indented and non-indented comments)
         assert result == content[0].find("#")
 
@@ -952,7 +962,9 @@ class TestGetCommentsPosition:
     def test_empty_content(self):
         """Test with empty content (should return None)."""
         content = []
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         assert result is None
 
     @pytest.mark.unit
@@ -962,6 +974,7 @@ class TestGetCommentsPosition:
             "Param1 = value1 # comment # extra\n",
             "Param2 = value2 # another # more\n",
         ]
-        result = FileStyleProperties._get_comments_position(FileStyleProperties, content)
+        result = FileStyleProperties._get_comments_position(
+            FileStyleProperties, content
+        )
         assert result == content[0].find("#")
-
