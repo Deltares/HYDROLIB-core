@@ -361,7 +361,7 @@ class TestMduParser:
         parser.find_keyword_lines = types.MethodType(
             MDUParser.find_keyword_lines, parser
         )
-        parser._content = [
+        parser.content = [
             "[general]\n",
             "Name = Test\n",
             "[geometry]\n",
@@ -371,7 +371,7 @@ class TestMduParser:
         assert MDUParser.has_inifield_file(parser) is True
 
         # Test with a file that does not have an inifield file
-        parser._content = [
+        parser.content = [
             "[general]\n",
             "Name = Test\n",
             "[geometry]\n",
