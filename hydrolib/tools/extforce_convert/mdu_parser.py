@@ -605,7 +605,7 @@ class MDUParser:
         if not case_sensitive:
             keyword = keyword.lower()
         line_number = None
-        for i, line in enumerate(self._content, start=0):
+        for i, line in enumerate(self.content, start=0):
             haystack = line if case_sensitive else line.lower()
             stripped_line = haystack.lstrip()
             if_exist = (
@@ -632,12 +632,12 @@ class MDUParser:
         if not line.endswith("\n"):
             line += "\n"
 
-        if index < 0 or index > len(self._content):
+        if index < 0 or index > len(self.content):
             raise IndexError("Index out of bounds for inserting line.")
 
-        self._content.insert(index, line)
+        self.content.insert(index, line)
 
-    def find_section_bounds(self, section_name: str) -> tuple[int, int]:
+    def find_section_bounds(self, section_name: str) -> Tuple[int, int]:
         """Find the start and end line indices of a section.
 
         Args:
@@ -652,11 +652,11 @@ class MDUParser:
             ValueError: If the section is not found.
         """
         section_start = -1
-        section_end = len(self._content)
+        section_end = len(self.content)
 
         header = f"[{section_name.lower()}]"
 
-        for i, line in enumerate(self._content):
+        for i, line in enumerate(self.content):
             stripped = line.strip().lower()
             if stripped.startswith("[") and stripped.endswith("]"):
                 if stripped == header:
