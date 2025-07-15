@@ -282,77 +282,6 @@ class TestMduParser:
         assert non_existing_section[1] is None
 
     @pytest.mark.unit
-    def test_update_inifield_file_without_decorative_line(self):
-        """
-        Test adding the inifield file path to the geometry section.
-        The mdu file does not have lines around the section header.
-        - Example mdu file content:
-        ```ini
-        [geometry]
-        ...
-        Dcenterinside                       = 1.
-        PartitionFile                       =
-
-        [numerics]
-        ...
-        ```
-
-        - The inifield file should be added as:
-        ```ini
-        [geometry]
-        ...
-        Dcenterinside                       = 1.
-        IniFieldFile = new-inifield-file.ini
-        PartitionFile                       =
-
-        [numerics]
-        ...
-        ```
-        """
-        parser = MDUParser(self.file_path)
-        parser.update_inifield_file("new-inifield-file.ini")
-
-        # Check if the inifield file was added to the geometry section
-        _, end_ind = parser.find_section_bounds("geometry")
-        assert (
-            parser._content[end_ind - 2]
-            == "    IniFieldFile                        = new-inifield-file.ini\n"
-        )
-
-    @pytest.mark.unit
-    def test_update_inifield_file_with_decorative_lines(self):
-        """
-        Test adding the inifield file path to the geometry section.
-
-        The mdu file have decorative lines around the section header.
-
-        ```ini
-        #============================
-        [geometry]
-        #============================
-        ...
-        Dcenterinside                       = 1.
-        PartitionFile                       =
-
-        #============================
-        [numerics]
-        #============================
-        ...
-        ```
-        """
-        parser = MDUParser(self.file_path)
-        # add the decorative lines at the upper line of the numerics section
-        parser._content.insert(29, "#============================\n")
-        parser.update_inifield_file("new-inifield-file.ini")
-
-        # Check if the inifield file was added to the geometry section
-        _, end_ind = parser.find_section_bounds("geometry")
-        assert (
-            parser._content[end_ind - 2]
-            == "    IniFieldFile                        = new-inifield-file.ini\n"
-        )
-
-    @pytest.mark.unit
     def test_has_inifield_file(self):
         """Test the has_inifield_file method."""
 
@@ -378,35 +307,6 @@ class TestMduParser:
             "NetFile = test.nc\n",
         ]
         assert MDUParser.has_inifield_file(parser) is False
-
-    @pytest.mark.unit
-    def test_update_inifield_file_exists(self):
-        """Test the update_inifield_file method. where the inifield file already exists. with empty value"""
-        content = [
-            "[general]\n",
-            "Name = Test\n",
-            "[geometry]\n",
-            "IniFieldFile =     #some comments here\n",
-        ]
-
-        parser = MagicMock(spec=MDUParser)
-        parser.update_inifield_file = types.MethodType(MDUParser.update_inifield_file, parser)
-        parser.file_style_properties = FileStyleProperties(content)
-        parser.find_keyword_lines = types.MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
-        parser.find_section_bounds = types.MethodType(
-            MDUParser.find_section_bounds, parser
-        )
-        parser.insert_line = types.MethodType(
-            MDUParser.insert_line, parser
-        )
-        parser.content = deepcopy(content)
-        # Test with a file that has an inifield file
-        MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
-        old_index = content.index("IniFieldFile =     #some comments here\n")
-        assert parser.content[old_index] == "IniFieldFile= new-inifield-file.ini\n"
-
 
     def test_handle_external_forcing_section(self):
         """Test the _handle_external_forcing_section method."""
@@ -551,6 +451,109 @@ class TestMduParser:
         assert updated_lines[4] == "\n"
         assert updated_lines[5] == "[geometry]\n"
         assert updated_lines[6] == "NetFile = test.nc\n"
+
+
+class TestUpdateInifieldFile:
+    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
+
+    @pytest.mark.unit
+    def test_update_inifield_file_exists(self):
+        """Test the update_inifield_file method. where the inifield file already exists. with empty value"""
+        content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "IniFieldFile =     #some comments here\n",
+        ]
+
+        parser = MagicMock(spec=MDUParser)
+        parser.update_inifield_file = types.MethodType(MDUParser.update_inifield_file, parser)
+        parser.file_style_properties = FileStyleProperties(content)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
+        parser.find_section_bounds = types.MethodType(
+            MDUParser.find_section_bounds, parser
+        )
+        parser.insert_line = types.MethodType(
+            MDUParser.insert_line, parser
+        )
+        parser.content = deepcopy(content)
+        # Test with a file that has an inifield file
+        MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
+        old_index = content.index("IniFieldFile =     #some comments here\n")
+        assert parser.content[old_index] == "IniFieldFile= new-inifield-file.ini\n"
+
+    @pytest.mark.unit
+    def test_update_inifield_file_without_decorative_line(self):
+        """
+        Test adding the inifield file path to the geometry section.
+        The mdu file does not have lines around the section header.
+        - Example mdu file content:
+        ```ini
+        [geometry]
+        ...
+        Dcenterinside                       = 1.
+        PartitionFile                       =
+
+        [numerics]
+        ...
+        ```
+
+        - The inifield file should be added as:
+        ```ini
+        [geometry]
+        ...
+        Dcenterinside                       = 1.
+        IniFieldFile = new-inifield-file.ini
+        PartitionFile                       =
+
+        [numerics]
+        ...
+        ```
+        """
+        parser = MDUParser(self.file_path)
+        parser.update_inifield_file("new-inifield-file.ini")
+
+        # Check if the inifield file was added to the geometry section
+        _, end_ind = parser.find_section_bounds("geometry")
+        assert (
+                parser._content[end_ind - 2]
+                == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
+
+    @pytest.mark.unit
+    def test_update_inifield_file_with_decorative_lines(self):
+        """
+        Test adding the inifield file path to the geometry section.
+
+        The mdu file have decorative lines around the section header.
+
+        ```ini
+        #============================
+        [geometry]
+        #============================
+        ...
+        Dcenterinside                       = 1.
+        PartitionFile                       =
+
+        #============================
+        [numerics]
+        #============================
+        ...
+        ```
+        """
+        parser = MDUParser(self.file_path)
+        # add the decorative lines at the upper line of the numerics section
+        parser._content.insert(29, "#============================\n")
+        parser.update_inifield_file("new-inifield-file.ini")
+
+        # Check if the inifield file was added to the geometry section
+        _, end_ind = parser.find_section_bounds("geometry")
+        assert (
+                parser._content[end_ind - 2]
+                == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
 
 
 class TestLocate:
