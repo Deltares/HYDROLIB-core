@@ -1,6 +1,7 @@
 import types
 from pathlib import Path
 from typing import Tuple
+from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -377,6 +378,35 @@ class TestMduParser:
             "NetFile = test.nc\n",
         ]
         assert MDUParser.has_inifield_file(parser) is False
+
+    @pytest.mark.unit
+    def test_update_inifield_file_exists(self):
+        """Test the update_inifield_file method. where the inifield file already exists. with empty value"""
+        content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[geometry]\n",
+            "IniFieldFile =     #some comments here\n",
+        ]
+
+        parser = MagicMock(spec=MDUParser)
+        parser.update_inifield_file = types.MethodType(MDUParser.update_inifield_file, parser)
+        parser.file_style_properties = FileStyleProperties(content)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
+        parser.find_section_bounds = types.MethodType(
+            MDUParser.find_section_bounds, parser
+        )
+        parser.insert_line = types.MethodType(
+            MDUParser.insert_line, parser
+        )
+        parser.content = deepcopy(content)
+        # Test with a file that has an inifield file
+        MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
+        old_index = content.index("IniFieldFile =     #some comments here\n")
+        assert parser.content[old_index] == "IniFieldFile= new-inifield-file.ini\n"
+
 
     def test_handle_external_forcing_section(self):
         """Test the _handle_external_forcing_section method."""

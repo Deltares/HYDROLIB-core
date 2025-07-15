@@ -4,7 +4,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
@@ -451,12 +451,28 @@ class MDUParser:
             decorative line will be considered as the last line in the section and adding the inifield file at
             end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
             inifield file line.
+            - If the inifield file already exists, it will be updated with the new file name.
         """
-        line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+        if not self.has_inifield_file():
+            line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+            _, end_ind = self.find_section_bounds("geometry")
+            # put the inifield file at the end of the geometry section
+            line_number = end_ind - 1
+        else:
+            # find the line number of the existing inifield file
+            inifield_file_line_number = self.find_keyword_lines(INIFIELD_FILE_LINE)
+
+            # if the inifield file already exists, we update it
+            line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+
+            if inifield_file_line_number is not None:
+                # remove the old inifield file line
+                self.content.pop(inifield_file_line_number)
+
+            line_number = inifield_file_line_number
+
         line = self.file_style_properties.recenter_equal_sign(line)
-        # put the inifield file at the end of the geometry section
-        _, end_ind = self.find_section_bounds("geometry")
-        self.insert_line(line, end_ind - 1)
+        self.insert_line(line, line_number)
 
     def update_structure_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
