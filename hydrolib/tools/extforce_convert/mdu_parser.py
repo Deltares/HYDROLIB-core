@@ -309,7 +309,9 @@ class Line:
         """Get the number of leading spaces in the line."""
         return len(self.line) - len(self.line.lstrip())
 
-    def recenter_equal_sign(self, equal_sign_position: int = None, leading_spaces: int = None) -> str:
+    def recenter_equal_sign(
+        self, equal_sign_position: int = None, leading_spaces: int = None
+    ) -> str:
         """Recenter Equal Sign.
 
         Recenter the equal sign to a specific target column.
@@ -357,10 +359,11 @@ class Line:
             comments_position = self.comment_position
 
         if self.comment_position is not None:
-            aligned = self.line[:self.comment_position].ljust(comments_position)
+            aligned = self.line[: self.comment_position].ljust(comments_position)
             return f"{aligned}{self.comments}"
         else:
             return self.line
+
 
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""

@@ -8,10 +8,10 @@ import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (
     FileStyleProperties,
+    Line,
     MDUParser,
     get_ref_time,
     save_mdu_file,
-    Line
 )
 
 
@@ -1045,6 +1045,7 @@ class TestLine:
     def test_is_comment_true(self):
         """Test is_comment returns True for comment lines."""
         from hydrolib.tools.extforce_convert.mdu_parser import Line
+
         line = Line("   # This is a comment")
         assert line.is_comment() is True
 
@@ -1052,6 +1053,7 @@ class TestLine:
     def test_is_comment_false(self):
         """Test is_comment returns False for non-comment lines."""
         from hydrolib.tools.extforce_convert.mdu_parser import Line
+
         line = Line("Param = value")
         assert line.is_comment() is False
 
@@ -1107,6 +1109,7 @@ class TestLine:
     def test_get_leading_spaces_empty(self):
         """Test get_leading_spaces for empty line returns 0."""
         from hydrolib.tools.extforce_convert.mdu_parser import Line
+
         line = Line("")
         assert line.get_leading_spaces() == 0
 
@@ -1243,4 +1246,3 @@ class TestLineRecenterComments:
         result = line.recenter_comments(comments_position=25)
         # The first comment should start at column 25
         assert result[25:].startswith("# comment # extra")
-
