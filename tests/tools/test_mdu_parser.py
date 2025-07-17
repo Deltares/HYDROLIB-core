@@ -1244,3 +1244,103 @@ class TestLineRecenterComments:
         # The first comment should start at column 25
         assert result[25:].startswith("# comment # extra")
 
+
+class TestLineFromKeyValue:
+    """
+    Unit tests for Line.from_key_value classmethod.
+
+    Scenarios covered:
+        - Standard key/value with default alignment.
+        - Custom equal sign position and leading spaces.
+        - Empty key or value.
+        - Negative or invalid positions.
+        - Non-string key/value.
+        - Adding a comment.
+    """
+
+    @pytest.mark.unit
+    def test_standard_key_value(self):
+        """
+        Test standard key/value with default alignment.
+
+        Example:
+            Line.from_key_value('Param', 'value') -> 'Param= value'
+        """
+        line = Line.from_key_value('Param', 'value')
+        assert line.line == 'Param = value'
+
+    @pytest.mark.unit
+    def test_custom_alignment(self):
+        """
+        Test custom equal sign position and leading spaces.
+
+        Example:
+            Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2) -> '  Param    = value'
+        """
+        line = Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2)
+        assert line.line == '  Param   = value'
+
+    @pytest.mark.unit
+    def test_empty_key(self):
+        """
+        Test with empty key and non-empty value (should succeed).
+
+        Example:
+            Line.from_key_value('', 'value') -> '= value'
+        """
+        with pytest.raises(ValueError):
+            Line.from_key_value('', 'value')
+
+    @pytest.mark.unit
+    def test_empty_value(self):
+        """
+        Test with non-empty key and empty value (should succeed).
+
+        Example:
+            Line.from_key_value('Param', '') -> 'Param= '
+        """
+        line = Line.from_key_value('Param', '')
+        assert line.line == 'Param = '
+
+    @pytest.mark.unit
+    def test_empty_key_and_value(self):
+        """
+        Test with both key and value empty (should raise ValueError).
+        """
+        with pytest.raises(ValueError):
+            Line.from_key_value('', '')
+
+    @pytest.mark.unit
+    def test_negative_equal_sign_position(self):
+        """
+        Test with negative equal_sign_position (should raise ValueError).
+        """
+        with pytest.raises(ValueError):
+            Line.from_key_value('Param', 'value', equal_sign_position=-1)
+
+    @pytest.mark.unit
+    def test_negative_leading_spaces(self):
+        """
+        Test with negative leading_spaces (should raise ValueError).
+        """
+        with pytest.raises(ValueError):
+            Line.from_key_value('Param', 'value', leading_spaces=-2)
+
+    @pytest.mark.unit
+    def test_non_string_key(self):
+        """
+        Test with non-string key (should raise ValueError).
+        """
+        with pytest.raises(ValueError):
+            Line.from_key_value(123, 'value')
+
+    @pytest.mark.unit
+    def test_add_comment(self):
+        """
+        Test adding a comment to the line.
+        Example:
+            Line.from_key_value('Param', 'value', comment='# my comment') -> 'Param= value # my comment'
+        """
+        line = Line.from_key_value('Param', 'value', comment='# my comment')
+        assert line.line == 'Param = value # my comment'
+

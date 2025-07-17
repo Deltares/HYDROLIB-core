@@ -362,6 +362,54 @@ class Line:
         else:
             return self.line
 
+    @classmethod
+    def from_key_value(
+        cls,
+        key: str,
+        value: str,
+        equal_sign_position: int = None,
+        leading_spaces: int = 0,
+        comment: str = None,
+    ) -> "Line":
+        """Create a Line instance from a key-value pair.
+
+        Args:
+            key (str): The key to set in the line. Must not be empty.
+            value (str): The value to set in the line. Can be empty.
+            equal_sign_position (int, optional): Position of the equal sign. Defaults to None.
+            leading_spaces (int, optional): Number of leading spaces. Defaults to 0.
+            comment (str, optional): Comment to append to the line. Defaults to None.
+
+        Returns:
+            Line: A new Line instance with the specified key and value.
+
+        Raises:
+            ValueError: If key is not a string or is empty, or if positions are negative.
+
+        Examples:
+            >>> Line.from_key_value('Param', 'value')
+            Line('Param= value')
+            >>> Line.from_key_value('Param', '', comment='# no value')
+            Line('Param=  # no value')
+        """
+        if not isinstance(key, str):
+            raise ValueError("Key and value must be strings.")
+        if key == "":
+            raise ValueError("Key must not be empty.")
+        if equal_sign_position is not None and equal_sign_position < 0:
+            raise ValueError("equal_sign_position cannot be negative.")
+        if leading_spaces < 0:
+            raise ValueError("leading_spaces cannot be negative.")
+        if equal_sign_position is None:
+            equal_sign_position = len(key) + leading_spaces + 1
+        aligned_key = key.ljust(equal_sign_position - leading_spaces)
+        spaces = " " * leading_spaces
+        line_content = f"{spaces}{aligned_key}= {value}" if value != "" else f"{spaces}{aligned_key}="
+        if comment:
+            line_content = f"{line_content} {comment.strip()}"
+        return cls(line_content)
+
+
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
