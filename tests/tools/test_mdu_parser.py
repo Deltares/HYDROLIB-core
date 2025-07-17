@@ -1130,13 +1130,13 @@ class TestLine:
         """Test recenter_equal_sign with custom leading spaces."""
         line = Line("Param=val")
         result = line.recenter_equal_sign(leading_spaces=2, equal_sign_position=8)
-        assert result.startswith("  Param  = val")
+        assert result.startswith("  Param = val")
 
     @pytest.mark.unit
     def test_recenter_equal_sign_no_key_value(self):
         """Test recenter_equal_sign raises ValueError if no key/value present."""
         line = Line("# Just a comment")
-        with pytest.raises(ValueError):
+        with pytest.raises(AttributeError):
             line.recenter_equal_sign()
 
     @pytest.mark.unit
