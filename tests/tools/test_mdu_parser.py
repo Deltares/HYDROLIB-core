@@ -1031,7 +1031,7 @@ class TestLine:
     def test_with_comment(self):
         """Test extracting comment and its position from a line with a comment."""
         line = Line("Param = value # comment here")
-        assert line.comment_position == line.line.find("#")
+        assert line.comment_position == line.content.find("#")
         assert line.comments == "# comment here"
 
     @pytest.mark.unit
@@ -1071,25 +1071,24 @@ class TestLine:
     def test_get_key_value_standard(self):
         """Test get_key_value parses key, value, and equal sign position for standard lines."""
         line = Line("Param = value")
-        key, value, pos = line.get_key_value()
+        key, value = line.get_key_value()
         assert key == "Param"
         assert value == "value"
-        assert pos == line.line.find("=")
+        assert line.equal_sign_position == line.content.find("=")
 
     @pytest.mark.unit
     def test_get_key_value_no_equal_sign(self):
         """Test get_key_value raises ValueError if no equal sign is present."""
-        line = Line("Param value")
         with pytest.raises(ValueError):
-            line.get_key_value()
+            line = Line("Param value")
 
     @pytest.mark.unit
     def test_get_key_value_comment_or_section(self):
         """Test get_key_value returns None for key/value/pos for comment or section header lines."""
         comment_line = Line("# Just a comment")
         section_line = Line("[general]")
-        assert comment_line.get_key_value() == (None, None, None)
-        assert section_line.get_key_value() == (None, None, None)
+        assert comment_line.get_key_value() == (None, None)
+        assert section_line.get_key_value() == (None, None)
 
     @pytest.mark.unit
     def test_get_leading_spaces(self):
@@ -1106,7 +1105,6 @@ class TestLine:
     @pytest.mark.unit
     def test_get_leading_spaces_empty(self):
         """Test get_leading_spaces for empty line returns 0."""
-        from hydrolib.tools.extforce_convert.mdu_parser import Line
         line = Line("")
         assert line.get_leading_spaces() == 0
 
@@ -1267,7 +1265,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value') -> 'Param= value'
         """
         line = Line.from_key_value('Param', 'value')
-        assert line.line == 'Param = value'
+        assert line.content == 'Param = value'
 
     @pytest.mark.unit
     def test_custom_alignment(self):
@@ -1278,7 +1276,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2) -> '  Param    = value'
         """
         line = Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2)
-        assert line.line == '  Param   = value'
+        assert line.content == '  Param   = value'
 
     @pytest.mark.unit
     def test_empty_key(self):
@@ -1300,7 +1298,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', '') -> 'Param= '
         """
         line = Line.from_key_value('Param', '')
-        assert line.line == 'Param = '
+        assert line.content == 'Param ='
 
     @pytest.mark.unit
     def test_empty_key_and_value(self):
@@ -1342,5 +1340,5 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value', comment='# my comment') -> 'Param= value # my comment'
         """
         line = Line.from_key_value('Param', 'value', comment='# my comment')
-        assert line.line == 'Param = value # my comment'
+        assert line.content == 'Param = value # my comment'
 

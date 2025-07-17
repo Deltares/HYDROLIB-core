@@ -265,15 +265,54 @@ class FileStyleProperties:
 class Line:
 
     def __init__(self, line: str):
-        self.line = line
-        self.comment_position, self.comments = self._get_comments()
-        self.leading_spaces = self.get_leading_spaces()
+        self._content = line
+        self.key, self.value = self.get_key_value()
+
+    @property
+    def content(self) -> str:
+        """Get the content of the line."""
+        return self._content
+
+    @property
+    def key_value(self) -> Tuple[str, str]:
+        """Get the key of the line."""
+        if self.is_comment() or self.is_section_header():
+            key = None
+            value = None
+        else:
+            key, value = self.get_key_value()
+
+        return key, value
+
+    @property
+    def equal_sign_position(self) -> int:
+        """Get the position of the equal sign in the line."""
+        return self.content.find("=")
+
+    @property
+    def comments(self) -> str:
+        _, comment = self._get_comments()
+        return comment
+
+    @property
+    def comment_position(self) -> Optional[int]:
+        """Get the position of the comments in the line."""
+        comment_index = self.content.find("#")
+        if comment_index == -1:
+            comment_index = None
+
+        return comment_index
+
+    @property
+    def leading_spaces(self) -> int:
+        """Get the number of leading spaces in the line."""
+        return self.get_leading_spaces()
 
     def _get_comments(self) -> Tuple[int, str]:
         """Get comments from the line."""
-        comment_index = self.line.find("#")
+        comment_index = self.content.find("#")
         if comment_index != -1:
-            comments = self.line[comment_index:].strip()
+            comments = self.content[comment_index:].strip()
         else:
             comment_index = None
             comments = ""
@@ -282,32 +321,34 @@ class Line:
 
     def is_comment(self) -> bool:
         """Check if the line is a comment."""
-        return self.line.strip().startswith("#")
+        return self.content.strip().startswith("#")
 
     def is_section_header(self) -> bool:
         """Check if the line is a section header (e.g., '[...]')."""
-        return self.line.startswith("[") and self.line.endswith("]")
+        return self.content.startswith("[") and self.content.endswith("]")
 
-    def get_key_value(self) -> Tuple[str, str, int]:
+    def is_empty(self) -> bool:
+        """Check if the line is empty or contains only whitespace."""
+        return not self.content.strip()
+
+    def get_key_value(self) -> Tuple[str, str]:
         """Get the key and value from the line."""
-        if self.is_comment() or self.is_section_header():
+        if self.is_comment() or self.is_section_header() or self.is_empty():
             key = None
             value = None
-            equal_sign_position = None
         else:
-            if "=" in self.line:
-                key, value = self.line.split("=", 1)
+            if "=" in self.content:
+                key, value = self.content.split("=", 1)
                 key = key.strip()
                 value = value.strip()
-                equal_sign_position = self.line.find("=")
             else:
-                raise ValueError(f"Line '{self.line}' does not contain an '='")
+                raise ValueError(f"Line '{self.content}' does not contain an '='")
 
-        return key, value, equal_sign_position
+        return key, value
 
     def get_leading_spaces(self) -> int:
         """Get the number of leading spaces in the line."""
-        return len(self.line) - len(self.line.lstrip())
+        return len(self.content) - len(self.content.lstrip())
 
     def recenter_equal_sign(
         self, equal_sign_position: int = None, leading_spaces: int = None
@@ -330,10 +371,10 @@ class Line:
             - If the line does not contain an equal sign, it will raise a ValueError.
             - The function preserves the leading spaces and aligns the key to the specified equal sign position.
         """
-        key, value, old_equal_sign_position = self.get_key_value()
+        key, value = self.get_key_value()
 
         if equal_sign_position is None:
-            equal_sign_position = old_equal_sign_position
+            equal_sign_position = self.equal_sign_position
 
         if leading_spaces is None:
             leading_spaces = self.leading_spaces
@@ -359,10 +400,10 @@ class Line:
             comments_position = self.comment_position
 
         if self.comment_position is not None:
-            aligned = self.line[: self.comment_position].ljust(comments_position)
+            aligned = self.content[: self.comment_position].ljust(comments_position)
             return f"{aligned}{self.comments}"
         else:
-            return self.line
+            return self.content
 
     @classmethod
     def from_key_value(
