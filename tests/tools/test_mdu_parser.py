@@ -11,6 +11,7 @@ from hydrolib.tools.extforce_convert.mdu_parser import (
     MDUParser,
     get_ref_time,
     save_mdu_file,
+    Line
 )
 
 
@@ -1011,3 +1012,235 @@ class TestGetCommentsPosition:
             FileStyleProperties, content
         )
         assert result == content[0].find("#")
+
+
+class TestLine:
+    """
+    Unit tests for the Line class in mdu_parser.py.
+
+    Covers:
+        - Comment extraction and position
+        - Section header detection
+        - Key-value parsing
+        - Leading spaces calculation
+        - Equal sign alignment
+        - Edge cases (empty, whitespace, tabs, only comments, missing key/value)
+    """
+
+    @pytest.mark.unit
+    def test_with_comment(self):
+        """Test extracting comment and its position from a line with a comment."""
+        line = Line("Param = value # comment here")
+        assert line.comment_position == line.line.find("#")
+        assert line.comments == "# comment here"
+
+    @pytest.mark.unit
+    def test_without_comment(self):
+        """Test extracting comment from a line without a comment."""
+        line = Line("Param = value")
+        assert line.comment_position is None
+        assert line.comments == ""
+
+    @pytest.mark.unit
+    def test_is_comment_true(self):
+        """Test is_comment returns True for comment lines."""
+        from hydrolib.tools.extforce_convert.mdu_parser import Line
+        line = Line("   # This is a comment")
+        assert line.is_comment() is True
+
+    @pytest.mark.unit
+    def test_is_comment_false(self):
+        """Test is_comment returns False for non-comment lines."""
+        from hydrolib.tools.extforce_convert.mdu_parser import Line
+        line = Line("Param = value")
+        assert line.is_comment() is False
+
+    @pytest.mark.unit
+    def test_is_section_header_true(self):
+        """Test is_section_header returns True for section header lines."""
+        line = Line("[general]")
+        assert line.is_section_header() is True
+
+    @pytest.mark.unit
+    def test_is_section_header_false(self):
+        """Test is_section_header returns False for non-section header lines."""
+        line = Line("Param = value")
+        assert line.is_section_header() is False
+
+    @pytest.mark.unit
+    def test_get_key_value_standard(self):
+        """Test get_key_value parses key, value, and equal sign position for standard lines."""
+        line = Line("Param = value")
+        key, value, pos = line.get_key_value()
+        assert key == "Param"
+        assert value == "value"
+        assert pos == line.line.find("=")
+
+    @pytest.mark.unit
+    def test_get_key_value_no_equal_sign(self):
+        """Test get_key_value raises ValueError if no equal sign is present."""
+        line = Line("Param value")
+        with pytest.raises(ValueError):
+            line.get_key_value()
+
+    @pytest.mark.unit
+    def test_get_key_value_comment_or_section(self):
+        """Test get_key_value returns None for key/value/pos for comment or section header lines."""
+        comment_line = Line("# Just a comment")
+        section_line = Line("[general]")
+        assert comment_line.get_key_value() == (None, None, None)
+        assert section_line.get_key_value() == (None, None, None)
+
+    @pytest.mark.unit
+    def test_get_leading_spaces(self):
+        """Test get_leading_spaces returns correct number of leading spaces."""
+        line = Line("   Param = value")
+        assert line.get_leading_spaces() == 3
+
+    @pytest.mark.unit
+    def test_get_leading_spaces_tabs(self):
+        """Test get_leading_spaces with tabs (should count tabs as 1 char each)."""
+        line = Line("\t\tParam = value")
+        assert line.get_leading_spaces() == 2
+
+    @pytest.mark.unit
+    def test_get_leading_spaces_empty(self):
+        """Test get_leading_spaces for empty line returns 0."""
+        from hydrolib.tools.extforce_convert.mdu_parser import Line
+        line = Line("")
+        assert line.get_leading_spaces() == 0
+
+    @pytest.mark.unit
+    def test_recenter_equal_sign_default(self):
+        """Test recenter_equal_sign aligns the equal sign at detected position."""
+        line = Line("Param=val")
+        result = line.recenter_equal_sign()
+        # Should align at detected position
+        assert result.startswith("Param=")
+
+    @pytest.mark.unit
+    def test_recenter_equal_sign_custom_position(self):
+        """Test recenter_equal_sign aligns the equal sign at a custom position."""
+        line = Line("Param=val")
+        result = line.recenter_equal_sign(equal_sign_position=10)
+        assert result.startswith("Param     = val")
+
+    @pytest.mark.unit
+    def test_recenter_equal_sign_with_leading_spaces(self):
+        """Test recenter_equal_sign with custom leading spaces."""
+        line = Line("Param=val")
+        result = line.recenter_equal_sign(leading_spaces=2, equal_sign_position=8)
+        assert result.startswith("  Param  = val")
+
+    @pytest.mark.unit
+    def test_recenter_equal_sign_no_key_value(self):
+        """Test recenter_equal_sign raises ValueError if no key/value present."""
+        line = Line("# Just a comment")
+        with pytest.raises(ValueError):
+            line.recenter_equal_sign()
+
+    @pytest.mark.unit
+    def test_recenter_equal_sign_empty_value(self):
+        """Test recenter_equal_sign with empty value."""
+        line = Line("Param=")
+        result = line.recenter_equal_sign(equal_sign_position=8)
+        assert result.startswith("Param   = ")
+
+    # Add more edge cases as needed
+
+
+class TestLineRecenterComments:
+    """
+    Unit tests for the Line.recenter_comments method.
+
+    Scenarios covered:
+        - Line with a comment at a standard position.
+        - Line with a comment at a custom target position.
+        - Line without a comment (should return original line).
+        - Line with only a comment.
+        - Empty line.
+        - Line with multiple '#' characters (should use the first occurrence).
+    """
+
+    @pytest.mark.unit
+    def test_standard_comment_position(self):
+        """
+        Test recenter_comments with a line containing a comment at the default position.
+
+        Example:
+            Line: "Param = value # comment"
+            Should align comment at its original position.
+        """
+        line = Line("Param = value # comment")
+        result = line.recenter_comments()
+        assert result.startswith("Param = value")
+        assert result.endswith("# comment")
+
+    @pytest.mark.unit
+    def test_custom_comment_position(self):
+        """
+        Test recenter_comments with a custom target position for the comment.
+
+        Example:
+            Line: "Param = value # comment"
+            Custom position: 30
+            Should align comment at column 30.
+        """
+        line = Line("Param = value # comment")
+        result = line.recenter_comments(comments_position=30)
+        # The comment should start at column 30
+        assert result[30:].startswith("# comment")
+
+    @pytest.mark.unit
+    def test_no_comment(self):
+        """
+        Test recenter_comments with a line that has no comment (should return original line).
+
+        Example:
+            Line: "Param = value"
+            Should return the original line.
+        """
+        line = Line("Param = value")
+        result = line.recenter_comments()
+        assert result == "Param = value"
+
+    @pytest.mark.unit
+    def test_only_comment_line(self):
+        """
+        Test recenter_comments with a line that is only a comment.
+
+        Example:
+            Line: "# just a comment"
+            Should return the original line.
+        """
+        line = Line("# just a comment")
+        result = line.recenter_comments()
+        assert result == "# just a comment"
+
+    @pytest.mark.unit
+    def test_empty_line(self):
+        """
+        Test recenter_comments with an empty line (should return empty string).
+
+        Example:
+            Line: ""
+            Should return "".
+        """
+        line = Line("")
+        result = line.recenter_comments()
+        assert result == ""
+
+    @pytest.mark.unit
+    def test_multiple_hashes(self):
+        """
+        Test recenter_comments with a line containing multiple '#' characters (should use the first occurrence).
+
+        Example:
+            Line: "Param = value # comment # extra"
+            Should align at the first '#'.
+        """
+        line = Line("Param = value # comment # extra")
+        result = line.recenter_comments(comments_position=25)
+        # The first comment should start at column 25
+        assert result[25:].startswith("# comment # extra")
+

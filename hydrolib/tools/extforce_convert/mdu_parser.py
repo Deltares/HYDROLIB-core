@@ -262,6 +262,106 @@ class FileStyleProperties:
         return f"{spaces}{aligned_key}= {value}"
 
 
+class Line:
+
+    def __init__(self, line: str):
+        self.line = line
+        self.comment_position, self.comments = self._get_comments()
+        self.leading_spaces = self.get_leading_spaces()
+
+    def _get_comments(self) -> Tuple[int, str]:
+        """Get comments from the line."""
+        comment_index = self.line.find("#")
+        if comment_index != -1:
+            comments = self.line[comment_index:].strip()
+        else:
+            comment_index = None
+            comments = ""
+
+        return comment_index, comments
+
+    def is_comment(self) -> bool:
+        """Check if the line is a comment."""
+        return self.line.strip().startswith("#")
+
+    def is_section_header(self) -> bool:
+        """Check if the line is a section header (e.g., '[...]')."""
+        return self.line.startswith("[") and self.line.endswith("]")
+
+    def get_key_value(self) -> Tuple[str, str, int]:
+        """Get the key and value from the line."""
+        if self.is_comment() or self.is_section_header():
+            key = None
+            value = None
+            equal_sign_position = None
+        else:
+            if "=" in self.line:
+                key, value = self.line.split("=", 1)
+                key = key.strip()
+                value = value.strip()
+                equal_sign_position = self.line.find("=")
+            else:
+                raise ValueError(f"Line '{self.line}' does not contain an '='")
+
+        return key, value, equal_sign_position
+
+    def get_leading_spaces(self) -> int:
+        """Get the number of leading spaces in the line."""
+        return len(self.line) - len(self.line.lstrip())
+
+    def recenter_equal_sign(self, equal_sign_position: int = None, leading_spaces: int = None) -> str:
+        """Recenter Equal Sign.
+
+        Recenter the equal sign to a specific target column.
+
+        Args:
+            equal_sign_position (int, optional):
+                location of the equal sign in the line, if None, it will use the position of the equal sign in the line.
+            leading_spaces (int, optional):
+                number of leading spaces in the line, if None, it will use the number of leading spaces in the line.
+
+        Returns:
+            str:
+                Re-aligned line with equal sign at target_pos
+
+        Notes:
+            - If the line does not contain an equal sign, it will raise a ValueError.
+            - The function preserves the leading spaces and aligns the key to the specified equal sign position.
+        """
+        key, value, old_equal_sign_position = self.get_key_value()
+
+        if equal_sign_position is None:
+            equal_sign_position = old_equal_sign_position
+
+        if leading_spaces is None:
+            leading_spaces = self.leading_spaces
+
+        aligned_key = key.ljust(equal_sign_position - leading_spaces)
+        spaces = " " * leading_spaces
+        return f"{spaces}{aligned_key}= {value}"
+
+    def recenter_comments(self, comments_position: int = None) -> str:
+        """Recenter Comments.
+
+        Recenter the comments to a specific target column.
+
+        Args:
+            comments_position (int, optional):
+                position of the comments in the line, if None, it will use the position of the comments in the line.
+
+        Returns:
+            str:
+                Re-aligned line with comments at target_pos
+        """
+        if comments_position is None:
+            comments_position = self.comment_position
+
+        if self.comment_position is not None:
+            aligned = self.line[:self.comment_position].ljust(comments_position)
+            return f"{aligned}{self.comments}"
+        else:
+            return self.line
+
 class MDUParser:
     """A class to update the ExtForceFileNew entry in an MDU file."""
 
