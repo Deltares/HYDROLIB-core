@@ -1,7 +1,7 @@
 import types
+from copy import deepcopy
 from pathlib import Path
 from typing import Tuple
-from copy import deepcopy
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -468,7 +468,9 @@ class TestUpdateInifieldFile:
         ]
 
         parser = MagicMock(spec=MDUParser)
-        parser.update_inifield_file = types.MethodType(MDUParser.update_inifield_file, parser)
+        parser.update_inifield_file = types.MethodType(
+            MDUParser.update_inifield_file, parser
+        )
         parser.file_style_properties = FileStyleProperties(content)
         parser.find_keyword_lines = types.MethodType(
             MDUParser.find_keyword_lines, parser
@@ -476,9 +478,7 @@ class TestUpdateInifieldFile:
         parser.find_section_bounds = types.MethodType(
             MDUParser.find_section_bounds, parser
         )
-        parser.insert_line = types.MethodType(
-            MDUParser.insert_line, parser
-        )
+        parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
         parser.content = deepcopy(content)
         # Test with a file that has an inifield file
         MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
@@ -519,8 +519,8 @@ class TestUpdateInifieldFile:
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
         assert (
-                parser._content[end_ind - 2]
-                == "    IniFieldFile                        = new-inifield-file.ini\n"
+            parser._content[end_ind - 2]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
         )
 
     @pytest.mark.unit
@@ -552,8 +552,8 @@ class TestUpdateInifieldFile:
         # Check if the inifield file was added to the geometry section
         _, end_ind = parser.find_section_bounds("geometry")
         assert (
-                parser._content[end_ind - 2]
-                == "    IniFieldFile                        = new-inifield-file.ini\n"
+            parser._content[end_ind - 2]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
         )
 
 
