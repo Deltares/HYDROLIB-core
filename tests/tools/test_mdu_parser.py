@@ -11,7 +11,8 @@ from hydrolib.tools.extforce_convert.mdu_parser import (
     MDUParser,
     get_ref_time,
     save_mdu_file,
-    Line
+    Line,
+    Section
 )
 
 
@@ -271,17 +272,6 @@ class TestMduParser:
         with pytest.raises(IndexError):
             parser.insert_line("Invalid", len(parser.content) + 1)
 
-    def test_find_section_bounds(self):
-        parser = MDUParser(self.file_path)
-        section_start, section_end = parser.find_section_bounds("geometry")
-        assert parser.content[section_start] == "[geometry]\n"
-        assert parser.content[section_end] == "\n"
-
-        # Test for a non-existing section
-        non_existing_section = parser.find_section_bounds("non-existing")
-        assert non_existing_section[0] is None
-        assert non_existing_section[1] is None
-
     @pytest.mark.unit
     def test_has_inifield_file(self):
         """Test the has_inifield_file method."""
@@ -452,6 +442,40 @@ class TestMduParser:
         assert updated_lines[4] == "\n"
         assert updated_lines[5] == "[geometry]\n"
         assert updated_lines[6] == "NetFile = test.nc\n"
+
+class TestFindSectionBounds:
+    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
+
+    def test_find_section_bounds(self):
+        content = [
+            '[geometry]\n',
+            '    NetFile                             = sp_net.nc                          # *_net.nc\n',
+            '    unknown_geometry                    = 5                                   # any comment\n',
+            '    WaterLevIniFile                     =                                    # Initial water levels sample file *.xyz\n',
+            '    LandBoundaryFile                    =                                    # Only for plotting\n',
+            '    ThinDamFile                         =                                    # *_thd.pli, Polyline(s) for tracing thin dams.\n',
+            '    FixedWeirFile                       =                                    # *_tdk.pli, Polyline(s) x,y,z, z = fixed weir top levels\n',
+            '    ProflocFile                         =                                    # *_proflocation.xyz)    x,y,z, z = profile refnumber\n',
+            '    ProfdefFile                         =                                    # *_profdefinition.def) definition for all profile nrs\n',
+            '    WaterLevIni                         = 0.56                               # Initial water level\n',
+            '\n',
+            '#============================================\n',
+            '#============================================\n',
+            '[numerics]\n',
+            '    any_key                             = any_value                          # any comment\n',
+        ]
+        section_bounds = Section("geometry", content)
+
+        assert content[section_bounds.start] == "[geometry]\n"
+        assert content[section_bounds.end] == content[12]
+        last_line = section_bounds.last_key_value_line_index
+        assert content[last_line] == content[9]
+
+        # Test for a non-existing section
+        non_existing_section = Section("non-existing", content)
+        assert non_existing_section.start is None
+        assert non_existing_section.end is None
+
 
 
 class TestUpdateInifieldFile:
