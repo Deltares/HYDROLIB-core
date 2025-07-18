@@ -1265,7 +1265,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value') -> 'Param= value'
         """
         line = Line.from_key_value('Param', 'value')
-        assert line.content == 'Param = value'
+        assert line.content == 'Param = value\n'
 
     @pytest.mark.unit
     def test_custom_alignment(self):
@@ -1276,7 +1276,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2) -> '  Param    = value'
         """
         line = Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2)
-        assert line.content == '  Param   = value'
+        assert line.content == '  Param   = value\n'
 
     @pytest.mark.unit
     def test_empty_key(self):
@@ -1298,7 +1298,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', '') -> 'Param= '
         """
         line = Line.from_key_value('Param', '')
-        assert line.content == 'Param ='
+        assert line.content == 'Param = \n'
 
     @pytest.mark.unit
     def test_empty_key_and_value(self):
@@ -1340,5 +1340,78 @@ class TestLineFromKeyValue:
             Line.from_key_value('Param', 'value', comment='# my comment') -> 'Param= value # my comment'
         """
         line = Line.from_key_value('Param', 'value', comment='# my comment')
-        assert line.content == 'Param = value # my comment'
+        assert line.content == 'Param = value # my comment\n'
 
+
+class TestLineUpdateValue:
+    """
+    Unit tests for the Line.update_value method.
+
+    Scenarios covered:
+        - Standard key/value update with preserved formatting.
+        - Update with comment preserved.
+        - Update on line with leading spaces and custom equal sign position.
+        - Update on line with empty value.
+        - Update on line with only whitespace.
+        - Update on comment line (should raise ValueError).
+        - Update on section header line (should raise ValueError).
+        - Update on empty line (should raise ValueError).
+    """
+
+    @pytest.mark.unit
+    def test_update_standard_value(self):
+        """Update value for a standard key-value line, formatting is preserved."""
+        line = Line("Param = oldvalue")
+        updated = line.update_value("newvalue")
+        assert updated.content == "Param = newvalue\n"
+
+    @pytest.mark.unit
+    def test_update_preserves_comment(self):
+        """Update value for a line with a comment, comment is preserved."""
+        line = Line("Param = oldvalue # comment")
+        updated = line.update_value("newvalue")
+        assert updated.content == "Param = newvalue # comment\n"
+
+    @pytest.mark.unit
+    def test_update_preserves_leading_spaces_and_equal_sign(self):
+        """Update value for a line with leading spaces and custom equal sign position."""
+        line = Line("   Param    = oldvalue # comment")
+        updated = line.update_value("newvalue")
+        # Leading spaces and equal sign alignment should be preserved
+        assert updated.content.startswith("   Param    = newvalue")
+        assert updated.content.endswith("# comment\n")
+
+    @pytest.mark.unit
+    def test_update_empty_value(self):
+        """Update value for a line with an empty value."""
+        line = Line("Param = ")
+        updated = line.update_value("newvalue")
+        assert updated.content == "Param = newvalue\n"
+
+    @pytest.mark.unit
+    def test_update_on_whitespace_line(self):
+        """Update value for a line with only whitespace (should raise ValueError)."""
+        line = Line("   ")
+        with pytest.raises(ValueError):
+            line.update_value("newvalue")
+
+    @pytest.mark.unit
+    def test_update_on_comment_line(self):
+        """Update value for a comment line (should raise ValueError)."""
+        line = Line("# just a comment")
+        with pytest.raises(ValueError):
+            line.update_value("newvalue")
+
+    @pytest.mark.unit
+    def test_update_on_section_header(self):
+        """Update value for a section header line (should raise ValueError)."""
+        line = Line("[general]")
+        with pytest.raises(ValueError):
+            line.update_value("newvalue")
+
+    @pytest.mark.unit
+    def test_update_on_empty_line(self):
+        """Update value for an empty line (should raise ValueError)."""
+        line = Line("")
+        with pytest.raises(ValueError):
+            line.update_value("newvalue")

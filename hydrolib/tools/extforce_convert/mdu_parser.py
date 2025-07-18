@@ -287,7 +287,7 @@ class Line:
     @property
     def equal_sign_position(self) -> int:
         """Get the position of the equal sign in the line."""
-        return self.content.find("=")
+        return self.content.find("=") if "=" in self.content else None
 
     @property
     def comments(self) -> str:
@@ -447,10 +447,32 @@ class Line:
             equal_sign_position = len(key) + leading_spaces + 1
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        line_content = f"{spaces}{aligned_key}= {value}" if value != "" else f"{spaces}{aligned_key}="
+        line_content = f"{spaces}{aligned_key}= {value}" if value != "" else f"{spaces}{aligned_key}= "
         if comment:
-            line_content = f"{line_content} {comment.strip()}"
+            stripped = comment.strip()
+            if not stripped.endswith("\n"):
+                stripped += "\n"
+            line_content = f"{line_content} {stripped}"
+        else:
+            line_content += "\n"
+
         return cls(line_content)
+
+    def update_value(self, new_value: str):
+        """Update the value of the line, preserving key and formatting."""
+        if self.is_comment() or self.is_section_header() or self.is_empty():
+            raise ValueError("Cannot update value for comment or section header lines.")
+
+        key, _ = self.get_key_value()
+
+        # Rebuild the line
+        return self.from_key_value(
+            key,
+            new_value,
+            equal_sign_position=self.equal_sign_position,
+            leading_spaces=self.leading_spaces,
+            comment=self.comments
+        )
 
 
 class MDUParser:
