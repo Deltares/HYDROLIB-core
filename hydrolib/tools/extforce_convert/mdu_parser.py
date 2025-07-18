@@ -668,6 +668,37 @@ class MDUParser:
 
         return self.updated_lines
 
+    def update_file_entry(self, field_name: str, file_name: str, section: str) -> None:
+        if not self.has_field(field_name):
+            # if the field does not exist, we create a new line for it and add it to the end of the section
+            line = Line.from_key_value(
+                field_name,
+                file_name,
+                leading_spaces=self.file_style_properties.leading_spaces,
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+            )
+            _, end_ind = self.find_section_bounds(section)
+            # put the inifield file at the end of the geometry section
+            line_number = end_ind - 1
+        else:
+            # if the field already exists, we update it
+
+            line = Line(self.content[existing_field_line_num])
+            line = line.update_value(file_name)
+            line.recenter_comments()
+            line.recenter_equal_sign()
+
+            # find the line number of the existing field
+            existing_field_line_num = self.find_keyword_lines(field_name)
+
+            if existing_field_line_num is not None:
+                # remove the old inifield file line
+                self.content.pop(existing_field_line_num)
+
+            line_number = existing_field_line_num
+
+        self.insert_line(line.content, line_number)
+
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
 
@@ -684,33 +715,7 @@ class MDUParser:
             inifield file line.
             - If the inifield file already exists, it will be updated with the new file name.
         """
-        if not self.has_inifield_file():
-            line = Line.from_key_value(
-                INIFIELD_FILE_LINE,
-                file_name,
-                leading_spaces=self.file_style_properties.leading_spaces,
-                equal_sign_position=self.file_style_properties.equal_sign_position,
-            )
-            _, end_ind = self.find_section_bounds("geometry")
-            # put the inifield file at the end of the geometry section
-            line_number = end_ind - 1
-        else:
-            # find the line number of the existing inifield file
-            inifield_file_line_number = self.find_keyword_lines(INIFIELD_FILE_LINE)
-
-            # if the inifield file already exists, we update it
-            line = Line(self.content[inifield_file_line_number])
-            line = line.update_value(file_name)
-            line.recenter_comments()
-            line.recenter_equal_sign()
-
-            if inifield_file_line_number is not None:
-                # remove the old inifield file line
-                self.content.pop(inifield_file_line_number)
-
-            line_number = inifield_file_line_number
-
-        self.insert_line(line.content, line_number)
+        self.update_file_entry(INIFIELD_FILE_LINE, file_name, "geometry")
 
     def update_structure_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
@@ -727,33 +732,7 @@ class MDUParser:
             end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
             inifield file line.
         """
-        if not self.has_structure_file():
-            line = Line.from_key_value(
-                STRUCTURE_FILE_LINE,
-                file_name,
-                leading_spaces=self.file_style_properties.leading_spaces,
-                equal_sign_position=self.file_style_properties.equal_sign_position,
-            )
-            _, end_ind = self.find_section_bounds("geometry")
-            # put the inifield file at the end of the geometry section
-            line_number = end_ind - 1
-        else:
-            # find the line number of the existing inifield file
-            inifield_file_line_number = self.find_keyword_lines(STRUCTURE_FILE_LINE)
-
-            # if the inifield file already exists, we update it
-            line = Line(self.content[inifield_file_line_number])
-            line = line.update_value(file_name)
-            line.recenter_comments()
-            line.recenter_equal_sign()
-
-            if inifield_file_line_number is not None:
-                # remove the old inifield file line
-                self.content.pop(inifield_file_line_number)
-
-            line_number = inifield_file_line_number
-
-        self.insert_line(line.content, line_number)
+        self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
     @staticmethod
     def is_section_header(line: str) -> bool:

@@ -478,6 +478,12 @@ class TestUpdateInifieldFile:
         parser.find_section_bounds = types.MethodType(
             MDUParser.find_section_bounds, parser
         )
+        parser.has_field = types.MethodType(
+            MDUParser.has_field, parser
+        )
+        parser.update_file_entry = types.MethodType(
+            MDUParser.update_file_entry, parser
+        )
         parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
         parser.content = deepcopy(content)
         # Test with a file that has an inifield file
