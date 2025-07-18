@@ -669,16 +669,20 @@ class MDUParser:
         return self.updated_lines
 
     def update_file_entry(self, field_name: str, file_name: str, section: str) -> None:
+        leading_spaces=self.file_style_properties.leading_spaces
+        equal_sign_position=self.file_style_properties.equal_sign_position
+
         if not self.has_field(field_name):
             # if the field does not exist, we create a new line for it and add it to the end of the section
             line = Line.from_key_value(
                 field_name,
                 file_name,
-                leading_spaces=self.file_style_properties.leading_spaces,
-                equal_sign_position=self.file_style_properties.equal_sign_position,
+                leading_spaces=leading_spaces,
+                equal_sign_position=equal_sign_position,
             )
             _, end_ind = self.find_section_bounds(section)
             # put the inifield file at the end of the geometry section
+
             line_number = end_ind - 1
         else:
             # if the field already exists, we update it
@@ -687,11 +691,14 @@ class MDUParser:
             existing_field_line_num = self.find_keyword_lines(field_name)
             line = Line(self.content[existing_field_line_num])
             line = line.update_value(file_name)
-            line.recenter_comments()
-            line.recenter_equal_sign()
+            line.recenter_comments(self.file_style_properties.comments_position)
+            line.recenter_equal_sign(
+                equal_sign_position=equal_sign_position,
+                leading_spaces=leading_spaces,
+            )
 
             if existing_field_line_num is not None:
-                # remove the old inifield file line
+                # remove the old line
                 self.content.pop(existing_field_line_num)
 
             line_number = existing_field_line_num
