@@ -268,6 +268,10 @@ class Line:
         self._content = line
         self.validate()
 
+    def __str__(self):
+        """String representation of the Line object."""
+        return self.content
+
     @property
     def content(self) -> str:
         """Get the content of the line."""
