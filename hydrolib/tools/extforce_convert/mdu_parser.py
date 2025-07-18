@@ -685,7 +685,12 @@ class MDUParser:
             - If the inifield file already exists, it will be updated with the new file name.
         """
         if not self.has_inifield_file():
-            line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+            line = Line.from_key_value(
+                INIFIELD_FILE_LINE,
+                file_name,
+                leading_spaces=self.file_style_properties.leading_spaces,
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+            )
             _, end_ind = self.find_section_bounds("geometry")
             # put the inifield file at the end of the geometry section
             line_number = end_ind - 1
@@ -694,7 +699,10 @@ class MDUParser:
             inifield_file_line_number = self.find_keyword_lines(INIFIELD_FILE_LINE)
 
             # if the inifield file already exists, we update it
-            line = f"{INIFIELD_FILE_LINE} = {file_name}\n"
+            line = Line(self.content[inifield_file_line_number])
+            line = line.update_value(file_name)
+            line.recenter_comments()
+            line.recenter_equal_sign()
 
             if inifield_file_line_number is not None:
                 # remove the old inifield file line
@@ -702,8 +710,7 @@ class MDUParser:
 
             line_number = inifield_file_line_number
 
-        line = self.file_style_properties.recenter_equal_sign(line)
-        self.insert_line(line, line_number)
+        self.insert_line(line.content, line_number)
 
     def update_structure_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
