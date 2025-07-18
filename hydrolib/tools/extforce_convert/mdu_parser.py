@@ -683,13 +683,12 @@ class MDUParser:
         else:
             # if the field already exists, we update it
 
+            # find the line number of the existing field
+            existing_field_line_num = self.find_keyword_lines(field_name)
             line = Line(self.content[existing_field_line_num])
             line = line.update_value(file_name)
             line.recenter_comments()
             line.recenter_equal_sign()
-
-            # find the line number of the existing field
-            existing_field_line_num = self.find_keyword_lines(field_name)
 
             if existing_field_line_num is not None:
                 # remove the old inifield file line
