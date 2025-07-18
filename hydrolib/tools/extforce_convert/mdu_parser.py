@@ -5,14 +5,73 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
-
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
 
+
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
+@dataclass
+class Section:
+    """Information about a section in an MDU file.
+    
+    Attributes:
+        start: The index of the section header line.
+        end: The index of the last line in the section.
+        empty_lines_at_end: List of indices of empty lines at the end of the section.
+    """
+    start: Optional[int]
+    end: Optional[int]
+    non_key_value_lines_at_end: Optional[int]
+    last_key_value_line_index: Optional[int]
+
+    def __init__(self, section_name: str, content: List[str]):
+        """Initialize SectionBounds with content and section indices."""
+        section_start = -1
+        section_end = len(content) - 1
+
+        header = f"[{section_name.lower()}]"
+
+        # Find section start and end
+        for i, line in enumerate(content):
+            stripped = line.strip().lower()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                if stripped == header:
+                    section_start = i
+                elif section_start != -1:
+                    # We hit the start of a new section after finding our target
+                    section_end = i - 1
+                    break
+
+        if section_start == -1:
+            # Section not found
+            section_start = None
+            section_end = None
+
+        self.start = section_start
+        self.end = section_end
+        self.non_key_value_lines_at_end = (
+            self.get_empty_and_non_key_value_lines(content, section_start, section_end)
+        )
+        self.last_key_value_line_index = self.end - self.non_key_value_lines_at_end
+
+    @staticmethod
+    def get_empty_and_non_key_value_lines(content, section_start: int, section_end: int):
+        # Find empty lines at the end of the section and non-key-value lines within the section
+        empty_lines_at_end = []
+
+        if section_start is not None and section_end is not None:
+            # Check for empty lines at the end of the section
+            for i in range(section_end, section_start, -1):
+                line_obj = Line(content[i])
+                if line_obj.is_empty() or line_obj.is_comment():
+                    empty_lines_at_end.append(i)
+                else:
+                    break
+
+        return len(empty_lines_at_end)
 
 @dataclass
 class ExternalForcingBlock:
@@ -916,26 +975,8 @@ class MDUParser:
         Raises:
             ValueError: If the section is not found.
         """
-        section_start = -1
-        section_end = len(self.content)
+        return Section(section_name, self.content)
 
-        header = f"[{section_name.lower()}]"
-
-        for i, line in enumerate(self.content):
-            stripped = line.strip().lower()
-            if stripped.startswith("[") and stripped.endswith("]"):
-                if stripped == header:
-                    section_start = i
-                elif section_start != -1:
-                    # We hit the start of a new section after finding our target
-                    section_end = i - 1
-                    break
-
-        if section_start == -1:
-            section_start = None
-            section_end = None
-
-        return section_start, section_end
 
     def get_inifield_file(
         self,
