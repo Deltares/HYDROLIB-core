@@ -266,12 +266,18 @@ class Line:
 
     def __init__(self, line: str):
         self._content = line
-        self.key, self.value = self.get_key_value()
+        self.validate()
 
     @property
     def content(self) -> str:
         """Get the content of the line."""
         return self._content
+
+    def validate(self):
+        """Validate the line content."""
+        if not (self.is_empty() or self.is_comment() or self.is_section_header()):
+            if self.equal_sign_position is None:
+                raise ValueError("Line must contain an equal sign '=' for key-value pairs.")
 
     @property
     def key_value(self) -> Tuple[str, str]:
@@ -283,6 +289,18 @@ class Line:
             key, value = self.get_key_value()
 
         return key, value
+
+    @property
+    def key(self) -> str:
+        """Get the key of the line."""
+        key, _ = self.key_value
+        return key
+
+    @property
+    def value(self) -> str:
+        """Get the value of the line."""
+        _, value = self.key_value
+        return value
 
     @property
     def equal_sign_position(self) -> int:
@@ -381,7 +399,7 @@ class Line:
 
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        return f"{spaces}{aligned_key}= {value}"
+        self._content =  f"{spaces}{aligned_key}= {value}"
 
     def recenter_comments(self, comments_position: int = None) -> str:
         """Recenter Comments.
@@ -401,9 +419,7 @@ class Line:
 
         if self.comment_position is not None:
             aligned = self.content[: self.comment_position].ljust(comments_position)
-            return f"{aligned}{self.comments}"
-        else:
-            return self.content
+            self._content = f"{aligned}{self.comments}"
 
     @classmethod
     def from_key_value(
@@ -445,9 +461,11 @@ class Line:
             raise ValueError("leading_spaces cannot be negative.")
         if equal_sign_position is None:
             equal_sign_position = len(key) + leading_spaces + 1
+
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
         line_content = f"{spaces}{aligned_key}= {value}" if value != "" else f"{spaces}{aligned_key}= "
+
         if comment:
             stripped = comment.strip()
             if not stripped.endswith("\n"):
@@ -466,7 +484,7 @@ class Line:
         key, _ = self.get_key_value()
 
         # Rebuild the line
-        return self.from_key_value(
+        return Line.from_key_value(
             key,
             new_value,
             equal_sign_position=self.equal_sign_position,

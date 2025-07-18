@@ -1044,14 +1044,14 @@ class TestLine:
     @pytest.mark.unit
     def test_is_comment_true(self):
         """Test is_comment returns True for comment lines."""
-        from hydrolib.tools.extforce_convert.mdu_parser import Line
+
         line = Line("   # This is a comment")
         assert line.is_comment() is True
 
     @pytest.mark.unit
     def test_is_comment_false(self):
         """Test is_comment returns False for non-comment lines."""
-        from hydrolib.tools.extforce_convert.mdu_parser import Line
+
         line = Line("Param = value")
         assert line.is_comment() is False
 
@@ -1112,23 +1112,23 @@ class TestLine:
     def test_recenter_equal_sign_default(self):
         """Test recenter_equal_sign aligns the equal sign at detected position."""
         line = Line("Param=val")
-        result = line.recenter_equal_sign()
+        line.recenter_equal_sign()
         # Should align at detected position
-        assert result.startswith("Param=")
+        assert line.content.startswith("Param=")
 
     @pytest.mark.unit
     def test_recenter_equal_sign_custom_position(self):
         """Test recenter_equal_sign aligns the equal sign at a custom position."""
         line = Line("Param=val")
-        result = line.recenter_equal_sign(equal_sign_position=10)
-        assert result.startswith("Param     = val")
+        line.recenter_equal_sign(equal_sign_position=10)
+        assert line.content.startswith("Param     = val")
 
     @pytest.mark.unit
     def test_recenter_equal_sign_with_leading_spaces(self):
         """Test recenter_equal_sign with custom leading spaces."""
         line = Line("Param=val")
-        result = line.recenter_equal_sign(leading_spaces=2, equal_sign_position=8)
-        assert result.startswith("  Param = val")
+        line.recenter_equal_sign(leading_spaces=2, equal_sign_position=8)
+        assert line.content.startswith("  Param = val")
 
     @pytest.mark.unit
     def test_recenter_equal_sign_no_key_value(self):
@@ -1141,10 +1141,9 @@ class TestLine:
     def test_recenter_equal_sign_empty_value(self):
         """Test recenter_equal_sign with empty value."""
         line = Line("Param=")
-        result = line.recenter_equal_sign(equal_sign_position=8)
-        assert result.startswith("Param   = ")
+        line.recenter_equal_sign(equal_sign_position=8)
+        assert line.content.startswith("Param   = ")
 
-    # Add more edge cases as needed
 
 
 class TestLineRecenterComments:
@@ -1170,9 +1169,9 @@ class TestLineRecenterComments:
             Should align comment at its original position.
         """
         line = Line("Param = value # comment")
-        result = line.recenter_comments()
-        assert result.startswith("Param = value")
-        assert result.endswith("# comment")
+        line.recenter_comments()
+        assert line.content.startswith("Param = value")
+        assert line.content.endswith("# comment")
 
     @pytest.mark.unit
     def test_custom_comment_position(self):
@@ -1185,9 +1184,9 @@ class TestLineRecenterComments:
             Should align comment at column 30.
         """
         line = Line("Param = value # comment")
-        result = line.recenter_comments(comments_position=30)
+        line.recenter_comments(comments_position=30)
         # The comment should start at column 30
-        assert result[30:].startswith("# comment")
+        assert line.content[30:].startswith("# comment")
 
     @pytest.mark.unit
     def test_no_comment(self):
@@ -1199,8 +1198,8 @@ class TestLineRecenterComments:
             Should return the original line.
         """
         line = Line("Param = value")
-        result = line.recenter_comments()
-        assert result == "Param = value"
+        line.recenter_comments()
+        assert line.content == "Param = value"
 
     @pytest.mark.unit
     def test_only_comment_line(self):
@@ -1212,8 +1211,8 @@ class TestLineRecenterComments:
             Should return the original line.
         """
         line = Line("# just a comment")
-        result = line.recenter_comments()
-        assert result == "# just a comment"
+        line.recenter_comments()
+        assert line.content == "# just a comment"
 
     @pytest.mark.unit
     def test_empty_line(self):
@@ -1225,8 +1224,8 @@ class TestLineRecenterComments:
             Should return "".
         """
         line = Line("")
-        result = line.recenter_comments()
-        assert result == ""
+        line.recenter_comments()
+        assert line.content == ""
 
     @pytest.mark.unit
     def test_multiple_hashes(self):
@@ -1238,9 +1237,9 @@ class TestLineRecenterComments:
             Should align at the first '#'.
         """
         line = Line("Param = value # comment # extra")
-        result = line.recenter_comments(comments_position=25)
+        line.recenter_comments(comments_position=25)
         # The first comment should start at column 25
-        assert result[25:].startswith("# comment # extra")
+        assert line.content[25:].startswith("# comment # extra")
 
 
 class TestLineFromKeyValue:
