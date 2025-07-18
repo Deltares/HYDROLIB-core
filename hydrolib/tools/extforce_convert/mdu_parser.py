@@ -727,11 +727,33 @@ class MDUParser:
             end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
             inifield file line.
         """
-        line = f"{STRUCTURE_FILE_LINE} = {file_name}\n"
-        line = self.file_style_properties.recenter_equal_sign(line)
-        # put the structure file at the end of the geometry section
-        _, end_ind = self.find_section_bounds("geometry")
-        self.insert_line(line, end_ind - 1)
+        if not self.has_structure_file():
+            line = Line.from_key_value(
+                STRUCTURE_FILE_LINE,
+                file_name,
+                leading_spaces=self.file_style_properties.leading_spaces,
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+            )
+            _, end_ind = self.find_section_bounds("geometry")
+            # put the inifield file at the end of the geometry section
+            line_number = end_ind - 1
+        else:
+            # find the line number of the existing inifield file
+            inifield_file_line_number = self.find_keyword_lines(STRUCTURE_FILE_LINE)
+
+            # if the inifield file already exists, we update it
+            line = Line(self.content[inifield_file_line_number])
+            line = line.update_value(file_name)
+            line.recenter_comments()
+            line.recenter_equal_sign()
+
+            if inifield_file_line_number is not None:
+                # remove the old inifield file line
+                self.content.pop(inifield_file_line_number)
+
+            line_number = inifield_file_line_number
+
+        self.insert_line(line.content, line_number)
 
     @staticmethod
     def is_section_header(line: str) -> bool:
