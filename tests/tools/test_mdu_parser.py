@@ -8,11 +8,11 @@ import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (
     FileStyleProperties,
+    Line,
     MDUParser,
+    Section,
     get_ref_time,
     save_mdu_file,
-    Line,
-    Section
 )
 
 
@@ -390,12 +390,12 @@ class TestMduParser:
 
         # Test with a file that has an external forcing section but no ExtForceFileNew entry
         parser.content = [
-            "[general]\n",                  # 0
-            "Name = Test\n",                # 1
-            "[external forcing]\n",         # 2
-            "ExtForceFile = old.ext\n",     # 3
-            "[geometry]\n",                 # 4
-            "NetFile = test.nc\n",          # 5
+            "[general]\n",  # 0
+            "Name = Test\n",  # 1
+            "[external forcing]\n",  # 2
+            "ExtForceFile = old.ext\n",  # 3
+            "[geometry]\n",  # 4
+            "NetFile = test.nc\n",  # 5
         ]
         parser.updated_lines = []
 
@@ -434,21 +434,18 @@ class TestUpdateInifieldFile:
         parser.find_keyword_lines = types.MethodType(
             MDUParser.find_keyword_lines, parser
         )
-        parser.find_section_bounds = types.MethodType(
-            MDUParser.get_section, parser
-        )
-        parser.has_field = types.MethodType(
-            MDUParser.has_field, parser
-        )
-        parser.update_file_entry = types.MethodType(
-            MDUParser.update_file_entry, parser
-        )
+        parser.find_section_bounds = types.MethodType(MDUParser.get_section, parser)
+        parser.has_field = types.MethodType(MDUParser.has_field, parser)
+        parser.update_file_entry = types.MethodType(MDUParser.update_file_entry, parser)
         parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
         parser.content = deepcopy(content)
         # Test with a file that has an inifield file
         MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
         old_index = content.index("IniFieldFile =     #some comments here\n")
-        assert parser.content[old_index] == "IniFieldFile= new-inifield-file.ini #some comments here\n"
+        assert (
+            parser.content[old_index]
+            == "IniFieldFile= new-inifield-file.ini #some comments here\n"
+        )
 
     @pytest.mark.unit
     def test_update_inifield_file_without_decorative_line(self):
@@ -484,7 +481,10 @@ class TestUpdateInifieldFile:
         # Check if the inifield file was added to the geometry section
         section_bounds = parser.get_section("geometry")
         ind = section_bounds.last_key_value_line_index
-        assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
+        assert (
+            parser._content[ind]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
 
     @pytest.mark.unit
     def test_update_inifield_file_with_decorative_lines(self):
@@ -515,7 +515,10 @@ class TestUpdateInifieldFile:
         # Check if the inifield file was added to the geometry section
         section_bounds = parser.get_section("geometry")
         ind = section_bounds.last_key_value_line_index
-        assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
+        assert (
+            parser._content[ind]
+            == "    IniFieldFile                        = new-inifield-file.ini\n"
+        )
 
 
 class TestLocate:
@@ -1033,7 +1036,6 @@ class TestLine:
         assert line.content.startswith("Param   = ")
 
 
-
 class TestLineRecenterComments:
     """
     Unit tests for the Line.recenter_comments method.
@@ -1151,8 +1153,8 @@ class TestLineFromKeyValue:
         Example:
             Line.from_key_value('Param', 'value') -> 'Param= value'
         """
-        line = Line.from_key_value('Param', 'value')
-        assert line.content == 'Param = value\n'
+        line = Line.from_key_value("Param", "value")
+        assert line.content == "Param = value\n"
 
     @pytest.mark.unit
     def test_custom_alignment(self):
@@ -1162,8 +1164,10 @@ class TestLineFromKeyValue:
         Example:
             Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2) -> '  Param    = value'
         """
-        line = Line.from_key_value('Param', 'value', equal_sign_position=10, leading_spaces=2)
-        assert line.content == '  Param   = value\n'
+        line = Line.from_key_value(
+            "Param", "value", equal_sign_position=10, leading_spaces=2
+        )
+        assert line.content == "  Param   = value\n"
 
     @pytest.mark.unit
     def test_empty_key(self):
@@ -1174,7 +1178,7 @@ class TestLineFromKeyValue:
             Line.from_key_value('', 'value') -> '= value'
         """
         with pytest.raises(ValueError):
-            Line.from_key_value('', 'value')
+            Line.from_key_value("", "value")
 
     @pytest.mark.unit
     def test_empty_value(self):
@@ -1184,8 +1188,8 @@ class TestLineFromKeyValue:
         Example:
             Line.from_key_value('Param', '') -> 'Param= '
         """
-        line = Line.from_key_value('Param', '')
-        assert line.content == 'Param = \n'
+        line = Line.from_key_value("Param", "")
+        assert line.content == "Param = \n"
 
     @pytest.mark.unit
     def test_empty_key_and_value(self):
@@ -1193,7 +1197,7 @@ class TestLineFromKeyValue:
         Test with both key and value empty (should raise ValueError).
         """
         with pytest.raises(ValueError):
-            Line.from_key_value('', '')
+            Line.from_key_value("", "")
 
     @pytest.mark.unit
     def test_negative_equal_sign_position(self):
@@ -1201,7 +1205,7 @@ class TestLineFromKeyValue:
         Test with negative equal_sign_position (should raise ValueError).
         """
         with pytest.raises(ValueError):
-            Line.from_key_value('Param', 'value', equal_sign_position=-1)
+            Line.from_key_value("Param", "value", equal_sign_position=-1)
 
     @pytest.mark.unit
     def test_negative_leading_spaces(self):
@@ -1209,7 +1213,7 @@ class TestLineFromKeyValue:
         Test with negative leading_spaces (should raise ValueError).
         """
         with pytest.raises(ValueError):
-            Line.from_key_value('Param', 'value', leading_spaces=-2)
+            Line.from_key_value("Param", "value", leading_spaces=-2)
 
     @pytest.mark.unit
     def test_non_string_key(self):
@@ -1217,7 +1221,7 @@ class TestLineFromKeyValue:
         Test with non-string key (should raise ValueError).
         """
         with pytest.raises(ValueError):
-            Line.from_key_value(123, 'value')
+            Line.from_key_value(123, "value")
 
     @pytest.mark.unit
     def test_add_comment(self):
@@ -1226,8 +1230,8 @@ class TestLineFromKeyValue:
         Example:
             Line.from_key_value('Param', 'value', comment='# my comment') -> 'Param= value # my comment'
         """
-        line = Line.from_key_value('Param', 'value', comment='# my comment')
-        assert line.content == 'Param = value # my comment\n'
+        line = Line.from_key_value("Param", "value", comment="# my comment")
+        assert line.content == "Param = value # my comment\n"
 
 
 class TestLineUpdateValue:
@@ -1327,15 +1331,15 @@ class TestSection:
     def test_section_at_end_of_file(self):
         """Section is last in file, with trailing empty/comment lines."""
         content = [
-            '[geometry]\n',
-            'NetFile = test.nc\n',
-            '[output]\n',
-            'OutputFile = out.nc\n',
-            '\n',
-            '# comment\n',
-            '\n',
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+            "[output]\n",
+            "OutputFile = out.nc\n",
+            "\n",
+            "# comment\n",
+            "\n",
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 2
         assert section.end == 3 + 3  # last line index
         assert section.non_key_value_lines_at_end == 3
@@ -1344,11 +1348,11 @@ class TestSection:
     def test_section_with_only_header(self):
         """Section contains only the header and no content."""
         content = [
-            '[geometry]\n',  # 0
-            '[output]\n',    # 1
-            '[numerics]\n',  # 2
+            "[geometry]\n",  # 0
+            "[output]\n",  # 1
+            "[numerics]\n",  # 2
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 1
         assert section.end == 1
         assert section.non_key_value_lines_at_end == 0
@@ -1357,14 +1361,14 @@ class TestSection:
     def test_section_with_only_comments_and_empty_lines(self):
         """Section contains only comments and empty lines after header."""
         content = [
-            '[geometry]\n', # 0
-            '[output]\n',   # 1
-            '# comment\n',  # 2
-            '\n',           # 3
-            '\n',           # 4
-            '[numerics]\n', # 5
+            "[geometry]\n",  # 0
+            "[output]\n",  # 1
+            "# comment\n",  # 2
+            "\n",  # 3
+            "\n",  # 4
+            "[numerics]\n",  # 5
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 1
         assert section.end == 4
         assert section.non_key_value_lines_at_end == 3
@@ -1373,11 +1377,11 @@ class TestSection:
     def test_section_with_no_key_value_lines(self):
         """Section contains no key-value lines, only comments/empty lines."""
         content = [
-            '[output]\n',   # 0
-            '# comment\n',  # 1
-            '\n',           # 2
+            "[output]\n",  # 0
+            "# comment\n",  # 1
+            "\n",  # 2
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 0
         assert section.end == 2
         assert section.non_key_value_lines_at_end == 2
@@ -1386,15 +1390,15 @@ class TestSection:
     def test_section_with_mixed_content(self):
         """Section contains key-value lines, comments, and empty lines in various orders."""
         content = [
-            '[output]\n',               # 0
-            'OutputFile = out.nc\n',    # 1
-            '# comment\n',              # 2
-            '\n',                       # 3
-            'AnotherKey = 1\n',         # 4
-            '\n',                       # 5
-            '# another comment\n',      # 6
+            "[output]\n",  # 0
+            "OutputFile = out.nc\n",  # 1
+            "# comment\n",  # 2
+            "\n",  # 3
+            "AnotherKey = 1\n",  # 4
+            "\n",  # 5
+            "# another comment\n",  # 6
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 0
         assert section.end == 6
         assert section.non_key_value_lines_at_end == 2
@@ -1403,12 +1407,12 @@ class TestSection:
     def test_section_with_decorative_lines(self):
         """Section surrounded by decorative lines (e.g., lines of #====)."""
         content = [
-            '#================\n',      # 0
-            '[output]\n',               # 1
-            'OutputFile = out.nc\n',    # 2
-            '#================\n',      # 3
+            "#================\n",  # 0
+            "[output]\n",  # 1
+            "OutputFile = out.nc\n",  # 2
+            "#================\n",  # 3
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 1
         assert section.end == 3
         assert section.non_key_value_lines_at_end == 1
@@ -1417,10 +1421,10 @@ class TestSection:
     def test_section_name_case_insensitivity(self):
         """Section header with different cases (e.g., [GEOMETRY] vs [geometry])."""
         content = [
-            '[GEOMETRY]\n',         # 0
-            'NetFile = test.nc\n',  # 1
+            "[GEOMETRY]\n",  # 0
+            "NetFile = test.nc\n",  # 1
         ]
-        section = Section('geometry', content)
+        section = Section("geometry", content)
         assert section.start == 0
         assert section.end == 1
         assert section.last_key_value_line_index == 1
@@ -1428,25 +1432,25 @@ class TestSection:
     def test_malformed_section_headers(self):
         """Section headers that are not properly closed or opened are ignored."""
         content = [
-            '[geometry\n',  # malformed         # 0
-            '[output]\n',                       # 1
-            'OutputFile = out.nc\n',            # 2
-            'output]\n',  # malformed           # 3
-            '[numerics]\n',                     # 4
+            "[geometry\n",  # malformed         # 0
+            "[output]\n",  # 1
+            "OutputFile = out.nc\n",  # 2
+            "output]\n",  # malformed           # 3
+            "[numerics]\n",  # 4
         ]
         with pytest.raises(ValueError):
-            Section('output', content)
+            Section("output", content)
 
     def test_multiple_sections_with_same_name(self):
         """Multiple sections with the same name (should pick the first occurrence)."""
         content = [
-            '[output]\n',               # 0
-            'OutputFile = out1.nc\n',   # 1
-            '[geometry]\n',             # 2
-            '[output]\n',               # 3
-            'OutputFile = out2.nc\n',   # 4
+            "[output]\n",  # 0
+            "OutputFile = out1.nc\n",  # 1
+            "[geometry]\n",  # 2
+            "[output]\n",  # 3
+            "OutputFile = out2.nc\n",  # 4
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 0
         assert section.end == 1
         assert section.last_key_value_line_index == 1
@@ -1454,11 +1458,11 @@ class TestSection:
     def test_section_at_start_of_file(self):
         """Section is the very first lines in the file."""
         content = [
-            '[output]\n',               # 0
-            'OutputFile = out.nc\n',    # 1
-            '[geometry]\n',             # 2
+            "[output]\n",  # 0
+            "OutputFile = out.nc\n",  # 1
+            "[geometry]\n",  # 2
         ]
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start == 0
         assert section.end == 1
         assert section.last_key_value_line_index == 1
@@ -1466,27 +1470,27 @@ class TestSection:
     def test_empty_file(self):
         """Empty file should result in None for start and end."""
         content = []
-        section = Section('output', content)
+        section = Section("output", content)
         assert section.start is None
         assert section.end is None
 
     def test_find_section_bounds(self):
         content = [
-            '[geometry]\n',
-            '    NetFile                             = sp_net.nc                          # *_net.nc\n',
-            '    unknown_geometry                    = 5                                   # any comment\n',
-            '    WaterLevIniFile                     =                                    # Initial water levels sample file *.xyz\n',
-            '    LandBoundaryFile                    =                                    # Only for plotting\n',
-            '    ThinDamFile                         =                                    # *_thd.pli, Polyline(s) for tracing thin dams.\n',
-            '    FixedWeirFile                       =                                    # *_tdk.pli, Polyline(s) x,y,z, z = fixed weir top levels\n',
-            '    ProflocFile                         =                                    # *_proflocation.xyz)    x,y,z, z = profile refnumber\n',
-            '    ProfdefFile                         =                                    # *_profdefinition.def) definition for all profile nrs\n',
-            '    WaterLevIni                         = 0.56                               # Initial water level\n',
-            '\n',
-            '#============================================\n',
-            '#============================================\n',
-            '[numerics]\n',
-            '    any_key                             = any_value                          # any comment\n',
+            "[geometry]\n",
+            "    NetFile                             = sp_net.nc                          # *_net.nc\n",
+            "    unknown_geometry                    = 5                                   # any comment\n",
+            "    WaterLevIniFile                     =                                    # Initial water levels sample file *.xyz\n",
+            "    LandBoundaryFile                    =                                    # Only for plotting\n",
+            "    ThinDamFile                         =                                    # *_thd.pli, Polyline(s) for tracing thin dams.\n",
+            "    FixedWeirFile                       =                                    # *_tdk.pli, Polyline(s) x,y,z, z = fixed weir top levels\n",
+            "    ProflocFile                         =                                    # *_proflocation.xyz)    x,y,z, z = profile refnumber\n",
+            "    ProfdefFile                         =                                    # *_profdefinition.def) definition for all profile nrs\n",
+            "    WaterLevIni                         = 0.56                               # Initial water level\n",
+            "\n",
+            "#============================================\n",
+            "#============================================\n",
+            "[numerics]\n",
+            "    any_key                             = any_value                          # any comment\n",
         ]
         section_bounds = Section("geometry", content)
 
