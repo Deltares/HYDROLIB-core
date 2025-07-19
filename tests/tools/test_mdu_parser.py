@@ -50,8 +50,7 @@ def test_update_mdu_on_the_fly(
     mdu_filename = input_files_dir / input_file
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
     updater = MDUParser(mdu_filename)
-    updater.new_forcing_file = ext_file
-    updater.update_extforce_file_new()
+    updater.update_extforce_file_new(ext_file)
     assert updater.content[on_line[0]] == "[external forcing]\n"
     assert updater.content[on_line[1]] == expected_line
     # test the save mdu file function
@@ -365,28 +364,16 @@ class TestMduParser:
             "tests/data/input/dflowfm_individual_files/with_optional_sections.mdu"
         )
         parser = MDUParser(mdu_file)
-        parser.new_forcing_file = "new_test.ext"
 
-        # Update the file
-        parser.update_extforce_file_new()
+        new_extforce_file = "new_test.ext"
+        parser.update_extforce_file_new(new_extforce_file)
 
-        # Check that the updated lines contain the new forcing file
-        external_forcing_section = False
-        found_extforcefilenew = False
-
-        for line in parser.content:
-            if "[external forcing]" in line.lower():
-                external_forcing_section = True
-                continue
-
-            if external_forcing_section and "extforcefilenew" in line.lower():
-                found_extforcefilenew = True
-                assert "new_test.ext" in line
-
-            if external_forcing_section and line.strip().startswith("["):
-                external_forcing_section = False
-
-        assert found_extforcefilenew, "ExtForceFileNew entry not found in updated lines"
+        # Check that the updated content contain the new forcing file
+        ind = parser.find_keyword_lines("extforcefilenew")
+        assert ind is not None, "ExtForceFileNew keyword not found in the content"
+        line = parser.content[ind]
+        _, new_file = line.split("=")
+        assert new_file.strip() == new_extforce_file
 
         # Test with a file that has an external forcing section but no ExtForceFileNew entry
         parser.content = [
@@ -397,9 +384,8 @@ class TestMduParser:
             "[geometry]\n",                 # 4
             "NetFile = test.nc\n",          # 5
         ]
-        parser.updated_lines = []
 
-        MDUParser.update_extforce_file_new(parser)
+        MDUParser.update_extforce_file_new(parser, new_extforce_file)
 
         updated_lines = parser.content
         # Check that the ExtForceFileNew entry was added and ExtForceFile was removed

@@ -450,9 +450,7 @@ class ExternalForcingConverter:
             `ExtForceFileNew` in the mdu file, and store the new content in the `mdu_info` dictionary under a
             `new_mdu_content` key.
         """
-        new_ext_file = self.ext_model.filepath.name
-        self.mdu_parser.new_forcing_file = new_ext_file
-        self.mdu_parser.update_extforce_file_new()
+        self.mdu_parser.update_extforce_file_new(self.ext_model.filepath.name)
         if (
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0

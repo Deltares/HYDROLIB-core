@@ -749,8 +749,7 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
-    def update_extforce_file_new(self):
-        file_name = self.new_forcing_file
+    def update_extforce_file_new(self, file_name: str):
         self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
         old_ext_force_line = self.find_keyword_lines("ExtForceFile")
         self.content.pop(old_ext_force_line)

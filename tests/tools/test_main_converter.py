@@ -319,9 +319,7 @@ class TestExternalFocingConverter:
         ):
             converter = ExternalForcingConverter(mock_ext_old_model)
 
-        # Mock the MDU parser
         mock_mdu_parser = MagicMock()
-        # mock_mdu_parser.update_extforce_file_new.return_value = ["updated content"]
         mock_mdu_parser.has_inifield_file.return_value = False
         mock_mdu_parser.has_structure_file.return_value = False
         converter._mdu_parser = mock_mdu_parser
