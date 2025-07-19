@@ -1444,3 +1444,200 @@ class TestLineUpdateValue:
         line = Line("")
         with pytest.raises(ValueError):
             line.update_value("newvalue")
+
+
+class TestSection:
+    """
+    Unit tests for the Section class in mdu_parser.py.
+
+    Scenarios covered:
+        - Section at the end of file (with/without trailing empty/comment lines).
+        - Section with only header.
+        - Section with only comments/empty lines after header.
+        - Section with no key-value lines.
+        - Section with mixed content (key-value, comments, empty lines).
+        - Section surrounded by decorative lines.
+        - Section name case sensitivity.
+        - Malformed section headers.
+        - Multiple sections with same name (should pick first occurrence).
+        - Section at the start of file.
+        - Empty file.
+    """
+
+    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
+
+    def test_section_at_end_of_file(self):
+        """Section is last in file, with trailing empty/comment lines."""
+        content = [
+            '[geometry]\n',
+            'NetFile = test.nc\n',
+            '[output]\n',
+            'OutputFile = out.nc\n',
+            '\n',
+            '# comment\n',
+            '\n',
+        ]
+        section = Section('output', content)
+        assert section.start == 2
+        assert section.end == 3 + 3  # last line index
+        assert section.non_key_value_lines_at_end == 3
+        assert section.last_key_value_line_index == 3
+
+    def test_section_with_only_header(self):
+        """Section contains only the header and no content."""
+        content = [
+            '[geometry]\n',  # 0
+            '[output]\n',    # 1
+            '[numerics]\n',  # 2
+        ]
+        section = Section('output', content)
+        assert section.start == 1
+        assert section.end == 1
+        assert section.non_key_value_lines_at_end == 0
+        assert section.last_key_value_line_index == 1
+
+    def test_section_with_only_comments_and_empty_lines(self):
+        """Section contains only comments and empty lines after header."""
+        content = [
+            '[geometry]\n', # 0
+            '[output]\n',   # 1
+            '# comment\n',  # 2
+            '\n',           # 3
+            '\n',           # 4
+            '[numerics]\n', # 5
+        ]
+        section = Section('output', content)
+        assert section.start == 1
+        assert section.end == 4
+        assert section.non_key_value_lines_at_end == 3
+        assert section.last_key_value_line_index == 1
+
+    def test_section_with_no_key_value_lines(self):
+        """Section contains no key-value lines, only comments/empty lines."""
+        content = [
+            '[output]\n',   # 0
+            '# comment\n',  # 1
+            '\n',           # 2
+        ]
+        section = Section('output', content)
+        assert section.start == 0
+        assert section.end == 2
+        assert section.non_key_value_lines_at_end == 2
+        assert section.last_key_value_line_index == 0
+
+    def test_section_with_mixed_content(self):
+        """Section contains key-value lines, comments, and empty lines in various orders."""
+        content = [
+            '[output]\n',               # 0
+            'OutputFile = out.nc\n',    # 1
+            '# comment\n',              # 2
+            '\n',                       # 3
+            'AnotherKey = 1\n',         # 4
+            '\n',                       # 5
+            '# another comment\n',      # 6
+        ]
+        section = Section('output', content)
+        assert section.start == 0
+        assert section.end == 6
+        assert section.non_key_value_lines_at_end == 2
+        assert section.last_key_value_line_index == 4
+
+    def test_section_with_decorative_lines(self):
+        """Section surrounded by decorative lines (e.g., lines of #====)."""
+        content = [
+            '#================\n',      # 0
+            '[output]\n',               # 1
+            'OutputFile = out.nc\n',    # 2
+            '#================\n',      # 3
+        ]
+        section = Section('output', content)
+        assert section.start == 1
+        assert section.end == 3
+        assert section.non_key_value_lines_at_end == 1
+        assert section.last_key_value_line_index == 2
+
+    def test_section_name_case_insensitivity(self):
+        """Section header with different cases (e.g., [GEOMETRY] vs [geometry])."""
+        content = [
+            '[GEOMETRY]\n',         # 0
+            'NetFile = test.nc\n',  # 1
+        ]
+        section = Section('geometry', content)
+        assert section.start == 0
+        assert section.end == 1
+        assert section.last_key_value_line_index == 1
+
+    def test_malformed_section_headers(self):
+        """Section headers that are not properly closed or opened are ignored."""
+        content = [
+            '[geometry\n',  # malformed         # 0
+            '[output]\n',                       # 1
+            'OutputFile = out.nc\n',            # 2
+            'output]\n',  # malformed           # 3
+            '[numerics]\n',                     # 4
+        ]
+        with pytest.raises(ValueError):
+            Section('output', content)
+
+    def test_multiple_sections_with_same_name(self):
+        """Multiple sections with the same name (should pick the first occurrence)."""
+        content = [
+            '[output]\n',               # 0
+            'OutputFile = out1.nc\n',   # 1
+            '[geometry]\n',             # 2
+            '[output]\n',               # 3
+            'OutputFile = out2.nc\n',   # 4
+        ]
+        section = Section('output', content)
+        assert section.start == 0
+        assert section.end == 1
+        assert section.last_key_value_line_index == 1
+
+    def test_section_at_start_of_file(self):
+        """Section is the very first lines in the file."""
+        content = [
+            '[output]\n',               # 0
+            'OutputFile = out.nc\n',    # 1
+            '[geometry]\n',             # 2
+        ]
+        section = Section('output', content)
+        assert section.start == 0
+        assert section.end == 1
+        assert section.last_key_value_line_index == 1
+
+    def test_empty_file(self):
+        """Empty file should result in None for start and end."""
+        content = []
+        section = Section('output', content)
+        assert section.start is None
+        assert section.end is None
+
+    def test_find_section_bounds(self):
+        content = [
+            '[geometry]\n',
+            '    NetFile                             = sp_net.nc                          # *_net.nc\n',
+            '    unknown_geometry                    = 5                                   # any comment\n',
+            '    WaterLevIniFile                     =                                    # Initial water levels sample file *.xyz\n',
+            '    LandBoundaryFile                    =                                    # Only for plotting\n',
+            '    ThinDamFile                         =                                    # *_thd.pli, Polyline(s) for tracing thin dams.\n',
+            '    FixedWeirFile                       =                                    # *_tdk.pli, Polyline(s) x,y,z, z = fixed weir top levels\n',
+            '    ProflocFile                         =                                    # *_proflocation.xyz)    x,y,z, z = profile refnumber\n',
+            '    ProfdefFile                         =                                    # *_profdefinition.def) definition for all profile nrs\n',
+            '    WaterLevIni                         = 0.56                               # Initial water level\n',
+            '\n',
+            '#============================================\n',
+            '#============================================\n',
+            '[numerics]\n',
+            '    any_key                             = any_value                          # any comment\n',
+        ]
+        section_bounds = Section("geometry", content)
+
+        assert content[section_bounds.start] == "[geometry]\n"
+        assert content[section_bounds.end] == content[12]
+        last_line = section_bounds.last_key_value_line_index
+        assert content[last_line] == content[9]
+
+        # Test for a non-existing section
+        non_existing_section = Section("non-existing", content)
+        assert non_existing_section.start is None
+        assert non_existing_section.end is None

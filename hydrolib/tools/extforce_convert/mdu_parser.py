@@ -18,9 +18,24 @@ class Section:
     """Information about a section in an MDU file.
     
     Attributes:
-        start: The index of the section header line.
-        end: The index of the last line in the section.
-        empty_lines_at_end: List of indices of empty lines at the end of the section.
+        start (int):
+            The index of the section header line (0-index).
+        end (int):
+            The index of the last line in the section (0-index), the last line in the section is the line before the
+            header of the next section.
+        non_key_value_lines_at_end (int):
+            number of empty or non-key-value lines at the end of the section.
+        last_key_value_line_index (int):
+            index of the last key-value line in the section (0-based index), use this index to append any key-value
+            to the end of the section.
+    Notes:
+        - The section header is expected to be in the format "[section_name]".
+        - The section is defined as starting from the section header line and ending at the line before the header of
+        the next section.
+        - If all the lines in the section are empty lines or comments, the `start` and `last_key_value_line_index`
+        will be the same.
+        - if the section is not found, `start` and `end` will be set to None.
+        - if the section exists twice in the file, the first occurrence will be used.
     """
     start: Optional[int]
     end: Optional[int]
@@ -52,10 +67,10 @@ class Section:
 
         self.start = section_start
         self.end = section_end
-        self.non_key_value_lines_at_end = (
+        self.non_key_value_lines_at_end = None if section_start is None else (
             self.get_empty_and_non_key_value_lines(content, section_start, section_end)
         )
-        self.last_key_value_line_index = self.end - self.non_key_value_lines_at_end
+        self.last_key_value_line_index =None if section_start is None else (self.end - self.non_key_value_lines_at_end)
 
     @staticmethod
     def get_empty_and_non_key_value_lines(content, section_start: int, section_end: int):
