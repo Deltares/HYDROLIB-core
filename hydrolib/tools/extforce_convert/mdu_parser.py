@@ -746,7 +746,7 @@ class MDUParser:
 
         return self.updated_lines
 
-    def update_file_entry(self, field_name: str, file_name: str, section: str) -> None:
+    def update_file_entry(self, field_name: str, file_name: str, section_name: str) -> None:
         leading_spaces=self.file_style_properties.leading_spaces
         equal_sign_position=self.file_style_properties.equal_sign_position
 
@@ -758,10 +758,9 @@ class MDUParser:
                 leading_spaces=leading_spaces,
                 equal_sign_position=equal_sign_position,
             )
-            _, end_ind = self.find_section_bounds(section)
+            section_bounds = self.find_section_bounds(section_name)
             # put the inifield file at the end of the geometry section
-
-            line_number = end_ind - 1
+            line_number = section_bounds.last_key_value_line_index + 1
         else:
             # if the field already exists, we update it
 
