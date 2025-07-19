@@ -777,84 +777,9 @@ class MDUParser:
         old_ext_force_line = self.find_keyword_lines("ExtForceFile")
         self.content.pop(old_ext_force_line)
 
-    @staticmethod
-    def is_section_header(line: str) -> bool:
-        """Check if the line is a section header (e.g., '[...]').
-
-        Args:
-            line: The line to check
-
-        Returns:
-            True if the line is a section header (excluding '[external forcing]'), False otherwise
-        """
-        return (
-            line.startswith("[")
-            and line.endswith("]")
-            and "external forcing" not in line.lower()
-        )
-
-    def replace_extforcefilenew(self, line: str) -> str:
-        """Replace the ExtForceFileNew line with the new filename.
-
-        Args:
-            line: The line containing the ExtForceFileNew entry
-
-        Returns:
-            The updated line with the new filename
-
-        Notes:
-            - This method preserves the formatting of the original line, including comments
-            - If the line doesn't contain an '=' character, it's returned unchanged
-            - If the new filename would overflow into a comment, the comment is preserved
-        """
-        # Find the '=' character
-        eq_index = line.find("=")
-        if eq_index == -1:
-            return line
-        # Everything up to and including '='
-        left_part = line[: eq_index + 1]
-        # Remainder of the line (after '=')
-        right_part = line[eq_index + 1 :].strip("\n")  # noqa: E203
-        name_len = len(str(self.new_forcing_file))
-        # Protect against filename overflow into the comment
-        right_part_clipped = right_part[name_len + 1 :]
-        if right_part_clipped.find("#") == -1 and right_part_clipped != "":
-            right_part_clipped = f" {right_part.lstrip()}"
-        # Insert new filename immediately after '=' + a space
-        return f"{left_part} {self.new_forcing_file}{right_part_clipped}\n"
-
-    def _handle_external_forcing_section(self, stripped: str) -> None:
-        """Handle a line within the [external forcing] section.
-
-        Args:
-            stripped: The stripped line to process
-
-        Notes:
-            - If the line is a section header, it means we're leaving the [external forcing] section
-            - If we're leaving the section and haven't found ExtForceFileNew, add it
-            - If the line starts with ExtForceFileNew, replace it with the new filename
-            - If the line starts with ExtForceFile, skip it (remove it from the output)
-            - Otherwise, add the line to the output unchanged
-        """
-        if self.is_section_header(stripped):
-            # If we never found ExtForceFileNew before leaving, add it now
-            if not self.found_extforcefilenew:
-                new_line = f"ExtForceFileNew                           = {self.new_forcing_file}\n"
-                self.updated_lines.extend([new_line, "\n"])
-
-            self.inside_external_forcing = False
-            # fall through to just append the line below
-
-        # If the line has ExtForceFileNew, replace it
-        # The simplest way is to check if it starts with or contains ExtForceFileNew
-        # ignoring trailing spaces. You can refine the logic as needed.
-        if stripped.lower().startswith("extforcefilenew"):
-            self.found_extforcefilenew = True
-            self.updated_lines.append(self.replace_extforcefilenew(stripped))
-            return
-        elif stripped.lower().startswith("extforcefile"):
-            return
-        self.updated_lines.append(f"{stripped}\n")
+    def remove_extforce_file_new(self):
+        ext_force_line = self.find_keyword_lines("ExtForceFileNew")
+        self.content.pop(ext_force_line)
 
     def get_temperature_salinity_data(self) -> Dict[str, Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.

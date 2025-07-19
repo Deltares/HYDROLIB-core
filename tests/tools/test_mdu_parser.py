@@ -83,61 +83,6 @@ def test_save_mdu_file(tmp_path):
     assert saved_content == content
 
 
-@pytest.mark.parametrize(
-    "line, expected",
-    [
-        (
-            "ExtForceFileNew                           = old_file.ext",
-            "ExtForceFileNew                           = new_file.ext\n",
-        ),
-        (
-            "ExtForceFileNew                           = old_file.ext # Comment",
-            "ExtForceFileNew                           = new_file.ext # Comment\n",
-        ),
-        (
-            "ExtForceFileNew",
-            "ExtForceFileNew",
-        ),
-    ],
-    ids=["without comment", "with comment", "without equals sign"],
-)
-def test_replace_extforcefilenew(line, expected):
-    """Test the replace_extforcefilenew method."""
-    # Mock the MDUParser class and its methods
-    with (
-        patch("hydrolib.tools.extforce_convert.mdu_parser.MDUParser._read_file"),
-        patch("pathlib.Path.exists", return_value=True),
-        patch(
-            "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model",
-            return_value=MagicMock(geometry=MagicMock()),
-        ),
-        patch(
-            "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data",
-            return_value=None,
-        ),
-    ):
-        parser = MDUParser("dummy_path")
-        parser.new_forcing_file = Path("new_file.ext")
-
-    assert parser.replace_extforcefilenew(line) == expected
-
-
-def test_is_section_header():
-    """Test the is_section_header method."""
-    # Test with valid section headers
-    assert MDUParser.is_section_header("[general]") is True
-    assert MDUParser.is_section_header("[output]") is True
-
-    # Test with invalid section headers
-    assert MDUParser.is_section_header("general") is False
-    assert MDUParser.is_section_header("[general") is False
-    assert MDUParser.is_section_header("general]") is False
-
-    # Test with external forcing section header (should return False)
-    assert MDUParser.is_section_header("[external forcing]") is False
-    assert MDUParser.is_section_header("[EXTERNAL FORCING]") is False
-
-
 def test_get_ref_time():
     """Test the get_ref_time function."""
     # Test with valid date
@@ -297,46 +242,6 @@ class TestMduParser:
             "NetFile = test.nc\n",
         ]
         assert MDUParser.has_inifield_file(parser) is False
-
-    def test_handle_external_forcing_section(self):
-        """Test the _handle_external_forcing_section method."""
-        parser = MDUParser(self.file_path)
-        parser.new_forcing_file = "test.ext"
-        parser.inside_external_forcing = True
-        parser.found_extforcefilenew = False
-        parser.updated_lines = []
-
-        # Test with a section header
-        parser._handle_external_forcing_section("[general]")
-        assert not parser.inside_external_forcing
-        assert len(parser.updated_lines) == 3  # New line + empty line
-        assert "ExtForceFileNew" in parser.updated_lines[0]
-
-        # Reset for next test
-        parser.inside_external_forcing = True
-        parser.found_extforcefilenew = False
-        parser.updated_lines = []
-
-        # Test with ExtForceFileNew line
-        parser._handle_external_forcing_section("ExtForceFileNew = old.ext")
-        assert parser.found_extforcefilenew
-        assert len(parser.updated_lines) == 1
-        assert "test.ext" in parser.updated_lines[0]
-
-        # Reset for next test
-        parser.inside_external_forcing = True
-        parser.found_extforcefilenew = False
-        parser.updated_lines = []
-
-        # Test with ExtForceFile line (should be skipped)
-        parser._handle_external_forcing_section("ExtForceFile = old.ext")
-        assert not parser.found_extforcefilenew
-        assert len(parser.updated_lines) == 0
-
-        # Test with regular line
-        parser._handle_external_forcing_section("RegularLine = value")
-        assert len(parser.updated_lines) == 1
-        assert "RegularLine = value" in parser.updated_lines[0]
 
     def test_get_temperature_salinity_data(self):
         """Test the get_temperature_salinity_data method."""
