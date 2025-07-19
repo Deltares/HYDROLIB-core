@@ -451,11 +451,15 @@ class ExternalForcingConverter:
             `new_mdu_content` key.
         """
         num_ext_model_quantities = (
-                len(self.ext_model.boundary) + len(self.ext_model.lateral) + len(self.ext_model.meteo) +
-                len(self.ext_model.sourcesink)
+            len(self.ext_model.boundary)
+            + len(self.ext_model.lateral)
+            + len(self.ext_model.meteo)
+            + len(self.ext_model.sourcesink)
         )
 
-        self.mdu_parser.update_extforce_file_new(self.ext_model.filepath.name, num_quantities=num_ext_model_quantities)
+        self.mdu_parser.update_extforce_file_new(
+            self.ext_model.filepath.name, num_quantities=num_ext_model_quantities
+        )
 
         if (
             len(self.inifield_model.parameter) > 0
