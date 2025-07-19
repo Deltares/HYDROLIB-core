@@ -39,7 +39,7 @@ class TestSourceSink:
                     "zSource": 0.0,
                     "area": 1.0,
                     "discharge": 1.23,
-                    "salinityDelta": 4.0,
+                    "salinitydelta": 4.0,
                     "temperatureDelta": 5.0,
                 }
             ]

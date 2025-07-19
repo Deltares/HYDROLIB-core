@@ -1,8 +1,6 @@
 from pathlib import Path
-from typing import List, Tuple
 
 import numpy as np
-import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -17,6 +15,9 @@ from hydrolib.tools.extforce_convert.converters import (
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
+)
+from hydrolib.tools.extforce_convert.utils import (
+    create_initial_cond_and_parameter_input_dict,
 )
 
 
@@ -64,6 +65,30 @@ class TestConvertParameters:
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
+
+    def test_bed_rock_surface_elevation(self):
+        """Test conversion of bedrock surface elevation forcing.
+
+        The Test only check that the name of the quantity is converted correctly.
+        - all the the underscores in the old name are removed.
+        - the naming convention is changed to camelCase.
+        old: "bedrock_surface_elevation"
+        new: "bedrockSurfaceElevation"
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.BedRockSurfaceElevation,
+            filename="subsupl.tim",
+            filetype=7,
+            method="1",
+            operand="O",
+        )
+
+        new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        assert new_focing_dict["quantity"] == "bedrockSurfaceElevation"
+
+        new_quantity_block = ParametersConverter().convert(forcing)
+        assert isinstance(new_quantity_block, ParameterField)
+        assert new_quantity_block.quantity == "bedrockSurfaceElevation"
 
 
 class TestConvertMeteo:
