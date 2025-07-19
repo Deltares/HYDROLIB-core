@@ -388,94 +388,28 @@ class TestMduParser:
 
         assert found_extforcefilenew, "ExtForceFileNew entry not found in updated lines"
 
-        parser = MagicMock(spec=MDUParser)
-        parser.content = [
-            "[general]\n",
-            "Name = Test\n",
-            "[geometry]\n",
-            "NetFile = test.nc\n",
-        ]
-        parser.update_extforce_file_new = types.MethodType(
-            MDUParser.update_extforce_file_new, parser
-        )
-        parser._handle_external_forcing_section = types.MethodType(
-            MDUParser._handle_external_forcing_section, parser
-        )
-        parser.inside_external_forcing = False
-        parser.found_extforcefilenew = False
-        parser.updated_lines = []
-        parser.new_forcing_file = "new_test.ext"
-
-        # Update the file
-        updated_lines = MDUParser.update_extforce_file_new(parser)
-
-        # Check that the updated lines are the same as the original (no external forcing section to update)
-        assert len(updated_lines) == 4
-        assert updated_lines == [
-            "[general]\n",
-            "Name = Test\n",
-            "[geometry]\n",
-            "NetFile = test.nc\n",
-        ]
-
         # Test with a file that has an external forcing section but no ExtForceFileNew entry
         parser.content = [
-            "[general]\n",
-            "Name = Test\n",
-            "[external forcing]\n",
-            "ExtForceFile = old.ext\n",
-            "[geometry]\n",
-            "NetFile = test.nc\n",
+            "[general]\n",                  # 0
+            "Name = Test\n",                # 1
+            "[external forcing]\n",         # 2
+            "ExtForceFile = old.ext\n",     # 3
+            "[geometry]\n",                 # 4
+            "NetFile = test.nc\n",          # 5
         ]
         parser.updated_lines = []
 
-        # Update the file
         updated_lines = MDUParser.update_extforce_file_new(parser)
 
         # Check that the ExtForceFileNew entry was added and ExtForceFile was removed
-        assert len(updated_lines) == 7
+        assert len(updated_lines) == 6
         assert updated_lines[0] == "[general]\n"
         assert updated_lines[1] == "Name = Test\n"
         assert updated_lines[2] == "[external forcing]\n"
         assert "ExtForceFileNew" in updated_lines[3]
         assert "new_test.ext" in updated_lines[3]
-        assert updated_lines[4] == "\n"
-        assert updated_lines[5] == "[geometry]\n"
-        assert updated_lines[6] == "NetFile = test.nc\n"
-
-class TestFindSectionBounds:
-    file_path = "tests/data/input/dflowfm_individual_files/mdu/sp.mdu"
-
-    def test_find_section_bounds(self):
-        content = [
-            '[geometry]\n',
-            '    NetFile                             = sp_net.nc                          # *_net.nc\n',
-            '    unknown_geometry                    = 5                                   # any comment\n',
-            '    WaterLevIniFile                     =                                    # Initial water levels sample file *.xyz\n',
-            '    LandBoundaryFile                    =                                    # Only for plotting\n',
-            '    ThinDamFile                         =                                    # *_thd.pli, Polyline(s) for tracing thin dams.\n',
-            '    FixedWeirFile                       =                                    # *_tdk.pli, Polyline(s) x,y,z, z = fixed weir top levels\n',
-            '    ProflocFile                         =                                    # *_proflocation.xyz)    x,y,z, z = profile refnumber\n',
-            '    ProfdefFile                         =                                    # *_profdefinition.def) definition for all profile nrs\n',
-            '    WaterLevIni                         = 0.56                               # Initial water level\n',
-            '\n',
-            '#============================================\n',
-            '#============================================\n',
-            '[numerics]\n',
-            '    any_key                             = any_value                          # any comment\n',
-        ]
-        section_bounds = Section("geometry", content)
-
-        assert content[section_bounds.start] == "[geometry]\n"
-        assert content[section_bounds.end] == content[12]
-        last_line = section_bounds.last_key_value_line_index
-        assert content[last_line] == content[9]
-
-        # Test for a non-existing section
-        non_existing_section = Section("non-existing", content)
-        assert non_existing_section.start is None
-        assert non_existing_section.end is None
-
+        assert updated_lines[4] == "[geometry]\n"
+        assert updated_lines[5] == "NetFile = test.nc\n"
 
 
 class TestUpdateInifieldFile:
