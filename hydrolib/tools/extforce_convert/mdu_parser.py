@@ -758,9 +758,9 @@ class MDUParser:
                 leading_spaces=leading_spaces,
                 equal_sign_position=equal_sign_position,
             )
-            section_bounds = self.find_section_bounds(section_name)
+            section = self.get_section(section_name)
             # put the inifield file at the end of the geometry section
-            line_number = section_bounds.last_key_value_line_index + 1
+            line_number = section.last_key_value_line_index + 1
         else:
             # if the field already exists, we update it
 
@@ -975,19 +975,22 @@ class MDUParser:
 
         self.content.insert(index, line)
 
-    def find_section_bounds(self, section_name: str) -> Tuple[int, int]:
-        """Find the start and end line indices of a section.
-
-        Args:
-            section_name: The name of the section, e.g., "geometry".
+    def get_section(self, section_name: str) -> Section:
+        """Get Mdu Section.
 
         Returns:
-            A tuple (start_index, end_index):
-                - start_index is the index of the section header line.
-                - end_index is the index just before the next section header or end of file(index to the empty line).
-
-        Raises:
-            ValueError: If the section is not found.
+            Section:
+                Section object.
+                    start (int):
+                        The index of the section header line (0-index).
+                    end (int):
+                        The index of the last line in the section (0-index), the last line in the section is the line before the
+                        header of the next section.
+                    non_key_value_lines_at_end (int):
+                        number of empty or non-key-value lines at the end of the section.
+                    last_key_value_line_index (int):
+                        index of the last key-value line in the section (0-based index), use this index to append any key-value
+                        to the end of the section.
         """
         return Section(section_name, self.content)
 

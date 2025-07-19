@@ -500,7 +500,7 @@ class TestUpdateInifieldFile:
             MDUParser.find_keyword_lines, parser
         )
         parser.find_section_bounds = types.MethodType(
-            MDUParser.find_section_bounds, parser
+            MDUParser.get_section, parser
         )
         parser.has_field = types.MethodType(
             MDUParser.has_field, parser
@@ -547,7 +547,7 @@ class TestUpdateInifieldFile:
         parser.update_inifield_file("new-inifield-file.ini")
 
         # Check if the inifield file was added to the geometry section
-        section_bounds = parser.find_section_bounds("geometry")
+        section_bounds = parser.get_section("geometry")
         ind = section_bounds.last_key_value_line_index
         assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
 
@@ -578,7 +578,7 @@ class TestUpdateInifieldFile:
         parser.update_inifield_file("new-inifield-file.ini")
 
         # Check if the inifield file was added to the geometry section
-        section_bounds = parser.find_section_bounds("geometry")
+        section_bounds = parser.get_section("geometry")
         ind = section_bounds.last_key_value_line_index
         assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
 
