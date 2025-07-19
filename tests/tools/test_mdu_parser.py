@@ -51,11 +51,11 @@ def test_update_mdu_on_the_fly(
     new_mdu_file = mdu_filename.with_stem(f"{mdu_filename.stem}-updated")
     updater = MDUParser(mdu_filename)
     updater.new_forcing_file = ext_file
-    updated_mdu_file = updater.update_extforce_file_new()
-    assert updated_mdu_file[on_line[0]] == "[external forcing]\n"
-    assert updated_mdu_file[on_line[1]] == expected_line
+    updater.update_extforce_file_new()
+    assert updater.content[on_line[0]] == "[external forcing]\n"
+    assert updater.content[on_line[1]] == expected_line
     # test the save mdu file function
-    save_mdu_file(updated_mdu_file, new_mdu_file)
+    save_mdu_file(updater.content, new_mdu_file)
     assert new_mdu_file.exists()
     try:
         new_mdu_file.unlink()
@@ -368,13 +368,13 @@ class TestMduParser:
         parser.new_forcing_file = "new_test.ext"
 
         # Update the file
-        updated_lines = parser.update_extforce_file_new()
+        parser.update_extforce_file_new()
 
         # Check that the updated lines contain the new forcing file
         external_forcing_section = False
         found_extforcefilenew = False
 
-        for line in updated_lines:
+        for line in parser.content:
             if "[external forcing]" in line.lower():
                 external_forcing_section = True
                 continue
@@ -399,8 +399,9 @@ class TestMduParser:
         ]
         parser.updated_lines = []
 
-        updated_lines = MDUParser.update_extforce_file_new(parser)
+        MDUParser.update_extforce_file_new(parser)
 
+        updated_lines = parser.content
         # Check that the ExtForceFileNew entry was added and ExtForceFile was removed
         assert len(updated_lines) == 6
         assert updated_lines[0] == "[general]\n"

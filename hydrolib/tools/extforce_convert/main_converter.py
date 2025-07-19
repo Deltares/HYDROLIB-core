@@ -452,7 +452,7 @@ class ExternalForcingConverter:
         """
         new_ext_file = self.ext_model.filepath.name
         self.mdu_parser.new_forcing_file = new_ext_file
-        self.mdu_parser.content = self.mdu_parser.update_extforce_file_new()
+        self.mdu_parser.update_extforce_file_new()
         if (
             len(self.inifield_model.parameter) > 0
             or len(self.inifield_model.initial) > 0

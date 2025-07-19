@@ -310,11 +310,9 @@ class TestExternalFocingConverter:
         2. An inifield file entry is added if it doesn't exist and there are initial fields or parameters
         3. A structure file entry is added if it doesn't exist and there are structures
         """
-        # Create a mock ExtOldModel
         mock_ext_old_model = MagicMock(spec=ExtOldModel)
         mock_ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
 
-        # Create the converter with the mock model
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file",
             return_value=mock_ext_old_model,
@@ -323,12 +321,11 @@ class TestExternalFocingConverter:
 
         # Mock the MDU parser
         mock_mdu_parser = MagicMock()
-        mock_mdu_parser.update_extforce_file_new.return_value = ["updated content"]
+        # mock_mdu_parser.update_extforce_file_new.return_value = ["updated content"]
         mock_mdu_parser.has_inifield_file.return_value = False
         mock_mdu_parser.has_structure_file.return_value = False
         converter._mdu_parser = mock_mdu_parser
 
-        # Create a DiskOnlyFileModel for the datafile
         datafile = DiskOnlyFileModel(
             filepath=Path("tests/data/input/mock_datafile.xyz")
         )
@@ -338,12 +335,9 @@ class TestExternalFocingConverter:
             quantity="waterlevel", datafile=datafile, datafiletype=DataFileType.arcinfo
         )
 
-        # Add the initial field to the inifield model
         converter.inifield_model.initial = [initial_field]
 
         # Add some structures to the structure model
-
-        # Create a Structure instance
         structure = Structure(
             id="structure1",
             name="Test Structure",
@@ -352,15 +346,12 @@ class TestExternalFocingConverter:
             chainage=100.0,
         )
 
-        # Add the structure to the structure model
         converter.structure_model.structure = [structure]
 
-        # Call the method under test
         converter._update_mdu_file()
 
         # Verify that the external forcing file was updated
         mock_mdu_parser.update_extforce_file_new.assert_called_once()
-        assert mock_mdu_parser.content == ["updated content"]
 
         # Verify that the inifield file was added
         mock_mdu_parser.update_inifield_file.assert_called_once_with(

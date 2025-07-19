@@ -754,8 +754,6 @@ class MDUParser:
         self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
         old_ext_force_line = self.find_keyword_lines("ExtForceFile")
         self.content.pop(old_ext_force_line)
-        return self.content
-
 
     @staticmethod
     def is_section_header(line: str) -> bool:
