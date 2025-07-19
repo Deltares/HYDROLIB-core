@@ -696,56 +696,6 @@ class MDUParser:
         """
         return True if self.find_keyword_lines(field_name) is not None else False
 
-    def update_extforce_file_new(self) -> List[str]:
-        """Update the ExtForceFileNew entry in the MDU file.
-
-        Update the 'ExtForceFileNew' entry under the '[external forcing]' section
-        of an MDU file. Writes the updated content to output_path if provided,
-        or overwrites the original file otherwise.
-
-        Returns:
-            List[str]:
-                The updated lines of the .mdu file.
-
-        Notes:
-            - This function is a workaround for updating the ExtForceFileNew entry in an MDU file.
-            - The function reads the entire file into memory, updates the line containing ExtForceFileNew, and writes the
-                updated content back to disk.
-            - The function removes the `extforcefile` from the mdu file, and only keeps the new updated `ExtForceFileNew`
-            entry, as all the old forcing quantities in the old forcing file are converted to the new format.
-            - after fixing the issue with mdu files having `Unkown keyword` error, this function will be removed,
-            and the `LegacyFMModel` will be the only way to read/update the mdu file
-
-        """
-        lines = self.content
-        for line in lines:
-            stripped = line.strip()
-            # Check if we've hit the [external forcing] header
-            if stripped.lower().startswith("[external forcing]"):
-                self.inside_external_forcing = True
-                self.found_extforcefilenew = False
-                self.updated_lines.append(line)
-                continue
-
-            # If we are inside the [external forcing] section, look for ExtForceFileNew
-            if self.inside_external_forcing:
-                # If we find another section header, it means [external forcing] section ended
-                self._handle_external_forcing_section(stripped)
-                continue
-
-            # Default: write the line unmodified
-            self.updated_lines.append(line)
-
-        # If we ended the file while still in [external forcing] with no ExtForceFileNew found, add it
-        if self.inside_external_forcing and not self.found_extforcefilenew:
-            new_line = (
-                f"ExtForceFileNew                           = {self.new_forcing_file}\n"
-            )
-            self.updated_lines.append(new_line)
-            self.updated_lines.append("\n")
-
-        return self.updated_lines
-
     def update_file_entry(self, field_name: str, file_name: str, section_name: str) -> None:
         leading_spaces=self.file_style_properties.leading_spaces
         equal_sign_position=self.file_style_properties.equal_sign_position
@@ -816,6 +766,14 @@ class MDUParser:
             inifield file line.
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
+
+    def update_extforce_file_new(self):
+        file_name = self.new_forcing_file
+        self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
+        old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+        self.content.pop(old_ext_force_line)
+        return self.content
+
 
     @staticmethod
     def is_section_header(line: str) -> bool:
