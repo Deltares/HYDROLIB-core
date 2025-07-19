@@ -547,11 +547,9 @@ class TestUpdateInifieldFile:
         parser.update_inifield_file("new-inifield-file.ini")
 
         # Check if the inifield file was added to the geometry section
-        _, end_ind = parser.find_section_bounds("geometry")
-        assert (
-            parser._content[end_ind - 2]
-            == "    IniFieldFile                        = new-inifield-file.ini\n"
-        )
+        section_bounds = parser.find_section_bounds("geometry")
+        ind = section_bounds.last_key_value_line_index
+        assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
 
     @pytest.mark.unit
     def test_update_inifield_file_with_decorative_lines(self):
@@ -580,11 +578,9 @@ class TestUpdateInifieldFile:
         parser.update_inifield_file("new-inifield-file.ini")
 
         # Check if the inifield file was added to the geometry section
-        _, end_ind = parser.find_section_bounds("geometry")
-        assert (
-            parser._content[end_ind - 2]
-            == "    IniFieldFile                        = new-inifield-file.ini\n"
-        )
+        section_bounds = parser.find_section_bounds("geometry")
+        ind = section_bounds.last_key_value_line_index
+        assert parser._content[ind] == "    IniFieldFile                        = new-inifield-file.ini\n"
 
 
 class TestLocate:
