@@ -513,7 +513,7 @@ class TestUpdateInifieldFile:
         # Test with a file that has an inifield file
         MDUParser.update_inifield_file(parser, "new-inifield-file.ini")
         old_index = content.index("IniFieldFile =     #some comments here\n")
-        assert parser.content[old_index] == "IniFieldFile = new-inifield-file.ini #some comments here\n"
+        assert parser.content[old_index] == "IniFieldFile= new-inifield-file.ini #some comments here\n"
 
     @pytest.mark.unit
     def test_update_inifield_file_without_decorative_line(self):
