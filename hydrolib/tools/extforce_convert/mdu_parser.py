@@ -236,7 +236,7 @@ class FileStyleProperties:
             - If no lines with comments are found, it returns None.
             - if the line has multiple comment characters, it will only count the first one.
         """
-        position = FileStyleProperties._locate(content, "#")
+        position = self._locate(content, "#")
 
         return position
 
