@@ -5,18 +5,19 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
 
-
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
+
 
 @dataclass
 class Section:
     """Information about a section in an MDU file.
-    
+
     Attributes:
         start (int):
             The index of the section header line (0-index).
@@ -37,6 +38,7 @@ class Section:
         - if the section is not found, `start` and `end` will be set to None.
         - if the section exists twice in the file, the first occurrence will be used.
     """
+
     start: Optional[int]
     end: Optional[int]
     non_key_value_lines_at_end: Optional[int]
@@ -67,13 +69,25 @@ class Section:
 
         self.start = section_start
         self.end = section_end
-        self.non_key_value_lines_at_end = None if section_start is None else (
-            self.get_empty_and_non_key_value_lines(content, section_start, section_end)
+        self.non_key_value_lines_at_end = (
+            None
+            if section_start is None
+            else (
+                self.get_empty_and_non_key_value_lines(
+                    content, section_start, section_end
+                )
+            )
         )
-        self.last_key_value_line_index =None if section_start is None else (self.end - self.non_key_value_lines_at_end)
+        self.last_key_value_line_index = (
+            None
+            if section_start is None
+            else (self.end - self.non_key_value_lines_at_end)
+        )
 
     @staticmethod
-    def get_empty_and_non_key_value_lines(content, section_start: int, section_end: int):
+    def get_empty_and_non_key_value_lines(
+        content, section_start: int, section_end: int
+    ):
         # Find empty lines at the end of the section and non-key-value lines within the section
         empty_lines_at_end = []
 
@@ -87,6 +101,7 @@ class Section:
                     break
 
         return len(empty_lines_at_end)
+
 
 @dataclass
 class ExternalForcingBlock:
@@ -337,7 +352,9 @@ class Line:
         """Validate the line content."""
         if not (self.is_empty() or self.is_comment() or self.is_section_header()):
             if self.equal_sign_position is None:
-                raise ValueError("Line must contain an equal sign '=' for key-value pairs.")
+                raise ValueError(
+                    "Line must contain an equal sign '=' for key-value pairs."
+                )
 
     @property
     def key_value(self) -> Tuple[str, str]:
@@ -459,7 +476,7 @@ class Line:
 
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        self._content =  f"{spaces}{aligned_key}= {value}"
+        self._content = f"{spaces}{aligned_key}= {value}"
 
     def recenter_comments(self, comments_position: int = None) -> str:
         """Recenter Comments.
@@ -524,7 +541,11 @@ class Line:
 
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        line_content = f"{spaces}{aligned_key}= {value}" if value != "" else f"{spaces}{aligned_key}= "
+        line_content = (
+            f"{spaces}{aligned_key}= {value}"
+            if value != ""
+            else f"{spaces}{aligned_key}= "
+        )
 
         if comment:
             stripped = comment.strip()
@@ -549,7 +570,7 @@ class Line:
             new_value,
             equal_sign_position=self.equal_sign_position,
             leading_spaces=self.leading_spaces,
-            comment=self.comments
+            comment=self.comments,
         )
 
 
@@ -678,9 +699,11 @@ class MDUParser:
         """
         return True if self.find_keyword_lines(field_name) is not None else False
 
-    def update_file_entry(self, field_name: str, file_name: str, section_name: str) -> None:
-        leading_spaces=self.file_style_properties.leading_spaces
-        equal_sign_position=self.file_style_properties.equal_sign_position
+    def update_file_entry(
+        self, field_name: str, file_name: str, section_name: str
+    ) -> None:
+        leading_spaces = self.file_style_properties.leading_spaces
+        equal_sign_position = self.file_style_properties.equal_sign_position
 
         if not self.has_field(field_name):
             # if the field does not exist, we create a new line for it and add it to the end of the section
@@ -930,7 +953,6 @@ class MDUParser:
                         to the end of the section.
         """
         return Section(section_name, self.content)
-
 
     def get_inifield_file(
         self,
