@@ -461,18 +461,15 @@ class ExternalForcingConverter:
             self.ext_model.filepath.name, num_quantities=num_ext_model_quantities
         )
 
-        if (
-            len(self.inifield_model.parameter) > 0
-            or len(self.inifield_model.initial) > 0
-        ):
-            if not self.mdu_parser.has_inifield_file():
-                self.mdu_parser.update_inifield_file(self.inifield_model.filepath.name)
+        num_quantities_inifield = len(self.inifield_model.parameter) + len(self.inifield_model.initial)
+
+        if num_quantities_inifield > 0:
+            self.mdu_parser.update_inifield_file(self.inifield_model.filepath.name)
 
         if len(self.structure_model.structure) > 0:
-            if not self.mdu_parser.has_structure_file():
-                self.mdu_parser.update_structure_file(
-                    self.structure_model.filepath.name
-                )
+            self.mdu_parser.update_structure_file(
+                self.structure_model.filepath.name
+            )
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
