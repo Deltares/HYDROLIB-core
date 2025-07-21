@@ -481,7 +481,7 @@ class Line:
 
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        all_after_equal_sign = self._content[self.equal_sign_position + 1:]
+        all_after_equal_sign = self._content[self.equal_sign_position + 1 :]
         self._content = f"{spaces}{aligned_key}= {all_after_equal_sign.lstrip()}"
 
     def recenter_comments(self, comments_position: int = None) -> str:

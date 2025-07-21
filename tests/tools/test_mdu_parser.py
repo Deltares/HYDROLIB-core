@@ -909,6 +909,7 @@ class TestLine:
         line.recenter_equal_sign(equal_sign_position=8)
         assert line.content.startswith("Param   = ")
 
+
 class TestGetKeyValue:
 
     @pytest.mark.unit
@@ -951,6 +952,7 @@ class TestGetKeyValue:
         section_line = Line("[general]")
         assert comment_line.get_key_value() == (None, None)
         assert section_line.get_key_value() == (None, None)
+
 
 class TestLineRecenterComments:
     """
