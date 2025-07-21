@@ -820,7 +820,7 @@ class TestLine:
         """Test extracting comment and its position from a line with a comment."""
         line = Line("Param = value # comment here")
         assert line.comment_position == line.content.find("#")
-        assert line.comments == "# comment here"
+        assert line.comments == "# comment here\n"
 
     @pytest.mark.unit
     def test_without_comment(self):
@@ -958,7 +958,7 @@ class TestLineRecenterComments:
         line = Line("Param = value # comment")
         line.recenter_comments()
         assert line.content.startswith("Param = value")
-        assert line.content.endswith("# comment")
+        assert line.content.endswith("# comment\n")
 
     @pytest.mark.unit
     def test_custom_comment_position(self):
@@ -999,7 +999,7 @@ class TestLineRecenterComments:
         """
         line = Line("# just a comment")
         line.recenter_comments()
-        assert line.content == "# just a comment"
+        assert line.content == "# just a comment\n"
 
     @pytest.mark.unit
     def test_empty_line(self):

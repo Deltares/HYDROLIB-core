@@ -408,6 +408,7 @@ class Line:
         comment_index = self.content.find("#")
         if comment_index != -1:
             comments = self.content[comment_index:].strip()
+            comments += "\n"
         else:
             comment_index = None
             comments = ""
