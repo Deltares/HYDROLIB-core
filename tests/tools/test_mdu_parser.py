@@ -856,29 +856,6 @@ class TestLine:
         assert line.is_section_header() is False
 
     @pytest.mark.unit
-    def test_get_key_value_standard(self):
-        """Test get_key_value parses key, value, and equal sign position for standard lines."""
-        line = Line("Param = value")
-        key, value = line.get_key_value()
-        assert key == "Param"
-        assert value == "value"
-        assert line.equal_sign_position == line.content.find("=")
-
-    @pytest.mark.unit
-    def test_get_key_value_no_equal_sign(self):
-        """Test get_key_value raises ValueError if no equal sign is present."""
-        with pytest.raises(ValueError):
-            line = Line("Param value")
-
-    @pytest.mark.unit
-    def test_get_key_value_comment_or_section(self):
-        """Test get_key_value returns None for key/value/pos for comment or section header lines."""
-        comment_line = Line("# Just a comment")
-        section_line = Line("[general]")
-        assert comment_line.get_key_value() == (None, None)
-        assert section_line.get_key_value() == (None, None)
-
-    @pytest.mark.unit
     def test_get_leading_spaces(self):
         """Test get_leading_spaces returns correct number of leading spaces."""
         line = Line("   Param = value")
@@ -932,6 +909,48 @@ class TestLine:
         line.recenter_equal_sign(equal_sign_position=8)
         assert line.content.startswith("Param   = ")
 
+class TestGetKeyValue:
+
+    @pytest.mark.unit
+    def test_get_key_value_standard(self):
+        """Test get_key_value parses key, value, and equal sign position for standard lines."""
+        line = Line("Param = value")
+        key, value = line.get_key_value()
+        assert key == "Param"
+        assert value == "value"
+        assert line.equal_sign_position == line.content.find("=")
+
+    @pytest.mark.unit
+    def test_get_key_value_with_comment(self):
+        """Test get_key_value parses key, value, and equal sign position for standard lines."""
+        line = Line("Param = value # comment")
+        key, value = line.get_key_value()
+        assert key == "Param"
+        assert value == "value"
+        assert line.equal_sign_position == line.content.find("=")
+
+    @pytest.mark.unit
+    def test_get_key_value_with_comment_empty_value(self):
+        """Test get_key_value parses key, value, and equal sign position for standard lines."""
+        line = Line("Param = # comment")
+        key, value = line.get_key_value()
+        assert key == "Param"
+        assert value is None
+        assert line.equal_sign_position == line.content.find("=")
+
+    @pytest.mark.unit
+    def test_get_key_value_no_equal_sign(self):
+        """Test get_key_value raises ValueError if no equal sign is present."""
+        with pytest.raises(ValueError):
+            line = Line("Param value")
+
+    @pytest.mark.unit
+    def test_get_key_value_comment_or_section(self):
+        """Test get_key_value returns None for key/value/pos for comment or section header lines."""
+        comment_line = Line("# Just a comment")
+        section_line = Line("[general]")
+        assert comment_line.get_key_value() == (None, None)
+        assert section_line.get_key_value() == (None, None)
 
 class TestLineRecenterComments:
     """

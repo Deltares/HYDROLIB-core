@@ -437,6 +437,10 @@ class Line:
                 key, value = self.content.split("=", 1)
                 key = key.strip()
                 value = value.strip()
+                if "#" in value:
+                    value = value.split("#", 1)[0].strip()
+                    if value == "":
+                        value = None
             else:
                 raise ValueError(f"Line '{self.content}' does not contain an '='")
 
@@ -477,7 +481,8 @@ class Line:
 
         aligned_key = key.ljust(equal_sign_position - leading_spaces)
         spaces = " " * leading_spaces
-        self._content = f"{spaces}{aligned_key}= {value}"
+        all_after_equal_sign = self._content[self.equal_sign_position + 1:]
+        self._content = f"{spaces}{aligned_key}= {all_after_equal_sign.lstrip()}"
 
     def recenter_comments(self, comments_position: int = None) -> str:
         """Recenter Comments.
