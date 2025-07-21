@@ -68,6 +68,7 @@ class TestExtForcing:
         )
 
         assert isinstance(forcing.filename, DiskOnlyFileModel)
+
     def test_tracer_fall_velocity_quantity(self, input_files_dir: Path):
         forcing = ExtOldForcing(
             quantity="initialtracerdtr1",
@@ -75,8 +76,8 @@ class TestExtForcing:
             filetype=3,
             method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
-            tracerfallvelocity= 1,
-            tracerdecaytime= 1,
+            tracerfallvelocity=1,
+            tracerdecaytime=1,
         )
 
         assert forcing.tracerfallvelocity == 1

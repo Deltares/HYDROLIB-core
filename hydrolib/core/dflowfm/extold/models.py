@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-
 INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "initialsedfrac",
@@ -684,7 +683,6 @@ class ExtOldForcing(BaseModel):
 
     tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: Optional[int] = Field(None, alias="tracerDecayTime")
-
 
     def is_intermediate_link(self) -> bool:
         return True
