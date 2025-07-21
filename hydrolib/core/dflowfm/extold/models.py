@@ -683,8 +683,7 @@ class ExtOldForcing(BaseModel):
     """Optional[int]: The minimum required number of source data points in each target cell."""
 
     tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
-    tracerdecaytime: Optional[int] = Field(None, alias="tracerDecayTime")
-
+    tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
 
     def is_intermediate_link(self) -> bool:
         return True
