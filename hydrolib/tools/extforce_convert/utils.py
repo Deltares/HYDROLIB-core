@@ -215,7 +215,7 @@ def create_initial_cond_and_parameter_input_dict(
             "yes" if forcing.extrapolation == 1 else "no"
         )
     for key, value in forcing.dict().items():
-        if key.lower().startswith("tracer"):
+        if key.lower().startswith("tracer") and value is not None:
             block_data[key] = value
     return block_data
 
