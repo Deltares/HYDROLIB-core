@@ -165,8 +165,8 @@ class AbstractSpatialField(INIBasedModel, ABC):
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    tracerfallvelocity: Optional[float] = Field(None, alias="TRACERFALLVELOCITY")
-    tracerdecaytime: Optional[float] = Field(None, alias="TRACERDECAYTIME")
+    tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
 
     @root_validator(allow_reuse=True)
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
