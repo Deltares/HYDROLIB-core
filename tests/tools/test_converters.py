@@ -1,6 +1,7 @@
 from pathlib import Path
-import pytest
+
 import numpy as np
+import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -75,6 +76,7 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(forcing)
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.tracerfallvelocity == 0.1
+
 
 class TestConvertParameters:
     def test_sample_data_file(self):
