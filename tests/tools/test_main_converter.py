@@ -365,13 +365,17 @@ class TestExternalFocingConverter:
         mock_mdu_parser.reset_mock()
         mock_mdu_parser.has_inifield_file.return_value = True
         converter._update_mdu_file()
-        mock_mdu_parser.update_inifield_file.assert_not_called()
+        mock_mdu_parser.update_inifield_file.assert_called_once_with(
+            converter.inifield_model.filepath.name
+        )
 
         # Test case: structure file already exists
         mock_mdu_parser.reset_mock()
         mock_mdu_parser.has_structure_file.return_value = True
         converter._update_mdu_file()
-        mock_mdu_parser.update_structure_file.assert_not_called()
+        mock_mdu_parser.update_structure_file.assert_called_once_with(
+            converter.structure_model.filepath.name
+        )
 
         # Test case: no initial fields or parameters
         mock_mdu_parser.reset_mock()
