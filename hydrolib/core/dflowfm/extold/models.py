@@ -18,7 +18,6 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-VALID_ATTRIBUTES_PREFIXES = "tracer"
 
 INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
@@ -683,22 +682,9 @@ class ExtOldForcing(BaseModel):
     nummin: Optional[int] = Field(None, alias="NUMMIN")
     """Optional[int]: The minimum required number of source data points in each target cell."""
 
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
+    tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: Optional[int] = Field(None, alias="tracerDecayTime")
 
-        # Allow dynamic fields
-        extra = "allow"
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.lower().startswith(
-                VALID_ATTRIBUTES_PREFIXES
-            ):
-                setattr(self, key, value)
 
     def is_intermediate_link(self) -> bool:
         return True
