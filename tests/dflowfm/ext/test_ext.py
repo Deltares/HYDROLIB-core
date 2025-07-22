@@ -24,7 +24,10 @@ class TestExtModel:
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
-        input_ext = input_files_dir / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        input_ext = (
+            input_files_dir
+            / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        )
 
         ext_model = ExtModel(input_ext)
 
@@ -37,7 +40,9 @@ class TestExtModel:
         assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
 
     def test_construct_from_file_with_bc(self, input_files_dir: Path):
-        input_ext = input_files_dir / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
+        input_ext = (
+            input_files_dir / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
+        )
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
@@ -47,7 +52,10 @@ class TestExtModel:
         assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
 
     def test_construct_from_file_with_netcdf(self, input_files_dir: Path):
-        input_ext = input_files_dir / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
+        input_ext = (
+            input_files_dir
+            / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
+        )
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
@@ -58,7 +66,7 @@ class TestExtModel:
 
     @pytest.mark.e2e
     def test_read_ext_model_with_recurse_false(self, input_files_dir: Path):
-        """ Test reading an external forcing file with recurse=False.
+        """Test reading an external forcing file with recurse=False.
 
         - This is to ensure that the forcing files are not recursively read
         - The forcingfile (time) should be read as DiskOnlyFileModel instances.
@@ -68,12 +76,14 @@ class TestExtModel:
         - The `FileModel.validate` method runs after the `Meteo` model is initialized (the forcingfile attribute is
         already assigned to a certain class), then it overrides the forcingfile attribute with the `DiskOnlyFileModel`.
         """
-        input_ext = input_files_dir / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        input_ext = (
+            input_files_dir
+            / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
+        )
 
         ext_model = ExtModel(input_ext, recurse=False)
 
         assert isinstance(ext_model.meteo[0].forcingfile, DiskOnlyFileModel)
-
 
     def test_ext_model_correct_default_serializer_config(self):
         model = ExtModel()
