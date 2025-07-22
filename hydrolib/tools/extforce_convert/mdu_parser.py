@@ -786,7 +786,8 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         old_ext_force_line = self.find_keyword_lines("ExtForceFile")
-        self.content.pop(old_ext_force_line)
+        if old_ext_force_line is not None:
+            self.content.pop(old_ext_force_line)
 
     def get_temperature_salinity_data(self) -> Dict[str, Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
