@@ -75,7 +75,7 @@ class TestConvertInitialCondition:
 
         new_quantity_block = InitialConditionConverter().convert(forcing)
         assert isinstance(new_quantity_block, InitialField)
-        assert new_quantity_block.tracerfallvelocity == 0.1
+        assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
 
 
 class TestConvertParameters:
