@@ -497,12 +497,11 @@ class FileModel(BaseModel, ABC):
 
         with file_load_context() as context:
             if (
-                hasattr(context, "_load_settings")
-                and context._load_settings is not None
-                and not context._load_settings.recurse
-            ):
-                if hasattr(value, "filepath"):
-                    return DiskOnlyFileModel(value.filepath)
+                    hasattr(context, "_load_settings")
+                    and context._load_settings is not None
+                    and not context._load_settings.recurse
+            ) and hasattr(value, "filepath"):
+                return DiskOnlyFileModel(value.filepath)
 
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
