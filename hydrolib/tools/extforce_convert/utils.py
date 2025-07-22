@@ -22,7 +22,9 @@ from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     InterpolationMethod,
 )
-
+SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
+SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
+SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
@@ -259,14 +261,14 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     result = OrderedDict()
     strings = list(set(strings))
     # remove the `discharge_salinity_temperature_sorsin` quantity from the list
-    if "discharge_salinity_temperature_sorsin" in strings:
-        strings.remove("discharge_salinity_temperature_sorsin")
+    if SOURCESINK_NAME_IN_EXT in strings:
+        strings.remove(SOURCESINK_NAME_IN_EXT)
 
     if any("salinity" in string.lower() for string in strings):
-        result["sourcesink_salinitydelta"] = 3
+        result[SOURCESINK_SALINITY_IN_BC] = 3
     if any("temperature" in string.lower() for string in strings):
-        result["sourcesink_temperaturedelta"] = (
-            result.get("sourcesink_salinitydelta", 2) + 1
+        result[SOURCESINK_TEMP_IN_BC] = (
+            result.get(SOURCESINK_SALINITY_IN_BC, 2) + 1
         )  # Default temperature value is 2
 
     return result
