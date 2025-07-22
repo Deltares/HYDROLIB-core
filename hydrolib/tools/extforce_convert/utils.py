@@ -22,9 +22,11 @@ from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     InterpolationMethod,
 )
+
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
 SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
+
 
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
