@@ -353,7 +353,7 @@ class Line:
         if not (self.is_empty() or self.is_comment() or self.is_section_header()):
             if self.equal_sign_position is None:
                 raise ValueError(
-                    "Line must contain an equal sign '=' for key-value pairs."
+                    f"Invalid line content: '{self._content}'. Line must contain an equal sign '=' for key-value pairs."
                 )
 
     @property
