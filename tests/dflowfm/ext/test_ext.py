@@ -71,7 +71,7 @@ class TestExtModel:
         - This is to ensure that the forcing files are not recursively read
         - The forcingfile (time) should be read as DiskOnlyFileModel instances.
         - The `Meteo.choose_file_model` method return the correct file model type
-        - Only the `FileModel` (specifically the `FileModel.validate` method) know whither to read the child files
+        - Only the `FileModel` (specifically the `FileModel.validate` method) know whether to read the child files
         (`forcingfile`) with their own class or not read them at all (use `DiskOnlyFileModel`).
         - The `FileModel.validate` method runs after the `Meteo` model is initialized (the forcingfile attribute is
         already assigned to a certain class), then it overrides the forcingfile attribute with the `DiskOnlyFileModel`.
