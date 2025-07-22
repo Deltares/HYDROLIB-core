@@ -495,6 +495,14 @@ class FileModel(BaseModel, ABC):
             DiskOnlyFileModel,  # because of circular import
         )
 
+        with file_load_context() as context:
+            if (
+                hasattr(context, "_load_settings")
+                and context._load_settings is not None
+                and not context._load_settings.recurse
+            ) and hasattr(value, "filepath"):
+                return DiskOnlyFileModel(value.filepath)
+
         # Enable initialization with a Path.
         if isinstance(value, (Path, str)):
             # Check if we're in a file load context and if recurse is False
