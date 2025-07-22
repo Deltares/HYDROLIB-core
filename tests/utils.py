@@ -308,3 +308,7 @@ def ignore_version_lines(line: str, pattern=VERSION_LINE_PATTERN) -> bool:
 
 def is_macos():
     return os.name == "posix" and sys.platform == "darwin"
+
+
+def is_linux():
+    return os.name == "posix" and sys.platform.startswith("linux")

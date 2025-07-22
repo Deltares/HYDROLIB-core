@@ -17,7 +17,6 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_required_fields,
 )
 
-VALID_ATTRIBUTES_PREFIXES = "tracer"
 logger = logging.getLogger(__name__)
 
 
@@ -166,32 +165,8 @@ class AbstractSpatialField(INIBasedModel, ABC):
     averagingtype_validator = get_enum_validator("averagingtype", enum=AveragingType)
     locationtype_validator = get_enum_validator("locationtype", enum=LocationType)
 
-    @classmethod
-    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
-        fields = cls.__fields__
-        unknown_keywords = [
-            key
-            for key in input_data.keys()
-            if key not in fields and key.lower().startswith(VALID_ATTRIBUTES_PREFIXES)
-        ]
-        return set(unknown_keywords)
-
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
-
-        # Allow dynamic fields
-        extra = "allow"
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.lower().startswith(
-                VALID_ATTRIBUTES_PREFIXES
-            ):
-                setattr(self, key, value)
+    tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
 
     @root_validator(allow_reuse=True)
     def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:

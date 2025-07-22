@@ -16,11 +16,29 @@ from hydrolib.tools.extforce_convert.main_converter import (
 
 
 def valid_file(path_str):
-    """Check if the file exists and return its path."""
+    """Check if the file exists, has a .mdu extension, and return its path."""
     path = Path(path_str)
+    if not str(path).lower().endswith(".mdu"):
+        raise ArgumentTypeError(f"File must have a .mdu extension: {path}")
+
     if not path.exists():
         raise ArgumentTypeError(f"File not found: {path}")
     return path
+
+
+def _validator(path_str, extension):
+    """Validate that the file exists and has the given extension."""
+    path = Path(path_str)
+    if not path.exists():
+        raise ArgumentTypeError(f"File not found: {path}")
+    if not str(path).lower().endswith(extension):
+        raise ArgumentTypeError(f"File must have a {extension} extension: {path}")
+    return path
+
+
+def valid_file_with_extension(extension):
+    """Create a validator for files with a specific extension for argparse."""
+    return lambda path_str: _validator(path_str, extension)
 
 
 def _get_parser() -> argparse.ArgumentParser:
@@ -41,14 +59,14 @@ def _get_parser() -> argparse.ArgumentParser:
         "--mdufile",
         "-m",
         action="store",
-        type=valid_file,
+        type=valid_file_with_extension(".mdu"),
         help="Automatically take input and output filenames from MDUFILE",
     )
     group.add_argument(
         "--extoldfile",
         "-e",
         action="store",
-        type=valid_file,
+        type=valid_file_with_extension(".ext"),
         help="Input EXTOLDFILE to be converted.",
     )
     group.add_argument(
@@ -94,12 +112,28 @@ def _get_parser() -> argparse.ArgumentParser:
 
 
 def main(args=None):
-    """Entry point for extforce_convert tool.
+    """
+    Entry point for extforce_convert tool.
 
-    Args:
-        args : list
-            A of arguments as if they were input in the command line. Leave it
-            None to use sys.argv.
+    CLI argument combinations:
+
+    Required (mutually exclusive, pick one):
+      --mdufile MDUFILE         Use MDUFILE to determine input/output files automatically.
+      --extoldfile EXTOLDFILE   Convert a specific legacy external forcing file.
+      --dir DIR                 Recursively find and convert all .mdu files in DIR.
+
+    Optional:
+      --outfiles EXTFILE INIFIELDFILE STRUCTUREFILE
+                              Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
+      --backup / --no-backup   Create (default) or skip creating a backup of overwritten files (mutually exclusive).
+      --remove-legacy-files    Remove legacy/old files (e.g. .tim) after conversion.
+      --verbose, -v            Print diagnostic information.
+      --version                Print version and exit.
+
+    Example usages:
+      extforce_convert --mdufile model.mdu
+      extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
+      extforce_convert --dir ./models --no-backup --remove-legacy-files
     """
     parser = _get_parser()
     args = parser.parse_args(args)
@@ -129,9 +163,9 @@ def convert_with_mdu_file(args: Namespace):
     """
     converter = ExternalForcingConverter.from_mdu(
         args.mdufile,
-        ext_file=(args.outfiles[0] if args.outfiles else None),
-        inifield_file=(args.outfiles[1] if args.outfiles else None),
-        structure_file=(args.outfiles[2] if args.outfiles else None),
+        ext_file_user=(args.outfiles[0] if args.outfiles else None),
+        inifield_file_user=(args.outfiles[1] if args.outfiles else None),
+        structure_file_user=(args.outfiles[2] if args.outfiles else None),
     )
     convert(converter, args)
 

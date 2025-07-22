@@ -509,9 +509,15 @@ class SourceSinkConverter(BaseConverter):
             # the kwargs will be provided only from the source and sink converter
             # Ensure 'temperature' comes before 'salinity'
             keys = list(final_temp_salinity.keys())
-            if "temperaturedelta" in keys and "salinitydelta" in keys:
-                keys.remove("salinitydelta")
-                keys.insert(keys.index("temperaturedelta"), "salinitydelta")
+            if (
+                "sourcesink_temperaturedelta" in keys
+                and "sourcesink_salinitydelta" in keys
+            ):
+                keys.remove("sourcesink_salinitydelta")
+                keys.insert(
+                    keys.index("sourcesink_temperaturedelta"),
+                    "sourcesink_salinitydelta",
+                )
         else:
             keys = list(temp_salinity_from_ext.keys())
 
@@ -527,9 +533,9 @@ class SourceSinkConverter(BaseConverter):
 
         The order of the quantities in the tim file should be as follows:
         - time
-        - discharge
-        - salinitydelta (optional)
-        - temperaturedelta (optional)
+        - sourcesink_discharge
+        - sourcesink_salinitydelta (optional)
+        - sourcesink_temperatureDelta (optional)
         - tracer<anyname>delta (optional)
         - any other quantities from the external forcings file.
 
@@ -576,39 +582,43 @@ class SourceSinkConverter(BaseConverter):
         columns in the TIM file, if they don't match a `Value Error` will be raised.
         - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
         tim file contains 4 columns (excluding the time column).
-
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> converter = SourceSinkConverter()
             >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
             >>> print(tim_model.quantities_names)
-            ['discharge', 'salinitydelta', 'temperaturedelta', 'initialtracerAnyname']
+            ['sourcesink_discharge', 'sourcesink_salinitydelta', 'sourcesink_temperaturedelta', 'initialtracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
-                "salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
-                "temperaturedelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "sourcesink_salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "sourcesink_temperatureDelta": [3.0, 3.0, 3.0, 3.0, 3.0],
                 "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
+            ```
 
         mdu file:
-        ```
-        [physics]
-        ...
-        Salinity             = 1        # Include salinity, (0=no, 1=yes)
-        ...
-        Temperature          = 1        # Include temperature, (0=no, 1=only transport, 3=excess model of D3D,5=heat flux model (5) of D3D)
-        ```
-        external forcings file:
-        ```
-        QUANTITY=initialtemperature
-        FILENAME=right.pol
-        ...
+            ```ini
+            [physics]
+            ...
+            Salinity             = 1        # Include salinity, (0=no, 1=yes)
+            ...
+            Temperature          = 1        # Include temperature, (0=no, 1=only transport, 3=excess model of D3D,5=heat flux model (5) of D3D)
+            ```
 
-        QUANTITY=initialsalinity
-        FILENAME=right.pol
-        ...
-        ```
+        external forcings file:
+            ```
+            QUANTITY=initialtemperature
+            FILENAME=right.pol
+            ...
+
+            QUANTITY=initialsalinity
+            FILENAME=right.pol
+            ...
+            ```
         """
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
@@ -629,7 +639,9 @@ class SourceSinkConverter(BaseConverter):
             mdu_quantities, temp_salinity_from_ext
         )
         final_quantities_list = (
-            ["discharge"] + final_temp_salinity + required_quantities_from_ext
+            ["sourcesink_discharge"]
+            + final_temp_salinity
+            + required_quantities_from_ext
         )
 
         if len(time_series) != len(final_quantities_list):
@@ -689,7 +701,8 @@ class SourceSinkConverter(BaseConverter):
             model.forcing = [forcing]
             forcing_model_list.append(model)
             name = forcing.quantityunitpair[1].quantity
-            forcings[name] = model
+            # remove the prefix 'sourcesink_' from the name as the extforce file will not have this prefix.
+            forcings[name.removeprefix("sourcesink_")] = model
 
         return forcings
 
