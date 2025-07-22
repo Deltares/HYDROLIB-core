@@ -24,9 +24,7 @@ class TestExtModel:
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath(
-            "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
-        )
+        input_ext = input_files_dir / "e02/f006_external_forcing/c063_rain_tim/rainschematic.ext"
 
         ext_model = ExtModel(input_ext)
 
@@ -39,9 +37,7 @@ class TestExtModel:
         assert len(ext_model.meteo[0].forcingfile.timeseries) == 14
 
     def test_construct_from_file_with_bc(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath(
-            "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
-        )
+        input_ext = input_files_dir / "e02/f006_external_forcing/c069_rain_bc/rainschematic.ext"
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
@@ -51,9 +47,7 @@ class TestExtModel:
         assert ext_model.meteo[0].forcingfiletype == MeteoForcingFileType.bcascii
 
     def test_construct_from_file_with_netcdf(self, input_files_dir: Path):
-        input_ext = input_files_dir.joinpath(
-            "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
-        )
+        input_ext = input_files_dir / "e02/f006_external_forcing/c067_rain_netcdf_stations/rainschematic.ext"
         ext_model = ExtModel(input_ext)
 
         assert isinstance(ext_model, ExtModel)
