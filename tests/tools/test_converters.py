@@ -67,7 +67,7 @@ class TestConvertInitialCondition:
             filetype=4,
             method="4",
             operand="O",
-            tracerFallVelocity=0.1,
+            TRACERFALLVELOCITY=0.1,
         )
 
         new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
