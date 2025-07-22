@@ -943,7 +943,7 @@ class TestGetKeyValue:
     def test_get_key_value_no_equal_sign(self):
         """Test get_key_value raises ValueError if no equal sign is present."""
         with pytest.raises(ValueError):
-            line = Line("Param value")
+            Line("Param value")
 
     @pytest.mark.unit
     def test_get_key_value_comment_or_section(self):

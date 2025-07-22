@@ -471,7 +471,7 @@ class Line:
             - If the line does not contain an equal sign, it will raise a ValueError.
             - The function preserves the leading spaces and aligns the key to the specified equal sign position.
         """
-        key, value = self.get_key_value()
+        key, _ = self.get_key_value()
 
         if equal_sign_position is None:
             equal_sign_position = self.equal_sign_position
@@ -724,7 +724,6 @@ class MDUParser:
             line_number = section.last_key_value_line_index + 1
         else:
             # if the field already exists, we update it
-
             # find the line number of the existing field
             existing_field_line_num = self.find_keyword_lines(field_name)
             line = Line(self.content[existing_field_line_num])
