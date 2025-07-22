@@ -346,10 +346,10 @@ class ExternalForcingConverter:
             recursive (bool, optional): Defaults to True.
                 Save the models recursively.
         """
-        if (
-            len(self.inifield_model.parameter) > 0
-            or len(self.inifield_model.initial) > 0
-        ):
+        num_quantities_inifield = len(self.inifield_model.parameter) + len(
+            self.inifield_model.initial
+        )
+        if num_quantities_inifield > 0:
             self._save_inifield_model(backup, recursive)
 
         if len(self.structure_model.structure) > 0:
@@ -372,12 +372,12 @@ class ExternalForcingConverter:
     def _save_inifield_model(self, backup: bool, recursive: bool):
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive)
+        self.inifield_model.save(recurse=recursive,  exclude_unset=True)
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
-        self.structure_model.save(recurse=recursive)
+        self.structure_model.save(recurse=recursive, exclude_unset=True)
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
