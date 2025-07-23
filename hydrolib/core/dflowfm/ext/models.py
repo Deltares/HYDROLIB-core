@@ -278,7 +278,7 @@ class SourceSink(INIBasedModel):
     zsink: Optional[Union[float, List[float]]] = Field(None, alias="zSink")
     area: Optional[float] = Field(None, alias="Area")
 
-    sourcesink_discharge: ForcingData = Field(alias="sourcesink_discharge")
+    discharge: ForcingData = Field(alias="discharge")
     salinitydelta: Optional[ForcingData] = Field(None, alias="salinityDelta")
     temperaturedelta: Optional[ForcingData] = Field(None, alias="temperatureDelta")
 
