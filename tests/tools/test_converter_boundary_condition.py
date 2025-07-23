@@ -82,9 +82,17 @@ def verify_boundary_conditions(
     assert forcing_model.filepath.name == "tfl_01.bc"
 
 
+@pytest.mark.e2e
 def test_merge_tim_files(converter: BoundaryConditionConverter, tim_files: List[Path]):
     """
-    Test merging multiple tim files into a single tim model.
+    Tests that merging multiple tim files using the converter results in a single TimModel
+    with the correct quantity names, index, and values.
+
+    Args:
+        converter (BoundaryConditionConverter):
+            The converter instance.
+        tim_files (List[Path]):
+            List of tim file paths to merge.
     """
     tim_model = converter.merge_tim_files(tim_files, "waterlevelbnd")
     assert tim_model.quantities_names == ["tfl_01_0001", "tfl_01_0002"]
@@ -145,6 +153,24 @@ class TestBoundaryConverter:
         forcing: ExtOldForcing,
         start_date: str,
     ):
+        """
+        Tests the conversion of boundary conditions for all combinations of tim, t3d, and cmp files.
+        Verifies that the resulting boundary block and its forcing model have the expected structure and data.
+
+        Args:
+            request:
+                Pytest request fixture for dynamic fixture access.
+            files (List[str]):
+                List of fixture names for file types.
+            contents:
+                Expected datablock contents for each forcing.
+            converter (BoundaryConditionConverter):
+                The converter instance.
+            forcing (ExtOldForcing):
+                The old forcing block.
+            start_date (str):
+                The reference start date.
+        """
         resolved_files = [
             (
                 request.getfixturevalue(fixture_name)
@@ -174,7 +200,15 @@ class TestBoundaryConverter:
         start_date: str,
     ):
         """
-        Test converting a boundary condition with a tim file.
+        Tests conversion of a boundary condition when only tim files are present.
+        Verifies correct legacy file tracking, quantityunitpair, and datablock content.
+
+        Args:
+            converter (BoundaryConditionConverter): The converter instance.
+            input_files_dir (Path): Directory containing input files.
+            forcing (ExtOldForcing): The old forcing block.
+            tim_files (List[Path]): List of tim file paths.
+            start_date (str): The reference start date.
         """
         t3d_files = []
         cmp_files = []
@@ -203,7 +237,18 @@ class TestBoundaryConverter:
         start_date: str,
     ):
         """
-        Test converting a boundary condition with a tim file.
+        Tests conversion of a boundary condition when only cmp files are present.
+        Verifies correct legacy file tracking, quantityunitpair, and datablock content for cmp.
+
+        Args:
+            converter (BoundaryConditionConverter):
+                The converter instance.
+            forcing (ExtOldForcing):
+                The old forcing block.
+            cmp_files (List[Path]):
+                List of cmp file paths.
+            start_date (str):
+                The reference start date.
         """
         t3d_files = []
         tim_files = []
@@ -240,7 +285,20 @@ class TestBoundaryConverter:
         start_date: str,
     ):
         """
-        Test convert a boundary condition with a t3d file.
+        Tests conversion of a boundary condition when only t3d files are present.
+        Verifies correct legacy file tracking, quantityunitpair, and datablock content for t3d.
+
+        Args:
+            converter (BoundaryConditionConverter):
+                The converter instance.
+            input_files_dir (Path):
+                Directory containing input files.
+            forcing (ExtOldForcing):
+                The old forcing block.
+            t3d_files (List[Path]):
+                List of t3d file paths.
+            start_date (str):
+                The reference start date.
         """
         tim_files = []
         cmp_files = []
@@ -289,8 +347,14 @@ class TestMainConverter:
         self, old_forcing_file_boundary: Dict[str, str], start_date: str
     ):
         """
-        The old external forcing file contains only 9 boundary condition quantities all with polyline location files
-        and no forcing files. The update method should convert all the quantities to boundary conditions.
+        Tests the update method of ExternalForcingConverter for a file containing only boundary conditions.
+        Verifies that all quantities are converted to boundary conditions and saved correctly.
+
+        Args:
+            old_forcing_file_boundary (Dict[str, str]):
+                Dictionary with test file paths and expected data.
+            start_date (str):
+                The reference start date.
         """
         mock_mdu_parser = MagicMock(spec=MDUParser)
         mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}

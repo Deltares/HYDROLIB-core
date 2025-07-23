@@ -339,4 +339,4 @@ class TestExcludeFromValidation:
         }
 
         model = InitialField(**data)
-        assert model.tracerdecaytime == "8640000"
+        assert model.tracerdecaytime == 8640000

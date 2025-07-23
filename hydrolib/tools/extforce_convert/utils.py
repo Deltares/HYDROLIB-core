@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
 from pydantic import ConfigDict
-from pydantic.v1 import Extra
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
@@ -13,12 +12,20 @@ from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldFileType,
+    ExtOldForcing,
+    ExtOldQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
     DataFileType,
     InterpolationMethod,
 )
+
+SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
+SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
+SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 
 def construct_filemodel_new_or_existing(
@@ -185,8 +192,13 @@ def create_initial_cond_and_parameter_input_dict(
         Dict[str, str]:
             the input dictionary to the `InitialField` or `ParameterField` constructor
     """
+    quantity_name = (
+        forcing.quantity
+        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
+        else "bedrockSurfaceElevation"
+    )
     block_data = {
-        "quantity": forcing.quantity,
+        "quantity": quantity_name,
         "datafile": DiskOnlyFileModel(forcing.filename.filepath),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
@@ -207,7 +219,7 @@ def create_initial_cond_and_parameter_input_dict(
             "yes" if forcing.extrapolation == 1 else "no"
         )
     for key, value in forcing.model_dump().items():
-        if key.lower().startswith("tracer"):
+        if key.lower().startswith("tracer") and value is not None:
             block_data[key] = value
     return block_data
 
@@ -219,26 +231,28 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     and returns a dictionary with associated values.
 
     Args:
-        strings (List[str]): A list of strings to search.
+        strings (List[str]):
+            A list of strings to search.
 
     Returns:
-        Dict[str, int]: A dictionary with keys as "salinity" or "temperature"
-                        and values 3 and 4 respectively.
+        Dict[str, int]:
+            A dictionary with keys as "salinity" or "temperature" and values 3 and 4 respectively.
 
      Examples:
-         ```python
+        ```python
+        >>> from hydrolib.tools.extforce_convert.utils import find_temperature_salinity_in_quantities
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({'salinitydelta': 3, 'temperaturedelta': 4})
+        OrderedDict({'sourcesink_salinitydelta': 3, 'sourcesink_temperaturedelta': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({'temperaturedelta': 3})
+        OrderedDict({'sourcesink_temperaturedelta': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({'salinitydelta': 3})
+        OrderedDict({'sourcesink_salinitydelta': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
-        OrderedDict({'salinitydelta': 3})
+        OrderedDict({'sourcesink_salinitydelta': 3})
 
         ```
 
@@ -249,14 +263,14 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
     result = OrderedDict()
     strings = list(set(strings))
     # remove the `discharge_salinity_temperature_sorsin` quantity from the list
-    if "discharge_salinity_temperature_sorsin" in strings:
-        strings.remove("discharge_salinity_temperature_sorsin")
+    if SOURCESINK_NAME_IN_EXT in strings:
+        strings.remove(SOURCESINK_NAME_IN_EXT)
 
     if any("salinity" in string.lower() for string in strings):
-        result["salinitydelta"] = 3
+        result[SOURCESINK_SALINITY_IN_BC] = 3
     if any("temperature" in string.lower() for string in strings):
-        result["temperaturedelta"] = (
-            result.get("salinitydelta", 2) + 1
+        result[SOURCESINK_TEMP_IN_BC] = (
+            result.get(SOURCESINK_SALINITY_IN_BC, 2) + 1
         )  # Default temperature value is 2
 
     return result

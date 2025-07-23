@@ -24,7 +24,6 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_required_fields,
 )
 
-VALID_ATTRIBUTES_PREFIXES = "tracer"
 logger = logging.getLogger(__name__)
 
 
@@ -195,24 +194,8 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
         return values
 
-    @classmethod
-    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
-        fields = cls.model_fields
-        unknown_keywords = [
-            key
-            for key in input_data.keys()
-            if key not in fields and key.lower().startswith(VALID_ATTRIBUTES_PREFIXES)
-        ]
-        return set(unknown_keywords)
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.lower().startswith(
-                VALID_ATTRIBUTES_PREFIXES
-            ):
-                setattr(self, key, value)
+    tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
 
     @model_validator(mode="before")
     @classmethod

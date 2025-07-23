@@ -173,9 +173,19 @@ class PathToDictionaryConverter:
                 The converted value, which is a dictionary if the value is a file model type.
         """
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
+        from hydrolib.core.base.file_manager import file_load_context
+        from hydrolib.core.base.models import DiskOnlyFileModel
 
         fields = cls.model_fields
         key = info.field_name
+        with file_load_context() as context:
+            if (
+                    hasattr(context, "_load_settings")
+                    and context._load_settings is not None
+                    and not context._load_settings.recurse
+            ) and hasattr(value, "filepath"):
+                return DiskOnlyFileModel(value.filepath)
+
         if isinstance(value, (str, Path, list)) and fields.get(key) is not None:
             if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
                 value = PathToDictionaryConverter.make_dict(value)

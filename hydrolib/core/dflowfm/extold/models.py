@@ -19,8 +19,6 @@ from hydrolib.core.dflowfm.ini.util import enum_value_parser
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-VALID_ATTRIBUTES_PREFIXES = "tracer"
-
 INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "initialsedfrac",
@@ -692,22 +690,8 @@ class ExtOldForcing(BaseModel):
     area: Optional[float] = Field(None, alias="AREA")
     nummin: Optional[int] = Field(None, alias="NUMMIN")
 
-    class Config:
-        """
-        Config class to tell Pydantic to accept fields not explicitly declared in the model.
-        """
-
-        # Allow dynamic fields
-        extra = "allow"
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.lower().startswith(
-                VALID_ATTRIBUTES_PREFIXES
-            ):
-                setattr(self, key, value)
+    tracerfallvelocity: Optional[float] = Field(None, alias="TRACERFALLVELOCITY")
+    tracerdecaytime: Optional[float] = Field(None, alias="TRACERDECAYTIME")
 
     def is_intermediate_link(self) -> bool:
         return True
