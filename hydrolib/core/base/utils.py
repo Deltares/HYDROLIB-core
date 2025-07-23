@@ -178,13 +178,13 @@ class PathToDictionaryConverter:
 
         fields = cls.model_fields
         key = info.field_name
-        with file_load_context() as context:
-            if (
-                    hasattr(context, "_load_settings")
-                    and context._load_settings is not None
-                    and not context._load_settings.recurse
-            ) and hasattr(value, "filepath"):
-                return DiskOnlyFileModel(value.filepath)
+        # with file_load_context() as context:
+        #     if (
+        #             hasattr(context, "_load_settings")
+        #             and context._load_settings is not None
+        #             and not context._load_settings.recurse
+        #     ) and hasattr(value, "filepath"):
+        #         return DiskOnlyFileModel(value.filepath)
 
         if isinstance(value, (str, Path, list)) and fields.get(key) is not None:
             if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
