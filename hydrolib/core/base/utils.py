@@ -157,6 +157,24 @@ def operator_str(operator_func: Callable) -> str:
 def resolve_file_model(
     value: Union[str, Path], model: Callable[[Union[str, Path]], Any]
 ):
+    """Resolve file model.
+
+     Resolves a file model based on the provided value and context.
+     This function determines whether to use a `DiskOnlyFileModel` or the
+     provided `model` class to resolve the given file path or string, depending
+     on the current file load context settings.
+
+     Args:
+         value (Union[str, Path]):
+            The file path or string to be resolved.
+         model:
+            The model class to use for resolving the file if the context settings allow recursion.
+     Returns:
+         An instance of `DiskOnlyFileModel` or the provided `model` class, depending on the file load context settings.
+
+    Notes:
+        - The function choose the `DiskOnlyFileModel` when the context's load settings do not allow recursion.
+    """
     from hydrolib.core.base.file_manager import file_load_context
     from hydrolib.core.base.models import DiskOnlyFileModel
 
