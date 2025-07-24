@@ -516,9 +516,8 @@ class Meteo(INIBasedModel):
             )
             file_type = values.get(file_type_var_name)
             file_type = str(file_type).lower() if file_type is not None else None
-            forcing_file = values.get(filename_var_name)
-            if isinstance(forcing_file, (Path, str)):
-                raw_path = values.get(filename_var_name)
+            raw_path = values.get(filename_var_name)
+            if isinstance(raw_path, (Path, str)):
                 model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
                 values[filename_var_name] = resolve_file_model(raw_path, model)
 
