@@ -12,6 +12,7 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
+from hydrolib.core.base.utils import resolve_file_model
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -897,12 +898,10 @@ class ExtOldForcing(BaseModel):
             filename_var_name = "filename" if "filename" in values else "FILENAME"
             file_type = values.get(file_type_var_name)
             raw_path = values.get(filename_var_name)
-            model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
 
-            if not isinstance(raw_path, model):
-                raw_path = model(raw_path)
-
-            values[filename_var_name] = raw_path
+            if isinstance(raw_path, (Path, str)):
+                model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
+                values[filename_var_name] = resolve_file_model(raw_path, model)
 
         return values
 

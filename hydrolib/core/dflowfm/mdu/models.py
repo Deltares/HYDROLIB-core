@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BeforeValidator, Field, ValidationInfo, field_validator
-from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (

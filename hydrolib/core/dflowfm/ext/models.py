@@ -15,7 +15,7 @@ from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
 )
-from hydrolib.core.base.utils import str_is_empty_or_none
+from hydrolib.core.base.utils import resolve_file_model, str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import (
     ForcingBase,
     ForcingData,
@@ -211,9 +211,9 @@ class Lateral(INIBasedModel):
                 try:
                     result = RealTime(v.lower())
                 except ValueError:
-                    result = ForcingModel(filepath=v)
+                    result = resolve_file_model(v, ForcingModel)
         elif isinstance(v, Path):
-            result = ForcingModel(filepath=str(v))
+            result = resolve_file_model(v, ForcingModel)
         elif isinstance(v, dict):
             # Try to instantiate ForcingModel from dict
             result = ForcingModel(**v)
@@ -516,12 +516,10 @@ class Meteo(INIBasedModel):
             )
             file_type = values.get(file_type_var_name)
             file_type = str(file_type).lower() if file_type is not None else None
-            forcing_file = values.get(filename_var_name)
-            if isinstance(forcing_file, (Path, str)):
-                raw_path = values.get(filename_var_name)
+            raw_path = values.get(filename_var_name)
+            if isinstance(raw_path, (Path, str)):
                 model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-
-                values[filename_var_name] = model(raw_path)
+                values[filename_var_name] = resolve_file_model(raw_path, model)
 
         return values
 

@@ -1,9 +1,10 @@
+import os
 import types
 from copy import deepcopy
 from pathlib import Path
 from typing import Tuple
 from unittest.mock import MagicMock, patch
-import os
+
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (

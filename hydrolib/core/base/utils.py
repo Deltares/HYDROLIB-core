@@ -154,6 +154,42 @@ def operator_str(operator_func: Callable) -> str:
         return str(operator_func)
 
 
+def resolve_file_model(
+    value: Union[str, Path], model: Callable[[Union[str, Path]], Any]
+):
+    """Resolve file model.
+
+     Resolves a file model based on the provided value and context.
+     This function determines whether to use a `DiskOnlyFileModel` or the
+     provided `model` class to resolve the given file path or string, depending
+     on the current file load context settings.
+
+     Args:
+         value (Union[str, Path]):
+            The file path or string to be resolved.
+         model:
+            The model class to use for resolving the file if the context settings allow recursion.
+     Returns:
+         An instance of `DiskOnlyFileModel` or the provided `model` class, depending on the file load context settings.
+
+    Notes:
+        - The function choose the `DiskOnlyFileModel` when the context's load settings do not allow recursion.
+    """
+    from hydrolib.core.base.file_manager import file_load_context
+    from hydrolib.core.base.models import DiskOnlyFileModel
+
+    with file_load_context() as context:
+        if (
+            hasattr(context, "_load_settings")
+            and context._load_settings is not None
+            and not context._load_settings.recurse
+        ):
+            result = DiskOnlyFileModel(value)
+        else:
+            result = model(value)
+    return result
+
+
 class PathToDictionaryConverter:
 
     @staticmethod
@@ -173,18 +209,9 @@ class PathToDictionaryConverter:
                 The converted value, which is a dictionary if the value is a file model type.
         """
         from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
-        from hydrolib.core.base.file_manager import file_load_context
-        from hydrolib.core.base.models import DiskOnlyFileModel
 
         fields = cls.model_fields
         key = info.field_name
-        # with file_load_context() as context:
-        #     if (
-        #             hasattr(context, "_load_settings")
-        #             and context._load_settings is not None
-        #             and not context._load_settings.recurse
-        #     ) and hasattr(value, "filepath"):
-        #         return DiskOnlyFileModel(value.filepath)
 
         if isinstance(value, (str, Path, list)) and fields.get(key) is not None:
             if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):

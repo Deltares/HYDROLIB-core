@@ -18,7 +18,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
 )
-from hydrolib.core.dflowfm.structure.models import StructureModel, Weir, FlowDirection
+from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
