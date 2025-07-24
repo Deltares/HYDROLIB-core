@@ -154,7 +154,7 @@ def operator_str(operator_func: Callable) -> str:
         return str(operator_func)
 
 
-def resolve_file_model(value: Union[str, Path], model):
+def resolve_file_model(value: Union[str, Path], model: Callable[[Union[str, Path]], Any]):
     from hydrolib.core.base.file_manager import file_load_context
     from hydrolib.core.base.models import DiskOnlyFileModel
 
