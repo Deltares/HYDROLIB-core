@@ -372,7 +372,9 @@ class BoundaryConditionConverter(BaseConverter):
         return new_block
 
     @staticmethod
-    def _convert_t3d_files(t3d_files: List[Path], quantity: str, label: str) -> List[T3D]:
+    def _convert_t3d_files(
+        t3d_files: List[Path], quantity: str, label: str
+    ) -> List[T3D]:
         """Convert T3D files to T3D forcing objects.
 
         Args:
@@ -399,7 +401,9 @@ class BoundaryConditionConverter(BaseConverter):
         return t3d_forcing_list
 
     @staticmethod
-    def _convert_cmp_files(cmp_files: List[Path], quantity: str, label: str) -> List[ForcingBase]:
+    def _convert_cmp_files(
+        cmp_files: List[Path], quantity: str, label: str
+    ) -> List[ForcingBase]:
         """Convert CMP files to ForcingModel.
 
         Args:
