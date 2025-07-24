@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.ext.models import Boundary
 
 
 def test_existing_file():
+    """Test creation of Boundary with an existing file and default values."""
     polyline = "tests/data/input/boundary-conditions/tfl_01.pli"
     data = {
         "quantity": "waterlevelbnd",
@@ -22,7 +23,7 @@ def test_existing_file():
     boundary_block = Boundary(**data)
     assert boundary_block.locationfile == DiskOnlyFileModel(Path(polyline))
     assert boundary_block.quantity == "waterlevelbnd"
-    assert boundary_block.forcingfile == ForcingModel()
+    assert boundary_block.forcingfile == [data["forcingfile"]]
     assert boundary_block.bndwidth1d is None
     assert boundary_block.bndbldepth is None
 
@@ -41,14 +42,16 @@ def test_given_args_expected_values():
     created_boundary = Boundary(**dict_values)
 
     # 3. Verify boundary values as expected.
-    created_boundary_dict = created_boundary.dict()
+    created_boundary_dict = created_boundary.model_dump()
 
     compare_data = dict(dict_values)
     expected_location_path = compare_data.pop("locationfile")
+    compare_data.pop("forcingfile")
 
     for key, value in compare_data.items():
         assert created_boundary_dict[key] == value
 
+    assert created_boundary.forcingfile == [dict_values["forcingfile"]]
     assert created_boundary_dict["locationfile"]["filepath"] == expected_location_path
 
 
@@ -64,12 +67,12 @@ def test_given_args_as_alias_expected_values():
     }
 
     created_boundary = Boundary(**dict_values)
-    boundary_as_dict = created_boundary.dict()
+    boundary_as_dict = created_boundary.model_dump()
     # 3. Verify boundary values as expected.
     assert boundary_as_dict["quantity"] == dict_values["quantity"]
     assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
     assert boundary_as_dict["locationfile"]["filepath"] == dict_values["locationfile"]
-    assert boundary_as_dict["forcingfile"] == dict_values["forcingFile"]
+    assert created_boundary.forcingfile == [dict_values["forcingFile"]]
     assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
     assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
 
@@ -131,7 +134,7 @@ class TestValidateFromCtor:
         ],
     )
     def test_given_no_values_raises_valueerror(self, dict_values: dict):
-        required_values = dict(quantity="aQuantity")
+        required_values = dict(quantity="aQuantity", forcingfile=[ForcingModel()])
         test_values = {**dict_values, **required_values}
         with pytest.raises(ValueError) as exc_mssg:
             Boundary(**test_values)
@@ -157,17 +160,17 @@ class TestValidateFromCtor:
         ],
     )
     def test_given_dict_values_doesnot_raise(self, dict_values: dict):
-        required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
+        required_values = dict(quantity="aQuantity", forcingfile=[ForcingModel()])
         test_values = {**dict_values, **required_values}
         created_boundary = Boundary(**test_values)
 
         expected_locationfile = test_values.pop("locationfile", None)
+        test_values.pop("forcingfile", None)
 
         for key, value in test_values.items():
-            if key == "forcing_file":
-                value = value.dict()
-            assert created_boundary.dict()[key] == value
+            assert created_boundary.model_dump()[key] == value
 
         assert (
-            created_boundary.dict()["locationfile"]["filepath"] == expected_locationfile
+            created_boundary.model_dump()["locationfile"]["filepath"]
+            == expected_locationfile
         )

@@ -1,19 +1,26 @@
 import logging
-from typing import List, Literal, Optional
+from pathlib import Path
+from typing import Annotated, List, Literal, Optional
 
-from pydantic.v1 import Field, NonNegativeInt, PositiveInt
-from pydantic.v1.class_validators import validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
+from pydantic.types import NonNegativeInt, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
-    validator_set_default_disk_only_file_model_when_none,
+    set_default_disk_only_file_model,
 )
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,28 +30,31 @@ class FrictionType(StrEnum):
     """
     Enum class containing the valid values for the frictionType
     attribute in several subclasses of Structure/CrossSection/friction.models.
+
+    Args:
+        chezy: str
+            Chézy C [m 1/2 /s]
+        manning: str
+            Manning n [s/m 1/3 ]
+        walllawnikuradse: str
+            Nikuradse k_n [m]
+        whitecolebrook: str
+            Nikuradse k_n [m]
+        stricklernikuradse: str
+            Nikuradse k_n [m]
+        strickler: str
+            Strickler k_s [m 1/3 /s]
+        debosbijkerk: str
+            De Bos-Bijkerk γ [1/s]
     """
 
     chezy = "Chezy"
-    """str: Chézy C [m 1/2 /s]"""
-
     manning = "Manning"
-    """str: Manning n [s/m 1/3 ]"""
-
     walllawnikuradse = "wallLawNikuradse"
-    """str: Nikuradse k_n [m]"""
-
     whitecolebrook = "WhiteColebrook"
-    """str: Nikuradse k_n [m]"""
-
     stricklernikuradse = "StricklerNikuradse"
-    """str: Nikuradse k_n [m]"""
-
     strickler = "Strickler"
-    """str: Strickler k_s [m 1/3 /s]"""
-
     debosbijkerk = "deBosBijkerk"
-    """str: De Bos-Bijkerk γ [1/s]"""
 
 
 class FrictGeneral(INIGeneral):
@@ -68,13 +78,19 @@ class FrictGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["roughness"] = Field("roughness", alias="fileType")
-    frictionvaluesfile: DiskOnlyFileModel = Field(
+    frictionvaluesfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="frictionValuesFile"
     )
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
+    @field_validator("frictionvaluesfile", mode="before")
+    @classmethod
+    def _validate_frictionvaluesfile(cls, v: Optional[DiskOnlyFileModel]):
+        """Validate the frictionValuesFile field to ensure it is a DiskOnlyFileModel."""
+        if isinstance(v, (str, Path)):
+            return DiskOnlyFileModel(v)
+        return v
 
 
 class FrictGlobal(INIBasedModel):
@@ -103,7 +119,10 @@ class FrictGlobal(INIBasedModel):
     frictiontype: FrictionType = Field(alias="frictionType")
     frictionvalue: float = Field(alias="frictionValue")
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _validate_frictiontype(cls, v: str) -> FrictionType:
+        return enum_value_parser(v, FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("frictionid")
@@ -160,66 +179,88 @@ class FrictBranch(INIBasedModel):
     branchid: str = Field(alias="branchId")
     frictiontype: FrictionType = Field(alias="frictionType")
     functiontype: Optional[str] = Field("constant", alias="functionType")
-    timeseriesid: Optional[str] = Field(alias="timeSeriesId")
-    numlevels: Optional[PositiveInt] = Field(alias="numLevels")
-    levels: Optional[List[float]]
+    timeseriesid: Optional[str] = Field(None, alias="timeSeriesId")
+    numlevels: Optional[PositiveInt] = Field(None, alias="numLevels")
+    levels: Optional[List[float]] = Field(None)
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
-    chainage: Optional[List[float]]
-    frictionvalues: Optional[List[float]] = Field(
-        alias="frictionValues"
-    )  # TODO: turn this into List[List[float]], see issue #143.
+    chainage: Optional[List[float]] = Field(None)
+    frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "levels",
-        "chainage",
-        "frictionvalues",
-    )
+    @field_validator("levels", "chainage", "frictionvalues", mode="before")
+    @classmethod
+    def split_field_values(cls, v, info: ValidationInfo) -> Optional[List[float]]:
+        return split_string_on_delimiter(cls, v, info)
 
-    _frictiontype_validator = get_enum_validator("frictiontype", enum=FrictionType)
+    @field_validator("frictiontype", mode="before")
+    @classmethod
+    def _validate_frictiontype(cls, v: str) -> FrictionType:
+        return enum_value_parser(v, FrictionType)
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")
 
-    @validator("levels", always=True)
+    @field_validator("levels", mode="after")
     @classmethod
-    def _validate_levels(cls, v, values):
-        if v is not None and (
-            values["numlevels"] is None or len(v) != values["numlevels"]
-        ):
+    def _validate_levels(cls, v: Optional[List[float]], info: ValidationInfo):
+        numlevels = info.data.get("numlevels")
+        branchid = info.data.get("branchid", "")
+        if v is not None and (numlevels is None or len(v) != numlevels):
             raise ValueError(
-                f"Number of values for levels should be equal to the numLevels value (branchId={values.get('branchid', '')})."
+                f"Number of values for levels should be equal to the numLevels value (branchId={branchid})."
             )
 
         return v
 
-    @validator("chainage", always=True)
+    @field_validator("chainage", mode="after")
     @classmethod
-    def _validate_chainage(cls, v, values):
-        if v is not None and len(v) != values["numlocations"]:
+    def _validate_chainage(cls, v: Optional[List[float]], info: ValidationInfo):
+        numlocations = info.data.get("numlocations")
+        branchid = info.data.get("branchid", "")
+        if v is not None and len(v) != numlocations:
             raise ValueError(
-                f"Number of values for chainage should be equal to the numLocations value (branchId={values.get('branchid', '')})."
+                f"Number of values for chainage should be equal to the numLocations value (branchId={branchid})."
             )
 
         return v
 
-    @validator("frictionvalues", always=True)
+    @field_validator("frictionvalues", mode="after")
     @classmethod
-    def _validate_frictionvalues(cls, v, values):
+    def _validate_frictionvalues(cls, v: Optional[List[float]], info: ValidationInfo):
+        numlevels = info.data.get("numlevels") or 1
+        numlocations = info.data.get("numlocations") or 0
+        branchid = info.data.get("branchid", "")
         # number of values should be equal to numlocations*numlevels
-        numlevels = (
-            1
-            if (
-                "numlevels" not in values
-                or values["numlevels"] is None
-                or values["numlevels"] == 0
-            )
-            else values["numlevels"]
-        )
-        numvals = max(1, values["numlocations"]) * numlevels
+        numvals = max(1, numlocations) * numlevels
+
         if v is not None and len(v) != numvals:
             raise ValueError(
-                f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={values.get('branchid', '')})."
+                f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={branchid})."
             )
+
+        return v
+
+    @model_validator(mode="after")
+    @classmethod
+    def validate_all(cls, values):
+        v = values
+        if v.levels is not None:
+            if v.numlevels is None or len(v.levels) != v.numlevels:
+                raise ValueError(
+                    f"Number of values for levels should be equal to the numLevels value (branchId={v.branchid})."
+                )
+
+        if v.chainage is not None and len(v.chainage) != v.numlocations:
+            raise ValueError(
+                f"Number of values for chainage should be equal to the numLocations value (branchId={v.branchid})."
+            )
+
+        if v.frictionvalues is not None:
+            numlevels = 1 if not v.numlevels else v.numlevels
+            numvals = max(1, v.numlocations) * numlevels
+            if len(v.frictionvalues) != numvals:
+                raise ValueError(
+                    f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={v.branchid})."
+                )
 
         return v
 
@@ -237,13 +278,10 @@ class FrictionModel(INIModel):
     """
 
     general: FrictGeneral = FrictGeneral()
-    global_: List[FrictGlobal] = Field([], alias="global")  # to circumvent built-in kw
-    branch: List[FrictBranch] = []
-
-    _split_to_list = make_list_validator(
-        "global_",
-        "branch",
-    )
+    global_: Annotated[List[FrictGlobal], BeforeValidator(make_list)] = Field(
+        default_factory=list, alias="global"
+    )  # to circumvent built-in kw
+    branch: Annotated[List[FrictBranch], BeforeValidator(make_list)] = []
 
     @classmethod
     def _ext(cls) -> str:

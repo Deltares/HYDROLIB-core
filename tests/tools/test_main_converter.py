@@ -18,7 +18,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
 )
-from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
+from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
@@ -336,12 +336,16 @@ class TestExternalFocingConverter:
         converter.inifield_model.initial = [initial_field]
 
         # Add some structures to the structure model
-        structure = Structure(
-            id="structure1",
-            name="Test Structure",
-            type="weir",
-            branchid="branch1",
-            chainage=100.0,
+        structure = Weir(
+            id="weir_id",
+            name="W001",
+            branchid="branch",
+            chainage=3.0,
+            allowedflowdir=FlowDirection.positive,
+            crestlevel=10.5,
+            crestwidth=None,
+            usevelocityheight=False,
+            _header="Structure",
         )
 
         converter.structure_model.structure = [structure]

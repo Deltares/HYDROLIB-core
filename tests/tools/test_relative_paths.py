@@ -42,7 +42,7 @@ class TestSourceSinks:
 
         assert len(ext_model.boundary) == 1
         boundary = ext_model.boundary[0]
-        assert boundary.forcingfile.filepath == boundary_paths["bc_relative_path"]
+        assert boundary.forcingfile[0].filepath == boundary_paths["bc_relative_path"]
 
         converter.save()
 

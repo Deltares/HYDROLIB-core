@@ -8,7 +8,7 @@ import shutil
 import tempfile
 import unittest
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel, ModelSaveSettings
@@ -23,10 +23,10 @@ class SimpleFileModel(FileModel):
     name: str = "default"
     value: int = 0
     description: Optional[str] = None
-    child_file: Optional["SimpleFileModel"] = None
-    child_file1: Optional["SimpleFileModel"] = None
-    child_file2: Optional["SimpleFileModel"] = None
-    child_file3: Optional["SimpleFileModel"] = None
+    child_file: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file1: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file2: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
+    child_file3: Optional[Union["SimpleFileModel", DiskOnlyFileModel]] = None
 
     def _post_init_load(self) -> None:
         """Post-initialization load method."""
@@ -465,12 +465,11 @@ class TestFileModelE2E(unittest.TestCase):
         resolved relative to the parent model's location.
         """
         # Create a parent model with a child using an absolute path
-        absolute_path = self.temp_dir / "absolute_child.txt"
+        child_path = "absolute_child.txt"
 
         # Create and save the child model first
         child_model = SimpleFileModel(name="absolute_child", value=600)
-        child_model.save(filepath=absolute_path)
-
+        child_model.filepath = child_path
         # Create the parent model with a reference to the child
         parent_model = SimpleFileModel(
             name="parent_with_absolute_child", value=700, child_file=child_model
@@ -478,7 +477,9 @@ class TestFileModelE2E(unittest.TestCase):
         parent_save_path = self.temp_dir / "parent_with_absolute_child.txt"
 
         # Save the parent model
-        parent_model.save(filepath=parent_save_path)
+        parent_model.save(filepath=parent_save_path, recurse=True)
+        # check if the child model is saved correctly
+        assert Path(self.temp_dir / child_path).exists()
 
         # Load the parent model again
         loaded_parent = SimpleFileModel(filepath=parent_save_path)

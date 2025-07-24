@@ -1,15 +1,14 @@
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, Dict, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.fields import Field
+from pydantic import BeforeValidator, Field, field_validator, model_validator
 
 from hydrolib.core.dflowfm.common.models import LocationType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    get_enum_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
     validate_location_specification,
 )
 
@@ -72,9 +71,12 @@ class ObservationPoint(INIBasedModel):
     x: Optional[float] = Field(None, alias="x")
     y: Optional[float] = Field(None, alias="y")
 
-    _type_validator = get_enum_validator("locationtype", enum=LocationType)
+    @field_validator("locationtype", mode="before")
+    @classmethod
+    def _type_validator(cls, v) -> LocationType:
+        return enum_value_parser(v, enum=LocationType)
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
         return validate_location_specification(
@@ -101,9 +103,7 @@ class ObservationPointModel(INIModel):
     """
 
     general: ObservationPointGeneral = ObservationPointGeneral()
-    observationpoint: List[ObservationPoint] = []
-
-    _make_list = make_list_validator("observationpoint")
+    observationpoint: Annotated[List[ObservationPoint], BeforeValidator(make_list)] = []
 
     @classmethod
     def _filename(cls) -> str:

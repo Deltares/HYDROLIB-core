@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.base.models import (
     BaseModel,
@@ -46,10 +46,6 @@ class XYZModel(ParsableFileModel):
     """
 
     points: List[XYZPoint] = []
-
-    def dict(self, *args, **kwargs):
-        # speed up serializing by not converting these lowest models to dict
-        return dict(points=self.points)
 
     @classmethod
     def _ext(cls) -> str:

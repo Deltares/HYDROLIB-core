@@ -12,11 +12,30 @@ Most relevant classes are:
 import logging
 import re
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterator, List, Literal, Optional, Set, Union
+from typing import (
+    Annotated,
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    Set,
+    Union,
+)
 
-from pydantic.v1 import Extra
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import (
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    GetCoreSchemaHandler,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
+from pydantic_core import core_schema
 from strenum import StrEnum
 
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings
@@ -30,12 +49,10 @@ from hydrolib.core.dflowfm.ini.models import (
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    get_enum_validator,
-    get_from_subclass_defaults,
-    get_split_string_on_delimiter_validator,
-    get_type_based_on_subclass_default_value,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
     rename_keys_for_backwards_compatibility,
+    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -94,7 +111,7 @@ class QuantityUnitPair(BaseModel):
     unit: str
     """str: Unit of quantity."""
 
-    vertpositionindex: Optional[int] = Field(alias="vertPositionIndex")
+    vertpositionindex: Optional[int] = Field(default=None, alias="vertPositionIndex")
     """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
@@ -111,8 +128,7 @@ class VectorQuantityUnitPairs(BaseModel):
     followed by all component quantity names, their unit and optionally their
     vertical position indexes."""
 
-    class Config:
-        validate_assignment = True
+    model_config = ConfigDict(validate_assignment=True)
 
     vectorname: str
     """str: Name of the vector quantity."""
@@ -123,7 +139,7 @@ class VectorQuantityUnitPairs(BaseModel):
     quantityunitpair: List[QuantityUnitPair]
     """List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components."""
 
-    @root_validator
+    @model_validator(mode="before")
     @classmethod
     def _validate_quantity_element_names(cls, values: Dict):
         for idx, name in enumerate(
@@ -266,71 +282,45 @@ class ForcingBase(DataBlockINIBasedModel):
     def _duplicate_keys_as_list(cls):
         return True
 
-    @root_validator(pre=True)
-    def _validate_quantityunitpair(cls, values):
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        schema = handler(source_type)
+
+        return core_schema.no_info_before_validator_function(
+            cls.preprocess_quantities,  # this is called BEFORE validation
+            schema,
+        )
+
+    @classmethod
+    def preprocess_quantities(cls, values):
+        if not isinstance(values, dict) or values.get("quantityunitpair") is not None:
+            return values
         quantityunitpairkey = "quantityunitpair"
 
-        if values.get(quantityunitpairkey) is not None:
-            return values
-
         quantities = values.get("quantity")
+        units = values.get("unit")
         if quantities is None:
             raise ValueError("quantity is not provided")
-        units = values.get("unit")
         if units is None:
             raise ValueError("unit is not provided")
 
-        if isinstance(quantities, str) and isinstance(units, str):
-            values[quantityunitpairkey] = [
-                QuantityUnitPair(quantity=quantities, unit=units)
-            ]
-            return values
+        if isinstance(quantities, str):
+            quantities = [quantities]
+        if isinstance(units, str):
+            units = [units]
 
-        if isinstance(quantities, list) and isinstance(units, list):
-            if len(quantities) != len(units):
-                raise ValueError(
-                    "Number of quantities should be equal to number of units"
-                )
+        if not isinstance(quantities, list) or not isinstance(units, list):
+            raise ValueError("'quantity' and 'unit' must be a string or a list.")
 
-            values[quantityunitpairkey] = [
-                QuantityUnitPair(quantity=quantity, unit=unit)
-                for quantity, unit in zip(quantities, units)
-            ]
-            return values
-
-        raise ValueError("Number of quantities should be equal to number of units")
-
-    @validator("function", pre=True)
-    def _set_function(cls, value):
-        return get_from_subclass_defaults(ForcingBase, "function", value)
-
-    @classmethod
-    def validate(cls, v):
-        """Try to initialize subclass based on the `function` field.
-        This field is compared to each `function` field of the derived models of `ForcingBase`
-        or models derived from derived models.
-        The derived model with an equal function type will be initialized.
-
-        Raises:
-            ValueError: When the given type is not a known structure type.
-        """
-
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict):
-            function_string = v.get("function", "").lower()
-            function_type = get_type_based_on_subclass_default_value(
-                cls, "function", function_string
-            )
-
-            if function_type is not None:
-                return function_type(**v)
-
-            else:
-                raise ValueError(
-                    f"Function of {cls.__name__} with name={v.get('name', '')} and function={v.get('function', '')} is not recognized."
-                )
-        return v
+        if len(quantities) != len(units):
+            raise ValueError("Number of quantities should be equal to number of units.")
+        values[quantityunitpairkey] = [
+            QuantityUnitPair(quantity=quantity, unit=unit)
+            for quantity, unit in zip(quantities, units)
+        ]
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
@@ -348,13 +338,12 @@ class ForcingBase(DataBlockINIBasedModel):
 
         return section
 
-    class Config:
-        extra = Extra.ignore
+    model_config = ConfigDict(extra="ignore")
 
     def __repr__(self) -> str:
         data = dict(self)
         data["datablock"] = "<omitted>"
-        representable = BaseModel.construct(**data)
+        representable = BaseModel.model_construct(**data)
         return str(representable)
 
 
@@ -363,7 +352,7 @@ class VectorForcingBase(ForcingBase):
     The base class of a single [Forcing] block that supports vectors in a .bc forcings file.
     """
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
         """
         Validates and, if required, updates vector quantity unit pairs.
@@ -379,6 +368,8 @@ class VectorForcingBase(ForcingBase):
         Returns:
             Dict: Dictionary of validates values.
         """
+        if not isinstance(values, dict):
+            return values
         quantityunitpairs = values["quantityunitpair"]
         vector = values.get("vector")
         number_of_element_repetitions = cls.get_number_of_repetitions(values)
@@ -558,10 +549,6 @@ class VectorForcingBase(ForcingBase):
 
         return valid
 
-    @validator("function", pre=True)
-    def _set_function(cls, value):
-        return get_from_subclass_defaults(VectorForcingBase, "function", value)
-
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
         """Gets the number of expected quantityunitpairs for each vector element. Defaults to 1."""
@@ -667,11 +654,12 @@ class TimeSeries(VectorForcingBase):
     factor: float = Field(1.0, alias="factor")
     """float: All values in the table are multiplied with the factor. Defaults to 1.0."""
 
-    _timeinterpolation_validator = get_enum_validator(
-        "timeinterpolation", enum=TimeInterpolation
-    )
+    @field_validator("timeinterpolation", mode="before")
+    @classmethod
+    def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
+        return enum_value_parser(value, TimeInterpolation)
 
-    @root_validator(allow_reuse=True, pre=True)
+    @model_validator(mode="before")
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(
@@ -745,7 +733,7 @@ class T3D(VectorForcingBase):
         TimeInterpolation.linear, alias="timeInterpolation"
     )
 
-    _keys_to_rename = {
+    _keys_to_rename: ClassVar[Dict[str, List[str]]] = {
         "timeinterpolation": ["time_interpolation"],
         "vertpositions": ["vertical_position_specification"],
         "vertinterpolation": ["vertical_interpolation"],
@@ -753,28 +741,46 @@ class T3D(VectorForcingBase):
         "vertpositionindex": ["vertical_position"],
     }
 
-    @root_validator(allow_reuse=True, pre=True)
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        schema = super().__get_pydantic_core_schema__(source_type, handler)
+        return core_schema.no_info_before_validator_function(
+            cls.rename_keys,  # this is called BEFORE validation
+            schema,
+        )
+
+    @classmethod
     def rename_keys(cls, values: Dict) -> Dict:
         """Renames some old keywords to the currently supported keywords."""
         return rename_keys_for_backwards_compatibility(values, cls._keys_to_rename)
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "vertpositions",
-    )
+    @field_validator("vertpositions", mode="before")
+    @classmethod
+    def _split_vertpositions(cls, value: Any, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, value, info)
 
-    _verticalinterpolation_validator = get_enum_validator(
-        "vertinterpolation", enum=VerticalInterpolation
-    )
-    _verticalpositiontype_validator = get_enum_validator(
-        "vertpositiontype",
-        enum=VerticalPositionType,
-        alternative_enum_values={
-            VerticalPositionType.percentage_bed: ["percentage from bed"],
-        },
-    )
-    _timeinterpolation_validator = get_enum_validator(
-        "timeinterpolation", enum=TimeInterpolation
-    )
+    @field_validator("vertinterpolation", mode="before")
+    @classmethod
+    def _validate_vertinterpolation(cls, value: Any) -> VerticalInterpolation:
+        return enum_value_parser(value, enum=VerticalInterpolation)
+
+    @field_validator("vertpositiontype", mode="before")
+    @classmethod
+    def _validate_vertpositiontype(cls, value: Any) -> VerticalPositionType:
+        return enum_value_parser(
+            value,
+            enum=VerticalPositionType,
+            alternative_enum_values={
+                VerticalPositionType.percentage_bed: ["percentage from bed"]
+            },
+        )
+
+    @field_validator("timeinterpolation", mode="before")
+    @classmethod
+    def _validate_timeinterpolation(cls, value: Any) -> TimeInterpolation:
+        return enum_value_parser(value, enum=TimeInterpolation)
 
     @classmethod
     def get_number_of_repetitions(cls, values: Dict) -> int:
@@ -799,8 +805,9 @@ class T3D(VectorForcingBase):
 
         return number_of_verticalpositions
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def _validate_quantityunitpairs(cls, values: Dict) -> Dict:
+
         quantityunitpairs = values["quantityunitpair"]
 
         T3D._validate_that_first_unit_is_time_and_has_no_verticalposition(
@@ -950,6 +957,18 @@ class ForcingGeneral(INIGeneral):
     filetype: Literal["boundConds"] = Field("boundConds", alias="fileType")
 
 
+FORCINGS = Union[
+    TimeSeries,
+    Harmonic,
+    Astronomic,
+    HarmonicCorrection,
+    AstronomicCorrection,
+    T3D,
+    QHTable,
+    Constant,
+]
+
+
 class ForcingModel(INIModel):
     """
     The overall model that contains the contents of one .bc forcings file.
@@ -1091,18 +1110,43 @@ class ForcingModel(INIModel):
     general: ForcingGeneral = ForcingGeneral()
     """ForcingGeneral: `[General]` block with file metadata."""
 
-    forcing: List[ForcingBase] = Field(default_factory=list)
+    forcing: Annotated[
+        list[Annotated[FORCINGS, Field(discriminator="function")]],
+        BeforeValidator(make_list),
+    ] = Field(default_factory=list)
     """List[ForcingBase]: List of `[Forcing]` blocks for all forcing
     definitions in a single .bc file. Actual data is stored in
     forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock]."""
-
-    _split_to_list = make_list_validator("forcing")
 
     serializer_config: DataBlockINIBasedSerializerConfig = (
         DataBlockINIBasedSerializerConfig(
             section_indent=0, property_indent=0, datablock_indent=0
         )
     )
+
+    @field_validator("forcing", mode="before")
+    def _validate_forcing_case_insensitive(
+        cls, values: List[Dict]
+    ) -> List[ForcingBase]:
+        """
+        Validate and convert forcing definitions to ForcingBase subclasses.
+
+        Args:
+            values (List[Dict]):
+                List of forcing definitions.
+
+        Returns:
+            List[ForcingBase]:
+                List of validated and converted forcing definitions.
+        """
+        for v in values:
+            if (
+                isinstance(v, dict)
+                and "function" in v
+                and isinstance(v["function"], str)
+            ):
+                v["function"] = v["function"].lower()
+        return values
 
     @classmethod
     def _ext(cls) -> str:

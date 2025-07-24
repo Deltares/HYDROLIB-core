@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity

@@ -1,3 +1,22 @@
+## 1.0.0b1 (2025-07-04)
+
+### Refactor
+
+- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
+- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
+- **onedfield**: Migrate `OneDField` to pydantic v2 (#848)
+- **onedfield**: migrate to Pydantic v2
+- **structure**: Migrate `structure` module to pydantic v2 (#845)
+- **structure**: Migrate `structure` module to pydantic v2
+- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
+- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
+- **models**: `ext` models to Pydantic v2 (#841)
+- **models**: `ext` models to Pydantic v2 (#841)
+- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
+- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
+- **models**: migrate to the gui module to Pydantic v2 #842)
+- **models**: migrate to the gui module to Pydantic v2 #842)
+
 ## 0.9.2 (2025-06-26)
 
 ### Feat
