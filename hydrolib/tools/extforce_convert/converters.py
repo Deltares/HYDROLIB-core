@@ -341,27 +341,13 @@ class BoundaryConditionConverter(BaseConverter):
 
         # check t3d files
         if len(t3d_files) > 0:
-            t3d_models = [T3DModel(path) for path in t3d_files]
-            # this line assumed that the two t3d files will have the same number of layers and same number of quantities
-            quantities_names = [quantity] * t3d_models[0].size[1]
-            user_defined_names = [
-                f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
-            ]
-            t3d_forcing_list = T3DToForcingConverter.convert(
-                t3d_models, quantities_names, user_defined_names
-            )
+            t3d_forcing_list = self._convert_t3d_files(t3d_files, quantity, label)
             forcings_list.extend(t3d_forcing_list)
             self.legacy_files = t3d_files
 
         # check cmp files
         if len(cmp_files) > 0:
-            cmp_models = [CMPModel(path) for path in cmp_files]
-            for cmp_model in cmp_models:
-                cmp_model.quantities_name = [forcing.quantity]
-                user_defined_names = [
-                    f"{label}_{str(i).zfill(4)}" for i in range(1, len(cmp_files) + 1)
-                ]
-            forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
+            forcing_list = self._convert_cmp_files(cmp_files, quantity, label)
             forcings_list.extend(forcing_list)
             self.legacy_files = cmp_files
 
@@ -384,6 +370,58 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         return new_block
+
+    @staticmethod
+    def _convert_t3d_files(t3d_files: List[Path], quantity: str, label: str) -> List[T3D]:
+        """Convert T3D files to T3D forcing objects.
+
+        Args:
+            t3d_files (List[Path]):
+                t3d files to be converted.
+            quantity (str):
+                quantity name that the t3d files represent.
+            label (str):
+                label from the pli file to be used to name the time series sections in the .bc model.
+
+        Returns:
+            List[T3D]:
+                A list of T3D objects representing the converted T3D files.
+        """
+        t3d_models = [T3DModel(path) for path in t3d_files]
+        # this line assumed that the two t3d files will have the same number of layers and same number of quantities
+        quantities_names = [quantity] * t3d_models[0].size[1]
+        user_defined_names = [
+            f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
+        ]
+        t3d_forcing_list = T3DToForcingConverter.convert(
+            t3d_models, quantities_names, user_defined_names
+        )
+        return t3d_forcing_list
+
+    @staticmethod
+    def _convert_cmp_files(cmp_files: List[Path], quantity: str, label: str) -> List[ForcingBase]:
+        """Convert CMP files to ForcingModel.
+
+        Args:
+            cmp_files (List[Path]):
+                List of CMP files to be converted.
+            quantity (str):
+                quantity name that the cmp files represent.
+            label (str):
+                label from the cmp file names to be used to name the time series sections in the .bc model.
+
+        Returns:
+            List[ForcingModel]:
+                The converted ForcingModel.
+        """
+        cmp_models = [CMPModel(path) for path in cmp_files]
+        for cmp_model in cmp_models:
+            cmp_model.quantities_name = [quantity]
+            user_defined_names = [
+                f"{label}_{str(i).zfill(4)}" for i in range(1, len(cmp_files) + 1)
+            ]
+        forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
+        return forcing_list
 
 
 class InitialConditionConverter(BaseConverter):
