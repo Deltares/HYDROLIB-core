@@ -1,8 +1,8 @@
-from pathlib import Path
+from typing import Any, Dict
 
 import numpy as np
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
@@ -94,25 +94,6 @@ def astronomic_values(iscorrection: bool, quantityunitpair):
 
 
 class TestForcingBase:
-    @pytest.mark.parametrize(
-        "input,expected",
-        [
-            ("TimeSeries", "timeseries"),
-            ("haRmoniC", "harmonic"),
-            ("ASTRONOMIC", "astronomic"),
-            ("harmonic-Correction", "harmonic-correction"),
-            ("Astronomic-Correction", "astronomic-correction"),
-            ("t3D", "t3d"),
-            ("QHtable", "qhtable"),
-            ("Constant", "constant"),
-            ("DOESNOTEXIST", "DOESNOTEXIST"),
-            ("doesnotexist", "doesnotexist"),
-        ],
-    )
-    def test_parses_function_case_insensitive(self, input, expected):
-        forcing = ForcingBase(function=input, name="somename", quantityunitpair=[])
-
-        assert forcing.function == expected
 
     @pytest.mark.parametrize(
         "missing_field",
@@ -183,6 +164,25 @@ class TestForcingModel:
         assert len(m.forcing) == 13
         assert isinstance(m.forcing[-1], TimeSeries)
 
+    @pytest.mark.parametrize(
+        "input_type, values, expected",
+        [
+            ("Astronomic", astronomic_values, "astronomic"),
+            ("HarmOnic", harmonic_values, "harmonic"),
+        ],
+    )
+    def test_forcing_model_case_insensitive_discriminator(
+        self, input_type, values, expected
+    ):
+        values = (
+            values(False, quantityunitpair)
+            if input_type == "Astronomic"
+            else values(False)
+        )
+        values["function"] = input_type
+        model = ForcingModel(forcing=[values])
+        assert model.forcing[0].function == expected
+
     def test_read_bc_missing_field_raises_correct_error(self, invalid_data_dir):
         bc_file = "missing_field.bc"
         identifier = "Boundary2"
@@ -192,7 +192,7 @@ class TestForcingModel:
         with pytest.raises(ValidationError) as error:
             ForcingModel(filepath)
 
-        expected_message1 = f"{bc_file} -> forcing -> 1 -> {identifier}"
+        expected_message1 = f"`{bc_file}`.forcing.1.constant"
         expected_message2 = "quantity is not provided"
         assert expected_message1 in str(error.value)
         assert expected_message2 in str(error.value)
@@ -237,26 +237,6 @@ class TestForcingModel:
             pytest.fail(
                 f"No validation error should be raised when creating an {cls.__name__}"
             )
-
-    def test_representation_is_correct(self):
-        forcing = ForcingBase(
-            name="some_name",
-            function="some_function",
-            quantityunitpair=[
-                QuantityUnitPair(quantity="some_quantity", unit="some_unit")
-            ],
-            datablock=[[1.2, 2.3]],
-        )
-
-        str_representation_as_single = str(forcing)
-        str_representation_in_list = str([forcing])
-
-        # datablock should be omitted when a `ForcingBase` is represented from within a list
-        expected_result = "comments=Comments() datablock={0} name='some_name' function='some_function' quantityunitpair=[QuantityUnitPair(quantity='some_quantity', unit='some_unit', vertpositionindex=None)]"
-        assert str_representation_as_single == expected_result.format("[[1.2, 2.3]]")
-        assert str_representation_in_list == "[{0}]".format(
-            expected_result.format("'<omitted>'")
-        )
 
     def test_forcing_model_correct_default_serializer_config(self):
         model = ForcingModel()

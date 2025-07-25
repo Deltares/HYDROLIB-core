@@ -2,7 +2,7 @@ from math import nan
 from typing import List
 
 import pytest
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
 from tests.utils import error_occurs_only_once

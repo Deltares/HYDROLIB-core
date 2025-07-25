@@ -1,15 +1,20 @@
-from typing import Dict, List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic.v1.class_validators import root_validator, validator
-from pydantic.v1.fields import Field
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 from strenum import StrEnum
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
-    get_enum_validator,
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    enum_value_parser,
+    make_list,
+    split_string_on_delimiter,
     validate_correct_length,
     validate_required_fields,
 )
@@ -140,25 +145,25 @@ class StorageNode(INIBasedModel):
     _header: Literal["StorageNode"] = "StorageNode"
     id: str = Field(alias="id")
     name: str = Field(alias="name")
-    manholeid: Optional[str] = Field(alias="manholeId")
+    manholeid: Optional[str] = Field(None, alias="manholeId")
 
     nodetype: Optional[NodeType] = Field(NodeType.unspecified.value, alias="nodeType")
     nodeid: str = Field(alias="nodeId")
     usetable: bool = Field(alias="useTable")
 
     # useTable is True
-    bedlevel: Optional[float] = Field(alias="bedLevel")
-    area: Optional[float] = Field(alias="area")
-    streetlevel: Optional[float] = Field(alias="streetLevel")
-    streetstoragearea: Optional[float] = Field(alias="streetStorageArea")
+    bedlevel: Optional[float] = Field(None, alias="bedLevel")
+    area: Optional[float] = Field(None, alias="area")
+    streetlevel: Optional[float] = Field(None, alias="streetLevel")
+    streetstoragearea: Optional[float] = Field(None, alias="streetStorageArea")
     storagetype: Optional[StorageType] = Field(
         StorageType.reservoir.value, alias="storageType"
     )
 
     # useTable is False
-    numlevels: Optional[int] = Field(alias="numLevels")
-    levels: Optional[List[float]] = Field(alias="levels")
-    storagearea: Optional[List[float]] = Field(alias="storageArea")
+    numlevels: Optional[int] = Field(None, alias="numLevels")
+    levels: Optional[List[float]] = Field(None, alias="levels")
+    storagearea: Optional[List[float]] = Field(None, alias="storageArea")
     interpolate: Optional[Interpolation] = Field(
         Interpolation.linear.value, alias="interpolate"
     )
@@ -170,52 +175,70 @@ class StorageNode(INIBasedModel):
         """
         return None
 
-    _interpolation_validator = get_enum_validator("interpolate", enum=Interpolation)
-    _nodetype_validator = get_enum_validator("nodetype", enum=NodeType)
-    _storagetype_validator = get_enum_validator("storagetype", enum=StorageType)
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "levels",
-        "storagearea",
-    )
+    @field_validator("interpolate", mode="before")
+    @classmethod
+    def _interpolate_validator(cls, v) -> Interpolation:
+        return enum_value_parser(v, Interpolation)
 
-    @root_validator(allow_reuse=True)
-    def check_list_length_levels(cls, values):
+    @field_validator("nodetype", mode="before")
+    @classmethod
+    def _nodetype_validator(cls, v) -> NodeType:
+        return enum_value_parser(v, NodeType)
+
+    @field_validator("storagetype", mode="before")
+    @classmethod
+    def _storagetype_validator(cls, v) -> StorageType:
+        return enum_value_parser(v, StorageType)
+
+    @field_validator("levels", "storagearea", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
+
+    @model_validator(mode="after")
+    @classmethod
+    def check_list_length_levels(cls, values: "StorageNode") -> "StorageNode":
         """Validates that the length of the levels field is as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            values.model_dump(),
             "levels",
             "storagearea",
             length_name="numlevels",
             list_required_with_length=True,
         )
+        return values
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_using_tables(
-        cls, values: Dict
-    ) -> Dict:
+        cls, values: "StorageNode"
+    ) -> "StorageNode":
         """Validates that the specified fields are present when the usetable field is also present."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            values.model_dump(),
             "numlevels",
             "levels",
             "storagearea",
             conditional_field_name="usetable",
             conditional_value=True,
         )
+        return values
 
-    @root_validator(allow_reuse=True)
+    @model_validator(mode="after")
+    @classmethod
     def validate_that_required_fields_are_present_when_not_using_tables(
-        cls, values: Dict
-    ) -> Dict:
+        cls, values: "StorageNode"
+    ) -> "StorageNode":
         """Validates that the specified fields are present."""
-        return validate_required_fields(
-            values,
+        validate_required_fields(
+            values.model_dump(),
             "bedlevel",
             "area",
             "streetlevel",
             conditional_field_name="usetable",
             conditional_value=False,
         )
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
@@ -233,29 +256,28 @@ class StorageNodeModel(INIModel):
     """
 
     general: StorageNodeGeneral = StorageNodeGeneral()
-    storagenode: List[StorageNode] = []
-
-    _make_list = make_list_validator("storagenode")
+    storagenode: Annotated[List[StorageNode], BeforeValidator(make_list)] = []
 
     @classmethod
     def _filename(cls) -> str:
         return "nodeFile"
 
-    @validator("storagenode", each_item=True)
-    def _validate(cls, storagenode: StorageNode, values: dict):
+    @field_validator("storagenode", mode="after")
+    def _validate(cls, storagenodes: List[StorageNode], info: ValidationInfo):
         """Validates for each storage node whether the streetStorageArea value is provided
         when the general useStreetStorage is True and the storage node useTable is False.
         """
 
-        usestreetstorage = values["general"].usestreetstorage
+        usestreetstorage = info.data["general"].usestreetstorage
 
-        if (
-            usestreetstorage
-            and not storagenode.usetable
-            and storagenode.streetstoragearea is None
-        ):
-            raise ValueError(
-                f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
-            )
+        for storagenode in storagenodes:
+            if (
+                usestreetstorage
+                and not storagenode.usetable
+                and storagenode.streetstoragearea is None
+            ):
+                raise ValueError(
+                    f"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id {storagenode.id}"
+                )
 
-        return storagenode
+        return storagenodes
