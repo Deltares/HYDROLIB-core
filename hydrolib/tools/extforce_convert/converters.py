@@ -314,6 +314,8 @@ class BoundaryConditionConverter(BaseConverter):
             - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
             boundary Condition can be only converted by reading the mdu file and the external forcing file is not
             enough.
+            - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
+            end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
@@ -411,8 +413,8 @@ class BoundaryConditionConverter(BaseConverter):
                 label from the cmp file names to be used to name the time series sections in the .bc model.
 
         Returns:
-            List[ForcingModel]:
-                The converted ForcingModel.
+            List[ForcingBase]:
+                The converted ForcingBase object.
         """
         cmp_models = [CMPModel(path) for path in cmp_files]
         user_defined_names = BoundaryConditionConverter._get_file_labels(label, cmp_files)
