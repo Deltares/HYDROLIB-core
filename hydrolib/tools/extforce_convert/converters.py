@@ -433,7 +433,15 @@ class BoundaryConditionConverter(BaseConverter):
     @staticmethod
     def _get_file_labels(label: str, files: List[Path]) -> List[str]:
         """Get the labels of the files."""
-        file_int_id = [int(file.stem.split("_")[-1]) for file in files]
+        try:
+            file_int = [file.stem.split("_")[-1] for file in files]
+            file_int_id = [int(i) for i in file_int]
+        except ValueError:
+            raise ValueError(
+                f"Cannot get the file number from the file name. file name should be <NAME>_<INT-NUMBER> "
+                f"Please check the file names: {files}"
+            )
+
         user_defined_names = [f"{label}_{str(i).zfill(4)}" for i in file_int_id]
         return user_defined_names
 
