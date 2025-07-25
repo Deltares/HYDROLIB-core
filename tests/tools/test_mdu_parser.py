@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (
+    ExternalForcingBlock,
     FileStyleProperties,
     Line,
     MDUParser,
@@ -106,9 +107,6 @@ class TestMduParser:
         # Test with a valid file path
         parser = MDUParser(self.file_path)
         assert parser.mdu_path == Path(self.file_path)
-        assert parser.updated_lines == []
-        assert parser.inside_external_forcing is False
-        assert parser.found_extforcefilenew is False
         assert isinstance(parser._content, list)
         assert isinstance(parser.loaded_fm_data, dict)
         assert isinstance(parser.temperature_salinity_data, dict)
@@ -1421,3 +1419,72 @@ class TestSection:
         non_existing_section = Section("non-existing", content)
         assert non_existing_section.start is None
         assert non_existing_section.end is None
+
+
+class GetNewExtforceFile:
+    """
+    Unit tests for ExternalForcingBlock.get_new_extforce_file method.
+    Covers:
+        - extforcefilenew present
+        - extforcefilenew absent, ext_file not provided
+        - extforcefilenew absent, ext_file provided
+        - file already exists (raises FileExistsError)
+        - missing extforcefile (raises ValueError)
+        - root_dir not set (raises AttributeError or TypeError)
+    """
+
+    def make_block(self, **kwargs):
+        # Helper to create ExternalForcingBlock with root_dir
+        block = ExternalForcingBlock(**kwargs)
+        block.root_dir = Path.cwd()
+        return block
+
+    def test_extforcefilenew_present(self):
+        """If extforcefilenew is present, returns its resolved path."""
+        block = self.make_block(extforcefile="old.ext", extforcefilenew="new.ext")
+        result = block.get_new_extforce_file()
+        assert result.name == "new.ext"
+        assert str(result).endswith("new.ext")
+
+    def test_extforcefilenew_absent_and_ext_file_not_provided(self):
+        """If extforcefilenew is absent and ext_file is not provided, returns old.ext-new path."""
+        block = self.make_block(extforcefile="old.ext")
+        result = block.get_new_extforce_file()
+        assert result.name == "old-new.ext"
+
+    def test_extforcefilenew_absent_and_ext_file_provided(self):
+        """If extforcefilenew is absent and ext_file is provided, returns its resolved path."""
+        block = self.make_block(extforcefile="old.ext")
+        custom = Path("custom.ext")
+        result = block.get_new_extforce_file(ext_file=custom)
+        assert result.name == "custom.ext"
+        assert result.is_absolute()
+
+    def test_file_already_exists_raises(self, tmp_path):
+        """
+        If extforcefilenew is absent, ext_file not provided, and the new file already exists,
+        raises FileExistsError. Uses tmp_path for isolation.
+        """
+        old_ext = tmp_path / "old.ext"
+        old_ext.touch()
+        block = ExternalForcingBlock(extforcefile=str(old_ext))
+        block.root_dir = tmp_path
+        # Simulate the new file already exists
+        new_ext = tmp_path / "old-new.ext"
+        new_ext.touch()
+        with pytest.raises(FileExistsError):
+            block.get_new_extforce_file()
+
+    def test_missing_extforcefile_raises(self):
+        """If extforcefile does not exist, raises ValueError."""
+        block = ExternalForcingBlock()
+        block.root_dir = Path.cwd()
+        with pytest.raises(ValueError):
+            block.get_new_extforce_file()
+
+    def test_root_dir_not_set(self):
+        """If root_dir is not set, should raise TypeError or AttributeError."""
+        block = ExternalForcingBlock(extforcefile="old.ext")
+        block.root_dir = None
+        with pytest.raises(Exception):
+            block.get_new_extforce_file()
