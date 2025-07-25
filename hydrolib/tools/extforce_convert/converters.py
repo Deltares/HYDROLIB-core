@@ -414,7 +414,7 @@ class BoundaryConditionConverter(BaseConverter):
             quantity (str):
                 quantity name that the cmp files represent.
             label (str):
-                label from the cmp file names to be used to name the time series sections in the .bc model.
+                label from the pli file names to be used to name the time series sections in the .bc model.
 
         Returns:
             List[ForcingBase]:
