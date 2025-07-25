@@ -242,12 +242,12 @@ class BoundaryConditionConverter(BaseConverter):
         """
         tim_model = self.merge_tim_files(tim_files, quantity)
 
-        num_tim_files = len(tim_files)
         # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = [
-            f"{label}_{str(i).zfill(4)}" for i in range(1, num_tim_files + 1)
-        ]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(
+            label, tim_files
+        )
         tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+
         units = tim_model.get_units()
         time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
@@ -316,6 +316,8 @@ class BoundaryConditionConverter(BaseConverter):
             - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
             boundary Condition can be only converted by reading the mdu file and the external forcing file is not
             enough.
+            - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
+            end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
@@ -341,27 +343,13 @@ class BoundaryConditionConverter(BaseConverter):
 
         # check t3d files
         if len(t3d_files) > 0:
-            t3d_models = [T3DModel(path) for path in t3d_files]
-            # this line assumed that the two t3d files will have the same number of layers and same number of quantities
-            quantities_names = [quantity] * t3d_models[0].size[1]
-            user_defined_names = [
-                f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
-            ]
-            t3d_forcing_list = T3DToForcingConverter.convert(
-                t3d_models, quantities_names, user_defined_names
-            )
+            t3d_forcing_list = self._convert_t3d_files(t3d_files, quantity, label)
             forcings_list.extend(t3d_forcing_list)
             self.legacy_files = t3d_files
 
         # check cmp files
         if len(cmp_files) > 0:
-            cmp_models = [CMPModel(path) for path in cmp_files]
-            for cmp_model in cmp_models:
-                cmp_model.quantities_name = [forcing.quantity]
-                user_defined_names = [
-                    f"{label}_{str(i).zfill(4)}" for i in range(1, len(cmp_files) + 1)
-                ]
-            forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
+            forcing_list = self._convert_cmp_files(cmp_files, quantity, label)
             forcings_list.extend(forcing_list)
             self.legacy_files = cmp_files
 
@@ -384,6 +372,95 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         return new_block
+
+    @staticmethod
+    def _convert_t3d_files(
+        t3d_files: List[Path], quantity: str, label: str
+    ) -> List[T3D]:
+        """Convert T3D files to T3D forcing objects.
+
+        Args:
+            t3d_files (List[Path]):
+                t3d files to be converted.
+            quantity (str):
+                quantity name that the t3d files represent.
+            label (str):
+                label from the pli file to be used to name the time series sections in the .bc model.
+
+        Returns:
+            List[T3D]:
+                A list of T3D objects representing the converted T3D files.
+        """
+        t3d_models = [T3DModel(path) for path in t3d_files]
+        # this line assumed that the two t3d files will have the same number of layers and same number of quantities
+        quantities_names = [quantity] * t3d_models[0].size[1]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(
+            label, t3d_files
+        )
+        t3d_forcing_list = T3DToForcingConverter.convert(
+            t3d_models, quantities_names, user_defined_names
+        )
+        return t3d_forcing_list
+
+    @staticmethod
+    def _convert_cmp_files(
+        cmp_files: List[Path], quantity: str, label: str
+    ) -> List[ForcingBase]:
+        """Convert CMP files to ForcingModel.
+
+        Args:
+            cmp_files (List[Path]):
+                List of CMP files to be converted.
+            quantity (str):
+                quantity name that the cmp files represent.
+            label (str):
+                label from the pli file names to be used to name the time series sections in the .bc model.
+
+        Returns:
+            List[ForcingBase]:
+                The converted ForcingBase object.
+        """
+        cmp_models = [CMPModel(path) for path in cmp_files]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(
+            label, cmp_files
+        )
+
+        for cmp_model in cmp_models:
+            cmp_model.quantities_name = [quantity]
+        forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
+        return forcing_list
+
+    @staticmethod
+    def _get_file_labels(label: str, files: List[Path]) -> List[str]:
+        """
+        Get the labels of the files based on their filenames and a provided label.
+
+        Args:
+            label (str):
+                A string label to prefix the generated file labels.
+            files (List[Path]):
+                A list of file paths. Each file's name is expected to end with '_<number>',
+                where <number> is an integer used to generate the labels.
+
+        Returns:
+            List[str]:
+                A list of strings representing the labels for the files. Each label is
+                generated by appending '_<number>' (zero-padded to 4 digits) to the provided label.
+
+        Assumptions:
+            - Filenames must end with '_<number>', where <number> is an integer.
+            - The method extracts this integer from the filename to generate the labels.
+        """
+        try:
+            file_int = [file.stem.split("_")[-1] for file in files]
+            file_int_id = [int(i) for i in file_int]
+        except ValueError:
+            raise ValueError(
+                f"Cannot get the file number from the file name. file name should be <NAME>_<INT-NUMBER> "
+                f"Please check the file names: {files}"
+            )
+        user_defined_names = [f"{label}_{str(i).zfill(4)}" for i in file_int_id]
+        return user_defined_names
 
 
 class InitialConditionConverter(BaseConverter):
