@@ -7,13 +7,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import (
+    ExternalForcingBlock,
     FileStyleProperties,
     Line,
     MDUParser,
     Section,
     get_ref_time,
     save_mdu_file,
-    ExternalForcingBlock
 )
 
 
@@ -1488,4 +1488,3 @@ class GetNewExtforceFile:
         block.root_dir = None
         with pytest.raises(Exception):
             block.get_new_extforce_file()
-
