@@ -242,12 +242,10 @@ class BoundaryConditionConverter(BaseConverter):
         """
         tim_model = self.merge_tim_files(tim_files, quantity)
 
-        num_tim_files = len(tim_files)
         # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = [
-            f"{label}_{str(i).zfill(4)}" for i in range(1, num_tim_files + 1)
-        ]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(label, tim_files)
         tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+
         units = tim_model.get_units()
         time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, time_interpolation, units, user_defined_names
@@ -392,9 +390,7 @@ class BoundaryConditionConverter(BaseConverter):
         t3d_models = [T3DModel(path) for path in t3d_files]
         # this line assumed that the two t3d files will have the same number of layers and same number of quantities
         quantities_names = [quantity] * t3d_models[0].size[1]
-        user_defined_names = [
-            f"{label}_{str(i).zfill(4)}" for i in range(1, len(t3d_files) + 1)
-        ]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(label, t3d_files)
         t3d_forcing_list = T3DToForcingConverter.convert(
             t3d_models, quantities_names, user_defined_names
         )
@@ -419,14 +415,19 @@ class BoundaryConditionConverter(BaseConverter):
                 The converted ForcingModel.
         """
         cmp_models = [CMPModel(path) for path in cmp_files]
+        user_defined_names = BoundaryConditionConverter._get_file_labels(label, cmp_files)
+
         for cmp_model in cmp_models:
             cmp_model.quantities_name = [quantity]
-            user_defined_names = [
-                f"{label}_{str(i).zfill(4)}" for i in range(1, len(cmp_files) + 1)
-            ]
         forcing_list = CMPToForcingConverter.convert(cmp_models, user_defined_names)
         return forcing_list
 
+    @staticmethod
+    def _get_file_labels(label: str, files: List[Path]) -> List[str]:
+        """Get the labels of the files."""
+        file_int_id = [int(file.stem.split("_")[-1]) for file in files]
+        user_defined_names = [f"{label}_{str(i).zfill(4)}" for i in file_int_id]
+        return user_defined_names
 
 class InitialConditionConverter(BaseConverter):
     """Initial condition converter."""
