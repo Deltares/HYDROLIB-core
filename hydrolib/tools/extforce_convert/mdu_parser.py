@@ -594,9 +594,6 @@ class MDUParser:
             raise FileNotFoundError(f"File not found: {mdu_path}")
 
         self.mdu_path = mdu_path
-        self.updated_lines = []
-        self.inside_external_forcing = False
-        self.found_extforcefilenew = False
         self._content = self._read_file()
         self.loaded_fm_data = self._load_with_fm_model()
         self.extforce_block = ExternalForcingBlock(**self.external_forcing)
