@@ -159,6 +159,12 @@ class ExternalForcingBlock:
                 ext_file = self.root_dir / self.extforce_file.with_stem(
                     self.extforce_file.stem + "-new"
                 )
+                if ext_file.exists():
+                    raise FileExistsError(
+                        "The converter detected that there is no new extforce file in the mdu file, \n"
+                        f"But ther is an extforce file with the name {ext_file} that already exists. \n"
+                        "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
+                    )
             else:
                 # if an ext_file is provided, we use it
                 ext_file = Path(ext_file).resolve()
