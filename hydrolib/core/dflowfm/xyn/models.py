@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import validator
+from pydantic import field_validator
 
 from hydrolib.core.base.models import (
     BaseModel,
@@ -33,7 +33,7 @@ class XYNPoint(BaseModel):
         n = data.get("n")
         return f"x:{x} y:{y} n:{n}"
 
-    @validator("n", pre=True)
+    @field_validator("n", mode="before")
     def _validate_name(cls, value):
         if str_is_empty_or_none(value):
             raise ValueError("Name cannot be empty.")
@@ -51,10 +51,6 @@ class XYNModel(ParsableFileModel):
 
     points: List[XYNPoint] = []
     """List[`XYNPoint`]: List of XYN points."""
-
-    def dict(self, *args, **kwargs):
-        # speed up serializing by not converting these lowest models to dict
-        return dict(points=self.points)
 
     @classmethod
     def _filename(cls) -> str:
