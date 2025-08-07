@@ -327,6 +327,7 @@ class ExtOldInitialConditionQuantity(StrEnum):
     InitialVelocityY = "initialvelocityy"
     InitialVelocity = "initialvelocity"
     InitialWaqBot = "initialwaqbot"
+    SecchiDepth = "secchidepth"
 
     @classmethod
     def _missing_(cls, value):
@@ -479,6 +480,8 @@ class ExtOldQuantity(StrEnum):
     """Initial vertical salinity profile"""
     BedLevel = "bedlevel"
     """Bed level"""
+    SecchiDepth = "secchidepth"
+    """Secchi depth"""
 
     # Spatial physical properties
     FrictionCoefficient = "frictioncoefficient"
