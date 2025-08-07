@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -302,6 +302,45 @@ class TestConverter:
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
         assert converter.legacy_files == [location_file.with_suffix(".tim")]
+
+        # check the converted bc_forcing
+        compare_data(new_quantity_block)
+
+    @pytest.mark.parametrize(
+        "area", [None, 2.1, 0.0], ids=["Unset", "Area 2.1", "Area 0.0"]
+    )
+    def test_sourcesink_area_is_set(
+        self, converter: SourceSinkConverter, start_time: str, area: Optional[float]
+    ):
+        """Test if the area is set in the forcing, it is used in the converted model."""
+        location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename=location_file,
+            filetype=9,
+            method="1",
+            operand="O",
+        )
+        if area is not None:
+            forcing.area = area
+
+        ext_file_other_quantities = [
+            "salinity",
+            "temperature",
+            "initialtracer_anyname",
+        ]
+
+        new_quantity_block = converter.convert(
+            forcing, ext_file_other_quantities, start_time
+        )
+
+        assert new_quantity_block.zsink == [-4.2]
+        assert new_quantity_block.zsource == [-3]
+        assert converter.legacy_files == [location_file.with_suffix(".tim")]
+        if area is None:
+            assert not hasattr(new_quantity_block, "area")
+        else:
+            assert new_quantity_block.area == area
 
         # check the converted bc_forcing
         compare_data(new_quantity_block)
