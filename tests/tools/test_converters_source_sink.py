@@ -307,7 +307,7 @@ class TestConverter:
         compare_data(new_quantity_block)
 
     @pytest.mark.parametrize(
-        "area", [None, 2.1, 0.0], ids=["Unset", "Area 2.1", "Area 0.0"]
+        "area", [None, 2.1, 0.0], ids=["Unset", "Area = 2.1", "Area = 0.0"]
     )
     def test_sourcesink_area_is_set(
         self, converter: SourceSinkConverter, start_time: str, area: Optional[float]
@@ -320,9 +320,8 @@ class TestConverter:
             filetype=9,
             method="1",
             operand="O",
+            area=area,
         )
-        if area is not None:
-            forcing.area = area
 
         ext_file_other_quantities = [
             "salinity",
