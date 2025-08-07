@@ -871,6 +871,8 @@ class SourceSinkConverter(BaseConverter):
             "xcoordinates": polyline.x,
             "ycoordinates": polyline.y,
         }
+        if forcing.area is not None:
+            data["area"] = forcing.area
         forcings = self.separate_forcing_model(forcing_model)
 
         # the same forcing model will be used for all the forcings to be able to save all the forcings (sourcesinks)
