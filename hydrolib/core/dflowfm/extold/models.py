@@ -223,6 +223,7 @@ class ExtOldParametersQuantity(StrEnum):
     WavePeriod = "waveperiod"
     WaveSignificantHeight = "wavesignificantheight"
     InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
+    SecchiDepth = "secchidepth"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -327,7 +328,6 @@ class ExtOldInitialConditionQuantity(StrEnum):
     InitialVelocityY = "initialvelocityy"
     InitialVelocity = "initialvelocity"
     InitialWaqBot = "initialwaqbot"
-    SecchiDepth = "secchidepth"
 
     @classmethod
     def _missing_(cls, value):
