@@ -103,11 +103,8 @@ class TestConvertInitialCondition:
     def test_initial_condition_quantity(self, quantity, expected_quantity):
         """Test conversion of initial condition quantity.
 
-        The Test only check that the name of the quantity is converted correctly.
-        - all the the underscores in the old name are removed.
-        - the naming convention is changed to camelCase.
-        old: "initial_water_level"
-        new: "initialWaterLevel"
+        The test checks that the quantity resolves to the correct converter and that the
+        quantity is converted correctly.
         """
         forcing = ExtOldForcing(
             quantity=quantity,
@@ -144,7 +141,7 @@ class TestConvertParameters:
     def test_bed_rock_surface_elevation(self):
         """Test conversion of bedrock surface elevation forcing.
 
-        The Test only check that the name of the quantity is converted correctly.
+        The test only check that the name of the quantity is converted correctly.
         - all the the underscores in the old name are removed.
         - the naming convention is changed to camelCase.
         old: "bedrock_surface_elevation"
@@ -203,11 +200,8 @@ class TestConvertParameters:
     def test_parameter_quantity(self, quantity, expected_quantity):
         """Test conversion of parameter quantity.
 
-        The Test only checks that the name of the quantity is converted correctly.
-        - all the the underscores in the old name are removed.
-        - the naming convention is changed to camelCase.
-        old: "initial_water_level"
-        new: "initialWaterLevel"
+        The test checks that the quantity resolves to the correct converter and that the
+        quantity is converted correctly.
         """
         forcing = ExtOldForcing(
             quantity=quantity,
