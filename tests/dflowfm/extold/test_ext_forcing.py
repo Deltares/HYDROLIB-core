@@ -69,19 +69,57 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, DiskOnlyFileModel)
 
-    def test_tracer_fall_velocity_quantity(self, input_files_dir: Path):
-        forcing = ExtOldForcing(
-            quantity="initialtracerdtr1",
-            filename=DiskOnlyFileModel("any-file.pol"),
-            filetype=3,
-            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
-            operand=Operand.override,
-            tracerfallvelocity=1,
-            tracerdecaytime=1,
-        )
 
-        assert forcing.tracerfallvelocity == 1
-        assert forcing.tracerdecaytime == 1
+@pytest.fixture
+def base_kwargs():
+    return {
+        "QUANTITY": ExtOldQuantity.WaterLevelBnd,
+        "FILETYPE": ExtOldFileType.TimeSeries,
+        "METHOD": ExtOldMethod.PassThrough,
+        "OPERAND": Operand.override,
+    }
+
+
+# Four naming variants for the two fields, each with expected values
+CASES = [
+    pytest.param(
+        {"TRACERFALLVELOCITY": 1.0, "TRACERDECAYTIME": 2.0},
+        (1.0, 2.0),
+        id="uppercase",
+    ),
+    pytest.param(
+        {"tracerfallvelocity": 3.0, "tracerdecaytime": 4.0},
+        (3.0, 4.0),
+        id="lowercase",
+    ),
+    pytest.param(
+        {"tracerFallVelocity": 5.0, "tracerDecayTime": 6.0},
+        (5.0, 6.0),
+        id="camelCase",
+    ),
+    pytest.param(
+        {"TRACERfallvelocity": 7.0, "tracerDECAYtime": 8.0},
+        (7.0, 8.0),
+        id="mixed",
+    ),
+]
+
+
+class TestTracerFields:
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("variant_kwargs, expected", CASES)
+    def test_tracerfallvelocity_is_parsed(self, base_kwargs, variant_kwargs, expected):
+        fall_expected, _ = expected
+        forcing = ExtOldForcing(**base_kwargs, **variant_kwargs)
+        assert forcing.tracerfallvelocity == pytest.approx(fall_expected)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("variant_kwargs, expected", CASES)
+    def test_tracerdecaytime_is_parsed(self, base_kwargs, variant_kwargs, expected):
+        _, decay_expected = expected
+        forcing = ExtOldForcing(**base_kwargs, **variant_kwargs)
+        assert forcing.tracerdecaytime == pytest.approx(decay_expected)
 
 
 class TestValidateQuantity:
