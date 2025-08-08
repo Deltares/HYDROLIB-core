@@ -225,6 +225,9 @@ class ExtOldParametersQuantity(StrEnum):
     InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
     SecchiDepth = "secchidepth"
     SeaIceAreaFraction = "sea_ice_area_fraction"
+    StemHeight = "stemheight"
+    StemDensity = "stemdensity"
+    StemDiameter = "stemdiameter"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -485,6 +488,12 @@ class ExtOldQuantity(StrEnum):
     """Secchi depth"""
     SeaIceAreaFraction = "sea_ice_area_fraction"
     """Sea ice area fraction"""
+    StemHeight = "stemheight"
+    """Stem height"""
+    StemDensity = "stemdensity"
+    """Stem density"""
+    StemDiameter = "stemdiameter"
+    """Stem diameter"""
 
     # Spatial physical properties
     FrictionCoefficient = "frictioncoefficient"
