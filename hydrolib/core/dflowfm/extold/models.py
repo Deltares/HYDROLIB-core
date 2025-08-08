@@ -686,7 +686,7 @@ class ExtOldForcing(BaseModel):
 
     def is_intermediate_link(self) -> bool:
         return True
-        
+
     @root_validator(pre=True)
     def handle_case_insensitive_tracer_fields(cls, values):
         """Handle case-insensitive matching for tracer fields."""
@@ -695,7 +695,7 @@ class ExtOldForcing(BaseModel):
         # Define the field names and their aliases
         tracer_fields = ["tracerfallvelocity", "tracerdecaytime"]
 
-        for field_i in values.keys():
+        for field_i in list(values.keys()):
             if field_i.lower() in tracer_fields:
                 # If the key is not in the expected lowercase format, add it with the correct format
                 values_copy[field_i.lower()] = values_copy[field_i]
@@ -703,7 +703,6 @@ class ExtOldForcing(BaseModel):
                 values_copy.pop(field_i)
 
         return values_copy
-
 
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
