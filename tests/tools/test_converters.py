@@ -78,6 +78,7 @@ class TestConvertInitialCondition:
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
 
+    @pytest.mark.e2e
     @pytest.mark.parametrize(
         "quantity, expected_quantity",
         [
@@ -164,6 +165,7 @@ class TestConvertParameters:
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
 
+    @pytest.mark.e2e
     @pytest.mark.parametrize(
         "quantity, expected_quantity",
         [
