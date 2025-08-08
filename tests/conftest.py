@@ -203,6 +203,9 @@ def parameter_quantities() -> List[str]:
         "internaltidesfrictioncoefficient",
         "secchidepth",
         "sea_ice_area_fraction",
+        "stemheight",
+        "stemdensity",
+        "stemdiameter",
     ]
 
 

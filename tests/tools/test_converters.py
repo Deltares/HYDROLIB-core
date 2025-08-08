@@ -191,6 +191,9 @@ class TestConvertParameters:
             ),
             pytest.param(ExtOldQuantity.SecchiDepth, "secchidepth"),
             pytest.param(ExtOldQuantity.SeaIceAreaFraction, "sea_ice_area_fraction"),
+            pytest.param(ExtOldQuantity.StemHeight, "stemheight"),
+            pytest.param(ExtOldQuantity.StemDensity, "stemdensity"),
+            pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
