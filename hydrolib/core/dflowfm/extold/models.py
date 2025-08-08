@@ -697,10 +697,12 @@ class ExtOldForcing(BaseModel):
 
         for field_i in values.keys():
             if field_i.lower() in tracer_fields:
-                # If the key is not in the expected lowercase format, add it with the correct format
-                values_copy[field_i.lower()] = values_copy[field_i]
-                # Remove the original key to avoid "extra fields not permitted" error
-                values_copy.pop(field_i)
+                # if the field is already lowercase no need to change it
+                if field_i != field_i.lower():
+                    # If the key is not in the expected lowercase format, add it with the correct format
+                    values_copy[field_i.lower()] = values_copy[field_i]
+                    # Remove the original key to avoid "extra fields not permitted" error
+                    values_copy.pop(field_i)
 
         return values_copy
 
