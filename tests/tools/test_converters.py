@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.tools.extforce_convert.converters import (
+    ConverterFactory,
     InitialConditionConverter,
     MeteoConverter,
     ParametersConverter,
@@ -77,6 +78,50 @@ class TestConvertInitialCondition:
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
 
+    @pytest.mark.e2e
+    @pytest.mark.parametrize(
+        "quantity, expected_quantity",
+        [
+            pytest.param(ExtOldQuantity.BedLevel, "bedlevel"),
+            pytest.param(ExtOldQuantity.InitialWaterLevel, "initialwaterlevel"),
+            pytest.param(ExtOldQuantity.InitialSalinity, "initialsalinity"),
+            pytest.param(ExtOldQuantity.InitialSalinityTop, "initialsalinitytop"),
+            pytest.param(
+                ExtOldQuantity.InitialVerticalSalinityProfile,
+                "initialverticalsalinityprofile",
+            ),
+            pytest.param(ExtOldQuantity.InitialTemperature, "initialtemperature"),
+            pytest.param(
+                ExtOldQuantity.InitialVerticalTemperatureProfile,
+                "initialverticaltemperatureprofile",
+            ),
+            pytest.param(ExtOldQuantity.InitialVelocityX, "initialvelocityx"),
+            pytest.param(ExtOldQuantity.InitialVelocityY, "initialvelocityy"),
+            pytest.param(ExtOldQuantity.InitialVelocity, "initialvelocity"),
+        ],
+    )
+    def test_initial_condition_quantity(self, quantity, expected_quantity):
+        """Test conversion of initial condition quantity.
+
+        The test checks that the quantity resolves to the correct converter and that the
+        quantity is converted correctly.
+        """
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="iniwaterlevel.xyz",
+            filetype=7,
+            method="5",
+            operand="O",
+        )
+
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        assert new_forcing_dict["quantity"] == expected_quantity
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        assert isinstance(converter, InitialConditionConverter)
+        new_quantity_block = converter.convert(forcing)
+        assert isinstance(new_quantity_block, InitialField)
+        assert new_quantity_block.quantity == expected_quantity
+
 
 class TestConvertParameters:
     def test_sample_data_file(self):
@@ -96,7 +141,7 @@ class TestConvertParameters:
     def test_bed_rock_surface_elevation(self):
         """Test conversion of bedrock surface elevation forcing.
 
-        The Test only check that the name of the quantity is converted correctly.
+        The test only check that the name of the quantity is converted correctly.
         - all the the underscores in the old name are removed.
         - the naming convention is changed to camelCase.
         old: "bedrock_surface_elevation"
@@ -116,6 +161,63 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(forcing)
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
+
+    @pytest.mark.e2e
+    @pytest.mark.parametrize(
+        "quantity, expected_quantity",
+        [
+            pytest.param(ExtOldQuantity.FrictionCoefficient, "frictioncoefficient"),
+            pytest.param(
+                ExtOldQuantity.HorizontalEddyViscosityCoefficient,
+                "horizontaleddyviscositycoefficient",
+            ),
+            pytest.param(
+                ExtOldQuantity.HorizontalEddyDiffusivityCoefficient,
+                "horizontaleddydiffusivitycoefficient",
+            ),
+            pytest.param(ExtOldQuantity.AdvectionType, "advectiontype"),
+            pytest.param(
+                ExtOldQuantity.BedRockSurfaceElevation, "bedrockSurfaceElevation"
+            ),
+            pytest.param(ExtOldQuantity.WaveDirection, "wavedirection"),
+            pytest.param(ExtOldQuantity.XWaveForce, "xwaveforce"),
+            pytest.param(ExtOldQuantity.YWaveForce, "ywaveforce"),
+            pytest.param(ExtOldQuantity.WavePeriod, "waveperiod"),
+            pytest.param(ExtOldQuantity.WaveSignificantHeight, "wavesignificantheight"),
+            pytest.param(
+                ExtOldQuantity.InternalTidesFrictionCoefficient,
+                "internaltidesfrictioncoefficient",
+            ),
+            pytest.param(ExtOldQuantity.SecchiDepth, "secchidepth"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "sea_ice_area_fraction"),
+            pytest.param(ExtOldQuantity.StemHeight, "stemheight"),
+            pytest.param(ExtOldQuantity.StemDensity, "stemdensity"),
+            pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
+            pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
+            pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
+        ],
+    )
+    def test_parameter_quantity(self, quantity, expected_quantity):
+        """Test conversion of parameter quantity.
+
+        The test checks that the quantity resolves to the correct converter and that the
+        quantity is converted correctly.
+        """
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="iniwaterlevel.xyz",
+            filetype=7,
+            method="5",
+            operand="O",
+        )
+
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        assert new_forcing_dict["quantity"] == expected_quantity
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        assert isinstance(converter, ParametersConverter)
+        new_quantity_block = converter.convert(forcing)
+        assert isinstance(new_quantity_block, ParameterField)
+        assert new_quantity_block.quantity == expected_quantity
 
 
 class TestConvertMeteo:
