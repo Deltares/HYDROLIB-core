@@ -228,6 +228,8 @@ class ExtOldParametersQuantity(StrEnum):
     StemHeight = "stemheight"
     StemDensity = "stemdensity"
     StemDiameter = "stemdiameter"
+    NudgeRate = "nudgerate"
+    NudgeTime = "nudgetime"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -494,6 +496,10 @@ class ExtOldQuantity(StrEnum):
     """Stem density"""
     StemDiameter = "stemdiameter"
     """Stem diameter"""
+    NudgeRate = "nudgerate"
+    """Nudge rate"""
+    NudgeTime = "nudgetime"
+    """Nudge time"""
 
     # Spatial physical properties
     FrictionCoefficient = "frictioncoefficient"
