@@ -695,7 +695,7 @@ class ExtOldForcing(BaseModel):
         # Define the field names and their aliases
         tracer_fields = ["tracerfallvelocity", "tracerdecaytime"]
 
-        for field_i in list(values.keys()):
+        for field_i in values.keys():
             if field_i.lower() in tracer_fields:
                 # If the key is not in the expected lowercase format, add it with the correct format
                 values_copy[field_i.lower()] = values_copy[field_i]
