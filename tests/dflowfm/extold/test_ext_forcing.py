@@ -73,11 +73,12 @@ class TestExtForcing:
 @pytest.fixture
 def base_kwargs():
     return {
-        'QUANTITY': ExtOldQuantity.WaterLevelBnd,
-        'FILETYPE': ExtOldFileType.TimeSeries,
-        'METHOD': ExtOldMethod.PassThrough,
-        'OPERAND': Operand.override
+        "QUANTITY": ExtOldQuantity.WaterLevelBnd,
+        "FILETYPE": ExtOldFileType.TimeSeries,
+        "METHOD": ExtOldMethod.PassThrough,
+        "OPERAND": Operand.override,
     }
+
 
 # Four naming variants for the two fields, each with expected values
 CASES = [
@@ -102,6 +103,7 @@ CASES = [
         id="mixed",
     ),
 ]
+
 
 class TestTracerFields:
 
