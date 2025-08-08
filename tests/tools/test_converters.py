@@ -190,12 +190,13 @@ class TestConvertParameters:
                 "internaltidesfrictioncoefficient",
             ),
             pytest.param(ExtOldQuantity.SecchiDepth, "secchidepth"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "sea_ice_area_fraction"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
         """Test conversion of parameter quantity.
 
-        The Test only check that the name of the quantity is converted correctly.
+        The Test only checks that the name of the quantity is converted correctly.
         - all the the underscores in the old name are removed.
         - the naming convention is changed to camelCase.
         old: "initial_water_level"

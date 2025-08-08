@@ -202,6 +202,7 @@ def parameter_quantities() -> List[str]:
         "wavesignificantheight",
         "internaltidesfrictioncoefficient",
         "secchidepth",
+        "sea_ice_area_fraction",
     ]
 
 
