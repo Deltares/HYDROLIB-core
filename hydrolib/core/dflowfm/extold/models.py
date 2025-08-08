@@ -224,6 +224,7 @@ class ExtOldParametersQuantity(StrEnum):
     WaveSignificantHeight = "wavesignificantheight"
     InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
     SecchiDepth = "secchidepth"
+    SeaIceAreaFraction = "sea_ice_area_fraction"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -482,6 +483,8 @@ class ExtOldQuantity(StrEnum):
     """Bed level"""
     SecchiDepth = "secchidepth"
     """Secchi depth"""
+    SeaIceAreaFraction = "sea_ice_area_fraction"
+    """Sea ice area fraction"""
 
     # Spatial physical properties
     FrictionCoefficient = "frictioncoefficient"
