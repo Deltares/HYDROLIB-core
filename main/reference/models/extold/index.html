@@ -2715,6 +2715,15 @@ You're not viewing the latest release version.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.extold.models.ExtOldForcing.handle_case_insensitive_tracer_fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      handle_case_insensitive_tracer_fields
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5079,7 +5088,26 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">857</span>
 <span class="normal">858</span>
 <span class="normal">859</span>
-<span class="normal">860</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class holding the external forcing values.&quot;&quot;&quot;</span>
 
     <span class="n">quantity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtOldQuantity</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;QUANTITY&quot;</span><span class="p">)</span>
@@ -5187,6 +5215,25 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
+        <span class="n">values_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># Define the field names and their aliases</span>
+        <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tracerfallvelocity&quot;</span><span class="p">,</span> <span class="s2">&quot;tracerdecaytime&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">field_i</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">tracer_fields</span><span class="p">:</span>
+                <span class="c1"># if the field is already lowercase no need to change it</span>
+                <span class="k">if</span> <span class="n">field_i</span> <span class="o">!=</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="c1"># If the key is not in the expected lowercase format, add it with the correct format</span>
+                    <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="p">]</span>
+                    <span class="c1"># Remove the original key to avoid &quot;extra fields not permitted&quot; error</span>
+                    <span class="n">values_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field_i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values_copy</span>
 
     <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -5831,26 +5878,7 @@ dictionary.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">823</span>
-<span class="normal">824</span>
-<span class="normal">825</span>
-<span class="normal">826</span>
-<span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
-<span class="normal">834</span>
-<span class="normal">835</span>
-<span class="normal">836</span>
-<span class="normal">837</span>
-<span class="normal">838</span>
-<span class="normal">839</span>
-<span class="normal">840</span>
-<span class="normal">841</span>
-<span class="normal">842</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">842</span>
 <span class="normal">843</span>
 <span class="normal">844</span>
 <span class="normal">845</span>
@@ -5868,7 +5896,26 @@ dictionary.</p>
 <span class="normal">857</span>
 <span class="normal">858</span>
 <span class="normal">859</span>
-<span class="normal">860</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">860</span>
+<span class="normal">861</span>
+<span class="normal">862</span>
+<span class="normal">863</span>
+<span class="normal">864</span>
+<span class="normal">865</span>
+<span class="normal">866</span>
+<span class="normal">867</span>
+<span class="normal">868</span>
+<span class="normal">869</span>
+<span class="normal">870</span>
+<span class="normal">871</span>
+<span class="normal">872</span>
+<span class="normal">873</span>
+<span class="normal">874</span>
+<span class="normal">875</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
 
@@ -5906,6 +5953,62 @@ dictionary.</p>
         <span class="n">values</span><span class="p">[</span><span class="n">filename_var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_path</span>
 
     <span class="k">return</span> <span class="n">values</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="hydrolib.core.dflowfm.extold.models.ExtOldForcing.handle_case_insensitive_tracer_fields" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
+
+<a href="#hydrolib.core.dflowfm.extold.models.ExtOldForcing.handle_case_insensitive_tracer_fields" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Handle case-insensitive matching for tracer fields.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
+    <span class="n">values_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># Define the field names and their aliases</span>
+    <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tracerfallvelocity&quot;</span><span class="p">,</span> <span class="s2">&quot;tracerdecaytime&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">field_i</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">tracer_fields</span><span class="p">:</span>
+            <span class="c1"># if the field is already lowercase no need to change it</span>
+            <span class="k">if</span> <span class="n">field_i</span> <span class="o">!=</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="c1"># If the key is not in the expected lowercase format, add it with the correct format</span>
+                <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="p">]</span>
+                <span class="c1"># Remove the original key to avoid &quot;extra fields not permitted&quot; error</span>
+                <span class="n">values_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field_i</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">values_copy</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7184,26 +7287,7 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">863</span>
-<span class="normal">864</span>
-<span class="normal">865</span>
-<span class="normal">866</span>
-<span class="normal">867</span>
-<span class="normal">868</span>
-<span class="normal">869</span>
-<span class="normal">870</span>
-<span class="normal">871</span>
-<span class="normal">872</span>
-<span class="normal">873</span>
-<span class="normal">874</span>
-<span class="normal">875</span>
-<span class="normal">876</span>
-<span class="normal">877</span>
-<span class="normal">878</span>
-<span class="normal">879</span>
-<span class="normal">880</span>
-<span class="normal">881</span>
-<span class="normal">882</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">882</span>
 <span class="normal">883</span>
 <span class="normal">884</span>
 <span class="normal">885</span>
@@ -7220,7 +7304,26 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">896</span>
 <span class="normal">897</span>
 <span class="normal">898</span>
-<span class="normal">899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">899</span>
+<span class="normal">900</span>
+<span class="normal">901</span>
+<span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
+<span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (old format).</span>
 
