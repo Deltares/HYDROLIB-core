@@ -206,6 +206,8 @@ def parameter_quantities() -> List[str]:
         "stemheight",
         "stemdensity",
         "stemdiameter",
+        "nudgerate",
+        "nudgetime",
     ]
 
 

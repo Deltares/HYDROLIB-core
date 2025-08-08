@@ -194,6 +194,8 @@ class TestConvertParameters:
             pytest.param(ExtOldQuantity.StemHeight, "stemheight"),
             pytest.param(ExtOldQuantity.StemDensity, "stemdensity"),
             pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
+            pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
+            pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
