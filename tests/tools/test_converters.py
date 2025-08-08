@@ -114,8 +114,8 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
-        assert new_focing_dict["quantity"] == expected_quantity
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, InitialConditionConverter)
         new_quantity_block = converter.convert(forcing)
@@ -211,8 +211,8 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
-        assert new_focing_dict["quantity"] == expected_quantity
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, ParametersConverter)
         new_quantity_block = converter.convert(forcing)
