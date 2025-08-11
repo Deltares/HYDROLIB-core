@@ -1,5 +1,6 @@
 """DIMR Serializer."""
 
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import List
@@ -55,8 +56,13 @@ class DIMRSerializer:
             xml_declaration=True,
         )
         # Replace single quotes with double quotes in the XML declaration
-        if xml.startswith(b"<?xml"):
-            xml = xml.replace(b"'", b'"', 4)
+        xml = re.sub(
+            rb"^(<\?xml[^>]+)(\?>)",
+            lambda m: m.group(1).replace(b"'", b'"') + m.group(2),
+            xml,
+            count=1,
+            flags=re.DOTALL,
+        )
 
         with path.open("wb") as f:
             f.write(xml)
