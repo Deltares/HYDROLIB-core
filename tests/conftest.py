@@ -201,6 +201,13 @@ def parameter_quantities() -> List[str]:
         "waveperiod",
         "wavesignificantheight",
         "internaltidesfrictioncoefficient",
+        "secchidepth",
+        "sea_ice_area_fraction",
+        "stemheight",
+        "stemdensity",
+        "stemdiameter",
+        "nudgerate",
+        "nudgetime",
     ]
 
 

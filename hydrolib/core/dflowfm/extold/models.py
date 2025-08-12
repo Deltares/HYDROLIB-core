@@ -231,6 +231,13 @@ class ExtOldParametersQuantity(StrEnum):
     WavePeriod = "waveperiod"
     WaveSignificantHeight = "wavesignificantheight"
     InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
+    SecchiDepth = "secchidepth"
+    SeaIceAreaFraction = "sea_ice_area_fraction"
+    StemHeight = "stemheight"
+    StemDensity = "stemdensity"
+    StemDiameter = "stemdiameter"
+    NudgeRate = "nudgerate"
+    NudgeTime = "nudgetime"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -369,149 +376,92 @@ class ExtOldQuantity(StrEnum):
 
     # Boundary conditions
     WaterLevelBnd = "waterlevelbnd"
-    """Water level"""
     NeumannBnd = "neumannbnd"
-    """Water level gradient"""
     RiemannBnd = "riemannbnd"
-    """Riemann invariant"""
     OutflowBnd = "outflowbnd"
-    """Outflow"""
     VelocityBnd = "velocitybnd"
-    """Velocity"""
     DischargeBnd = "dischargebnd"
-    """Discharge"""
     RiemannVelocityBnd = "riemann_velocitybnd"
-    """Riemann invariant velocity"""
     SalinityBnd = "salinitybnd"
-    """Salinity"""
     TemperatureBnd = "temperaturebnd"
-    """Temperature"""
     SedimentBnd = "sedimentbnd"
-    """Suspended sediment"""
     UXUYAdvectionVelocityBnd = "uxuyadvectionvelocitybnd"
-    """ux-uy advection velocity"""
     NormalVelocityBnd = "normalvelocitybnd"
-    """Normal velocity"""
     TangentialVelocityBnd = "tangentialvelocitybnd"
-    """Tangentional velocity"""
     QhBnd = "qhbnd"
-    """Discharge-water level dependency"""
 
     # Meteorological fields
     WindX = "windx"
-    """Wind x component"""
     WindY = "windy"
-    """Wind y component"""
     WindXY = "windxy"
-    """Wind vector"""
     AirPressureWindXWindY = "airpressure_windx_windy"
-    """Atmospheric pressure and wind components"""
     AirPressureWindXWindYCharnock = "airpressure_windx_windy_charnock"
-    "Atmospheric pressure and wind components Charnock"
     AtmosphericPressure = "atmosphericpressure"
-    """Atmospheric pressure"""
     Rainfall = "rainfall"
-    """Precipitation"""
     RainfallRate = "rainfall_rate"
-    """Precipitation"""
     HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
-    """Combined heat flux terms"""
     HumidityAirTemperatureCloudinessSolarRadiation = (
         "humidity_airtemperature_cloudiness_solarradiation"
     )
-    """Combined heat flux terms"""
     DewPointAirTemperatureCloudiness = "dewpoint_airtemperature_cloudiness"
-    """Dew point air temperature cloudiness"""
     LongWaveRadiation = "longwaveradiation"
-    """Long wave radiation"""
     SolarRadiation = "solarradiation"
-    """Solar radiation"""
     DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
-    """Discharge, salinity temperature source-sinks"""
     NudgeSalinityTemperature = "nudge_salinity_temperature"
-    """Nudging salinity and temperature"""
     AirPressure = "airpressure"
-    """AirPressure"""
     StressX = "stressx"
-    """eastward wind stress"""
     StressY = "stressy"
-    """northward wind stress"""
     AirTemperature = "airtemperature"
-    """AirTemperature"""
     Cloudiness = "cloudiness"
-    """Cloudiness, or cloud cover (fraction)"""
     Humidity = "humidity"
-    """Humidity"""
     StressXY = "stressxy"
-    """eastward and northward wind stress"""
     AirpressureStressXStressY = "airpressure_stressx_stressy"
-    """Airpressure, eastward and northward wind stress"""
     WindSpeed = "wind_speed"
-    """WindSpeed"""
     WindSpeedFactor = "windspeedfactor"
     WindFromDirection = "wind_from_direction"
-    """WindFromDirection"""
     DewpointAirTemperatureCloudinessSolarradiation = (
         "dewpoint_airtemperature_cloudiness_solarradiation"
     )
-    """Dewpoint temperature, air temperature, cloudiness, solarradiation"""
     AirDensity = "airdensity"
-    """Air density"""
     Charnock = "charnock"
-    """Charnock coefficient"""
     Dewpoint = "dewpoint"
-    """Dewpoint temperature"""
 
     # Structure parameters
     Pump = "pump"
-    """Pump capacity"""
     DamLevel = "damlevel"
-    """Dam level"""
     GateLowerEdgeLevel = "gateloweredgelevel"
-    """Gate lower edge level"""
     GeneralStructure = "generalstructure"
-    """General structure"""
 
     # Initial fields
     InitialWaterLevel = "initialwaterlevel"
-    """Initial water level"""
     InitialSalinity = "initialsalinity"
-    """Initial salinity"""
     InitialSalinityTop = "initialsalinitytop"
-    """Initial salinity top layer"""
     InitialTemperature = "initialtemperature"
-    """Initial temperature"""
     InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
-    """Initial vertical temperature profile"""
     InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
-    """Initial vertical salinity profile"""
     BedLevel = "bedlevel"
-    """Bed level"""
+    SecchiDepth = "secchidepth"
+    SeaIceAreaFraction = "sea_ice_area_fraction"
+    StemHeight = "stemheight"
+    StemDensity = "stemdensity"
+    StemDiameter = "stemdiameter"
+    NudgeRate = "nudgerate"
+    NudgeTime = "nudgetime"
 
     # Spatial physical properties
     FrictionCoefficient = "frictioncoefficient"
-    """Friction coefficient"""
     HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
-    """Horizontal eddy viscosity coefficient"""
     InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
-    """Internal tides friction coefficient"""
     HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    """Horizontal eddy diffusivity coefficient"""
     AdvectionType = "advectiontype"
-    """Type of advection scheme"""
     IBotLevType = "ibotlevtype"
     BedRockSurfaceElevation = "bedrock_surface_elevation"
-    """Type of bed-level handling"""
 
     # Miscellaneous
     ShiptXY = "shiptxy"
-    """shiptxy"""
     MovingStationXY = "movingstationxy"
-    """Moving observation point for output (time, x, y)"""
     WaveSignificantHeight = "wavesignificantheight"
-    """Wave significant height"""
     WavePeriod = "waveperiod"
-    """Wave period"""
     WaveDirection = "wavedirection"
     XWaveForce = "xwaveforce"
     YWaveForce = "ywaveforce"
@@ -696,6 +646,25 @@ class ExtOldForcing(BaseModel):
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @root_validator(pre=True)
+    def handle_case_insensitive_tracer_fields(cls, values):
+        """Handle case-insensitive matching for tracer fields."""
+        values_copy = dict(values)
+
+        # Define the field names and their aliases
+        tracer_fields = ["tracerfallvelocity", "tracerdecaytime"]
+
+        for field_i in values.keys():
+            if field_i.lower() in tracer_fields:
+                # if the field is already lowercase no need to change it
+                if field_i != field_i.lower():
+                    # If the key is not in the expected lowercase format, add it with the correct format
+                    values_copy[field_i.lower()] = values_copy[field_i]
+                    # Remove the original key to avoid "extra fields not permitted" error
+                    values_copy.pop(field_i)
+
+        return values_copy
 
     @field_validator("quantity", mode="before")
     @classmethod
