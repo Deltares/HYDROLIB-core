@@ -647,7 +647,8 @@ class ExtOldForcing(BaseModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def handle_case_insensitive_tracer_fields(cls, values):
         """Handle case-insensitive matching for tracer fields."""
         values_copy = dict(values)
