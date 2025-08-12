@@ -56,12 +56,14 @@ class DIMRSerializer:
             xml_declaration=True,
         )
         # Replace single quotes with double quotes in the XML declaration
+        # The following regex matches the XML declaration at the start of the file.
+        # It captures two groups: (1) everything from '<?xml' up to the closing '?>', and (2) the closing '?>'.
+        # This allows us to replace single quotes with double quotes only within the declaration.
         xml = re.sub(
             rb"^(<\?xml[^>]+)(\?>)",
             lambda m: m.group(1).replace(b"'", b'"') + m.group(2),
             xml,
             count=1,
-            flags=re.DOTALL,
         )
 
         with path.open("wb") as f:
