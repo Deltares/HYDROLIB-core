@@ -1,9 +1,9 @@
 """DIMR Serializer."""
 
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import List
-from xml.dom import minidom
 
 from lxml import etree as e
 
@@ -49,8 +49,22 @@ class DIMRSerializer:
             root, data, config, save_settings, path_style_converter
         )
 
-        to_string = minidom.parseString(e.tostring(root))
-        xml = to_string.toprettyxml(indent="  ", encoding="utf-8")
+        xml = e.tostring(
+            root,
+            encoding="utf-8",
+            pretty_print=True,
+            xml_declaration=True,
+        )
+        # Replace single quotes with double quotes in the XML declaration
+        # The following regex matches the XML declaration at the start of the file.
+        # It captures two groups: (1) everything from '<?xml' up to the closing '?>', and (2) the closing '?>'.
+        # This allows us to replace single quotes with double quotes only within the declaration.
+        xml = re.sub(
+            rb"^(<\?xml[^>]+)(\?>)",
+            lambda m: m.group(1).replace(b"'", b'"') + m.group(2),
+            xml,
+            count=1,
+        )
 
         with path.open("wb") as f:
             f.write(xml)
