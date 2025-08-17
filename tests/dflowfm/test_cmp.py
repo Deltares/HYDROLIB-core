@@ -2,10 +2,16 @@ import re
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 from pyfakefs.fake_filesystem import FakeFilesystem
 
 from hydrolib.core.base.models import ModelSaveSettings
-from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
+from hydrolib.core.dflowfm.cmp.models import (
+    AstronomicRecord,
+    CMPModel,
+    CMPSet,
+    HarmonicRecord,
+)
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
 from hydrolib.core.dflowfm.cmp.serializer import CMPSerializer
 
@@ -116,7 +122,7 @@ class TestCMPModel:
     def test_cmp_model_initialization(self):
         model = CMPModel()
         assert len(model.comments) == 0
-        assert len(model.component) == 0
+        assert isinstance(model.component, CMPSet)
 
     def test_astronomic_record_initialization(self):
         record = AstronomicRecord(name="3MS2", amplitude=1.0, phase=2.0)
@@ -139,7 +145,7 @@ class TestCMPModel:
         assert len(model.component.astronomics) == 1
 
     def test_cmp_model_initialization_with_invalid_data(self):
-        with pytest.raises(ValueError) as error:
+        with pytest.raises(ValidationError) as error:
             CMPModel(
                 comments=["test content"],
                 component={
@@ -148,7 +154,10 @@ class TestCMPModel:
                 },
             )
 
-        expected_error_msg = "phase\n  field required (type=value_error.missing)"
+        expected_error_msg = (
+            "1 validation error for CMPModel\n"
+            "component.astronomics.0.phase\n  Field required"
+        )
         assert expected_error_msg in str(error.value)
 
     def test_cmp_model_parse(self):

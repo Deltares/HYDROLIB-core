@@ -3,9 +3,9 @@
 from abc import ABC, abstractclassmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Dict, List, Literal, Optional, Type, Union
+from typing import Annotated, Callable, Dict, List, Literal, Optional, Type, Union
 
-from pydantic.v1 import Field, validator
+from pydantic import Field, ValidationInfo, field_validator
 
 from hydrolib.core import __version__
 from hydrolib.core.base.models import (
@@ -54,12 +54,12 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[int]
+    process: Optional[int] = Field(default=None)
     setting: Optional[List[KeyValuePair]] = Field(default_factory=list)
     parameter: Optional[List[KeyValuePair]] = Field(default_factory=list)
-    mpiCommunicator: Optional[str]
+    mpiCommunicator: Optional[str] = Field(default=None)
 
-    model: Optional[FileModel]
+    model: Optional[FileModel] = Field(default=None)
 
     @property
     def filepath(self):
@@ -69,7 +69,7 @@ class Component(BaseModel, ABC):
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
-    @validator("setting", "parameter", pre=True, allow_reuse=True)
+    @field_validator("setting", "parameter", mode="before")
     def validate_setting(cls, v):
         return to_list(v)
 
@@ -79,10 +79,10 @@ class Component(BaseModel, ABC):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         # Exclude the FileModel from any DIMR serialization.
         kwargs["exclude"] = {"model"}
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
 
 class FMComponent(Component):
@@ -90,8 +90,8 @@ class FMComponent(Component):
 
     library: Literal["dflowfm"] = "dflowfm"
 
-    @validator("process", pre=True)
-    def validate_process(cls, value, values: dict) -> Union[None, int]:
+    @field_validator("process", mode="before")
+    def validate_process(cls, value, info: ValidationInfo) -> Union[None, int]:
         """
         Validation for the process Attribute.
 
@@ -110,12 +110,12 @@ class FMComponent(Component):
             return value
 
         if isinstance(value, int) and cls._is_valid_process_int(
-            value, values.get("name")
+            value, info.data.get("name")
         ):
             return value
 
         raise ValueError(
-            f"In component '{values.get('name')}', the keyword process '{value}', is incorrect."
+            f"In component '{info.data.get('name')}', the keyword process '{value}', is incorrect."
         )
 
     @classmethod
@@ -229,9 +229,9 @@ class Coupler(BaseModel):
     sourceComponent: str
     targetComponent: str
     item: List[CoupledItem] = Field(default_factory=list)
-    logger: Optional[Logger]
+    logger: Optional[Logger] = Field(default=None)
 
-    @validator("item", pre=True)
+    @field_validator("item", mode="before")
     def validate_item(cls, v):
         return to_list(v)
 
@@ -258,7 +258,7 @@ class StartGroup(BaseModel):
     start: List[ComponentOrCouplerRef] = Field(default_factory=list)
     coupler: List[ComponentOrCouplerRef] = Field(default_factory=list)
 
-    @validator("start", "coupler", pre=True)
+    @field_validator("start", "coupler", mode="before")
     def validate_start(cls, v):
         return to_list(v)
 
@@ -271,21 +271,11 @@ class ControlModel(BaseModel):
 
     _type: str
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         """Add control element prefixes for serialized data."""
         return {
-            str(self._type): super().dict(*args, **kwargs),
+            str(self._type): super().model_dump(*args, **kwargs),
         }
-
-    @classmethod
-    def validate(cls, v):
-        """Remove control element prefixes from parsed data."""
-        # should be replaced by discriminated unions once merged
-        # https://github.com/samuelcolvin/pydantic/pull/2336
-        if isinstance(v, dict) and len(v.keys()) == 1:
-            key = list(v.keys())[0]
-            v = v[key]
-        return super().validate(v)
 
 
 class Parallel(ControlModel):
@@ -316,6 +306,11 @@ class Start(ControlModel):
     name: str
 
 
+ComponentUnion = Annotated[
+    Union[RRComponent, FMComponent], Field(discriminator="library")
+]
+
+
 class DIMR(ParsableFileModel):
     """DIMR model representation.
 
@@ -340,20 +335,58 @@ class DIMR(ParsableFileModel):
 
     documentation: Documentation = Documentation()
     control: List[Union[Start, Parallel]] = Field(default_factory=list)
-    component: List[Union[RRComponent, FMComponent, Component]] = Field(
-        default_factory=list
-    )
+    component: List[ComponentUnion] = Field(default_factory=list)
     coupler: Optional[List[Coupler]] = Field(default_factory=list)
-    waitFile: Optional[str]
-    global_settings: Optional[GlobalSettings]
+    waitFile: Optional[str] = Field(default=None)
+    global_settings: Optional[GlobalSettings] = Field(default=None)
 
-    @validator("component", "coupler", "control", pre=True)
+    @field_validator("component", "coupler", "control", mode="before")
     def validate_component(cls, v):
         return to_list(v)
 
-    def dict(self, *args, **kwargs):
+    @field_validator("control", mode="before")
+    def validate_control(cls, v):
+        if isinstance(v, list):
+            return [
+                (
+                    Start(**item["start"])
+                    if next(iter(item)) == "start"
+                    else Parallel(**item["parallel"])
+                )
+                for item in v
+            ]
+        elif isinstance(v, dict):
+            val = (
+                Start(**v["start"])
+                if next(iter(v)) == "start"
+                else Parallel(**v["parallel"])
+            )
+            return val
+        return v
+
+    def model_dump(self, *args, **kwargs):
         kwargs["exclude_none"] = True
-        return super().dict(*args, **kwargs)
+        data = super().model_dump(*args, **kwargs)
+        # Manually apply custom model_dump for control items
+        if "control" in data:
+            data["control"] = [
+                (
+                    item.model_dump(*args, **kwargs)
+                    if isinstance(item, ControlModel)
+                    else item
+                )
+                for item in self.control
+            ]
+        if "component" in data:
+            data["component"] = [
+                (
+                    item.model_dump(*args, **kwargs)
+                    if isinstance(item, Component)
+                    else item
+                )
+                for item in self.component
+            ]
+        return data
 
     def _post_init_load(self) -> None:
         """Load the component models of this DIMR model."""
@@ -402,12 +435,16 @@ class DIMR(ParsableFileModel):
             if fmcomponent is None or fmcomponent.process is None:
                 continue
 
-            fmcomponent_process_value = " ".join(
-                str(i) for i in range(fmcomponent.process)
-            )
-            fmcomponent_as_dict = self._update_component_dictonary(
-                fmcomponent, fmcomponent_process_value
-            )
+            if fmcomponent.process == 1:
+                fmcomponent_as_dict = fmcomponent.model_dump()
+                fmcomponent_as_dict.pop("process", None)
+            else:
+                fmcomponent_process_value = " ".join(
+                    str(i) for i in range(fmcomponent.process)
+                )
+                fmcomponent_as_dict = self._update_component_dictonary(
+                    fmcomponent, fmcomponent_process_value
+                )
 
             list_of_fm_components_as_dict.append(fmcomponent_as_dict)
 
@@ -416,7 +453,7 @@ class DIMR(ParsableFileModel):
     def _update_component_dictonary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
     ) -> Dict:
-        fmcomponent_as_dict = fmcomponent.dict()
+        fmcomponent_as_dict = fmcomponent.model_dump()
         fmcomponent_as_dict.update({"process": fmcomponent_process_value})
         return fmcomponent_as_dict
 

@@ -1,4 +1,4 @@
-# written by HYDROLIB-core 0.7.0
+# written by HYDROLIB-core 0.9.0
 
 [General]
 fileVersion           = 1.09          # File format version (do not edit this)
@@ -11,17 +11,10 @@ pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to reso
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
 bathymetryFile                 =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
-dryPointsFile                  =                   # Dry points file *.xyz (third column dummy z values), or dry areas polygon file *.pol (third column 1/-1: inside/outside)
-structureFile                  =                   # Hydraulic structure file (*.ini)
 iniFieldFile                   =                   # Initial and parameter field file <*.ini>.
 waterLevIniFile                =                   # Initial water levels sample file <*.xyz>.
-landBoundaryFile               =                   # Only for plotting.
-thinDamFile                    =                   # Polyline file *_thd.pli, containing thin dams
-fixedWeirFile                  =                   # Polyline file *_fxw.pliz, containing fixed weirs with rows x, y, crest level, left ground level, right ground level
-pillarFile                     =                   # <*_pillar.pliz>, Polyline file containing four colums with x, y, diameter and Cd coefficient for bridge pillars.
 useCaching                     = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)
 vertPlizFile                   =                   # <*_vlay.pliz>), = pliz with x, y, Z, first Z = nr of layers, second Z = laytyp.
-frictFile                      =                   # Location of the files with roughness data for 1D.
 crossDefFile                   =                   # Cross section definitions for all cross section shapes.
 crossLocFile                   =                   # Location definitions of the cross sections on a 1D network.
 storageNodeFile                =                   # File containing the specification of storage nodes and/or manholes to add extra storage to 1D models.
@@ -265,7 +258,6 @@ outputDir                         =                                             
 waqOutputDir                      =                                                                                 # Output directory of Water Quality files.
 flowGeomFile                      =                                                                                 # *_flowgeom.nc Flow geometry file in netCDF format.
 obsFile                           = /p/i1000668-tcoms/03_newModel/01_input/05_obs/UHSLCandIHO_obs.xyn cells_obs.xyn # Points file *.xyn with observation stations with rows x, y, station name
-crsFile                           =                                                                                 # Polyline file *_crs.pli defining observation cross sections
 fouFile                           =                                                                                 # Fourier analysis input file *.fou
 fouUpdateStep                     = 0                                                                               # Fourier update step type: 0=every user time step, 1=every computational timestep, 2=same as history output.
 hisFile                           =                                                                                 # HisFile name *_his.nc
