@@ -78,7 +78,6 @@ version_files = [
   "pyproject.toml:version",
   "tests/data/reference/dimr/test_serialize.xml:createdBy",
   "tests/data/reference/model/test_dimr_model_save.xml:createdBy",
-  "tests/data/reference/crosssection/crsloc.ini:HYDROLIB-core",
 ]
 changelog_file = "docs/changelog.md"
 
