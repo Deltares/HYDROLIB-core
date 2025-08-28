@@ -872,7 +872,11 @@ class MDUParser:
         self.content.insert(index, line)
 
     def delete_line(
-        self, *, index: Optional[int] = None, keyword: Optional[str] = None, case_sensitive: bool = False
+        self,
+        *,
+        index: Optional[int] = None,
+        keyword: Optional[str] = None,
+        case_sensitive: bool = False,
     ) -> None:
         """
         Delete a line from the MDU file content by index or keyword.
