@@ -871,6 +871,34 @@ class MDUParser:
 
         self.content.insert(index, line)
 
+    def delete_line(
+        self, *, index: Optional[int] = None, keyword: Optional[str] = None, case_sensitive: bool = False
+    ) -> None:
+        """
+
+        Args:
+            index: The index to be used in the MDU file.
+            keyword: The keyword to search for. If None, it will search for the keyword.
+            case_sensitive: Whether the search should be case-sensitive.
+
+        """
+        if (index is None) == (keyword is None):
+            raise ValueError("Exactly one of 'index' or 'keyword' must be provided")
+
+        if index:
+            # validate bounds explicitly
+            if not (0 <= index < len(self.content)):
+                raise IndexError(f"index out of range: {index}")
+            self.content.pop(index)
+        elif keyword is not None:
+            if keyword == "":
+                raise ValueError("keyword cannot be empty string")
+
+            index = self.find_keyword_lines(keyword, case_sensitive=case_sensitive)
+
+            if index is not None:
+                self.content.pop(index)
+
     def get_section(self, section_name: str) -> Section:
         """Get Mdu Section.
 
