@@ -2893,15 +2893,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.extold.models.ExtOldMeteoQuantity.NudgeSalinityTemperature" class="md-nav__link">
-    <span class="md-ellipsis">
-      NudgeSalinityTemperature
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.extold.models.ExtOldMeteoQuantity.Rainfall" class="md-nav__link">
     <span class="md-ellipsis">
       Rainfall
@@ -3720,15 +3711,15 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">520</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">519</span>
+<span class="normal">520</span>
 <span class="normal">521</span>
 <span class="normal">522</span>
 <span class="normal">523</span>
 <span class="normal">524</span>
 <span class="normal">525</span>
 <span class="normal">526</span>
-<span class="normal">527</span>
-<span class="normal">528</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldExtrapolationMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">527</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldExtrapolationMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the `extrapolation_method` attribute</span>
 <span class="sd">    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3834,7 +3825,8 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">466</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">465</span>
+<span class="normal">466</span>
 <span class="normal">467</span>
 <span class="normal">468</span>
 <span class="normal">469</span>
@@ -3861,8 +3853,7 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">490</span>
 <span class="normal">491</span>
 <span class="normal">492</span>
-<span class="normal">493</span>
-<span class="normal">494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldFileType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">493</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldFileType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the `filetype` attribute</span>
 <span class="sd">    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4227,7 +4218,8 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">531</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">530</span>
+<span class="normal">531</span>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
@@ -4524,8 +4516,7 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">825</span>
 <span class="normal">826</span>
 <span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">828</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class holding the external forcing values.&quot;&quot;&quot;</span>
 
     <span class="n">quantity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtOldQuantity</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;QUANTITY&quot;</span><span class="p">)</span>
@@ -5296,7 +5287,8 @@ dictionary.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">792</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">791</span>
+<span class="normal">792</span>
 <span class="normal">793</span>
 <span class="normal">794</span>
 <span class="normal">795</span>
@@ -5332,8 +5324,7 @@ dictionary.</p>
 <span class="normal">825</span>
 <span class="normal">826</span>
 <span class="normal">827</span>
-<span class="normal">828</span>
-<span class="normal">829</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">828</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
 
@@ -5392,7 +5383,8 @@ dictionary.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">640</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">639</span>
+<span class="normal">640</span>
 <span class="normal">641</span>
 <span class="normal">642</span>
 <span class="normal">643</span>
@@ -5408,8 +5400,7 @@ dictionary.</p>
 <span class="normal">653</span>
 <span class="normal">654</span>
 <span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">656</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
     <span class="n">values_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
@@ -5476,7 +5467,8 @@ please open and issue in github.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">302</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">301</span>
+<span class="normal">302</span>
 <span class="normal">303</span>
 <span class="normal">304</span>
 <span class="normal">305</span>
@@ -5528,8 +5520,7 @@ please open and issue in github.</p>
 <span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldInitialConditionQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldInitialConditionQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initial Condition quantities:</span>
 <span class="sd">        initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,</span>
@@ -5629,8 +5620,7 @@ please open and issue in github.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
-<span class="normal">236</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
@@ -5692,8 +5682,7 @@ please open and issue in github.</p>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldMeteoQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldMeteoQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 
     <span class="c1"># Meteorological fields</span>
     <span class="n">WindX</span> <span class="o">=</span> <span class="s2">&quot;windx&quot;</span>
@@ -5724,8 +5713,6 @@ please open and issue in github.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Long wave radiation&quot;&quot;&quot;</span>
     <span class="n">SolarRadiation</span> <span class="o">=</span> <span class="s2">&quot;solarradiation&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solar radiation&quot;&quot;&quot;</span>
-    <span class="n">NudgeSalinityTemperature</span> <span class="o">=</span> <span class="s2">&quot;nudge_salinity_temperature&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nudging salinity and temperature&quot;&quot;&quot;</span>
     <span class="n">AirPressure</span> <span class="o">=</span> <span class="s2">&quot;airpressure&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;AirPressure&quot;&quot;&quot;</span>
     <span class="n">StressX</span> <span class="o">=</span> <span class="s2">&quot;stressx&quot;</span>
@@ -6127,28 +6114,6 @@ please open and issue in github.</p>
 
 
 
-<h3 id="hydrolib.core.dflowfm.extold.models.ExtOldMeteoQuantity.NudgeSalinityTemperature" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">NudgeSalinityTemperature</span> <span class="o">=</span> <span class="s1">&#39;nudge_salinity_temperature&#39;</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#hydrolib.core.dflowfm.extold.models.ExtOldMeteoQuantity.NudgeSalinityTemperature" class="headerlink" title="Permanent link">&para;</a></h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Nudging salinity and temperature</p>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-attribute">
-
-
-
 <h3 id="hydrolib.core.dflowfm.extold.models.ExtOldMeteoQuantity.Rainfall" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">Rainfall</span> <span class="o">=</span> <span class="s1">&#39;rainfall&#39;</span></code>
 
@@ -6423,7 +6388,8 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">497</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">496</span>
+<span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
 <span class="normal">500</span>
@@ -6442,8 +6408,7 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">513</span>
 <span class="normal">514</span>
 <span class="normal">515</span>
-<span class="normal">516</span>
-<span class="normal">517</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">516</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the `method` attribute</span>
 <span class="sd">    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6705,7 +6670,8 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">832</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">831</span>
+<span class="normal">832</span>
 <span class="normal">833</span>
 <span class="normal">834</span>
 <span class="normal">835</span>
@@ -6740,8 +6706,7 @@ in the <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.extold
 <span class="normal">864</span>
 <span class="normal">865</span>
 <span class="normal">866</span>
-<span class="normal">867</span>
-<span class="normal">868</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">867</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (old format).</span>
 
@@ -6920,7 +6885,8 @@ https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf</p>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
-<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldParametersQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">232</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldParametersQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the Spatial parameter category</span>
 <span class="sd">    of the external forcings.</span>
 
@@ -6947,6 +6913,7 @@ https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf</p>
     <span class="n">StemDiameter</span> <span class="o">=</span> <span class="s2">&quot;stemdiameter&quot;</span>
     <span class="n">NudgeRate</span> <span class="o">=</span> <span class="s2">&quot;nudgerate&quot;</span>
     <span class="n">NudgeTime</span> <span class="o">=</span> <span class="s2">&quot;nudgetime&quot;</span>
+    <span class="n">NudgeSalinityTemperature</span> <span class="o">=</span> <span class="s2">&quot;nudge_salinity_temperature&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6996,7 +6963,8 @@ of the external forcings.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">363</span>
+<span class="normal">364</span>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
@@ -7094,8 +7062,7 @@ of the external forcings.</p>
 <span class="normal">459</span>
 <span class="normal">460</span>
 <span class="normal">461</span>
-<span class="normal">462</span>
-<span class="normal">463</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldQuantity</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the boundary conditions category</span>
 <span class="sd">    of the external forcings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7243,10 +7210,10 @@ of the external forcings.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">358</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">357</span>
+<span class="normal">358</span>
 <span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldSourcesSinks</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">360</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldSourcesSinks</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Source and sink quantities&quot;&quot;&quot;</span>
 
     <span class="n">DischargeSalinityTemperatureSorSin</span> <span class="o">=</span> <span class="s2">&quot;discharge_salinity_temperature_sorsin&quot;</span>
