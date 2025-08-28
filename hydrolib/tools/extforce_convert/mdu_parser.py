@@ -1,11 +1,12 @@
 """MDU Parser."""
-
+import yaml
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
@@ -13,6 +14,13 @@ from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, bac
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
+
+CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
+
+with CONVERTER_DATA_PATH.open("r") as fh:
+    CONVERTER_DATA = yaml.safe_load(fh)
+
+__all__ = ["MDUParser"]
 
 @dataclass
 class Section:
