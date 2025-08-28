@@ -608,6 +608,15 @@ class MDUParser:
         self._geometry = self.loaded_fm_data.get("geometry")
         self.file_style_properties = FileStyleProperties(self._content)
 
+    def __repr__(self):
+        message = f"""
+            path: {self.mdu_path}
+            No lines: {len(self._content)}
+            inifield: {self.has_inifield_file()}
+            structure: {self.has_structure_file()} 
+        """
+        return message
+
     def _load_with_fm_model(self) -> Dict[str, Any]:
         """Load the MDU file using the FMModel class.
 
