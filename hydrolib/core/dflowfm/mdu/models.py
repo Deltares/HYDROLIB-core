@@ -1,15 +1,16 @@
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
-from pydantic.v1 import Field, validator
+from pydantic import BeforeValidator, Field, ValidationInfo, field_validator
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     FileModel,
-    validator_set_default_disk_only_file_model_when_none,
+    set_default_disk_only_file_model,
 )
+from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -17,7 +18,7 @@ from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    get_split_string_on_delimiter_validator,
+    split_string_on_delimiter,
     validate_datetime_string,
 )
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
@@ -29,6 +30,39 @@ from hydrolib.core.dflowfm.storagenode.models import StorageNodeModel
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
+
+
+def load_crs(value):
+    file_suffix_model_map = {
+        ".pli": PolyFile,
+        ".ini": ObservationCrossSectionModel,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_point(value):
+    file_suffix_model_map = {
+        ".ini": ObservationPointModel,
+        ".xyn": XYNModel,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_dry(value):
+    file_suffix_model_map = {
+        ".xyz": XYZModel,
+        ".pli": PolyFile,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_model(value, file_suffix_model_map):
+    """Load a model from a file path or return the value as is."""
+    if isinstance(value, (str, Path)):
+        path = Path(value)
+        if file_suffix_model_map.get(path.suffix):
+            return file_suffix_model_map[path.suffix](path)
+    return value
 
 
 class AutoStartOption(IntEnum):
@@ -644,18 +678,14 @@ class Sediment(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Sediment"] = "Sediment"
     sedimentmodelnr: Optional[int] = Field(0, alias="Sedimentmodelnr")
-    morfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="MorFile"
-    )
-    sedfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile"
-    )
+    morfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="MorFile")
+    sedfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile")
 
 
 class Wind(INIBasedModel):
@@ -724,10 +754,14 @@ class Wind(INIBasedModel):
     def list_delimiter(cls) -> str:
         return " "
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "cdbreakpoints",
         "windspeedbreakpoints",
+        mode="before",
     )
+    @classmethod
+    def split_field_values(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
 
 class Waves(INIBasedModel):
@@ -842,7 +876,8 @@ class Time(INIBasedModel):
     updateroughnessinterval: float = Field(86400.0, alias="updateRoughnessInterval")
     dtfacmax: float = Field(1.1, alias="Dtfacmax")
 
-    @validator("startdatetime", "stopdatetime")
+    @field_validator("startdatetime", "stopdatetime", mode="before")
+    @classmethod
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
@@ -869,17 +904,14 @@ class Restart(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Restart"] = "Restart"
-    restartfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile"
-    )
+    restartfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="restartFile")
     restartdatetime: Optional[str] = Field("", alias="restartDateTime")
 
-    @validator("restartdatetime")
+    @field_validator("restartdatetime", mode="before")
+    @classmethod
     def _validate_datetime(cls, value, field):
         return validate_datetime_string(value, field)
 
@@ -919,13 +951,13 @@ class ExternalForcing(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: Optional[ExtOldModel] = Field(None, alias="extForceFile")
-    extforcefilenew: Optional[ExtModel] = Field(None, alias="extForceFileNew")
+    extforcefile: Optional[Union[ExtOldModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFile"
+    )
+    extforcefilenew: Optional[Union[ExtModel, DiskOnlyFileModel]] = Field(
+        None, alias="extForceFileNew"
+    )
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
     evaporation: Optional[bool] = Field(None, alias="evaporation")
@@ -933,6 +965,11 @@ class ExternalForcing(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @field_validator("extforcefile", "extforcefilenew", mode="before")
+    @classmethod
+    def _validate_ext_force_file(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
 
 class Hydrology(INIBasedModel):
@@ -997,8 +1034,11 @@ class Trachytopes(INIBasedModel):
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
 
-ObsFile = Union[XYNModel, ObservationPointModel]
-ObsCrsFile = Union[PolyFile, ObservationCrossSectionModel]
+ObsFile = Annotated[Union[XYNModel, ObservationPointModel], BeforeValidator(load_point)]
+ObsCrsFile = Annotated[
+    Union[PolyFile, ObservationCrossSectionModel], BeforeValidator(load_crs)
+]
+DryPointsFile = Annotated[Union[XYZModel, PolyFile], BeforeValidator(load_dry)]
 
 
 class Output(INIBasedModel):
@@ -1516,10 +1556,6 @@ class Output(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Output"] = "Output"
     wrishp_crs: bool = Field(False, alias="wrishp_crs")
     wrishp_weir: bool = Field(False, alias="wrishp_weir")
@@ -1534,23 +1570,23 @@ class Output(INIBasedModel):
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
     outputdir: Optional[Path] = Field("", alias="outputDir")
     waqoutputdir: Optional[Path] = Field("", alias="waqOutputDir")
-    flowgeomfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile"
-    )
+    flowgeomfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
-    foufile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile"
-    )
+    foufile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile")
     fouupdatestep: int = Field(0, alias="fouUpdateStep")
-    hisfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile"
-    )
+    hisfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile")
     hisinterval: List[float] = Field([300.0], alias="hisInterval")
     xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
-    mapfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile"
-    )
+    mapfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile")
     mapinterval: List[float] = Field([1200.0], alias="mapInterval")
     rstinterval: List[float] = Field([0.0], alias="rstInterval")
     mapformat: int = Field(4, alias="mapFormat")
@@ -1665,14 +1701,16 @@ class Output(INIBasedModel):
         True, alias="wrimap_internal_tides_dissipation"
     )
     wrimap_flow_analysis: bool = Field(False, alias="wrimap_flow_analysis")
-    mapoutputtimevector: DiskOnlyFileModel = Field(
+    mapoutputtimevector: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="mapOutputTimeVector"
     )
     fullgridoutput: bool = Field(False, alias="fullGridOutput")
     eulervelocities: bool = Field(False, alias="eulerVelocities")
-    classmapfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="classMapFile"
-    )
+    classmapfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="classMapFile")
     waterlevelclasses: List[float] = Field([0.0], alias="waterLevelClasses")
     waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
     classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
@@ -1712,7 +1750,7 @@ class Output(INIBasedModel):
         [0.0], alias="VelocityMagnitudeClasses"
     )
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator(
         "waterlevelclasses",
         "waterdepthclasses",
         "crsfile",
@@ -1726,7 +1764,11 @@ class Output(INIBasedModel):
         "statsinterval",
         "timingsinterval",
         "velocitymagnitudeclasses",
+        mode="before",
     )
+    @classmethod
+    def split_string_to_list(cls, value, info: ValidationInfo):
+        return split_string_on_delimiter(cls, value, info)
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -1990,55 +2032,69 @@ class Geometry(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Geometry"] = "Geometry"
-    netfile: Optional[NetworkModel] = Field(
+    netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
     )
-    bathymetryfile: Optional[XYZModel] = Field(None, alias="bathymetryFile")
-    drypointsfile: Optional[List[Union[XYZModel, PolyFile]]] = Field(
+    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
+        None, alias="bathymetryFile"
+    )
+    drypointsfile: Optional[List[DryPointsFile]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
-    structurefile: Optional[List[StructureModel]] = Field(
+    structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", delimiter=";"
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
-    waterlevinifile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile"
-    )
+    waterlevinifile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile")
     landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
         None, alias="landBoundaryFile"
     )
-    thindamfile: Optional[List[PolyFile]] = Field(None, alias="thinDamFile")
-    fixedweirfile: Optional[List[PolyFile]] = Field(None, alias="fixedWeirFile")
-    pillarfile: Optional[List[PolyFile]] = Field(None, alias="pillarFile")
+    thindamfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="thinDamFile"
+    )
+    fixedweirfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="fixedWeirFile"
+    )
+    pillarfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
+        None, alias="pillarFile"
+    )
     usecaching: bool = Field(True, alias="useCaching")
-    vertplizfile: Optional[PolyFile] = Field(None, alias="vertPlizFile")
-    frictfile: Optional[List[FrictionModel]] = Field(
+    vertplizfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="vertPlizFile"
+    )
+    frictfile: Optional[List[Union[FrictionModel, DiskOnlyFileModel]]] = Field(
         None, alias="frictFile", delimiter=";"
     )
-    crossdeffile: Optional[CrossDefModel] = Field(None, alias="crossDefFile")
-    crosslocfile: Optional[CrossLocModel] = Field(None, alias="crossLocFile")
-    storagenodefile: Optional[StorageNodeModel] = Field(None, alias="storageNodeFile")
-    oned2dlinkfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile"
+    crossdeffile: Optional[Union[CrossDefModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossDefFile"
     )
-    proflocfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="profLocFile"
+    crosslocfile: Optional[Union[CrossLocModel, DiskOnlyFileModel]] = Field(
+        None, alias="crossLocFile"
     )
-    profdeffile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefFile"
+    storagenodefile: Optional[Union[StorageNodeModel, DiskOnlyFileModel]] = Field(
+        None, alias="storageNodeFile"
     )
-    profdefxyzfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile"
+    oned2dlinkfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="1d2dLinkFile")
+    proflocfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="profLocFile")
+    profdeffile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="profDefFile")
+    profdefxyzfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile")
+    manholefile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile")
+    partitionfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="partitionFile"
     )
-    manholefile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile"
-    )
-    partitionfile: Optional[PolyFile] = Field(None, alias="partitionFile")
     uniformwidth1d: float = Field(2.0, alias="uniformWidth1D")
     dxwuimin2d: float = Field(0.0, alias="dxWuiMin2D")
     waterlevini: float = Field(0.0, alias="waterLevIni")
@@ -2083,8 +2139,12 @@ class Geometry(INIBasedModel):
     zlaybot: float = Field(-999.0, alias="zlayBot")
     zlaytop: float = Field(-999.0, alias="zlayTop")
     uniformheight1d: float = Field(3.0, alias="uniformHeight1D")
-    roofsfile: Optional[PolyFile] = Field(None, alias="roofsFile")
-    gulliesfile: Optional[PolyFile] = Field(None, alias="gulliesFile")
+    roofsfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="roofsFile"
+    )
+    gulliesfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="gulliesFile"
+    )
     uniformwidth1dstreetinlets: float = Field(0.2, alias="uniformWidth1DStreetInlets")
     uniformheight1dstreetinlets: float = Field(0.1, alias="uniformHeight1DStreetInlets")
     uniformtyp1droofgutterpipes: int = Field(-2, alias="uniformTyp1DRoofGutterPipes")
@@ -2092,7 +2152,12 @@ class Geometry(INIBasedModel):
         0.1, alias="uniformWidth1DRoofGutterPipes"
     )
 
-    _split_to_list = get_split_string_on_delimiter_validator(
+    @field_validator("*", mode="before")
+    @classmethod
+    def parse_file_model_paths(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
+
+    @field_validator(
         "frictfile",
         "structurefile",
         "drypointsfile",
@@ -2100,7 +2165,11 @@ class Geometry(INIBasedModel):
         "thindamfile",
         "fixedweirfile",
         "pillarfile",
+        mode="before",
     )
+    @classmethod
+    def split_on_delimiter(cls, value, info: ValidationInfo):
+        return split_string_on_delimiter(cls, value, info)
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -2132,18 +2201,14 @@ class Calibration(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Calibration"] = "Calibration"
     usecalibration: bool = Field(False, alias="UseCalibration")
-    definitionfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="DefinitionFile"
-    )
-    areafile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile"
-    )
+    definitionfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="DefinitionFile")
+    areafile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="AreaFile")
 
 
 class InfiltrationMethod(IntEnum):
@@ -2282,22 +2347,20 @@ class Processes(INIBasedModel):
 
     comments: Comments = Comments()
 
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
-
     _header: Literal["Processes"] = "Processes"
 
-    substancefile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="SubstanceFile"
-    )
-    additionalhistoryoutputfile: DiskOnlyFileModel = Field(
+    substancefile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SubstanceFile")
+    additionalhistoryoutputfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(
         default_factory=lambda: DiskOnlyFileModel(None),
         alias="AdditionalHistoryOutputFile",
     )
-    statisticsfile: DiskOnlyFileModel = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile"
-    )
+    statisticsfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile")
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
     processfluxintegration: Optional[ProcessFluxIntegration] = Field(
@@ -2348,14 +2411,13 @@ class Particles(INIBasedModel):
         )
 
     comments: Comments = Comments()
-    _disk_only_file_model_should_not_be_none = (
-        validator_set_default_disk_only_file_model_when_none()
-    )
 
     _header: Literal["Particles"] = "Particles"
 
     particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
-    particlesreleasefile: DiskOnlyFileModel = Field(
+    particlesreleasefile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="ParticlesReleaseFile"
     )
     addtracer: Optional[bool] = Field(False, alias="AddTracer")
