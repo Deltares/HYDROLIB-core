@@ -20,6 +20,8 @@ CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml
 with CONVERTER_DATA_PATH.open("r") as fh:
     CONVERTER_DATA = yaml.safe_load(fh)
 
+DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated-key-words")
+
 __all__ = ["MDUParser"]
 
 @dataclass
@@ -1014,6 +1016,13 @@ class MDUParser:
 
             if index is not None:
                 self.content.pop(index)
+
+    def clean(self):
+        """
+        Remove the deprecated mdu keywords from the file
+        """
+        for keyword in DEPRECATED_KEYS:
+            self.delete_line(keyword=keyword)
 
     def get_section(self, section_name: str) -> Section:
         """Get Mdu Section.
