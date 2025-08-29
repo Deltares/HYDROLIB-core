@@ -1488,4 +1488,3 @@ class GetNewExtforceFile:
         block.root_dir = None
         with pytest.raises(Exception):
             block.get_new_extforce_file()
-

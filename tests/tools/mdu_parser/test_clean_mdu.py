@@ -11,20 +11,30 @@ class TestMDUParserDeleteLine:
     @pytest.fixture(autouse=True)
     def setup_mduparser(self):
         # Patch file reading, FMModel loading, and Path.exists to avoid file IO and file existence checks
-        with patch.object(MDUParser, '_read_file', return_value=[
-            "Keyword1= value1\n",
-            "Keyword2= value2\n",
-            "Keyword3= value3\n",
-            "# Comment line\n",
-            "[Section]\n",
-        ]), \
-            patch.object(MDUParser, '_load_with_fm_model', return_value={
-                "external_forcing": {},
-                "geometry": {},
-                "time": {},
-                "physics": {"temperature": 0, "salinity": False}
-            }), \
-            patch("pathlib.Path.exists", return_value=True):
+        with (
+            patch.object(
+                MDUParser,
+                "_read_file",
+                return_value=[
+                    "Keyword1= value1\n",
+                    "Keyword2= value2\n",
+                    "Keyword3= value3\n",
+                    "# Comment line\n",
+                    "[Section]\n",
+                ],
+            ),
+            patch.object(
+                MDUParser,
+                "_load_with_fm_model",
+                return_value={
+                    "external_forcing": {},
+                    "geometry": {},
+                    "time": {},
+                    "physics": {"temperature": 0, "salinity": False},
+                },
+            ),
+            patch("pathlib.Path.exists", return_value=True),
+        ):
             self.parser = MDUParser("dummy_path.mdu")
         yield
 
