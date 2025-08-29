@@ -1,3 +1,14 @@
+## 0.9.4 (2025-08-29)
+
+### Feat
+
+- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods (#924)
+- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods
+
+### Fix
+
+- **extold/models**: fix NudgeSalinityTemperature parameter quantity (#923)
+
 ## 0.9.3 (2025-08-17)
 
 ### Feat
