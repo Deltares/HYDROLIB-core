@@ -1,6 +1,8 @@
-import pytest
 from unittest.mock import patch
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser, CONVERTER_DATA
+
+import pytest
+
+from hydrolib.tools.extforce_convert.mdu_parser import CONVERTER_DATA, MDUParser
 
 
 class TestMDUParserDeleteLine:
@@ -144,11 +146,20 @@ class TestMDUParserClean:
         yield
 
     def _make_parser(self, lines):
-        with patch.object(MDUParser, '_read_file', return_value=lines), \
-                patch.object(MDUParser, '_load_with_fm_model', return_value={
-                    "external_forcing": {}, "geometry": {}, "time": {}, "physics": {"temperature": 0, "salinity": False}
-                }), \
-                patch("pathlib.Path.exists", return_value=True):
+        with (
+            patch.object(MDUParser, "_read_file", return_value=lines),
+            patch.object(
+                MDUParser,
+                "_load_with_fm_model",
+                return_value={
+                    "external_forcing": {},
+                    "geometry": {},
+                    "time": {},
+                    "physics": {"temperature": 0, "salinity": False},
+                },
+            ),
+            patch("pathlib.Path.exists", return_value=True),
+        ):
             return MDUParser("dummy_path.mdu")
 
     def test_clean_all_deprecated_present(self):
@@ -199,7 +210,7 @@ class TestMDUParserClean:
             "# Comment\n",
             "[Section]\n",
             f"{self.deprecated_keys[0]}= value\n",
-            "Other= value\n"
+            "Other= value\n",
         ]
         parser = self._make_parser(lines)
         parser.clean()
