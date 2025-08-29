@@ -367,6 +367,7 @@ class ExternalForcingConverter:
             self.ext_model.save(recurse=recursive, exclude_unset=True)
 
         if self.mdu_parser is not None:
+            self.mdu_parser.clean()
             self.mdu_parser.save(backup=backup)
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
