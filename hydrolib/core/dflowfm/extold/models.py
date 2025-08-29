@@ -4,15 +4,16 @@ of the external forcings.
 for more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
 https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf
 """
-import yaml
-from enum import IntEnum
 
+from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
+import yaml
 from pydantic.v1 import Field, root_validator, validator
 from strenum import StrEnum
 
+from hydrolib import __path__
 from hydrolib.core.base.models import (
     BaseModel,
     DiskOnlyFileModel,
@@ -25,7 +26,6 @@ from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib import __path__
 
 EXT_OLD_MODULE_PATH = Path(__path__[0]) / "core/dflowfm/extold"
 
@@ -57,7 +57,10 @@ ExtOldTracerQuantity = StrEnum(
 )
 
 
-BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(QUANTITIES_DATA["BoundaryCondition"]["prefixes"])
+BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
+    QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
+)
+
 
 class _ExtOldBoundaryQuantity(StrEnum):
 
@@ -84,19 +87,22 @@ class _ExtOldBoundaryQuantity(StrEnum):
 ExtOldBoundaryQuantity = StrEnum(
     "ExtOldBoundaryQuantity",
     QUANTITIES_DATA["BoundaryCondition"]["quantity-names"],
-    type=_ExtOldBoundaryQuantity
+    type=_ExtOldBoundaryQuantity,
 )
 
 ExtOldParametersQuantity = StrEnum(
     "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]
 )
 ExtOldMeteoQuantity = StrEnum(
-    "ExtOldMeteoQuantity", QUANTITIES_DATA["Meteo"],
+    "ExtOldMeteoQuantity",
+    QUANTITIES_DATA["Meteo"],
 )
 
 
+INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
+    QUANTITIES_DATA["InitialConditions"]["prefixes"]
+)
 
-INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(QUANTITIES_DATA["InitialConditions"]["prefixes"])
 
 class _ExtOldInitialConditionQuantity(StrEnum):
     """
@@ -105,6 +111,7 @@ class _ExtOldInitialConditionQuantity(StrEnum):
     and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
     please open and issue in github.
     """
+
     @classmethod
     def _missing_(cls, value):
         """Custom implementation for handling missing values.
@@ -124,10 +131,11 @@ class _ExtOldInitialConditionQuantity(StrEnum):
                 f"and quantities that start with 'tracer'"
             )
 
+
 ExtOldInitialConditionQuantity = StrEnum(
     "ExtOldInitialConditionQuantity",
     QUANTITIES_DATA["InitialConditions"]["quantity-names"],
-    type=_ExtOldInitialConditionQuantity
+    type=_ExtOldInitialConditionQuantity,
 )
 
 ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
@@ -241,7 +249,9 @@ ExtOldFileType = IntEnum("ExtOldFileType", QUANTITIES_DATA["FileType"])
 ExtOldMethod = IntEnum("ExtOldMethod", QUANTITIES_DATA["OldMethods"])
 
 
-ExtOldExtrapolationMethod = IntEnum("ExtOldExtrapolationMethod", QUANTITIES_DATA["ExtrapolationMethod"])
+ExtOldExtrapolationMethod = IntEnum(
+    "ExtOldExtrapolationMethod", QUANTITIES_DATA["ExtrapolationMethod"]
+)
 
 
 class ExtOldForcing(BaseModel):
