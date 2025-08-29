@@ -99,6 +99,10 @@ SourceSink:
 
 Tracer:
     # the prefixes specify that any quantity starting with these values is treated as a tracer
+    quantity-names:
+        TracerBnd: tracerbnd
+        InitialTracer: initialtracer
+        SedFracBnd: sedfracbnd
     prefixes:
         - tracerbnd
         - sedfracbnd
@@ -106,13 +110,6 @@ Tracer:
         - initialsedfrac
         - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
-    names:
-        # fixed names tracer names
-        TracerBnd: tracerbnd
-        # User-defined tracer
-        InitialTracer: initialtracer
-        # Initial tracer
-        SedFracBnd: sedfracbnd
 
 FileType:
     TimeSeries: 1

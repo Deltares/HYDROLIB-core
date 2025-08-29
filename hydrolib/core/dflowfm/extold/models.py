@@ -53,7 +53,7 @@ FILETYPE_FILEMODEL_MAPPING = {
 
 
 ExtOldTracerQuantity = StrEnum(
-    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["names"]
+    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity-names"]
 )
 
 
