@@ -1,10 +1,12 @@
 """MDU Parser."""
-import yaml
+
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
+
+import yaml
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -23,6 +25,7 @@ with CONVERTER_DATA_PATH.open("r") as fh:
 DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated-key-words")
 
 __all__ = ["MDUParser"]
+
 
 @dataclass
 class Section:
