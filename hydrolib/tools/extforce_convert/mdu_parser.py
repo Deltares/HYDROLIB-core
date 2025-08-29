@@ -911,7 +911,7 @@ class MDUParser:
                 The 0-based index of the line to delete. Must be within bounds of the file content.
             keyword (Optional[str]):
                 The keyword to search for. Deletes the first line starting with this keyword. Cannot be empty string.
-                if the keyword does not exist in the file the function will not raise an error..
+                if the keyword does not exist in the file the function will not raise an error.
             case_sensitive (bool):
                 Whether the keyword search should be case-sensitive. Defaults to False.
 
@@ -954,7 +954,7 @@ class MDUParser:
                 ```
 
             - Delete a line by keyword (case-sensitive) - the function will not find the keyword and will not raise
-                and error:
+                an error:
                 ```python
                 >>> path = "tests/data/input/mdu-files/extforce_test_1.mdu"
                 >>> mdu_file = MDUParser(path)
@@ -981,27 +981,27 @@ class MDUParser:
 
             - Error if index is out of bounds:
 
-            ```python
-            >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-            >>> path = "tests/data/input/mdu-files/extforce_test_1.mdu"
-            >>> mdu_file = MDUParser(path)
-            >>> mdu_file.delete_line(index=1000)
-            Traceback (most recent call last):
-            ...
-            IndexError: index out of range: 1000
-            ```
+                ```python
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> path = "tests/data/input/mdu-files/extforce_test_1.mdu"
+                >>> mdu_file = MDUParser(path)
+                >>> mdu_file.delete_line(index=1000)
+                Traceback (most recent call last):
+                ...
+                IndexError: index out of range: 1000
+                ```
 
-        - Error if keyword is empty string:
+            - Error if keyword is empty string:
 
-            ```python
-            >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-            >>> path = "tests/data/input/mdu-files/extforce_test_1.mdu"
-            >>> mdu_file = MDUParser(path)
-            >>> mdu_file.delete_line(keyword='')
-            Traceback (most recent call last):
-            ...
-            ValueError: keyword cannot be empty string
-            ```
+                ```python
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> path = "tests/data/input/mdu-files/extforce_test_1.mdu"
+                >>> mdu_file = MDUParser(path)
+                >>> mdu_file.delete_line(keyword='')
+                Traceback (most recent call last):
+                ...
+                ValueError: keyword cannot be empty string
+                ```
 
         See Also:
             MDUParser.insert_line: For inserting lines into the MDU file content.
