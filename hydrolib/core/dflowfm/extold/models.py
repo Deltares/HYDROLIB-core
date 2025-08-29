@@ -29,7 +29,7 @@ from hydrolib import __path__
 
 EXT_OLD_MODULE_PATH = Path(__path__[0]) / "core/dflowfm/extold"
 
-with (EXT_OLD_MODULE_PATH / "quantities.yaml").open("r") as fh:
+with (EXT_OLD_MODULE_PATH / "old-external-forcing-data.yaml").open("r") as fh:
     QUANTITIES_DATA = yaml.safe_load(fh)
 
 with (EXT_OLD_MODULE_PATH / "header.txt").open("r") as f:
