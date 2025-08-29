@@ -89,7 +89,6 @@ ExtOldBoundaryQuantity = StrEnum(
     QUANTITIES_DATA["BoundaryCondition"]["quantity-names"],
     type=_ExtOldBoundaryQuantity,
 )
-
 ExtOldParametersQuantity = StrEnum(
     "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]
 )
@@ -244,11 +243,7 @@ class ExtOldQuantity(StrEnum):
 
 
 ExtOldFileType = IntEnum("ExtOldFileType", QUANTITIES_DATA["FileType"])
-
-
 ExtOldMethod = IntEnum("ExtOldMethod", QUANTITIES_DATA["OldMethods"])
-
-
 ExtOldExtrapolationMethod = IntEnum(
     "ExtOldExtrapolationMethod", QUANTITIES_DATA["ExtrapolationMethod"]
 )
