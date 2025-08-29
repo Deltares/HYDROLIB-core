@@ -238,6 +238,7 @@ class ExtOldParametersQuantity(StrEnum):
     StemDiameter = "stemdiameter"
     NudgeRate = "nudgerate"
     NudgeTime = "nudgetime"
+    NudgeSalinityTemperature = "nudge_salinity_temperature"
 
 
 class ExtOldMeteoQuantity(StrEnum):
@@ -271,8 +272,6 @@ class ExtOldMeteoQuantity(StrEnum):
     """Long wave radiation"""
     SolarRadiation = "solarradiation"
     """Solar radiation"""
-    NudgeSalinityTemperature = "nudge_salinity_temperature"
-    """Nudging salinity and temperature"""
     AirPressure = "airpressure"
     """AirPressure"""
     StressX = "stressx"

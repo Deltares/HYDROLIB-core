@@ -46,6 +46,46 @@
 - **models**: migrate to the gui module to Pydantic v2 #842)
 - **models**: migrate to the gui module to Pydantic v2 #842)
 
+
+## 0.9.4 (2025-08-29)
+
+### Feat
+
+- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods (#924)
+- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods
+
+### Fix
+
+- **extold/models**: fix NudgeSalinityTemperature parameter quantity (#923)
+
+## 0.9.3 (2025-08-17)
+
+### Feat
+
+- **extforce**: add new parameter quantities and extend converter support (#909)
+- **extforce**: add new parameter quantities and extend converter support
+- **converter**: support dynamic attributes (tracerFallVelocity and tracerdecaytime) for the extoldforcing (#817)
+- **ci**: improve release workflow with version and branch setup (#878)
+- **ci**: improve release workflow with version and branch setup
+
+### Fix
+
+- **tests**: remove obsolete reference to HYDROLIB-core in crsloc.ini
+- **converter**: propagate area parameter from ExtOldForcing to new SourceSink model
+- **extforce**: new external forcing files name conflict with existing file (#897)
+
+### Refactor
+
+- **dimr**: improve serialization safety by replacing minidom with lxml
+- **extoldforcing**: normalize tracer field names  `tracerfallvelocity`/`tracerdecaytime` (#911)
+- **extoldforcing**: normalize tracer field names
+- **converters**: abstract conversion logic for T3D and CMP files, fix label issue  (#896)
+- **converters**: abstract conversion logic for T3D and CMP files
+- **ext**: read child files as `DiskOnlyFileModel` (recurse=False) (#892)
+- **ext**: simplify logic and read child files as DiskOnlyFileModel
+- **mdu**: enhance MDU parser with structured line and section handling (#881)
+- **mdu**: enhance MDU parser with structured line and section handling
+
 ## 0.9.2 (2025-06-26)
 
 ### Feat

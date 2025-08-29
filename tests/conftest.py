@@ -186,31 +186,6 @@ def old_forcing_comment_len() -> int:
     return 63
 
 
-@pytest.fixture
-def parameter_quantities() -> List[str]:
-    return [
-        "frictioncoefficient",
-        "horizontaleddyviscositycoefficient",
-        "horizontaleddydiffusivitycoefficient",
-        "advectiontype",
-        "infiltrationcapacity",
-        "bedrock_surface_elevation",
-        "wavedirection",
-        "xwaveforce",
-        "ywaveforce",
-        "waveperiod",
-        "wavesignificantheight",
-        "internaltidesfrictioncoefficient",
-        "secchidepth",
-        "sea_ice_area_fraction",
-        "stemheight",
-        "stemdensity",
-        "stemdiameter",
-        "nudgerate",
-        "nudgetime",
-    ]
-
-
 def quantityunitpair(quantity, unit, verticalpositionindex=None):
     return QuantityUnitPair(
         quantity=quantity, unit=unit, vertpositionindex=verticalpositionindex
