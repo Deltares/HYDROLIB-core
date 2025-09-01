@@ -310,6 +310,8 @@ class ExtOldForcing(BaseModel):
 
         if lower_value in list(ExtOldQuantity):
             return ExtOldQuantity(lower_value)
+        elif value_str in list(ExtOldQuantity):
+            return ExtOldQuantity(value_str)
 
         supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
         raise ValueError(
