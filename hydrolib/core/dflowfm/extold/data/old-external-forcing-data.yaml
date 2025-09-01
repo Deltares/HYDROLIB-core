@@ -1,22 +1,32 @@
 BoundaryCondition:
     quantity-names:
-        WaterLevelBnd: waterlevelbnd
-        NeumannBnd: neumannbnd
-        RiemannBnd: riemannbnd
-        OutflowBnd: outflowbnd
-        VelocityBnd: velocitybnd
+        OneD2Dbnd: 1d2dbnd
+        AbsgenBnd: absgenbnd
+        CriticalOutFlowBnd: criticaloutflowbnd
         DischargeBnd: dischargebnd
-        RiemannVelocityBnd: riemann_velocitybnd
-        SalinityBnd: salinitybnd
-        TemperatureBnd: temperaturebnd
-        SedimentBnd: sedimentbnd
-        UXUYAdvectionVelocityBnd: uxuyadvectionvelocitybnd
+        NeumannBnd: neumannbnd
         NormalVelocityBnd: normalvelocitybnd
-        TangentialVelocityBnd: tangentialvelocitybnd
+        OutflowBnd: outflowbnd
         QhBnd: qhbnd
+        QhUBnd: qhubnd
+        RiemannBnd: riemannbnd
+        SalinityBnd: salinitybnd
+
+        SedimentBnd: sedimentbnd
+        TangentialVelocityBnd: tangentialvelocitybnd
+        TemperatureBnd: temperaturebnd
+
+        UXUYAdvectionVelocityBnd: uxuyadvectionvelocitybnd
+        VelocityBnd: velocitybnd
+        WaterLevelBnd: waterlevelbnd
+        WaveEnergyBnd: waveenergybnd
+        WeirOutFlowBnd: weiroutflowbnd
+        # RiemannVelocityBnd: riemann_velocitybnd
+
     prefixes:
-        - tracerbnd
         - sedfracbnd
+        - tracerbnd
+
 Meteo:
     WindX: windx
     WindY: windy
@@ -98,7 +108,7 @@ InitialConditions:
 SourceSink:
     DischargeSalinityTemperatureSorSin: discharge_salinity_temperature_sorsin
 
-# the structure data are not read in the extold module, but are defined here for completeness
+
 Structure:
     Pump: pump
     DamLevel: damlevel
