@@ -13,6 +13,8 @@ homepage = "https://deltares.github.io/HYDROLIB-core"
 include = [
     { path = "hydrolib/tools/extforce_convert/data/**", format = "wheel" },
     { path = "hydrolib/tools/extforce_convert/data/**", format = "sdist" },
+    { path = "hydrolib/core/dflowfm/extold/data/**", format = "wheel" },
+    { path = "hydrolib/core/dflowfm/extold/data/**", format = "sdist" },
 ]
 
 [tool.poetry.urls]
