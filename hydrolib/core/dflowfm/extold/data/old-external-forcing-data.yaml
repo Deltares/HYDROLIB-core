@@ -82,26 +82,33 @@ Parameter:
 
 InitialConditions:
     quantity-names:
-        BedLevel: bedlevel
-        BedLevel1D: bedlevel1d
-        BedLevel2D: bedlevel2d
-        InitialWaterLevel: initialwaterlevel
-        InitialWaterLevel1D: initialwaterlevel1d
-        InitialWaterLevel2D: initialwaterlevel2d
         InitialSalinity: initialsalinity
-        InitialSalinityTop: initialsalinitytop
         InitialSalinityBot: initialsalinitybot
-        InitialVerticalSalinityProfile: initialverticalsalinityprofile
+        InitialSalinityTop: initialsalinitytop
+
         InitialTemperature: initialtemperature
-        InitialVerticalTemperatureProfile: initialverticaltemperatureprofile
-        initialUnsaturatedZoneThickness: initialunsaturatedzonethickness
+
+        InitialUnsaturatedZoneThickness: initialunsaturatedzonethickness
+        InitialVelocity: initialvelocity
         InitialVelocityX: initialvelocityx
         InitialVelocityY: initialvelocityy
-        InitialVelocity: initialvelocity
+        InitialVerticalSalinityProfile: initialverticalsalinityprofile
+        InitialVerticalTemperatureProfile: initialverticaltemperatureprofile
+
         InitialWaqBot: initialwaqbot
+        InitialWaterLevel: initialwaterlevel
+        BedLevel: bedlevel
+
+#         BedLevel1D: bedlevel1d
+#         BedLevel2D: bedlevel2d
+#         InitialWaterLevel1D: initialwaterlevel1d
+#         InitialWaterLevel2D: initialwaterlevel2d
+
+
     prefixes:
-        - initialtracer
         - initialsedfrac
+        - initialsediment
+        - initialtracer
         - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
 
