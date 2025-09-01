@@ -28,57 +28,96 @@ BoundaryCondition:
         - tracerbnd
 
 Meteo:
-    WindX: windx
-    WindY: windy
-    WindXY: windxy
-    AirPressureWindXWindY: airpressure_windx_windy
-    AirPressureWindXWindYCharnock: airpressure_windx_windy_charnock
-    AtmosphericPressure: atmosphericpressure
-    Rainfall: rainfall
-    RainfallRate: rainfall_rate
-    HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
-    HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
-    DewPointAirTemperatureCloudiness: dewpoint_airtemperature_cloudiness
-    LongWaveRadiation: longwaveradiation
-    SolarRadiation: solarradiation
-    AirPressure: airpressure
-    StressX: stressx
-    StressY: stressy
-    AirTemperature: airtemperature
-    Cloudiness: cloudiness
-    Humidity: humidity
-    StressXY: stressxy
-    AirpressureStressXStressY: airpressure_stressx_stressy
-    WindSpeed: wind_speed
-    WindSpeedFactor: windspeedfactor
-    WindFromDirection: wind_from_direction
-    DewpointAirTemperatureCloudinessSolarradiation: dewpoint_airtemperature_cloudiness_solarradiation
-    AirDensity: airdensity
-    Charnock: charnock
-    Dewpoint: dewpoint
+    quantity-names:
+        AirDensity: airdensity
+        AirPressure: airpressure
+        AirpressureStressXStressY: airpressure_stressx_stressy
+        AirPressureWindXWindY: airpressure_windx_windy
+        AirPressureWindXWindYCharnock: airpressure_windx_windy_charnock
+        AirTemperature: airtemperature
+        AtmosphericPressure: atmosphericpressure
+        Charnock: charnock
+        Cloudiness: cloudiness
+        Dewpoint: dewpoint
+        DewPointAirTemperatureCloudiness: dewpoint_airtemperature_cloudiness
+        DewpointAirTemperatureCloudinessSolarradiation: dewpoint_airtemperature_cloudiness_solarradiation
+        Humidity: humidity
+        HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
+        HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
+        LongWaveRadiation: longwaveradiation
+        Rainfall: rainfall
+        RainfallRate: rainfall_rate
+        SolarRadiation: solarradiation
+        # missing the SolarRadiationFactor
+        StressX: stressx
+        StressXY: stressxy
+        StressY: stressy
+        # missing the WindSpeedFactor
+        # missing the windstresscoefficient
+        WindX: windx
+        WindY: windy
+        WindXY: windxy
+    Extra:
+        WindSpeed: wind_speed
+        WindFromDirection: wind_from_direction
+    Missing:
+        SolarRadiationFactor: solarradiationfactor
+        WindSpeedFactor: windspeedfactor
+        WindStressCoefficient: windstresscoefficient
+
 
 Parameter:
-    FrictionCoefficient: frictioncoefficient
-    HorizontalEddyViscosityCoefficient: horizontaleddyviscositycoefficient
-    HorizontalEddyDiffusivityCoefficient: horizontaleddydiffusivitycoefficient
-    AdvectionType: advectiontype
-    InfiltrationCapacity: infiltrationcapacity
-    BedRockSurfaceElevation: bedrock_surface_elevation
-    IBotLevType: ibotlevtype
-    WaveDirection: wavedirection
-    XWaveForce: xwaveforce
-    YWaveForce: ywaveforce
-    WavePeriod: waveperiod
-    WaveSignificantHeight: wavesignificantheight
-    InternalTidesFrictionCoefficient: internaltidesfrictioncoefficient
-    SecchiDepth: secchidepth
-    SeaIceAreaFraction: sea_ice_area_fraction
-    StemHeight: stemheight
-    StemDensity: stemdensity
-    StemDiameter: stemdiameter
-    NudgeRate: nudgerate
-    NudgeTime: nudgetime
-    NudgeSalinityTemperature: nudge_salinity_temperature
+    quantity-names:
+        AdvectionType: advectiontype
+        # GroundLayerThickness: Groundlayerthickness
+        BedRockSurfaceElevation: bedrock_surface_elevation
+        FrictionCoefficientTimeDependent: friction_coefficient_time_dependent
+        FrictionCoefficient: frictioncoefficient
+        FrictionTrtFactor: frictiontrtfactor
+        HorizontalEddyDiffusivityCoefficient: horizontaleddydiffusivitycoefficient
+        HorizontalEddyViscosityCoefficient: horizontaleddyviscositycoefficient
+        IBedLevType: ibedlevtype
+        InfiltrationCapacity: infiltrationcapacity
+        InterceptionLayerThickness: interceptionlayerthickness
+        InternalTidesFrictionCoefficient: internaltidesfrictioncoefficient
+        LinearFrictionCoefficient: linearfrictioncoefficient
+        NudgeSalinityTemperature: nudge_salinity_temperature
+        NudgeRate: nudgerate
+        NudgeTime: nudgetime
+        SeaIceAreaFraction: sea_ice_area_fraction
+        SeaIceThickness: sea_ice_thickness
+        # missing floe_diameter
+        SecchiDepth: secchidepth
+        StemDensity: stemdensity
+        StemDiameter: stemdiameter
+        StemHeight: stemheight
+        # missing windstresscoefficient
+        WaveSignificantHeight: wavesignificantheight
+        WavePeriod: waveperiod
+        WaveDirection: wavedirection
+        WaveBreakerDissipation: wavebreakerdissipation
+        WhiteCappingDissipation: whitecappingdissipation
+        XWaveForce: xwaveforce
+        YWaveForce: ywaveforce
+        TotalWaveEnergyDissipation: totalwaveenergydissipation
+
+        # IBotLevType: ibotlevtype
+
+    Missing:
+        FloeDiameter: floe_diameter
+        WindStressCoefficient: windstresscoefficient
+        WaqFunction: waqfunction
+        WaqParameter: waqparameter
+        WaqSegmentFunction: waqsegmentfunction
+        WaqSegmentNumber: waqsegmentnumber
+
+
+
+
+
+
+
+
 
 InitialConditions:
     quantity-names:
@@ -107,10 +146,11 @@ InitialConditions:
 
     prefixes:
         - initialsedfrac
-        - initialsediment
         - initialtracer
         - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
+    Missing:
+        - initialsediment
 
 SourceSink:
     DischargeSalinityTemperatureSorSin: discharge_salinity_temperature_sorsin
@@ -181,3 +221,4 @@ ExtrapolationMethod:
     # 0. No spatial extrapolation.
     SpatialExtrapolationOutsideOfSourceDataBoundingBox: 1
     # 1. Do spatial extrapolation outside of source data bounding box.
+

@@ -88,11 +88,11 @@ ExtOldBoundaryQuantity = StrEnum(
     type=_ExtOldBoundaryQuantity,
 )
 ExtOldParametersQuantity = StrEnum(
-    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]
+    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]["quantity-names"]
 )
 ExtOldMeteoQuantity = StrEnum(
     "ExtOldMeteoQuantity",
-    QUANTITIES_DATA["Meteo"],
+    QUANTITIES_DATA["Meteo"]["quantity-names"],
 )
 
 
@@ -139,8 +139,8 @@ ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"]
 
 ALL_QUANTITIES = (
     QUANTITIES_DATA["BoundaryCondition"]["quantity-names"]
-    | QUANTITIES_DATA["Meteo"]
-    | QUANTITIES_DATA["Parameter"]
+    | QUANTITIES_DATA["Meteo"]["quantity-names"]
+    | QUANTITIES_DATA["Parameter"]["quantity-names"]
     | QUANTITIES_DATA["InitialConditions"]["quantity-names"]
     | QUANTITIES_DATA["SourceSink"]
     | QUANTITIES_DATA["Structure"]
