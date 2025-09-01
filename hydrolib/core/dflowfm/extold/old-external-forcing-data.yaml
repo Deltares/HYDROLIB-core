@@ -54,6 +54,7 @@ Parameter:
     AdvectionType: advectiontype
     InfiltrationCapacity: infiltrationcapacity
     BedRockSurfaceElevation: bedrock_surface_elevation
+    IBotLevType: ibotlevtype
     WaveDirection: wavedirection
     XWaveForce: xwaveforce
     YWaveForce: ywaveforce
@@ -72,8 +73,8 @@ Parameter:
 InitialConditions:
     quantity-names:
         BedLevel: bedlevel
-        BedLevel1D: bedlevel1D
-        BedLevel2D: bedlevel2D
+        BedLevel1D: bedlevel1d
+        BedLevel2D: bedlevel2d
         InitialWaterLevel: initialwaterlevel
         InitialWaterLevel1D: initialwaterlevel1d
         InitialWaterLevel2D: initialwaterlevel2d
@@ -96,6 +97,13 @@ InitialConditions:
 
 SourceSink:
     DischargeSalinityTemperatureSorSin: discharge_salinity_temperature_sorsin
+
+# the structure data are not read in the extold module, but are defined here for completeness
+Structure:
+    Pump: pump
+    DamLevel: damlevel
+    GateLowerEdgeLevel: gateloweredgelevel
+    GeneralStructure: generalstructure
 
 Tracer:
     # the prefixes specify that any quantity starting with these values is treated as a tracer

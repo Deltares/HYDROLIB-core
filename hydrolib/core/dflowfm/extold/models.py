@@ -56,7 +56,6 @@ ExtOldTracerQuantity = StrEnum(
     "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity-names"]
 )
 
-
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
     QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
 )
@@ -139,107 +138,14 @@ ExtOldInitialConditionQuantity = StrEnum(
 
 ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
 
+ALL_QUANTITIES = (
+        QUANTITIES_DATA["BoundaryCondition"]["quantity-names"] |
+        QUANTITIES_DATA["Meteo"] | QUANTITIES_DATA["Parameter"] |
+        QUANTITIES_DATA["InitialConditions"]["quantity-names"] |
+        QUANTITIES_DATA["SourceSink"]
+)
 
-class ExtOldQuantity(StrEnum):
-    """Enum class containing the valid values for the boundary conditions category
-    of the external forcings.
-    """
-
-    # Boundary conditions
-    WaterLevelBnd = "waterlevelbnd"
-    NeumannBnd = "neumannbnd"
-    RiemannBnd = "riemannbnd"
-    OutflowBnd = "outflowbnd"
-    VelocityBnd = "velocitybnd"
-    DischargeBnd = "dischargebnd"
-    RiemannVelocityBnd = "riemann_velocitybnd"
-    SalinityBnd = "salinitybnd"
-    TemperatureBnd = "temperaturebnd"
-    SedimentBnd = "sedimentbnd"
-    UXUYAdvectionVelocityBnd = "uxuyadvectionvelocitybnd"
-    NormalVelocityBnd = "normalvelocitybnd"
-    TangentialVelocityBnd = "tangentialvelocitybnd"
-    QhBnd = "qhbnd"
-
-    # Meteorological fields
-    WindX = "windx"
-    WindY = "windy"
-    WindXY = "windxy"
-    AirPressureWindXWindY = "airpressure_windx_windy"
-    AirPressureWindXWindYCharnock = "airpressure_windx_windy_charnock"
-    AtmosphericPressure = "atmosphericpressure"
-    Rainfall = "rainfall"
-    RainfallRate = "rainfall_rate"
-    HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
-    HumidityAirTemperatureCloudinessSolarRadiation = (
-        "humidity_airtemperature_cloudiness_solarradiation"
-    )
-    DewPointAirTemperatureCloudiness = "dewpoint_airtemperature_cloudiness"
-    LongWaveRadiation = "longwaveradiation"
-    SolarRadiation = "solarradiation"
-    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
-    NudgeSalinityTemperature = "nudge_salinity_temperature"
-    AirPressure = "airpressure"
-    StressX = "stressx"
-    StressY = "stressy"
-    AirTemperature = "airtemperature"
-    Cloudiness = "cloudiness"
-    Humidity = "humidity"
-    StressXY = "stressxy"
-    AirpressureStressXStressY = "airpressure_stressx_stressy"
-    WindSpeed = "wind_speed"
-    WindSpeedFactor = "windspeedfactor"
-    WindFromDirection = "wind_from_direction"
-    DewpointAirTemperatureCloudinessSolarradiation = (
-        "dewpoint_airtemperature_cloudiness_solarradiation"
-    )
-    AirDensity = "airdensity"
-    Charnock = "charnock"
-    Dewpoint = "dewpoint"
-
-    # Structure parameters
-    Pump = "pump"
-    DamLevel = "damlevel"
-    GateLowerEdgeLevel = "gateloweredgelevel"
-    GeneralStructure = "generalstructure"
-
-    # Initial fields
-    InitialWaterLevel = "initialwaterlevel"
-    InitialSalinity = "initialsalinity"
-    InitialSalinityTop = "initialsalinitytop"
-    InitialTemperature = "initialtemperature"
-    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
-    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
-    BedLevel = "bedlevel"
-    SecchiDepth = "secchidepth"
-    SeaIceAreaFraction = "sea_ice_area_fraction"
-    StemHeight = "stemheight"
-    StemDensity = "stemdensity"
-    StemDiameter = "stemdiameter"
-    NudgeRate = "nudgerate"
-    NudgeTime = "nudgetime"
-
-    # Spatial physical properties
-    FrictionCoefficient = "frictioncoefficient"
-    HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
-    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
-    HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    AdvectionType = "advectiontype"
-    IBotLevType = "ibotlevtype"
-    BedRockSurfaceElevation = "bedrock_surface_elevation"
-
-    # Miscellaneous
-    ShiptXY = "shiptxy"
-    MovingStationXY = "movingstationxy"
-    WaveSignificantHeight = "wavesignificantheight"
-    WavePeriod = "waveperiod"
-    WaveDirection = "wavedirection"
-    XWaveForce = "xwaveforce"
-    YWaveForce = "ywaveforce"
-
-    InitialVelocityX = "initialvelocityx"
-    InitialVelocityY = "initialvelocityy"
-    InitialVelocity = "initialvelocity"
+ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
 
 
 ExtOldFileType = IntEnum("ExtOldFileType", QUANTITIES_DATA["FileType"])
