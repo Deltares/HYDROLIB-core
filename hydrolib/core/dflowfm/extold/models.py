@@ -139,10 +139,11 @@ ExtOldInitialConditionQuantity = StrEnum(
 ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
 
 ALL_QUANTITIES = (
-        QUANTITIES_DATA["BoundaryCondition"]["quantity-names"] |
-        QUANTITIES_DATA["Meteo"] | QUANTITIES_DATA["Parameter"] |
-        QUANTITIES_DATA["InitialConditions"]["quantity-names"] |
-        QUANTITIES_DATA["SourceSink"]
+    QUANTITIES_DATA["BoundaryCondition"]["quantity-names"]
+    | QUANTITIES_DATA["Meteo"]
+    | QUANTITIES_DATA["Parameter"]
+    | QUANTITIES_DATA["InitialConditions"]["quantity-names"]
+    | QUANTITIES_DATA["SourceSink"]
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
