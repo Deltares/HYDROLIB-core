@@ -27,7 +27,7 @@ from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-EXT_OLD_MODULE_PATH = Path(__path__[0]) / "core/dflowfm/extold"
+EXT_OLD_MODULE_PATH = Path(__file__).parent / "data"
 
 with (EXT_OLD_MODULE_PATH / "old-external-forcing-data.yaml").open("r") as fh:
     QUANTITIES_DATA = yaml.safe_load(fh)
