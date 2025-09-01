@@ -40,8 +40,8 @@ def invalid_data_dir() -> Path:
 def initial_condition_quantities() -> List[str]:
     return [
         "bedlevel",
-        "bedlevel1D",
-        "bedlevel2D",
+        "bedlevel1d",
+        "bedlevel2d",
         "initialwaterlevel",
         "initialwaterlevel1d",
         "initialwaterlevel2d",

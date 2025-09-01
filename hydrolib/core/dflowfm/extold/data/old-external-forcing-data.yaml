@@ -1,0 +1,166 @@
+BoundaryCondition:
+    quantity-names:
+        WaterLevelBnd: waterlevelbnd
+        NeumannBnd: neumannbnd
+        RiemannBnd: riemannbnd
+        OutflowBnd: outflowbnd
+        VelocityBnd: velocitybnd
+        DischargeBnd: dischargebnd
+        RiemannVelocityBnd: riemann_velocitybnd
+        SalinityBnd: salinitybnd
+        TemperatureBnd: temperaturebnd
+        SedimentBnd: sedimentbnd
+        UXUYAdvectionVelocityBnd: uxuyadvectionvelocitybnd
+        NormalVelocityBnd: normalvelocitybnd
+        TangentialVelocityBnd: tangentialvelocitybnd
+        QhBnd: qhbnd
+    prefixes:
+        - tracerbnd
+        - sedfracbnd
+Meteo:
+    WindX: windx
+    WindY: windy
+    WindXY: windxy
+    AirPressureWindXWindY: airpressure_windx_windy
+    AirPressureWindXWindYCharnock: airpressure_windx_windy_charnock
+    AtmosphericPressure: atmosphericpressure
+    Rainfall: rainfall
+    RainfallRate: rainfall_rate
+    HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
+    HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
+    DewPointAirTemperatureCloudiness: dewpoint_airtemperature_cloudiness
+    LongWaveRadiation: longwaveradiation
+    SolarRadiation: solarradiation
+    AirPressure: airpressure
+    StressX: stressx
+    StressY: stressy
+    AirTemperature: airtemperature
+    Cloudiness: cloudiness
+    Humidity: humidity
+    StressXY: stressxy
+    AirpressureStressXStressY: airpressure_stressx_stressy
+    WindSpeed: wind_speed
+    WindSpeedFactor: windspeedfactor
+    WindFromDirection: wind_from_direction
+    DewpointAirTemperatureCloudinessSolarradiation: dewpoint_airtemperature_cloudiness_solarradiation
+    AirDensity: airdensity
+    Charnock: charnock
+    Dewpoint: dewpoint
+
+Parameter:
+    FrictionCoefficient: frictioncoefficient
+    HorizontalEddyViscosityCoefficient: horizontaleddyviscositycoefficient
+    HorizontalEddyDiffusivityCoefficient: horizontaleddydiffusivitycoefficient
+    AdvectionType: advectiontype
+    InfiltrationCapacity: infiltrationcapacity
+    BedRockSurfaceElevation: bedrock_surface_elevation
+    IBotLevType: ibotlevtype
+    WaveDirection: wavedirection
+    XWaveForce: xwaveforce
+    YWaveForce: ywaveforce
+    WavePeriod: waveperiod
+    WaveSignificantHeight: wavesignificantheight
+    InternalTidesFrictionCoefficient: internaltidesfrictioncoefficient
+    SecchiDepth: secchidepth
+    SeaIceAreaFraction: sea_ice_area_fraction
+    StemHeight: stemheight
+    StemDensity: stemdensity
+    StemDiameter: stemdiameter
+    NudgeRate: nudgerate
+    NudgeTime: nudgetime
+    NudgeSalinityTemperature: nudge_salinity_temperature
+
+InitialConditions:
+    quantity-names:
+        BedLevel: bedlevel
+        BedLevel1D: bedlevel1d
+        BedLevel2D: bedlevel2d
+        InitialWaterLevel: initialwaterlevel
+        InitialWaterLevel1D: initialwaterlevel1d
+        InitialWaterLevel2D: initialwaterlevel2d
+        InitialSalinity: initialsalinity
+        InitialSalinityTop: initialsalinitytop
+        InitialSalinityBot: initialsalinitybot
+        InitialVerticalSalinityProfile: initialverticalsalinityprofile
+        InitialTemperature: initialtemperature
+        InitialVerticalTemperatureProfile: initialverticaltemperatureprofile
+        initialUnsaturatedZoneThickness: initialunsaturatedzonethickness
+        InitialVelocityX: initialvelocityx
+        InitialVelocityY: initialvelocityy
+        InitialVelocity: initialvelocity
+        InitialWaqBot: initialwaqbot
+    prefixes:
+        - initialtracer
+        - initialsedfrac
+        - initialverticalsedfracprofile
+        - initialverticalsigmasedfracprofile
+
+SourceSink:
+    DischargeSalinityTemperatureSorSin: discharge_salinity_temperature_sorsin
+
+# the structure data are not read in the extold module, but are defined here for completeness
+Structure:
+    Pump: pump
+    DamLevel: damlevel
+    GateLowerEdgeLevel: gateloweredgelevel
+    GeneralStructure: generalstructure
+
+Misellaneous:
+     ShiptXY: shiptxy
+     MovingStationXY: movingstationxy
+
+Tracer:
+    # the prefixes specify that any quantity starting with these values is treated as a tracer
+    quantity-names:
+        TracerBnd: tracerbnd
+        InitialTracer: initialtracer
+        SedFracBnd: sedfracbnd
+    prefixes:
+        - tracerbnd
+        - sedfracbnd
+        - initialtracer
+        - initialsedfrac
+        - initialverticalsedfracprofile
+        - initialverticalsigmasedfracprofile
+
+FileType:
+    TimeSeries: 1
+    TimeSeriesMagnitudeAndDirection: 2
+    SpatiallyVaryingWindPressure: 3
+    ArcInfo: 4
+    SpiderWebData: 5
+    CurvilinearData: 6
+    Samples: 7
+    TriangulationMagnitudeAndDirection: 8
+    Polyline: 9
+    # 9. Polyline (<*.pli>-file) with boundary signals on support points
+    InsidePolygon: 10
+    # 10. Polyfile (<*.pol>-file). Uniform value inside polygon for INITIAL fields
+    NetCDFGridData: 11
+    # 11. NetCDF grid data (e.g. meteo fields)
+    NetCDFWaveData: 14
+    # 14. NetCDF wave data
+
+OldMethods:
+    PassThrough: 1
+    # 1. Pass through (no interpolation)
+    InterpolateTimeAndSpace: 2
+    # 2. Interpolate time and space
+    InterpolateTimeAndSpaceSaveWeights: 3
+    # 3. Interpolate time and space, save weights
+    InterpolateSpace: 4
+    # 4. Interpolate space
+    InterpolateTime: 5
+    # 5. Interpolate time
+    AveragingSpace: 6
+    # 6. Averaging in space
+    InterpolateExtrapolateTime: 7
+    # 7. Interpolate/Extrapolate time
+    Obsolete: 11
+    # 11. METHOD=11 is obsolete; use METHOD=3 and EXTRAPOLATION_METHOD=1
+
+ExtrapolationMethod:
+    NoSpatialExtrapolation: 0
+    # 0. No spatial extrapolation.
+    SpatialExtrapolationOutsideOfSourceDataBoundingBox: 1
+    # 1. Do spatial extrapolation outside of source data bounding box.
