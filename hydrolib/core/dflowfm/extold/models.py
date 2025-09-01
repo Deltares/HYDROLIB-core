@@ -142,6 +142,8 @@ ALL_QUANTITIES = (
     | QUANTITIES_DATA["Parameter"]
     | QUANTITIES_DATA["InitialConditions"]["quantity-names"]
     | QUANTITIES_DATA["SourceSink"]
+    | QUANTITIES_DATA["Structure"]
+    | QUANTITIES_DATA["Misellaneous"]
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
