@@ -57,19 +57,19 @@ Meteo:
         WindX: windx
         WindY: windy
         WindXY: windxy
-    Extra:
-        WindSpeed: wind_speed
-        WindFromDirection: wind_from_direction
-    Missing:
+        # Missing in the converter
         SolarRadiationFactor: solarradiationfactor
         WindSpeedFactor: windspeedfactor
         WindStressCoefficient: windstresscoefficient
+        # Extra
+        WindSpeed: wind_speed
+        WindFromDirection: wind_from_direction
 
 
 Parameter:
     quantity-names:
         AdvectionType: advectiontype
-        # GroundLayerThickness: Groundlayerthickness
+        GroundLayerThickness: Groundlayerthickness
         BedRockSurfaceElevation: bedrock_surface_elevation
         FrictionCoefficientTimeDependent: friction_coefficient_time_dependent
         FrictionCoefficient: frictioncoefficient
@@ -100,23 +100,15 @@ Parameter:
         XWaveForce: xwaveforce
         YWaveForce: ywaveforce
         TotalWaveEnergyDissipation: totalwaveenergydissipation
-
-        # IBotLevType: ibotlevtype
-
-    Missing:
+        # Extra
+        IBotLevType: ibotlevtype
+        # Missing in the converter
         FloeDiameter: floe_diameter
         WindStressCoefficient: windstresscoefficient
         WaqFunction: waqfunction
         WaqParameter: waqparameter
         WaqSegmentFunction: waqsegmentfunction
         WaqSegmentNumber: waqsegmentnumber
-
-
-
-
-
-
-
 
 
 InitialConditions:
@@ -137,19 +129,18 @@ InitialConditions:
         InitialWaqBot: initialwaqbot
         InitialWaterLevel: initialwaterlevel
         BedLevel: bedlevel
-
-#         BedLevel1D: bedlevel1d
-#         BedLevel2D: bedlevel2d
-#         InitialWaterLevel1D: initialwaterlevel1d
-#         InitialWaterLevel2D: initialwaterlevel2d
-
+        # Extra
+        BedLevel1D: bedlevel1d
+        BedLevel2D: bedlevel2d
+        InitialWaterLevel1D: initialwaterlevel1d
+        InitialWaterLevel2D: initialwaterlevel2d
 
     prefixes:
         - initialsedfrac
         - initialtracer
         - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
-    Missing:
+        # Missing in the converter
         - initialsediment
 
 SourceSink:
@@ -157,10 +148,13 @@ SourceSink:
 
 
 Structure:
-    Pump: pump
+    # Missing in the converter
     DamLevel: damlevel
     GateLowerEdgeLevel: gateloweredgelevel
     GeneralStructure: generalstructure
+    Pump: pump
+    Pump1D: pump1d
+
 
 Misellaneous:
      ShiptXY: shiptxy
