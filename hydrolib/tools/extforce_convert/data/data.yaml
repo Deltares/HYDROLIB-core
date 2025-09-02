@@ -5,7 +5,7 @@ missing-quantities:
     # Meteo
     - solarradiationfactor
     - windspeedfactor
-    - windstresscoefficient
+    # - windstresscoefficient # duplicate in the Parameters quantities
     # Parameters
     - floe_diameter
     - windstresscoefficient
@@ -20,4 +20,4 @@ missing-quantities:
     - pump
     - pump1d
     # Initial conditions
-#     initialsediment
+    # - initialsediment
