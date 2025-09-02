@@ -4,8 +4,10 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
 
+import yaml
 from pydantic.v1 import Extra
 
+from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
 from hydrolib.core.dflowfm.ext.models import (
@@ -15,6 +17,7 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
+    ExtOldModel,
     ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import (
@@ -26,6 +29,30 @@ from hydrolib.core.dflowfm.inifield.models import (
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
 SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
+
+
+CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
+with CONVERTER_DATA_PATH.open("r") as fh:
+    try:
+        CONVERTER_DATA = yaml.safe_load(fh)
+    except yaml.YAMLError as e:
+        raise RuntimeError(f"Failed to parse YAML at {CONVERTER_DATA_PATH}: {e}") from e
+
+_mdu_section = CONVERTER_DATA.get("mdu") or {}
+_deprecated_keywords = _mdu_section.get("deprecated_keywords") or []
+if not isinstance(_deprecated_keywords, list):
+    raise TypeError(
+        f"'mdu.deprecated_keywords' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
+    )
+
+DEPRECATED_KEYS = tuple(_deprecated_keywords)
+_missing_quantities = CONVERTER_DATA.get("missing_quantities") or []
+if not isinstance(_missing_quantities, list):
+    raise TypeError(
+        f"'missing_quantities' must be a list in {CONVERTER_DATA_PATH}, got {type(_missing_quantities).__name__}"
+    )
+
+UN_SUPPORTED_QUANTITIES = set(quantity.lower() for quantity in _missing_quantities)
 
 
 def construct_filemodel_new_or_existing(
@@ -297,4 +324,19 @@ class IgnoreUnknownKeyWord(type):
 class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
     """Base class to ignore unknown keyword arguments when creating a new class instance."""
 
+    pass
+
+
+def check_unsupported_quantities(ext_old_model: ExtOldModel):
+    """Check if the old external forcing file contains unsupported quantities."""
+    quantities = [forcing.quantity.lower() for forcing in ext_old_model.forcing]
+    un_supported = UN_SUPPORTED_QUANTITIES.intersection(quantities)
+
+    if un_supported:
+        raise NotSupportedQuantities(
+            f"The following quantities are not supported: {un_supported}"
+        )
+
+
+class NotSupportedQuantities(Exception):
     pass

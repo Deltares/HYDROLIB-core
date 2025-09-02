@@ -1,15 +1,27 @@
+from collections import Counter
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
+import yaml
 from pydantic.v1.error_wrappers import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldForcing,
+    ExtOldModel,
+    ExtOldQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA_PATH,
+    UN_SUPPORTED_QUANTITIES,
     IgnoreUnknownKeyWordClass,
+    NotSupportedQuantities,
+    check_unsupported_quantities,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
@@ -90,3 +102,38 @@ def test_ignore_unknown_keyword_class():
         assert mdu_time.refdate == 20010101
         assert mdu_time.tzone == pytest.approx(0.0)
         assert mdu_time.dtuser == pytest.approx(10.0)
+
+
+class TestUnsupportedQuantities:
+    def test_check_no_raise_when_all_supported(self):
+        model = MagicMock(spec=ExtOldModel)
+        model.forcing = [
+            SimpleNamespace(quantity="supported_quantity_a"),
+            SimpleNamespace(quantity="supported_quantity_b"),
+        ]
+        check_unsupported_quantities(model)  # should not raise
+
+    def test_check_raises_on_unsupported(self):
+        if not UN_SUPPORTED_QUANTITIES:
+            pytest.skip("No unsupported quantities configured.")
+        unsupported = next(iter(UN_SUPPORTED_QUANTITIES))
+
+        model = MagicMock(spec=ExtOldModel)
+        model.forcing = [
+            SimpleNamespace(quantity="supported_quantity"),
+            SimpleNamespace(quantity=unsupported),
+        ]
+
+        with pytest.raises(NotSupportedQuantities) as exc:
+            check_unsupported_quantities(model)
+        assert str(unsupported) in str(exc.value)
+
+
+def test_missing_quantities_are_unique():
+    path = Path(CONVERTER_DATA_PATH)
+    data = yaml.safe_load(path.read_text()) or {}
+    items = data.get("missing_quantities") or []
+    # only consider strings; strip to avoid whitespace duplicates
+    items = [s.strip() for s in items if isinstance(s, str)]
+    dupes = [k for k, c in Counter(items).items() if c > 1]
+    assert not dupes, f"Duplicate entries in missing_quantities: {dupes}"

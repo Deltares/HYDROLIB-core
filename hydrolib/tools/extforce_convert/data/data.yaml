@@ -1,2 +1,23 @@
 mdu:
-    deprecated-key-words: [Allowcoolingbelowzero, RhoairRhowater]
+    deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
+
+missing_quantities:
+    # Meteo
+    - solarradiationfactor
+    - windspeedfactor
+    # - windstresscoefficient # duplicate in the Parameters quantities
+    # Parameters
+    - floe_diameter
+    - windstresscoefficient
+    - waqfunction
+    - waqparameter
+    - waqsegmentfunction
+    - waqsegmentnumber
+    # structure
+    - damlevel
+    - gateloweredgelevel
+    - generalstructure
+    - pump
+    - pump1d
+    # Initial conditions
+    # - initialsediment
