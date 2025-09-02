@@ -1029,7 +1029,11 @@ class MDUParser:
         Remove the deprecated mdu keywords from the file
         """
         for keyword in DEPRECATED_KEYS:
-            self.delete_line(keyword=keyword)
+            ind = self.find_keyword_lines(keyword)
+            if ind is not None:
+                line = Line(self.content[ind])
+                if line.value == "0":
+                    self.content.pop(ind)
 
     def get_section(self, section_name: str) -> Section:
         """Get Mdu Section.
