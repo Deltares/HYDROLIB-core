@@ -25,8 +25,8 @@ from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     backup_file,
+    check_unsupported_quantities,
     construct_filemodel_new_or_existing,
-    check_unsupported_quantities
 )
 
 

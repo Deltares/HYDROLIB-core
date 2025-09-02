@@ -1,10 +1,10 @@
 """Utility functions for converting old external forcing files to new format."""
 
-import yaml
-
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
+
+import yaml
 from pydantic.v1 import Extra
 
 from hydrolib import __path__
@@ -17,8 +17,8 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
-    ExtOldQuantity,
     ExtOldModel,
+    ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -336,6 +336,7 @@ def check_unsupported_quantities(ext_old_model: ExtOldModel):
         raise NotSupportedQuantities(
             f"The following quantities are not supported: {un_supported}"
         )
+
 
 class NotSupportedQuantities(Exception):
     pass
