@@ -69,7 +69,8 @@ Meteo:
 Parameter:
     quantity-names:
         AdvectionType: advectiontype
-        GroundLayerThickness: Groundlayerthickness
+        # has a problem as it starts with a capital letter
+        #GroundLayerThickness: Groundlayerthickness
         BedRockSurfaceElevation: bedrock_surface_elevation
         FrictionCoefficientTimeDependent: friction_coefficient_time_dependent
         FrictionCoefficient: frictioncoefficient
@@ -215,4 +216,3 @@ ExtrapolationMethod:
     # 0. No spatial extrapolation.
     SpatialExtrapolationOutsideOfSourceDataBoundingBox: 1
     # 1. Do spatial extrapolation outside of source data bounding box.
-
