@@ -518,9 +518,9 @@ class FileCasingResolver:
         operating_system = get_operating_system()
         if operating_system == OperatingSystem.WINDOWS:
             return self._resolve_casing_windows(path)
-        if operating_system == OperatingSystem.LINUX:
+        elif operating_system == OperatingSystem.LINUX:
             return self._resolve_casing_linux(path)
-        if operating_system == OperatingSystem.MACOS:
+        elif operating_system == OperatingSystem.MACOS:
             return self._resolve_casing_macos(path)
         else:
             raise NotImplementedError(
