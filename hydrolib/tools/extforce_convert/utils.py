@@ -1,11 +1,13 @@
 """Utility functions for converting old external forcing files to new format."""
 
+import yaml
+
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Type, Union
-
 from pydantic.v1 import Extra
 
+from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
 from hydrolib.core.dflowfm.ext.models import (
@@ -16,6 +18,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldQuantity,
+    ExtOldModel,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -26,6 +29,14 @@ from hydrolib.core.dflowfm.inifield.models import (
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
 SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
+
+
+CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
+with CONVERTER_DATA_PATH.open("r") as fh:
+    CONVERTER_DATA = yaml.safe_load(fh)
+
+DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated-key-words")
+UN_SUPPORTED_QUANTITIES = set(CONVERTER_DATA.get("missing-quantities"))
 
 
 def construct_filemodel_new_or_existing(
@@ -297,4 +308,18 @@ class IgnoreUnknownKeyWord(type):
 class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
     """Base class to ignore unknown keyword arguments when creating a new class instance."""
 
+    pass
+
+
+def check_unsuported_quantities(ext_old_model: ExtOldModel):
+    """Check if the old external forcing file contains unsupported quantities."""
+    quantities = [forcing.quantity for forcing in ext_old_model.forcing]
+    un_supported = UN_SUPPORTED_QUANTITIES.intersection(quantities)
+
+    if un_supported:
+        raise NotSupportedQuantities(
+            f"The following quantities are not supported: {un_supported}"
+        )
+
+class NotSupportedQuantities(Exception):
     pass

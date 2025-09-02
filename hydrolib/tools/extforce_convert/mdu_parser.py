@@ -6,23 +6,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import yaml
-
-from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.tools.extforce_convert.utils import DEPRECATED_KEYS
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
-
-CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
-
-with CONVERTER_DATA_PATH.open("r") as fh:
-    CONVERTER_DATA = yaml.safe_load(fh)
-
-DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated-key-words")
 
 __all__ = ["MDUParser"]
 
