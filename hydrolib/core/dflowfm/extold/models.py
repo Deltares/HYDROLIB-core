@@ -1,7 +1,7 @@
 from enum import IntEnum
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
-
+import yaml
 from pydantic import Field, field_validator, model_validator
 from strenum import StrEnum
 
@@ -20,17 +20,14 @@ from hydrolib.core.dflowfm.ini.util import enum_value_parser
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
-INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = (
-    "initialtracer",
-    "initialsedfrac",
-    "initialverticalsedfracprofile",
-    "initialverticalsigmasedfracprofile",
-)
+EXT_OLD_MODULE_PATH = Path(__file__).parent / "data"
 
-BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = (
-    "tracerbnd",
-    "sedfracbnd",
-)
+with (EXT_OLD_MODULE_PATH / "old-external-forcing-data.yaml").open("r") as fh:
+    QUANTITIES_DATA = yaml.safe_load(fh)
+
+with (EXT_OLD_MODULE_PATH / "header.txt").open("r") as f:
+    HEADER = f.read()
+
 
 FILETYPE_FILEMODEL_MAPPING = {
     1: TimModel,
@@ -47,149 +44,17 @@ FILETYPE_FILEMODEL_MAPPING = {
     12: DiskOnlyFileModel,
 }
 
-HEADER = """
- QUANTITY    : waterlevelbnd, velocitybnd, dischargebnd, tangentialvelocitybnd, normalvelocitybnd  filetype=9         method=2,3
-             : outflowbnd, neumannbnd, qhbnd, uxuyadvectionvelocitybnd                             filetype=9         method=2,3
-             : salinitybnd                                                                         filetype=9         method=2,3
-             : gateloweredgelevel, damlevel, pump                                                  filetype=9         method=2,3
-             : frictioncoefficient, horizontaleddyviscositycoefficient, advectiontype              filetype=4,7,10    method=4
-             : bedlevel, ibotlevtype                                                               filetype=4,7,10    method=4..9
-             : initialwaterlevel                                                                   filetype=4,7,10,12 method=4..9
-             : initialtemperature                                                                  filetype=4,7,10,12 method=4..9
-             : initialvelocityx, initialvelocityy                                                  filetype=4,7,10,12 method=4..9
-             : initialvelocity                                                                     filetype=12        method=4..9
-             : initialsalinity, initialsalinitytop: use initialsalinity for depth-uniform, or
-             : as bed level value in combination with initialsalinitytop                           filetype=4,7,10    method=4
-             : initialverticaltemperatureprofile                                                   filetype=9,10      method=
-             : initialverticalsalinityprofile                                                      filetype=9,10      method=
-             : windx, windy, windxy, rainfall, atmosphericpressure                                 filetype=1,2,4,6,7,8 method=1,2,3
-             : shiptxy, movingstationtxy                                                           filetype=1         method=1
-             : discharge_salinity_temperature_sorsin                                               filetype=9         method=1
-             : windstresscoefficient                                                               filetype=4,7,10    method=4
-             : nudge_salinity_temperature                                                          filetype=11        method=3
 
- kx = Vectormax = Nr of variables specified on the same time/space frame. Eg. Wind magnitude,direction: kx = 2
- FILETYPE=1  : uniform              kx = 1 value               1 dim array      uni
- FILETYPE=2  : unimagdir            kx = 2 values              1 dim array,     uni mag/dir transf to u,v, in index 1,2
- FILETYPE=3  : svwp                 kx = 3 fields  u,v,p       3 dim array      nointerpolation
- FILETYPE=4  : arcinfo              kx = 1 field               2 dim array      bilin/direct
- FILETYPE=5  : spiderweb            kx = 3 fields              3 dim array      bilin/spw
- FILETYPE=6  : curvi                kx = ?                                      bilin/findnm
- FILETYPE=7  : triangulation        kx = 1 field               1 dim array      triangulation
- FILETYPE=8  : triangulation_magdir kx = 2 fields consisting of Filetype=2      triangulation in (wind) stations
+ExtOldTracerQuantity = StrEnum(
+    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity-names"]
+)
 
- FILETYPE=9  : polyline             kx = 1 For polyline points i= 1 through N specify boundary signals, either as
-                                           timeseries or Fourier components or tidal constituents
-                                           Timeseries are in files *_000i.tim, two columns: time (min)  values
-                                           Fourier components and or tidal constituents are in files *_000i.cmp, three columns
-                                           period (min) or constituent name (e.g. M2), amplitude and phase (deg)
-                                           If no file is specified for a node, its value will be interpolated from surrounding nodes
-                                           If only one signal file is specified, the boundary gets a uniform signal
-                                           For a dischargebnd, only one signal file must be specified
-
- FILETYPE=10 : inside_polygon       kx = 1 field                                uniform value inside polygon for INITIAL fields
- FILETYPE=11 : ncgrid               kx = 1 field                    2 dim array      triangulation (should have proper standard_name in var, e.g., 'precipitation')
- FILETYPE=12 : ncflow (map file)    kx = 1 or 2 field               1 dim array      triangulation
- FILETYPE=14 : ncwave (com file)    kx = 1 field                    1 dim array      triangulation
-
- METHOD  =0  : provider just updates, another provider that pointers to this one does the actual interpolation
-         =1  : intp space and time (getval) keep  2 meteofields in memory
-         =2  : first intp space (update), next intp. time (getval) keep 2 flowfields in memory
-         =3  : save weightfactors, intp space and time (getval),   keep 2 pointer- and weight sets in memory.
-         =4  : only spatial, inside polygon
-         =5  : only spatial, triangulation, (if samples from *.asc file then bilinear)
-         =6  : only spatial, averaging
-         =7  : only spatial, index triangulation
-         =8  : only spatial, smoothing
-         =9  : only spatial, internal diffusion
-         =10 : only initial vertical profiles
-
- OPERAND =O  : Override at all points
-         =+  : Add to previously specified value
-         =*  : Multiply with previously specified value
-         =A  : Apply only if no value specified previously (For Initial fields, similar to Quickin preserving best data specified first)
-         =X  : MAX with prev. spec.
-         =N  : MIN with prev. spec.
-
- EXTRAPOLATION_METHOD (ONLY WHEN METHOD=3)
-         = 0 : No spatial extrapolation.
-         = 1 : Do spatial extrapolation outside of source data bounding box.
-
- MAXSEARCHRADIUS (ONLY WHEN EXTRAPOLATION_METHOD=1)
-         = search radius (in m) for model grid points that lie outside of the source data bounding box.
-
- AVERAGINGTYPE (ONLY WHEN METHOD=6)
-         =1  : SIMPLE AVERAGING
-         =2  : NEAREST NEIGHBOUR
-         =3  : MAX (HIGHEST)
-         =4  : MIN (LOWEST)
-         =5  : INVERSE WEIGHTED DISTANCE-AVERAGE
-         =6  : MINABS
-         =7  : KDTREE (LIKE 1, BUT FAST AVERAGING)
-
- RELATIVESEARCHCELLSIZE : For METHOD=6, the relative search cell size for samples inside cell (default: 1.01)
-
- PERCENTILEMINMAX : (ONLY WHEN AVERAGINGTYPE=3 or 4) Changes the min/max operator to an average of the
-               highest/lowest data points. The value sets the percentage of the total set that is to be included.
-
- NUMMIN  =   : For METHOD=6, minimum required number of source data points in each target cell.
-
- VALUE   =   : Offset value for this provider
-
- FACTOR  =   : Conversion factor for this provider
-
-*************************************************************************************************************
-"""
+BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
+    QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
+)
 
 
-class ExtOldTracerQuantity(StrEnum):
-    """Enum class containing the valid values for the boundary conditions category
-    of the external forcings that are specific to tracers.
-
-    Attributes:
-        TracerBnd (str):
-            User-defined tracer boundary condition.
-        InitialTracer (str):
-            Initial tracer condition.
-        SedFracBnd (str):
-            Sediment fraction boundary condition.
-    """
-
-    TracerBnd = "tracerbnd"
-    InitialTracer = "initialtracer"
-    SedFracBnd = "sedfracbnd"
-
-
-class ExtOldBoundaryQuantity(StrEnum):
-    # Boundary conditions
-    WaterLevelBnd = "waterlevelbnd"
-    """Water level"""
-    NeumannBnd = "neumannbnd"
-    """Water level gradient"""
-    RiemannBnd = "riemannbnd"
-    """Riemann invariant"""
-    OutflowBnd = "outflowbnd"
-    """Outflow"""
-    VelocityBnd = "velocitybnd"
-    """Velocity"""
-    DischargeBnd = "dischargebnd"
-    """Discharge"""
-    RiemannVelocityBnd = "riemann_velocitybnd"
-    """Riemann invariant velocity"""
-    SalinityBnd = "salinitybnd"
-    """Salinity"""
-    TemperatureBnd = "temperaturebnd"
-    """Temperature"""
-    SedimentBnd = "sedimentbnd"
-    """Suspended sediment"""
-    UXUYAdvectionVelocityBnd = "uxuyadvectionvelocitybnd"
-    """ux-uy advection velocity"""
-    NormalVelocityBnd = "normalvelocitybnd"
-    """Normal velocity"""
-    TangentialVelocityBnd = "tangentialvelocitybnd"
-    """Tangential velocity"""
-    QhBnd = "qhbnd"
-    """Discharge-water level dependency"""
+class _ExtOldBoundaryQuantity(StrEnum):
 
     @classmethod
     def _missing_(cls, value):
@@ -211,136 +76,32 @@ class ExtOldBoundaryQuantity(StrEnum):
             )
 
 
-class ExtOldParametersQuantity(StrEnum):
-    """Enum class containing the valid values for the Spatial parameter category
-    of the external forcings.
+ExtOldBoundaryQuantity = StrEnum(
+    "ExtOldBoundaryQuantity",
+    QUANTITIES_DATA["BoundaryCondition"]["quantity-names"],
+    type=_ExtOldBoundaryQuantity,
+)
+ExtOldParametersQuantity = StrEnum(
+    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]
+)
+ExtOldMeteoQuantity = StrEnum(
+    "ExtOldMeteoQuantity",
+    QUANTITIES_DATA["Meteo"],
+)
 
-    for more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
-    https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf
+
+INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
+    QUANTITIES_DATA["InitialConditions"]["prefixes"]
+)
+
+
+class _ExtOldInitialConditionQuantity(StrEnum):
     """
-
-    FrictionCoefficient = "frictioncoefficient"
-    HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
-    HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    AdvectionType = "advectiontype"
-    InfiltrationCapacity = "infiltrationcapacity"
-    BedRockSurfaceElevation = "bedrock_surface_elevation"
-    WaveDirection = "wavedirection"
-    XWaveForce = "xwaveforce"
-    YWaveForce = "ywaveforce"
-    WavePeriod = "waveperiod"
-    WaveSignificantHeight = "wavesignificantheight"
-    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
-    SecchiDepth = "secchidepth"
-    SeaIceAreaFraction = "sea_ice_area_fraction"
-    StemHeight = "stemheight"
-    StemDensity = "stemdensity"
-    StemDiameter = "stemdiameter"
-    NudgeRate = "nudgerate"
-    NudgeTime = "nudgetime"
-    NudgeSalinityTemperature = "nudge_salinity_temperature"
-
-
-class ExtOldMeteoQuantity(StrEnum):
-
-    # Meteorological fields
-    WindX = "windx"
-    """Wind x component"""
-    WindY = "windy"
-    """Wind y component"""
-    WindXY = "windxy"
-    """Wind vector"""
-    AirPressureWindXWindY = "airpressure_windx_windy"
-    """Atmospheric pressure and wind components"""
-    AirPressureWindXWindYCharnock = "airpressure_windx_windy_charnock"
-    "Atmospheric pressure and wind components Charnock"
-    AtmosphericPressure = "atmosphericpressure"
-    """Atmospheric pressure"""
-    Rainfall = "rainfall"
-    """Precipitation"""
-    RainfallRate = "rainfall_rate"
-    """Precipitation"""
-    HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
-    """Combined heat flux terms"""
-    HumidityAirTemperatureCloudinessSolarRadiation = (
-        "humidity_airtemperature_cloudiness_solarradiation"
-    )
-    """Combined heat flux terms"""
-    DewPointAirTemperatureCloudiness = "dewpoint_airtemperature_cloudiness"
-    """Dew point air temperature cloudiness"""
-    LongWaveRadiation = "longwaveradiation"
-    """Long wave radiation"""
-    SolarRadiation = "solarradiation"
-    """Solar radiation"""
-    AirPressure = "airpressure"
-    """AirPressure"""
-    StressX = "stressx"
-    """eastward wind stress"""
-    StressY = "stressy"
-    """northward wind stress"""
-    AirTemperature = "airtemperature"
-    """AirTemperature"""
-    Cloudiness = "cloudiness"
-    """Cloudiness, or cloud cover (fraction)"""
-    Humidity = "humidity"
-    """Humidity"""
-    StressXY = "stressxy"
-    """eastward and northward wind stress"""
-    AirpressureStressXStressY = "airpressure_stressx_stressy"
-    """Airpressure, eastward and northward wind stress"""
-    WindSpeed = "wind_speed"
-    """WindSpeed"""
-    WindSpeedFactor = "windspeedfactor"
-
-    WindFromDirection = "wind_from_direction"
-    """WindFromDirection"""
-    DewpointAirTemperatureCloudinessSolarradiation = (
-        "dewpoint_airtemperature_cloudiness_solarradiation"
-    )
-    """Dewpoint temperature, air temperature, cloudiness, solarradiation"""
-    AirDensity = "airdensity"
-    """Air density"""
-    Charnock = "charnock"
-    """Charnock coefficient"""
-    Dewpoint = "dewpoint"
-    """Dewpoint temperature"""
-
-
-class ExtOldInitialConditionQuantity(StrEnum):
-    """
-    Initial Condition quantities:
-        initialwaterlevel, initialsalinity, initialsalinitytop, initialtemperature,
-        initialverticaltemperatureprofile, initialverticalsalinityprofile, initialvelocityx,
-        initialvelocityy, initialvelocity
-
     If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
     [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
     and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
     please open and issue in github.
     """
-
-    # Initial Condition fields
-    BedLevel = "bedlevel"
-    BedLevel1D = "bedlevel1D"
-    BedLevel2D = "bedlevel2D"
-
-    InitialWaterLevel = "initialwaterlevel"
-    InitialWaterLevel1D = "initialwaterlevel1d"
-    InitialWaterLevel2D = "initialwaterlevel2d"
-
-    InitialSalinity = "initialsalinity"
-    InitialSalinityTop = "initialsalinitytop"
-    InitialSalinityBot = "initialsalinitybot"
-    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
-
-    InitialTemperature = "initialtemperature"
-    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
-
-    initialUnsaturatedZoneThickness = "initialunsaturatedzonethickness"
-    InitialVelocityX = "initialvelocityx"
-    InitialVelocityY = "initialvelocityy"
-    InitialVelocity = "initialvelocity"
-    InitialWaqBot = "initialwaqbot"
 
     @classmethod
     def _missing_(cls, value):
@@ -362,177 +123,32 @@ class ExtOldInitialConditionQuantity(StrEnum):
             )
 
 
-class ExtOldSourcesSinks(StrEnum):
-    """Source and sink quantities"""
+ExtOldInitialConditionQuantity = StrEnum(
+    "ExtOldInitialConditionQuantity",
+    QUANTITIES_DATA["InitialConditions"]["quantity-names"],
+    type=_ExtOldInitialConditionQuantity,
+)
 
-    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
+ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
 
+ALL_QUANTITIES = (
+    QUANTITIES_DATA["BoundaryCondition"]["quantity-names"]
+    | QUANTITIES_DATA["Meteo"]
+    | QUANTITIES_DATA["Parameter"]
+    | QUANTITIES_DATA["InitialConditions"]["quantity-names"]
+    | QUANTITIES_DATA["SourceSink"]
+    | QUANTITIES_DATA["Structure"]
+    | QUANTITIES_DATA["Misellaneous"]
+)
 
-class ExtOldQuantity(StrEnum):
-    """Enum class containing the valid values for the boundary conditions category
-    of the external forcings.
-    """
-
-    # Boundary conditions
-    WaterLevelBnd = "waterlevelbnd"
-    NeumannBnd = "neumannbnd"
-    RiemannBnd = "riemannbnd"
-    OutflowBnd = "outflowbnd"
-    VelocityBnd = "velocitybnd"
-    DischargeBnd = "dischargebnd"
-    RiemannVelocityBnd = "riemann_velocitybnd"
-    SalinityBnd = "salinitybnd"
-    TemperatureBnd = "temperaturebnd"
-    SedimentBnd = "sedimentbnd"
-    UXUYAdvectionVelocityBnd = "uxuyadvectionvelocitybnd"
-    NormalVelocityBnd = "normalvelocitybnd"
-    TangentialVelocityBnd = "tangentialvelocitybnd"
-    QhBnd = "qhbnd"
-
-    # Meteorological fields
-    WindX = "windx"
-    WindY = "windy"
-    WindXY = "windxy"
-    AirPressureWindXWindY = "airpressure_windx_windy"
-    AirPressureWindXWindYCharnock = "airpressure_windx_windy_charnock"
-    AtmosphericPressure = "atmosphericpressure"
-    Rainfall = "rainfall"
-    RainfallRate = "rainfall_rate"
-    HumidityAirTemperatureCloudiness = "humidity_airtemperature_cloudiness"
-    HumidityAirTemperatureCloudinessSolarRadiation = (
-        "humidity_airtemperature_cloudiness_solarradiation"
-    )
-    DewPointAirTemperatureCloudiness = "dewpoint_airtemperature_cloudiness"
-    LongWaveRadiation = "longwaveradiation"
-    SolarRadiation = "solarradiation"
-    DischargeSalinityTemperatureSorSin = "discharge_salinity_temperature_sorsin"
-    NudgeSalinityTemperature = "nudge_salinity_temperature"
-    AirPressure = "airpressure"
-    StressX = "stressx"
-    StressY = "stressy"
-    AirTemperature = "airtemperature"
-    Cloudiness = "cloudiness"
-    Humidity = "humidity"
-    StressXY = "stressxy"
-    AirpressureStressXStressY = "airpressure_stressx_stressy"
-    WindSpeed = "wind_speed"
-    WindSpeedFactor = "windspeedfactor"
-    WindFromDirection = "wind_from_direction"
-    DewpointAirTemperatureCloudinessSolarradiation = (
-        "dewpoint_airtemperature_cloudiness_solarradiation"
-    )
-    AirDensity = "airdensity"
-    Charnock = "charnock"
-    Dewpoint = "dewpoint"
-
-    # Structure parameters
-    Pump = "pump"
-    DamLevel = "damlevel"
-    GateLowerEdgeLevel = "gateloweredgelevel"
-    GeneralStructure = "generalstructure"
-
-    # Initial fields
-    InitialWaterLevel = "initialwaterlevel"
-    InitialSalinity = "initialsalinity"
-    InitialSalinityTop = "initialsalinitytop"
-    InitialTemperature = "initialtemperature"
-    InitialVerticalTemperatureProfile = "initialverticaltemperatureprofile"
-    InitialVerticalSalinityProfile = "initialverticalsalinityprofile"
-    BedLevel = "bedlevel"
-    SecchiDepth = "secchidepth"
-    SeaIceAreaFraction = "sea_ice_area_fraction"
-    StemHeight = "stemheight"
-    StemDensity = "stemdensity"
-    StemDiameter = "stemdiameter"
-    NudgeRate = "nudgerate"
-    NudgeTime = "nudgetime"
-
-    # Spatial physical properties
-    FrictionCoefficient = "frictioncoefficient"
-    HorizontalEddyViscosityCoefficient = "horizontaleddyviscositycoefficient"
-    InternalTidesFrictionCoefficient = "internaltidesfrictioncoefficient"
-    HorizontalEddyDiffusivityCoefficient = "horizontaleddydiffusivitycoefficient"
-    AdvectionType = "advectiontype"
-    IBotLevType = "ibotlevtype"
-    BedRockSurfaceElevation = "bedrock_surface_elevation"
-
-    # Miscellaneous
-    ShiptXY = "shiptxy"
-    MovingStationXY = "movingstationxy"
-    WaveSignificantHeight = "wavesignificantheight"
-    WavePeriod = "waveperiod"
-    WaveDirection = "wavedirection"
-    XWaveForce = "xwaveforce"
-    YWaveForce = "ywaveforce"
-
-    InitialVelocityX = "initialvelocityx"
-    InitialVelocityY = "initialvelocityy"
-    InitialVelocity = "initialvelocity"
+ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
 
 
-class ExtOldFileType(IntEnum):
-    """Enum class containing the valid values for the `filetype` attribute
-    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
-    """
-
-    TimeSeries = 1
-    """1. Time series"""
-    TimeSeriesMagnitudeAndDirection = 2
-    """2. Time series magnitude and direction"""
-    SpatiallyVaryingWindPressure = 3
-    """3. Spatially varying wind and pressure"""
-    ArcInfo = 4
-    """4. ArcInfo"""
-    SpiderWebData = 5
-    """5. Spiderweb data (cyclones)"""
-    CurvilinearData = 6
-    """6. Space-time data on curvilinear grid"""
-    Samples = 7
-    """7. Samples"""
-    TriangulationMagnitudeAndDirection = 8
-    """8. Triangulation magnitude and direction"""
-    Polyline = 9
-    """9. Polyline (<*.pli>-file) with boundary signals on support points"""
-    InsidePolygon = 10
-    """10. Polyfile (<*.pol>-file). Uniform value inside polygon for INITIAL fields"""
-    NetCDFGridData = 11
-    """11. NetCDF grid data (e.g. meteo fields)"""
-    NetCDFWaveData = 14
-    """14. NetCDF wave data"""
-
-
-class ExtOldMethod(IntEnum):
-    """Enum class containing the valid values for the `method` attribute
-    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
-    """
-
-    PassThrough = 1
-    """1. Pass through (no interpolation)"""
-    InterpolateTimeAndSpace = 2
-    """2. Interpolate time and space"""
-    InterpolateTimeAndSpaceSaveWeights = 3
-    """3. Interpolate time and space, save weights"""
-    InterpolateSpace = 4
-    """4. Interpolate space"""
-    InterpolateTime = 5
-    """5. Interpolate time"""
-    AveragingSpace = 6
-    """6. Averaging in space"""
-    InterpolateExtrapolateTime = 7
-    """7. Interpolate/Extrapolate time"""
-    Obsolete = 11
-    """11. METHOD=11 is obsolete; use METHOD=3 and EXTRAPOLATION_METHOD=1"""
-
-
-class ExtOldExtrapolationMethod(IntEnum):
-    """Enum class containing the valid values for the `extrapolation_method` attribute
-    in the [ExtOldForcing][hydrolib.core.dflowfm.extold.models.ExtOldForcing] class.
-    """
-
-    NoSpatialExtrapolation = 0
-    """0. No spatial extrapolation."""
-    SpatialExtrapolationOutsideOfSourceDataBoundingBox = 1
-    """1. Do spatial extrapolation outside of source data bounding box."""
+ExtOldFileType = IntEnum("ExtOldFileType", QUANTITIES_DATA["FileType"])
+ExtOldMethod = IntEnum("ExtOldMethod", QUANTITIES_DATA["OldMethods"])
+ExtOldExtrapolationMethod = IntEnum(
+    "ExtOldExtrapolationMethod", QUANTITIES_DATA["ExtrapolationMethod"]
+)
 
 
 class ExtOldForcing(BaseModel):
