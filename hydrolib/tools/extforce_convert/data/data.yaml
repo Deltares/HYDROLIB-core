@@ -1,7 +1,7 @@
 mdu:
-    deprecated-key-words: [Allowcoolingbelowzero, RhoairRhowater]
+    deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
 
-missing-quantities:
+missing_quantities:
     # Meteo
     - solarradiationfactor
     - windspeedfactor

@@ -128,8 +128,8 @@ class TestUnsupportedQuantities:
 def test_missing_quantities_are_unique():
     path = Path(CONVERTER_DATA_PATH)
     data = yaml.safe_load(path.read_text()) or {}
-    items = data.get("missing-quantities") or []
+    items = data.get("missing_quantities") or []
     # only consider strings; strip to avoid whitespace duplicates
     items = [s.strip() for s in items if isinstance(s, str)]
     dupes = [k for k, c in Counter(items).items() if c > 1]
-    assert not dupes, f"Duplicate entries in missing-quantities: {dupes}"
+    assert not dupes, f"Duplicate entries in missing_quantities: {dupes}"

@@ -39,17 +39,17 @@ with CONVERTER_DATA_PATH.open("r") as fh:
         raise RuntimeError(f"Failed to parse YAML at {CONVERTER_DATA_PATH}: {e}") from e
 
 _mdu_section = CONVERTER_DATA.get("mdu") or {}
-_deprecated_keywords = _mdu_section.get("deprecated-key-words") or []
+_deprecated_keywords = _mdu_section.get("deprecated_keywords") or []
 if not isinstance(_deprecated_keywords, list):
     raise TypeError(
-        f"'mdu.deprecated-key-words' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
+        f"'mdu.deprecated_keywords' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
     )
 
 DEPRECATED_KEYS = tuple(_deprecated_keywords)
-_missing_quantities = CONVERTER_DATA.get("missing-quantities") or []
+_missing_quantities = CONVERTER_DATA.get("missing_quantities") or []
 if not isinstance(_missing_quantities, list):
     raise TypeError(
-        f"'missing-quantities' must be a list in {CONVERTER_DATA_PATH}, got {type(_missing_quantities).__name__}"
+        f"'missing_quantities' must be a list in {CONVERTER_DATA_PATH}, got {type(_missing_quantities).__name__}"
     )
 
 UN_SUPPORTED_QUANTITIES = set(quantity.lower() for quantity in _missing_quantities)

@@ -52,7 +52,7 @@ FILETYPE_FILEMODEL_MAPPING = {
 
 
 ExtOldTracerQuantity = StrEnum(
-    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity-names"]
+    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity_names"]
 )
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
@@ -84,15 +84,15 @@ class _ExtOldBoundaryQuantity(StrEnum):
 
 ExtOldBoundaryQuantity = StrEnum(
     "ExtOldBoundaryQuantity",
-    QUANTITIES_DATA["BoundaryCondition"]["quantity-names"],
+    QUANTITIES_DATA["BoundaryCondition"]["quantity_names"],
     type=_ExtOldBoundaryQuantity,
 )
 ExtOldParametersQuantity = StrEnum(
-    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]["quantity-names"]
+    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]["quantity_names"]
 )
 ExtOldMeteoQuantity = StrEnum(
     "ExtOldMeteoQuantity",
-    QUANTITIES_DATA["Meteo"]["quantity-names"],
+    QUANTITIES_DATA["Meteo"]["quantity_names"],
 )
 
 
@@ -131,17 +131,17 @@ class _ExtOldInitialConditionQuantity(StrEnum):
 
 ExtOldInitialConditionQuantity = StrEnum(
     "ExtOldInitialConditionQuantity",
-    QUANTITIES_DATA["InitialConditions"]["quantity-names"],
+    QUANTITIES_DATA["InitialConditions"]["quantity_names"],
     type=_ExtOldInitialConditionQuantity,
 )
 
 ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
 
 ALL_QUANTITIES = (
-    QUANTITIES_DATA["BoundaryCondition"]["quantity-names"]
-    | QUANTITIES_DATA["Meteo"]["quantity-names"]
-    | QUANTITIES_DATA["Parameter"]["quantity-names"]
-    | QUANTITIES_DATA["InitialConditions"]["quantity-names"]
+    QUANTITIES_DATA["BoundaryCondition"]["quantity_names"]
+    | QUANTITIES_DATA["Meteo"]["quantity_names"]
+    | QUANTITIES_DATA["Parameter"]["quantity_names"]
+    | QUANTITIES_DATA["InitialConditions"]["quantity_names"]
     | QUANTITIES_DATA["SourceSink"]
     | QUANTITIES_DATA["Structure"]
     | QUANTITIES_DATA["Misellaneous"]
