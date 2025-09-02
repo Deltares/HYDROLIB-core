@@ -33,10 +33,26 @@ SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
 with CONVERTER_DATA_PATH.open("r") as fh:
-    CONVERTER_DATA = yaml.safe_load(fh)
+    try:
+        CONVERTER_DATA = yaml.safe_load(fh)
+    except yaml.YAMLError as e:
+        raise RuntimeError(f"Failed to parse YAML at {CONVERTER_DATA_PATH}: {e}") from e
 
-DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated-key-words")
-UN_SUPPORTED_QUANTITIES = set(CONVERTER_DATA.get("missing-quantities"))
+_mdu_section = CONVERTER_DATA.get("mdu") or {}
+_deprecated_keywords = _mdu_section.get("deprecated-key-words") or []
+if not isinstance(_deprecated_keywords, list):
+    raise TypeError(
+        f"'mdu.deprecated-key-words' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
+    )
+
+DEPRECATED_KEYS = tuple(_deprecated_keywords)
+_missing_quantities = CONVERTER_DATA.get("missing-quantities") or []
+if not isinstance(_missing_quantities, list):
+    raise TypeError(
+        f"'missing-quantities' must be a list in {CONVERTER_DATA_PATH}, got {type(_missing_quantities).__name__}"
+    )
+
+UN_SUPPORTED_QUANTITIES = set(quantity.lower() for quantity in _missing_quantities)
 
 
 def construct_filemodel_new_or_existing(
@@ -313,7 +329,7 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
 
 def check_unsupported_quantities(ext_old_model: ExtOldModel):
     """Check if the old external forcing file contains unsupported quantities."""
-    quantities = [forcing.quantity for forcing in ext_old_model.forcing]
+    quantities = [forcing.quantity.lower() for forcing in ext_old_model.forcing]
     un_supported = UN_SUPPORTED_QUANTITIES.intersection(quantities)
 
     if un_supported:
