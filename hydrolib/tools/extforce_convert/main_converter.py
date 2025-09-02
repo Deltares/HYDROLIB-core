@@ -26,6 +26,7 @@ from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     backup_file,
     construct_filemodel_new_or_existing,
+    check_unsupported_quantities
 )
 
 
@@ -218,11 +219,11 @@ class ExternalForcingConverter:
         )
 
     @staticmethod
-    def _read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
+    def _read_old_file(ext_old_file: PathOrStr) -> ExtOldModel:
         """Read a legacy D-Flow FM external forcings file (.ext) into an ExtOldModel object.
 
         Args:
-            extoldfile (PathOrStr):
+            ext_old_file (PathOrStr):
                 path to the external forcings file (.ext)
 
             Returns:
@@ -231,15 +232,17 @@ class ExternalForcingConverter:
             Raises:
                 FileNotFoundError: If the old external forcing file does not exist.
         """
-        if not isinstance(extoldfile, Path):
-            extoldfile = Path(extoldfile)
+        if not isinstance(ext_old_file, Path):
+            ext_old_file = Path(ext_old_file)
 
-        if not extoldfile.exists():
-            raise FileNotFoundError(f"File not found: {extoldfile}")
+        if not ext_old_file.exists():
+            raise FileNotFoundError(f"File not found: {ext_old_file}")
 
-        extold_model = ExtOldModel(extoldfile)
+        ext_old_model = ExtOldModel(ext_old_file)
+        # check if the file contains unsupported quantities
+        check_unsupported_quantities(ext_old_model)
 
-        return extold_model
+        return ext_old_model
 
     def _type_field_map(self) -> dict[type, tuple[Any, str]]:
         return {
