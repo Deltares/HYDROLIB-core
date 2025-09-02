@@ -1,4 +1,6 @@
 from pathlib import Path
+import yaml
+from collections import Counter
 
 import pytest
 from unittest.mock import MagicMock
@@ -18,6 +20,7 @@ from hydrolib.tools.extforce_convert.utils import (
     check_unsupported_quantities,
     NotSupportedQuantities,
     UN_SUPPORTED_QUANTITIES,
+    CONVERTER_DATA_PATH
 )
 
 
@@ -120,3 +123,13 @@ class TestUnsupportedQuantities:
         with pytest.raises(NotSupportedQuantities) as exc:
             check_unsupported_quantities(model)
         assert str(unsupported) in str(exc.value)
+
+
+def test_missing_quantities_are_unique():
+    path = Path(CONVERTER_DATA_PATH)
+    data = yaml.safe_load(path.read_text()) or {}
+    items = data.get("missing-quantities") or []
+    # only consider strings; strip to avoid whitespace duplicates
+    items = [s.strip() for s in items if isinstance(s, str)]
+    dupes = [k for k, c in Counter(items).items() if c > 1]
+    assert not dupes, f"Duplicate entries in missing-quantities: {dupes}"
