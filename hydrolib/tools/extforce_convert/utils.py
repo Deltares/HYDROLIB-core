@@ -311,7 +311,7 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
     pass
 
 
-def check_unsuported_quantities(ext_old_model: ExtOldModel):
+def check_unsupported_quantities(ext_old_model: ExtOldModel):
     """Check if the old external forcing file contains unsupported quantities."""
     quantities = [forcing.quantity for forcing in ext_old_model.forcing]
     un_supported = UN_SUPPORTED_QUANTITIES.intersection(quantities)
