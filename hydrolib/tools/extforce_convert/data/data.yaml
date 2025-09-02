@@ -3,21 +3,21 @@ mdu:
 
 missing-quantities:
     # Meteo
-    SolarRadiationFactor: solarradiationfactor
-    WindSpeedFactor: windspeedfactor
-    WindStressCoefficient: windstresscoefficient
+    - solarradiationfactor
+    - windspeedfactor
+    - windstresscoefficient
     # Parameters
-    FloeDiameter: floe_diameter
-    WindStressCoefficient: windstresscoefficient
-    WaqFunction: waqfunction
-    WaqParameter: waqparameter
-    WaqSegmentFunction: waqsegmentfunction
-    WaqSegmentNumber: waqsegmentnumber
+    - floe_diameter
+    - windstresscoefficient
+    - waqfunction
+    - waqparameter
+    - waqsegmentfunction
+    - waqsegmentnumber
     # structure
-    DamLevel: damlevel
-    GateLowerEdgeLevel: gateloweredgelevel
-    GeneralStructure: generalstructure
-    Pump: pump
-    Pump1D: pump1d
+    - damlevel
+    - gateloweredgelevel
+    - generalstructure
+    - pump
+    - pump1d
     # Initial conditions
 #     initialsediment
