@@ -26,6 +26,6 @@ class TestConvertMeteo:
         assert new_quantity_block.forcingfile == DiskOnlyFileModel("windtest.amu")
         assert new_quantity_block.forcingfiletype == MeteoForcingFileType.arcinfo
         assert (
-                new_quantity_block.interpolationmethod
-                == MeteoInterpolationMethod.linearSpaceTime
+            new_quantity_block.interpolationmethod
+            == MeteoInterpolationMethod.linearSpaceTime
         )
