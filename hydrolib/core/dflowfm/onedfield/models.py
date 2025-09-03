@@ -1,14 +1,19 @@
 import logging
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import root_validator
-from pydantic.v1.types import NonNegativeInt
+from pydantic import (
+    BeforeValidator,
+    Field,
+    NonNegativeInt,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
-    get_split_string_on_delimiter_validator,
-    make_list_validator,
+    make_list,
+    split_string_on_delimiter,
     validate_correct_length,
 )
 
@@ -79,34 +84,38 @@ class OneDFieldBranch(INIBasedModel):
 
     branchid: str = Field(alias="branchId")
     numlocations: Optional[NonNegativeInt] = Field(0, alias="numLocations")
-    chainage: Optional[List[float]] = Field(alias="chainage")
+    chainage: Optional[List[float]] = Field(None, alias="chainage")
     values: List[float] = Field(alias="values")
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "chainage",
-        "values",
-    )
+    @field_validator("chainage", "values", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo):
+        return split_string_on_delimiter(cls, v, info)
 
-    @root_validator(allow_reuse=True)
-    def check_list_length_values(cls, values):
+    @model_validator(mode="after")
+    @classmethod
+    def check_list_length_values(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
         """Validates that the length of the values field is as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            values.model_dump(),
             "values",
             length_name="numlocations",
             list_required_with_length=True,
             min_length=1,
         )
+        return values
 
-    @root_validator(allow_reuse=True)
-    def check_list_length_chainage(cls, values):
+    @model_validator(mode="after")
+    @classmethod
+    def check_list_length_chainage(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
         """Validates that the length of the chainage field is as expected."""
-        return validate_correct_length(
-            values,
+        validate_correct_length(
+            values.model_dump(),
             "chainage",
             length_name="numlocations",
             list_required_with_length=True,
         )
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")
@@ -126,13 +135,9 @@ class OneDFieldModel(INIModel):
 
     general: OneDFieldGeneral = OneDFieldGeneral()
     global_: Optional[OneDFieldGlobal] = Field(
-        alias="global"
+        None, alias="global"
     )  # to circumvent built-in kw
-    branch: List[OneDFieldBranch] = []
-
-    _split_to_list = make_list_validator(
-        "branch",
-    )
+    branch: Annotated[List[OneDFieldBranch], BeforeValidator(make_list)] = []
 
     @classmethod
     def _ext(cls) -> str:

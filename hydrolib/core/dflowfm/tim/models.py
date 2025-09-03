@@ -2,8 +2,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 from pandas import DataFrame
-from pydantic.v1 import Field
-from pydantic.v1.class_validators import validator
+from pydantic import Field, ValidationInfo, field_validator
 
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.base.utils import FortranUtils
@@ -132,7 +131,7 @@ class TimModel(ParsableFileModel):
         - `TIM file format <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4>`_
     """
 
-    serializer_config = TimSerializerConfig()
+    serializer_config: TimSerializerConfig = TimSerializerConfig()
     """TimSerializerConfig: The serialization configuration for the tim file."""
 
     comments: List[str] = Field(default_factory=list)
@@ -177,7 +176,7 @@ class TimModel(ParsableFileModel):
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return TimParser.parse
 
-    @validator("timeseries", pre=True, check_fields=True, allow_reuse=True)
+    @field_validator("timeseries", mode="before", check_fields=True)
     def replace_fortran_scientific_notation_for_floats(cls, value, field):
         for record in value:
             if isinstance(record, dict):
@@ -197,7 +196,7 @@ class TimModel(ParsableFileModel):
 
         return value
 
-    @validator("timeseries")
+    @field_validator("timeseries", mode="after")
     @classmethod
     def _validate_timeseries_values(cls, v: List[TimRecord]) -> List[TimRecord]:
         """Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.
@@ -244,15 +243,15 @@ class TimModel(ParsableFileModel):
                 )
             seen_times.add(timrecord.time)
 
-    @validator("quantities_names")
-    def _validate_quantities_names(cls, v, values):
+    @field_validator("quantities_names", mode="before")
+    def _validate_quantities_names(cls, v, info: ValidationInfo) -> List[str]:
         """Validate if the number of quantities_names matches the number of columns in the timeseries.
 
         The validator compared the amount of quantities_names with the number of columns in the first record of
         the timeseries.
         """
         if v is not None:
-            first_records_data = values["timeseries"][0].data
+            first_records_data = info.data["timeseries"][0].data
             if len(v) != len(first_records_data):
                 raise ValueError(
                     f"The number of quantities_names ({len(v)}) must match the number of columns in the Tim file ({len(first_records_data)})."
