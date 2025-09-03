@@ -1,2 +1,3 @@
 mdu:
-    deprecated-key-words: [Allowcoolingbelowzero, RhoairRhowater, baroczlaybed]
+    deprecated_key_words: [Allowcoolingbelowzero, RhoairRhowater, baroczlaybed]
+    deprecated_value: 0
