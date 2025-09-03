@@ -371,9 +371,14 @@ class ExternalForcingConverter:
             self.mdu_parser.save(backup=backup)
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
+        """
+        The save method for the IniFieldModel.
+        the exclude_unset parameter is set to False, to save the general section with the fileversion section as
+        required by the Fortran kernel.
+        """
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive, exclude_unset=True)
+        self.inifield_model.save(recurse=recursive, exclude_unset=False)
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
