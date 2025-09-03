@@ -1,13 +1,18 @@
 from pathlib import Path
 from types import MethodType
+
 import numpy as np
 import pytest
 
-from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
-
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField, IniFieldModel
+from hydrolib.core.dflowfm.inifield.models import (
+    DataFileType,
+    IniFieldModel,
+    InitialField,
+    InterpolationMethod,
+    ParameterField,
+)
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
@@ -18,6 +23,7 @@ from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
 )
 from tests.utils import compare_two_files, ignore_version_lines
+
 
 class TestConvertInitialCondition:
     def test_sample_data_file(self):
@@ -215,6 +221,7 @@ class TestConvertParameters:
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == expected_quantity
 
+
 class TestInifieldConverter:
     def test_save_inifield(self, tmp_path: Path):
         """
@@ -222,16 +229,18 @@ class TestInifieldConverter:
         """
         path = Path("tests/data/output/delete-me.ini")
         data = {
-            'quantity': 'initialwaterlevel',
-            'datafile': DiskOnlyFileModel(filepath='iniwaterlevel.xyz'),
-            'datafiletype': DataFileType.sample,
-            'interpolationmethod': InterpolationMethod.triangulation,
-            'operand': 'O'
+            "quantity": "initialwaterlevel",
+            "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
+            "datafiletype": DataFileType.sample,
+            "interpolationmethod": InterpolationMethod.triangulation,
+            "operand": "O",
         }
         ini_field = InitialField(**data)
 
         converter = object.__new__(ExternalForcingConverter)
-        converter._save_inifield_model = MethodType(ExternalForcingConverter._save_inifield_model, converter)
+        converter._save_inifield_model = MethodType(
+            ExternalForcingConverter._save_inifield_model, converter
+        )
 
         inifield_model = IniFieldModel(initial=[ini_field])
         inifield_model.filepath = path
@@ -244,7 +253,6 @@ class TestInifieldConverter:
             reference,
             path,
             ignore_line=ignore_version_lines,
-            )
+        )
         assert diff == []
         path.unlink()
-
