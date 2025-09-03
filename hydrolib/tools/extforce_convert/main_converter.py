@@ -373,7 +373,7 @@ class ExternalForcingConverter:
     def _save_inifield_model(self, backup: bool, recursive: bool):
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive, exclude_unset=True)
+        self.inifield_model.save(recurse=recursive, exclude_unset=False)
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
