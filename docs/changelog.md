@@ -1,3 +1,15 @@
+## 1.0.0b4 (2025-09-03)
+
+## 1.0.0b3 (2025-08-29)
+
+## 1.0.0b2 (2025-08-17)
+
+### Refactor
+
+- **dflowfm**: restore __init__.py imports for improved API usability
+- **core**: migrate all model modules to Pydantic v2 and improve validation architecture (#832)
+- **core**: migrate all model modules to Pydantic v2 and improve validation architecture
+
 ## 0.9.5 (2025-09-03)
 
 ### Fix
