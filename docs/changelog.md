@@ -1,4 +1,21 @@
+## 0.9.5 (2025-09-03)
+
+### Fix
+
+- **extforce_convert**: ensure all fields are saved in IniFieldModel (#938)
+- **extforce_convert**: ensure all fields are saved in IniFieldModel
+- **mdu_parser**: improve deprecated keyword handling and clean logic (#934)
+- **mdu_parser**: improve deprecated keyword handling and clean logic
+
+### Refactor
+
+- **extold**: externalize quantities and headers to YAML (#925)
+- **extold**: externalize quantities and headers to YAML
+
+
 ## 1.0.0b3 (2025-08-29)
+
+
 
 ## 0.9.4 (2025-08-29)
 
@@ -10,16 +27,6 @@
 ### Fix
 
 - **extold/models**: fix NudgeSalinityTemperature parameter quantity (#923)
-
-## 0.9.3 (2025-08-17)
-
-### Fix
-
-- **tests**: remove obsolete reference to HYDROLIB-core in crsloc.ini
-
-### Refactor
-
-- **dimr**: improve serialization safety by replacing minidom with lxml
 
 ## 1.0.0b2 (2025-08-17)
 
@@ -50,36 +57,6 @@
 - **mdu**: enhance MDU parser with structured line and section handling (#881)
 - **mdu**: enhance MDU parser with structured line and section handling
 
-## 1.0.0b1 (2025-07-04)
-
-### Refactor
-
-- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
-- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
-- **onedfield**: Migrate `OneDField` to pydantic v2 (#848)
-- **onedfield**: migrate to Pydantic v2
-- **structure**: Migrate `structure` module to pydantic v2 (#845)
-- **structure**: Migrate `structure` module to pydantic v2
-- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
-- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
-- **models**: `ext` models to Pydantic v2 (#841)
-- **models**: `ext` models to Pydantic v2 (#841)
-- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
-- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
-- **models**: migrate to the gui module to Pydantic v2 #842)
-- **models**: migrate to the gui module to Pydantic v2 #842)
-
-
-## 0.9.4 (2025-08-29)
-
-### Feat
-
-- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods (#924)
-- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods
-
-### Fix
-
-- **extold/models**: fix NudgeSalinityTemperature parameter quantity (#923)
 
 ## 0.9.3 (2025-08-17)
 
@@ -108,6 +85,26 @@
 - **ext**: simplify logic and read child files as DiskOnlyFileModel
 - **mdu**: enhance MDU parser with structured line and section handling (#881)
 - **mdu**: enhance MDU parser with structured line and section handling
+
+## 1.0.0b1 (2025-07-04)
+
+### Refactor
+
+- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
+- **storagenode**: Migrate `StorageNode` to pydantic v2 (#847)
+- **onedfield**: Migrate `OneDField` to pydantic v2 (#848)
+- **onedfield**: migrate to Pydantic v2
+- **structure**: Migrate `structure` module to pydantic v2 (#845)
+- **structure**: Migrate `structure` module to pydantic v2
+- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
+- **obs**: migrate ObservationCrossSection and `ObservationPoint` models to Pydantic v2  (#844)
+- **models**: `ext` models to Pydantic v2 (#841)
+- **models**: `ext` models to Pydantic v2 (#841)
+- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
+- **inifield**: migrate IniField to Pydantic v2 and improve input handling (#843)
+- **models**: migrate to the gui module to Pydantic v2 #842)
+- **models**: migrate to the gui module to Pydantic v2 #842)
+
 
 ## 0.9.2 (2025-06-26)
 
