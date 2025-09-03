@@ -1028,6 +1028,11 @@ class MDUParser:
     def clean(self):
         """
         Remove the deprecated mdu keywords from the file
+
+        Notes:
+            - The `clean` function only removes the first occurrence of the deprecated keywords from the file. if a
+            keyword is repeated in the file, the `clean` function will only remove the first one.
+            not remove the deprecated
         """
         for keyword in DEPRECATED_KEYS:
             ind = self.find_keyword_lines(keyword)
