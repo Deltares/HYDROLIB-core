@@ -220,7 +220,7 @@ class TestInifieldConverter:
         """
         the test mocks the converter and only instantiates the InifieldModel.
         """
-        path = Path("tests/data/output/delete-me.ini")
+        path = tmp_path / "delete-me.ini"
         data = {
             'quantity': 'initialwaterlevel',
             'datafile': DiskOnlyFileModel(filepath='iniwaterlevel.xyz'),
