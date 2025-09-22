@@ -860,8 +860,8 @@ class SourceSinkConverter(BaseConverter):
             tim_model, start_time, user_defined_names=labels
         )
         # set the bc file names to the same names as the tim files.
-        forcing_model.filepath = tim_file.relative_to(
-            self.root_dir.resolve()
+        forcing_model.filepath = Path(
+            os.path.relpath(tim_file, self.root_dir.resolve())
         ).with_suffix(".bc")
 
         data = {
