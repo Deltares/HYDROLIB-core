@@ -1,10 +1,12 @@
-from pathlib import Path
+import os
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.utils import FilePathStyleConverter, PathStyle
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -391,6 +393,43 @@ class TestExternalFocingConverter:
         converter.structure_model.structure = []
         converter._update_mdu_file()
         mock_mdu_parser.update_structure_file.assert_not_called()
+
+    @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    def test_externalforcingconverter_path_style_converted_to_os_style(
+        self, tmp_path, path_style
+    ):
+        ext_file = tmp_path / "test.ext"
+        pol_file = tmp_path / "domain.pol"
+        filepath = str(pol_file)
+        if path_style == PathStyle.UNIXLIKE and os.name == "nt":
+            filepath = FilePathStyleConverter._from_windows_to_posix_path(pol_file)
+        elif path_style == PathStyle.WINDOWSLIKE and os.name != "nt":
+            filepath = FilePathStyleConverter._from_posix_to_windows_path(pol_file)
+        ext_file.write_text(
+            "QUANTITY     =initialtracerdTR1\n"
+            f"FILENAME     ={filepath}\n"
+            "FILETYPE     =10\n"
+            "METHOD       =4\n"
+            "OPERAND      =O\n"
+            "VALUE        =0\n"
+        )
+        pol_file.write_text(
+            "L1\n"
+            "     4     2\n"
+            "    -244.151184    1790.310059\n"
+            "    -228.566650    -617.508057\n"
+            "   10065.006836    -251.270264\n"
+            "    9994.876953    1868.232910\n"
+        )
+
+        converter = ExternalForcingConverter(
+            extold_model=ext_file,
+            path_style=path_style,
+        )
+        converter.update()
+
+        assert len(converter.inifield_model.initial) == 1
+        assert converter.extold_model.forcing[0].filename.filepath == pol_file
 
 
 class TestUpdate:
