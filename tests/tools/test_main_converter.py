@@ -416,7 +416,7 @@ class TestUpdate:
             str(ext_model.meteo[i].forcingfile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_meteo["file_path"]
 
-    def test_initial_contitions_only(
+    def test_initial_conditions_only(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
         converter = ExternalForcingConverter(old_forcing_file_initial_condition["path"])
