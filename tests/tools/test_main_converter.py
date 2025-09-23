@@ -398,6 +398,13 @@ class TestExternalFocingConverter:
     def test_externalforcingconverter_path_style_converted_to_os_style(
         self, tmp_path, path_style
     ):
+        """Test that the paths in the old external forcing file are converted to the OS style when reading the file.
+
+        Notes:
+            - The test creates a temporary old external forcing file and a polyline file.
+            - The path in the old external forcing file is set according to the specified path_style.
+            - The test verifies that the path in the converted model matches the expected path style of the OS.
+        """
         ext_file = tmp_path / "test.ext"
         pol_file = tmp_path / "domain.pol"
         filepath = str(pol_file)
