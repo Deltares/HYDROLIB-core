@@ -9,6 +9,7 @@ from argparse import ArgumentTypeError, Namespace
 from pathlib import Path
 
 from hydrolib.core import __version__
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
@@ -108,6 +109,13 @@ def _get_parser() -> argparse.ArgumentParser:
         default=False,
         help="Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.",
     )
+    parser.add_argument(
+        "--pathstyle",
+        choices=[style.value for style in PathStyle],
+        default=None,
+        type=lambda s: PathStyle(s),
+        help="Set the path style for the file paths in the models.",
+    )
     return parser
 
 
@@ -166,6 +174,7 @@ def convert_with_mdu_file(args: Namespace):
         ext_file_user=(args.outfiles[0] if args.outfiles else None),
         inifield_file_user=(args.outfiles[1] if args.outfiles else None),
         structure_file_user=(args.outfiles[2] if args.outfiles else None),
+        path_style=(args.pathstyle if args.pathstyle else None),
     )
     convert(converter, args)
 
@@ -182,6 +191,7 @@ def convert_with_extold_file(args: Namespace):
         ext_file=(args.outfiles[0] if args.outfiles else None),
         inifield_file=(args.outfiles[1] if args.outfiles else None),
         structure_file=(args.outfiles[2] if args.outfiles else None),
+        path_style=(args.pathstyle if args.pathstyle else None),
     )
     convert(converter, args)
 
