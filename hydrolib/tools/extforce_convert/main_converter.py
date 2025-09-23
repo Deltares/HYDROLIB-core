@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -40,6 +41,7 @@ class ExternalForcingConverter:
         structure_file: Optional[PathOrStr] = None,
         mdu_parser: MDUParser = None,
         verbose: bool = False,
+        path_style: PathStyle = None,
     ):
         r"""Initialize the converter.
 
@@ -91,7 +93,7 @@ class ExternalForcingConverter:
             ```
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
-            extold_model = self._read_old_file(extold_model)
+            extold_model = self._read_old_file(extold_model, path_style=path_style)
             rdir = extold_model.filepath.parent
         else:
             if not isinstance(extold_model, ExtOldModel):
@@ -103,6 +105,7 @@ class ExternalForcingConverter:
         self._extold_model = extold_model
         self._verbose = verbose
         self._root_dir = rdir
+        self._path_style = path_style
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
@@ -167,6 +170,11 @@ class ExternalForcingConverter:
         return self._root_dir
 
     @property
+    def path_style(self) -> PathStyle:
+        """Path style for the file paths in the models."""
+        return self._path_style
+
+    @property
     def extold_model(self) -> ExtOldModel:
         """Old external forcing model."""
         return self._extold_model
@@ -218,7 +226,9 @@ class ExternalForcingConverter:
         )
 
     @staticmethod
-    def _read_old_file(extoldfile: PathOrStr) -> ExtOldModel:
+    def _read_old_file(
+        extoldfile: PathOrStr, path_style: Optional[PathStyle] = None
+    ) -> ExtOldModel:
         """Read a legacy D-Flow FM external forcings file (.ext) into an ExtOldModel object.
 
         Args:
@@ -237,7 +247,7 @@ class ExternalForcingConverter:
         if not extoldfile.exists():
             raise FileNotFoundError(f"File not found: {extoldfile}")
 
-        extold_model = ExtOldModel(extoldfile)
+        extold_model = ExtOldModel(extoldfile, path_style=path_style)
 
         return extold_model
 
@@ -364,7 +374,9 @@ class ExternalForcingConverter:
         if num_quantities_ext:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
-            self.ext_model.save(recurse=recursive, exclude_unset=True)
+            self.ext_model.save(
+                recurse=recursive, exclude_unset=True, path_style=self.path_style
+            )
 
         if self.mdu_parser is not None:
             self.mdu_parser.clean()
@@ -378,12 +390,16 @@ class ExternalForcingConverter:
         """
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive, exclude_unset=False)
+        self.inifield_model.save(
+            recurse=recursive, exclude_unset=False, path_style=self.path_style
+        )
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
-        self.structure_model.save(recurse=recursive, exclude_unset=True)
+        self.structure_model.save(
+            recurse=recursive, exclude_unset=True, path_style=self.path_style
+        )
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
@@ -401,6 +417,7 @@ class ExternalForcingConverter:
         ext_file_user: Optional[PathOrStr] = None,
         inifield_file_user: Optional[PathOrStr] = None,
         structure_file_user: Optional[PathOrStr] = None,
+        path_style: Optional[PathStyle] = None,
     ) -> "ExternalForcingConverter":
         """Create the converter from the MDU file.
 
@@ -443,6 +460,7 @@ class ExternalForcingConverter:
             inifield_file_user,
             structure_file_user,
             mdu_parser,
+            path_style=path_style,
         )
 
     def _update_mdu_file(self):
