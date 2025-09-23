@@ -21,7 +21,6 @@ BoundaryCondition:
         WaterLevelBnd: waterlevelbnd
         WaveEnergyBnd: waveenergybnd
         WeirOutFlowBnd: weiroutflowbnd
-        # RiemannVelocityBnd: riemann_velocitybnd
 
     prefixes:
         - sedfracbnd
