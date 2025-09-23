@@ -45,7 +45,14 @@ if not isinstance(_deprecated_keywords, list):
         f"'mdu.deprecated_keywords' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
     )
 
+_deprecated_value = _mdu_section.get("deprecated_value")
+if not isinstance(_deprecated_value, (list, float, int)):
+    raise TypeError(
+        f"'mdu.deprecated_value' must be a list/int/float in {CONVERTER_DATA_PATH}, got {type(_deprecated_value).__name__}"
+    )
+
 DEPRECATED_KEYS = tuple(_deprecated_keywords)
+DEPRECATED_VALUE = _deprecated_value
 _missing_quantities = CONVERTER_DATA.get("missing_quantities") or []
 if not isinstance(_missing_quantities, list):
     raise TypeError(

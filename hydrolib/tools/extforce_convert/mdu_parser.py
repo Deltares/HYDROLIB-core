@@ -13,6 +13,7 @@ from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     DEPRECATED_KEYS,
+    DEPRECATED_VALUE,
     IgnoreUnknownKeyWordClass,
     backup_file,
 )
@@ -21,13 +22,6 @@ STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
 
-CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
-
-with CONVERTER_DATA_PATH.open("r") as fh:
-    CONVERTER_DATA = yaml.safe_load(fh)
-
-DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated_keywords")
-DEPRECATED_VALUE = CONVERTER_DATA.get("mdu").get("deprecated_value")
 
 __all__ = ["MDUParser"]
 
