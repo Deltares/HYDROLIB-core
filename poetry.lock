@@ -2314,17 +2314,17 @@ files = [
 
 [[package]]
 name = "meshkernel"
-version = "8.1.2"
+version = "8.1.3"
 description = "`meshkernel` is a library which can be used to manipulate meshes."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "meshkernel-8.1.2-py3-none-macosx_13_0_arm64.whl", hash = "sha256:2bc0e89efc4249e045292f31bf58ac56840c7d90a5b2bb9cb5072def2efc6939"},
-    {file = "meshkernel-8.1.2-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:80096ae38d9a486bcb7203dd5a35109ee021df662c588a23e3983b60eb0b1c74"},
-    {file = "meshkernel-8.1.2-py3-none-macosx_14_0_arm64.whl", hash = "sha256:7f88cd16ad240d932eef513ce1242b95055e473498877adcbce505d60568f9d1"},
-    {file = "meshkernel-8.1.2-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:d404973091e247ec2a787122c8614b643903fef4e3fbd103fab120ad1515c7a8"},
-    {file = "meshkernel-8.1.2-py3-none-win_amd64.whl", hash = "sha256:4fdf8066a3c8b3b6ce257a5ed514081e0517461403c43f2b6daeecd93dd5a009"},
+    {file = "meshkernel-8.1.3-py3-none-macosx_13_0_arm64.whl", hash = "sha256:269af9b7ecc535cb870ade7f03f6a0ea73cc2511c613a7a883463f4944f6d3e3"},
+    {file = "meshkernel-8.1.3-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:a03367e248e50cf459764179cd643d3e4c567bce627ce03d1b4a53f7f1711f58"},
+    {file = "meshkernel-8.1.3-py3-none-macosx_14_0_arm64.whl", hash = "sha256:2273e606d77bddbac9aa4e3d76cfa8b4f53bbf5357d31efdc5e869f493c594bf"},
+    {file = "meshkernel-8.1.3-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:8d2fdc10a2f9b346541adcbf0d4e04a936648ad9821d865a48d0a5fb0c4916bc"},
+    {file = "meshkernel-8.1.3-py3-none-win_amd64.whl", hash = "sha256:39818dd8dda40a373abfa952e05e7923111c4e2cf8c45a8690b8b42176b14c4d"},
 ]
 
 [package.dependencies]
@@ -3746,7 +3746,7 @@ version = "6.0.2"
 description = "YAML parser and emitter for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["dev", "docs"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0a9a2848a5b7feac301353437eb7d5957887edbf81d56e903999a75a3d743086"},
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:29717114e51c84ddfba879543fb232a6ed60086602313ca38cce623c1d62cfbf"},
@@ -4700,4 +4700,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "aa0d16a4c1799667b7ad8c65f4d0418b605a706e41170be3e4bbf2b5e0b1cc01"
+content-hash = "2d826b5206a28b3969130a4f80e6bd991bba7fba8ac7405ae40745d2d7b361ab"

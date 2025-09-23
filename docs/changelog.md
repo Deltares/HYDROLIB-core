@@ -1,3 +1,23 @@
+## 0.9.6 (2025-09-04)
+
+### Fix
+
+- fix pyyaml import error (#939)
+
+## 0.9.5 (2025-09-03)
+
+### Fix
+
+- **extforce_convert**: ensure all fields are saved in IniFieldModel (#938)
+- **extforce_convert**: ensure all fields are saved in IniFieldModel
+- **mdu_parser**: improve deprecated keyword handling and clean logic (#934)
+- **mdu_parser**: improve deprecated keyword handling and clean logic
+
+### Refactor
+
+- **extold**: externalize quantities and headers to YAML (#925)
+- **extold**: externalize quantities and headers to YAML
+
 ## 0.9.4 (2025-08-29)
 
 ### Feat

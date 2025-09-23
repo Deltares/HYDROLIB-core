@@ -1,5 +1,6 @@
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
+    deprecated_value: 0
 
 missing_quantities:
     # Meteo

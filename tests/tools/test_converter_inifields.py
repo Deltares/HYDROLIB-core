@@ -1,26 +1,28 @@
 from pathlib import Path
+from types import MethodType
 
 import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.common.models import Operand
-from hydrolib.core.dflowfm.ext.models import (
-    Meteo,
-    MeteoForcingFileType,
-    MeteoInterpolationMethod,
-)
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.inifield.models import (
+    DataFileType,
+    IniFieldModel,
+    InitialField,
+    InterpolationMethod,
+    ParameterField,
+)
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
-    MeteoConverter,
     ParametersConverter,
 )
+from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
 )
+from tests.utils import compare_two_files, ignore_version_lines
 
 
 class TestConvertInitialCondition:
@@ -220,23 +222,37 @@ class TestConvertParameters:
         assert new_quantity_block.quantity == expected_quantity
 
 
-class TestConvertMeteo:
-    def test_default(self):
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.WindX,
-            filename="windtest.amu",
-            filetype=4,
-            method="2",
-            operand="O",
+class TestInifieldConverter:
+    def test_save_inifield(self, tmp_path: Path):
+        """
+        the test mocks the converter and only instantiates the InifieldModel.
+        """
+        path = tmp_path / "delete-me.ini"
+        data = {
+            "quantity": "initialwaterlevel",
+            "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
+            "datafiletype": DataFileType.sample,
+            "interpolationmethod": InterpolationMethod.triangulation,
+            "operand": "O",
+        }
+        ini_field = InitialField(**data)
+
+        converter = object.__new__(ExternalForcingConverter)
+        converter._save_inifield_model = MethodType(
+            ExternalForcingConverter._save_inifield_model, converter
         )
 
-        new_quantity_block = MeteoConverter().convert(forcing)
-        assert isinstance(new_quantity_block, Meteo)
-        assert new_quantity_block.quantity == "windx"
-        assert new_quantity_block.operand == Operand.override
-        assert new_quantity_block.forcingfile == DiskOnlyFileModel("windtest.amu")
-        assert new_quantity_block.forcingfiletype == MeteoForcingFileType.arcinfo
-        assert (
-            new_quantity_block.interpolationmethod
-            == MeteoInterpolationMethod.linearSpaceTime
+        inifield_model = IniFieldModel(initial=[ini_field])
+        inifield_model.filepath = path
+
+        converter._inifield_model = inifield_model
+
+        converter._save_inifield_model(backup=True, recursive=True)
+        reference = "tests/data/reference/ini/inifield-with-one-initial.ini"
+        diff = compare_two_files(
+            reference,
+            path,
+            ignore_line=ignore_version_lines,
         )
+        assert diff == []
+        path.unlink()
