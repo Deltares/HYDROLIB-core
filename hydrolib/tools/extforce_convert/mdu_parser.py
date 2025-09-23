@@ -22,7 +22,6 @@ STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
 
-
 __all__ = ["MDUParser"]
 
 
