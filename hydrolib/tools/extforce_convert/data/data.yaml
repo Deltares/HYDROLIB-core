@@ -14,7 +14,6 @@ missing_quantities:
         # Parameters
         - floe_diameter
         - waqmonitoringarea
-        - massbalancearea
         - waqparameter
         - ibotlevtype
         - friction_coefficient_time_dependent
@@ -49,7 +48,8 @@ missing_quantities:
         - xwaveforce
         - ywaveforce
         - totalwaveenergydissipation
-
+        # do not convert for now
+        - bedrock_surface_elevation
     Prefixes:
         # initial conditions
         - initialsediment
@@ -58,3 +58,4 @@ missing_quantities:
         - waqfunction
         - waqsegmentfunction
         - waqsegmentnumber
+        - massbalancearea
