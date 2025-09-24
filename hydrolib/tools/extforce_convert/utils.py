@@ -2,7 +2,7 @@
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Dict, List, Type, Union, Iterable, Set
 
 import yaml
 from pydantic.v1 import Extra
@@ -368,5 +368,15 @@ class ConverterData(BaseModel):
 
 CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
+
 class UnSupportedQuantitiesError(Exception):
     pass
+
+__all__ = [
+    "UnSupportedQuantitiesError",
+    "CONVERTER_DATA",
+    "find_temperature_salinity_in_quantities",
+    "IgnoreUnknownKeyWordClass",
+    "backup_file",
+    "construct_filemodel_new_or_existing"
+]
