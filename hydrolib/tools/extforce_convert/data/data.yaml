@@ -23,4 +23,6 @@ missing_quantities:
     - pump
     - pump1d
     # Initial conditions
+    - bedlevel1d
+    - bedlevel2d
     # - initialsediment
