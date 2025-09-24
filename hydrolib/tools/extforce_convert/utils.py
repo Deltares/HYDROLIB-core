@@ -55,8 +55,6 @@ if not isinstance(_deprecated_value, (list, float, int)):
 DEPRECATED_KEYS = tuple(_deprecated_keywords)
 DEPRECATED_VALUE = _deprecated_value
 
-external_forcing_data = CONVERTER_DATA.get("external_forcing")
-
 
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
@@ -330,9 +328,10 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
     pass
 
 
-class UnsupportedQuantities(BaseModel):
-    name: List[str] = Field(default_factory=list)
-    prefix: List[str] = Field(default_factory=list)
+class MDUConfig(BaseModel):
+    deprecated_keywords: List[str] = Field(default_factory=list)
+    deprecated_value: Union[int, float, List[Union[int, float]]] = 0
+
 
 class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: List[str] = Field(default_factory=list)
@@ -350,21 +349,24 @@ class ExternalForcingConfigs(BaseModel):
                     unique.append(key)
         return unique
 
-unsupported_quantities = ExternalForcingConfigs(**external_forcing_data)
 
-unsupported_quantities = UnsupportedQuantities(**_missing_quantities)
+class ConverterData(BaseModel):
+    mdu: MDUConfig = Field(default_factory=MDUConfig)
+    external_forcing: ExternalForcingConfigs = Field(default_factory=ExternalForcingConfigs)
 
 
 def check_unsupported_quantities(ext_old_model: ExtOldModel):
     """Check if the old external forcing file contains unsupported quantities."""
     quantities = [forcing.quantity.lower() for forcing in ext_old_model.forcing]
-    un_supported = set(unsupported_quantities.unsupported_quantity_names).intersection(quantities)
+    un_supported = set(CONVERTER_DATA.external_forcing.unsupported_quantity_names).intersection(quantities)
 
     if un_supported:
         raise UnSupportedQuantitiesError(
             f"The following quantities are not supported by the converted yet: {un_supported}"
         )
 
+
+CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
 class UnSupportedQuantitiesError(Exception):
     pass
