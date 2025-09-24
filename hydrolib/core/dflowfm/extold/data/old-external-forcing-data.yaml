@@ -91,7 +91,6 @@ Parameter:
         StemDensity: stemdensity
         StemDiameter: stemdiameter
         StemHeight: stemheight
-        # missing windstresscoefficient
         WaveSignificantHeight: wavesignificantheight
         WavePeriod: waveperiod
         WaveDirection: wavedirection
@@ -104,7 +103,6 @@ Parameter:
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
-        WindStressCoefficient: windstresscoefficient
         WaqFunction: waqfunction
         WaqParameter: waqparameter
         WaqSegmentFunction: waqsegmentfunction

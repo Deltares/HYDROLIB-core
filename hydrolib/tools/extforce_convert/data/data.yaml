@@ -7,9 +7,9 @@ missing_quantities:
     - solarradiationfactor
     - windspeedfactor
     # - windstresscoefficient # duplicate in the Parameters quantities
+    - windstresscoefficient
     # Parameters
     - floe_diameter
-    - windstresscoefficient
     - waqfunction
     - waqparameter
     - waqsegmentfunction
