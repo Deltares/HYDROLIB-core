@@ -85,7 +85,6 @@ Parameter:
         NudgeTime: nudgetime
         SeaIceAreaFraction: sea_ice_area_fraction
         SeaIceThickness: sea_ice_thickness
-        # missing floe_diameter
         SecchiDepth: secchidepth
         StemDensity: stemdensity
         StemDiameter: stemdiameter
@@ -98,7 +97,6 @@ Parameter:
         XWaveForce: xwaveforce
         YWaveForce: ywaveforce
         TotalWaveEnergyDissipation: totalwaveenergydissipation
-        # Extra
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
@@ -149,6 +147,7 @@ Structure:
     GeneralStructure: generalstructure
     Pump: pump
     Pump1D: pump1d
+    valve1D: valve1d
 
 
 Misellaneous:
