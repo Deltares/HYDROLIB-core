@@ -349,23 +349,28 @@ class ExternalForcingConfigs(BaseModel):
                     unique.append(key)
         return unique
 
+    def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
+        """Return the set of unsupported quantities present in the given iterable."""
+        normalized = (str(q).lower() for q in quantities)
+        return set(self.unsupported_quantity_names).intersection(normalized)
+
+    def check_unsupported_quantities(self, quantities: Iterable[str]) -> None:
+        """Raise an error if any of the given quantities are unsupported."""
+        un_supported = self.find_unsupported(quantities)
+        if un_supported:
+            raise UnSupportedQuantitiesError(
+                f"The following quantities are not supported by the converted yet: {un_supported}"
+            )
 
 class ConverterData(BaseModel):
     version: str
     mdu: MDUConfig = Field(default_factory=MDUConfig)
     external_forcing: ExternalForcingConfigs = Field(default_factory=ExternalForcingConfigs)
 
-
-def check_unsupported_quantities(ext_old_model: ExtOldModel):
-    """Check if the old external forcing file contains unsupported quantities."""
-    quantities = [forcing.quantity.lower() for forcing in ext_old_model.forcing]
-    un_supported = set(CONVERTER_DATA.external_forcing.unsupported_quantity_names).intersection(quantities)
-
-    if un_supported:
-        raise UnSupportedQuantitiesError(
-            f"The following quantities are not supported by the converted yet: {un_supported}"
-        )
-
+    def check_unsupported_quantities(self, ext_old_model: ExtOldModel):
+        """Check if the old external forcing file contains unsupported quantities."""
+        quantities = [forcing.quantity for forcing in ext_old_model.forcing]
+        self.external_forcing.check_unsupported_quantities(quantities)
 
 CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
