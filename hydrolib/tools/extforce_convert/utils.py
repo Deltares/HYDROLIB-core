@@ -351,6 +351,7 @@ class ExternalForcingConfigs(BaseModel):
 
 
 class ConverterData(BaseModel):
+    version: str
     mdu: MDUConfig = Field(default_factory=MDUConfig)
     external_forcing: ExternalForcingConfigs = Field(default_factory=ExternalForcingConfigs)
 
