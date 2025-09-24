@@ -2,8 +2,8 @@ mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
     deprecated_value: 0
 
-missing_quantities:
-    quantity_names:
+external_forcing:
+    unsupported_quantity_names:
         # Meteo
         - solarradiationfactor
         - windspeedfactor
@@ -50,10 +50,9 @@ missing_quantities:
         - totalwaveenergydissipation
         # do not convert for now
         - bedrock_surface_elevation
-    Prefixes:
+    unsupported_prefixes:
         # initial conditions
         - initialsediment
-
         # Parameters
         - waqfunction
         - waqsegmentfunction

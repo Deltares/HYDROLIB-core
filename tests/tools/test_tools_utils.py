@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 import pytest
 import yaml
 from pydantic.v1.error_wrappers import ValidationError
-
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -18,13 +17,14 @@ from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA_PATH,
-    UN_SUPPORTED_QUANTITIES,
     IgnoreUnknownKeyWordClass,
-    UnSupportedQuantities,
     check_unsupported_quantities,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
+    UnsupportedQuantities,
+    UnSupportedQuantitiesError,
+    unsupported_quantities
 )
 
 
@@ -104,7 +104,41 @@ def test_ignore_unknown_keyword_class():
         assert mdu_time.dtuser == pytest.approx(10.0)
 
 
-class TestUnsupportedQuantities:
+class TestMissingQuantities:
+
+    def test_missing_quantities_normalization(self):
+        mq = UnsupportedQuantities(
+            name=[" A ", "a", "B", None, 123, " b "],
+            prefix=[" p1 ", "p2"]
+        )
+        # stripped, lowercased, deduped
+        assert mq.name == ["a", "b"]
+        # unchanged (no validator on Prefixes)
+        assert mq.prefix == [" p1 ", "p2"]
+
+    def test_empty_input_defaults(self):
+        mq = UnsupportedQuantities()
+        assert mq.name == []
+        assert mq.prefix == []
+
+    def test_from_yaml_file(self, tmp_path):
+        yaml_text = """
+    external_forcing:
+      name:
+        - " x "
+        - "X"
+        - y
+      prefix:
+        - pre
+    """
+        data = yaml.safe_load(yaml_text)
+        mq = UnsupportedQuantities(**(data.get("external_forcing") or {}))
+        assert mq.name == ["x", "y"]
+        assert mq.prefix == ["pre"]
+
+
+
+class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [
@@ -114,9 +148,9 @@ class TestUnsupportedQuantities:
         check_unsupported_quantities(model)  # should not raise
 
     def test_check_raises_on_unsupported(self):
-        if not UN_SUPPORTED_QUANTITIES:
+        if not unsupported_quantities.name:
             pytest.skip("No unsupported quantities configured.")
-        unsupported = next(iter(UN_SUPPORTED_QUANTITIES))
+        unsupported = next(iter(unsupported_quantities.name))
 
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [
@@ -124,7 +158,7 @@ class TestUnsupportedQuantities:
             SimpleNamespace(quantity=unsupported),
         ]
 
-        with pytest.raises(UnSupportedQuantities) as exc:
+        with pytest.raises(UnSupportedQuantitiesError) as exc:
             check_unsupported_quantities(model)
         assert str(unsupported) in str(exc.value)
 
@@ -132,8 +166,9 @@ class TestUnsupportedQuantities:
 def test_missing_quantities_are_unique():
     path = Path(CONVERTER_DATA_PATH)
     data = yaml.safe_load(path.read_text()) or {}
-    items = data.get("missing_quantities") or []
+    items = data.get("external_forcing") or []
     # only consider strings; strip to avoid whitespace duplicates
     items = [s.strip() for s in items if isinstance(s, str)]
     dupes = [k for k, c in Counter(items).items() if c > 1]
-    assert not dupes, f"Duplicate entries in missing_quantities: {dupes}"
+    assert not dupes, f"Duplicate entries in external_forcing: {dupes}"
+
