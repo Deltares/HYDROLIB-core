@@ -6,8 +6,11 @@ missing_quantities:
     # Meteo
     - solarradiationfactor
     - windspeedfactor
-    # - windstresscoefficient # duplicate in the Parameters quantities
+    - rainfall_rate
     - windstresscoefficient
+    - windspeedfactor
+    - wind_speed
+    - wind_from_direction
     # Parameters
     - floe_diameter
     - waqfunction

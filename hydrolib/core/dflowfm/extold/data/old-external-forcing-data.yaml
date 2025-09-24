@@ -60,7 +60,6 @@ Meteo:
         SolarRadiationFactor: solarradiationfactor
         WindSpeedFactor: windspeedfactor
         WindStressCoefficient: windstresscoefficient
-        # Extra
         WindSpeed: wind_speed
         WindFromDirection: wind_from_direction
 
@@ -127,7 +126,6 @@ InitialConditions:
         InitialWaqBot: initialwaqbot
         InitialWaterLevel: initialwaterlevel
         BedLevel: bedlevel
-        # Extra
         BedLevel1D: bedlevel1d
         BedLevel2D: bedlevel2d
         InitialWaterLevel1D: initialwaterlevel1d
