@@ -329,8 +329,18 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
 
 
 class MDUConfig(BaseModel):
-    deprecated_keywords: List[str] = Field(default_factory=list)
+    deprecated_keywords: Set[str] = Field(default_factory=set)
     deprecated_value: Union[int, float, List[Union[int, float]]] = 0
+
+    @validator("deprecated_keywords", pre=True)
+    def _to_set(cls, v):
+        """convert the deprecated keywords to a set."""
+        try:
+            vals = {x.strip() if isinstance(x, str) else str(x) for x in v}
+        except TypeError:
+            vals = {str(v)}
+
+        return vals
 
 
 class ExternalForcingConfigs(BaseModel):
