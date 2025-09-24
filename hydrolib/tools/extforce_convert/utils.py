@@ -39,22 +39,6 @@ with CONVERTER_DATA_PATH.open("r") as fh:
     except yaml.YAMLError as e:
         raise RuntimeError(f"Failed to parse YAML at {CONVERTER_DATA_PATH}: {e}") from e
 
-_mdu_section = CONVERTER_DATA.get("mdu") or {}
-_deprecated_keywords = _mdu_section.get("deprecated_keywords") or []
-if not isinstance(_deprecated_keywords, list):
-    raise TypeError(
-        f"'mdu.deprecated_keywords' must be a list in {CONVERTER_DATA_PATH}, got {type(_deprecated_keywords).__name__}"
-    )
-
-_deprecated_value = _mdu_section.get("deprecated_value")
-if not isinstance(_deprecated_value, (list, float, int)):
-    raise TypeError(
-        f"'mdu.deprecated_value' must be a list/int/float in {CONVERTER_DATA_PATH}, got {type(_deprecated_value).__name__}"
-    )
-
-DEPRECATED_KEYS = tuple(_deprecated_keywords)
-DEPRECATED_VALUE = _deprecated_value
-
 
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
