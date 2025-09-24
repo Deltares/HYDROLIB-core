@@ -6,14 +6,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import yaml
-
-from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
-    DEPRECATED_KEYS,
-    DEPRECATED_VALUE,
+    CONVERTER_DATA,
     IgnoreUnknownKeyWordClass,
     backup_file,
 )
@@ -618,6 +614,7 @@ class MDUParser:
         self.temperature_salinity_data = self.get_temperature_salinity_data()
         self._geometry = self.loaded_fm_data.get("geometry")
         self.file_style_properties = FileStyleProperties(self._content)
+        self.configs = CONVERTER_DATA
 
     def __repr__(self):
         message = f"""
@@ -1031,11 +1028,12 @@ class MDUParser:
             keyword is repeated in the file, the `clean` function will only remove the first one.
             not remove the deprecated
         """
-        for keyword in DEPRECATED_KEYS:
+
+        for keyword in self.configs.mdu.deprecated_keywords:
             ind = self.find_keyword_lines(keyword)
             if ind is not None:
                 line = Line(self.content[ind])
-                if line.value == str(DEPRECATED_VALUE):
+                if line.value == str(self.configs.mdu.deprecated_value):
                     self.content.pop(ind)
 
     def get_section(self, section_name: str) -> Section:

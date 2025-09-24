@@ -17,14 +17,14 @@ from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA_PATH,
+    ConverterData,
     IgnoreUnknownKeyWordClass,
-    check_unsupported_quantities,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
     ExternalForcingConfigs,
     UnSupportedQuantitiesError,
-    unsupported_quantities
+    CONVERTER_DATA
 )
 
 
@@ -141,16 +141,17 @@ class TestMissingQuantities:
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
+        converter_data = MagicMock(spec=ConverterData)
         model.forcing = [
             SimpleNamespace(quantity="supported_quantity_a"),
             SimpleNamespace(quantity="supported_quantity_b"),
         ]
-        check_unsupported_quantities(model)  # should not raise
+        converter_data.check_unsupported_quantities(model)  # should not raise
 
     def test_check_raises_on_unsupported(self):
-        if not unsupported_quantities.unsupported_quantity_names:
+        if not CONVERTER_DATA.external_forcing.unsupported_quantity_names:
             pytest.skip("No unsupported quantities configured.")
-        unsupported = next(iter(unsupported_quantities.unsupported_quantity_names))
+        unsupported = next(iter(CONVERTER_DATA.external_forcing.unsupported_quantity_names))
 
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [
@@ -159,7 +160,7 @@ class TestCheckUnsupportedQuantities:
         ]
 
         with pytest.raises(UnSupportedQuantitiesError) as exc:
-            check_unsupported_quantities(model)
+            CONVERTER_DATA.check_unsupported_quantities(model)
         assert str(unsupported) in str(exc.value)
 
 

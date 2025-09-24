@@ -25,8 +25,8 @@ from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     backup_file,
-    check_unsupported_quantities,
     construct_filemodel_new_or_existing,
+    CONVERTER_DATA
 )
 
 
@@ -240,7 +240,7 @@ class ExternalForcingConverter:
 
         ext_old_model = ExtOldModel(ext_old_file)
         # check if the file contains unsupported quantities
-        check_unsupported_quantities(ext_old_model)
+        CONVERTER_DATA.check_unsupported_quantities(ext_old_model)
 
         return ext_old_model
 
