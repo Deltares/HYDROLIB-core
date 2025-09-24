@@ -8,7 +8,6 @@ missing_quantities:
     - windspeedfactor
     - rainfall_rate
     - windstresscoefficient
-    - windspeedfactor
     - wind_speed
     - wind_from_direction
     # Parameters
