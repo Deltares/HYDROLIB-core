@@ -20,6 +20,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
 )
+from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
@@ -394,9 +395,46 @@ class TestExternalFocingConverter:
         converter._update_mdu_file()
         mock_mdu_parser.update_structure_file.assert_not_called()
 
-    @pytest.mark.parametrize("path_style", [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE])
+    @pytest.fixture
+    def setup_absolute_path_files(self, request, tmp_path: Path) -> dict:
+        """Fixture to create temporary old external forcing and polyline files with absolute paths."""
+        ext_file = tmp_path / "test.ext"
+        poly_file = tmp_path / "domain.pol"
+        file_path = poly_file.as_posix()
+        if request.param == PathStyle.UNIXLIKE and os.name == "nt":
+            file_path = FilePathStyleConverter._from_windows_to_posix_path(poly_file)
+        elif request.param == PathStyle.WINDOWSLIKE and os.name != "nt":
+            file_path = FilePathStyleConverter._from_posix_to_windows_path(poly_file)
+        ext_file.write_text(
+            "QUANTITY     =initialtracerdTR1\n"
+            f"FILENAME     ={file_path}\n"
+            "FILETYPE     =10\n"
+            "METHOD       =4\n"
+            "OPERAND      =O\n"
+            "VALUE        =0\n"
+        )
+        poly_file.write_text(
+            "L1\n"
+            "     4     2\n"
+            "    -244.151184    1790.310059\n"
+            "    -228.566650    -617.508057\n"
+            "   10065.006836    -251.270264\n"
+            "    9994.876953    1868.232910\n"
+        )
+        return {
+            "ext_file": ext_file,
+            "poly_file": poly_file,
+            "raw_poly_file": file_path,
+            "path_style": request.param,
+        }
+
+    @pytest.mark.parametrize(
+        "setup_absolute_path_files",
+        [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE],
+        indirect=True,
+    )
     def test_externalforcingconverter_path_style_converted_to_os_style(
-        self, tmp_path, path_style
+        self, setup_absolute_path_files
     ):
         """Test that the paths in the old external forcing file are converted to the OS style when reading the file.
 
@@ -405,38 +443,45 @@ class TestExternalFocingConverter:
             - The path in the old external forcing file is set according to the specified path_style.
             - The test verifies that the path in the converted model matches the expected path style of the OS.
         """
-        ext_file = tmp_path / "test.ext"
-        pol_file = tmp_path / "domain.pol"
-        filepath = str(pol_file)
-        if path_style == PathStyle.UNIXLIKE and os.name == "nt":
-            filepath = FilePathStyleConverter._from_windows_to_posix_path(pol_file)
-        elif path_style == PathStyle.WINDOWSLIKE and os.name != "nt":
-            filepath = FilePathStyleConverter._from_posix_to_windows_path(pol_file)
-        ext_file.write_text(
-            "QUANTITY     =initialtracerdTR1\n"
-            f"FILENAME     ={filepath}\n"
-            "FILETYPE     =10\n"
-            "METHOD       =4\n"
-            "OPERAND      =O\n"
-            "VALUE        =0\n"
-        )
-        pol_file.write_text(
-            "L1\n"
-            "     4     2\n"
-            "    -244.151184    1790.310059\n"
-            "    -228.566650    -617.508057\n"
-            "   10065.006836    -251.270264\n"
-            "    9994.876953    1868.232910\n"
-        )
 
         converter = ExternalForcingConverter(
-            extold_model=ext_file,
-            path_style=path_style,
+            extold_model=setup_absolute_path_files["ext_file"],
+            path_style=setup_absolute_path_files["path_style"],
         )
         converter.update()
 
         assert len(converter.inifield_model.initial) == 1
-        assert converter.extold_model.forcing[0].filename.filepath == pol_file
+        assert (
+            converter.extold_model.forcing[0].filename.filepath
+            == setup_absolute_path_files["poly_file"]
+        )
+
+    @pytest.mark.parametrize(
+        "setup_absolute_path_files",
+        [PathStyle.UNIXLIKE, PathStyle.WINDOWSLIKE],
+        indirect=True,
+    )
+    def test_externalforcingconverter_os_style_converted_to_path_style(
+        self, setup_absolute_path_files, tmp_path: Path
+    ):
+        """Test that the paths in the new initial conditions file are converted to the specified path style.
+
+        Notes:
+            - The test creates a temporary old external forcing file and a polyline file.
+            - The path in the old external forcing file is set according to the specified path_style.
+            - The test verifies that the path in the new initial conditions file matches the specified path style.
+        """
+
+        converter = ExternalForcingConverter(
+            extold_model=setup_absolute_path_files["ext_file"],
+            path_style=setup_absolute_path_files["path_style"],
+        )
+        converter.update()
+        converter.save()
+
+        assert len(converter.inifield_model.initial) == 1
+        initial_file = tmp_path / "new-initial-conditions.ini"
+        assert setup_absolute_path_files["raw_poly_file"] in initial_file.read_text()
 
 
 class TestUpdate:
