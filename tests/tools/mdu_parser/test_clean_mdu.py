@@ -143,7 +143,7 @@ class TestMDUParserDeleteLine:
 class TestMDUParserClean:
     @pytest.fixture(autouse=True)
     def setup_parser(self):
-        self.deprecated_keys = CONVERTER_DATA.get("mdu").get("deprecated_keywords")
+        self.deprecated_keys = ["Allowcoolingbelowzero", "RhoairRhowater"]
         yield
 
     def _make_parser(self, lines):
