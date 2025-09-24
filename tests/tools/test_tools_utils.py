@@ -22,7 +22,7 @@ from hydrolib.tools.extforce_convert.utils import (
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
-    UnsupportedQuantities,
+    ExternalForcingConfigs,
     UnSupportedQuantitiesError,
     unsupported_quantities
 )
@@ -107,34 +107,34 @@ def test_ignore_unknown_keyword_class():
 class TestMissingQuantities:
 
     def test_missing_quantities_normalization(self):
-        mq = UnsupportedQuantities(
-            name=[" A ", "a", "B", None, 123, " b "],
-            prefix=[" p1 ", "p2"]
+        mq = ExternalForcingConfigs(
+            unsupported_quantity_names=[" A ", "a", "B", None, 123, " b "],
+            unsupported_prefixes=[" p1 ", "p2"]
         )
         # stripped, lowercased, deduped
-        assert mq.name == ["a", "b"]
+        assert mq.unsupported_quantity_names == ["a", "b"]
         # unchanged (no validator on Prefixes)
-        assert mq.prefix == [" p1 ", "p2"]
+        assert mq.unsupported_prefixes == [" p1 ", "p2"]
 
     def test_empty_input_defaults(self):
-        mq = UnsupportedQuantities()
-        assert mq.name == []
-        assert mq.prefix == []
+        mq = ExternalForcingConfigs()
+        assert mq.unsupported_quantity_names == []
+        assert mq.unsupported_prefixes == []
 
     def test_from_yaml_file(self, tmp_path):
         yaml_text = """
     external_forcing:
-      name:
+      unsupported_quantity_names:
         - " x "
         - "X"
         - y
-      prefix:
+      unsupported_prefixes:
         - pre
     """
         data = yaml.safe_load(yaml_text)
-        mq = UnsupportedQuantities(**(data.get("external_forcing") or {}))
-        assert mq.name == ["x", "y"]
-        assert mq.prefix == ["pre"]
+        mq = ExternalForcingConfigs(**(data.get("external_forcing") or {}))
+        assert mq.unsupported_quantity_names == ["x", "y"]
+        assert mq.unsupported_prefixes == ["pre"]
 
 
 
@@ -148,9 +148,9 @@ class TestCheckUnsupportedQuantities:
         check_unsupported_quantities(model)  # should not raise
 
     def test_check_raises_on_unsupported(self):
-        if not unsupported_quantities.name:
+        if not unsupported_quantities.unsupported_quantity_names:
             pytest.skip("No unsupported quantities configured.")
-        unsupported = next(iter(unsupported_quantities.name))
+        unsupported = next(iter(unsupported_quantities.unsupported_quantity_names))
 
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [

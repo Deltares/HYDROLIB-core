@@ -56,10 +56,7 @@ DEPRECATED_KEYS = tuple(_deprecated_keywords)
 DEPRECATED_VALUE = _deprecated_value
 
 external_forcing_data = CONVERTER_DATA.get("external_forcing")
-_missing_quantities = {
-    "name": external_forcing_data.get("unsupported_quantity_names", []),
-    "prefix": external_forcing_data.get("unsupported_prefixes", []),
-}
+
 
 def construct_filemodel_new_or_existing(
     model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
@@ -337,7 +334,11 @@ class UnsupportedQuantities(BaseModel):
     name: List[str] = Field(default_factory=list)
     prefix: List[str] = Field(default_factory=list)
 
-    @validator("name", pre=True)
+class ExternalForcingConfigs(BaseModel):
+    unsupported_quantity_names: List[str] = Field(default_factory=list)
+    unsupported_prefixes: List[str] = Field(default_factory=list)
+
+    @validator("unsupported_quantity_names", pre=True)
     def ensure_unique(cls, v: List[str]) -> List[str]:
         seen = set()
         unique = []
@@ -349,6 +350,7 @@ class UnsupportedQuantities(BaseModel):
                     unique.append(key)
         return unique
 
+unsupported_quantities = ExternalForcingConfigs(**external_forcing_data)
 
 unsupported_quantities = UnsupportedQuantities(**_missing_quantities)
 
@@ -356,7 +358,7 @@ unsupported_quantities = UnsupportedQuantities(**_missing_quantities)
 def check_unsupported_quantities(ext_old_model: ExtOldModel):
     """Check if the old external forcing file contains unsupported quantities."""
     quantities = [forcing.quantity.lower() for forcing in ext_old_model.forcing]
-    un_supported = set(unsupported_quantities.name).intersection(quantities)
+    un_supported = set(unsupported_quantities.unsupported_quantity_names).intersection(quantities)
 
     if un_supported:
         raise UnSupportedQuantitiesError(
