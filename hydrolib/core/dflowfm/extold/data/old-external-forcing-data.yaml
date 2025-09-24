@@ -166,7 +166,6 @@ Tracer:
         - sedfracbnd
         - initialtracer
         - initialsedfrac
-        - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
 
 FileType:
