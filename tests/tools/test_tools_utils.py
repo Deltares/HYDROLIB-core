@@ -20,7 +20,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA_PATH,
     UN_SUPPORTED_QUANTITIES,
     IgnoreUnknownKeyWordClass,
-    NotSupportedQuantities,
+    UnSupportedQuantities,
     check_unsupported_quantities,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
@@ -124,7 +124,7 @@ class TestUnsupportedQuantities:
             SimpleNamespace(quantity=unsupported),
         ]
 
-        with pytest.raises(NotSupportedQuantities) as exc:
+        with pytest.raises(UnSupportedQuantities) as exc:
             check_unsupported_quantities(model)
         assert str(unsupported) in str(exc.value)
 

@@ -340,10 +340,10 @@ def check_unsupported_quantities(ext_old_model: ExtOldModel):
     un_supported = UN_SUPPORTED_QUANTITIES.intersection(quantities)
 
     if un_supported:
-        raise NotSupportedQuantities(
-            f"The following quantities are not supported: {un_supported}"
+        raise UnSupportedQuantities(
+            f"The following quantities are not supported by the converted yet: {un_supported}"
         )
 
 
-class NotSupportedQuantities(Exception):
+class UnSupportedQuantities(Exception):
     pass
