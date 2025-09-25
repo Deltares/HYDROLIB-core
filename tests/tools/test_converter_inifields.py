@@ -238,6 +238,7 @@ class TestInifieldConverter:
         ini_field = InitialField(**data)
 
         converter = object.__new__(ExternalForcingConverter)
+        converter._path_style = None
         converter._save_inifield_model = MethodType(
             ExternalForcingConverter._save_inifield_model, converter
         )
