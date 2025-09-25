@@ -234,6 +234,8 @@ class ExternalForcingConverter:
         Args:
             extoldfile (PathOrStr):
                 path to the external forcings file (.ext)
+            path_style (Optional[PathStyle]):
+                path style for the file paths in the models. Defaults to None.
 
             Returns:
                 ExtOldModel: object with all forcing blocks.
