@@ -311,6 +311,16 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
 
     pass
 
+def check_unique(v):
+    seen = set()
+    unique = []
+    for s in v or []:
+        if isinstance(s, str):
+            key = s.strip().lower()
+            if key and key not in seen:
+                seen.add(key)
+                unique.append(key)
+    return unique
 
 class MDUConfig(BaseModel):
     deprecated_keywords: Set[str] = Field(default_factory=set)
@@ -331,17 +341,9 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: List[str] = Field(default_factory=list)
     unsupported_prefixes: List[str] = Field(default_factory=list)
 
-    @validator("unsupported_quantity_names", pre=True)
+    @validator("unsupported_quantity_names", "unsupported_prefixes", pre=True)
     def ensure_unique(cls, v: List[str]) -> List[str]:
-        seen = set()
-        unique = []
-        for s in v or []:
-            if isinstance(s, str):
-                key = s.strip().lower()
-                if key and key not in seen:
-                    seen.add(key)
-                    unique.append(key)
-        return unique
+        return check_unique(v)
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""

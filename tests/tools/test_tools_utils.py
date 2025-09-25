@@ -114,7 +114,7 @@ class TestMissingQuantities:
         # stripped, lowercased, deduped
         assert mq.unsupported_quantity_names == ["a", "b"]
         # unchanged (no validator on Prefixes)
-        assert mq.unsupported_prefixes == [" p1 ", "p2"]
+        assert mq.unsupported_prefixes == ["p1", "p2"]
 
     def test_empty_input_defaults(self):
         mq = ExternalForcingConfigs()
