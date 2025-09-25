@@ -271,7 +271,9 @@ def validate_conditionally(
 def validate_datetime_string(
     field_value: Optional[str], field: ModelField
 ) -> Optional[str]:
-    """Validate that a field value matches the YYYYmmddHHMMSS datetime format.
+    """Validate that a field value matches the expected datetime format.
+
+    The validation checks that the date formats conform to either 'YYYYmmddHHMMSS' or 'YYYYmmdd'.
 
     Args:
         field_value (Optional[str]): value of a Pydantic field, may be optional.
@@ -292,9 +294,12 @@ def validate_datetime_string(
         try:
             _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
         except ValueError:
-            raise ValueError(
-                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS'."
-            )
+            try:
+                _ = datetime.strptime(field_value, r"%Y%m%d")
+            except ValueError:
+                raise ValueError(
+                    f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+                )
 
     return field_value  # this is the value written to the class field
 
