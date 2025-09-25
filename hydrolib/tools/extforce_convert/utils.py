@@ -32,6 +32,16 @@ SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 
+__all__ = [
+    "UnSupportedQuantitiesError",
+    "CONVERTER_DATA",
+    "find_temperature_salinity_in_quantities",
+    "IgnoreUnknownKeyWordClass",
+    "backup_file",
+    "construct_filemodel_new_or_existing"
+]
+
+
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
 with CONVERTER_DATA_PATH.open("r") as fh:
     try:
@@ -378,12 +388,3 @@ CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
 class UnSupportedQuantitiesError(Exception):
     pass
-
-__all__ = [
-    "UnSupportedQuantitiesError",
-    "CONVERTER_DATA",
-    "find_temperature_salinity_in_quantities",
-    "IgnoreUnknownKeyWordClass",
-    "backup_file",
-    "construct_filemodel_new_or_existing"
-]
