@@ -141,12 +141,11 @@ class TestMissingQuantities:
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
-        converter_data = MagicMock(spec=ConverterData)
         model.forcing = [
             SimpleNamespace(quantity="supported_quantity_a"),
             SimpleNamespace(quantity="supported_quantity_b"),
         ]
-        converter_data.check_unsupported_quantities(model)  # should not raise
+        CONVERTER_DATA.check_unsupported_quantities(model)  # should not raise
 
     def test_check_raises_on_unsupported(self):
         if not CONVERTER_DATA.external_forcing.unsupported_quantity_names:
