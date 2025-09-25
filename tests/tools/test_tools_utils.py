@@ -2,7 +2,6 @@ from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
-
 import pytest
 import yaml
 from pydantic.v1.error_wrappers import ValidationError
@@ -17,14 +16,14 @@ from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA_PATH,
-    ConverterData,
     IgnoreUnknownKeyWordClass,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
     ExternalForcingConfigs,
     UnSupportedQuantitiesError,
-    CONVERTER_DATA
+    CONVERTER_DATA,
+    MDUConfig
 )
 
 
@@ -187,3 +186,137 @@ def test_missing_quantities_are_unique():
     dupes = [k for k, c in Counter(items).items() if c > 1]
     assert not dupes, f"Duplicate entries in external_forcing: {dupes}"
 
+
+class TestMDUConfigToSetValidator:
+    """Tests for the @validator('deprecated_keywords', pre=True) -> _to_set."""
+
+    def test_single_string(self):
+        """
+        Input: deprecated_keywords=' AllowCoolingBelowZero '
+        Expect: {'allowcoolingbelowzero'} after strip+lower and dedup.
+        Checks: normalization of a single string value.
+        """
+        cfg = MDUConfig(deprecated_keywords=" AllowCoolingBelowZero ")
+        assert cfg.deprecated_keywords == {"allowcoolingbelowzero"}
+
+    def test_list_of_strings_normalization_and_dedup(self):
+        """
+        Input: deprecated_keywords=[' A ', 'a', 'B', ' b ']
+        Expect: {'a', 'b'} after strip+lower+dedup.
+        Checks: list normalization and deduplication.
+        """
+        cfg = MDUConfig(deprecated_keywords=[" A ", "a", "B", " b "])
+        assert cfg.deprecated_keywords == {"a", "b"}
+
+    def test_mixed_types_in_list(self):
+        """
+        Input: deprecated_keywords=[' A ', None, 123, ' b ']
+        Expect: {'a', '123', 'b'} after coercing non-strings via str(), strip+lower, dedup, and filtering falsy.
+        Checks: robustness to mixed-type inputs.
+        """
+        cfg = MDUConfig(deprecated_keywords=[" A ", None, 123, " b "])
+        assert cfg.deprecated_keywords == {"a", "b"}
+
+    def test_duplicates_with_casing_and_whitespace(self):
+        """
+        Input: deprecated_keywords=['X', ' x ', 'X ', 'x']
+        Expect: {'x'} after normalization.
+        Checks: duplicates collapse to a single normalized entry.
+        """
+        cfg = MDUConfig(deprecated_keywords=["X", " x ", "X ", "x"])
+        assert cfg.deprecated_keywords == {"x"}
+
+    def test_iterable_other_than_list(self):
+        """
+        Input: deprecated_keywords as a set-like {' A ', 'b'}
+        Expect: {'a', 'b'} after normalization.
+        Checks: non-list iterables are accepted and normalized consistently.
+        """
+        cfg = MDUConfig(deprecated_keywords={" A ", "b"})
+        assert cfg.deprecated_keywords == {"a", "b"}
+
+    def test_tuple_input(self):
+        """
+        Input: deprecated_keywords=(' A ', 'B ')
+        Expect: {'a', 'b'} after normalization.
+        Checks: tuple input handling.
+        """
+        cfg = MDUConfig(deprecated_keywords=(" A ", "B "))
+        assert cfg.deprecated_keywords == {"a", "b"}
+
+    def test_falsy_values_filtered(self):
+        """
+        Input: deprecated_keywords=['', '   ', None]
+        Expect: set() since all normalize to empty/falsy.
+        Checks: empty and None are filtered out after normalization.
+        """
+        cfg = MDUConfig(deprecated_keywords=["", "   ", None])
+        assert cfg.deprecated_keywords == set()
+
+
+class TestMDUConfigDeprecatedValue:
+    """Tests for the 'deprecated_value' field type and defaults (Union[int, float])."""
+
+    def test_default_value_is_zero(self):
+        """
+        Input: omit deprecated_value.
+        Expect: deprecated_value == 0 (int).
+        Checks: defaulting behavior when value is not provided.
+        """
+        cfg = MDUConfig()
+        assert cfg.deprecated_value == 0
+        assert isinstance(cfg.deprecated_value, int)
+
+    def test_accepts_int(self):
+        """
+        Input: deprecated_value=5
+        Expect: deprecated_value == 5 (int).
+        Checks: integer is stored as-is.
+        """
+        cfg = MDUConfig(deprecated_value=5)
+        assert cfg.deprecated_value == 5
+        assert isinstance(cfg.deprecated_value, int)
+
+    def test_accepts_float(self):
+        """
+        Input: deprecated_value=3.14
+        Expect: deprecated_value == 3.14 (float).
+        Checks: float is stored as-is.
+        """
+        cfg = MDUConfig(deprecated_value=3.14)
+        assert isinstance(cfg.deprecated_value, float)
+        assert cfg.deprecated_value == pytest.approx(3.14)
+
+    def test_rejects_string(self):
+        """
+        Input: deprecated_value='invalid'
+        Expect: pydantic validation error since value must be int or float.
+        Checks: strict typing enforced by the annotated field type.
+        """
+        with pytest.raises(Exception):
+            MDUConfig(deprecated_value="invalid")
+
+    def test_rejects_list(self):
+        """
+        Input: deprecated_value=[1, 2]
+        Expect: pydantic validation error since lists are no longer allowed.
+        Checks: only scalar int/float are valid.
+        """
+        with pytest.raises(Exception):
+            MDUConfig(deprecated_value=[1, 2])
+
+    def test_rejects_dict(self):
+        """
+        Input: deprecated_value={'a': 1}
+        Expect: pydantic validation error since dicts are not allowed.
+        Checks: only scalar int/float are valid.
+        """
+        with pytest.raises(Exception):
+            MDUConfig(deprecated_value={"a": 1})
+
+
+# class TestConverterData:
+#     def test_1(self):
+#         from hydrolib.tools.extforce_convert.utils import ConverterData, CONVERTER_DATA
+#         cfg = ConverterData(**CONVERTER_DATA)
+#         print(cfg)
