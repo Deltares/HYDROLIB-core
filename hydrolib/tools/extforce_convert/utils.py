@@ -345,8 +345,13 @@ class ExternalForcingConfigs(BaseModel):
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""
-        normalized = (str(q).lower() for q in quantities)
-        return set(self.unsupported_quantity_names).intersection(normalized)
+        normalized = [str(q).lower() for q in quantities]
+        result = set(self.unsupported_quantity_names).intersection(normalized)
+
+        for q in normalized:
+            if any(q.startswith(p) for p in self.unsupported_prefixes):
+                result.add(q)
+        return result
 
     def check_unsupported_quantities(self, quantities: Iterable[str]) -> None:
         """Raise an error if any of the given quantities are unsupported."""

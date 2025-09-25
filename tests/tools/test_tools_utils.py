@@ -162,6 +162,21 @@ class TestCheckUnsupportedQuantities:
             CONVERTER_DATA.check_unsupported_quantities(model)
         assert str(unsupported) in str(exc.value)
 
+    def test_check_raises_on_unsupported_with_prefix(self):
+        if not CONVERTER_DATA.external_forcing.unsupported_prefixes:
+            pytest.skip("No unsupported quantities configured.")
+        unsupported = next(iter(CONVERTER_DATA.external_forcing.unsupported_prefixes))
+
+        model = MagicMock(spec=ExtOldModel)
+        model.forcing = [
+            SimpleNamespace(quantity="supported_quantity"),
+            SimpleNamespace(quantity=f"{unsupported}any-suffix"),
+        ]
+
+        with pytest.raises(UnSupportedQuantitiesError) as exc:
+            CONVERTER_DATA.check_unsupported_quantities(model)
+        assert str(unsupported) in str(exc.value)
+
 
 def test_missing_quantities_are_unique():
     path = Path(CONVERTER_DATA_PATH)
