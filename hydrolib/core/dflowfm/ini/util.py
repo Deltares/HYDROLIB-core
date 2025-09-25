@@ -291,15 +291,17 @@ def validate_datetime_string(
         and len(field_value.strip()) > 0
         and field_value != "yyyymmddhhmmss"
     ):
-        try:
-            _ = datetime.strptime(field_value, r"%Y%m%d%H%M%S")
-        except ValueError:
+        formats = ["%Y%m%d%H%M%S", "%Y%m%d"]
+        for fmt in formats:
             try:
-                _ = datetime.strptime(field_value, r"%Y%m%d")
+                datetime.strptime(field_value, fmt)
+                break
             except ValueError:
-                raise ValueError(
-                    f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
-                )
+                continue
+        else:
+            raise ValueError(
+                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            )
 
     return field_value  # this is the value written to the class field
 
