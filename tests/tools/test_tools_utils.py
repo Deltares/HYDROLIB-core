@@ -313,10 +313,3 @@ class TestMDUConfigDeprecatedValue:
         """
         with pytest.raises(Exception):
             MDUConfig(deprecated_value={"a": 1})
-
-
-# class TestConverterData:
-#     def test_1(self):
-#         from hydrolib.tools.extforce_convert.utils import ConverterData, CONVERTER_DATA
-#         cfg = ConverterData(**CONVERTER_DATA)
-#         print(cfg)
