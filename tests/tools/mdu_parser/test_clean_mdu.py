@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
-from hydrolib.tools.extforce_convert.utils import CONVERTER_DATA
 
 
 class TestMDUParserDeleteLine:
