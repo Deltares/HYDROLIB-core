@@ -515,11 +515,11 @@ class TestOutput:
 
         with pytest.raises(ValueError) as exc_err:
             FMModel(filepath=tmp_mdu_path)
-            assert (
-                "Invalid datetime string for startDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
-                in str(exc_err.value)
-            )
-            assert (
-                "Invalid datetime string for stopDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
-                in str(exc_err.value)
-            )
+        assert (
+            "Invalid datetime string for startDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            in str(exc_err.value)
+        )
+        assert (
+            "Invalid datetime string for stopDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            in str(exc_err.value)
+        )
