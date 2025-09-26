@@ -291,7 +291,13 @@ class ExternalForcingConverter:
         ) as progress_bar:
             for forcing in self.extold_model.forcing:
                 if forcing.quantity in self.un_supported_quantities:
+                    print(
+                        f"The quantity {forcing.quantity} is not supported, and the debug mode is {self.debug}. "
+                        "So the forcing will not be converted (stay in the old external forcing file)."
+                    )
+                    progress_bar.update(1)
                     continue
+
                 # Update the description of tqdm to include the current forcing's filepath
                 progress_bar.set_description(
                     f"Processing: {forcing.quantity} - {forcing.filename.filepath}"
