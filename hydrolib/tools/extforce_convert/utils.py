@@ -373,7 +373,7 @@ class ExternalForcingConfigs(BaseModel):
         un_supported = self.find_unsupported(quantities)
         if raise_error and un_supported:
             raise UnSupportedQuantitiesError(
-                f"The following quantities are not supported by the converted yet: {un_supported}"
+                f"The following quantities are not supported by the converter yet: {un_supported}"
             )
         else:
             return un_supported
