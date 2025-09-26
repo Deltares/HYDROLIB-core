@@ -37,29 +37,6 @@ def invalid_data_dir() -> Path:
 
 
 @pytest.fixture
-def initial_condition_quantities() -> List[str]:
-    return [
-        "bedlevel",
-        "bedlevel1d",
-        "bedlevel2d",
-        "initialwaterlevel",
-        "initialwaterlevel1d",
-        "initialwaterlevel2d",
-        "initialsalinity",
-        "initialsalinitytop",
-        "initialsalinitybot",
-        "initialverticalsalinityprofile",
-        "initialtemperature",
-        "initialverticaltemperatureprofile",
-        "initialunsaturatedzonethickness",
-        "initialvelocityx",
-        "initialvelocityy",
-        "initialvelocity",
-        "initialwaqbot",
-    ]
-
-
-@pytest.fixture
 def initial_condition_interpolation_methods() -> List[str]:
     return [
         "constant",

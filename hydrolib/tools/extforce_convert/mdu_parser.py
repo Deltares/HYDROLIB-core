@@ -6,24 +6,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import yaml
-
-from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
-from hydrolib.tools.extforce_convert.utils import IgnoreUnknownKeyWordClass, backup_file
+from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
+    IgnoreUnknownKeyWordClass,
+    backup_file,
+)
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
 
-
-CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
-
-with CONVERTER_DATA_PATH.open("r") as fh:
-    CONVERTER_DATA = yaml.safe_load(fh)
-
-DEPRECATED_KEYS = CONVERTER_DATA.get("mdu").get("deprecated_key_words")
-DEPRECATED_VALUE = CONVERTER_DATA.get("mdu").get("deprecated_value")
 
 __all__ = ["MDUParser"]
 
@@ -803,7 +796,9 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
-    def update_extforce_file_new(self, file_name: str, num_quantities: int) -> None:
+    def update_extforce_file_new(
+        self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False
+    ) -> None:
         if num_quantities > 0:
             self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
         else:
@@ -811,9 +806,10 @@ class MDUParser:
             if ext_force_line is not None:
                 self.content.pop(ext_force_line)
 
-        old_ext_force_line = self.find_keyword_lines("ExtForceFile")
-        if old_ext_force_line is not None:
-            self.content.pop(old_ext_force_line)
+        if remove_old_ext_file:
+            old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+            if old_ext_force_line is not None:
+                self.content.pop(old_ext_force_line)
 
     def get_temperature_salinity_data(self) -> Dict[str, Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
@@ -1034,11 +1030,12 @@ class MDUParser:
             keyword is repeated in the file, the `clean` function will only remove the first one.
             not remove the deprecated
         """
-        for keyword in DEPRECATED_KEYS:
+
+        for keyword in CONVERTER_DATA.mdu.deprecated_keywords:
             ind = self.find_keyword_lines(keyword)
             if ind is not None:
                 line = Line(self.content[ind])
-                if line.value == str(DEPRECATED_VALUE):
+                if line.value == str(CONVERTER_DATA.mdu.deprecated_value):
                     self.content.pop(ind)
 
     def get_section(self, section_name: str) -> Section:
