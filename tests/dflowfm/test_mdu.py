@@ -472,3 +472,54 @@ class TestOutput:
             assert len(excluded_fields) > 0
             for excluded_field in excluded_fields:
                 assert excluded_field not in str(exc_err.value)
+
+    def test_mdu_datetime_yyyymmdd_format(self, tmp_path):
+        tmp_mdu = """
+        [General]
+        fileVersion           = 1.09
+        fileType              = modelDef
+        program               = D-Flow FM
+        version               = 1.2.100.66357
+        autoStart             = 0
+        pathsRelativeToParent = 0
+
+        [Time]
+        startDateTime         = 20230101
+        stopDateTime          = 20230102
+        """
+
+        tmp_mdu_path = tmp_path / "tmp.mdu"
+        tmp_mdu_path.write_text(tmp_mdu)
+
+        model = FMModel(filepath=tmp_mdu_path)
+        assert model.time.startdatetime == "20230101"
+        assert model.time.stopdatetime == "20230102"
+
+    def test_mdu_datetime_invalid_format_raises_valueerror(self, tmp_path):
+        tmp_mdu = """
+        [General]
+        fileVersion           = 1.09
+        fileType              = modelDef
+        program               = D-Flow FM
+        version               = 1.2.100.66357
+        autoStart             = 0
+        pathsRelativeToParent = 0
+
+        [Time]
+        startDateTime         = invalid
+        stopDateTime          = invalid
+        """
+
+        tmp_mdu_path = tmp_path / "tmp.mdu"
+        tmp_mdu_path.write_text(tmp_mdu)
+
+        with pytest.raises(ValueError) as exc_err:
+            FMModel(filepath=tmp_mdu_path)
+        assert (
+            "Invalid datetime string for startDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            in str(exc_err.value)
+        )
+        assert (
+            "Invalid datetime string for stopDateTime: 'invalid', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            in str(exc_err.value)
+        )
