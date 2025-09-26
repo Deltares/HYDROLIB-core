@@ -1,16 +1,18 @@
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field, ValidationInfo, field_validator
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm import (
+from hydrolib.core.base.utils import PathToDictionaryConverter
+from hydrolib.core.dflowfm.ini.models import INIBasedModel
+from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
+from hydrolib.core.dflowfm.mdu import (
     FMModel,
     General,
     Geometry,
     Numerics,
     Output,
     Physics,
-    PolyFile,
     Processes,
     Restart,
     Sediment,
@@ -19,8 +21,7 @@ from hydrolib.core.dflowfm import (
     Waves,
     Wind,
 )
-from hydrolib.core.dflowfm.ini.models import INIBasedModel
-from hydrolib.core.dflowfm.ini.util import get_split_string_on_delimiter_validator
+from hydrolib.core.dflowfm.polyfile import PolyFile
 
 DEPRECATED_VARIABLE = "Deprecated variable."
 DEPRECATED_KEYWORD = "Deprecated keyword."
@@ -791,6 +792,14 @@ class ResearchTrachytopes(Trachytopes):
     research_trtmnh: Optional[float] = Field(None, alias="trtmnh")
     research_trtcll: Optional[DiskOnlyFileModel] = Field(None, alias="trtcll")
 
+    @field_validator("research_trtcll", mode="before")
+    @classmethod
+    def resolve_trachytopes_file_model(
+        cls, value, info: ValidationInfo
+    ) -> Dict[str, Any]:
+        """Resolve disk-only file models."""
+        return PathToDictionaryConverter.convert(cls, value, info)
+
 
 class ResearchOutput(Output):
     """An extended [output] section that includes highly experimental research keywords."""
@@ -936,6 +945,16 @@ class ResearchOutput(Output):
     research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
+    @field_validator(
+        "research_waqhoraggr",
+        "research_waqvertaggr",
+        "research_metadatafile",
+        mode="before",
+    )
+    @classmethod
+    def _resolve_output_file_model(cls, v, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, v, info)
+
 
 class ResearchProcesses(Processes):
     """An extended [processes] section that includes highly experimental research keywords."""
@@ -988,9 +1007,17 @@ class ResearchSedtrails(INIBasedModel):
         None, alias="sedtrailsoutputfile"
     )
 
-    _split_to_list = get_split_string_on_delimiter_validator(
-        "research_sedtrailsinterval",
+    @field_validator(
+        "research_sedtrailsgrid", "research_sedtrailsoutputfile", mode="before"
     )
+    @classmethod
+    def _resolve_sedtrails_file_model(cls, v, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, v, info)
+
+    @field_validator("research_sedtrailsinterval", mode="before")
+    @classmethod
+    def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
 
 
 class ResearchFMModel(FMModel):

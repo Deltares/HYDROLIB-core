@@ -418,7 +418,7 @@ def test_ext_old_source_sinks():
     )
 
 
-def test_ext_old_chooce_file_model_validator(tim_files_dir: Path):
+def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
     """
     Check if the root validator correctly chose the right type of file model.
     """

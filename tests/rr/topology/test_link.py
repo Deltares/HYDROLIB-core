@@ -71,7 +71,7 @@ class TestLinkFile:
         data = create_link_values()
         link = Link(**data)
 
-        result = link.dict()
+        result = link.model_dump()
 
         assert result == data
 
