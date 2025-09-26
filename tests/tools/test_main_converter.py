@@ -320,12 +320,15 @@ class TestExternalFocingConverter:
         mock_ext_old_model = MagicMock(spec=ExtOldModel)
         mock_ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
 
-        with patch(
-            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file",
-            return_value=mock_ext_old_model,
-        ), patch(
-        "hydrolib.tools.extforce_convert.utils.ConverterData.check_unsupported_quantities",
-        return_value=None,
+        with (
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file",
+                return_value=mock_ext_old_model,
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.utils.ConverterData.check_unsupported_quantities",
+                return_value=None,
+            ),
         ):
 
             converter = ExternalForcingConverter(mock_ext_old_model)
