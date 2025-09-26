@@ -553,6 +553,9 @@ def recursive_converter(
         backup (bool, optional): Create a backup of each file that will be overwritten.
         suppress_errors (bool, optional): Suppress errors during conversion.
         remove_legacy (bool, optional): Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.
+        debug (bool, Optional):
+                Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
+                Defaults to False.
     """
     mdu_files = [
         path for path in Path(root_dir).rglob("*.mdu") if "_ext" not in path.name
