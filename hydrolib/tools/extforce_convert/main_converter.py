@@ -41,6 +41,7 @@ class ExternalForcingConverter:
         structure_file: Optional[PathOrStr] = None,
         mdu_parser: MDUParser = None,
         verbose: bool = False,
+        debug: Optional[bool] = False,
     ):
         r"""Initialize the converter.
 
@@ -61,6 +62,9 @@ class ExternalForcingConverter:
                 a Parser for the MDU file.
             verbose (bool, optional, Defaults to False):
                 Enable verbose output.
+            debug (bool, Optional):
+                Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
+                Defaults to False.
 
         Raises:
             FileNotFoundError: If the old external forcing file does not exist.
@@ -132,6 +136,17 @@ class ExternalForcingConverter:
             self._mdu_parser = mdu_parser
 
         self._legacy_files = []
+        self.debug = debug
+        self.un_supported_quantities = self.check_unsupported_quantities()
+
+    def check_unsupported_quantities(self):
+        """Check for unsupported quantities in the old external forcing model.
+
+        Returns:
+            list[str]: List of unsupported quantities found in the old external forcing model.
+        """
+        # check if the file contains unsupported quantities
+        return CONVERTER_DATA.check_unsupported_quantities(self.extold_model, raise_error=not self.debug)
 
     @property
     def legacy_files(self) -> list[Path]:
@@ -239,8 +254,6 @@ class ExternalForcingConverter:
             raise FileNotFoundError(f"File not found: {ext_old_file}")
 
         ext_old_model = ExtOldModel(ext_old_file)
-        # check if the file contains unsupported quantities
-        CONVERTER_DATA.check_unsupported_quantities(ext_old_model)
 
         return ext_old_model
 
@@ -277,6 +290,8 @@ class ExternalForcingConverter:
             total=num_quantities, desc="Converting forcings", unit="forcing"
         ) as progress_bar:
             for forcing in self.extold_model.forcing:
+                if forcing.quantity in self.un_supported_quantities:
+                    continue
                 # Update the description of tqdm to include the current forcing's filepath
                 progress_bar.set_description(
                     f"Processing: {forcing.quantity} - {forcing.filename.filepath}"
@@ -298,6 +313,12 @@ class ExternalForcingConverter:
 
         if self.mdu_parser is not None:
             self._update_mdu_file()
+
+        if self.un_supported_quantities:
+            forcing = [
+                forcing for forcing in self.extold_model.forcing if forcing.quantity in self.un_supported_quantities
+            ]
+            self.extold_model.forcing = forcing
 
         return self.ext_model, self.inifield_model, self.structure_model
 
@@ -358,6 +379,10 @@ class ExternalForcingConverter:
         if len(self.structure_model.structure) > 0:
             self._save_structure_model(backup, recursive)
 
+        if self.un_supported_quantities:
+            backup_file(self.extold_model.filepath)
+            self.extold_model.save(recurse=recursive, exclude_unset=True)
+
         num_quantities_ext = (
             len(self.ext_model.meteo)
             + len(self.ext_model.sourcesink)
@@ -395,7 +420,8 @@ class ExternalForcingConverter:
                 print(f"Removing legacy file:{file}")
                 file.unlink()
 
-        self.extold_model.filepath.unlink()
+        if not self.un_supported_quantities:
+            self.extold_model.filepath.unlink()
 
     @classmethod
     def from_mdu(
@@ -404,6 +430,7 @@ class ExternalForcingConverter:
         ext_file_user: Optional[PathOrStr] = None,
         inifield_file_user: Optional[PathOrStr] = None,
         structure_file_user: Optional[PathOrStr] = None,
+        debug: bool = False,
     ) -> "ExternalForcingConverter":
         """Create the converter from the MDU file.
 
@@ -421,6 +448,9 @@ class ExternalForcingConverter:
             structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
+            debug (bool, Optional):
+                Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
+                Defaults to False.
 
         Returns:
             ExternalForcingConverter: The converter object.
@@ -446,6 +476,7 @@ class ExternalForcingConverter:
             inifield_file_user,
             structure_file_user,
             mdu_parser,
+            debug=debug,
         )
 
     def _update_mdu_file(self):
@@ -466,8 +497,10 @@ class ExternalForcingConverter:
             + len(self.ext_model.sourcesink)
         )
 
+        remove_old_ext_file = False if self.un_supported_quantities else True
+
         self.mdu_parser.update_extforce_file_new(
-            self.ext_model.filepath.name, num_quantities=num_ext_model_quantities
+            self.ext_model.filepath.name, num_quantities=num_ext_model_quantities, remove_old_ext_file=remove_old_ext_file
         )
 
         num_quantities_inifield = len(self.inifield_model.parameter) + len(
@@ -499,6 +532,7 @@ def recursive_converter(
     backup: bool = True,
     suppress_errors: bool = False,
     remove_legacy: bool = False,
+    debug: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -519,7 +553,7 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(path)
+                converter = ExternalForcingConverter.from_mdu(path, debug=debug)
                 _, _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:

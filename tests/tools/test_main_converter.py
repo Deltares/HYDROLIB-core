@@ -271,8 +271,11 @@ class TestExternalFocingConverter:
         """
         mock_ext_old_model = MagicMock(spec=ExtOldModel)
         mock_ext_old_model.filepath = old_forcing_file_initial_condition["path"]
-
-        converter = ExternalForcingConverter(mock_ext_old_model)
+        with patch(
+            "hydrolib.tools.extforce_convert.utils.ConverterData.check_unsupported_quantities",
+            return_value=1,
+        ):
+            converter = ExternalForcingConverter(mock_ext_old_model)
         converter._ext_model = MagicMock(spec=ExtModel)
         converter._ext_model.meteo = [MagicMock(spec=Meteo)]
         converter._ext_model.sourcesink = [MagicMock(spec=SourceSink)]
@@ -280,8 +283,12 @@ class TestExternalFocingConverter:
         converter._ext_model.boundary = [MagicMock(spec=Boundary)]
         converter._ext_model.filepath = Path("any-path.ext")
 
+        converter._extold_model = MagicMock(spec=ExtOldModel)
+        converter._extold_model.filepath = Path("any-path.ext")
+
         converter.save()
         converter._ext_model.save.assert_called_once()
+        converter._extold_model.save.assert_called_once()
 
     def test_read_old_file(
         self,
@@ -316,7 +323,11 @@ class TestExternalFocingConverter:
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._read_old_file",
             return_value=mock_ext_old_model,
+        ), patch(
+        "hydrolib.tools.extforce_convert.utils.ConverterData.check_unsupported_quantities",
+        return_value=None,
         ):
+
             converter = ExternalForcingConverter(mock_ext_old_model)
 
         mock_mdu_parser = MagicMock()
