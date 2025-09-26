@@ -63,13 +63,15 @@ def _get_parser() -> argparse.ArgumentParser:
         "-m",
         action="store",
         type=valid_file_with_extension(".mdu"),
-        help="Automatically take input and output filenames from MDUFILE",
+        metavar="MDUFILE",
+        help="Automatically take input and output filenames from MDUFILE.",
     )
     group.add_argument(
         "--extoldfile",
         "-e",
         action="store",
         type=valid_file_with_extension(".ext"),
+        metavar="EXTOLDFILE",
         help="Input EXTOLDFILE to be converted.",
     )
     group.add_argument(
@@ -77,6 +79,8 @@ def _get_parser() -> argparse.ArgumentParser:
         "-d",
         action="store",
         help="Directory to recursively find and convert .mdu files in",
+        metavar="DIR",
+        help="Directory to recursively find and convert .mdu files in.",
     )
 
     parser.add_argument(
