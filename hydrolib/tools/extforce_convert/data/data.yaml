@@ -56,3 +56,4 @@ external_forcing:
         - waqsegmentfunction
         - waqsegmentnumber
         - massbalancearea
+        - waqmassbalancearea
