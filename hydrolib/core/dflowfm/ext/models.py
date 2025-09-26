@@ -86,8 +86,7 @@ class Boundary(INIBasedModel):
     @root_validator(pre=True)
     @classmethod
     def rename_return_time_field(cls, values: Dict) -> Dict:
-        """
-        Renames the returnTime field to returntime to match the attribute name.
+        """Renames the deprecated return_time field to returnTime.
 
         Args:
             values (Dict): Dictionary with values already validated.
