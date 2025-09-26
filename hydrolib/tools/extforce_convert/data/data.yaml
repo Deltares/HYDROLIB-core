@@ -8,7 +8,6 @@ external_forcing:
         # Meteo
         - solarradiationfactor
         - windspeedfactor
-        - rainfall_rate
         - windstresscoefficient
         - wind_speed
         - wind_from_direction
