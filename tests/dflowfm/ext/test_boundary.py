@@ -74,6 +74,21 @@ def test_given_args_as_alias_expected_values():
     assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
 
 
+def test_return_time_field_is_renamed():
+    dict_values = {
+        "quantity": "42",
+        "nodeid": "aNodeId",
+        "locationfile": Path("aLocationFile"),
+        "forcingfile": ForcingModel(),
+        "return_time": 10.0,
+    }
+
+    created_boundary = Boundary(**dict_values)
+    assert created_boundary.returntime == dict_values["return_time"]
+    # Make sure the deprecated field is not set (Pydantic v1 requirement due to extra=forbid)
+    assert created_boundary.return_time is None
+
+
 class TestValidateRootValidator:
     """
     Test class to validate the paradigms when evaluating
