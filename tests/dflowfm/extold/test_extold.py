@@ -391,16 +391,6 @@ class TestSerializer:
 
 class TestOldInitialConditionQuantity:
 
-    def test_ext_old_initial_condition_quantity(self, initial_condition_quantities):
-        """
-        Test the number of initial condition quantities in the ExtOldInitialConditionQuantity enum.
-        """
-        assert len(ExtOldInitialConditionQuantity) == len(initial_condition_quantities)
-        assert all(
-            quantity.value in initial_condition_quantities
-            for quantity in ExtOldInitialConditionQuantity.__members__.values()
-        )
-
     def test_the_missing_method(self):
         """
         Test the missing method in the ExtOldInitialConditionQuantity enum with a ValueError.

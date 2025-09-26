@@ -2,10 +2,14 @@
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, List, Type, Union
+from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 from pydantic import ConfigDict
 
+import yaml
+from pydantic import BaseModel, Extra, Field, field_validator
+
+from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
 from hydrolib.core.dflowfm.ext.models import (
@@ -15,6 +19,7 @@ from hydrolib.core.dflowfm.ext.models import (
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
+    ExtOldModel,
     ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import (
@@ -26,6 +31,24 @@ from hydrolib.core.dflowfm.inifield.models import (
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
 SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
+
+
+__all__ = [
+    "UnSupportedQuantitiesError",
+    "CONVERTER_DATA",
+    "find_temperature_salinity_in_quantities",
+    "IgnoreUnknownKeyWordClass",
+    "backup_file",
+    "construct_filemodel_new_or_existing",
+]
+
+
+CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
+with CONVERTER_DATA_PATH.open("r") as fh:
+    try:
+        CONVERTER_DATA = yaml.safe_load(fh)
+    except yaml.YAMLError as e:
+        raise RuntimeError(f"Failed to parse YAML at {CONVERTER_DATA_PATH}: {e}") from e
 
 
 def construct_filemodel_new_or_existing(
@@ -296,4 +319,106 @@ class IgnoreUnknownKeyWord(type):
 class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
     """Base class to ignore unknown keyword arguments when creating a new class instance."""
 
+    pass
+
+
+def check_unique(v):
+    """Checks and filters unique non-empty strings from the input list.
+
+        This function processes a given input list, ensuring that all strings are:
+        - Trimmed of any leading or trailing whitespace.
+        - Converted to lowercase for case-insensitive uniqueness.
+        - Added to the result list only if they haven't been seen before.
+
+        Empty strings or non-string elements are ignored.
+
+    Args:
+        v (list[str] | None):
+            A list of strings to be processed. May contain None or non-string elements.
+            If the input is None, it is treated as an empty list.
+
+    Returns:
+        list[str]
+            A list of unique, lowercase, trimmed strings in the order of their first
+            appearance.
+    """
+    seen = set()
+    unique = []
+    for s in v or []:
+        if isinstance(s, str):
+            key = s.strip().lower()
+            if key and key not in seen:
+                seen.add(key)
+                unique.append(key)
+    return unique
+
+
+class MDUConfig(BaseModel):
+    deprecated_keywords: Set[str] = Field(default_factory=set)
+    deprecated_value: int = 0
+
+    @field_validator("deprecated_keywords", mode="before")
+    def _to_set(cls, v):
+        """convert the deprecated keywords to a set."""
+        if v is None:
+            return set()
+
+        if isinstance(v, str):
+            v = [v]
+        return set(check_unique(v))
+
+
+class ExternalForcingConfigs(BaseModel):
+    unsupported_quantity_names: List[str] = Field(default_factory=list)
+    unsupported_prefixes: List[str] = Field(default_factory=list)
+
+    @field_validator("unsupported_quantity_names", "unsupported_prefixes", mode="before")
+    def ensure_unique(cls, v: List[str]) -> List[str]:
+        return check_unique(v)
+
+    def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
+        """Return the set of unsupported quantities present in the given iterable."""
+        normalized = [str(q).lower() for q in quantities]
+        result = set(self.unsupported_quantity_names).intersection(normalized)
+
+        for q in normalized:
+            if any(q.startswith(p) for p in self.unsupported_prefixes):
+                result.add(q)
+        return result
+
+    def check_unsupported_quantities(
+        self, quantities: Iterable[str], raise_error: bool = True
+    ) -> Set[str]:
+        """Raise an error if any of the given quantities are unsupported."""
+        un_supported = self.find_unsupported(quantities)
+        if raise_error and un_supported:
+            raise UnSupportedQuantitiesError(
+                f"The following quantities are not supported by the converter yet: {un_supported}"
+            )
+        else:
+            return un_supported
+
+
+class ConverterData(BaseModel):
+    version: float
+    mdu: MDUConfig = Field(default_factory=MDUConfig)
+    external_forcing: ExternalForcingConfigs = Field(
+        default_factory=ExternalForcingConfigs
+    )
+
+    def check_unsupported_quantities(
+        self, ext_old_model: ExtOldModel, raise_error: bool = True
+    ):
+        """Check if the old external forcing file contains unsupported quantities."""
+        quantities = [forcing.quantity for forcing in ext_old_model.forcing]
+        unsupported_quantities = self.external_forcing.check_unsupported_quantities(
+            quantities, raise_error=raise_error
+        )
+        return unsupported_quantities
+
+
+CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
+
+
+class UnSupportedQuantitiesError(Exception):
     pass

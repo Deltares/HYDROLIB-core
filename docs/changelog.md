@@ -1,14 +1,20 @@
-## 1.0.0b4 (2025-09-03)
+## 0.9.7 (2025-09-26)
 
-## 1.0.0b3 (2025-08-29)
+### Fix
 
-## 1.0.0b2 (2025-08-17)
+- **path**: resolve root dir with UNC-compatible relative paths (#950)
+- **path**: resolve root dir with UNC-compatible relative paths (#950)
 
 ### Refactor
 
-- **dflowfm**: restore __init__.py imports for improved API usability
-- **core**: migrate all model modules to Pydantic v2 and improve validation architecture (#832)
-- **core**: migrate all model modules to Pydantic v2 and improve validation architecture
+- **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
+- **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
+
+## 0.9.6 (2025-09-04)
+
+### Fix
+
+- fix pyyaml import error (#939)
 
 ## 0.9.5 (2025-09-03)
 
