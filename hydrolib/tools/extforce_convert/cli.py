@@ -40,6 +40,16 @@ def valid_file_with_extension(extension):
     """Create a validator for files with a specific extension for argparse."""
     return lambda path_str: _validator(path_str, extension)
 
+def valid_dir(path_str):
+    """Validate that the path exists and is a directory."""
+    path = Path(path_str)
+    if not path.exists():
+        raise ArgumentTypeError(f"Directory not found: {path}")
+    if not path.is_dir():
+        raise ArgumentTypeError(f"Path is not a directory: {path}")
+    return path
+
+
 
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -78,7 +88,7 @@ def _get_parser() -> argparse.ArgumentParser:
         "--dir",
         "-d",
         action="store",
-        help="Directory to recursively find and convert .mdu files in",
+        type=valid_dir,
         metavar="DIR",
         help="Directory to recursively find and convert .mdu files in.",
     )
@@ -136,6 +146,10 @@ def main(args=None):
     """
     parser = _get_parser()
     args = parser.parse_args(args)
+
+    # Disallow --outfiles when converting a directory.
+    if args.dir is not None and args.outfiles is not None:
+        parser.error("--outfiles cannot be used with --dir. It only applies to single-file conversions.")
 
     if args.mdufile:
         convert_with_mdu_file(args)
