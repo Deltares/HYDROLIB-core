@@ -51,6 +51,9 @@ def _get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Print diagnostic information"
     )
+    parser.add_argument(
+        "--debug-mode", action="store_true", help="convert all quantities everything"
+    )
 
     # mdu file, extforcefile and dir are mutually exclusive (can only use one)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -138,14 +141,13 @@ def main(args=None):
     parser = _get_parser()
     args = parser.parse_args(args)
 
-    # three cases to consider
     if args.mdufile:
         convert_with_mdu_file(args)
     elif args.extoldfile is not None:
         convert_with_extold_file(args)
     elif args.dir is not None:
         recursive_converter(
-            args.dir, backup=args.backup, remove_legacy=args.remove_legacy
+            args.dir, backup=args.backup, remove_legacy=args.remove_legacy, debug=args.debug_mode
         )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
@@ -166,6 +168,7 @@ def convert_with_mdu_file(args: Namespace):
         ext_file_user=(args.outfiles[0] if args.outfiles else None),
         inifield_file_user=(args.outfiles[1] if args.outfiles else None),
         structure_file_user=(args.outfiles[2] if args.outfiles else None),
+        debug=args.debug_mode,
     )
     convert(converter, args)
 
@@ -182,6 +185,7 @@ def convert_with_extold_file(args: Namespace):
         ext_file=(args.outfiles[0] if args.outfiles else None),
         inifield_file=(args.outfiles[1] if args.outfiles else None),
         structure_file=(args.outfiles[2] if args.outfiles else None),
+        debug=args.debug_mode,
     )
     convert(converter, args)
 
