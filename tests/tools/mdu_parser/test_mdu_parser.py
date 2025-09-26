@@ -53,7 +53,7 @@ def test_update_mdu_on_the_fly(
     updater = MDUParser(mdu_filename)
     # assume that the number of new quantities in the new external forcing file is 1 to trigger the update
     num_quantities = 1
-    updater.update_extforce_file_new(ext_file, num_quantities)
+    updater.update_extforce_file_new(ext_file, num_quantities, remove_old_ext_file=True)
     assert updater.content[on_line[0]] == "[external forcing]\n"
     assert updater.content[on_line[1]] == expected_line
     # test the save mdu file function
@@ -273,7 +273,7 @@ class TestMduParser:
         new_extforce_file = "new_test.ext"
         # assume that the number of new quantities in the new external forcing file is 1 to trigger the update
         num_quantities = 1
-        parser.update_extforce_file_new(new_extforce_file, num_quantities)
+        parser.update_extforce_file_new(new_extforce_file, num_quantities, remove_old_ext_file=True)
 
         # Check that the updated content contain the new forcing file
         ind = parser.find_keyword_lines("extforcefilenew")
@@ -294,7 +294,7 @@ class TestMduParser:
 
         # assume that the number of new quantities in the new external forcing file is 1 to trigger the update
         num_quantities = 1
-        MDUParser.update_extforce_file_new(parser, new_extforce_file, num_quantities)
+        MDUParser.update_extforce_file_new(parser, new_extforce_file, num_quantities, remove_old_ext_file=True)
 
         updated_lines = parser.content
         # Check that the ExtForceFileNew entry was added and ExtForceFile was removed

@@ -797,7 +797,7 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
-    def update_extforce_file_new(self, file_name: str, num_quantities: int) -> None:
+    def update_extforce_file_new(self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False) -> None:
         if num_quantities > 0:
             self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
         else:
@@ -805,9 +805,10 @@ class MDUParser:
             if ext_force_line is not None:
                 self.content.pop(ext_force_line)
 
-        old_ext_force_line = self.find_keyword_lines("ExtForceFile")
-        if old_ext_force_line is not None:
-            self.content.pop(old_ext_force_line)
+        if remove_old_ext_file:
+            old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+            if old_ext_force_line is not None:
+                self.content.pop(old_ext_force_line)
 
     def get_temperature_salinity_data(self) -> Dict[str, Any]:
         """Get the info needed from the mdu to process and convert the old external forcing files.
