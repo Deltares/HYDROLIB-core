@@ -183,10 +183,16 @@ class TestCheckUnsupportedQuantities:
 def test_missing_quantities_are_unique():
     path = Path(CONVERTER_DATA_PATH)
     data = yaml.safe_load(path.read_text()) or {}
-    items = data.get("external_forcing") or []
+    unsupported_quantity_names = data.get("external_forcing", {}).get("unsupported_quantity_names", [])
     # only consider strings; strip to avoid whitespace duplicates
-    items = [s.strip() for s in items if isinstance(s, str)]
-    dupes = [k for k, c in Counter(items).items() if c > 1]
+    unsupported_quantity_names = [s.strip() for s in unsupported_quantity_names if isinstance(s, str)]
+    dupes = [k for k, c in Counter(unsupported_quantity_names).items() if c > 1]
+    assert not dupes, f"Duplicate entries in external_forcing: {dupes}"
+
+    unsupported_prefixes = data.get("external_forcing", {}).get("unsupported_prefixes", [])
+    # only consider strings; strip to avoid whitespace duplicates
+    unsupported_prefixes = [s.strip() for s in unsupported_prefixes if isinstance(s, str)]
+    dupes = [k for k, c in Counter(unsupported_prefixes).items() if c > 1]
     assert not dupes, f"Duplicate entries in external_forcing: {dupes}"
 
 
