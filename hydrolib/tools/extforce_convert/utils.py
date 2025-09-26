@@ -322,6 +322,25 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
 
 
 def check_unique(v):
+    """Checks and filters unique non-empty strings from the input list.
+
+        This function processes a given input list, ensuring that all strings are:
+        - Trimmed of any leading or trailing whitespace.
+        - Converted to lowercase for case-insensitive uniqueness.
+        - Added to the result list only if they haven't been seen before.
+
+        Empty strings or non-string elements are ignored.
+
+    Args:
+        v (list[str] | None):
+            A list of strings to be processed. May contain None or non-string elements.
+            If the input is None, it is treated as an empty list.
+
+    Returns:
+        list[str]
+            A list of unique, lowercase, trimmed strings in the order of their first
+            appearance.
+    """
     seen = set()
     unique = []
     for s in v or []:
