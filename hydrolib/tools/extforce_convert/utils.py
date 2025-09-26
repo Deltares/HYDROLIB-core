@@ -345,7 +345,7 @@ class MDUConfig(BaseModel):
 
         if isinstance(v, str):
             v = [v]
-        return check_unique(v)
+        return set(check_unique(v))
 
 
 class ExternalForcingConfigs(BaseModel):
