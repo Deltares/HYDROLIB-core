@@ -2,11 +2,10 @@
 
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, List, Type, Union, Iterable, Set
+from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic.v1 import Extra
-from pydantic.v1 import BaseModel, Field, validator
+from pydantic.v1 import BaseModel, Extra, Field, validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -38,7 +37,7 @@ __all__ = [
     "find_temperature_salinity_in_quantities",
     "IgnoreUnknownKeyWordClass",
     "backup_file",
-    "construct_filemodel_new_or_existing"
+    "construct_filemodel_new_or_existing",
 ]
 
 
@@ -321,6 +320,7 @@ class IgnoreUnknownKeyWordClass(metaclass=IgnoreUnknownKeyWord):
 
     pass
 
+
 def check_unique(v):
     seen = set()
     unique = []
@@ -331,6 +331,7 @@ def check_unique(v):
                 seen.add(key)
                 unique.append(key)
     return unique
+
 
 class MDUConfig(BaseModel):
     deprecated_keywords: Set[str] = Field(default_factory=set)
@@ -365,7 +366,9 @@ class ExternalForcingConfigs(BaseModel):
                 result.add(q)
         return result
 
-    def check_unsupported_quantities(self, quantities: Iterable[str], raise_error: bool = True) -> Set[str]:
+    def check_unsupported_quantities(
+        self, quantities: Iterable[str], raise_error: bool = True
+    ) -> Set[str]:
         """Raise an error if any of the given quantities are unsupported."""
         un_supported = self.find_unsupported(quantities)
         if raise_error and un_supported:
@@ -375,16 +378,24 @@ class ExternalForcingConfigs(BaseModel):
         else:
             return un_supported
 
+
 class ConverterData(BaseModel):
     version: str
     mdu: MDUConfig = Field(default_factory=MDUConfig)
-    external_forcing: ExternalForcingConfigs = Field(default_factory=ExternalForcingConfigs)
+    external_forcing: ExternalForcingConfigs = Field(
+        default_factory=ExternalForcingConfigs
+    )
 
-    def check_unsupported_quantities(self, ext_old_model: ExtOldModel, raise_error: bool = True):
+    def check_unsupported_quantities(
+        self, ext_old_model: ExtOldModel, raise_error: bool = True
+    ):
         """Check if the old external forcing file contains unsupported quantities."""
         quantities = [forcing.quantity for forcing in ext_old_model.forcing]
-        unsupported_quantities = self.external_forcing.check_unsupported_quantities(quantities, raise_error=raise_error)
+        unsupported_quantities = self.external_forcing.check_unsupported_quantities(
+            quantities, raise_error=raise_error
+        )
         return unsupported_quantities
+
 
 CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 

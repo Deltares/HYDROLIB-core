@@ -147,7 +147,10 @@ def main(args=None):
         convert_with_extold_file(args)
     elif args.dir is not None:
         recursive_converter(
-            args.dir, backup=args.backup, remove_legacy=args.remove_legacy, debug=args.debug_mode
+            args.dir,
+            backup=args.backup,
+            remove_legacy=args.remove_legacy,
+            debug=args.debug_mode,
         )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")

@@ -2,9 +2,11 @@ from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock
+
 import pytest
 import yaml
 from pydantic.v1.error_wrappers import ValidationError
+
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -15,15 +17,15 @@ from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mdu.models import Time
 from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     CONVERTER_DATA_PATH,
+    ExternalForcingConfigs,
     IgnoreUnknownKeyWordClass,
+    MDUConfig,
+    UnSupportedQuantitiesError,
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
-    ExternalForcingConfigs,
-    UnSupportedQuantitiesError,
-    CONVERTER_DATA,
-    MDUConfig
 )
 
 
@@ -108,7 +110,7 @@ class TestMissingQuantities:
     def test_missing_quantities_normalization(self):
         mq = ExternalForcingConfigs(
             unsupported_quantity_names=[" A ", "a", "B", None, 123, " b "],
-            unsupported_prefixes=[" p1 ", "p2"]
+            unsupported_prefixes=[" p1 ", "p2"],
         )
         # stripped, lowercased, deduped
         assert mq.unsupported_quantity_names == ["a", "b"]
@@ -136,7 +138,6 @@ class TestMissingQuantities:
         assert mq.unsupported_prefixes == ["pre"]
 
 
-
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
@@ -149,7 +150,9 @@ class TestCheckUnsupportedQuantities:
     def test_check_raises_on_unsupported(self):
         if not CONVERTER_DATA.external_forcing.unsupported_quantity_names:
             pytest.skip("No unsupported quantities configured.")
-        unsupported = next(iter(CONVERTER_DATA.external_forcing.unsupported_quantity_names))
+        unsupported = next(
+            iter(CONVERTER_DATA.external_forcing.unsupported_quantity_names)
+        )
 
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [

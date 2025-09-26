@@ -796,7 +796,9 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
-    def update_extforce_file_new(self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False) -> None:
+    def update_extforce_file_new(
+        self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False
+    ) -> None:
         if num_quantities > 0:
             self.update_file_entry("ExtForceFileNew", file_name, "external forcing")
         else:

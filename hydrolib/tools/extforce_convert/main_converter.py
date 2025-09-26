@@ -24,9 +24,9 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import ConverterFactory
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
-    CONVERTER_DATA
 )
 
 
@@ -146,7 +146,9 @@ class ExternalForcingConverter:
             list[str]: List of unsupported quantities found in the old external forcing model.
         """
         # check if the file contains unsupported quantities
-        return CONVERTER_DATA.check_unsupported_quantities(self.extold_model, raise_error=not self.debug)
+        return CONVERTER_DATA.check_unsupported_quantities(
+            self.extold_model, raise_error=not self.debug
+        )
 
     @property
     def legacy_files(self) -> list[Path]:
@@ -322,7 +324,9 @@ class ExternalForcingConverter:
 
         if self.un_supported_quantities:
             forcing = [
-                forcing for forcing in self.extold_model.forcing if forcing.quantity in self.un_supported_quantities
+                forcing
+                for forcing in self.extold_model.forcing
+                if forcing.quantity in self.un_supported_quantities
             ]
             self.extold_model.forcing = forcing
 
@@ -506,7 +510,9 @@ class ExternalForcingConverter:
         remove_old_ext_file = False if self.un_supported_quantities else True
 
         self.mdu_parser.update_extforce_file_new(
-            self.ext_model.filepath.name, num_quantities=num_ext_model_quantities, remove_old_ext_file=remove_old_ext_file
+            self.ext_model.filepath.name,
+            num_quantities=num_ext_model_quantities,
+            remove_old_ext_file=remove_old_ext_file,
         )
 
         num_quantities_inifield = len(self.inifield_model.parameter) + len(
