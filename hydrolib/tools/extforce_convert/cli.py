@@ -88,21 +88,13 @@ def _get_parser() -> argparse.ArgumentParser:
         help="Save forcings, initial fields and structures to specified filenames",
     )
 
-    backup_group = parser.add_mutually_exclusive_group()
-
-    backup_group.add_argument(
-        "--backup",
-        "-b",
-        action="store_true",
-        default=True,
-        help="Create a backup of each file that will be overwritten.",
-    )
-    backup_group.add_argument(
+    parser.add_argument(
         "--no-backup",
         dest="backup",
         action="store_false",
         help="Do not create a backup of each file that will be overwritten.",
     )
+    parser.set_defaults(backup=True)
 
     parser.add_argument(
         "--remove-legacy-files",
