@@ -50,7 +50,6 @@ def valid_dir(path_str):
     return path
 
 
-
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="extforce_convert",
