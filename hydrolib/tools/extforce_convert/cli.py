@@ -62,7 +62,11 @@ def _get_parser() -> argparse.ArgumentParser:
         "--verbose", "-v", action="store_true", help="Print diagnostic information"
     )
     parser.add_argument(
-        "--debug-mode", action="store_true", help="convert all quantities everything"
+        "--debug-mode",
+        action="store_true",
+        default=False,
+        help="Convert the supported quantities only and leave unsupported quantities in the old external forcing "
+             "file, default is False.(the conversion will fail if there is any unsupported quantities) ",
     )
 
     # mdu file, extforcefile and dir are mutually exclusive (can only use one)
@@ -99,7 +103,7 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store",
         nargs=3,
         metavar=("EXTFILE", "INIFIELDFILE", "STRUCTUREFILE"),
-        help="Save forcings, initial fields and structures to specified filenames",
+        help="Save forcings, initial fields and structures to specified filenames (only valid with --mdufile or --extoldfile).",
     )
 
     parser.add_argument(
@@ -134,9 +138,9 @@ def main(args=None):
 
     Optional:
       --outfiles EXTFILE INIFIELDFILE STRUCTUREFILE
-                              Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
-      --backup / --no-backup   Create (default) or skip creating a backup of overwritten files (mutually exclusive).
-      --remove-legacy-files    Remove legacy/old files (e.g. .tim) after conversion.
+                               Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
+      --no-backup              Do not create a backup of overwritten files (mutually exclusive).
+      --remove-legacy-files -r Remove legacy/old files (e.g. .tim) after conversion.
       --verbose, -v            Print diagnostic information.
       --version                Print version and exit.
 
