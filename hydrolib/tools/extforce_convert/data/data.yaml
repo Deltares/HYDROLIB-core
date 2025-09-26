@@ -18,9 +18,6 @@ external_forcing:
         - waqparameter
         - ibotlevtype
         - friction_coefficient_time_dependent
-        # Initial conditions
-        - bedlevel1d
-        - bedlevel2d
         # structure
         - damlevel
         - gateloweredgelevel
