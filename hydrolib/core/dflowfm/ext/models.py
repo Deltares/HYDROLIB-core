@@ -67,6 +67,10 @@ class Boundary(INIBasedModel):
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
     returntime: Optional[float] = Field(alias="returnTime")
+    # deprecated, use returnTime instead
+    # Necessary for pydantic v1 due to extra=forbid. Can be removed in pydantic v2,
+    # due to different handling of model_validator execution order.
+    return_time: Optional[float] = Field(None)
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -78,6 +82,21 @@ class Boundary(INIBasedModel):
         return isinstance(elem, Path) or (
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
+
+    @root_validator(pre=True)
+    @classmethod
+    def rename_return_time_field(cls, values: Dict) -> Dict:
+        """Renames the deprecated return_time field to returnTime.
+
+        Args:
+            values (Dict): Dictionary with values already validated.
+
+        Returns:
+            Dict: Validated dictionary of values for Boundary.
+        """
+        if "return_time" in values:
+            values["returnTime"] = values.pop("return_time")
+        return values
 
     @root_validator
     @classmethod
