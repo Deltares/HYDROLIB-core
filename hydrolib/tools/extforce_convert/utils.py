@@ -4,10 +4,8 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
 
-from pydantic import ConfigDict
-
 import yaml
-from pydantic import BaseModel, Extra, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -372,7 +370,9 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: List[str] = Field(default_factory=list)
     unsupported_prefixes: List[str] = Field(default_factory=list)
 
-    @field_validator("unsupported_quantity_names", "unsupported_prefixes", mode="before")
+    @field_validator(
+        "unsupported_quantity_names", "unsupported_prefixes", mode="before"
+    )
     def ensure_unique(cls, v: List[str]) -> List[str]:
         return check_unique(v)
 
