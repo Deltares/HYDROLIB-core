@@ -112,6 +112,7 @@ def _get_parser() -> argparse.ArgumentParser:
 
     parser.add_argument(
         "--remove-legacy-files",
+        "-r",
         dest="remove_legacy",
         action="store_true",
         default=False,
