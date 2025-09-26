@@ -614,7 +614,6 @@ class MDUParser:
         self.temperature_salinity_data = self.get_temperature_salinity_data()
         self._geometry = self.loaded_fm_data.get("geometry")
         self.file_style_properties = FileStyleProperties(self._content)
-        self.configs = CONVERTER_DATA
 
     def __repr__(self):
         message = f"""
@@ -1030,11 +1029,11 @@ class MDUParser:
             not remove the deprecated
         """
 
-        for keyword in self.configs.mdu.deprecated_keywords:
+        for keyword in CONVERTER_DATA.mdu.deprecated_keywords:
             ind = self.find_keyword_lines(keyword)
             if ind is not None:
                 line = Line(self.content[ind])
-                if line.value == str(self.configs.mdu.deprecated_value):
+                if line.value == str(CONVERTER_DATA.mdu.deprecated_value):
                     self.content.pop(ind)
 
     def get_section(self, section_name: str) -> Section:
