@@ -40,6 +40,7 @@ def valid_file_with_extension(extension):
     """Create a validator for files with a specific extension for argparse."""
     return lambda path_str: _validator(path_str, extension)
 
+
 def valid_dir(path_str):
     """Validate that the path exists and is a directory."""
     path = Path(path_str)
@@ -48,7 +49,6 @@ def valid_dir(path_str):
     if not path.is_dir():
         raise ArgumentTypeError(f"Path is not a directory: {path}")
     return path
-
 
 
 def _get_parser() -> argparse.ArgumentParser:
@@ -66,7 +66,7 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
         help="Convert the supported quantities only and leave unsupported quantities in the old external forcing "
-             "file, default is False.(the conversion will fail if there is any unsupported quantities) ",
+        "file, default is False.(the conversion will fail if there is any unsupported quantities) ",
     )
 
     # mdu file, extforcefile and dir are mutually exclusive (can only use one)
@@ -154,7 +154,9 @@ def main(args=None):
 
     # Disallow --outfiles when converting a directory.
     if args.dir is not None and args.outfiles is not None:
-        parser.error("--outfiles cannot be used with --dir. It only applies to single-file conversions.")
+        parser.error(
+            "--outfiles cannot be used with --dir. It only applies to single-file conversions."
+        )
 
     if args.mdufile:
         convert_with_mdu_file(args)
