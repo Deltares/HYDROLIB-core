@@ -334,7 +334,7 @@ def check_unique(v):
 
 class MDUConfig(BaseModel):
     deprecated_keywords: Set[str] = Field(default_factory=set)
-    deprecated_value: Union[float, int] = 0
+    deprecated_value: int = 0
 
     @validator("deprecated_keywords", pre=True)
     def _to_set(cls, v):

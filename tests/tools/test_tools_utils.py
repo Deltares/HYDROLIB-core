@@ -277,16 +277,6 @@ class TestMDUConfigDeprecatedValue:
         assert cfg.deprecated_value == 5
         assert isinstance(cfg.deprecated_value, int)
 
-    def test_accepts_float(self):
-        """
-        Input: deprecated_value=3.14
-        Expect: deprecated_value == 3.14 (float).
-        Checks: float is stored as-is.
-        """
-        cfg = MDUConfig(deprecated_value=3.14)
-        assert isinstance(cfg.deprecated_value, float)
-        assert cfg.deprecated_value == pytest.approx(3.14)
-
     def test_rejects_string(self):
         """
         Input: deprecated_value='invalid'
