@@ -4,9 +4,27 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
-from typing import Any, Callable, List, Optional
+from typing import Annotated, Any, Callable, List, Optional, Union, get_args, get_origin
 
+from pydantic import ValidationInfo
+from pydantic.fields import FieldInfo
 from strenum import StrEnum
+
+SCIENTIFIC_NOTATION_PATTERN = r"([\d.]+)([dD])([+-]?\d{1,3})"
+
+# matches a float: 1d9, 1D-3, 1.D+4, etc.
+SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
+
+PYTHON_STYLES = r"\1e\3"
+
+valid_types = (
+    float,
+    list[float],
+    List[float],
+    Optional[float],
+    Optional[List[float]],
+    Optional[list[float]],
+)
 
 
 def to_key(string: str) -> str:
@@ -134,6 +152,162 @@ def operator_str(operator_func: Callable) -> str:
         return "is greater than or equal to"
     else:
         return str(operator_func)
+
+
+def resolve_file_model(
+    value: Union[str, Path], model: Callable[[Union[str, Path]], Any]
+):
+    """Resolve file model.
+
+     Resolves a file model based on the provided value and context.
+     This function determines whether to use a `DiskOnlyFileModel` or the
+     provided `model` class to resolve the given file path or string, depending
+     on the current file load context settings.
+
+     Args:
+         value (Union[str, Path]):
+            The file path or string to be resolved.
+         model:
+            The model class to use for resolving the file if the context settings allow recursion.
+     Returns:
+         An instance of `DiskOnlyFileModel` or the provided `model` class, depending on the file load context settings.
+
+    Notes:
+        - The function choose the `DiskOnlyFileModel` when the context's load settings do not allow recursion.
+    """
+    from hydrolib.core.base.file_manager import file_load_context
+    from hydrolib.core.base.models import DiskOnlyFileModel
+
+    with file_load_context() as context:
+        if (
+            hasattr(context, "_load_settings")
+            and context._load_settings is not None
+            and not context._load_settings.recurse
+        ):
+            result = DiskOnlyFileModel(value)
+        else:
+            result = model(value)
+    return result
+
+
+class PathToDictionaryConverter:
+
+    @staticmethod
+    def convert(cls, value: Any, info: ValidationInfo):
+        """Convert a value to a dictionary if it is a file model type.
+
+        Args:
+            cls (Type):
+                The class to which the value belongs.
+            value (Any):
+                The value to convert.
+            info (ValidationInfo):
+                Validation information.
+
+        Returns:
+            Any:
+                The converted value, which is a dictionary if the value is a file model type.
+        """
+        from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
+
+        fields = cls.model_fields
+        key = info.field_name
+
+        if isinstance(value, (str, Path, list)) and fields.get(key) is not None:
+            if PathToDictionaryConverter.is_file_model_type(fields[key].annotation):
+                value = PathToDictionaryConverter.make_dict(value)
+            elif PathToDictionaryConverter.is_list_file_model_type(
+                fields[key].annotation
+            ):
+                value = [
+                    (
+                        PathToDictionaryConverter.make_dict(v)
+                        if isinstance(v, (str, Path))
+                        else v
+                    )
+                    for v in split_string_on_delimiter(cls, value, info)
+                ]
+
+        return value
+
+    @staticmethod
+    def make_dict(value: Union[str, Path]) -> Union[dict, "DiskOnlyFileModel"]:
+        """Convert a value to a dictionary with a 'filepath' key.
+
+        Args:
+            value (Union[str, Path]): The value to convert, which can be a string or a Path object.
+
+        Returns:
+            dict: A dictionary with a 'filepath' key containing the Path object.
+            DiskOnlyFileModel: If the context's load settings do not recurse, return a DiskOnlyFileModel.
+        """
+        from hydrolib.core.base.file_manager import file_load_context
+        from hydrolib.core.base.models import DiskOnlyFileModel
+
+        with file_load_context() as context:
+            if (
+                hasattr(context, "_load_settings")
+                and context._load_settings is not None
+                and not context._load_settings.recurse
+            ):
+                value = DiskOnlyFileModel(value)
+            else:
+                value = {"filepath": Path(value)}
+        return value
+
+    @staticmethod
+    def is_file_model_type(annotation: Any) -> bool:
+        """Check if the given annotation is a FileModel type.
+
+        Args:
+            annotation (Any): The annotation to check.
+
+        Returns:
+            bool: True if the annotation is a FileModel type, False otherwise.
+        """
+        from hydrolib.core.base.models import FileModel
+
+        stack = [annotation]
+        result = False
+        while stack:
+            current = stack.pop()
+            origin = get_origin(current)
+            if origin is Union:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is Annotated:
+                stack.append(get_args(current)[0])
+                continue
+            if isinstance(current, type) and issubclass(current, FileModel):
+                result = True
+        return result
+
+    @staticmethod
+    def is_list_file_model_type(annotation: Any) -> bool:
+        """Check if the given annotation is a list of FileModel types.
+
+        Args:
+            annotation (Any): The annotation to check.
+
+        Returns:
+            bool: True if the annotation is a list of FileModel types, False otherwise.
+        """
+        stack = [annotation]
+        result = False
+        while stack:
+            current = stack.pop()
+            origin = get_origin(current)
+            if origin is Union:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is Annotated:
+                stack.append(get_args(current)[0])
+                continue
+            if origin is list:
+                result = PathToDictionaryConverter.is_file_model_type(
+                    get_args(current)[0]
+                )
+        return result
 
 
 class OperatingSystem(Enum):
@@ -344,18 +518,74 @@ class FileChecksumCalculator:
 class FortranUtils:
     """Utility class for Fortran specific conventions."""
 
-    _scientific_exp_d_notation_regex = re.compile(
-        r"([\d.]+)([dD])([+-]?\d{1,3})"
-    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
-
     @staticmethod
     def replace_fortran_scientific_notation(value):
         """Replace Fortran scientific notation ("D" in exponent) with standard
         scientific notation ("e" in exponent).
         """
         if isinstance(value, str):
-            return FortranUtils._scientific_exp_d_notation_regex.sub(r"\1e\3", value)
+            return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
         elif isinstance(value, list):
             return list(map(FortranUtils.replace_fortran_scientific_notation, value))
 
         return value
+
+
+class FortranScientificNotationConverter:
+
+    @classmethod
+    def convert(cls, value: Union[str, List[str]]) -> Union[str, List[str]]:
+        """
+        Replaces FORTRAN-style scientific notation in a value.
+
+        Args:
+            value (Any): The value to process.
+
+        Returns:
+            Any: The processed value.
+        """
+        if isinstance(value, str):
+            return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
+        if isinstance(value, list):
+            for i, v in enumerate(value):
+                if isinstance(v, str):
+                    value[i] = SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, v)
+
+        return value
+
+    @classmethod
+    def convert_fields(cls, values: dict, field_definitions: dict) -> dict:
+        """Convert Fields
+
+        Converts values in a dictionary using Fortran-style scientific notation
+        to Python floats for fields defined as float or List[float].
+
+        Args:
+            values (dict):
+                The input dictionary of field values.
+            field_definitions (dict):
+                A mapping of field names to Pydantic Field definitions.
+
+        Returns:
+            dict:
+                The updated dictionary with converted float fields.
+        """
+        alias_to_field = {
+            field.alias: name
+            for name, field in field_definitions.items()
+            if field.alias is not None
+        }
+        new_values = {}
+        for field_name, value in values.items():
+            actual_field_name = alias_to_field.get(field_name, field_name)
+            field: FieldInfo = field_definitions.get(actual_field_name)
+            if field:
+                field_type = field.annotation
+                if field_type not in valid_types:
+                    new_values[field_name] = value
+                else:
+                    # convert only the value if it is a float or a list of floats
+                    new_values[field_name] = cls.convert(value)
+            else:
+                new_values[field_name] = value
+        return new_values

@@ -25,7 +25,7 @@ class SimpleTestModel(BaseModel):
     value: int
 
 
-class TestModelWithLinks(BaseModel):
+class ModelWithLinks(BaseModel):
     """A test model that overrides link methods."""
 
     name: str
@@ -37,20 +37,20 @@ class TestModelWithLinks(BaseModel):
         return True
 
 
-class ChildTestModel(TestModelWithLinks):
+class ChildTestModel(ModelWithLinks):
     """A child test model for hierarchy testing."""
 
     value: int
 
 
-class ParentTestModel(TestModelWithLinks):
+class ParentTestModel(ModelWithLinks):
     """A parent test model for hierarchy testing."""
 
     child: ChildTestModel
     children: List[ChildTestModel] = []
 
 
-class TestBaseModelWithFunc(BaseModel):
+class BaseModelWithFunc(BaseModel):
     """A test base model that can track function calls."""
 
     def test_func(self):
@@ -58,19 +58,19 @@ class TestBaseModelWithFunc(BaseModel):
         pass
 
 
-class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
+class ChildModelWithFunc(BaseModelWithFunc, ChildTestModel):
     """A child model that includes the test_func method."""
 
     pass
 
 
-class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
+class ParentModelWithFunc(BaseModelWithFunc, ParentTestModel):
     """A parent model that includes the test_func method."""
 
     pass
 
 
-class TestParsableModelBase(ParsableFileModel):
+class ParsableModelBase(ParsableFileModel):
     """Base class for parsable file model tests."""
 
     name: str = "default"
@@ -157,7 +157,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_file_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_file_link())
 
     def test_is_intermediate_link(self):
@@ -167,7 +167,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_intermediate_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_intermediate_link())
 
     def test_show_tree(self):
@@ -191,7 +191,7 @@ class TestBaseModel(unittest.TestCase):
             called_models.append(self)
 
         # Patch the test_func method
-        with patch.object(TestBaseModelWithFunc, "test_func", test_func):
+        with patch.object(BaseModelWithFunc, "test_func", test_func):
             child1 = ChildModelWithFunc(name="child1", value=1)
             child2 = ChildModelWithFunc(name="child2", value=2)
             child3 = ChildModelWithFunc(name="child3", value=3)
@@ -292,7 +292,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = TestParsableModelBase
+        self.TestParsableModel = ParsableModelBase
 
     def test_get_quantity_unit(self):
         """Test _get_quantity_unit method with different quantity types."""

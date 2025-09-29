@@ -19,8 +19,8 @@ class TestXYZSerializer:
 
         data = {
             "points": [
-                XYZPoint(x=1.232, y=2.343, z=3.454),
-                XYZPoint(x=4.565, y=5.676, z=6.787, comment="Some comment"),
+                {"x": 1.232, "y": 2.343, "z": 3.454},
+                {"x": 4.565, "y": 5.676, "z": 6.787, "comment": "Some comment"},
             ]
         }
 
@@ -37,8 +37,8 @@ class TestXYZModel:
         reference_file = test_reference_dir / "xyz" / "test.xyz"
 
         points = [
-            XYZPoint(x=1.232, y=2.343, z=3.454),
-            XYZPoint(x=4.565, y=5.676, z=6.787, comment="Some comment"),
+            {"x": 1.232, "y": 2.343, "z": 3.454},
+            {"x": 4.565, "y": 5.676, "z": 6.787, "comment": "Some comment"},
         ]
         model = XYZModel(points=points)
 
