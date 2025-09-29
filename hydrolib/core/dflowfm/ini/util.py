@@ -291,14 +291,17 @@ def validate_datetime_string(
         and len(field_value.strip()) > 0
         and field_value != "yyyymmddhhmmss"
     ):
-        formats = ["%Y%m%d%H%M%S", "%Y%m%d"]
-        for fmt in formats:
+        formats = {14: "%Y%m%d%H%M%S", 8: "%Y%m%d"}
+        result = False
+        format_length = len(field_value)
+        if format_length in formats:
             try:
-                datetime.strptime(field_value, fmt)
-                break
+                datetime.strptime(field_value, formats[format_length])
+                result = True
             except ValueError:
-                continue
-        else:
+                pass
+
+        if not result:
             raise ValueError(
                 f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
             )
