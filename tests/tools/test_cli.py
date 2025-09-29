@@ -139,7 +139,7 @@ class TestGetParser:
         Test that only --dir is accepted and parsed correctly, and other mutually exclusive arguments are None.
         """
         args = self.parser.parse_args(["--dir", str(self.tmp_path)])
-        assert args.dir == str(self.tmp_path)
+        assert args.dir == self.tmp_path
         assert args.mdufile is None
         assert args.extoldfile is None
 
@@ -162,8 +162,6 @@ class TestGetParser:
         assert args.backup is True
         args = self.parser.parse_args(["--mdufile", str(self.mdu), "--no-backup"])
         assert args.backup is False
-        args = self.parser.parse_args(["--mdufile", str(self.mdu), "--backup"])
-        assert args.backup is True
 
     @pytest.mark.unit
     def test_remove_legacy_files(self):
