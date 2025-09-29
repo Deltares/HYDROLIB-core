@@ -89,7 +89,7 @@ class Boundary(INIBasedModel):
         """Renames the deprecated return_time field to returnTime.
 
         Args:
-            values (Dict): Dictionary with values already validated.
+            values (Dict): Dictionary with raw, unvalidated input values.
 
         Returns:
             Dict: Validated dictionary of values for Boundary.
