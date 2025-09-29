@@ -15,6 +15,7 @@ from hydrolib.core.dflowfm.ini.util import (
     get_from_subclass_defaults,
     get_type_based_on_subclass_default_value,
     rename_keys_for_backwards_compatibility,
+    validate_datetime_string,
     validate_location_specification,
 )
 
@@ -481,3 +482,59 @@ class TestUnknownKeywordErrorManager:
             )
         except ValueError:
             pytest.fail("Exception is thrown, no exception is expected for this test.")
+
+
+class TestDateTimeValidator:
+    @pytest.mark.parametrize(
+        "date_value",
+        [
+            ("20230101"),
+            ("20231231"),
+            ("20230101000000"),
+            ("20231231235959"),
+        ],
+        ids=[
+            "Date start of year",
+            "Date end of year",
+            "DateTime start of year",
+            "DateTime end of year",
+        ],
+    )
+    def test_mdu_datetime_valid_format_returns_value(self, date_value):
+        field = Mock(spec=ModelField)
+        field.name = "timefield"
+        field.alias = "timeField"
+
+        returned_value = validate_datetime_string(date_value, field)
+
+        assert returned_value == date_value
+
+    @pytest.mark.parametrize(
+        "date_value",
+        [
+            ("invalid"),
+            ("2023010"),
+            ("202312311"),
+            ("2023010100000"),
+            ("202301010000000"),
+        ],
+        ids=[
+            "unknown format",
+            "Date too short",
+            "Date too long",
+            "DateTime too short",
+            "DateTime too long",
+        ],
+    )
+    def test_mdu_datetime_invalid_format_raises_valueerror(self, date_value):
+        field = Mock(spec=ModelField)
+        field.name = "timefield"
+        field.alias = "timeField"
+
+        with pytest.raises(ValueError) as exc_err:
+            validate_datetime_string(date_value, field)
+
+        assert (
+            f"Invalid datetime string for {field.alias}: '{date_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            in str(exc_err.value)
+        )
