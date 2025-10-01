@@ -9,6 +9,7 @@ from argparse import ArgumentTypeError, Namespace
 from pathlib import Path
 
 from hydrolib.core import __version__
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
@@ -122,6 +123,15 @@ def _get_parser() -> argparse.ArgumentParser:
         default=False,
         help="Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.",
     )
+    parser.add_argument(
+        "--path-style",
+        choices=[style.value for style in PathStyle],
+        dest="path_style",
+        default=None,
+        type=lambda s: PathStyle(s),
+        help="Handle absolute paths in input files according to the specified style (unix/windows)."
+        "Use this when converting models with unix paths on Windows or windows paths on Unix.",
+    )
     return parser
 
 
@@ -143,11 +153,16 @@ def main(args=None):
       --remove-legacy-files -r Remove legacy/old files (e.g. .tim) after conversion.
       --verbose, -v            Print diagnostic information.
       --version                Print version and exit.
+      --path-style {unix,windows}
+                               Handle absolute paths in input/output files according to the specified style (unix/windows).
+                               Use this when converting models that use unix paths but you are running the converter
+                               on a Windows machine and the opposite.
 
     Example usages:
       extforce_convert --mdufile model.mdu
       extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
       extforce_convert --dir ./models --no-backup --remove-legacy-files
+      extforce_convert --mdufile model.mdu --path-style unix
     """
     parser = _get_parser()
     args = parser.parse_args(args)
@@ -188,6 +203,7 @@ def convert_with_mdu_file(args: Namespace):
         ext_file_user=(args.outfiles[0] if args.outfiles else None),
         inifield_file_user=(args.outfiles[1] if args.outfiles else None),
         structure_file_user=(args.outfiles[2] if args.outfiles else None),
+        path_style=args.path_style,
         debug=args.debug_mode,
     )
     convert(converter, args)
@@ -205,6 +221,7 @@ def convert_with_extold_file(args: Namespace):
         ext_file=(args.outfiles[0] if args.outfiles else None),
         inifield_file=(args.outfiles[1] if args.outfiles else None),
         structure_file=(args.outfiles[2] if args.outfiles else None),
+        path_style=args.path_style,
         debug=args.debug_mode,
     )
     convert(converter, args)
