@@ -66,6 +66,8 @@ class ExternalForcingConverter:
                 Enable verbose output.
             path_style (Optional[PathStyle], optional):
                 Path style for handling absolute paths in converted files. If None, the system style is used.
+                - On windows systems drives are represented as `P:/path/to/file`
+                - On unix systems drives are represented as `/p/path/to/file`
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
@@ -191,14 +193,7 @@ class ExternalForcingConverter:
 
     @property
     def path_style(self) -> PathStyle:
-        """Path style for the absolute paths in the models.
-
-        On windows systems drives are represented as `P:/path/to/file`
-        On unix systems drives are represented as `/p/path/to/file`
-
-        To correctly handle these paths on systems that differ from the path_style,
-        the path style must be converted to the system style.
-        """
+        """Path style for the absolute paths in the models."""
         return self._path_style
 
     @property
