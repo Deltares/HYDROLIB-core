@@ -67,10 +67,6 @@ class Boundary(INIBasedModel):
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
     returntime: Optional[float] = Field(alias="returnTime")
-    # deprecated, use returnTime instead
-    # Necessary for pydantic v1 due to extra=forbid. Can be removed in pydantic v2,
-    # due to different handling of model_validator execution order.
-    return_time: Optional[float] = Field(None)
 
     def is_intermediate_link(self) -> bool:
         return True
