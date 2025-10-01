@@ -155,7 +155,8 @@ def main(args=None):
       --version                Print version and exit.
       --path-style {unix,windows}
                                Handle absolute paths in input/output files according to the specified style (unix/windows).
-                               Use this when converting models with unix paths on Windows or windows paths on Unix.
+                               Use this when converting models that use unix paths but you are running the converter
+                               on a Windows machine and the opposite.
 
     Example usages:
       extforce_convert --mdufile model.mdu
