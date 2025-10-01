@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -41,6 +42,7 @@ class ExternalForcingConverter:
         structure_file: Optional[PathOrStr] = None,
         mdu_parser: MDUParser = None,
         verbose: bool = False,
+        path_style: PathStyle = None,
         debug: Optional[bool] = False,
     ):
         r"""Initialize the converter.
@@ -62,6 +64,12 @@ class ExternalForcingConverter:
                 a Parser for the MDU file.
             verbose (bool, optional, Defaults to False):
                 Enable verbose output.
+            path_style (Optional[PathStyle], optional):
+                Specifies how absolute paths in model files are interpreted and converted (unix or windows style).
+                Use this to correctly handle Unix paths on Windows or Windows paths on Unix.
+                If None, the system's default style is used.
+                - Example (Windows): `P:/path/to/file`
+                - Example (Unix): `/p/path/to/file`
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
@@ -96,7 +104,7 @@ class ExternalForcingConverter:
             ```
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
-            extold_model = self._read_old_file(extold_model)
+            extold_model = self._read_old_file(extold_model, path_style=path_style)
             rdir = extold_model.filepath.parent
         else:
             if not isinstance(extold_model, ExtOldModel):
@@ -108,6 +116,7 @@ class ExternalForcingConverter:
         self._extold_model = extold_model
         self._verbose = verbose
         self._root_dir = rdir
+        self._path_style = path_style
 
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
@@ -185,6 +194,11 @@ class ExternalForcingConverter:
         return self._root_dir
 
     @property
+    def path_style(self) -> PathStyle:
+        """Path style for the absolute paths in the models."""
+        return self._path_style
+
+    @property
     def extold_model(self) -> ExtOldModel:
         """Old external forcing model."""
         return self._extold_model
@@ -236,12 +250,17 @@ class ExternalForcingConverter:
         )
 
     @staticmethod
-    def _read_old_file(ext_old_file: PathOrStr) -> ExtOldModel:
+    def _read_old_file(
+        ext_old_file: PathOrStr, path_style: Optional[PathStyle] = None
+    ) -> ExtOldModel:
         """Read a legacy D-Flow FM external forcings file (.ext) into an ExtOldModel object.
 
         Args:
             ext_old_file (PathOrStr):
                 path to the external forcings file (.ext)
+            path_style (Optional[PathStyle]):
+                Path style for the file paths in the models. If None, the system style is used.
+                Converts absolute paths based on the provided style to the system style.
 
             Returns:
                 ExtOldModel: object with all forcing blocks.
@@ -255,7 +274,7 @@ class ExternalForcingConverter:
         if not ext_old_file.exists():
             raise FileNotFoundError(f"File not found: {ext_old_file}")
 
-        ext_old_model = ExtOldModel(ext_old_file)
+        ext_old_model = ExtOldModel(ext_old_file, path_style=path_style)
 
         return ext_old_model
 
@@ -402,7 +421,9 @@ class ExternalForcingConverter:
         if num_quantities_ext:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
-            self.ext_model.save(recurse=recursive, exclude_unset=True)
+            self.ext_model.save(
+                recurse=recursive, exclude_unset=True, path_style=self.path_style
+            )
 
         if self.mdu_parser is not None:
             self.mdu_parser.clean()
@@ -416,12 +437,16 @@ class ExternalForcingConverter:
         """
         if backup and self.inifield_model.filepath.exists():
             backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(recurse=recursive, exclude_unset=False)
+        self.inifield_model.save(
+            recurse=recursive, exclude_unset=False, path_style=self.path_style
+        )
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
-        self.structure_model.save(recurse=recursive, exclude_unset=True)
+        self.structure_model.save(
+            recurse=recursive, exclude_unset=True, path_style=self.path_style
+        )
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
@@ -440,6 +465,7 @@ class ExternalForcingConverter:
         ext_file_user: Optional[PathOrStr] = None,
         inifield_file_user: Optional[PathOrStr] = None,
         structure_file_user: Optional[PathOrStr] = None,
+        path_style: Optional[PathStyle] = None,
         debug: bool = False,
     ) -> "ExternalForcingConverter":
         """Create the converter from the MDU file.
@@ -458,6 +484,9 @@ class ExternalForcingConverter:
             structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
+            path_style (Optional[PathStyle], optional):
+                Path style for the file paths in the models. If None, the system style is used.
+                Converts absolute paths based on the provided style to the system style.
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
@@ -486,6 +515,7 @@ class ExternalForcingConverter:
             inifield_file_user,
             structure_file_user,
             mdu_parser,
+            path_style=path_style,
             debug=debug,
         )
 
