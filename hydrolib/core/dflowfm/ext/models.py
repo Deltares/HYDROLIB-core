@@ -79,6 +79,11 @@ class Boundary(INIBasedModel):
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
+    @classmethod
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        unknown_keywords = ["return_time"]
+        return set(unknown_keywords)
+
     @root_validator(pre=True)
     @classmethod
     def rename_return_time_field(cls, values: Dict) -> Dict:
