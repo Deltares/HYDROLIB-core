@@ -153,11 +153,15 @@ def main(args=None):
       --remove-legacy-files -r Remove legacy/old files (e.g. .tim) after conversion.
       --verbose, -v            Print diagnostic information.
       --version                Print version and exit.
+      --path-style {unix,windows}
+                               Handle absolute paths in input files according to the specified style (unix/windows).
+                               Use this when converting models with unix paths on Windows or windows paths on Unix.
 
     Example usages:
       extforce_convert --mdufile model.mdu
       extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
       extforce_convert --dir ./models --no-backup --remove-legacy-files
+      extforce_convert --mdufile model.mdu --path-style unix
     """
     parser = _get_parser()
     args = parser.parse_args(args)
