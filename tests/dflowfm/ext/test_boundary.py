@@ -85,8 +85,6 @@ def test_return_time_field_is_renamed():
 
     created_boundary = Boundary(**dict_values)
     assert created_boundary.returntime == dict_values["return_time"]
-    # Make sure the deprecated field is not set (Pydantic v1 requirement due to extra=forbid)
-    assert created_boundary.return_time is None
 
 
 class TestValidateRootValidator:
