@@ -65,9 +65,11 @@ class ExternalForcingConverter:
             verbose (bool, optional, Defaults to False):
                 Enable verbose output.
             path_style (Optional[PathStyle], optional):
-                Path style for handling absolute paths in converted files. If None, the system style is used.
-                - On windows systems drives are represented as `P:/path/to/file`
-                - On unix systems drives are represented as `/p/path/to/file`
+                Specifies how absolute paths in model files are interpreted and converted (unix or windows style).
+                Use this to correctly handle Unix paths on Windows or Windows paths on Unix.
+                If None, the system's default style is used.
+                - Example (Windows): `P:/path/to/file`
+                - Example (Unix): `/p/path/to/file`
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
@@ -258,7 +260,7 @@ class ExternalForcingConverter:
                 path to the external forcings file (.ext)
             path_style (Optional[PathStyle]):
                 Path style for the file paths in the models. If None, the system style is used.
-                Converts absolute paths to the system style.
+                Converts absolute paths based on the provided style to the system style.
 
             Returns:
                 ExtOldModel: object with all forcing blocks.
@@ -482,6 +484,9 @@ class ExternalForcingConverter:
             structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
+            path_style (Optional[PathStyle], optional):
+                Path style for the file paths in the models. If None, the system style is used.
+                Converts absolute paths based on the provided style to the system style.
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
