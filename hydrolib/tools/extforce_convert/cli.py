@@ -154,7 +154,7 @@ def main(args=None):
       --verbose, -v            Print diagnostic information.
       --version                Print version and exit.
       --path-style {unix,windows}
-                               Handle absolute paths in input files according to the specified style (unix/windows).
+                               Handle absolute paths in input/output files according to the specified style (unix/windows).
                                Use this when converting models with unix paths on Windows or windows paths on Unix.
 
     Example usages:
