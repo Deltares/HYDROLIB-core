@@ -151,8 +151,8 @@ ALL_QUANTITIES = (
 
 ALL_PREFIXES = (
     BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
-    | INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
-    | TRACER_QUANTITY_VALID_PREFIXES
+    + INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+    + TRACER_QUANTITY_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
@@ -298,23 +298,20 @@ class ExtOldForcing(BaseModel):
         if isinstance(value, ExtOldQuantity):
             return value
 
-        def raise_error_tracer_name(quantity: ExtOldTracerQuantity):
+        def raise_error_prefix_name(quantity: str):
             raise ValueError(
-                f"QUANTITY '{quantity}' should be appended with a tracer name."
+                f"QUANTITY '{quantity}' should be appended with a valid prefix name."
             )
-
-        if isinstance(value, ExtOldTracerQuantity):
-            raise_error_tracer_name(value)
 
         value_str = str(value)
         lower_value = value_str.lower()
 
-        for tracer_quantity in ExtOldTracerQuantity:
-            if lower_value.startswith(tracer_quantity):
-                n = len(tracer_quantity)
+        for prefix in ALL_PREFIXES:
+            if lower_value.startswith(prefix):
+                n = len(prefix)
                 if n == len(value_str):
-                    raise_error_tracer_name(tracer_quantity)
-                return tracer_quantity + value_str[n:]
+                    raise_error_prefix_name(prefix)
+                return prefix + value_str[n:]
 
         if lower_value in list(ExtOldQuantity):
             return ExtOldQuantity(lower_value)
@@ -410,11 +407,11 @@ class ExtOldForcing(BaseModel):
         )
         only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
-        if factor.value is not None and not quantity.value.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
-            raise ValueError(error)
+        # if factor.value is not None and not quantity.value.startswith(
+        #     ExtOldTracerQuantity.InitialTracer
+        # ):
+        #     error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+        #     raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
         only_allowed_when(averagingtype, method, ExtOldMethod.AveragingSpace)
