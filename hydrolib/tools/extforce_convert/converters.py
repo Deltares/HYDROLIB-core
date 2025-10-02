@@ -706,6 +706,7 @@ class SourceSinkConverter(BaseConverter):
             for key in ext_file_quantity_list
             if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
+        required_quantities_from_ext = list(set(required_quantities_from_ext))
 
         # check if the temperature and salinity are present in the external file
         temp_salinity_from_ext = find_temperature_salinity_in_quantities(
