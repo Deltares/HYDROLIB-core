@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from hydrolib.tools.extforce_convert.mdu_parser import CONVERTER_DATA, MDUParser
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class TestMDUParserDeleteLine:
@@ -142,7 +142,7 @@ class TestMDUParserDeleteLine:
 class TestMDUParserClean:
     @pytest.fixture(autouse=True)
     def setup_parser(self):
-        self.deprecated_keys = CONVERTER_DATA.get("mdu").get("deprecated_key_words")
+        self.deprecated_keys = ["Allowcoolingbelowzero", "RhoairRhowater"]
         yield
 
     def _make_parser(self, lines):
