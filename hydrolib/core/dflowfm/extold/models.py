@@ -34,6 +34,7 @@ with (EXT_OLD_MODULE_PATH / "old-external-forcing-data.yaml").open("r") as fh:
 with (EXT_OLD_MODULE_PATH / "header.txt").open("r") as f:
     HEADER = f.read()
 
+INITIALTRACER = "initialtracer"
 
 FILETYPE_FILEMODEL_MAPPING = {
     1: TimModel,
@@ -49,13 +50,6 @@ FILETYPE_FILEMODEL_MAPPING = {
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
 }
-
-
-ExtOldTracerQuantity = StrEnum(
-    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity_names"]
-)
-
-TRACER_QUANTITY_VALID_PREFIXES = tuple(QUANTITIES_DATA["Tracer"]["prefixes"])
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
     QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
@@ -152,7 +146,6 @@ ALL_QUANTITIES = (
 ALL_PREFIXES = (
     BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
     + INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
-    + TRACER_QUANTITY_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
@@ -407,10 +400,8 @@ class ExtOldForcing(BaseModel):
         )
         only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
-        if factor.value is not None and not quantity.value.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+        if factor.value is not None and not quantity.value.startswith(INITIALTRACER):
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {INITIALTRACER}"
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
