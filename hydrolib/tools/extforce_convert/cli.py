@@ -9,6 +9,7 @@ from argparse import ArgumentTypeError, Namespace
 from pathlib import Path
 
 from hydrolib.core import __version__
+from hydrolib.core.base.utils import PathStyle
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
@@ -41,6 +42,16 @@ def valid_file_with_extension(extension):
     return lambda path_str: _validator(path_str, extension)
 
 
+def valid_dir(path_str):
+    """Validate that the path exists and is a directory."""
+    path = Path(path_str)
+    if not path.exists():
+        raise ArgumentTypeError(f"Directory not found: {path}")
+    if not path.is_dir():
+        raise ArgumentTypeError(f"Path is not a directory: {path}")
+    return path
+
+
 def _get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="extforce_convert",
@@ -51,6 +62,13 @@ def _get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Print diagnostic information"
     )
+    parser.add_argument(
+        "--debug-mode",
+        action="store_true",
+        default=False,
+        help="Convert the supported quantities only and leave unsupported quantities in the old external forcing "
+        "file, default is False.(the conversion will fail if there is any unsupported quantities) ",
+    )
 
     # mdu file, extforcefile and dir are mutually exclusive (can only use one)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -60,20 +78,24 @@ def _get_parser() -> argparse.ArgumentParser:
         "-m",
         action="store",
         type=valid_file_with_extension(".mdu"),
-        help="Automatically take input and output filenames from MDUFILE",
+        metavar="MDUFILE",
+        help="Automatically take input and output filenames from MDUFILE.",
     )
     group.add_argument(
         "--extoldfile",
         "-e",
         action="store",
         type=valid_file_with_extension(".ext"),
+        metavar="EXTOLDFILE",
         help="Input EXTOLDFILE to be converted.",
     )
     group.add_argument(
         "--dir",
         "-d",
         action="store",
-        help="Directory to recursively find and convert .mdu files in",
+        type=valid_dir,
+        metavar="DIR",
+        help="Directory to recursively find and convert .mdu files in.",
     )
 
     parser.add_argument(
@@ -82,31 +104,33 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store",
         nargs=3,
         metavar=("EXTFILE", "INIFIELDFILE", "STRUCTUREFILE"),
-        help="Save forcings, initial fields and structures to specified filenames",
+        help="Save forcings, initial fields and structures to specified filenames (only valid with --mdufile or --extoldfile).",
     )
 
-    backup_group = parser.add_mutually_exclusive_group()
-
-    backup_group.add_argument(
-        "--backup",
-        "-b",
-        action="store_true",
-        default=True,
-        help="Create a backup of each file that will be overwritten.",
-    )
-    backup_group.add_argument(
+    parser.add_argument(
         "--no-backup",
         dest="backup",
         action="store_false",
         help="Do not create a backup of each file that will be overwritten.",
     )
+    parser.set_defaults(backup=True)
 
     parser.add_argument(
         "--remove-legacy-files",
+        "-r",
         dest="remove_legacy",
         action="store_true",
         default=False,
         help="Remove legacy/old files (e.g. .tim) after conversion. Defaults to False.",
+    )
+    parser.add_argument(
+        "--path-style",
+        choices=[style.value for style in PathStyle],
+        dest="path_style",
+        default=None,
+        type=lambda s: PathStyle(s),
+        help="Handle absolute paths in input files according to the specified style (unix/windows)."
+        "Use this when converting models with unix paths on Windows or windows paths on Unix.",
     )
     return parser
 
@@ -124,28 +148,41 @@ def main(args=None):
 
     Optional:
       --outfiles EXTFILE INIFIELDFILE STRUCTUREFILE
-                              Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
-      --backup / --no-backup   Create (default) or skip creating a backup of overwritten files (mutually exclusive).
-      --remove-legacy-files    Remove legacy/old files (e.g. .tim) after conversion.
+                               Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
+      --no-backup              Do not create a backup of overwritten files (mutually exclusive).
+      --remove-legacy-files -r Remove legacy/old files (e.g. .tim) after conversion.
       --verbose, -v            Print diagnostic information.
       --version                Print version and exit.
+      --path-style {unix,windows}
+                               Handle absolute paths in input/output files according to the specified style (unix/windows).
+                               Use this when converting models that use unix paths but you are running the converter
+                               on a Windows machine and the opposite.
 
     Example usages:
       extforce_convert --mdufile model.mdu
       extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
       extforce_convert --dir ./models --no-backup --remove-legacy-files
+      extforce_convert --mdufile model.mdu --path-style unix
     """
     parser = _get_parser()
     args = parser.parse_args(args)
 
-    # three cases to consider
+    # Disallow --outfiles when converting a directory.
+    if args.dir is not None and args.outfiles is not None:
+        parser.error(
+            "--outfiles cannot be used with --dir. It only applies to single-file conversions."
+        )
+
     if args.mdufile:
         convert_with_mdu_file(args)
     elif args.extoldfile is not None:
         convert_with_extold_file(args)
     elif args.dir is not None:
         recursive_converter(
-            args.dir, backup=args.backup, remove_legacy=args.remove_legacy
+            args.dir,
+            backup=args.backup,
+            remove_legacy=args.remove_legacy,
+            debug=args.debug_mode,
         )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
@@ -166,6 +203,8 @@ def convert_with_mdu_file(args: Namespace):
         ext_file_user=(args.outfiles[0] if args.outfiles else None),
         inifield_file_user=(args.outfiles[1] if args.outfiles else None),
         structure_file_user=(args.outfiles[2] if args.outfiles else None),
+        path_style=args.path_style,
+        debug=args.debug_mode,
     )
     convert(converter, args)
 
@@ -182,6 +221,8 @@ def convert_with_extold_file(args: Namespace):
         ext_file=(args.outfiles[0] if args.outfiles else None),
         inifield_file=(args.outfiles[1] if args.outfiles else None),
         structure_file=(args.outfiles[2] if args.outfiles else None),
+        path_style=args.path_style,
+        debug=args.debug_mode,
     )
     convert(converter, args)
 

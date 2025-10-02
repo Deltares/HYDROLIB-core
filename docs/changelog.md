@@ -1,3 +1,21 @@
+## 0.9.7 (2025-09-26)
+
+### Fix
+
+- **path**: resolve root dir with UNC-compatible relative paths (#950)
+- **path**: resolve root dir with UNC-compatible relative paths (#950)
+
+### Refactor
+
+- **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
+- **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
+
+## 0.9.6 (2025-09-04)
+
+### Fix
+
+- fix pyyaml import error (#939)
+
 ## 0.9.5 (2025-09-03)
 
 ### Fix
