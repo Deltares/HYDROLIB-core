@@ -154,19 +154,6 @@ Misellaneous:
      ShiptXY: shiptxy
      MovingStationXY: movingstationxy
 
-Tracer:
-    # the prefixes specify that any quantity starting with these values is treated as a tracer
-    quantity_names:
-        TracerBnd: tracerbnd
-        InitialTracer: initialtracer
-        SedFracBnd: sedfracbnd
-    prefixes:
-        - tracerbnd
-        - sedfracbnd
-        - initialtracer
-        - initialsedfrac
-        - initialverticalsigmasedfracprofile
-
 FileType:
     TimeSeries: 1
     TimeSeriesMagnitudeAndDirection: 2
