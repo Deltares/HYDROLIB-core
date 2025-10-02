@@ -407,11 +407,11 @@ class ExtOldForcing(BaseModel):
         )
         only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
-        # if factor.value is not None and not quantity.value.startswith(
-        #     ExtOldTracerQuantity.InitialTracer
-        # ):
-        #     error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
-        #     raise ValueError(error)
+        if factor.value is not None and not quantity.value.startswith(
+            ExtOldTracerQuantity.InitialTracer
+        ):
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+            raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
         only_allowed_when(averagingtype, method, ExtOldMethod.AveragingSpace)

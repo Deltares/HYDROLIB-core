@@ -162,7 +162,7 @@ class TestValidateQuantity:
             )
 
         exp_error = (
-            f"QUANTITY '{quantity.value}' should be appended with a tracer name."
+            f"QUANTITY '{quantity.value}' should be appended with a valid prefix name."
         )
         assert exp_error in str(error.value)
 
@@ -181,7 +181,7 @@ class TestValidateQuantity:
             )
 
         assert (
-            f"QUANTITY '{quantity_str}' should be appended with a tracer name."
+            f"QUANTITY '{quantity_str}' should be appended with a valid prefix name."
             in str(error.value)
         )
 
