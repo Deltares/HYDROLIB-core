@@ -55,6 +55,8 @@ ExtOldTracerQuantity = StrEnum(
     "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity_names"]
 )
 
+TRACER_QUANTITY_VALID_PREFIXES = tuple(QUANTITIES_DATA["Tracer"]["prefixes"])
+
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
     QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
 )
@@ -145,6 +147,12 @@ ALL_QUANTITIES = (
     | QUANTITIES_DATA["SourceSink"]
     | QUANTITIES_DATA["Structure"]
     | QUANTITIES_DATA["Misellaneous"]
+)
+
+ALL_PREFIXES = (
+    BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+    | INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+    | TRACER_QUANTITY_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
