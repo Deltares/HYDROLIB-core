@@ -741,25 +741,28 @@ class MDUParser:
             section = self.get_section(section_name)
             # put the inifield file at the end of the geometry section
             line_number = section.last_key_value_line_index + 1
+            self.insert_line(line.content, line_number)
         else:
             # if the field already exists, we update it
             # find the line number of the existing field
             existing_field_line_num = self.find_keyword_lines(field_name)
             line = Line(self.content[existing_field_line_num])
-            line = line.update_value(file_name)
-            line.recenter_comments(self.file_style_properties.comments_position)
-            line.recenter_equal_sign(
-                equal_sign_position=equal_sign_position,
-                leading_spaces=leading_spaces,
-            )
+            # only update the value if there was no value.
+            if not line.value:
+                line = line.update_value(file_name)
+                line.recenter_comments(self.file_style_properties.comments_position)
+                line.recenter_equal_sign(
+                    equal_sign_position=equal_sign_position,
+                    leading_spaces=leading_spaces,
+                )
 
-            if existing_field_line_num is not None:
-                # remove the old line
-                self.content.pop(existing_field_line_num)
+                if existing_field_line_num is not None:
+                    # remove the old line
+                    self.content.pop(existing_field_line_num)
 
-            line_number = existing_field_line_num
+                line_number = existing_field_line_num
 
-        self.insert_line(line.content, line_number)
+                self.insert_line(line.content, line_number)
 
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
