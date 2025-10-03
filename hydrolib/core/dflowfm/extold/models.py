@@ -286,35 +286,59 @@ class ExtOldForcing(BaseModel):
 
         return values_copy
 
-    @validator("quantity", pre=True)
-    def validate_quantity(cls, value):
-        if isinstance(value, ExtOldQuantity):
-            return value
+    @classmethod
+    def validate_quantity_prefix(
+        cls, lower_value: str, value_str: str
+    ) -> Optional[str]:
+        """Checks if the provided quantity string starts with any known valid prefix.
 
-        def raise_error_prefix_name(quantity: str):
-            raise ValueError(
-                f"QUANTITY '{quantity}' should be appended with a valid prefix name."
-            )
+        If the quantity matches a prefix, ensures it is followed by a name.
+        Returns the full quantity string if valid, otherwise None.
 
-        value_str = str(value)
-        lower_value = value_str.lower()
+        Args:
+            lower_value (str): The quantity string in lowercase.
+            value_str (str): The original quantity string.
 
+        Raises:
+            ValueError: If the quantity is only the prefix without a name.
+        """
+        value = None
         for prefix in ALL_PREFIXES:
             if lower_value.startswith(prefix):
                 n = len(prefix)
                 if n == len(value_str):
-                    raise_error_prefix_name(prefix)
-                return prefix + value_str[n:]
+                    raise ValueError(
+                        f"QUANTITY '{value_str}' should be appended with a valid name."
+                    )
+                value = prefix + value_str[n:]
+                break
 
-        if lower_value in list(ExtOldQuantity):
-            return ExtOldQuantity(lower_value)
-        elif value_str in list(ExtOldQuantity):
-            return ExtOldQuantity(value_str)
+        return value
 
-        supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
-        raise ValueError(
-            f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
-        )
+    @validator("quantity", pre=True)
+    def validate_quantity(cls, value):
+        if not isinstance(value, ExtOldQuantity):
+            found = False
+            value_str = str(value)
+            lower_value = value_str.lower()
+
+            quantity = cls.validate_quantity_prefix(lower_value, value_str)
+            if quantity is not None:
+                value = quantity
+                found = True
+            elif lower_value in list(ExtOldQuantity):
+                value = ExtOldQuantity(lower_value)
+                found = True
+            elif value_str in list(ExtOldQuantity):
+                value = ExtOldQuantity(value_str)
+                found = True
+
+            if not found:
+                supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
+                raise ValueError(
+                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
+                )
+        return value
 
     @validator("operand", pre=True)
     def validate_operand(cls, value):
