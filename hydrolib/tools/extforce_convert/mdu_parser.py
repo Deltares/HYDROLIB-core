@@ -773,7 +773,8 @@ class MDUParser:
 
         Notes:
             - The method adds the IniFieldFile entry at the end of the geometry section.
-            - If the inifield file already exists, it will not be updated.
+            - If the IniFieldFile entry exists with a non-empty value, it is left unchanged
+            if it exists but has no value, it is populated with the new value.
         """
         self.update_file_entry(INIFIELD_FILE_LINE, file_name, "geometry")
 
