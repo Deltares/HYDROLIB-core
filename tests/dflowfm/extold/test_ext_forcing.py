@@ -161,9 +161,7 @@ class TestValidateQuantity:
                 quantity=quantity, filename="", filetype=9, method=1, operand="O"
             )
 
-        exp_error = (
-            f"QUANTITY '{quantity}' should be appended with a valid prefix name."
-        )
+        exp_error = f"QUANTITY '{quantity}' should be appended with a valid name."
         assert exp_error in str(error.value)
 
     def test_with_invalid_quantity_string_raises_value_error(
