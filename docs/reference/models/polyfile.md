@@ -2,7 +2,7 @@
 
 ## Overview
 
-Polyline (.pli/.pliz) and polygon (.pol) files are basic spatial input files for a [D-Flow FM](glossary.md#d-flow-fm) model to select particular locations, and are used in various other input files. The `hydrolib.core.dflowfm.polyfile` module provides functionality for reading, writing, and manipulating these files.
+Polyline (.pli/.pliz) and polygon (.pol) files are basic spatial input files for a [D-Flow FM](../glossary.md#d-flow-fm) model to select particular locations, and are used in various other input files. The `hydrolib.core.dflowfm.polyfile` module provides functionality for reading, writing, and manipulating these files.
 
 Polyline files consist of one or more blocks, each containing:
 1. An optional description (lines starting with `*`)

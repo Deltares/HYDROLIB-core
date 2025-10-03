@@ -101,7 +101,7 @@ class Boundary(INIBasedModel):
 
     @root_validator
     @classmethod
-    def check_nodeid_or_locationfile_present(cls, values: Dict):
+    def check_nodeid_or_locationfile_present(cls, values: Dict) -> Dict:
         """
         Verifies that either nodeid or locationfile properties have been set.
 

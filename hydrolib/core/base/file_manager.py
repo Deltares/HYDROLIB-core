@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Generator, List, Optional, Tuple, Union
 
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
@@ -734,7 +734,7 @@ class FileLoadContext:
 
 
 @contextmanager
-def file_load_context():
+def file_load_context() -> Generator[FileLoadContext, None, None]:
     """file_load_context.
 
     Provide a FileLoadingContext. If none has been created in the context of

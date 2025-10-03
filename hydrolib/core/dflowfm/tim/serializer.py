@@ -26,15 +26,18 @@ class TimSerializer:
         Serialize timeseries data to a file in .tim format.
 
         Args:
-            path (Path): The path to the destination .tim file.
-            data (Dict[str, List[Any]]): A dictionary with keys "comments" and "timeseries".
-            - "comments" represents comments found at the start of the file.
-            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
-                - "time" is a time as a string.
-                - "data" is data as a list of strings.
-
-            config (TimSerializerConfig): The serialization configuration settings.
-            save_settings (ModelSaveSettings): The save settings to be used.
+            path (Path):
+                The path to the destination .tim file.
+            data (Dict[str, List[Any]]):
+                A dictionary with keys "comments" and "timeseries".
+                - "comments" represents comments found at the start of the file.
+                - "timeseries" is a list of dictionaries with the key as "time" and values as "data".
+                    - "time" is a time as a string.
+                    - "data" is data as a list of strings.
+            config (TimSerializerConfig):
+                The serialization configuration settings.
+            save_settings (ModelSaveSettings):
+                The save settings to be used.
         """
         path.parent.mkdir(parents=True, exist_ok=True)
 

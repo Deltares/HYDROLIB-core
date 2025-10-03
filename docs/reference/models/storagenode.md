@@ -1,6 +1,6 @@
 # Storage node .ini files
 The storage node module provides the specific logic for accessing storage node files
-for a [D-Flow FM](glossary.md#d-flow-fm) model.
+for a [D-Flow FM](../glossary.md#d-flow-fm) model.
 
 Generic parsing and serializing functionality comes from the generic hydrolib.core.dflowfm.ini modules.
 

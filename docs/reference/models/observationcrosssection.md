@@ -7,7 +7,7 @@ Observation cross section files come in two flavours:
 
 # Observation cross section .ini files
 The `obscrosssection` module provides the specific logic for accessing observation cross section .ini files.
-for a [D-Flow FM](glossary.md#d-flow-fm) model.
+for a [D-Flow FM](../glossary.md#d-flow-fm) model.
 
 Generic parsing and serializing functionality comes from the generic hydrolib.core.dflowfm.ini modules.
 
