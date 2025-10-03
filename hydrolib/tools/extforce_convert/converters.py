@@ -706,6 +706,9 @@ class SourceSinkConverter(BaseConverter):
             for key in ext_file_quantity_list
             if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
+        # Remove duplicate quantities that might be present in the list due to quantities that share names,
+        # therefore occurring multiple times in the external forcing file.
+        # TimeSeries columns are expected to be linked to unique quantity names.
         required_quantities_from_ext = list(set(required_quantities_from_ext))
 
         # check if the temperature and salinity are present in the external file
