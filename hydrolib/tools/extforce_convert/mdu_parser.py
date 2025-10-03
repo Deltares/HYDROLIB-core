@@ -769,13 +769,8 @@ class MDUParser:
                 The path to the new inifield file to set
 
         Notes:
-            - The method adds the IniFieldFile entry at the end-1 of the geometry section, as some mdu files has
-            decorative lines (i.e. "#=========") around the section headers, and the function that detects the end of
-            the section detects the end of the section by looking for the next section header. and then this
-            decorative line will be considered as the last line in the section and adding the inifield file at
-            end_ind - 1 will leave an empty line between the actual last line in the section and the newely added
-            inifield file line.
-            - If the inifield file already exists, it will be updated with the new file name.
+            - The method adds the IniFieldFile entry at the end of the geometry section.
+            - If the inifield file already exists, it will not be updated.
         """
         self.update_file_entry(INIFIELD_FILE_LINE, file_name, "geometry")
 
