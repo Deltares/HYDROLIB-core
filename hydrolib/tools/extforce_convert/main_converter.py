@@ -295,7 +295,12 @@ class ExternalForcingConverter:
         """Convert the old external forcing file to a new format files.
 
         Notes:
-            When the output files exist, output will be appended to them.
+            - When the output files exist, output will be appended to them.
+            - If there is a new external forcing file, the converted quantities will be appended to it, otherwise a new
+            external forcing file will be created.
+            - If there is an initial field file, the converted quantities will be appended to it, otherwise a new initial
+            field file will be created in the same directory as the mdu file, and the `IniFieldFile` field will be
+            added/updated in the geometry section in the mdu file.
 
         Returns:
             Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
@@ -520,15 +525,12 @@ class ExternalForcingConverter:
         )
 
     def _update_mdu_file(self):
-        """Update the FM model with the new external forcings, initial fields and structures files.
-
-        - The FM model will be saved with a postfix added to the filename.
-        - The original FM model will be backed up.
+        """Update the MDU file with the new external forcings files, initial fields and structures files.
 
         Notes:
-            -If the `fm_model` was not read correctly due to `Unknown keywords` the function will update the field of the
-            `ExtForceFileNew` in the mdu file, and store the new content in the `mdu_info` dictionary under a
-            `new_mdu_content` key.
+            - The MDU file is updated in place.
+            - The InifieldFile and StructureFile blocks are updated only if they were not present in the file,
+            if not, they will be created in the same directory as the mdu file.
         """
         num_ext_model_quantities = (
             len(self.ext_model.boundary)
