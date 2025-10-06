@@ -2,7 +2,7 @@ from typing import Dict, List, Literal, Optional
 from unittest.mock import Mock
 
 import pytest
-from pydantic import ValidationError, field_validator, model_validator
+from pydantic import ValidationError, ValidationInfo, field_validator, model_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.models import BaseModel
@@ -458,9 +458,8 @@ class TestDateTimeValidator:
         ],
     )
     def test_mdu_datetime_valid_format_returns_value(self, date_value):
-        field = Mock(spec=ModelField)
-        field.name = "timefield"
-        field.alias = "timeField"
+        field = Mock(spec=ValidationInfo)
+        field.field_name = "timefield"
 
         returned_value = validate_datetime_string(date_value, field)
 
@@ -484,14 +483,13 @@ class TestDateTimeValidator:
         ],
     )
     def test_mdu_datetime_invalid_format_raises_valueerror(self, date_value):
-        field = Mock(spec=ModelField)
-        field.name = "timefield"
-        field.alias = "timeField"
+        field = Mock(spec=ValidationInfo)
+        field.field_name = "timefield"
 
         with pytest.raises(ValueError) as exc_err:
             validate_datetime_string(date_value, field)
 
         assert (
-            f"Invalid datetime string for {field.alias}: '{date_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+            f"Invalid datetime string for {field.field_name}: '{date_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
             in str(exc_err.value)
         )

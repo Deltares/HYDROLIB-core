@@ -768,6 +768,6 @@ class TestTime:
 
         for invalid_field in invalid_fields:
             assert (
-                f"Invalid datetime string for {invalid_field}: '{time_dict[invalid_field]}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+                f"Invalid datetime string for {invalid_field.lower()}: '{time_dict[invalid_field]}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
                 in str(exc_err.value)
             )
