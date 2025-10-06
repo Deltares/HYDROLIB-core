@@ -3,7 +3,7 @@
 
 from typing import Callable, List, Optional, Sequence, Tuple
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 
@@ -47,7 +47,7 @@ class Point(BaseModel):
 
     x: float
     y: float
-    z: Optional[float]
+    z: Optional[float] = None
     data: Sequence[float]
 
     def _get_identifier(self, data: dict) -> Optional[str]:
@@ -74,7 +74,7 @@ class PolyObject(BaseModel):
             The points describing this PolyObject, structured according to the Metadata
     """
 
-    description: Optional[Description]
+    description: Optional[Description] = None
     metadata: Metadata
     points: List[Point]
 

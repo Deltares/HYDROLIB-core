@@ -42,7 +42,7 @@ class TestLinkFileSerializer:
         reference_file = reference_files_dir.joinpath("rr/serialize_link.tp")
 
         data = dict(
-            link=[create_link_values(), create_link_values(), create_link_values()]
+            brch=[create_link_values(), create_link_values(), create_link_values()]
         )
         LinkFileSerializer.serialize(
             output_file,

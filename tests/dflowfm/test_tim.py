@@ -107,23 +107,23 @@ class TestTimModel:
         assert len(model.timeseries) == 0
         assert model.as_dataframe().empty
 
-    def test_initialize_with_quantities_names(self, input_files_dir: Path):
+    def test_initialize_with_quantities_names(self):
         """
         Test Initializing the `TimModel` from a file and provide the name of the quantities in the files.
 
         The initialization should initizline the super class `BaseModel` with the file path.
         The `quantities_names` is used to initialize the `quantities_names` attribute.
         """
-        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        path = test_input_dir / "tim/single_data_for_timeseries.tim"
         model = TimModel(path, quantities_names=["a"])
         assert model.quantities_names == ["a"]
         assert len(model.timeseries) == 13
 
-    def test_get_units(self, input_files_dir: Path):
+    def test_get_units(self):
         """
         Test the `get_units` method. The method should return the units of the quantities in the timeseries.
         """
-        path = input_files_dir / "tim/single_data_for_timeseries.tim"
+        path = test_input_dir / "tim/single_data_for_timeseries.tim"
         model = TimModel(path, quantities_names=["discharge"])
         assert model.get_units() == ["m3/s"]
         model.quantities_names = ["waterlevel"]
@@ -233,7 +233,7 @@ class TestTimModel:
                         {"time": 30, "data": [1.5, 2.6, 3.7]},
                     ],
                 },
-                "value is not a valid float",
+                "Input should be a valid number",
                 id="value is not a valid float",
             ),
             pytest.param(

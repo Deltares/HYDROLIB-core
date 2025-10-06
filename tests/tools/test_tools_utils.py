@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 import yaml
-from pydantic.v1.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import (
