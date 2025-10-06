@@ -103,6 +103,21 @@ class Boundary(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
+    def rename_return_time_field(cls, values: Dict) -> Dict:
+        """Renames the deprecated return_time field to returnTime.
+
+        Args:
+            values (Dict): Dictionary with raw, unvalidated input values.
+
+        Returns:
+            Dict: Validated dictionary of values for Boundary.
+        """
+        if "return_time" in values:
+            values["returnTime"] = values.pop("return_time")
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
     def check_nodeid_or_locationfile_present(cls, values: Dict) -> Dict:
         """Verifies that either nodeid or locationfile properties have been set.
 

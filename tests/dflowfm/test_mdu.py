@@ -20,6 +20,7 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     Restart,
     Sediment,
+    Time,
     VegetationModelNr,
 )
 from hydrolib.core.dflowfm.net.models import Network
@@ -713,3 +714,60 @@ class TestOutput:
             assert len(excluded_fields) > 0
             for excluded_field in excluded_fields:
                 assert excluded_field not in str(exc_err.value)
+
+
+class TestTime:
+    @pytest.mark.parametrize(
+        "start_date_time, stop_date_time",
+        [
+            ("20230101", "20231231"),
+            ("20230101000000", "20231231235959"),
+        ],
+        ids=["YYYYmmdd", "YYYYmmddHHMMSS"],
+    )
+    def test_mdu_datetime_yyyymmdd_format(self, start_date_time, stop_date_time):
+        time_dict = {
+            "startDateTime": start_date_time,
+            "stopDateTime": stop_date_time,
+        }
+        time = Time(**time_dict)
+        assert time.startdatetime == start_date_time
+        assert time.stopdatetime == stop_date_time
+
+    @pytest.mark.parametrize(
+        "start_date_time, stop_date_time, invalid_fields",
+        [
+            ("invalid", "invalid", ["startDateTime", "stopDateTime"]),
+            ("20230101", "invalid", ["stopDateTime"]),
+            ("invalid", "20231231", ["startDateTime"]),
+            ("2023010100000", "20231231235959", ["startDateTime"]),
+            ("202301010000000", "20231231235959", ["startDateTime"]),
+            ("20230101000000", "2023123123595", ["stopDateTime"]),
+            ("20230101000000", "202312312359599", ["stopDateTime"]),
+        ],
+        ids=[
+            "both_invalid",
+            "stop_invalid",
+            "start_invalid",
+            "start_too_short",
+            "start_too_long",
+            "stop_too_short",
+            "stop_too_long",
+        ],
+    )
+    def test_mdu_datetime_invalid_format_raises_valueerror(
+        self, start_date_time, stop_date_time, invalid_fields
+    ):
+        time_dict = {
+            "startDateTime": start_date_time,
+            "stopDateTime": stop_date_time,
+        }
+
+        with pytest.raises(ValueError) as exc_err:
+            Time(**time_dict)
+
+        for invalid_field in invalid_fields:
+            assert (
+                f"Invalid datetime string for {invalid_field}: '{time_dict[invalid_field]}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+                in str(exc_err.value)
+            )
