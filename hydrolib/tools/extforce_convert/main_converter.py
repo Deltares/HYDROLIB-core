@@ -22,7 +22,12 @@ from hydrolib.core.dflowfm.inifield.models import (
     ParameterField,
 )
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.extforce_convert.converters import ConverterFactory
+from hydrolib.tools.extforce_convert.converters import (
+    BoundaryConditionConverter,
+    ConverterFactory,
+    InitialConditionConverter,
+    SourceSinkConverter,
+)
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -367,7 +372,7 @@ class ExternalForcingConverter:
         converter_class.root_dir = self.root_dir
 
         # only the SourceSink converter needs the quantities' list
-        if converter_class.__class__.__name__ == "SourceSinkConverter":
+        if isinstance(converter_class, SourceSinkConverter):
 
             if self.temperature_salinity_data is None:
                 raise ValueError(
@@ -381,13 +386,13 @@ class ExternalForcingConverter:
             new_quantity_block = converter_class.convert(
                 forcing, quantities, start_time=start_time, **temp_salinity_mdu
             )
-        elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
+        elif isinstance(converter_class, BoundaryConditionConverter):
             if self.temperature_salinity_data is None:
                 raise ValueError("FM model is required to convert Boundary conditions.")
             else:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
-        elif converter_class.__class__.__name__ == "InitialConditionConverter":
+        elif isinstance(converter_class, InitialConditionConverter):
             new_quantity_block = converter_class.convert(
                 forcing, self.inifield_model.filepath, self.extold_model.filepath
             )
@@ -607,6 +612,11 @@ def recursive_converter(
                 converter = ExternalForcingConverter.from_mdu(path, debug=debug)
                 _, _, _ = converter.update()
                 converter.save(backup=backup)
+                if remove_legacy:
+                    converter.clean()
+            except Exception as e:
+                if not suppress_errors:
+                    print(f"Error processing {path}: {e}")
                 if remove_legacy:
                     converter.clean()
             except Exception as e:
