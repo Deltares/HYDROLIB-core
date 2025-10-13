@@ -89,6 +89,26 @@ def start_time():
             },
             id="no_temperature_no_salinity",
         ),
+        pytest.param(
+            Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
+            ["sourcesink_discharge", "initialtracer_anyname", "initialtracer_anyname"],
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "initialtracer_anyname": [4.0] * 5,
+            },
+            id="2_unique_quantities_in_ext_file_list",
+        ),
+        pytest.param(
+            Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
+            [
+                "sourcesink_discharge",
+                "temperature",
+                "initialtracer_anyname",
+                "initialtracer_anyname",
+            ],
+            None,
+            id="3_unique_quantities_in_ext_file_list_missing_column_in_tim",
+        ),
     ],
 )
 def test_parse_tim_model(
@@ -171,6 +191,24 @@ def test_parse_tim_model(
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="temp_from_mdu_temp_salinity_from_ext",
+        ),
+        pytest.param(
+            tim_file,
+            [
+                "sourcesink_discharge",
+                "salinity",
+                "temperature",
+                "initialtracer_anyname",
+                "initialtracer_anyname",
+            ],
+            {"salinity": False, "temperature": True},
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "sourcesink_salinitydelta": [2.0] * 5,
+                "sourcesink_temperaturedelta": [3.0] * 5,
+                "initialtracer_anyname": [4.0] * 5,
+            },
+            id="duplicate_quantities_in_ext_list",
         ),
     ],
 )

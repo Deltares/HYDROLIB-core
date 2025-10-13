@@ -34,6 +34,7 @@ with (EXT_OLD_MODULE_PATH / "old-external-forcing-data.yaml").open("r") as fh:
 with (EXT_OLD_MODULE_PATH / "header.txt").open("r") as f:
     HEADER = f.read()
 
+INITIALTRACER = "initialtracer"
 
 FILETYPE_FILEMODEL_MAPPING = {
     1: TimModel,
@@ -49,11 +50,6 @@ FILETYPE_FILEMODEL_MAPPING = {
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
 }
-
-
-ExtOldTracerQuantity = StrEnum(
-    "ExtOldTracerQuantity", QUANTITIES_DATA["Tracer"]["quantity_names"]
-)
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
     QUANTITIES_DATA["BoundaryCondition"]["prefixes"]
@@ -145,6 +141,11 @@ ALL_QUANTITIES = (
     | QUANTITIES_DATA["SourceSink"]
     | QUANTITIES_DATA["Structure"]
     | QUANTITIES_DATA["Misellaneous"]
+)
+
+ALL_PREFIXES = (
+    BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
+    + INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
@@ -285,38 +286,59 @@ class ExtOldForcing(BaseModel):
 
         return values_copy
 
+    @classmethod
+    def validate_quantity_prefix(
+        cls, lower_value: str, value_str: str
+    ) -> Optional[str]:
+        """Checks if the provided quantity string starts with any known valid prefix.
+
+        If the quantity matches a prefix, ensures it is followed by a name.
+        Returns the full quantity string if valid, otherwise None.
+
+        Args:
+            lower_value (str): The quantity string in lowercase.
+            value_str (str): The original quantity string.
+
+        Raises:
+            ValueError: If the quantity is only the prefix without a name.
+        """
+        value = None
+        for prefix in ALL_PREFIXES:
+            if lower_value.startswith(prefix):
+                n = len(prefix)
+                if n == len(value_str):
+                    raise ValueError(
+                        f"QUANTITY '{value_str}' should be appended with a valid name."
+                    )
+                value = prefix + value_str[n:]
+                break
+
+        return value
+
     @validator("quantity", pre=True)
     def validate_quantity(cls, value):
-        if isinstance(value, ExtOldQuantity):
-            return value
+        if not isinstance(value, ExtOldQuantity):
+            found = False
+            value_str = str(value)
+            lower_value = value_str.lower()
 
-        def raise_error_tracer_name(quantity: ExtOldTracerQuantity):
-            raise ValueError(
-                f"QUANTITY '{quantity}' should be appended with a tracer name."
-            )
+            quantity = cls.validate_quantity_prefix(lower_value, value_str)
+            if quantity is not None:
+                value = quantity
+                found = True
+            elif lower_value in list(ExtOldQuantity):
+                value = ExtOldQuantity(lower_value)
+                found = True
+            elif value_str in list(ExtOldQuantity):
+                value = ExtOldQuantity(value_str)
+                found = True
 
-        if isinstance(value, ExtOldTracerQuantity):
-            raise_error_tracer_name(value)
-
-        value_str = str(value)
-        lower_value = value_str.lower()
-
-        for tracer_quantity in ExtOldTracerQuantity:
-            if lower_value.startswith(tracer_quantity):
-                n = len(tracer_quantity)
-                if n == len(value_str):
-                    raise_error_tracer_name(tracer_quantity)
-                return tracer_quantity + value_str[n:]
-
-        if lower_value in list(ExtOldQuantity):
-            return ExtOldQuantity(lower_value)
-        elif value_str in list(ExtOldQuantity):
-            return ExtOldQuantity(value_str)
-
-        supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
-        raise ValueError(
-            f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
-        )
+            if not found:
+                supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
+                raise ValueError(
+                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
+                )
+        return value
 
     @validator("operand", pre=True)
     def validate_operand(cls, value):
@@ -402,10 +424,8 @@ class ExtOldForcing(BaseModel):
         )
         only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
 
-        if factor.value is not None and not quantity.value.startswith(
-            ExtOldTracerQuantity.InitialTracer
-        ):
-            error = f"{factor.alias} only allowed when {quantity.alias} starts with {ExtOldTracerQuantity.InitialTracer}"
+        if factor.value is not None and not quantity.value.startswith(INITIALTRACER):
+            error = f"{factor.alias} only allowed when {quantity.alias} starts with {INITIALTRACER}"
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
