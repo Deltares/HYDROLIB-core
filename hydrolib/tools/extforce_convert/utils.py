@@ -203,8 +203,8 @@ def convert_interpolation_data(
 
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
-    inifile_path: Path | None = None,
-    ext_old_path: Path | None = None,
+    inifile_path: Union[Path, None] = None,
+    ext_old_path: Union[Path, None] = None,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 

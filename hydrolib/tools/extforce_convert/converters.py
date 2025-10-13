@@ -473,8 +473,8 @@ class InitialConditionConverter(BaseConverter):
     def convert(
         self,
         forcing: ExtOldForcing,
-        inifile_path: Path | None = None,
-        ext_old_path: Path | None = None,
+        inifile_path: Union[Path, None] = None,
+        ext_old_path: Union[Path, None] = None,
     ) -> InitialField:
         """Convert the Initial condition quantities.
 
