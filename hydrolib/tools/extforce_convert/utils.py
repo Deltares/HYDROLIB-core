@@ -223,7 +223,7 @@ def create_initial_cond_and_parameter_input_dict(
     )
     forcing_path = (
         forcing.filename.filepath
-        if inifile_path is None
+        if inifile_path is None or forcing.filename.filepath.is_absolute()
         else os.path.relpath(
             ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
         )
