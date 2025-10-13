@@ -1,5 +1,6 @@
 """Utility functions for converting old external forcing files to new format."""
 
+import os
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
@@ -202,6 +203,8 @@ def convert_interpolation_data(
 
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
+    inifile_path: Path | None = None,
+    ext_old_path: Path | None = None,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
@@ -218,9 +221,16 @@ def create_initial_cond_and_parameter_input_dict(
         if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
         else "bedrockSurfaceElevation"
     )
+    forcing_path = (
+        forcing.filename.filepath
+        if inifile_path is None
+        else os.path.relpath(
+            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
+        )
+    )
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(forcing.filename.filepath),
+        "datafile": DiskOnlyFileModel(forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":

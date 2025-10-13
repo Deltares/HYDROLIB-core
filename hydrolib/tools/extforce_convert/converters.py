@@ -470,7 +470,12 @@ class InitialConditionConverter(BaseConverter):
         """Initial condition converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> InitialField:
+    def convert(
+        self,
+        forcing: ExtOldForcing,
+        inifile_path: Path | None = None,
+        ext_old_path: Path | None = None,
+    ) -> InitialField:
         """Convert the Initial condition quantities.
 
         Convert an old external forcing block with Initial condition data to a IinitialField
@@ -500,7 +505,9 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(
+            forcing, inifile_path, ext_old_path
+        )
         try:
             new_block = InitialField(**data)
         except Exception as e:

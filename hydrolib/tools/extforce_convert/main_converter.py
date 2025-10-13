@@ -387,6 +387,10 @@ class ExternalForcingConverter:
             else:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
+        elif converter_class.__class__.__name__ == "InitialConditionConverter":
+            new_quantity_block = converter_class.convert(
+                forcing, self.inifield_model.filepath, self.extold_model.filepath
+            )
         else:
             new_quantity_block = converter_class.convert(forcing)
 
