@@ -617,8 +617,3 @@ def recursive_converter(
             except Exception as e:
                 if not suppress_errors:
                     print(f"Error processing {path}: {e}")
-                if remove_legacy:
-                    converter.clean()
-            except Exception as e:
-                if not suppress_errors:
-                    print(f"Error processing {path}: {e}")
