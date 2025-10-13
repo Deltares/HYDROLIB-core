@@ -221,9 +221,14 @@ def create_initial_cond_and_parameter_input_dict(
         if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
         else "bedrockSurfaceElevation"
     )
+    update_path_condition = (
+        inifile_path is None
+        or ext_old_path is None
+        or forcing.filename.filepath.is_absolute()
+    )
     forcing_path = (
         forcing.filename.filepath
-        if inifile_path is None or forcing.filename.filepath.is_absolute()
+        if update_path_condition
         else os.path.relpath(
             ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
         )
