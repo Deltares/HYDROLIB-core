@@ -93,7 +93,7 @@ nav:
       - DSD (2023):
           - tutorials/dsd_2023/instructions.md
           - tutorials/dsd_2023/demo/demo.ipynb
-          - tutorials/dsd_2023/magdalena_workflow/magdalena_workbook.ipynb
+          - tutorials/dsd_2023/magdalena_workflow/magdalena_workflow.ipynb
       - DSD (2022):
           - tutorials/dsd_2022_demo/demo_dsd.ipynb
       - External Forcing Conversion:
