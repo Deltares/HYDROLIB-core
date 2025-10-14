@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
@@ -43,9 +44,8 @@ class TestInitialConditionConverter:
             external_forcing_converter._legacy_files = []
             external_forcing_converter._mdu_parser = mdu_parser
         initial_field = external_forcing_converter._convert_forcing(forcing)
-        assert (
-            initial_field.datafile._source_file_path
-            == Path("iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz").resolve()
+        assert initial_field.datafile == DiskOnlyFileModel(
+            "iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz"
         )
 
 
