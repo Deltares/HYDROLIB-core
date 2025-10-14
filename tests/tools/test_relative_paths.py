@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing
-from hydrolib.tools.extforce_convert.converters import InitialConditionConverter
+from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
+from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class TestInitialConditionConverter:
@@ -24,9 +26,23 @@ class TestInitialConditionConverter:
             "operand": "O",
         }
         forcing = ExtOldForcing(**forcing_data)
-        initial_field = InitialConditionConverter().convert(
-            forcing, initialfield_path, ext_old_path
-        )
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.__init__",
+            return_value=None,
+        ):
+            extold_model = MagicMock(spec=ExtOldModel)
+            extold_model.filepath = ext_old_path
+            inifield_model = MagicMock(spec=IniFieldModel)
+            inifield_model.filepath = initialfield_path
+            mdu_parser = MagicMock(spec=MDUParser)
+            mdu_parser.loaded_fm_data = {"pathsRelativeToParent": True}
+            external_forcing_converter = ExternalForcingConverter("old-ext-file.ext")
+            external_forcing_converter._inifield_model = inifield_model
+            external_forcing_converter._extold_model = extold_model
+            external_forcing_converter._root_dir = tmp_path
+            external_forcing_converter._legacy_files = []
+            external_forcing_converter._mdu_parser = mdu_parser
+        initial_field = external_forcing_converter._convert_forcing(forcing)
         assert (
             initial_field.datafile._source_file_path
             == Path("iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz").resolve()
