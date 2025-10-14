@@ -33,6 +33,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
+    path_relative_to_parent,
 )
 
 
@@ -393,9 +394,13 @@ class ExternalForcingConverter:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
         elif isinstance(converter_class, InitialConditionConverter):
-            new_quantity_block = converter_class.convert(
-                forcing, self.inifield_model.filepath, self.extold_model.filepath
+            forcing_path = path_relative_to_parent(
+                forcing,
+                self.inifield_model.filepath,
+                self.extold_model.filepath,
+                self.mdu_parser,
             )
+            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 

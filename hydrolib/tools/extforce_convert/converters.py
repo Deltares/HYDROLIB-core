@@ -470,12 +470,7 @@ class InitialConditionConverter(BaseConverter):
         """Initial condition converter constructor."""
         super().__init__()
 
-    def convert(
-        self,
-        forcing: ExtOldForcing,
-        inifile_path: Union[Path, None] = None,
-        ext_old_path: Union[Path, None] = None,
-    ) -> InitialField:
+    def convert(self, forcing: ExtOldForcing, forcing_path: Path) -> InitialField:
         """Convert the Initial condition quantities.
 
         Convert an old external forcing block with Initial condition data to a IinitialField
@@ -505,9 +500,7 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = create_initial_cond_and_parameter_input_dict(
-            forcing, inifile_path, ext_old_path
-        )
+        data = create_initial_cond_and_parameter_input_dict(forcing, forcing_path)
         try:
             new_block = InitialField(**data)
         except Exception as e:
@@ -525,7 +518,7 @@ class ParametersConverter(BaseConverter):
         """Parameter converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> ParameterField:
+    def convert(self, forcing: ExtOldForcing, forcing_path: Path) -> ParameterField:
         """Parameter converter.
 
         Convert an old external forcing block to a parameter forcing block
@@ -556,7 +549,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing, forcing_path)
         new_block = ParameterField(**data)
 
         return new_block

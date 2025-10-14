@@ -201,10 +201,49 @@ def convert_interpolation_data(
     return data
 
 
+def path_relative_to_parent(
+    forcing: ExtOldForcing,
+    inifile_path: Path,
+    ext_old_path: Path,
+    mdu_parser: Any,
+) -> Path:
+    """Resolve the path of the forcing file relative to the parent file if needed.
+
+    Args:
+        forcing (ExtOldForcing):
+            The old forcing block with the filename to resolve.
+        inifile_path (Path):
+            The path to the inifields file.
+        ext_old_path (Path):
+            The path to the old external forcing file.
+        resolve_parent (bool):
+            Whether to resolve the path relative to the parent file.
+            if True, the path is resolved relative to the parent file.
+            if False, the path is returned as is because it is relative to the mdu file.
+
+    Returns:
+        Path: The resolved path of the forcing file.
+    """
+    if mdu_parser is None:
+        resolve_parent = False
+    else:
+        resolve_parent = mdu_parser.loaded_fm_data.get("pathsRelativeToParent", False)
+    update_path_condition = (
+        forcing.filename.filepath.is_absolute() or not resolve_parent
+    )
+    forcing_path = (
+        forcing.filename.filepath
+        if update_path_condition
+        else os.path.relpath(
+            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
+        )
+    )
+    return forcing_path
+
+
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
-    inifile_path: Union[Path, None] = None,
-    ext_old_path: Union[Path, None] = None,
+    forcing_path: Path,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
@@ -220,18 +259,6 @@ def create_initial_cond_and_parameter_input_dict(
         forcing.quantity
         if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
         else "bedrockSurfaceElevation"
-    )
-    update_path_condition = (
-        inifile_path is None
-        or ext_old_path is None
-        or forcing.filename.filepath.is_absolute()
-    )
-    forcing_path = (
-        forcing.filename.filepath
-        if update_path_condition
-        else os.path.relpath(
-            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
-        )
     )
     block_data = {
         "quantity": quantity_name,
