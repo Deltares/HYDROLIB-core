@@ -2602,6 +2602,21 @@ setuptools = ">=18.5"
 test = ["mkdocs-macros-test", "mkdocs-material", "packaging", "requests-html"]
 
 [[package]]
+name = "mkdocs-panzoom-plugin"
+version = "0.4.2"
+description = "MkDocs Plugin to enable pan & zoom on images and mermaid diagrams"
+optional = false
+python-versions = ">=3.7"
+groups = ["docs"]
+files = [
+    {file = "mkdocs_panzoom_plugin-0.4.2-py3-none-any.whl", hash = "sha256:6f3f4f29baef73ad4310535427e92ee4f71075bb3900b7a7756110c095de3dc5"},
+    {file = "mkdocs_panzoom_plugin-0.4.2.tar.gz", hash = "sha256:ad43b983a56c02002db322b318d799d51b51507ef343f38fc71071e5af7e2ff4"},
+]
+
+[package.dependencies]
+mkdocs = ">=1.0.4"
+
+[[package]]
 name = "mkdocs-table-reader-plugin"
 version = "3.1.0"
 description = "MkDocs plugin to directly insert tables from files into markdown."
@@ -5047,4 +5062,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "3ce618ab8d28d5de0781cd1228f1b7cd716717902dfd23e66adc48631f6e6c8f"
+content-hash = "1ab585fbe1d50fe71d92417bb1ea1aa425d7a3c9ef5d12022f689065f1106cb8"
