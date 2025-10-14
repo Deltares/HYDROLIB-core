@@ -72,12 +72,12 @@ extra_css:
   - stylesheets/extra.css
 
 nav:
-  - Home: "index.md"
+  - Home: index.md
   - How-to:
       - Installation:
-          - Pip install: "guides/setup.md"
-          - Developer container: "guides/devcontainers.md"
-          - Poetry: "guides/poetry.md"
+          - Pip install: guides/setup.md
+          - Developer container: guides/devcontainers.md
+          - Poetry: guides/poetry.md
       - Contributing: guides/contributing.md
       - Developer Guide: guides/developers-guide.md
       - Documentation: guides/documentation.md
