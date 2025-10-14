@@ -1,7 +1,36 @@
 import os
 from pathlib import Path
 
+from hydrolib.core.dflowfm.extold.models import ExtOldForcing
+from hydrolib.tools.extforce_convert.converters import InitialConditionConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+
+
+class TestInitialConditionConverter:
+    def test_convert_different_locations(self, tmp_path: Path):
+        ext_old_path = (
+            tmp_path
+            / "tests/testdata/tools/relative-path-model/model-inputs/computation/test/tba/old-ext-file.ext"
+        )
+        initialfield_path = (
+            tmp_path
+            / "tests/testdata/tools/relative-path-model/model-inputs/initial-conditions/test/initial-condition.ini"
+        )
+        forcing_data = {
+            "QUANTITY": "initialsalinity",
+            "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
+            "filetype": 7,
+            "method": 5,
+            "operand": "O",
+        }
+        forcing = ExtOldForcing(**forcing_data)
+        initial_field = InitialConditionConverter().convert(
+            forcing, initialfield_path, ext_old_path
+        )
+        assert (
+            initial_field.datafile._source_file_path
+            == Path("iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz").resolve()
+        )
 
 
 class TestSourceSinks:
