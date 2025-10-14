@@ -75,15 +75,13 @@ nav:
   - Home: "index.md"
   - How-to:
       - Installation:
-          - "pip install": "guides/setup.md"
-          - "Developer container": "guides/devcontainers.md"
-          - "Local clone + Poetry": "guides/poetry.md"
-      - Contributing:
-          - "guides/contributing.md"
-      - Documentation:
-          - "guides/documentation.md"
-      - Support:
-          - guides/gettinghelp.md
+          - Pip install: "guides/setup.md"
+          - Developer container: "guides/devcontainers.md"
+          - Poetry: "guides/poetry.md"
+      - Contributing: guides/contributing.md
+      - Developer Guide: guides/developers-guide.md
+      - Documentation: guides/documentation.md
+      - Support: guides/getting-help.md
   - Tutorials:
       - tutorials/tutorials.md
       - tutorials/build_basic_model.ipynb
