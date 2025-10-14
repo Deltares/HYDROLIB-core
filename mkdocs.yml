@@ -128,4 +128,4 @@ nav:
           - reference/rr/meteo.md
       - GUI:
           - reference/gui.md
-  - Release notes: "releasenotes.md"
+  - Release notes: "changelog.md"
