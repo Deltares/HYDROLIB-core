@@ -90,6 +90,14 @@ nav:
       - tutorials/loading_and_saving_a_model.md
       - tutorials/dataframe_handling.md
       - tutorials/plotting_a_network.md
+      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena.ipynb
+      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena_with_answers.ipynb
+      - DSD (2023):
+          - tutorials/dsd_2023/instructions.md
+          - tutorials/dsd_2023/demo/demo.ipynb
+          - tutorials/dsd_2023/magdalena_workflow/magdalena_workbook.ipynb
+      - DSD (2022):
+          - tutorials/dsd_2022_demo/demo_dsd.ipynb
       - External Forcing Conversion:
           - tutorials/extforce-convert/external_forcing_conversion.md
   - Topics:
