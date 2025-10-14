@@ -114,6 +114,7 @@ nav:
       - D-Flow FM:
           - Models:
               - reference/models/mdu.md
+              - reference/models/extold.md
               - reference/models/net.md
               - reference/models/ext.md
               - reference/models/forcing.md
@@ -127,6 +128,7 @@ nav:
               - reference/models/xyz.md
               - reference/models/observationpoint.md
               - reference/models/observationcrosssection.md
+              - reference/models/tim.md
           - DIMR:
               - reference/models/dimr.md
       - RainfallRunoff:
