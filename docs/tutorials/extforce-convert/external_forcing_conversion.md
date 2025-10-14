@@ -17,7 +17,7 @@ This document provides detailed usage instructions, argument descriptions, and e
     - [`--outfiles` / `-o`](#-outfiles-o)
     - [Backups](#backups)
         - [`--no-backup`](#-no-backup)
-    - [`--remove-legacy-files` / `-r`](#-remove-legacy-files--r)
+    - [`--remove-legacy-files` / `-r`](#-remove-legacy-files-r)
     - [`--path-style {unix,windows}`](#-path-style-unixwindows)
 - [Examples](#examples)
 - [Additional Notes](#additional-notes)
