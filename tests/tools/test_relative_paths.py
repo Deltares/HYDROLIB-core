@@ -35,7 +35,7 @@ class TestInitialConditionConverter:
             inifield_model = MagicMock(spec=IniFieldModel)
             inifield_model.filepath = initialfield_path
             mdu_parser = MagicMock(spec=MDUParser)
-            mdu_parser.loaded_fm_data = {"pathsRelativeToParent": True}
+            mdu_parser.loaded_fm_data = {"General": {"pathsRelativeToParent": True}}
             external_forcing_converter = ExternalForcingConverter("old-ext-file.ext")
             external_forcing_converter._inifield_model = inifield_model
             external_forcing_converter._extold_model = extold_model
