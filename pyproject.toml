@@ -77,6 +77,10 @@ mkdocstrings-python = "^1.13.0"
 mkdocs-mermaid2-plugin = "^1.2.1"
 
 
+[tool.poetry.group.examples.dependencies]
+geopandas = "^1.1.1"
+
+
 [tool.commitizen]
 name = "cz_conventional_commits"
 version = "0.9.7"
