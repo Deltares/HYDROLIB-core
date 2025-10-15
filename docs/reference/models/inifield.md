@@ -1,6 +1,6 @@
 # Initial and parameter field files
 The inifield file contains the initial conditions and spatial parameter input fields
-for a [D-Flow FM](glossary.md#d-flow-fm) model.
+for a [D-Flow FM](../glossary.md#d-flow-fm) model.
 
 Generic parsing and serializing functionality comes from the generic hydrolib.core.dflowfm.ini modules.
 

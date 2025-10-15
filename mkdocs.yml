@@ -23,7 +23,7 @@ theme:
 plugins:
   - search
   - autorefs
-
+  - mkdocs-jupyter
   - macros:
       module_name: docs/include/mkdocs-macros/main
   - table-reader
@@ -72,24 +72,30 @@ extra_css:
   - stylesheets/extra.css
 
 nav:
-  - Home: "index.md"
+  - Home: index.md
   - How-to:
       - Installation:
-          - "pip install": "guides/setup.md"
-          - "Developer container": "guides/devcontainers.md"
-          - "Local clone + Poetry": "guides/poetry.md"
-      - Contributing:
-          - "guides/contributing.md"
-      - Documentation:
-          - "guides/documentation.md"
-      - Support:
-          - guides/gettinghelp.md
+          - Pip install: guides/setup.md
+          - Developer container: guides/devcontainers.md
+          - Poetry: guides/poetry.md
+      - Contributing: guides/contributing.md
+      - Developer Guide: guides/developers-guide.md
+      - Documentation: guides/documentation.md
+      - Support: guides/getting-help.md
   - Tutorials:
       - tutorials/tutorials.md
       - tutorials/build_basic_model.ipynb
       - tutorials/loading_and_saving_a_model.md
       - tutorials/dataframe_handling.md
       - tutorials/plotting_a_network.md
+      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena.ipynb
+      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena_with_answers.ipynb
+      - DSD (2023):
+          - tutorials/dsd_2023/instructions.md
+          - tutorials/dsd_2023/demo/demo.ipynb
+          - tutorials/dsd_2023/magdalena_workflow/magdalena_workflow.ipynb
+      - DSD (2022):
+          - tutorials/dsd_2022_demo/demo_dsd.ipynb
       - External Forcing Conversion:
           - tutorials/extforce-convert/external_forcing_conversion.md
   - Topics:
@@ -108,6 +114,7 @@ nav:
       - D-Flow FM:
           - Models:
               - reference/models/mdu.md
+              - reference/models/extold.md
               - reference/models/net.md
               - reference/models/ext.md
               - reference/models/forcing.md
@@ -121,6 +128,7 @@ nav:
               - reference/models/xyz.md
               - reference/models/observationpoint.md
               - reference/models/observationcrosssection.md
+              - reference/models/tim.md
           - DIMR:
               - reference/models/dimr.md
       - RainfallRunoff:
@@ -128,4 +136,4 @@ nav:
           - reference/rr/meteo.md
       - GUI:
           - reference/gui.md
-  - Release notes: "releasenotes.md"
+  - Release notes: "changelog.md"
