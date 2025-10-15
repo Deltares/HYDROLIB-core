@@ -17,7 +17,17 @@ from hydrolib.tools.extforce_convert.main_converter import (
 
 
 def valid_file(path_str):
-    """Check if the file exists, has a .mdu extension, and return its path."""
+    """Validate an .mdu file path and return it as a Path object.
+
+    Args:
+        path_str: The path to the MDU file as provided on the command line.
+
+    Returns:
+        pathlib.Path: The validated path to the file.
+
+    Raises:
+        argparse.ArgumentTypeError: If the file does not exist or does not have a .mdu extension.
+    """
     path = Path(path_str)
     if not str(path).lower().endswith(".mdu"):
         raise ArgumentTypeError(f"File must have a .mdu extension: {path}")
@@ -28,7 +38,18 @@ def valid_file(path_str):
 
 
 def _validator(path_str, extension):
-    """Validate that the file exists and has the given extension."""
+    """Validate that a file exists and matches the expected extension.
+
+    Args:
+        path_str: The path to the file to validate.
+        extension: The required file extension (including the dot), e.g. ".ext".
+
+    Returns:
+        pathlib.Path: The validated file path.
+
+    Raises:
+        argparse.ArgumentTypeError: If the file does not exist or the extension does not match.
+    """
     path = Path(path_str)
     if not path.exists():
         raise ArgumentTypeError(f"File not found: {path}")
@@ -38,12 +59,29 @@ def _validator(path_str, extension):
 
 
 def valid_file_with_extension(extension):
-    """Create a validator for files with a specific extension for argparse."""
+    """Create a validator callable for argparse that enforces a file extension.
+
+    Args:
+        extension: The required file extension (including the dot), e.g. ".mdu".
+
+    Returns:
+        Callable[[str], pathlib.Path]: A function that validates a path string and returns a Path.
+    """
     return lambda path_str: _validator(path_str, extension)
 
 
 def valid_dir(path_str):
-    """Validate that the path exists and is a directory."""
+    """Validate that the given path exists and is a directory.
+
+    Args:
+        path_str: The path to validate.
+
+    Returns:
+        pathlib.Path: The validated directory path.
+
+    Raises:
+        argparse.ArgumentTypeError: If the path does not exist or is not a directory.
+    """
     path = Path(path_str)
     if not path.exists():
         raise ArgumentTypeError(f"Directory not found: {path}")
@@ -53,6 +91,11 @@ def valid_dir(path_str):
 
 
 def _get_parser() -> argparse.ArgumentParser:
+    """Create and configure the argument parser for the extforce_convert CLI.
+
+    Returns:
+        argparse.ArgumentParser: The configured argument parser.
+    """
     parser = argparse.ArgumentParser(
         prog="extforce_convert",
         description="Convert D-Flow FM legacy external forcings files to current external forcings file/initial fields file/structures file.",
@@ -137,26 +180,35 @@ def _get_parser() -> argparse.ArgumentParser:
 
 def main(args=None):
     """
-    Entry point for extforce_convert tool.
+    Entry point for the extforce_convert command-line tool.
 
     CLI argument combinations:
 
     Required (mutually exclusive, pick one):
-      --mdufile MDUFILE         Use MDUFILE to determine input/output files automatically.
-      --extoldfile EXTOLDFILE   Convert a specific legacy external forcing file.
-      --dir DIR                 Recursively find and convert all .mdu files in DIR.
+      --mdufile, -m MDUFILE         Use MDUFILE to determine input/output files automatically.
+      --extoldfile, -e EXTOLDFILE   Convert a specific legacy external forcing file.
+      --dir, -d DIR                 Recursively find and convert all .mdu files in DIR.
 
     Optional:
-      --outfiles EXTFILE INIFIELDFILE STRUCTUREFILE
+      --outfiles, -o EXTFILE INIFIELDFILE STRUCTUREFILE
                                Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
-      --no-backup              Do not create a backup of overwritten files (mutually exclusive).
-      --remove-legacy-files -r Remove legacy/old files (e.g. .tim) after conversion.
-      --verbose, -v            Print diagnostic information.
-      --version                Print version and exit.
+      --no-backup                  Do not create a backup of overwritten files.
+      --remove-legacy-files, -r    Remove legacy/old files (e.g. .tim) after conversion.
+      --debug-mode                 Convert only supported quantities; leave unsupported quantities in the legacy external forcing file (default: False).
+      --verbose, -v                Print diagnostic information.
+      --version                    Print version and exit.
       --path-style {unix,windows}
-                               Handle absolute paths in input/output files according to the specified style (unix/windows).
-                               Use this when converting models that use unix paths but you are running the converter
-                               on a Windows machine and the opposite.
+                                 Handle absolute paths in input/output files according to the specified style (unix/windows).
+                                 Use this when converting models that use unix paths but you are running the converter
+                                 on a Windows machine, or the opposite.
+
+    Args:
+      args: Optional list of argument strings to parse instead of sys.argv. Useful for testing.
+
+    Notes:
+      - `--outfiles` cannot be used together with `--dir`.
+      - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
+        legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
     Example usages:
       extforce_convert --mdufile model.mdu
