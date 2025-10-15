@@ -227,8 +227,8 @@ def path_relative_to_parent(
     if mdu_parser is None:
         resolve_parent = False
     else:
-        general_mdu = mdu_parser.loaded_fm_data.get("General", {})
-        resolve_parent = general_mdu.get("pathsRelativeToParent", False)
+        general_mdu = mdu_parser.loaded_fm_data.get("general", {})
+        resolve_parent = general_mdu.get("pathsrelativetoparent", "0") == "1"
     update_path_condition = (
         forcing.filename.filepath.is_absolute() or not resolve_parent
     )
