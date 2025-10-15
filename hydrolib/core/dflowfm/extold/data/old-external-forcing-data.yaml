@@ -104,6 +104,8 @@ Parameter:
         WaqParameter: waqparameter
         WaqSegmentFunction: waqsegmentfunction
         WaqSegmentNumber: waqsegmentnumber
+    prefixes:
+        - waqfunction
 
 
 InitialConditions:
