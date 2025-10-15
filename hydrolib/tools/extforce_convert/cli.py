@@ -16,11 +16,12 @@ from hydrolib.tools.extforce_convert.main_converter import (
 )
 
 
-def valid_file(path_str):
+def valid_file(path_str: str):
     """Validate an .mdu file path and return it as a Path object.
 
     Args:
-        path_str (str): The path to the MDU file as provided on the command line.
+        path_str (str):
+            The path to the MDU file as provided on the command line.
 
     Returns:
         Path: The validated path to the file.
@@ -37,12 +38,14 @@ def valid_file(path_str):
     return path
 
 
-def _validator(path_str, extension):
+def _validator(path_str: str, extension: str):
     """Validate that a file exists and matches the expected extension.
 
     Args:
-        path_str (str): The path to the file to validate.
-        extension (str): The required file extension (including the dot), e.g. ".ext".
+        path_str (str):
+            The path to the file to validate.
+        extension (str):
+            The required file extension (including the dot), e.g. ".ext".
 
     Returns:
         Path: The validated file path.
@@ -58,14 +61,16 @@ def _validator(path_str, extension):
     return path
 
 
-def valid_file_with_extension(extension):
+def valid_file_with_extension(extension: str):
     """Create a validator callable for argparse that enforces a file extension.
 
     Args:
-        extension (str): The required file extension (including the dot), e.g. ".mdu".
+        extension (str):
+            The required file extension (including the dot), e.g. ".mdu".
 
     Returns:
-        Callable[[str], Path]: A function that validates a path string and returns a Path when invoked.
+        Callable[[str], Path]:
+            A function that validates a path string and returns a Path when invoked.
 
     Raises:
         argparse.ArgumentTypeError: Raised by the returned validator if the provided path does not exist or
@@ -74,7 +79,7 @@ def valid_file_with_extension(extension):
     return lambda path_str: _validator(path_str, extension)
 
 
-def valid_dir(path_str):
+def valid_dir(path_str: str):
     """Validate that the given path exists and is a directory.
 
     Args:
