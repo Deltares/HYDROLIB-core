@@ -215,7 +215,7 @@ def main(args=None):
                                  on a Windows machine, or the opposite.
 
     Args:
-      args: Optional list of argument strings to parse instead of sys.argv. Useful for testing.
+      args (Optional[List[str]]): Optional list of argument strings to parse instead of sys.argv. Useful for testing.
 
     Notes:
       - `--outfiles` cannot be combined with `--dir`.
@@ -241,7 +241,7 @@ def main(args=None):
             ```shell
             >>> extforce_convert --mdufile model.mdu --path-style unix # doctest: +SKIP
             ```
-        - invalid flags what will raise an error:
+        - invalid flags combinations that will raise an error:
             --outfiles only works with single-file modes, not with --dir
             ```shell
             >>> extforce_convert --dir ./models --outfiles a.ext b.ini c.str # doctest: +SKIP
