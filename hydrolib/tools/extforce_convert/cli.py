@@ -220,21 +220,27 @@ def main(args=None):
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
     Examples (valid):
-      # Use an MDU file and let the tool determine I/O automatically
-      extforce_convert --mdufile model.mdu
-
-      # Convert a specific legacy .ext and explicitly set output filenames
-      extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
-
-      # Recursively convert all models in a directory (no --outfiles here)
-      extforce_convert --dir ./models --no-backup --remove-legacy-files
-
-      # Convert with explicit path style handling
-      extforce_convert --mdufile model.mdu --path-style unix
-
-    Examples (invalid and will error):
-      # --outfiles only works with single-file modes, not with --dir
-      extforce_convert --dir ./models --outfiles a.ext b.ini c.str
+        - Use an MDU file and let the tool determine I/O automatically
+            ```shell
+            >>> extforce_convert --mdufile model.mdu # doctest: +SKIP
+            ```
+        - Convert a specific legacy .ext and explicitly set output filenames
+            ```shell
+            >>> extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str # doctest: +SKIP
+            ```
+        - Recursively convert all models in a directory (no --outfiles here)
+            ```shell
+            >>> extforce_convert --dir ./models --no-backup --remove-legacy-files # doctest: +SKIP
+            ```
+        - Convert with explicit path style handling
+            ```shell
+            >>> extforce_convert --mdufile model.mdu --path-style unix # doctest: +SKIP
+            ```
+        - invalid flags what will raise an error:
+            --outfiles only works with single-file modes, not with --dir
+            ```shell
+            >>> extforce_convert --dir ./models --outfiles a.ext b.ini c.str # doctest: +SKIP
+            ```
     """
     parser = _get_parser()
     args = parser.parse_args(args)
