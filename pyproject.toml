@@ -75,6 +75,11 @@ jupyter = "^1.0.0"
 notebook = "^7.3.2"
 mkdocstrings-python = "^1.13.0"
 mkdocs-mermaid2-plugin = "^1.2.1"
+mkdocs-panzoom-plugin = "^0.4.2"
+
+
+[tool.poetry.group.examples.dependencies]
+geopandas = "*"
 
 
 [tool.commitizen]
