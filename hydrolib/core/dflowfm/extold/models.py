@@ -86,6 +86,7 @@ ExtOldBoundaryQuantity = StrEnum(
 ExtOldParametersQuantity = StrEnum(
     "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]["quantity_names"]
 )
+PARAMETER_QUANTITIES_VALID_PREFIXES = tuple(QUANTITIES_DATA["Parameter"]["prefixes"])
 ExtOldMeteoQuantity = StrEnum(
     "ExtOldMeteoQuantity",
     QUANTITIES_DATA["Meteo"]["quantity_names"],
@@ -146,6 +147,7 @@ ALL_QUANTITIES = (
 ALL_PREFIXES = (
     BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
     + INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
+    + PARAMETER_QUANTITIES_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
