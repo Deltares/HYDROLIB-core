@@ -20,10 +20,10 @@ def valid_file(path_str):
     """Validate an .mdu file path and return it as a Path object.
 
     Args:
-        path_str: The path to the MDU file as provided on the command line.
+        path_str (str): The path to the MDU file as provided on the command line.
 
     Returns:
-        pathlib.Path: The validated path to the file.
+        Path: The validated path to the file.
 
     Raises:
         argparse.ArgumentTypeError: If the file does not exist or does not have a .mdu extension.
@@ -41,11 +41,11 @@ def _validator(path_str, extension):
     """Validate that a file exists and matches the expected extension.
 
     Args:
-        path_str: The path to the file to validate.
-        extension: The required file extension (including the dot), e.g. ".ext".
+        path_str (str): The path to the file to validate.
+        extension (str): The required file extension (including the dot), e.g. ".ext".
 
     Returns:
-        pathlib.Path: The validated file path.
+        Path: The validated file path.
 
     Raises:
         argparse.ArgumentTypeError: If the file does not exist or the extension does not match.
@@ -62,10 +62,14 @@ def valid_file_with_extension(extension):
     """Create a validator callable for argparse that enforces a file extension.
 
     Args:
-        extension: The required file extension (including the dot), e.g. ".mdu".
+        extension (str): The required file extension (including the dot), e.g. ".mdu".
 
     Returns:
-        Callable[[str], pathlib.Path]: A function that validates a path string and returns a Path.
+        Callable[[str], Path]: A function that validates a path string and returns a Path when invoked.
+
+    Raises:
+        argparse.ArgumentTypeError: Raised by the returned validator if the provided path does not exist or
+            does not end with the required extension.
     """
     return lambda path_str: _validator(path_str, extension)
 
@@ -74,10 +78,10 @@ def valid_dir(path_str):
     """Validate that the given path exists and is a directory.
 
     Args:
-        path_str: The path to validate.
+        path_str (str): The path to validate.
 
     Returns:
-        pathlib.Path: The validated directory path.
+        Path: The validated directory path.
 
     Raises:
         argparse.ArgumentTypeError: If the path does not exist or is not a directory.
@@ -209,10 +213,10 @@ def main(args=None):
       args: Optional list of argument strings to parse instead of sys.argv. Useful for testing.
 
     Notes:
-      - --outfiles cannot be combined with --dir.
-      - --outfiles applies only to a single conversion target (from --mdufile or --extoldfile) and must provide three
+      - `--outfiles` cannot be combined with `--dir`.
+      - `--outfiles` applies only to a single conversion target (from --mdufile or --extoldfile) and must provide three
         filenames, in this order: EXTFILE INIFIELDFILE STRUCTUREFILE.
-      - When --debug-mode is provided, only supported quantities are converted; unsupported quantities remain in the
+      - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
     Examples (valid):
