@@ -26,6 +26,7 @@ from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
     InitialConditionConverter,
+    ParametersConverter,
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -393,7 +394,9 @@ class ExternalForcingConverter:
             else:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
-        elif isinstance(converter_class, InitialConditionConverter):
+        elif isinstance(
+            converter_class, (InitialConditionConverter, ParametersConverter)
+        ):
             forcing_path = path_relative_to_parent(
                 forcing,
                 self.inifield_model.filepath,
