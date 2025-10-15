@@ -192,6 +192,9 @@ def main(args=None):
     Optional:
       --outfiles, -o EXTFILE INIFIELDFILE STRUCTUREFILE
                                Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
+                               Note: requires exactly three paths and is only valid for single-file conversions
+                               (i.e., when using --mdufile or --extoldfile). Using --outfiles with --dir is invalid
+                               and will result in an error.
       --no-backup                  Do not create a backup of overwritten files.
       --remove-legacy-files, -r    Remove legacy/old files (e.g. .tim) after conversion.
       --debug-mode                 Convert only supported quantities; leave unsupported quantities in the legacy external forcing file (default: False).
@@ -206,15 +209,28 @@ def main(args=None):
       args: Optional list of argument strings to parse instead of sys.argv. Useful for testing.
 
     Notes:
-      - `--outfiles` cannot be used together with `--dir`.
-      - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
+      - --outfiles cannot be combined with --dir.
+      - --outfiles applies only to a single conversion target (from --mdufile or --extoldfile) and must provide three
+        filenames, in this order: EXTFILE INIFIELDFILE STRUCTUREFILE.
+      - When --debug-mode is provided, only supported quantities are converted; unsupported quantities remain in the
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
-    Example usages:
+    Examples (valid):
+      # Use an MDU file and let the tool determine I/O automatically
       extforce_convert --mdufile model.mdu
+
+      # Convert a specific legacy .ext and explicitly set output filenames
       extforce_convert --extoldfile old.ext --outfiles new.ext new.ini new.str
+
+      # Recursively convert all models in a directory (no --outfiles here)
       extforce_convert --dir ./models --no-backup --remove-legacy-files
+
+      # Convert with explicit path style handling
       extforce_convert --mdufile model.mdu --path-style unix
+
+    Examples (invalid and will error):
+      # --outfiles only works with single-file modes, not with --dir
+      extforce_convert --dir ./models --outfiles a.ext b.ini c.str
     """
     parser = _get_parser()
     args = parser.parse_args(args)
