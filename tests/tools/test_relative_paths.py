@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from hydrolib.core.basemodel import DiskOnlyFileModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
@@ -10,7 +12,9 @@ from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class TestInitialConditionConverter:
-    def test_convert_different_locations(self, tmp_path: Path):
+
+    @pytest.mark.parametrize("quantity", ["initialsalinity", "AdvectionType"])
+    def test_convert_different_locations(self, tmp_path: Path, quantity: str):
         ext_old_path = (
             tmp_path
             / "tests/testdata/tools/relative-path-model/model-inputs/computation/test/tba/old-ext-file.ext"
@@ -20,7 +24,7 @@ class TestInitialConditionConverter:
             / "tests/testdata/tools/relative-path-model/model-inputs/initial-conditions/test/initial-condition.ini"
         )
         forcing_data = {
-            "QUANTITY": "initialsalinity",
+            "QUANTITY": quantity,
             "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
             "filetype": 7,
             "method": 5,
