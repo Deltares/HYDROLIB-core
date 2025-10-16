@@ -356,7 +356,10 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
     variables were accessed with hard-coded names instead of via a mapping. This test
     only succeeds if the mapping is used (fixed in the PR linked to the issue).
     """
-    nc_original = test_input_dir / "e02/f152_1d2d_projectmodels_rhu/c04_DHydamo-MGB-initialisation/fm/moergestels_broek_net.nc"
+    nc_original = (
+        test_input_dir
+        / "e02/f152_1d2d_projectmodels_rhu/c04_DHydamo-MGB-initialisation/fm/moergestels_broek_net.nc"
+    )
     nc_renamed = tmp_path / "moergestels_broek_renamed_net.nc"
 
     ds = xr.open_dataset(nc_original)
@@ -367,7 +370,7 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
         "link1d2d_ids": "links_ids",
         "link1d2d_long_names": "links_long_names",
         "link1d2d_contact_type": "links_contact_type",
-        }
+    }
     ds = ds.rename_vars(rename_dict)
     ds.links.attrs["contact_type"] = "links_contact_type"
     ds.links.attrs["contact_ids"] = "links_ids"
