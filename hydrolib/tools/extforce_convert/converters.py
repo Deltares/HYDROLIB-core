@@ -521,7 +521,7 @@ class ParametersConverter(BaseConverter):
         """Parameter converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing, forcing_path: Path) -> ParameterField:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
         """Parameter converter.
 
         Convert an old external forcing block to a parameter forcing block
@@ -534,10 +534,13 @@ class ParametersConverter(BaseConverter):
         to the updated format and specifications.
 
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
             ParameterField:
@@ -552,7 +555,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing, forcing_path)
+        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
         new_block = ParameterField(**data)
 
         return new_block
