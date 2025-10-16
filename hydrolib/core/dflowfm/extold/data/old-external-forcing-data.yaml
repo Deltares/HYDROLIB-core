@@ -100,7 +100,6 @@ Parameter:
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
-        WaqFunction: waqfunction
         WaqParameter: waqparameter
         WaqSegmentFunction: waqsegmentfunction
         WaqSegmentNumber: waqsegmentnumber
