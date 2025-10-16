@@ -380,7 +380,8 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
     ds.close()
 
     # open the network with the non-default link1d2d variable names
-    _ = Network.from_file(nc_renamed)
+    network = Network.from_file(nc_renamed)
+    assert (network._link1d2d.link1d2d_contact_type == 3).all()
 
 
 @pytest.mark.parametrize("filepath", cases)
