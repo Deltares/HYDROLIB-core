@@ -364,7 +364,8 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
 
     ds = xr.open_dataset(nc_original)
 
-    # rename the link1d2d to links, this breaks if the link1d2d_contact_type variable is hard-coded, but still works if the variable is used via the mapping.
+    # rename the link1d2d to links, this breaks if the link1d2d_contact_type variable
+    # is hard-coded, but still works if the variable is used via the mapping.
     rename_dict = {
         "link1d2d": "links",
         "link1d2d_ids": "links_ids",
