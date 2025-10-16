@@ -216,10 +216,9 @@ def path_relative_to_parent(
             The path to the inifields file.
         ext_old_path (Path):
             The path to the old external forcing file.
-        resolve_parent (bool):
-            Whether to resolve the path relative to the parent file.
-            if True, the path is resolved relative to the parent file.
-            if False, the path is returned as is because it is relative to the mdu file.
+        mdu_parser (MDUParser):
+            The MDU parser object containing the loaded MDU data.
+            This holds the "pathsRelativeToParent" setting.
 
     Returns:
         Path: The resolved path of the forcing file.
