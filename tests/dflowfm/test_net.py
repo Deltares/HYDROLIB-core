@@ -360,7 +360,7 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
     nc_renamed = tmp_path / "moergestels_broek_renamed_net.nc"
 
     ds = xr.open_dataset(nc_original)
-    # ds_filtered = ds.filter_by_attrs(cf_role="mesh_topology_contact")
+
     # rename the link1d2d to links, this breaks if the link1d2d_contact_type variable is hard-coded, but still works if the variable is used via the mapping.
     rename_dict = {
         "link1d2d": "links",
@@ -374,7 +374,7 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
     ds.links.attrs["contact_long_names"] = "links_long_names"
     ds.to_netcdf(nc_renamed)
     ds.close()
-    
+
     # open the network with the non-default link1d2d variable names
     _ = Network.from_file(nc_renamed)
 
