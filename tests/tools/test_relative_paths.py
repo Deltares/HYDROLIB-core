@@ -15,13 +15,9 @@ class TestInitialConditionConverter:
 
     @pytest.mark.parametrize("quantity", ["initialsalinity", "AdvectionType"])
     def test_convert_different_locations(self, tmp_path: Path, quantity: str):
-        ext_old_path = (
-            tmp_path
-            / "tests/testdata/tools/relative-path-model/model-inputs/computation/test/tba/old-ext-file.ext"
-        )
+        ext_old_path = tmp_path / "tests/computation/test/tba/old-ext-file.ext"
         initialfield_path = (
-            tmp_path
-            / "tests/testdata/tools/relative-path-model/model-inputs/initial-conditions/test/initial-condition.ini"
+            tmp_path / "tests/initial-conditions/test/initial-condition.ini"
         )
         forcing_data = {
             "QUANTITY": quantity,
