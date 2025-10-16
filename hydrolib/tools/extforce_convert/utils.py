@@ -244,13 +244,15 @@ def path_relative_to_parent(
 
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
-    forcing_path: Path,
+    new_forcing_path: Path,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
     Args:
         forcing: [ExtOldForcing]
             External forcing block from the old external forcings file.
+        new_forcing_path: [Path]
+            The path to the new forcing file.
 
     Returns:
         Dict[str, str]:
@@ -263,7 +265,7 @@ def create_initial_cond_and_parameter_input_dict(
     )
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(forcing_path),
+        "datafile": DiskOnlyFileModel(new_forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":
