@@ -1,5 +1,6 @@
 """Utility functions for converting old external forcing files to new format."""
 
+import os
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
@@ -200,14 +201,57 @@ def convert_interpolation_data(
     return data
 
 
+def path_relative_to_parent(
+    forcing: ExtOldForcing,
+    inifile_path: Path,
+    ext_old_path: Path,
+    mdu_parser: Any,
+) -> Path:
+    """Resolve the path of the forcing file relative to the parent file if needed.
+
+    Args:
+        forcing (ExtOldForcing):
+            The old forcing block with the filename to resolve.
+        inifile_path (Path):
+            The path to the inifields file.
+        ext_old_path (Path):
+            The path to the old external forcing file.
+        mdu_parser (MDUParser):
+            The MDU parser object containing the loaded MDU data.
+            This holds the "pathsRelativeToParent" setting.
+
+    Returns:
+        Path: The resolved path of the forcing file.
+    """
+    if mdu_parser is None:
+        resolve_parent = False
+    else:
+        general_mdu = mdu_parser.loaded_fm_data.get("general", {})
+        resolve_parent = general_mdu.get("pathsrelativetoparent", "0") == "1"
+    update_path_condition = (
+        forcing.filename.filepath.is_absolute() or not resolve_parent
+    )
+    forcing_path = (
+        forcing.filename.filepath
+        if update_path_condition
+        else os.path.relpath(
+            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
+        )
+    )
+    return forcing_path
+
+
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
+    new_forcing_path: Path,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
     Args:
         forcing: [ExtOldForcing]
             External forcing block from the old external forcings file.
+        new_forcing_path: [Path]
+            The path to the new forcing file.
 
     Returns:
         Dict[str, str]:
@@ -220,7 +264,7 @@ def create_initial_cond_and_parameter_input_dict(
     )
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(forcing.filename.filepath),
+        "datafile": DiskOnlyFileModel(new_forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":
