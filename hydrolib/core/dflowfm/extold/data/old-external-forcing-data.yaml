@@ -101,10 +101,11 @@ Parameter:
         # Missing in the converter
         FloeDiameter: floe_diameter
         WaqParameter: waqparameter
-        WaqSegmentFunction: waqsegmentfunction
-        WaqSegmentNumber: waqsegmentnumber
     prefixes:
+        # Missing in the converter
         - waqfunction
+        - waqsegmentfunction
+        - waqsegmentnumber
 
 
 InitialConditions:
