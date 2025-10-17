@@ -91,6 +91,7 @@ ExtOldMeteoQuantity = StrEnum(
     "ExtOldMeteoQuantity",
     QUANTITIES_DATA["Meteo"]["quantity_names"],
 )
+ExtOldLateralQuantity = StrEnum("ExtOldLateralQuantity", QUANTITIES_DATA["Lateral"])
 
 
 INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
@@ -142,6 +143,7 @@ ALL_QUANTITIES = (
     | QUANTITIES_DATA["SourceSink"]
     | QUANTITIES_DATA["Structure"]
     | QUANTITIES_DATA["Misellaneous"]
+    | QUANTITIES_DATA["Lateral"]
 )
 
 ALL_PREFIXES = (

@@ -152,6 +152,12 @@ Structure:
     valve1D: valve1d
 
 
+Lateral:
+    LateralDischarge: lateraldischarge
+    LateralDischarge1D: lateraldischarge1d
+    LateralDischarge2D: lateraldischarge2d
+
+
 Misellaneous:
      ShiptXY: shiptxy
      MovingStationXY: movingstationxy
