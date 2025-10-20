@@ -297,7 +297,7 @@ class ExtOldForcing(BaseModel):
 
     @classmethod
     def validate_quantity_prefix(
-            cls, lower_value: str, value_str: str
+        cls, lower_value: str, value_str: str
     ) -> Optional[str]:
         """Checks if the provided quantity string starts with any known valid prefix.
 
@@ -387,9 +387,7 @@ class ExtOldForcing(BaseModel):
     @model_validator(mode="after")
     def validate_factor(self):
         quantity = self.quantity
-        if self.factor is not None and not str(quantity).startswith(
-                INITIALTRACER
-        ):
+        if self.factor is not None and not str(quantity).startswith(INITIALTRACER):
             raise ValueError(
                 f"FACTOR only allowed when QUANTITY starts with {INITIALTRACER}"
             )
