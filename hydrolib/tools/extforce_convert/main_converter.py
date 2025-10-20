@@ -323,7 +323,7 @@ class ExternalForcingConverter:
             total=num_quantities, desc="Converting forcings", unit="forcing"
         ) as progress_bar:
             for forcing in self.extold_model.forcing:
-                if forcing.quantity in self.un_supported_quantities:
+                if forcing.quantity.lower() in self.un_supported_quantities:
                     print(
                         f"The quantity {forcing.quantity} is not supported, and the debug mode is {self.debug}. "
                         "So the forcing will not be converted (stay in the old external forcing file)."
