@@ -4,7 +4,7 @@ import json
 import logging
 from collections import namedtuple
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple, Type
 
 import netCDF4 as nc
 import numpy as np
@@ -186,7 +186,7 @@ class NCExplorer(BaseModel):
             The mapping of Link1d2d variable names.
     """
 
-    Keys: ClassVar = namedtuple("Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"])
+    Keys: ClassVar[Type] = namedtuple("Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"])
 
     network1d_var_name_mapping: Optional[Dict[str, str]] = None
     mesh1d_var_name_mapping: Optional[Dict[str, str]] = None
