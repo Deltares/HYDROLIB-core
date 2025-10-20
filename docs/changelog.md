@@ -1,3 +1,21 @@
+## 0.9.8 (2025-10-20)
+
+### Feat
+
+- **extforce_convert**: improve relative path resolution for initial and parameter files (#966)
+- **extforce_convert**: improve relative path resolution for initial and parameter files
+- **mdu**: support `yyyymmdd` for startDateTime/stopDateTime (#953)
+- **mdu**: support `yyyymmdd` for startDateTime/stopDateTime (#953)
+- **cli**: add --path-style argument to control file path formatting (#951)
+- **cli**: add --path-style argument to control file path formatting
+
+### Fix
+
+- **netcdf-reader**: map link1d2d_contact_type to avoid IndexError
+- **mdu_parser**: only update field value if unset (#962)
+- **mdu_parser**: only update field value if unset (#962)
+- **inifield**: set averaging fields default to None
+
 ## 0.9.7 (2025-09-26)
 
 ### Fix
