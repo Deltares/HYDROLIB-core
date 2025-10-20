@@ -186,7 +186,9 @@ class NCExplorer(BaseModel):
             The mapping of Link1d2d variable names.
     """
 
-    Keys: ClassVar[Type] = namedtuple("Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"])
+    Keys: ClassVar[Type] = namedtuple(
+        "Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"]
+    )
 
     network1d_var_name_mapping: Optional[Dict[str, str]] = None
     mesh1d_var_name_mapping: Optional[Dict[str, str]] = None
