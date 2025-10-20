@@ -533,6 +533,7 @@ class TestMainConverter:
     tim_file = Path("tests/data/input/source-sink/tim-3-columns.tim")
     mdu_parser = MagicMock(spec=MDUParser)
     mdu_parser.temperature_salinity_data = temperature_and_salinity_info
+    mdu_parser.loaded_fm_data = {"general": {"pathsrelativetoparent": "0"}}
 
     def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
         """

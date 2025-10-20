@@ -1,7 +1,52 @@
 import os
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
+import pytest
+
+from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
+from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
+
+class TestInitialConditionConverter:
+
+    @pytest.mark.parametrize("quantity", ["initialsalinity", "AdvectionType"])
+    def test_convert_different_locations(self, tmp_path: Path, quantity: str):
+        ext_old_path = tmp_path / "tests/computation/test/tba/old-ext-file.ext"
+        initialfield_path = (
+            tmp_path / "tests/initial-conditions/test/initial-condition.ini"
+        )
+        forcing_data = {
+            "QUANTITY": quantity,
+            "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
+            "filetype": 7,
+            "method": 5,
+            "operand": "O",
+        }
+        forcing = ExtOldForcing(**forcing_data)
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.__init__",
+            return_value=None,
+        ):
+            extold_model = MagicMock(spec=ExtOldModel)
+            extold_model.filepath = ext_old_path
+            inifield_model = MagicMock(spec=IniFieldModel)
+            inifield_model.filepath = initialfield_path
+            mdu_parser = MagicMock(spec=MDUParser)
+            mdu_parser.loaded_fm_data = {"general": {"pathsrelativetoparent": "1"}}
+            external_forcing_converter = ExternalForcingConverter("old-ext-file.ext")
+            external_forcing_converter._inifield_model = inifield_model
+            external_forcing_converter._extold_model = extold_model
+            external_forcing_converter._root_dir = tmp_path
+            external_forcing_converter._legacy_files = []
+            external_forcing_converter._mdu_parser = mdu_parser
+        initial_field = external_forcing_converter._convert_forcing(forcing)
+        assert initial_field.datafile == DiskOnlyFileModel(
+            "iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz"
+        )
 
 
 class TestSourceSinks:
