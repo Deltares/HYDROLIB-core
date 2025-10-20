@@ -66,10 +66,6 @@ class INIBasedModel(BaseModel, ABC):
     specific behavior and headers for their respective INI blocks.
 
     Attributes:
-        comments (Optional[Comments]):
-            Optional Comments if defined by the user, containing descriptions for all data fields.
-
-    Args:
         comments (Optional[Comments], optional):
             Comments for the model fields. Defaults to None.
 
@@ -197,11 +193,7 @@ class INIBasedModel(BaseModel, ABC):
         return delimiter
 
     class Comments(BaseModel, ABC):
-        """
-        Represents the comments associated with fields in an INIBasedModel.
-
-        Attributes:
-            Arbitrary fields can be added dynamically to store comments.
+        """Represents the comments associated with fields in an INIBasedModel.
 
         Config:
             extra: Extra.allow
@@ -217,8 +209,7 @@ class INIBasedModel(BaseModel, ABC):
     @model_validator(mode="before")
     @classmethod
     def _validate_unknown_keywords(cls, values):
-        """
-        Validates fields and raises errors for unknown keywords.
+        """Validates fields and raises errors for unknown keywords.
 
         Args:
             values (dict): Dictionary of field values to validate.
@@ -582,11 +573,6 @@ class DataBlockINIBasedModel(INIBasedModel):
         datablock (Datablock): (class attribute) the actual data columns.
 
     Attributes:
-    datablock (List[List[Union[float, str]]]):
-        A two-dimensional list representing the data block. Each sub-list corresponds to
-        a row in the data block, and the values can be either floats or strings.
-
-    Args:
         datablock (List[List[Union[float, str]]], optional):
             The initial data block for the model. Defaults to an empty list.
 

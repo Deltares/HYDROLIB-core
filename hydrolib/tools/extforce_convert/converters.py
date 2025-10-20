@@ -470,7 +470,7 @@ class InitialConditionConverter(BaseConverter):
         """Initial condition converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> InitialField:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> InitialField:
         """Convert the Initial condition quantities.
 
         Convert an old external forcing block with Initial condition data to a IinitialField
@@ -483,10 +483,13 @@ class InitialConditionConverter(BaseConverter):
         iniFieldFile, adhering to the updated format and specifications.
 
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
             Initial condition field definition, represents an `[Initial]` block in an inifield file.
@@ -500,7 +503,7 @@ class InitialConditionConverter(BaseConverter):
         References:
             [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
         try:
             new_block = InitialField(**data)
         except Exception as e:
@@ -518,7 +521,7 @@ class ParametersConverter(BaseConverter):
         """Parameter converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> ParameterField:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
         """Parameter converter.
 
         Convert an old external forcing block to a parameter forcing block
@@ -531,10 +534,13 @@ class ParametersConverter(BaseConverter):
         to the updated format and specifications.
 
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
             ParameterField:
@@ -549,7 +555,7 @@ class ParametersConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing)
+        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
         new_block = ParameterField(**data)
 
         return new_block
@@ -706,6 +712,10 @@ class SourceSinkConverter(BaseConverter):
             for key in ext_file_quantity_list
             if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
+        # Remove duplicate quantities that might be present in the list due to quantities that share names,
+        # therefore occurring multiple times in the external forcing file.
+        # TimeSeries columns are expected to be linked to unique quantity names.
+        required_quantities_from_ext = list(set(required_quantities_from_ext))
 
         # check if the temperature and salinity are present in the external file
         temp_salinity_from_ext = find_temperature_salinity_in_quantities(

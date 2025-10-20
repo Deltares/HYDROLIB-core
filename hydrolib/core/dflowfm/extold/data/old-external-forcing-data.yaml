@@ -100,10 +100,12 @@ Parameter:
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
-        WaqFunction: waqfunction
         WaqParameter: waqparameter
-        WaqSegmentFunction: waqsegmentfunction
-        WaqSegmentNumber: waqsegmentnumber
+    prefixes:
+        # Missing in the converter
+        - waqfunction
+        - waqsegmentfunction
+        - waqsegmentnumber
 
 
 InitialConditions:
@@ -121,7 +123,6 @@ InitialConditions:
         InitialVerticalSalinityProfile: initialverticalsalinityprofile
         InitialVerticalTemperatureProfile: initialverticaltemperatureprofile
 
-        InitialWaqBot: initialwaqbot
         InitialWaterLevel: initialwaterlevel
         BedLevel: bedlevel
         BedLevel1D: bedlevel1d
@@ -134,6 +135,7 @@ InitialConditions:
         - initialtracer
         - initialverticalsedfracprofile
         - initialverticalsigmasedfracprofile
+        - initialwaqbot
         # Missing in the converter
         - initialsediment
 
@@ -150,22 +152,15 @@ Structure:
     valve1D: valve1d
 
 
+Lateral:
+    LateralDischarge: lateraldischarge
+    LateralDischarge1D: lateraldischarge1d
+    LateralDischarge2D: lateraldischarge2d
+
+
 Misellaneous:
      ShiptXY: shiptxy
      MovingStationXY: movingstationxy
-
-Tracer:
-    # the prefixes specify that any quantity starting with these values is treated as a tracer
-    quantity_names:
-        TracerBnd: tracerbnd
-        InitialTracer: initialtracer
-        SedFracBnd: sedfracbnd
-    prefixes:
-        - tracerbnd
-        - sedfracbnd
-        - initialtracer
-        - initialsedfrac
-        - initialverticalsigmasedfracprofile
 
 FileType:
     TimeSeries: 1

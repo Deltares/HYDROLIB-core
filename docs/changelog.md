@@ -1,3 +1,21 @@
+## 0.9.8 (2025-10-20)
+
+### Feat
+
+- **extforce_convert**: improve relative path resolution for initial and parameter files (#966)
+- **extforce_convert**: improve relative path resolution for initial and parameter files
+- **mdu**: support `yyyymmdd` for startDateTime/stopDateTime (#953)
+- **mdu**: support `yyyymmdd` for startDateTime/stopDateTime (#953)
+- **cli**: add --path-style argument to control file path formatting (#951)
+- **cli**: add --path-style argument to control file path formatting
+
+### Fix
+
+- **netcdf-reader**: map link1d2d_contact_type to avoid IndexError
+- **mdu_parser**: only update field value if unset (#962)
+- **mdu_parser**: only update field value if unset (#962)
+- **inifield**: set averaging fields default to None
+
 ## 0.9.7 (2025-09-26)
 
 ### Fix
@@ -362,23 +380,23 @@
 
 ## 0.2.0 (2021-12-17)
 ### Added
-* RainfallRunoff files: [NodeFile][hydrolib.core.io.rr.topology.models.NodeFile] ({{gh_issue(138)}})
-  and [LinkFile][hydrolib.core.io.rr.topology.models.LinkFile] ({{gh_issue(140)}})
+* RainfallRunoff files: [NodeFile][hydrolib.core.rr.topology.models.NodeFile] ({{gh_issue(138)}})
+  and [LinkFile][hydrolib.core.rr.topology.models.LinkFile] ({{gh_issue(140)}})
 * D-Flow FM files:
-    * Initial field files: [IniFieldModel][hydrolib.core.io.inifield.models.IniFieldModel],
-      also added 1D Field INI format: [OneDFieldModel][hydrolib.core.io.onedfield.models.OneDFieldModel] ({{gh_issue(119)}}).
-    * 1D Roughness INI files: [FrictionModel][hydrolib.core.io.friction.models.FrictionModel] ({{gh_issue(118)}}).
-    * Storage node files: [StorageNodeModel][hydrolib.core.io.storagenode.models.StorageNodeModel] ({{gh_issue(131)}}).
-    * General structure:  [GeneralStructure][hydrolib.core.io.structure.models.GeneralStructure] ({{gh_issue(79)}}).
+    * Initial field files: [IniFieldModel][hydrolib.core.dflowfm.inifield.models.IniFieldModel],
+      also added 1D Field INI format: [OneDFieldModel][hydrolib.core.dflowfm.onedfield.models.OneDFieldModel] ({{gh_issue(119)}}).
+    * 1D Roughness INI files: [FrictionModel][hydrolib.core.dflowfm.friction.models.FrictionModel] ({{gh_issue(118)}}).
+    * Storage node files: [StorageNodeModel][hydrolib.core.dflowfm.storagenode.models.StorageNodeModel] ({{gh_issue(131)}}).
+    * General structure:  [GeneralStructure][hydrolib.core.dflowfm.structure.models.GeneralStructure] ({{gh_issue(79)}}).
 * Many additions to the [API documentation](reference/base/api.md).
 
 
 ### Changed
 * All classes that have fields with "keyword values" (such as `frictionType = WhiteColebrook`) now use Enum classes for those values.
-  See for example [FrictionType][hydrolib.core.io.friction.models.FrictionType] and [FlowDirection][hydrolib.core.io.structure.models.FlowDirection]
+  See for example [FrictionType][hydrolib.core.dflowfm.friction.models.FrictionType] and [FlowDirection][hydrolib.core.dflowfm.structure.models.FlowDirection]
   ({{gh_issue(98)}})
 * All crosssection definition type now supported as subclasses of
-  [CrossSection][hydrolib.core.io.crosssection.models.CrossSectionDefinition] ({{gh_issue(117)}})
+  [CrossSection][hydrolib.core.dflowfm.crosssection.models.CrossSectionDefinition] ({{gh_issue(117)}})
 * Cross section definition and location classes have been moved from `hydrolib.core.io.ini.models`
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).

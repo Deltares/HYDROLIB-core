@@ -187,15 +187,6 @@ class ForcingBase(DataBlockINIBasedModel):
 
     Attributes:
         name (str):
-            Unique identifier that specifies the location for this forcing data.
-        function (str):
-            Specifies the function type of the data in the associated data block.
-        quantityunitpair (List[ScalarOrVectorQUP]):
-            List of header lines for one or more quantities and their units.
-            These describe the columns in the associated data block.
-
-    Args:
-        name (str):
             The unique name identifying this forcing block.
         function (str):
             The function type specifying the behavior of the forcing block.
@@ -203,9 +194,6 @@ class ForcingBase(DataBlockINIBasedModel):
             constant, qhtable.
         quantityunitpair (List[ScalarOrVectorQUP]):
             The quantities and units associated with the data block.
-
-    Returns:
-        None
 
     Raises:
         ValueError: If `quantity` or `unit` fields are missing or mismatched.
@@ -354,12 +342,12 @@ class VectorForcingBase(ForcingBase):
 
     @model_validator(mode="before")
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
-        """
-        Validates and, if required, updates vector quantity unit pairs.
+        """Validates and, if required, updates vector quantity unit pairs.
 
         Args:
-            values (Dict): Dictionary of values to be used to validate or
-            update vector quantity unit pairs.
+            values (Dict):
+                Dictionary of values to be used to validate or
+                update vector quantity unit pairs.
 
         Raises:
             ValueError: When a quantity unit pair is found in a vector where it does not belong.
@@ -703,7 +691,7 @@ class AstronomicCorrection(ForcingBase):
 class T3D(VectorForcingBase):
     """Subclass for a .bc file [Forcing] block with 3D timeseries data.
 
-    Args:
+    Attributes:
         offset (float): default is 0.0
             All values in the table are increased by the offset (after multiplication by factor).
         factor (float): default is 1.0
@@ -978,15 +966,6 @@ class ForcingModel(INIModel):
     serializing, and managing data within a .bc file.
 
     Attributes:
-        general (ForcingGeneral):
-            The `[General]` block containing metadata such as file version and type.
-        forcing (List[ForcingBase]):
-            A list of `[Forcing]` blocks representing the different forcings defined
-            in the file.
-        serializer_config (DataBlockINIBasedSerializerConfig):
-            Configuration for serialization of the .bc file.
-
-    Args:
         general (ForcingGeneral, optional):
             Metadata for the file. Defaults to an instance of `ForcingGeneral`.
         forcing (List[ForcingBase], optional, Defaults is []):

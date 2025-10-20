@@ -157,24 +157,31 @@ class PolyFile(ParsableFileModel):
              - calling this method on a polyline file that does not have z-values will return a list of None.
 
         Examples:
-        in case the polyline has 3 columns:
-            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
-            >>> z_source, z_sink = polyline.get_z_sources_sinks()
-            >>> print(z_source, z_sink)
-            [-3.0] [-4.2]
+            - in case the polyline has 3 columns:
+                ```python
+                >>> polyline = PolyFile("tests/data/input/source-sink/leftsor.pliz")
+                >>> z_source, z_sink = polyline.get_z_sources_sinks()
+                >>> print(z_source, z_sink)
+                [-3.0] [-4.2]
 
-        in case the polyline has more than 3 columns:
-            >>> polyline = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz") #Doctest: +SKIP
-            >>> z_source, z_sink = polyline.get_z_sources_sinks()
-            >>> print(z_source, z_sink)
-            [-3.0, -2.9] [-4.2, -5.35]
+                ```
+            - in case the polyline has more than 3 columns:
+                ```python
+                >>> polyline = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz") #Doctest: +SKIP
+                >>> z_source, z_sink = polyline.get_z_sources_sinks()
+                >>> print(z_source, z_sink)
+                [-3.0, -2.9] [-4.2, -5.35]
 
-        in case the polyline does not have z-values:
-            >>> root_dir = "tests/data/input/dflowfm_individual_files/polylines"
-            >>> polyline = PolyFile(f"{root_dir}/boundary-polyline-no-z-no-label.pli")
-            >>> z_source, z_sink = polyline.get_z_sources_sinks()
-            >>> print(z_source, z_sink)
-            [None] [None]
+                ```
+            - in case the polyline does not have z-values:
+                ```python
+                >>> root_dir = "tests/data/input/dflowfm_individual_files/polylines"
+                >>> polyline = PolyFile(f"{root_dir}/boundary-polyline-no-z-no-label.pli")
+                >>> z_source, z_sink = polyline.get_z_sources_sinks()
+                >>> print(z_source, z_sink)
+                [None] [None]
+
+                ```
         """
         has_data = True if self.objects[0].points[0].data else False
 

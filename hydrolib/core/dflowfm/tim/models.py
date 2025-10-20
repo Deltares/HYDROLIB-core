@@ -50,18 +50,6 @@ class TimModel(ParsableFileModel):
         _validate_quantities_names(cls, v, values) -> List[str]:
             Validates that quantities_names match the values or each record.
 
-    Args:
-        filepath (Path):
-            Path to the .tim file.
-        data (Dict):
-            Parsed data containing comments and timeseries.
-        serializer_config (TimSerializerConfig):
-            Configuration for serializing the .tim file.
-
-    Returns:
-        List[TimRecord]:
-            Validated list of TimRecord objects.
-
     Raises:
         ValueError:
             If the timeseries has inconsistent column counts or duplicate time values.
@@ -146,14 +134,18 @@ class TimModel(ParsableFileModel):
         self,
         filepath: Optional[Union[str, Path]] = None,
         quantities_names: Optional[List[str]] = None,
-        **parsable_file_kwargs,
+        **parsable_file_kwargs: Any,
     ):
         """
         Custom initializer to handle extra parameters specific to TimModel.
 
         Args:
-            quantities_names (Optional[List[str]]): Names for the quantities in the timeseries.
-            *args, **kwargs: Other arguments for the superclass.
+            filepath (Path):
+                Path to the .tim file.
+            quantities_names (Optional[List[str]]):
+                Names for the quantities in the timeseries.
+            **parsable_file_kwargs (Any):
+                Other arguments for the superclass.
         """
         super().__init__(filepath=filepath, **parsable_file_kwargs)
         self.quantities_names = quantities_names
@@ -374,7 +366,7 @@ class TimModel(ParsableFileModel):
         data = self.as_dataframe().to_dict(orient="list")
         return data
 
-    def get_units(self):
+    def get_units(self) -> Optional[List[str]]:
         """Return the units for each quantity in the timeseries.
 
         Returns:
