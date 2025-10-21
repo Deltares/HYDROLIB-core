@@ -733,7 +733,7 @@ class MDUParser:
         Returns:
             bool: True if an inifield file is defined, False otherwise
         """
-        return self.has_field("IniFieldFile")
+        return self.has_field(INIFIELD_FILE_LINE)
 
     def has_structure_file(self) -> bool:
         """Check if the MDU file has an inifield file defined.
@@ -741,7 +741,7 @@ class MDUParser:
         Returns:
             bool: True if an inifield file is defined, False otherwise
         """
-        return self.has_field("StructureFile")
+        return self.has_field(STRUCTURE_FILE_LINE)
 
     def has_field(self, field_name: str) -> bool:
         """Check if the MDU file has a given file defined.
@@ -1088,7 +1088,7 @@ class MDUParser:
         self,
         inifield_file: Optional[PathOrStr],
     ) -> Path:
-        ini_field_file = self.get_keyword("InifieldFile")
+        ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
         if inifield_file is not None:
             # user defined initial field file
@@ -1110,7 +1110,7 @@ class MDUParser:
         self,
         usr_structure_file: Optional[PathOrStr],
     ) -> Path:
-        structure_file = self.get_keyword("structurefile")
+        structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
 
         if usr_structure_file is not None:
             # user defined structure file
