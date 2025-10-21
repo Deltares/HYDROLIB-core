@@ -663,6 +663,25 @@ class MDUParser:
             raise ValueError("new_forcing_filename must be a str or Path")
         self._new_forcing_file = file_name
 
+    @property
+    def is_relative_to_parent(self) -> bool:
+        """
+        - True (1) if the file paths are relative to the direct parent file.
+        - False (0) if the file paths are relative to mdu file.
+        - Default is False, relative to the mdu file.
+        """
+        ind = self.find_keyword_lines("PathsRelativeToParent")
+        if ind is None:
+            val = False
+        else:
+            line = Line(self.content[ind])
+            if line.value == "1":
+                val = True
+            else:
+                val = False
+
+        return val
+
     def _read_file(self) -> List[str]:
         """Read the MDU file into a list of strings.
 
