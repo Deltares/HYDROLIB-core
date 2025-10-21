@@ -1,0 +1,54 @@
+[Branch]
+    name                  = 9                   # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 162                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 164                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 348                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 379                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 454                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 455                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 456                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 457                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 458                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
+
+[Branch]
+    name                  = 459                 # Unique branch id
+    branchType            = 0                   # Channel = 0, SewerConnection = 1, Pipe = 2
+    isLengthCustom        = True                # branch length specified by user
