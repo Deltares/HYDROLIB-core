@@ -534,6 +534,7 @@ class TestMainConverter:
     mdu_parser = MagicMock(spec=MDUParser)
     mdu_parser.temperature_salinity_data = temperature_and_salinity_info
     mdu_parser.is_relative_to_parent = False
+    mdu_parser.mdu_path = Path("tests/data/input/source-sink/mdu.mdu")
 
     def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
         """
