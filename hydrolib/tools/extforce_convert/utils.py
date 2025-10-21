@@ -39,6 +39,7 @@ __all__ = [
     "IgnoreUnknownKeyWordClass",
     "backup_file",
     "construct_filemodel_new_or_existing",
+    "path_relative_to_parent",
 ]
 
 
