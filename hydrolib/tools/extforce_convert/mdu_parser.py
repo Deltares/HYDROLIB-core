@@ -16,7 +16,7 @@ from hydrolib.tools.extforce_convert.utils import (
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
-
+PATH_RELATIVE_TO_PARENT = "PathsRelativeToParent"
 
 __all__ = ["MDUParser"]
 
@@ -670,7 +670,7 @@ class MDUParser:
         - False (0) if the file paths are relative to mdu file.
         - Default is False, relative to the mdu file.
         """
-        val = self.get_keyword("PathsRelativeToParent")
+        val = self.get_keyword(PATH_RELATIVE_TO_PARENT)
         if val is None:
             val = False
         else:
