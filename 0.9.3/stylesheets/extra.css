@@ -1,0 +1,12 @@
+[data-md-color-scheme="deltares"] {
+    --md-primary-fg-color:        #0D38E0;
+    --md-primary-fg-color--light: #0EBBF0;
+    --md-primary-fg-color--dark:  #080C80;
+  }
+
+/* Indentation. */
+div.doc-contents:not(.first) {
+  padding-left: 25px;
+  border-left: 4px solid rgba(230, 230, 230);
+  margin-bottom: 80px;
+}
