@@ -40,6 +40,7 @@ strenum = "^0"
 tqdm = "^4.67.1"
 pandas = "^2.0.0"
 pyyaml = "^6.0.2"
+pydantic-settings = "^2.11.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
