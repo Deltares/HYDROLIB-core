@@ -1,7 +1,7 @@
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -22,11 +22,11 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert import main_converter
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
 )
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class TestExtOldToNewFromMDU:
@@ -110,8 +110,8 @@ class TestExtOldToNewFromMDU:
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
                     "inifieldfile=initial_conditions.ini",
-                    "structurefile=structures.ini"
-                ]
+                    "structurefile=structures.ini",
+                ],
             ),
             (
                 {
@@ -129,7 +129,7 @@ class TestExtOldToNewFromMDU:
                     "extforcefile=old_forcing.ext",
                     "inifieldfile=initial_conditions.ini",
                     "structurefile=structures.ini",
-                ]
+                ],
             ),
             (
                 {
@@ -147,7 +147,7 @@ class TestExtOldToNewFromMDU:
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
                     "structurefile=structures.ini",
-                ]
+                ],
             ),
             (
                 {
@@ -165,7 +165,7 @@ class TestExtOldToNewFromMDU:
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
                     "inifieldfile=initial_conditions.ini",
-                ]
+                ],
             ),
             (
                 {
@@ -185,7 +185,7 @@ class TestExtOldToNewFromMDU:
                     "extforcefilenew=",
                     "inifieldfile=initial_conditions.ini",
                     "structurefile=structures.ini",
-                ]
+                ],
             ),
         ],
         ids=[
@@ -213,7 +213,9 @@ class TestExtOldToNewFromMDU:
             patch(
                 "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model"
             ) as mock_get_mdu_info,
-            patch.object(MDUParser, "content", new_callable=PropertyMock) as mock_content,
+            patch.object(
+                MDUParser, "content", new_callable=PropertyMock
+            ) as mock_content,
             patch(
                 "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data"
             ),
