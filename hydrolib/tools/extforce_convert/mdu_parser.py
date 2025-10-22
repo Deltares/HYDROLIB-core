@@ -665,7 +665,8 @@ class MDUParser:
 
     @property
     def is_relative_to_parent(self) -> bool:
-        """
+        """Check if the `PathsRelativeToParent` entry is set to 1.
+
         - True (1) if the file paths are relative to the direct parent file.
         - False (0) if the file paths are relative to mdu file.
         - Default is False, relative to the mdu file.
