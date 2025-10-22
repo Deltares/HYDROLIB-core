@@ -111,14 +111,19 @@ class ExternalForcingConverter:
             ```
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
+            # if the extold model is given as path/str then read the file
             extold_model = self._read_old_file(extold_model, path_style=path_style)
-            rdir = extold_model.filepath.parent
         else:
             if not isinstance(extold_model, ExtOldModel):
                 raise TypeError(
                     "extold_model must be a PathOrStr or ExtOldModel instance."
                 )
-            rdir = Path(".").resolve()
+
+        # if the mdu is not given then the root dir is the same as the extold model
+        if mdu_parser is not None:
+            rdir = mdu_parser.mdu_path.parent
+        else:
+            rdir = extold_model.filepath.parent
 
         self._extold_model = extold_model
         self._verbose = verbose

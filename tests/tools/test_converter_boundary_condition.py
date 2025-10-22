@@ -358,7 +358,7 @@ class TestMainConverter:
         """
         mock_mdu_parser = MagicMock(spec=MDUParser)
         mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}
-
+        mock_mdu_parser.mdu_path = old_forcing_file_boundary["path"].parent / "mdu.mdu"
         converter = ExternalForcingConverter(
             old_forcing_file_boundary["path"], mdu_parser=mock_mdu_parser
         )
