@@ -681,7 +681,22 @@ class MDUParser:
 
         return val
 
-    def get_keyword(self, keyword: str) -> bool:
+    def get_keyword(self, keyword: str) -> Optional[str]:
+        """Get the value of the specified keyword.
+
+        Args:
+            keyword (str):
+                the keyword to get the value of.
+
+        Returns:
+            str:
+                The value of the specified keyword if exists, None if does not exist.
+
+        Notes:
+            - The method is not a case-sensitive.
+            - If the keyword is not found, it will return None.
+            - If the is found, but the value is empty, it will return "" (empty string after =).
+        """
         ind = self.find_keyword_lines(keyword)
 
         if ind is None:
