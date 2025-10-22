@@ -752,10 +752,10 @@ class MDUParser:
         return self.has_field(INIFIELD_FILE_LINE)
 
     def has_structure_file(self) -> bool:
-        """Check if the MDU file has an inifield file defined.
+        """Check if the MDU file has an structure file defined.
 
         Returns:
-            bool: True if an inifield file is defined, False otherwise
+            bool: True if an structure file is defined, False otherwise
         """
         return self.has_field(STRUCTURE_FILE_LINE)
 
