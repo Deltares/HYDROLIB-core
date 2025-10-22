@@ -180,7 +180,7 @@ FileType:
     NetCDFWaveData: 14
     # 14. NetCDF wave data
 
-OldMethods:
+Averaging_Method:
     PassThrough: 1
     # 1. Pass through (no interpolation)
     InterpolateTimeAndSpace: 2

@@ -2,7 +2,7 @@ from .models import (
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
-    ExtOldMethod,
+    AveragingMethod,
     ExtOldModel,
     ExtOldQuantity,
 )
@@ -13,5 +13,5 @@ __all__ = [
     "ExtOldModel",
     "ExtOldQuantity",
     "ExtOldFileType",
-    "ExtOldMethod",
+    "AveragingMethod",
 ]

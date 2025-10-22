@@ -16,7 +16,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
-    ExtOldMethod,
+    AveragingMethod,
     ExtOldModel,
     ExtOldParametersQuantity,
     ExtOldQuantity,
@@ -180,7 +180,7 @@ class TestExtOldModel:
         assert forcing_1.varname is None
         assert forcing_1.sourcemask.filepath is None
         assert forcing_1.filetype == ExtOldFileType.NetCDFGridData
-        assert forcing_1.method == ExtOldMethod.InterpolateSpace
+        assert forcing_1.method == AveragingMethod.InterpolateSpace
         assert forcing_1.operand == Operand.add
         assert forcing_1.value == pytest.approx(0.0125)
         assert forcing_1.factor is None
@@ -198,7 +198,7 @@ class TestExtOldModel:
         assert forcing_2.varname is None
         assert forcing_2.sourcemask.filepath is None
         assert forcing_2.filetype == ExtOldFileType.ArcInfo
-        assert forcing_2.method == ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
+        assert forcing_2.method == AveragingMethod.InterpolateTimeAndSpaceSaveWeights
         assert forcing_2.operand == Operand.override
         assert forcing_2.value is None
         assert forcing_2.factor is None
@@ -236,7 +236,7 @@ class TestExtOldModel:
             quantity=ExtOldQuantity.InternalTidesFrictionCoefficient,
             filename=Path("surroundingDomain.pol"),
             filetype=ExtOldFileType.NetCDFGridData,
-            method=ExtOldMethod.InterpolateSpace,
+            method=AveragingMethod.InterpolateSpace,
             operand=Operand.add,
             value=0.0125,
         )
@@ -245,7 +245,7 @@ class TestExtOldModel:
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename="OB_001_orgsize.pli",
             filetype=ExtOldFileType.ArcInfo,
-            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            method=AveragingMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
         )
 

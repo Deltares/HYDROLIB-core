@@ -10,7 +10,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
-    ExtOldMethod,
+    AveragingMethod,
     ExtOldModel,
     ExtOldQuantity,
 )
@@ -39,7 +39,7 @@ class TestExtForcing:
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=input_files_dir.joinpath("tim/triple_data_for_timeseries.tim"),
             filetype=ExtOldFileType.TimeSeries,
-            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            method=AveragingMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
         )
 
@@ -50,7 +50,7 @@ class TestExtForcing:
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=input_files_dir.joinpath("dflowfm_individual_files/test.pli"),
             filetype=ExtOldFileType.Polyline,
-            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            method=AveragingMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
         )
 
@@ -63,7 +63,7 @@ class TestExtForcing:
             quantity=ExtOldQuantity.WaterLevelBnd,
             filename=input_files_dir.joinpath("file_load_test/FlowFM_net.nc"),
             filetype=ExtOldFileType.NetCDFGridData,
-            method=ExtOldMethod.InterpolateTimeAndSpaceSaveWeights,
+            method=AveragingMethod.InterpolateTimeAndSpaceSaveWeights,
             operand=Operand.override,
         )
 
@@ -75,7 +75,7 @@ def base_kwargs():
     return {
         "QUANTITY": ExtOldQuantity.WaterLevelBnd,
         "FILETYPE": ExtOldFileType.TimeSeries,
-        "METHOD": ExtOldMethod.PassThrough,
+        "METHOD": AveragingMethod.PassThrough,
         "OPERAND": Operand.override,
     }
 

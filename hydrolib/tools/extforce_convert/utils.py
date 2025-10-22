@@ -158,18 +158,18 @@ def oldmethod_to_interpolation_method(
 
 
 def averaging_type_converter(
-    oldmethod: int,
+    old_method: int,
 ) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
+    """Convert the old external forcing `METHOD` integer value to valid `averagingType` string value.
 
     Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
+        old_method (int): The METHOD value in an old external forcings file.
 
     Returns:
         Union[AveragingType,str]: Corresponding value for `averagingType`,
             or "unknown" for invalid input.
     """
-    if oldmethod == 6:
+    if old_method == 6:
         averaging_type = AveragingType.mean
     else:
         averaging_type = "unknown"

@@ -156,7 +156,7 @@ ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
 
 
 ExtOldFileType = IntEnum("ExtOldFileType", QUANTITIES_DATA["FileType"])
-ExtOldMethod = IntEnum("ExtOldMethod", QUANTITIES_DATA["OldMethods"])
+AveragingMethod = IntEnum("AveragingMethod", QUANTITIES_DATA["Averaging_Method"])
 ExtOldExtrapolationMethod = IntEnum(
     "ExtOldExtrapolationMethod", QUANTITIES_DATA["ExtrapolationMethod"]
 )
@@ -198,7 +198,7 @@ class ExtOldForcing(BaseModel):
     14. NetCDF wave data
     """
 
-    method: ExtOldMethod = Field(alias="METHOD")
+    method: AveragingMethod = Field(alias="METHOD")
     """ExtOldMethod: The method of interpolation.
 
     Options:
@@ -415,8 +415,8 @@ class ExtOldForcing(BaseModel):
         if (
             extrapolation_method.value
             == ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox
-            and method.value != ExtOldMethod.InterpolateTimeAndSpaceSaveWeights
-            and method.value != ExtOldMethod.Obsolete
+            and method.value != AveragingMethod.InterpolateTimeAndSpaceSaveWeights
+            and method.value != AveragingMethod.Obsolete
         ):
             error = f"{extrapolation_method.alias} only allowed to be 1 when {method.alias} is 3"
             raise ValueError(error)
@@ -426,21 +426,21 @@ class ExtOldForcing(BaseModel):
             extrapolation_method,
             ExtOldExtrapolationMethod.SpatialExtrapolationOutsideOfSourceDataBoundingBox,
         )
-        only_allowed_when(value, method, ExtOldMethod.InterpolateSpace)
+        only_allowed_when(value, method, AveragingMethod.InterpolateSpace)
 
         if factor.value is not None and not quantity.value.startswith(INITIALTRACER):
             error = f"{factor.alias} only allowed when {quantity.alias} starts with {INITIALTRACER}"
             raise ValueError(error)
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
-        only_allowed_when(averagingtype, method, ExtOldMethod.AveragingSpace)
-        only_allowed_when(relativesearchcellsize, method, ExtOldMethod.AveragingSpace)
-        only_allowed_when(extrapoltol, method, ExtOldMethod.InterpolateTime)
-        only_allowed_when(percentileminmax, method, ExtOldMethod.AveragingSpace)
+        only_allowed_when(averagingtype, method, AveragingMethod.AveragingSpace)
+        only_allowed_when(relativesearchcellsize, method, AveragingMethod.AveragingSpace)
+        only_allowed_when(extrapoltol, method, AveragingMethod.InterpolateTime)
+        only_allowed_when(percentileminmax, method, AveragingMethod.AveragingSpace)
         only_allowed_when(
             area, quantity, ExtOldQuantity.DischargeSalinityTemperatureSorSin
         )
-        only_allowed_when(nummin, method, ExtOldMethod.AveragingSpace)
+        only_allowed_when(nummin, method, AveragingMethod.AveragingSpace)
 
         return values
 
