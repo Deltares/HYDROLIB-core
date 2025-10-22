@@ -24,9 +24,7 @@ class TestMDUParserGetKeyword:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "Name = TestModel\n",
@@ -46,9 +44,7 @@ class TestMDUParserGetKeyword:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "Name = TestModel\n",
@@ -67,9 +63,7 @@ class TestMDUParserGetKeyword:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "Name = TestModel\n",
@@ -89,9 +83,7 @@ class TestMDUParserGetKeyword:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = 1 # Use parent-relative paths\n",
@@ -110,9 +102,7 @@ class TestMDUParserGetKeyword:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = 1\n",
@@ -144,9 +134,7 @@ class TestMDUParserIsRelativeToParent:
             lambda self: MDUParser.is_relative_to_parent.fget(self)
         )
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = 1\n",
@@ -166,9 +154,7 @@ class TestMDUParserIsRelativeToParent:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = 0\n",
@@ -187,9 +173,7 @@ class TestMDUParserIsRelativeToParent:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "Name = TestModel\n",
@@ -208,9 +192,7 @@ class TestMDUParserIsRelativeToParent:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = \n",
@@ -230,9 +212,7 @@ class TestMDUParserIsRelativeToParent:
         """
         parser = MagicMock(spec=MDUParser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
-        parser.find_keyword_lines = MethodType(
-            MDUParser.find_keyword_lines, parser
-        )
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
         parser.content = [
             "[general]\n",
             "PathsRelativeToParent = 2\n",
