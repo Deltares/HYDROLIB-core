@@ -44,12 +44,12 @@ __all__ = [
 
 
 AVERAGING_TYPE_DICT = {
-    1 : AveragingType.mean,
-    2 : AveragingType.nearestnb,
-    3 : AveragingType.max,
-    4 : AveragingType.min,
-    5 : AveragingType.invdist,
-    6 : AveragingType.minabs,
+    1: AveragingType.mean,
+    2: AveragingType.nearestnb,
+    3: AveragingType.max,
+    4: AveragingType.min,
+    5: AveragingType.invdist,
+    6: AveragingType.minabs,
     # 7 : AveragingType.kdtree,
 }
 
@@ -223,7 +223,9 @@ def convert_interpolation_data(
     """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = map_method_to_averaging_type(forcing.method, forcing.averagingtype)
+        data["averagingtype"] = map_method_to_averaging_type(
+            forcing.method, forcing.averagingtype
+        )
         data["averagingrelsize"] = forcing.relativesearchcellsize
         data["averagingnummin"] = forcing.nummin
         data["averagingpercentile"] = forcing.percentileminmax
