@@ -158,6 +158,7 @@ def oldmethod_to_interpolation_method(
 
 def oldmethod_to_averaging_type(
     oldmethod: int,
+    averagingtype: int,
 ) -> Union[AveragingType, str]:
     """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
 
@@ -169,8 +170,28 @@ def oldmethod_to_averaging_type(
             or "unknown" for invalid input.
     """
     if oldmethod == 6:
-        averaging_type = AveragingType.mean
+        """
+        AVERAGINGTYPE (ONLY WHEN METHOD=6)
+        =1  : SIMPLE AVERAGING
+        =2  : NEAREST NEIGHBOUR
+        =3  : MAX (HIGHEST)
+        =4  : MIN (LOWEST)
+        =5  : INVERSE WEIGHTED DISTANCE-AVERAGE
+        =6  : MINABS
+        =7  : KDTREE (LIKE 1, BUT FAST AVERAGING)
+        """
+        averagingtype_dict = {
+            1 : AveragingType.mean,
+            2 : AveragingType.nearestnb,
+            3 : AveragingType.max,
+            4 : AveragingType.min,
+            5 : AveragingType.invdist,
+            6 : AveragingType.minabs,
+            # 7 : AveragingType.kdtree, # TODO: median according to manual, kdtree in comment above, but both are not available in AveragingType enum
+            }
+        averaging_type = averagingtype_dict[averagingtype]
     else:
+        # TODO: in this case the keyword should not be written, there is probably a neater way to handle this, but I kept it as is
         averaging_type = "unknown"
 
     return averaging_type
@@ -193,7 +214,7 @@ def convert_interpolation_data(
     """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method, forcing.averagingtype)
         data["averagingrelsize"] = forcing.relativesearchcellsize
         data["averagingnummin"] = forcing.nummin
         data["averagingpercentile"] = forcing.percentileminmax
