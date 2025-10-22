@@ -434,7 +434,9 @@ class ExtOldForcing(BaseModel):
 
         only_allowed_when(ifrctype, quantity, ExtOldQuantity.FrictionCoefficient)
         only_allowed_when(averagingtype, method, AveragingMethod.AveragingSpace)
-        only_allowed_when(relativesearchcellsize, method, AveragingMethod.AveragingSpace)
+        only_allowed_when(
+            relativesearchcellsize, method, AveragingMethod.AveragingSpace
+        )
         only_allowed_when(extrapoltol, method, AveragingMethod.InterpolateTime)
         only_allowed_when(percentileminmax, method, AveragingMethod.AveragingSpace)
         only_allowed_when(

@@ -7,10 +7,10 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     ALL_PREFIXES,
+    AveragingMethod,
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
-    AveragingMethod,
     ExtOldModel,
     ExtOldQuantity,
 )

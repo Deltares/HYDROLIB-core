@@ -13,10 +13,10 @@ from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
     INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
+    AveragingMethod,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
-    AveragingMethod,
     ExtOldModel,
     ExtOldParametersQuantity,
     ExtOldQuantity,

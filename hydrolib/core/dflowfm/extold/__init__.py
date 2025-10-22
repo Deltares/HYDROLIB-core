@@ -1,8 +1,8 @@
 from .models import (
+    AveragingMethod,
     ExtOldExtrapolationMethod,
     ExtOldFileType,
     ExtOldForcing,
-    AveragingMethod,
     ExtOldModel,
     ExtOldQuantity,
 )
