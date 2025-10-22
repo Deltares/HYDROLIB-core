@@ -161,14 +161,31 @@ def oldmethod_to_averaging_type(
     oldmethod: int,
     averagingtype: int,
 ) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
+    """Convert an old external forcing `METHOD` integer value to a valid ` averagingType ` string value.
 
     Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
+        old_forcing_method (int):
+            The `METHOD` value in an old external forcings file.
+        averaging_type (int):
+            The `AVERAGINGTYPE` value in an old external forcings file.
+            AVERAGINGTYPE (ONLY WHEN METHOD=6)
+            ```ini
+            =1  : SIMPLE AVERAGING
+            =2  : NEAREST NEIGHBOUR
+            =3  : MAX (HIGHEST)
+            =4  : MIN (LOWEST)
+            =5  : INVERSE WEIGHTED DISTANCE-AVERAGE
+            =6  : MINABS
+            =7  : KDTREE (LIKE 1, BUT FAST AVERAGING)
+            ```
+
+    Notes:
+        - The new external forcing well have an Averaging type if the old external forcings had a `Method = 6`.
+
 
     Returns:
-        Union[AveragingType,str]: Corresponding value for `averagingType`,
-            or "unknown" for invalid input.
+        Union[AveragingType,str]:
+            Corresponding value for `averagingType`, or "unknown" for invalid input.
     """
     if oldmethod == 6:
         """
