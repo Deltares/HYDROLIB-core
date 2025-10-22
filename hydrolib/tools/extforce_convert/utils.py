@@ -157,7 +157,7 @@ def oldmethod_to_interpolation_method(
     return interpolation_method
 
 
-def oldmethod_to_averaging_type(
+def averaging_type_converter(
     oldmethod: int,
 ) -> Union[AveragingType, str]:
     """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
@@ -194,7 +194,7 @@ def convert_interpolation_data(
     """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingtype"] = averaging_type_converter(forcing.method)
         data["averagingrelsize"] = forcing.relativesearchcellsize
         data["averagingnummin"] = forcing.nummin
         data["averagingpercentile"] = forcing.percentileminmax
