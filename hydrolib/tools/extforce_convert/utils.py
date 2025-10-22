@@ -169,7 +169,17 @@ def averaging_type_converter(
         Union[AveragingType,str]: Corresponding value for `averagingType`,
             or "unknown" for invalid input.
     """
-    if old_method == 6:
+    if old_method == 1:
+        averaging_type = AveragingType.min
+    elif old_method == 2:
+        averaging_type = AveragingType.nearestnb
+    elif old_method == 3:
+        averaging_type = AveragingType.max
+    elif old_method == 4:
+        averaging_type = AveragingType.min
+    elif old_method == 5:
+        averaging_type = AveragingType.invdist
+    elif old_method == 6:
         averaging_type = AveragingType.mean
     else:
         averaging_type = "unknown"
