@@ -228,9 +228,11 @@ def path_relative_to_parent(
         resolve_parent = False
     else:
         resolve_parent = mdu_parser.is_relative_to_parent
+
     update_path_condition = (
         forcing.filename.filepath.is_absolute() or not resolve_parent
     )
+
     forcing_path = (
         forcing.filename.filepath
         if update_path_condition
