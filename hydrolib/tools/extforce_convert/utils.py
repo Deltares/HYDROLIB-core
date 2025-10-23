@@ -191,7 +191,7 @@ def map_method_to_averaging_type(
             ```
 
     Notes:
-        - The new external forcing well have an Averaging type if the old external forcings had a `Method = 6`.
+        - The new external forcing will have an Averaging type if the old external forcings had a `Method = 6`.
 
 
     Returns:
