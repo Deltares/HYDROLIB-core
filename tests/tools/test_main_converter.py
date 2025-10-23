@@ -582,11 +582,11 @@ class TestExternalFocingConverter:
         ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
         with pytest.raises(UnSupportedQuantitiesError) as error:
             ExternalForcingConverter(extold_model=ext_old_model, debug=False)
-            quantity = {unsupported_quantity.lower()}
-            assert (
-                f"The following quantities are not supported by the converter yet: {quantity}"
-                in str(error)
-            )
+        quantity = {unsupported_quantity.lower()}
+        assert (
+            f"The following quantities are not supported by the converter yet: {quantity}"
+            in str(error)
+        )
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
