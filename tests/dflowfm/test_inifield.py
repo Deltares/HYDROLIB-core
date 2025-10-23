@@ -219,7 +219,7 @@ def test_initial_condition_file_type(initial_condition_file_type: List[str]):
 
 
 def test_averaging_type_file_type(initial_cond_averaging_type: List[str]):
-    assert len(AveragingType) == 7
+    assert len(AveragingType) == 8
     assert all(
         quantity.value in initial_cond_averaging_type
         for quantity in AveragingType.__members__.values()
