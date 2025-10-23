@@ -50,7 +50,7 @@ AVERAGING_TYPE_DICT = {
     4: AveragingType.min,
     5: AveragingType.invdist,
     6: AveragingType.minabs,
-    # 7 : AveragingType.kdtree,
+    7 : AveragingType.median,
 }
 
 
