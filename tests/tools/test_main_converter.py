@@ -27,6 +27,7 @@ from hydrolib.tools.extforce_convert.main_converter import (
     recursive_converter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+from hydrolib.tools.extforce_convert.utils import UnSupportedQuantitiesError
 
 
 class TestExtOldToNewFromMDU:
@@ -528,6 +529,84 @@ class TestExternalFocingConverter:
         assert len(converter.inifield_model.initial) == 1
         initial_file = tmp_path / "new-initial-conditions.ini"
         assert setup_absolute_path_files["raw_poly_file"] in initial_file.read_text()
+
+    @pytest.fixture
+    def old_model(self) -> Dict[str, Any]:
+        return {
+            "forcing": [
+                {
+                    "quantity": "InternalTidesFrictionCoefficient",
+                    "filename": "file.xyz",
+                    "filetype": 7,
+                    "method": 1,
+                    "operand": "O",
+                },
+                {
+                    "quantity": "unsupported_quantity",
+                    "filename": "file2.xyz",
+                    "filetype": 7,
+                    "method": 4,
+                    "operand": "O",
+                    "value": 0.0125,
+                },
+            ]
+        }
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_debug_unsupported_quantities_conversion(
+        self, old_model, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter.update()
+
+        assert converter.un_supported_quantities == {unsupported_quantity.lower()}
+        assert ext_old_model.forcing[0].quantity == unsupported_quantity
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_no_debug_unsupported_quantities_conversion(
+        self, old_model, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        with pytest.raises(UnSupportedQuantitiesError) as error:
+            ExternalForcingConverter(extold_model=ext_old_model, debug=False)
+            quantity = {unsupported_quantity.lower()}
+            assert (
+                f"The following quantities are not supported by the converter yet: {quantity}"
+                in str(error)
+            )
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_debug_unsupported_quantities_save(
+        self, old_model, tmp_path: Path, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = tmp_path / "mock_file.ext"
+        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter.update()
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExtOldModel.save"
+        ) as mock_save:
+            converter.save()
+            mock_save.assert_called_once()
+            assert converter.un_supported_quantities == {unsupported_quantity.lower()}
 
 
 class TestUpdate:
