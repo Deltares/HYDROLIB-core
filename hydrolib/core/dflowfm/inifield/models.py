@@ -70,8 +70,11 @@ class AveragingType(StrEnum):
     min = "min"  # lowest
     invdist = "invDist"  # inverse-weighted distance average
     minabs = "minAbs"  # smallest absolute value
+    median = "median"
 
-    allowedvaluestext = "Possible values: mean, nearestNb, max, min, invDist, minAbs."
+    allowedvaluestext = (
+        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+    )
 
 
 class IniFieldGeneral(INIGeneral):
