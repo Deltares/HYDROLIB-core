@@ -494,9 +494,7 @@ class ExternalForcingConverter:
         merged_boundaries: Dict[Path, ForcingModel] = {}
         for boundary in self.ext_model.boundary:
             if not isinstance(boundary.forcingfile, list):
-                forcing = boundary.forcingfile
-                boundary.forcingfile = []
-                boundary.forcingfile.append(forcing)
+                boundary.forcingfile = [boundary.forcingfile]
             for forcingfile in boundary.forcingfile:
                 bc_filepath = forcingfile.filepath
                 if bc_filepath in merged_boundaries:
@@ -513,8 +511,7 @@ class ExternalForcingConverter:
                         forcing_list.append(merged_boundaries[bc_filepath])
                     else:
                         forcing_list.append(forcingfile)
-            boundary.forcingfile = []
-            boundary.forcingfile.extend(forcing_list)
+            boundary.forcingfile = forcing_list
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
         """
