@@ -45,6 +45,7 @@ def test_convert_interpolation_data():
         filetype=4,
         method="6",
         operand="O",
+        averagingtype="1",
     )
     data = convert_interpolation_data(forcing, data)
     assert data["interpolationmethod"] == "averaging"

@@ -43,6 +43,17 @@ __all__ = [
 ]
 
 
+AVERAGING_TYPE_DICT = {
+    1: AveragingType.mean,
+    2: AveragingType.nearestnb,
+    3: AveragingType.max,
+    4: AveragingType.min,
+    5: AveragingType.invdist,
+    6: AveragingType.minabs,
+    7: AveragingType.median,
+}
+
+
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
 with CONVERTER_DATA_PATH.open("r") as fh:
     try:
@@ -157,20 +168,38 @@ def oldmethod_to_interpolation_method(
     return interpolation_method
 
 
-def oldmethod_to_averaging_type(
-    oldmethod: int,
+def map_method_to_averaging_type(
+    old_forcing_method: int,
+    averaging_type: int,
 ) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
+    """Convert an old external forcing `METHOD` integer value to a valid ` averagingType ` string value.
 
     Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
+        old_forcing_method (int):
+            The `METHOD` value in an old external forcings file.
+        averaging_type (int):
+            The `AVERAGINGTYPE` value in an old external forcings file.
+            AVERAGINGTYPE (ONLY WHEN METHOD=6)
+            ```ini
+            =1  : SIMPLE AVERAGING
+            =2  : NEAREST NEIGHBOUR
+            =3  : MAX (HIGHEST)
+            =4  : MIN (LOWEST)
+            =5  : INVERSE WEIGHTED DISTANCE-AVERAGE
+            =6  : MINABS
+            =7  : KDTREE (LIKE 1, BUT FAST AVERAGING)
+            ```
+
+    Notes:
+        - The new external forcing will have an Averaging type if the old external forcings had a `Method = 6`.
+
 
     Returns:
-        Union[AveragingType,str]: Corresponding value for `averagingType`,
-            or "unknown" for invalid input.
+        Union[AveragingType,str]:
+            Corresponding value for `averagingType`, or "unknown" for invalid input.
     """
-    if oldmethod == 6:
-        averaging_type = AveragingType.mean
+    if old_forcing_method == 6:
+        averaging_type = AVERAGING_TYPE_DICT.get(int(averaging_type), "unknown")
     else:
         averaging_type = "unknown"
 
@@ -194,7 +223,9 @@ def convert_interpolation_data(
     """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingtype"] = map_method_to_averaging_type(
+            forcing.method, forcing.averagingtype
+        )
         data["averagingrelsize"] = forcing.relativesearchcellsize
         data["averagingnummin"] = forcing.nummin
         data["averagingpercentile"] = forcing.percentileminmax
