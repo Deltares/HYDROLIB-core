@@ -267,10 +267,10 @@ class TestVectorForcingBase:
         ],
     )
     def test_load_and_save_model_with_vector_quantities(
-        self, bc_file_name: str, reference_files_dir, output_files_dir, input_files_dir
+        self, bc_file_name: str, reference_files_dir, tmp_path, input_files_dir
     ):
         bc_file = input_files_dir / "dflowfm_individual_files" / bc_file_name
-        output_file = output_files_dir / "fm" / ("serialize_" + bc_file_name)
+        output_file = tmp_path / "fm" / ("serialize_" + bc_file_name)
         reference_file = reference_files_dir / "bc" / bc_file_name
 
         forcingmodel = ForcingModel(bc_file)
