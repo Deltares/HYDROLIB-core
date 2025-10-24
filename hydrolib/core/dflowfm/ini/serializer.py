@@ -314,7 +314,7 @@ class Serializer:
 
 
 def write_ini(
-    path: Path, document: Document, config: INISerializerConfig, file_mode: str
+    path: Path, document: Document, config: INISerializerConfig, file_mode: str = "w"
 ) -> None:
     """Write the provided document to the specified path
 
