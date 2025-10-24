@@ -62,20 +62,6 @@ def initial_condition_file_type() -> List[str]:
 
 
 @pytest.fixture
-def initial_cond_averaging_type() -> List[str]:
-    return [
-        "mean",
-        "nearestNb",
-        "max",
-        "min",
-        "invDist",
-        "minAbs",
-        "median",
-        "Possible values: mean, nearestNb, max, min, invDist, minAbs.",
-    ]
-
-
-@pytest.fixture
 def polylines_dir() -> Path:
     return Path("tests/data/input/dflowfm_individual_files/polylines")
 
