@@ -1083,6 +1083,9 @@ class ForcingModel(INIModel):
         )
     )
 
+    def _file_mode(self) -> str:
+        return "a"
+
     @classmethod
     def _ext(cls) -> str:
         """

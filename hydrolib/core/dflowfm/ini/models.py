@@ -738,6 +738,9 @@ class INIModel(ParsableFileModel):
                 )
         return Document(header_comment=[header], sections=sections)
 
+    def _file_mode(self) -> str:
+        return "w"
+
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
         """
         Create a `Document` from the model and write it to the file.
@@ -746,4 +749,5 @@ class INIModel(ParsableFileModel):
             self._resolved_filepath,
             self._to_document(save_settings),
             config=self.serializer_config,
+            file_mode=self._file_mode(),
         )

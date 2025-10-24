@@ -313,7 +313,9 @@ class Serializer:
         return chain.from_iterable(zip(iterable, repeat(val)))
 
 
-def write_ini(path: Path, document: Document, config: INISerializerConfig) -> None:
+def write_ini(
+    path: Path, document: Document, config: INISerializerConfig, file_mode: str = "w"
+) -> None:
     """Write the provided document to the specified path
 
     If the provided path already exists, it will be overwritten. If the parent folder
@@ -329,7 +331,7 @@ def write_ini(path: Path, document: Document, config: INISerializerConfig) -> No
 
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    with path.open("w", encoding="utf8") as f:
+    with path.open(file_mode, encoding="utf8") as f:
 
         for line in serializer.serialize(document):
             f.write(line + "\n")
