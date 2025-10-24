@@ -199,7 +199,10 @@ def map_method_to_averaging_type(
             Corresponding value for `averagingType`, or "unknown" for invalid input.
     """
     if old_forcing_method == 6:
-        averaging_type = AVERAGING_TYPE_DICT.get(int(averaging_type), "unknown")
+        if averaging_type is None:
+            averaging_type = AveragingType.mean
+        else:
+            averaging_type = AVERAGING_TYPE_DICT.get(int(averaging_type), "unknown")
     else:
         averaging_type = "unknown"
 
