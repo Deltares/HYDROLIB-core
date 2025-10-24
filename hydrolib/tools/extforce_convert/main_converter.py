@@ -359,10 +359,11 @@ class ExternalForcingConverter:
             self._update_mdu_file()
 
         if self.un_supported_quantities:
+            # replace the forcings by the forcings that were not converted (the unsupported quantities)
             forcing = [
                 forcing
                 for forcing in self.extold_model.forcing
-                if forcing.quantity in self.un_supported_quantities
+                if forcing.quantity.lower() in self.un_supported_quantities
             ]
             self.extold_model.forcing = forcing
 
