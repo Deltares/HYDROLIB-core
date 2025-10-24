@@ -65,7 +65,9 @@ class AveragingType(StrEnum):
     minabs = "minAbs"  # smallest absolute value
     median = "median"
 
-    allowedvaluestext = "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+    allowedvaluestext = (
+        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+    )
 
 
 class IniFieldGeneral(INIGeneral):
