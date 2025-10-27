@@ -447,24 +447,3 @@ class TestFileModel(unittest.TestCase):
 
                 # Verify traverse was called at least twice (once for name generation, once for saving)
                 self.assertGreaterEqual(mock_traverse.call_count, 2)
-
-    def test_validate(self):
-        """Test validate method."""
-        # Test with valid value
-        with patch.object(ConcreteFileModel, "_load"):
-            value = ConcreteFileModel()
-            result = ConcreteFileModel.validate(value)
-            self.assertEqual(result, value)
-
-            # Test with None value
-            result = ConcreteFileModel.validate(None)
-            self.assertIsNone(result)
-
-            # Test with invalid value
-            with patch.object(
-                FileModel,
-                "validate",
-                side_effect=ValueError("Expected FileModel, got str"),
-            ):
-                with self.assertRaises(ValueError):
-                    ConcreteFileModel.validate("not a FileModel")

@@ -12,6 +12,11 @@ from hydrolib.core.dflowfm.polyfile.models import Point, PolyFile
 from hydrolib.core.dflowfm.polyfile.parser import read_polyfile
 
 
+@pytest.fixture
+def polylines_dir() -> Path:
+    return Path("tests/data/input/dflowfm_individual_files/polylines")
+
+
 def test_with_label(polylines_dir: Path):
     """
     The test check a simple 2*2 polyline file with a label

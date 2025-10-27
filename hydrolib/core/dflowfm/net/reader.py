@@ -4,7 +4,7 @@ import json
 import logging
 from collections import namedtuple
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple, Type
 
 import netCDF4 as nc
 import numpy as np
@@ -87,7 +87,6 @@ class UgridReader:
 
         mapping = self._explorer.mesh2d_var_name_mapping
 
-        # TODO: is this necessary or checked elsewhere already?
         mesh2d_required = ["mesh2d_node_x", "mesh2d_node_y", "mesh2d_edge_nodes"]
         if not set(mesh2d_required).issubset(mapping.keys()):
             raise KeyError("not all required mesh2d attributes present in network")
@@ -187,12 +186,14 @@ class NCExplorer(BaseModel):
             The mapping of Link1d2d variable names.
     """
 
-    Keys = namedtuple("Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"])
+    Keys: ClassVar[Type] = namedtuple(
+        "Keys", ["network1d", "mesh1d", "mesh2d", "link1d2d"]
+    )
 
-    network1d_var_name_mapping: Optional[Dict[str, str]]
-    mesh1d_var_name_mapping: Optional[Dict[str, str]]
-    mesh2d_var_name_mapping: Optional[Dict[str, str]]
-    link1d2d_var_name_mapping: Optional[Dict[str, str]]
+    network1d_var_name_mapping: Optional[Dict[str, str]] = None
+    mesh1d_var_name_mapping: Optional[Dict[str, str]] = None
+    mesh2d_var_name_mapping: Optional[Dict[str, str]] = None
+    link1d2d_var_name_mapping: Optional[Dict[str, str]] = None
 
     @classmethod
     def from_file_path(cls, file_path: Path) -> "NCExplorer":

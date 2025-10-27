@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
-from pydantic.v1 import Field
+from pydantic import Field
 
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings, ParsableFileModel
 from hydrolib.core.dflowfm.cmp.parser import CMPParser
@@ -383,7 +383,7 @@ class CMPModel(ParsableFileModel):
     """
 
     comments: List[str] = Field(default_factory=list)
-    component: CMPSet = Field(default_factory=list)
+    component: CMPSet = Field(default_factory=CMPSet)
     quantities_name: Optional[List[str]] = None
 
     @classmethod

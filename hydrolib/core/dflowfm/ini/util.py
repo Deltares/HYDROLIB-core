@@ -6,79 +6,112 @@ from enum import Enum
 from operator import eq
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
-from pydantic.v1.main import BaseModel
+from pydantic import BaseModel, ValidationInfo
+from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
 from hydrolib.core.dflowfm.common.models import LocationType
 
 
-def get_split_string_on_delimiter_validator(*field_name: str):
-    """Get a validator to split strings passed to the specified field_name.
+def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
+    """Split a string on the list field delimiter, and return a list of strings.
 
-    Strings are split based on an automatically selected provided delimiter.
-    The delimiter is the field's own delimiter, if that was defined using
-    Field(.., delimiter=".."). Otherwise, the delimiter is the field's parent
-    class's delimiter (which should be (subclass of) INIBasedModel.)
-    The validator splits a string value into a list of substrings before any
-    other validation takes place.
+    If the input is a string, it is split on the delimiter defined in the class.
+    If the input is anything else, it is returned as is.
+
+    Args:
+        cls (Type[BaseModel]): The class that contains the field.
+        v (Any): The value to split.
+        field (ValidationInfo): The field information.
 
     Returns:
-        the validator which splits strings on the provided delimiter.
+        List[str] or Any: A list of strings if the input was a string, otherwise
+            the input value as is.
     """
-
-    def split(cls, v: Any, field: ModelField):
-        if isinstance(v, str):
-            v = v.split(cls.get_list_field_delimiter(field.name))
-            v = [item.strip() for item in v if item != ""]
-        return v
-
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+    if isinstance(v, str):
+        v = v.split(cls.get_list_field_delimiter(field.field_name))
+        v = [item.strip() for item in v if item != ""]
+    return v
 
 
-def get_enum_validator(
-    *field_name: str,
+def enum_value_parser(
+    v,
     enum: Type[Enum],
     alternative_enum_values: Optional[Dict[str, List[str]]] = None,
 ):
-    """
-    Get a case-insensitive enum validator that will returns the corresponding enum value.
-    If the input is a list, then each list value is checked individually.
+    """Return a function that converts strings (and string lists) to Enum values.
 
     Args:
-        enum (Type[Enum]): The enum type for which to validate.
-        alternative_enum_values (Dict[str, List[str]], optional): Dictionary with alternative
-            allowed values for one or more of the enum keys. Dict key must be a valid current
-            key of enum (case sensitive). Use this to backwards support and convert old enum
-            values in user input. For example: {SomeEnum.current_value: ["old value"]}.
+        enum (Type[Enum]): The Enum type to parse values into.
+        alternative_enum_values (Optional[Dict[str, List[str]]]): A dictionary mapping enum values
+            to alternative string representations. If provided, the parser will also accept these
+            alternative strings as valid inputs for the corresponding enum values.
+
+    Returns:
+        Callable: A function that takes a value (or list of values) and returns the corresponding
+            Enum value or raises a ValueError if the value is invalid.
+
+    Raises:
+        ValueError: If the input value is not a valid Enum value or does not match any
+            alternative string representations.
     """
+    if isinstance(v, list):
+        result = [parse_enum(item, enum, alternative_enum_values) for item in v]
+    else:
+        result = parse_enum(v, enum, alternative_enum_values)
+    return result
 
-    def get_enum(v):
+
+def parse_enum(
+    v, enum: Type[Enum], alternative_enum_values: Optional[Dict[str, List[str]]] = None
+):
+    result = None
+
+    if isinstance(v, enum):
+        result = v
+    elif isinstance(v, str):
+        v_lower = v.lower()
         for entry in enum:
-            if entry.lower() == v.lower():
-                return entry
+            if entry.value.lower() == v_lower:
+                result = entry
+                break
             if (
-                alternative_enum_values is not None
-                and (alt_values := alternative_enum_values.get(entry.value)) is not None
-                and v.lower() in (altval.lower() for altval in alt_values)
+                alternative_enum_values
+                and (alts := alternative_enum_values.get(entry.value))
+                and any(v_lower == alt.lower() for alt in alts)
             ):
-                return entry
+                result = entry
+                break
+    if result is None:
+        valid_values = [e.value for e in enum]
+        raise ValueError(f"Invalid enum value: {v!r}. Expected one of: {valid_values}")
+    return result
 
-        return v
 
-    return validator(*field_name, allow_reuse=True, pre=True, each_item=True)(get_enum)
+def ensure_list(v: Any):
+    """Ensure that the input is a list.
+
+    Args:
+        v (Any): The value to ensure is a list.
+
+    Returns:
+        List[Any]: A list containing the input value if it was a dictionary,
+            or the input value itself if it was already a list.
+
+    Raises:
+        TypeError: If the input is not a list or a dictionary.
+    """
+    if isinstance(v, dict):
+        v = [v]
+    if not isinstance(v, list):
+        raise TypeError("Expected a list or a single dictionary")
+    return v
 
 
-def make_list_validator(*field_name: str):
-    """Get a validator make a list of object if a single object is passed."""
-
-    def split(v: Any):
-        if not isinstance(v, list):
-            v = [v]
-        return v
-
-    return validator(*field_name, allow_reuse=True, pre=True)(split)
+def make_list(v: Any):
+    if not isinstance(v, list):
+        v = [v]
+    return v
 
 
 def validate_correct_length(
@@ -88,26 +121,33 @@ def validate_correct_length(
     length_incr: int = 0,
     list_required_with_length: bool = False,
     min_length: int = 0,
-) -> Dict:
+):
     """
     Validate the correct length (and presence) of several list fields in an object.
 
     Args:
-        values (Dict): dictionary of values to validate.
-        *field_names (str): names of the instance variables that are a list and need checking.
-        length_name (str): name of the instance variable that stores the expected length.
-        length_incr (int): Optional extra increment of length value (e.g., to have +1 extra value in lists).
-        list_required_with_length (obj:`bool`, optional): Whether each list *must* be present if the length
-            attribute is present (and > 0) in the input values. Default: False. If False, list length is only
-            checked for the lists that are not None.
-        min_length (int): minimum for list length value, overrides length_name value if that is smaller.
-            For example, to require list length 1 when length value is given as 0.
+        values (Dict):
+            dictionary of values to validate.
+        *field_names (str):
+            names of the instance variables that are a list and need checking.
+        length_name (str):
+            name of the instance variable that stores the expected length.
+        length_incr (int):
+            Optional extra increment of length value (e.g., to have +1 extra value in lists).
+        list_required_with_length (obj:`bool`, optional):
+            Whether each list *must* be present if the length attribute is present (and > 0) in the input values.
+            Default: False. If False, list length is only checked for the lists that are not None.
+        min_length (int):
+            minimum for list length value, overrides length_name value if that is smaller. For example, to require
+            list length 1 when length value is given as 0.
 
     Raises:
-        ValueError: When the number of values for any of the given field_names is not as expected.
+        ValueError:
+            When the number of values for any of the given field_names is not as expected.
 
     Returns:
-        Dict: Dictionary of validated values.
+        Dict:
+            Dictionary of validated values.
     """
 
     def _get_incorrect_length_validation_message() -> str:
@@ -139,24 +179,16 @@ def validate_correct_length(
                 f"List {field_name} cannot be missing if {length_name} is given."
             )
 
-        return field
-
     length = values.get(length_name)
     if length is None:
         # length attribute not present, possibly defer validation to a subclass.
         return values
 
-    requiredlength = max(length + length_incr, min_length)
+    requiredlength = max(int(length) + length_incr, min_length)
 
     for field_name in field_names:
         field = values.get(field_name)
-        values[field_name] = _validate_listfield_length(
-            field_name,
-            field,
-            requiredlength,
-        )
-
-    return values
+        _validate_listfield_length(field_name, field, requiredlength)
 
 
 def validate_forbidden_fields(
@@ -203,7 +235,7 @@ def validate_required_fields(
     conditional_field_name: str,
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
-) -> Dict:
+):
     """
     Validates whether the specified fields are provided, if `conditional_field_name` is equal to `conditional_value`.
     The equality check can be overridden with another comparison operator function.
@@ -233,11 +265,8 @@ def validate_required_fields(
                 f"{field} should be provided when {conditional_field_name} {operator_str(comparison_func)} {conditional_value}"
             )
 
-    return values
-
 
 def validate_conditionally(
-    cls,
     values: Dict,
     root_vldt: classmethod,
     conditional_field_name: str,
@@ -249,27 +278,30 @@ def validate_conditionally(
     The equality check can be overridden with another comparison operator function.
 
     Args:
-        cls: Reference to a class.
-        values (Dict): Dictionary of input class fields.
-        root_vldt (classmethod): A root validator that is to be called *if* the condition is satisfied.
-        conditional_field_name (str): Name of the instance variable that determines whether the root validator must be called or not.
-        conditional_value (Any): Value that the conditional field should be compared with to perform this validation.
-        comparison_func (Callable): Binary operator function, used to override the default "eq" check for the conditional field value.
+        values (Dict):
+            Dictionary of input class fields.
+        root_vldt (classmethod):
+            A root validator that is to be called *if* the condition is satisfied.
+        conditional_field_name (str):
+            Name of the instance variable that determines whether the root validator must be called or not.
+        conditional_value (Any):
+            Value that the conditional field should be compared with to perform this validation.
+        comparison_func (Callable):
+            Binary operator function, used to override the default "eq" check for the conditional field value.
 
     Returns:
-        Dict: Validated dictionary of input class fields.
+        Dict:
+            Validated dictionary of input class fields.
     """
     if (val := values.get(conditional_field_name)) is not None and comparison_func(
         val, conditional_value
     ):
         # Condition is met: call the actual root validator, passing on the attribute values.
-        root_vldt.__func__(cls, values)
-
-    return values
+        root_vldt(values)
 
 
 def validate_datetime_string(
-    field_value: Optional[str], field: ModelField
+    field_value: Optional[str], field: ValidationInfo
 ) -> Optional[str]:
     """Validate that a field value matches the expected datetime format.
 
@@ -303,7 +335,7 @@ def validate_datetime_string(
 
         if not result:
             raise ValueError(
-                f"Invalid datetime string for {field.alias}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
+                f"Invalid datetime string for {field.field_name}: '{field_value}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
             )
 
     return field_value  # this is the value written to the class field
@@ -349,63 +381,30 @@ def _try_get_default_value(
     Returns:
         Optional[str]: The field default that corresponds to the value. If nothing is found return None.
     """
-    if (field := c.__fields__.get(fieldname)) is None:
-        return None
+    stack = [c]
+    result = None
+    while stack:
+        current_class = stack.pop()
+        if not hasattr(current_class, "model_fields"):
+            continue
+        field = current_class.model_fields.get(fieldname)
+        if field is not None:
+            # In pydantic v2, default is accessed through default_factory or directly
+            if hasattr(field, "default_factory") and field.default_factory is not None:
+                default = field.default_factory()
+            else:
+                default = field.default
 
-    default = field.default
-
-    if default is not None and default.lower() == value.lower():
-        # If this class's default matches, directly return it to end the recursion.
-        return default
-
-    for sc in c.__subclasses__():
-        default = _try_get_default_value(sc, fieldname, value)
-        if default is not None:
-            return default
-
-    # Nothing found under c, return None to caller (e.g., to continue recursion).
-    return None
-
-
-def get_type_based_on_subclass_default_value(
-    cls: Type, fieldname: str, value: str
-) -> Optional[Type]:
-    """
-    Gets the type of the first subclass where the default value of the fieldname is equal
-    to the provided value. If there is no match in the subclass, it will recursively search
-    in the subclasses of the subclass.
-
-    Args:
-        cls (Type): The base type.
-        fieldname (str): The field name for which retrieve the default for.
-        value (str): The value to compare with.
-
-    Returns:
-        [type]: The type of the first subclass that has a default value for the provided fieldname
-        equal to the provided value. Returns None if the fieldname is not found in the subclasses
-        or if no match was found.
-    """
-    for c in cls.__subclasses__():
-        subclass_type = _get_type_based_on_default_value(c, fieldname, value)
-        if subclass_type is not None:
-            return subclass_type
-    return None
-
-
-def _get_type_based_on_default_value(cls, fieldname, value) -> Optional[Type]:
-    if (field := cls.__fields__.get(fieldname)) is None:
-        return None
-
-    default = field.default
-    if default is not None and default.lower() == value.lower():
-        return cls
-
-    for sc in cls.__subclasses__():
-        subclass_type = _get_type_based_on_default_value(sc, fieldname, value)
-        if subclass_type is not None:
-            return subclass_type
-
-    return None
+            if (
+                default is not None
+                and hasattr(default, "lower")
+                and default.lower() == value.lower()
+            ):
+                result = default
+                break
+        # Add subclasses to stack for further checking
+        stack.extend(current_class.__subclasses__())
+    return result
 
 
 class LocationValidationConfiguration(BaseModel):
@@ -469,9 +468,12 @@ def validate_location_specification(
     Validates for the locationType for nodeId and branchId.
 
     Args:
-        values (Dict): Dictionary of object's validated fields.
-        config (LocationValidationConfiguration, optional): Configuration for the location validation. Default is None.
-        field (LocationValidationFieldNames, optional): Fields names that should be used for the location validation. Default is None.
+        values (Dict):
+            Dictionary of object's validated fields.
+        config (LocationValidationConfiguration, optional):
+            Configuration for the location validation. Default is None.
+        fields (LocationValidationFieldNames, optional):
+            Fields names that should be used for the location validation. Default is None.
 
     Raises:
         ValueError: When exactly one of the following combinations were not given:
@@ -627,6 +629,8 @@ def rename_keys_for_backwards_compatibility(
     Returns:
         Dict: Dictionary where the provided keys are renamed.
     """
+    if not isinstance(values, dict):
+        return values
     for current_keyword, old_keywords in keys_to_rename.items():
         if current_keyword in values:
             continue
@@ -650,17 +654,21 @@ class UnknownKeywordErrorManager:
         self,
         data: Dict[str, Any],
         section_header: str,
-        fields: Dict[str, ModelField],
+        fields: Dict[str, FieldInfo],
         excluded_fields: Set[str],
     ) -> None:
         """
         Notify the user of unknown keywords.
 
         Args:
-            data (Dict[str, Any])           : Input data containing all properties which are checked on unknown keywords.
-            section_header (str)            : Header of the section in which unknown keys might be detected.
-            fields (Dict[str, ModelField])  : Known fields of the section.
-            excluded_fields (Set[str])      : Fields which should be excluded from the check for unknown keywords.
+            data (Dict[str, Any]):
+                Input data containing all properties which are checked on unknown keywords.
+            section_header (str):
+                Header of the section in which unknown keys might be detected.
+            fields (Dict[str, FieldInfo]):
+                Known fields of the section.
+            excluded_fields (Set[str]):
+                Fields which should be excluded from the check for unknown keywords.
         """
         unknown_keywords = self._get_all_unknown_keywords(data, fields, excluded_fields)
 
@@ -670,15 +678,21 @@ class UnknownKeywordErrorManager:
             )
 
     def _get_all_unknown_keywords(
-        self, data: Dict[str, Any], fields: Dict[str, ModelField], excluded_fields: Set
+        self,
+        data: Dict[str, Any],
+        fields: Dict[str, FieldInfo],
+        excluded_fields: Set,
     ) -> List[str]:
         """
         Get all unknown keywords in the data.
 
         Args:
-            data: Dict[str, Any]: Input data containing all properties which are checked on unknown keywords.
-            fields: Dict[str, ModelField]: Known fields of the Model.
-            excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
+            data: Dict[str, Any]:
+                Input data containing all properties which are checked on unknown keywords.
+            fields: Dict[str, FieldInfo]:
+                Known fields of the Model.
+            excluded_fields: Set[str]:
+                Fields which should be excluded from the check for unknown keywords.
 
         Returns:
             List[str]: List of unknown keywords.
@@ -692,24 +706,24 @@ class UnknownKeywordErrorManager:
 
     @staticmethod
     def _is_unknown_keyword(
-        keyword: str, fields: Dict[str, ModelField], excluded_fields: Set
-    ):
+        keyword: str, fields: Dict[str, FieldInfo], excluded_fields: Set
+    ) -> bool:
         """
         Check if the given field name equals to any of the model field names or aliases, if not, the function checks if
         the field is not in the excluded_fields parameter.
 
         Args:
             keyword: str: Name of the field.
-            fields: Dict[str, ModelField]: Known fields of the Model.
+            fields: Dict[str, FieldInfo]: Known fields of the Model.
             excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
 
         Returns:
             bool: True if the field is unknown (not a field name or alias and and not in the exclude list),
             False otherwise
         """
-        exists = any(
-            keyword == model_field.name or keyword == model_field.alias
-            for model_field in fields.values()
+        exists = keyword in fields or any(
+            hasattr(field_info, "alias") and keyword == field_info.alias
+            for field_info in fields.values()
         )
         # the field is not in the known fields, check if it should be excluded
         unknown = not exists and keyword not in excluded_fields

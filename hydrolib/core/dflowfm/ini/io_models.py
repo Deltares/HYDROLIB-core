@@ -1,7 +1,7 @@
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
-from pydantic.v1 import Field
+from pydantic import Field, field_validator
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.base.utils import to_key
@@ -14,7 +14,7 @@ class CommentBlock(BaseModel):
         lines (List[str]): The actual lines of the CommentBlock
     """
 
-    lines: List[str]
+    lines: List[str] = Field(default_factory=list)
 
 
 class Property(BaseModel):
@@ -27,14 +27,21 @@ class Property(BaseModel):
     """
 
     key: str
-    value: Optional[str]
-    comment: Optional[str]
+    value: Optional[str] = None
+    comment: Optional[str] = None
 
     def get_item(self):
         return {self.key: self.value}
 
     def get_comment(self):
         return {self.key: self.comment}
+
+    @field_validator("value", mode="before")
+    def make_value_str(cls, value: Any) -> Optional[str]:
+        """Ensure that the value is always a string, even if it is None."""
+        if value is None:
+            return None
+        return f"{value}"
 
 
 ContentElement = Union[Property, CommentBlock]
@@ -80,14 +87,14 @@ class Section(BaseModel):
     """
 
     header: str = Field(alias="_header")
-    content: List[ContentElement]
+    content: List[ContentElement] = Field(default_factory=list)
 
     # these are primarily relevant for bc files
-    datablock: Optional[Datablock]
+    datablock: Optional[Datablock] = None
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["by_alias"] = True
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     def flatten(self, duplicate_key_as_list=True, with_comments=True) -> Dict:
         converted_content = self._convert_section_content(
@@ -97,7 +104,7 @@ class Section(BaseModel):
         return {**underlying_dict, **converted_content}
 
     def _convert_section_to_dict(self) -> Dict:
-        return self.dict(
+        return self.model_dump(
             exclude={
                 "start_line",
                 "end_line",

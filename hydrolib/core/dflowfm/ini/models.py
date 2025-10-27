@@ -3,8 +3,8 @@ from abc import ABC
 from enum import Enum
 from inspect import isclass
 from math import isnan
-from re import compile
 from typing import (
+    Annotated,
     Any,
     Callable,
     List,
@@ -18,9 +18,16 @@ from typing import (
 )
 
 from pandas import DataFrame
-from pydantic.v1 import Extra, Field, root_validator
-from pydantic.v1.class_validators import validator
-from pydantic.v1.fields import ModelField
+from pydantic import (
+    BeforeValidator,
+    ConfigDict,
+    Field,
+    GetCoreSchemaHandler,
+    field_validator,
+    model_validator,
+)
+from pydantic.fields import FieldInfo
+from pydantic_core import core_schema
 
 from hydrolib.core import __version__ as version
 from hydrolib.core.base.file_manager import FilePathStyleConverter
@@ -30,6 +37,7 @@ from hydrolib.core.base.models import (
     ModelSaveSettings,
     ParsableFileModel,
 )
+from hydrolib.core.base.utils import FortranScientificNotationConverter
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,
@@ -42,10 +50,7 @@ from hydrolib.core.dflowfm.ini.serializer import (
     INISerializerConfig,
     write_ini,
 )
-from hydrolib.core.dflowfm.ini.util import (
-    UnknownKeywordErrorManager,
-    make_list_validator,
-)
+from hydrolib.core.dflowfm.ini.util import UnknownKeywordErrorManager, make_list
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +91,7 @@ class INIBasedModel(BaseModel, ABC):
             ```python
             >>> from hydrolib.core.dflowfm.ini.io_models import Section
             >>> section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])
-            >>> model = MyModel.parse_obj(section.flatten())
+            >>> model = MyModel.model_validate(section.flatten())
             >>> print(model.field_a)
             value
 
@@ -110,13 +115,12 @@ class INIBasedModel(BaseModel, ABC):
 
     _header: str = ""
     _file_path_style_converter = FilePathStyleConverter()
-    _scientific_notation_regex = compile(
-        r"([\d.]+)([dD])([+-]?\d{1,3})"
-    )  # matches a float: 1d9, 1D-3, 1.D+4, etc.
-
-    class Config:
-        extra = Extra.ignore
-        arbitrary_types_allowed = False
+    model_config = ConfigDict(
+        extra="ignore",
+        arbitrary_types_allowed=False,
+        populate_by_name=True,
+        error_url_template=None,
+    )
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -176,8 +180,13 @@ class INIBasedModel(BaseModel, ABC):
             str: the delimiter string to be used for serializing the given field.
         """
         delimiter = None
-        if (field := cls.__fields__.get(field_key)) and isinstance(field, ModelField):
-            delimiter = field.field_info.extra.get("delimiter")
+        field_info = cls.model_fields.get(field_key)
+        if (
+            (field := field_info)
+            and isinstance(field, FieldInfo)
+            and field.json_schema_extra
+        ):
+            delimiter = field.json_schema_extra.get("delimiter")
         if not delimiter:
             delimiter = cls.get_list_delimiter()
 
@@ -193,13 +202,12 @@ class INIBasedModel(BaseModel, ABC):
                 Indicates that only known types are allowed.
         """
 
-        class Config:
-            extra = Extra.allow
-            arbitrary_types_allowed = False
+        model_config = ConfigDict(extra="allow", arbitrary_types_allowed=False)
 
     comments: Optional[Comments] = Comments()
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def _validate_unknown_keywords(cls, values):
         """Validates fields and raises errors for unknown keywords.
 
@@ -218,12 +226,13 @@ class INIBasedModel(BaseModel, ABC):
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
-                cls.__fields__,
+                cls.model_fields,
                 cls._exclude_fields() | do_not_validate,
             )
         return values
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def _skip_nones_and_set_header(cls, values):
         """Drop None fields for known fields.
 
@@ -235,9 +244,14 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             dict: Updated field values with None values removed.
         """
+        # Convert Section to dictionary if needed
+        values = cls._convert_section_to_dict(values)
+        if not isinstance(values, dict):
+            return values
+
         dropkeys = []
         for k, v in values.items():
-            if v is None and k in cls.__fields__.keys():
+            if v is None and k in cls.model_fields.keys():
                 dropkeys.append(k)
 
         logger.info(f"Dropped unset keys: {dropkeys}")
@@ -249,8 +263,9 @@ class INIBasedModel(BaseModel, ABC):
 
         return values
 
-    @validator("comments", always=True, allow_reuse=True)
-    def comments_matches_has_comments(cls, v: Any) -> Any:
+    @field_validator("comments", mode="after")
+    @classmethod
+    def comments_matches_has_comments(cls, v):
         """
         Validates the presence of comments if supported by the model.
 
@@ -265,47 +280,90 @@ class INIBasedModel(BaseModel, ABC):
             v = None
         return v
 
-    @validator("*", pre=True, allow_reuse=True)
-    def replace_fortran_scientific_notation_for_floats(
-        cls, value: Any, field: Field
-    ) -> Any:
+    def __setattr__(self, key, value) -> None:
         """
-        Converts FORTRAN-style scientific notation to standard notation for float fields.
-
-        Args:
-            value (Any): The field value to process.
-            field (Field): The field being processed.
-
-        Returns:
-            Any: The processed field value.
+        Custom setter to handle Fortran-style scientific notation conversion
+        for float fields when setting attributes.
         """
-        if field.type_ != float:
-            return value
+        field = self.__class__.model_fields.get(key)
+        if field is None:
+            super().__setattr__(key, value)
+            return
 
-        return cls._replace_fortran_scientific_notation(value)
+        field_type = field.annotation
+        if field_type in (float, List[float]):
+            value = FortranScientificNotationConverter.convert(value)
+        super().__setattr__(key, value)
 
     @classmethod
-    def _replace_fortran_scientific_notation(cls, value: Any) -> Any:
+    def preprocess_input(cls, values: dict) -> dict:
+        """Pre-process input values for the model.
+
+        The preprocess_input method is called before validation and triggers the following actions:
+            - Convert Fortran-style scientific notation to Python float.
         """
-        Replaces FORTRAN-style scientific notation in a value.
+        if isinstance(values, dict):
+            new_values = FortranScientificNotationConverter.convert_fields(
+                values, cls.model_fields
+            )
+        else:
+            new_values = values
+
+        return new_values
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        schema = handler(source_type)
+
+        return core_schema.no_info_before_validator_function(
+            cls.preprocess_input,  # this is called BEFORE validation
+            schema,
+        )
+
+    @classmethod
+    def _convert_section_to_dict(cls, value: Any) -> Any:
+        """
+        Converts a Section object to a dictionary if needed.
 
         Args:
-            value (Any): The value to process.
+            value (Any): The value to convert.
 
         Returns:
-            Any: The processed value.
+            Any: The converted value (dictionary) or the original value if not a Section.
         """
-        if isinstance(value, str):
-            return cls._scientific_notation_regex.sub(r"\1e\3", value)
-        if isinstance(value, list):
-            for i, v in enumerate(value):
-                if isinstance(v, str):
-                    value[i] = cls._scientific_notation_regex.sub(r"\1e\3", v)
-
+        if isinstance(value, Section):
+            return value.flatten(
+                cls._duplicate_keys_as_list(), cls._supports_comments()
+            )
         return value
 
     @classmethod
-    def validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
+    def _extract_file_model_from_section(
+        cls, section: Section, key: str, file_model_class: Type
+    ):
+        """Extracts a file model from a Section object.
+
+        Args:
+            section (Section):
+                The Section object to extract from.
+            key (str):
+                The key to look for in the Section.
+            file_model_class (Type):
+                The class to use for creating the file model.
+
+        Returns:
+            Optional[Any]:
+                The file model if found, None otherwise.
+        """
+        for prop in section.content:
+            if isinstance(prop, Property) and prop.key.lower() == key.lower():
+                return file_model_class(prop.value)
+        return None
+
+    @classmethod
+    def model_validate(cls: Type["INIBasedModel"], value: Any) -> "INIBasedModel":
         """
         Validates a value as an instance of INIBasedModel.
 
@@ -315,12 +373,8 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             INIBasedModel: The validated instance.
         """
-        if isinstance(value, Section):
-            value = value.flatten(
-                cls._duplicate_keys_as_list(), cls._supports_comments()
-            )
-
-        return super().validate(value)
+        value = cls._convert_section_to_dict(value)
+        return super().model_validate(value)
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
@@ -398,13 +452,14 @@ class INIBasedModel(BaseModel, ABC):
             Section: The INI section representation of the model.
         """
         props = []
+        cls_fields = type(self).model_fields  # cache the class-level dict
         for key, value in self:
             if not self._should_be_serialized(key, value, save_settings):
                 continue
 
             field_key = key
-            if key in self.__fields__:
-                key = self.__fields__[key].alias
+            if key in cls_fields:
+                key = cls_fields[key].alias
 
             prop = Property(
                 key=key,
@@ -431,14 +486,15 @@ class INIBasedModel(BaseModel, ABC):
         if key in self._exclude_fields():
             return False
 
-        if save_settings._exclude_unset and key not in self.__fields_set__:
+        if save_settings._exclude_unset and key not in self.model_fields_set:
             return False
 
-        field = self.__fields__.get(key)
+        cls_fields = type(self).model_fields
+        field = cls_fields.get(key)
         if not field:
             return value is not None
 
-        field_type = field.type_
+        field_type = field.annotation
         if self._is_union(field_type):
             return value is not None or self._union_has_filemodel(field_type)
 
@@ -486,7 +542,7 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the type is a list; otherwise, False.
         """
-        return get_origin(field_type) is List
+        return get_origin(field_type) is List or get_origin(field_type) is list
 
     @staticmethod
     def _value_is_not_none_or_type_is_filemodel(field_type: type, value: Any) -> bool:
@@ -554,9 +610,47 @@ class DataBlockINIBasedModel(INIBasedModel):
         - Data blocks are converted to a serialized format for writing to INI files.
     """
 
-    datablock: Datablock = Field(default_factory=list)
+    datablock: Annotated[Datablock, BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
 
-    _make_lists = make_list_validator("datablock")
+    @staticmethod
+    def _is_float(value: str) -> bool:
+        """
+        Determines whether a value is a float.
+
+        Args:
+            value (str): The value to check.
+
+        Returns:
+            bool: True if the value can be converted to a float; otherwise, False.
+        """
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    @field_validator("datablock", mode="before")
+    @classmethod
+    def _convert_to_float(cls, datablock: Datablock) -> Datablock:
+        """
+        Validates that all values in the datablock are either floats or strings.
+
+        Args:
+            datablock (Datablock): The datablock to validate.
+
+        Returns:
+            Datablock: The validated datablock.
+
+        Raises:
+            ValueError: If any value in the datablock is not a float or string.
+        """
+        for r, row in enumerate(datablock):
+            for c, value in enumerate(row):
+                if isinstance(value, str) and cls._is_float(value):
+                    datablock[r][c] = float(value)
+        return datablock
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -648,7 +742,8 @@ class DataBlockINIBasedModel(INIBasedModel):
 
         return value
 
-    @validator("datablock")
+    @field_validator("datablock", mode="after")
+    @classmethod
     def _validate_no_nans_are_present(cls, datablock: Datablock) -> Datablock:
         """Validate that the datablock does not have any NaN values.
 
@@ -725,7 +820,7 @@ class INIModel(ParsableFileModel):
         for key, value in self:
             if key in self._exclude_fields() or value is None:
                 continue
-            if save_settings._exclude_unset and key not in self.__fields_set__:
+            if save_settings._exclude_unset and key not in self.model_fields_set:
                 continue
             if isinstance(value, list):
                 for v in value:

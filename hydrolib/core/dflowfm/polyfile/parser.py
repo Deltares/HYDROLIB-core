@@ -5,6 +5,8 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
+from pydantic import Field
+
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
@@ -31,7 +33,7 @@ class ParseMsg(BaseModel):
     line_start: int
     line_end: int
 
-    column: Optional[Tuple[int, int]]
+    column: Optional[Tuple[int, int]] = Field(default=None)
     reason: str
 
     def format_parsemsg_to_string(self, file_path: Optional[Path] = None) -> str:

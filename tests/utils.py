@@ -8,17 +8,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable, Generator, Generic, List, Optional, TypeVar
 
-from pydantic.v1.generics import GenericModel
+from pydantic import BaseModel
 
 from hydrolib.core.base.file_manager import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
-VERSION_LINE_PATTERN = (
-    r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$"
-)
+VERSION_LINE_PATTERN = r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:[a-zA-Z]+\d*)?(?:\.[\w]+)*\s*$"
 
 
-class WrapperTest(GenericModel, Generic[TWrapper]):
+class WrapperTest(BaseModel, Generic[TWrapper]):
     val: TWrapper
 
 
@@ -238,6 +236,7 @@ def compare_two_files(
         ```python
         >>> compare_two_files("file1.txt", "file2.txt") # doctest +SKIP
         ```
+
     Notes:
         - The function ignores the trailing blank lines.
     """
