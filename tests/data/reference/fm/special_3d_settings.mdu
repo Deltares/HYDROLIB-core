@@ -185,6 +185,7 @@ stanton                    = 0.0013  # Coefficient for convective heat flux, if 
 dalton                     = 0.0013  # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
 tempMax                    = 50.0    # Limit the temperature
 tempMin                    = -5.0    # Limit the temperature
+salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.
 saliMax                    = -999.0  # Limit the salinity
 saliMin                    = 0.0     # Limit the salinity
 heat_eachStep              = 1       # 1=heat each timestep, 0=heat each usertimestep
