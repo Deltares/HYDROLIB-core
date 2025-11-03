@@ -30,6 +30,8 @@ from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
 
+DEPRECATED_VARIABLE = "Deprecated variable."
+
 
 class AutoStartOption(IntEnum):
     """
@@ -560,6 +562,10 @@ class Physics(INIBasedModel):
         heat_eachstep: Optional[str] = Field(
             "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
         )
+        rhoairrhowater: Optional[str] = Field(
+            DEPRECATED_VARIABLE,
+            alias="rhoAirRhoWater",
+        )
         nudgetimeuni: Optional[str] = Field(
             "Uniform nudge relaxation time [s]", alias="nudgeTimeUni"
         )
@@ -618,6 +624,7 @@ class Physics(INIBasedModel):
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
+    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
     nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
     iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
