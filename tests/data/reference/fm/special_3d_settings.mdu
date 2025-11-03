@@ -112,7 +112,6 @@ maxitVerticalForesterTem  = 0       # Forester iterations for temperature (0: no
 turbulenceModel           = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
 turbulenceAdvection       = 3       # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
 antiCreep                 = 0       # Include anti-creep calculation (0: no, 1: yes)
-barocZLayBed              = 0       # Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)
 barocPOnBnd               = 1
 maxWaterLevelDiff         = 0.0     # Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.
 maxVelocityDiff           = 0.0     # Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.
