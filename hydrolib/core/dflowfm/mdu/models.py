@@ -553,9 +553,9 @@ class Physics(INIBasedModel):
         tempmin: Optional[str] = Field(
             "Limit the temperature to min value [°C]", alias="tempMin"
         )
-        salinitydependentfreezingppoint: Optional[str] = Field(
-            "Enable salinity-dependent freezing point (0 = no, 1 = yes). `tempMin` should be below 0 degrees Celsius.",
-            alias="salinityDependentFreezingPoint"
+        salinitydependentfreezingpoint: Optional[str] = Field(
+            "Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.",
+            alias="salinityDependentFreezingPoint",
         )
         salimax: Optional[str] = Field(
             "Limit for salinity to max value [ppt]", alias="saliMax"
@@ -625,7 +625,7 @@ class Physics(INIBasedModel):
     dalton: float = Field(0.0013, alias="dalton")
     tempmax: float = Field(-999.0, alias="tempMax")
     tempmin: float = Field(0.0, alias="tempMin")
-    salinitydependentfreezingppoint: bool = Field(False, alias="salinityDependentFreezingPoint")
+    salinitydependentfreezingpoint: bool = Field(False, alias="salinityDependentFreezingPoint")
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
