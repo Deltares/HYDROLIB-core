@@ -30,6 +30,8 @@ from hydrolib.core.dflowfm.structure.models import StructureModel
 from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
 
+DEPRECATED_VARIABLE = "Deprecated variable."
+
 
 class AutoStartOption(IntEnum):
     """
@@ -182,7 +184,7 @@ class Numerics(INIBasedModel):
             "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
         )
         baroczlaybed: Optional[str] = Field(
-            "Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)",
+            DEPRECATED_VARIABLE,
             alias="barocZLayBed",
         )
         barocponbnd: Optional[str] = Field(
@@ -347,7 +349,7 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
-    baroczlaybed: bool = Field(False, alias="barocZLayBed")
+    baroczlaybed: bool = Field(None, alias="barocZLayBed")
     barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
@@ -551,6 +553,10 @@ class Physics(INIBasedModel):
         tempmin: Optional[str] = Field(
             "Limit the temperature to min value [°C]", alias="tempMin"
         )
+        salinitydependentfreezingpoint: Optional[str] = Field(
+            "Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.",
+            alias="salinityDependentFreezingPoint",
+        )
         salimax: Optional[str] = Field(
             "Limit for salinity to max value [ppt]", alias="saliMax"
         )
@@ -561,7 +567,7 @@ class Physics(INIBasedModel):
             "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
         )
         rhoairrhowater: Optional[str] = Field(
-            "'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()",
+            DEPRECATED_VARIABLE,
             alias="rhoAirRhoWater",
         )
         nudgetimeuni: Optional[str] = Field(
@@ -619,10 +625,13 @@ class Physics(INIBasedModel):
     dalton: float = Field(0.0013, alias="dalton")
     tempmax: float = Field(-999.0, alias="tempMax")
     tempmin: float = Field(0.0, alias="tempMin")
+    salinitydependentfreezingpoint: bool = Field(
+        False, alias="salinityDependentFreezingPoint"
+    )
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
-    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
+    rhoairrhowater: int = Field(None, alias="rhoAirRhoWater")
     nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
     iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
@@ -699,6 +708,12 @@ class Wind(INIBasedModel):
         computedairdensity: Optional[str] = Field(
             "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
         )
+        rhowaterinwindstress: Optional[str] = Field(
+            "Water density used in computation of wind stress (0: space and "
+            "time constant value specified via keyword Rhomean, 1: space and "
+            "time varying local (surface) density of model)",
+            alias="rhoWaterInWindStress",
+        )
         stresstowind: Optional[str] = Field(
             "Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.",
             alias="stressToWind",
@@ -718,6 +733,7 @@ class Wind(INIBasedModel):
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
     computedairdensity: bool = Field(False, alias="computedAirdensity")
+    rhowaterinwindstress: int = Field(0, alias="rhoWaterInWindStress")
     stresstowind: bool = Field(False, alias="stressToWind")
 
     @classmethod
