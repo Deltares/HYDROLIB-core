@@ -1,3 +1,25 @@
+## 0.9.9 (2025-11-03)
+
+### Feat
+
+- **FMModel**: update physics parameters and handle new keywords (#994)
+- **FMModel**: update physics parameters and handle new keywords
+- **extforce_convert**: enhance parameter and prefix quantity handling (#976)
+- **extforce_convert**: enhance parameter and prefix quantity handling
+
+### Fix
+
+- **extforce_convert**: ensure case-insensitive matching for unsupported quantities (#988)
+- **extforce_convert**: ensure case-insensitive matching for unsupported quantities
+- **average-type**: add average type as mean if not given (#991)
+- **extforce_convert**: correct averaging type parsing and mapping (#987)
+- **extforce_convert**: correct averaging type parsing and mapping
+- **mdu_parser**: improve `path_relative_to_parent` handling (#982)
+
+### Refactor
+
+- **mdu_parser**: improve `path_relative_to_parent` handling
+
 ## 0.9.8 (2025-10-20)
 
 ### Feat
