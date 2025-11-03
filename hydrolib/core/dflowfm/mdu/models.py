@@ -184,7 +184,7 @@ class Numerics(INIBasedModel):
             "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
         )
         baroczlaybed: Optional[str] = Field(
-            "Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)",
+            DEPRECATED_VARIABLE,
             alias="barocZLayBed",
         )
         barocponbnd: Optional[str] = Field(
@@ -349,7 +349,7 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
-    baroczlaybed: bool = Field(False, alias="barocZLayBed")
+    baroczlaybed: bool = Field(None, alias="barocZLayBed")
     barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
@@ -553,6 +553,10 @@ class Physics(INIBasedModel):
         tempmin: Optional[str] = Field(
             "Limit the temperature to min value [°C]", alias="tempMin"
         )
+        salinitydependentfreezingppoint: Optional[str] = Field(
+            "Enable salinity-dependent freezing point (0 = no, 1 = yes). `tempMin` should be below 0 degrees Celsius.",
+            alias="salinityDependentFreezingPoint"
+        )
         salimax: Optional[str] = Field(
             "Limit for salinity to max value [ppt]", alias="saliMax"
         )
@@ -624,7 +628,7 @@ class Physics(INIBasedModel):
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
-    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
+    rhoairrhowater: int = Field(None, alias="rhoAirRhoWater")
     nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
     iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
