@@ -560,10 +560,6 @@ class Physics(INIBasedModel):
         heat_eachstep: Optional[str] = Field(
             "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
         )
-        rhoairrhowater: Optional[str] = Field(
-            "'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()",
-            alias="rhoAirRhoWater",
-        )
         nudgetimeuni: Optional[str] = Field(
             "Uniform nudge relaxation time [s]", alias="nudgeTimeUni"
         )
@@ -622,7 +618,6 @@ class Physics(INIBasedModel):
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
-    rhoairrhowater: int = Field(0, alias="rhoAirRhoWater")
     nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
     iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
@@ -699,6 +694,12 @@ class Wind(INIBasedModel):
         computedairdensity: Optional[str] = Field(
             "Compute air density yes/no (), 1/0, default 0.", alias="computedAirdensity"
         )
+        rhowaterinwindstress: Optional[str] = Field(
+            "Water density used in computation of wind stress (0: space and "
+            "time constant value specified via keyword Rhomean, 1: space and "
+            "time varying local (surface) density of model)",
+            alias="rhoWaterInWindStress",
+        )
         stresstowind: Optional[str] = Field(
             "Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.",
             alias="stressToWind",
@@ -718,6 +719,7 @@ class Wind(INIBasedModel):
     pavbnd: float = Field(0.0, alias="pavBnd")
     pavini: float = Field(0.0, alias="pavIni")
     computedairdensity: bool = Field(False, alias="computedAirdensity")
+    rhowaterinwindstress: int = Field(0, alias="rhoWaterInWindStress")
     stresstowind: bool = Field(False, alias="stressToWind")
 
     @classmethod
