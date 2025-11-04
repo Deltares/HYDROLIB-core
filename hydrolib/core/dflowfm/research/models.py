@@ -528,7 +528,7 @@ class ResearchPhysics(Physics):
             "Equilibrium spiral flow intensity (0: no, 1: yes).", alias="equili"
         )
         research_allowcoolingbelowzero: Optional[str] = Field(
-            "False	0 = no, 1 = yes.", alias="allowcoolingbelowzero"
+            DEPRECATED_KEYWORD, alias="allowcoolingbelowzero"
         )
         research_soiltempthick: Optional[str] = Field(
             "Use soil temperature buffer if > 0.", alias="soiltempthick"
