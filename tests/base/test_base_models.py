@@ -13,15 +13,14 @@ from hydrolib.core.base.models import (
     _should_traverse,
 )
 from tests.base.data import (
-    SimpleTestModel,
-    ModelWithLinks,
-    ChildTestModel,
-    ParentTestModel,
     BaseModelWithFunc,
     ChildModelWithFunc,
+    ChildTestModel,
+    ModelWithLinks,
     ParentModelWithFunc,
+    ParentTestModel,
+    SimpleTestModel,
 )
-
 
 
 class TestBaseModel(unittest.TestCase):
