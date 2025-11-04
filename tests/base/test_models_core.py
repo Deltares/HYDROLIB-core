@@ -16,13 +16,13 @@ from hydrolib.core.base.models import (
 from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
 from tests.base.data import (
-    SimpleTestModel,
-    ModelWithLinks,
-    ChildTestModel,
-    ParentTestModel,
     BaseModelWithFunc,
     ChildModelWithFunc,
+    ChildTestModel,
+    ModelWithLinks,
     ParentModelWithFunc,
+    ParentTestModel,
+    SimpleTestModel,
 )
 
 
