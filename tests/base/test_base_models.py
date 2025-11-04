@@ -22,7 +22,7 @@ class SimpleTestModel(BaseModel):
     value: int
 
 
-class TestModelWithLinks(BaseModel):
+class ModelWithLinks(BaseModel):
     """A test model that overrides link methods."""
 
     name: str
@@ -34,13 +34,13 @@ class TestModelWithLinks(BaseModel):
         return True
 
 
-class ChildTestModel(TestModelWithLinks):
+class ChildTestModel(ModelWithLinks):
     """A child test model for hierarchy testing."""
 
     value: int
 
 
-class ParentTestModel(TestModelWithLinks):
+class ParentTestModel(ModelWithLinks):
     """A parent test model for hierarchy testing."""
 
     child: ChildTestModel
@@ -88,7 +88,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_file_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_file_link())
 
     def test_is_intermediate_link(self):
@@ -98,7 +98,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_intermediate_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_intermediate_link())
 
     def test_show_tree(self):
