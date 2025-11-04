@@ -47,7 +47,7 @@ class ParentTestModel(ModelWithLinks):
     children: List[ChildTestModel] = []
 
 
-class TestBaseModelWithFunc(BaseModel):
+class BaseModelWithFunc(BaseModel):
     """A test base model that can track function calls."""
 
     def test_func(self):
@@ -55,13 +55,13 @@ class TestBaseModelWithFunc(BaseModel):
         pass
 
 
-class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
+class ChildModelWithFunc(BaseModelWithFunc, ChildTestModel):
     """A child model that includes the test_func method."""
 
     pass
 
 
-class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
+class ParentModelWithFunc(BaseModelWithFunc, ParentTestModel):
     """A parent model that includes the test_func method."""
 
     pass
@@ -123,7 +123,7 @@ class TestBaseModel(unittest.TestCase):
             called_models.append(self)
 
         # Patch the test_func method
-        with patch.object(TestBaseModelWithFunc, "test_func", test_func):
+        with patch.object(BaseModelWithFunc, "test_func", test_func):
             child1 = ChildModelWithFunc(name="child1", value=1)
             child2 = ChildModelWithFunc(name="child2", value=2)
             child3 = ChildModelWithFunc(name="child3", value=3)
@@ -149,7 +149,7 @@ class TestBaseModel(unittest.TestCase):
 
 
 # Common test model classes for ParsableFileModel tests
-class TestParsableModelBase(ParsableFileModel):
+class ParsableModelBase(ParsableFileModel):
     """Base class for parsable file model tests."""
 
     name: str = "default"
@@ -172,7 +172,7 @@ class TestParsableModelBase(ParsableFileModel):
         return MagicMock(return_value={"name": "parsed", "value": 42})
 
 
-class TestSaveModelBase(TestParsableModelBase):
+class SaveModelBase(ParsableModelBase):
     """Base class for testing save functionality."""
 
     @property
@@ -189,7 +189,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = TestParsableModelBase
+        self.TestParsableModel = ParsableModelBase
 
     def test_load(self):
         """Test _load method."""
@@ -220,7 +220,7 @@ class TestParsableFileModel(unittest.TestCase):
         mock_serializer = MagicMock()
 
         # Create a test model class that uses the mock serializer
-        class TestSaveModel(TestSaveModelBase):
+        class TestSaveModel(SaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
@@ -256,7 +256,7 @@ class TestParsableFileModel(unittest.TestCase):
         mock_serializer = MagicMock()
 
         # Create a test model class that uses the mock serializer
-        class TestSerializeModel(TestSaveModelBase):
+        class TestSerializeModel(SaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
