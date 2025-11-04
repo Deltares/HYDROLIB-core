@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
+from typing import Any, List
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
@@ -24,8 +24,6 @@ from tests.base.data import (
     ChildModelWithFunc,
     ParentModelWithFunc,
 )
-
-
 
 
 class ParsableModelBase(ParsableFileModel):
