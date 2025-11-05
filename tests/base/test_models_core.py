@@ -8,13 +8,10 @@ from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     ModelSaveSettings,
     ModelTreeTraverser,
-    ParsableFileModel,
     SerializerConfig,
     _should_execute,
     _should_traverse,
 )
-from hydrolib.core.base.parser import DummmyParser
-from hydrolib.core.base.serializer import DummySerializer
 from tests.base.data import (
     BaseModelWithFunc,
     ChildModelWithFunc,
@@ -22,31 +19,9 @@ from tests.base.data import (
     ModelWithLinks,
     ParentModelWithFunc,
     ParentTestModel,
+    ParsableModelWithDummies,
     SimpleTestModel,
 )
-
-
-class ParsableModelBase(ParsableFileModel):
-    """Base class for parsable file model tests."""
-
-    name: str = "default"
-    value: int = 0
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "test"
-
-    @classmethod
-    def _ext(cls) -> str:
-        return ".test"
-
-    @classmethod
-    def _get_serializer(cls):
-        return DummySerializer.serialize
-
-    @classmethod
-    def _get_parser(cls):
-        return DummmyParser.parse
 
 
 class TestBaseModelFunctions(unittest.TestCase):
@@ -248,7 +223,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = ParsableModelBase
+        self.TestParsableModel = ParsableModelWithDummies
 
     def test_get_quantity_unit(self):
         """Test _get_quantity_unit method with different quantity types."""

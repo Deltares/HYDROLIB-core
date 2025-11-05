@@ -1,13 +1,12 @@
 import unittest
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
 from hydrolib.core.base.models import (
     BaseModel,
     DiskOnlyFileModel,
-    ParsableFileModel,
     SerializerConfig,
     _should_execute,
     _should_traverse,
@@ -19,6 +18,8 @@ from tests.base.data import (
     ModelWithLinks,
     ParentModelWithFunc,
     ParentTestModel,
+    ParsableModelWithMocks,
+    SaveModelBase,
     SimpleTestModel,
 )
 
@@ -104,48 +105,12 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsNone(model._get_identifier({"name": "test", "value": 42}))
 
 
-# Common test model classes for ParsableFileModel tests
-class ParsableModelBase(ParsableFileModel):
-    """Base class for parsable file model tests."""
-
-    name: str = "default"
-    value: int = 0
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "test"
-
-    @classmethod
-    def _ext(cls) -> str:
-        return ".test"
-
-    @classmethod
-    def _get_serializer(cls):
-        return MagicMock()
-
-    @classmethod
-    def _get_parser(cls):
-        return MagicMock(return_value={"name": "parsed", "value": 42})
-
-
-class SaveModelBase(ParsableModelBase):
-    """Base class for testing save functionality."""
-
-    @property
-    def _resolved_filepath(self):
-        return Path(f"{self.__class__.__name__.lower()}.test")
-
-    def _load(self, filepath: Path) -> Dict:
-        # Override _load to avoid file not found error
-        return {"name": self.__class__.__name__.lower(), "value": 100}
-
-
 class TestParsableFileModel(unittest.TestCase):
     """Test cases for the ParsableFileModel class."""
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = ParsableModelBase
+        self.TestParsableModel = ParsableModelWithMocks
 
     def test_load(self):
         """Test _load method."""
