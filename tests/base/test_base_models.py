@@ -1,70 +1,27 @@
 import unittest
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
 from hydrolib.core.base.models import (
     BaseModel,
     DiskOnlyFileModel,
-    ParsableFileModel,
     SerializerConfig,
     _should_execute,
     _should_traverse,
 )
-
-
-# Common test model classes to reduce duplication
-class SimpleTestModel(BaseModel):
-    """A simple test model with basic properties."""
-
-    name: str
-    value: int
-
-
-class TestModelWithLinks(BaseModel):
-    """A test model that overrides link methods."""
-
-    name: str
-
-    def is_file_link(self) -> bool:
-        return True
-
-    def is_intermediate_link(self) -> bool:
-        return True
-
-
-class ChildTestModel(TestModelWithLinks):
-    """A child test model for hierarchy testing."""
-
-    value: int
-
-
-class ParentTestModel(TestModelWithLinks):
-    """A parent test model for hierarchy testing."""
-
-    child: ChildTestModel
-    children: List[ChildTestModel] = []
-
-
-class TestBaseModelWithFunc(BaseModel):
-    """A test base model that can track function calls."""
-
-    def test_func(self):
-        """Test function that can be used to track calls."""
-        pass
-
-
-class ChildModelWithFunc(TestBaseModelWithFunc, ChildTestModel):
-    """A child model that includes the test_func method."""
-
-    pass
-
-
-class ParentModelWithFunc(TestBaseModelWithFunc, ParentTestModel):
-    """A parent model that includes the test_func method."""
-
-    pass
+from tests.base.data import (
+    BaseModelWithFunc,
+    ChildModelWithFunc,
+    ChildTestModel,
+    ModelWithLinks,
+    ParentModelWithFunc,
+    ParentTestModel,
+    ParsableModelWithMocks,
+    SaveModelBase,
+    SimpleTestModel,
+)
 
 
 class TestBaseModel(unittest.TestCase):
@@ -88,7 +45,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_file_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_file_link())
 
     def test_is_intermediate_link(self):
@@ -98,7 +55,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertFalse(model.is_intermediate_link())
 
         # Test overridden implementation
-        model_with_links = TestModelWithLinks(name="test")
+        model_with_links = ModelWithLinks(name="test")
         self.assertTrue(model_with_links.is_intermediate_link())
 
     def test_show_tree(self):
@@ -123,7 +80,7 @@ class TestBaseModel(unittest.TestCase):
             called_models.append(self)
 
         # Patch the test_func method
-        with patch.object(TestBaseModelWithFunc, "test_func", test_func):
+        with patch.object(BaseModelWithFunc, "test_func", test_func):
             child1 = ChildModelWithFunc(name="child1", value=1)
             child2 = ChildModelWithFunc(name="child2", value=2)
             child3 = ChildModelWithFunc(name="child3", value=3)
@@ -148,48 +105,12 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsNone(model._get_identifier({"name": "test", "value": 42}))
 
 
-# Common test model classes for ParsableFileModel tests
-class TestParsableModelBase(ParsableFileModel):
-    """Base class for parsable file model tests."""
-
-    name: str = "default"
-    value: int = 0
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "test"
-
-    @classmethod
-    def _ext(cls) -> str:
-        return ".test"
-
-    @classmethod
-    def _get_serializer(cls):
-        return MagicMock()
-
-    @classmethod
-    def _get_parser(cls):
-        return MagicMock(return_value={"name": "parsed", "value": 42})
-
-
-class TestSaveModelBase(TestParsableModelBase):
-    """Base class for testing save functionality."""
-
-    @property
-    def _resolved_filepath(self):
-        return Path(f"{self.__class__.__name__.lower()}.test")
-
-    def _load(self, filepath: Path) -> Dict:
-        # Override _load to avoid file not found error
-        return {"name": self.__class__.__name__.lower(), "value": 100}
-
-
 class TestParsableFileModel(unittest.TestCase):
     """Test cases for the ParsableFileModel class."""
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = TestParsableModelBase
+        self.TestParsableModel = ParsableModelWithMocks
 
     def test_load(self):
         """Test _load method."""
@@ -220,7 +141,7 @@ class TestParsableFileModel(unittest.TestCase):
         mock_serializer = MagicMock()
 
         # Create a test model class that uses the mock serializer
-        class TestSaveModel(TestSaveModelBase):
+        class TestSaveModel(SaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
@@ -256,7 +177,7 @@ class TestParsableFileModel(unittest.TestCase):
         mock_serializer = MagicMock()
 
         # Create a test model class that uses the mock serializer
-        class TestSerializeModel(TestSaveModelBase):
+        class TestSerializeModel(SaveModelBase):
             @classmethod
             def _get_serializer(cls):
                 return mock_serializer
