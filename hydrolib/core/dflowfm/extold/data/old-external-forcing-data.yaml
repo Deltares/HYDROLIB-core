@@ -47,6 +47,7 @@ Meteo:
         Rainfall: rainfall
         RainfallRate: rainfall_rate
         SolarRadiation: solarradiation
+        NetSolarRadiation: netsolarradiation
         # missing the SolarRadiationFactor
         StressX: stressx
         StressXY: stressxy

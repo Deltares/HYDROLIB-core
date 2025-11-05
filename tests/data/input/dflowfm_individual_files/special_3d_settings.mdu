@@ -113,6 +113,7 @@ Stanton                             = 1.3d-3                                    
 Dalton                              = 1.3d-3                                                              # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
 Tempmax                             = 50.                                                                 # Limit the temperature
 Tempmin                             = -5.                                                                 # Limit the temperature
+salinityDependentFreezingPoint      = 0                                                                   # Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.
 Heat_eachstep                       = 1                                                                   # 1=heat each timestep, 0=heat each usertimestep
 RhoairRhowater                      = 1                                                                   # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 SecondaryFlow                       = 0                                                                   # Secondary flow (0: no, 1: yes)
