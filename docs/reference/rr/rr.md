@@ -10,7 +10,7 @@ in the {{sobek_um("section.D.19")}}.
 
 ## General layer
 ### rainfall file
-::: hydrolib.core.rr.meteo.models
+See [Meteo documentation](meteo.md) for details on the rainfall file (BUI) models.
 
 
 ## Topology layer ("Topography" in SOBEK UM)
