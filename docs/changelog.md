@@ -344,7 +344,7 @@
 * Cross section definition and location classes have been moved from `hydrolib.core.io.ini.models`
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).
-  More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/loading_and_saving_a_model.md).
+  More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/basic_tutorials/loading_and_saving_a_model.md).
 
 
 ### Fixed
