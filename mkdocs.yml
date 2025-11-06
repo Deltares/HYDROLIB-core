@@ -97,7 +97,7 @@ nav:
               - tutorials/dsd/demo/demo.ipynb
           - Magdalena Workflow:
               - tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises.ipynb
-              - tutorials/dsd/magdalena_workflow/magdalena_workbook_workedout.ipynb
+              - tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs.ipynb
           - DSD (Archive):
               - DSD (2023):
                   - tutorials/dsd/dsd_archive/dsd_2023/instructions.md
