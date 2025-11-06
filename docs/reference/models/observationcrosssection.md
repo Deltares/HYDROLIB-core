@@ -20,8 +20,5 @@ An observation cross section .ini file is described by the classes below.
 # Legacy observation cross section .pli files
 Legacy .pli files for observation points are supported via the generic `polyfile` module.
 
-A polyfile (hence also an observation cross section .pli file) is described by the classes below.
-
-## Model
-
-::: hydrolib.core.dflowfm.polyfile.models
+For details on the polyfile format and classes (`Description`, `Metadata`, `Point`, `PolyObject`, `PolyFile`), 
+see the [Polyfile documentation](polyfile.md).

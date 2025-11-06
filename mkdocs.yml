@@ -83,19 +83,19 @@ nav:
       - Documentation: guides/documentation.md
       - Support: guides/getting-help.md
   - Tutorials:
-      - tutorials/tutorials.md
-      - tutorials/build_basic_model.ipynb
-      - tutorials/loading_and_saving_a_model.md
-      - tutorials/dataframe_handling.md
-      - tutorials/plotting_a_network.md
-      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena.ipynb
-      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena_with_answers.ipynb
-      - DSD (2023):
-          - tutorials/dsd_2023/instructions.md
-          - tutorials/dsd_2023/demo/demo.ipynb
-          - tutorials/dsd_2023/magdalena_workflow/magdalena_workflow.ipynb
-      - DSD (2022):
-          - tutorials/dsd_2022_demo/demo_dsd.ipynb
+      - Basic Tutorials:
+          - tutorials/basic_tutorials/tutorials.md
+          - tutorials/basic_tutorials/build_basic_model.ipynb
+          - tutorials/basic_tutorials/loading_and_saving_a_model.md
+          - tutorials/basic_tutorials/dataframe_handling.md
+          - tutorials/basic_tutorials/plotting_a_network.md
+      - DSD:
+          - tutorials/dsd/instructions.md
+          - Demo:
+              - tutorials/dsd/demo/demo.ipynb
+          - Magdalena Workflow:
+              - tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises.ipynb
+              - tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs.ipynb
       - External Forcing Conversion:
           - tutorials/extforce-convert/external_forcing_conversion.md
   - Topics:
@@ -112,23 +112,28 @@ nav:
               - reference/base/api.md
               - reference/base/model-tree-traverser.md
       - D-Flow FM:
-          - Models:
-              - reference/models/mdu.md
-              - reference/models/extold.md
-              - reference/models/net.md
-              - reference/models/ext.md
-              - reference/models/forcing.md
-              - reference/models/structure.md
-              - reference/models/friction.md
-              - reference/models/crosssection.md
-              - reference/models/storagenode.md
-              - reference/models/inifield.md
-              - reference/models/onedfield.md
-              - reference/models/polyfile.md
-              - reference/models/xyz.md
-              - reference/models/observationpoint.md
-              - reference/models/observationcrosssection.md
-              - reference/models/tim.md
+          - MDU:
+            - reference/models/mdu.md
+            - reference/models/onedfield.md
+          - External Forcing:
+            - reference/models/extold.md
+            - reference/models/ext.md
+            - reference/models/forcing.md
+            - reference/models/inifield.md
+            - reference/models/structure.md
+          - Attribute Files:
+            - reference/models/polyfile.md
+            - reference/models/tim.md
+            - reference/models/xyz.md
+          - Cross-Sections:
+            - reference/models/friction.md
+            - reference/models/crosssection.md
+          - Topology and Network:
+            - reference/models/net.md
+            - reference/models/storagenode.md
+            - reference/models/observationpoint.md
+            - reference/models/observationcrosssection.md
+
           - DIMR:
               - reference/models/dimr.md
       - RainfallRunoff:
