@@ -16,7 +16,7 @@
 
 
 ## Introduction
-This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2023.
+This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2025.
 
 HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content. 
 HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.
@@ -30,7 +30,7 @@ Anaconda is an open-source distribution for Python and contains the package mana
 (!) Make sure to add Anaconda to your PATH environment variable during installation.
 
 ### Installation
-Once you've installed the required software, you can create a Python 3.11 environment with HYDROLIB-core 0.5.2, the latest release. 
+Once you've installed the required software, you can create a Python 3.12 environment with HYDROLIB-core 0.10.0, the latest release.
 Note that the environment that we are creating now contains not only HYDROLIB-core, but also the other packages that are needed today during the breakout sessions.
 
 Follow these steps:
@@ -39,9 +39,9 @@ Follow these steps:
 2. Enter the following commands:
 
 ```
-conda create --name dsd_env python=3.11 git -c conda-forge -y
+conda create --name dsd_env python=3.12 git -c conda-forge -y
 conda activate dsd_env
-pip install hydromt_delft3dfm[examples] dfm_tools pyogrio openpyxl
+pip install hydrolib-core[examples]
 conda deactivate
 ```
 
