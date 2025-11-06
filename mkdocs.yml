@@ -89,8 +89,6 @@ nav:
           - tutorials/basic_tutorials/loading_and_saving_a_model.md
           - tutorials/basic_tutorials/dataframe_handling.md
           - tutorials/basic_tutorials/plotting_a_network.md
-          - tutorials/basic_tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena.ipynb
-          - tutorials/basic_tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena_with_answers.ipynb
       - DSD:
           - tutorials/dsd/instructions.md
           - Demo:
