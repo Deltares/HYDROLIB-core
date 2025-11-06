@@ -3,9 +3,9 @@
 
 from strenum import StrEnum
 
+
 class SubstanceType(StrEnum):
     """SubstanceType defines the type of substance."""
+
     Active = "Active"
     Inactive = "Inactive"
-
-
