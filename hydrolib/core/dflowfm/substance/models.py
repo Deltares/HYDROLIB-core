@@ -1,6 +1,6 @@
 """models.py defines all classes and functions related to representing substance files.
 """
-from typing import Optional
+from typing import Optional, List
 from strenum import StrEnum
 from pydantic.v1 import Field
 from hydrolib.core.base.models import BaseModel
@@ -18,3 +18,29 @@ class Substance(BaseModel):
     type: SubstanceType = Field(default=SubstanceType.Active)
     concentration_unit: str
     waste_load_unit: Optional[str] = Field(default='-')
+
+
+class Parameter(BaseModel):
+    """Parameter represents a single parameter in a substance file."""
+    name: str = Field(...)
+    description: str = Field(...)
+    unit: str = Field(...)
+    value: float = Field(...)
+
+
+class Output(BaseModel):
+    """Output represents a single output in a substance file."""
+    name: str = Field(...)
+    description: str = Field(...)
+
+
+class ActiveProcess(BaseModel):
+    """ActiveProcess represents a single active process."""
+    name: str = Field(...)
+    description: str = Field(...)
+
+
+class ActiveProcesses(BaseModel):
+    """ActiveProcesses represents the collection of active processes in a substance file."""
+    processes: List[ActiveProcess] = Field(default_factory=list)
+
