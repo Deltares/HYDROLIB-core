@@ -113,22 +113,28 @@ nav:
               - reference/base/model-tree-traverser.md
       - D-Flow FM:
           - Models:
-              - reference/models/mdu.md
-              - reference/models/extold.md
-              - reference/models/net.md
-              - reference/models/ext.md
-              - reference/models/forcing.md
-              - reference/models/structure.md
-              - reference/models/friction.md
-              - reference/models/crosssection.md
-              - reference/models/storagenode.md
-              - reference/models/inifield.md
-              - reference/models/onedfield.md
-              - reference/models/polyfile.md
-              - reference/models/xyz.md
-              - reference/models/observationpoint.md
-              - reference/models/observationcrosssection.md
-              - reference/models/tim.md
+              - MDU:
+                - reference/models/mdu.md
+                - reference/models/onedfield.md
+              - External Forcing:
+                - reference/models/extold.md
+                - reference/models/ext.md
+                - reference/models/forcing.md
+                - reference/models/inifield.md
+                - reference/models/structure.md
+              - Attribute Files:
+                  - reference/models/polyfile.md
+                  - reference/models/tim.md
+                  - reference/models/xyz.md
+              - Cross-Sections:
+                  - reference/models/friction.md
+                  - reference/models/crosssection.md
+              - Topology and Network:
+                  - reference/models/net.md
+                  - reference/models/storagenode.md
+                  - reference/models/observationpoint.md
+                  - reference/models/observationcrosssection.md
+
           - DIMR:
               - reference/models/dimr.md
       - RainfallRunoff:
