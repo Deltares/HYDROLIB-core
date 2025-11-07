@@ -1,1 +1,8 @@
-__version__ = "0.10.1"
+from importlib.metadata import version, PackageNotFoundError
+
+
+try:
+    __version__ = version("Wadden-Sea-backend")
+except PackageNotFoundError:
+    __version__ = "unknown"
+
