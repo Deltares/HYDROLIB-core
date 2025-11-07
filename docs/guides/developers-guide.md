@@ -35,7 +35,7 @@ An example of such an `.md` can be found below:
 ```md
 # Timeseries .tim files
 Timeseries .tim files are timeseries input files 
-for a [D-Flow FM](glossary.md#d-flow-fm) model.
+for a [D-Flow FM](../reference/glossary.md#d-flow-fm) model.
 The support of .tim files is discontinued and are replaced by the [.bc file](#bc-file).
 
 They are represented by the class below.
@@ -45,5 +45,5 @@ They are represented by the class below.
 
 ```
 
-### Updating the functionalities sheet
+### Updating the functionality sheet
 To generate a list of D-HYDRO functionalities, grouped by kernel, and the current status of support inside hydrolib-core, we use an Excel sheet. This Excel sheet can be found at `docs\topics\dhydro_support_hydrolib-core.xlsx`. Each time you add support for new D-HYDRO functionalities, this Excel file has to be updated. Detailed information on how to update the Excel file correctly can be found inside the Excel file itself.
