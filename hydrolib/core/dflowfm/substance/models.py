@@ -5,8 +5,10 @@ from strenum import StrEnum
 from pydantic.v1 import Field
 from hydrolib.core.base.models import BaseModel
 
+
 class SubstanceType(StrEnum):
     """SubstanceType defines the type of substance."""
+
     Active = "Active"
     Inactive = "Inactive"
 
