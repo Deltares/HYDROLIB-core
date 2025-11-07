@@ -41,6 +41,25 @@ tqdm = "^4.67.1"
 pandas = "^2.0.0"
 pyyaml = "^6.0.2"
 
+## Optional dependencies for examples extra
+geopandas = { version = "^1.0.0", optional = true }
+openpyxl = { version = "^3.0.9", optional = true }
+jupyter = { version = "^1.0.0", optional = true }
+ipykernel = { version = "^6.15.0", optional = true }
+matplotlib = { version = "^3.8", optional = true }
+
+[tool.poetry.extras]
+examples = [
+    "geopandas",
+    "openpyxl",
+    "jupyter",
+    "ipykernel",
+]
+plot = [
+    "matplotlib",
+]
+
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 pytest-cov = "^6.0"
@@ -51,8 +70,6 @@ black = "^24.8.0"
 mypy = "^1.13"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
-# matplotlib >=3.8 supports numpy 2.0
-matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
 xarray = ">=2024.6.0"
 pyfakefs = "^5.7.4"
@@ -74,12 +91,6 @@ mkdocstrings-python = "^1.13.0"
 mkdocs-mermaid2-plugin = "^1.2.1"
 mkdocs-panzoom-plugin = "^0.4.2"
 
-
-[tool.poetry.group.examples.dependencies]
-geopandas = "*"
-openpyxl = "^3.0.9"
-jupyter = "^1.0.0"
-ipykernel = "^6.15.0"
 
 
 [tool.commitizen]
