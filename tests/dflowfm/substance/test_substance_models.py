@@ -1,5 +1,10 @@
-from hydrolib.core.dflowfm.substance import Substance, Parameter, Output
-from hydrolib.core.dflowfm.substance import ActiveProcesses, ActiveProcess
+from hydrolib.core.dflowfm.substance import (
+    ActiveProcess,
+    ActiveProcesses,
+    Output,
+    Parameter,
+    Substance,
+)
 
 
 class TestSubstance:
