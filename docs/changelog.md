@@ -1,3 +1,10 @@
+## 0.10.1 (2025-11-07)
+
+### Fix
+
+- **dependencies**: correct installation of optional dependencies from PyPI (#1003)
+- **dependencies**: correct installation of optional dependencies from PyPI
+
 ## 0.10.0 (2025-11-06)
 
 ## 0.9.9 (2025-11-03)
