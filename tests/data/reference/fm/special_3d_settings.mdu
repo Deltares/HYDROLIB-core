@@ -112,7 +112,6 @@ maxitVerticalForesterTem  = 0       # Forester iterations for temperature (0: no
 turbulenceModel           = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
 turbulenceAdvection       = 3       # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
 antiCreep                 = 0       # Include anti-creep calculation (0: no, 1: yes)
-barocZLayBed              = 0       # Use fix in baroclinic pressure for zlaybed (1: yes, 0: no)
 barocPOnBnd               = 1
 maxWaterLevelDiff         = 0.0     # Upper bound [m] on water level changes, (<= 0: no bounds). Run will abort when violated.
 maxVelocityDiff           = 0.0     # Upper bound [m/s] on velocity changes, (<= 0: no bounds). Run will abort when violated.
@@ -149,51 +148,52 @@ lateral_fixedweir_umin    = 0.0     # Minimal velocity threshold for weir losses
 jasfer3D                  = 0       # Corrections for spherical coordinates (0: no, 1: yes).
 
 [Physics]
-unifFrictCoef              = 0.028   # Uniform friction coefficient (0: no friction)
-unifFrictType              = 1       # Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)
-unifFrictCoef1D            = 0.023   # Uniform friction coefficient in 1D links (0: no friction).
-unifFrictCoefLin           = 0.0     # Uniform linear friction coefficient (0: no friction).
-vicouv                     = 0.1     # Uniform horizontal eddy viscosity (m2/s)
-dicouv                     = 0.1     # Uniform horizontal eddy diffusivity (m2/s)
-vicoww                     = 0.0001  # Uniform vertical eddy viscosity (m2/s)
-dicoww                     = 1.5e-05 # Uniform vertical eddy diffusivity (m2/s)
-vicwminb                   = 0.0     # Minimum visc in prod and buoyancy term (m2/s)
-xlozmidov                  = 0.0     # Ozmidov length scale (m), default=0.0, no contribution of internal waves to vertical diffusion
-smagorinsky                = 0.2     # Smagorinsky factor in horizontal turbulence, e.g. 0.15
-elder                      = 0.0     # Elder factor in horizontal turbulence
-irov                       = 0       # 0=free slip, 1 = partial slip using wall_ks
-wall_ks                    = 0.0     # Nikuradse roughness [m] for side walls, wall_z0=wall_ks/30.
-rhomean                    = 1023.0  # Average water density (kg/m3)
-idensform                  = 2       # Density calulation (0: uniform, 1: Eckart, 2: Unesco, 3: baroclinic case)
-ag                         = 9.813   # Gravitational acceleration
-tidalForcing               = 1       # Tidal forcing, if jsferic=1 (0: no, 1: yes)
-ITcap                      = 1.0     # Upper limit on internal tides dissipation (W/m^2)
-doodsonStart               = 55.565  # TRIWAQ: 55.565, D3D: 57.555
-doodsonStop                = 375.575 # TRIWAQ: 375.575, D3D: 275.555
-doodsonEps                 = 0.0     # TRIWAQ = 0.0  400 cmps , D3D = 0.03   60 cmps
-villemonteCD1              = 1.0     # Calibration coefficient for Villemonte. Default = 1.0.  NB. For Bloemberg data set 0.8 is recommended.
-villemonteCD2              = 10.0    # Calibration coefficient for Villemonte. Default = 10.0. NB. For Bloemberg data set 0.8 is recommended.
-salinity                   = 1       # Include salinity, (0=no, 1=yes)
-initialSalinity            = 34.0    # Uniform initial salinity concentration (ppt)
-sal0AboveZLev              = -999.0  # Salinity 0 above level [m].
-deltaSalinity              = -999.0  # uniform initial salinity [ppt].
-backgroundSalinity         = 35.0    # Background salinity for eqn. of state (psu) if salinity not computed
-temperature                = 1       # Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model)
-initialTemperature         = 27.0    # Uniform initial water temperature (degC)
-backgroundWaterTemperature = 10.0    # Background water temperature for eqn. of state (deg C) if temperature not computed
-secchiDepth                = 4.0     # Water clarity parameter (m)
-stanton                    = 0.0013  # Coefficient for convective heat flux, if negative, Ccon = abs(Stanton)*Cdwind
-dalton                     = 0.0013  # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
-tempMax                    = 50.0    # Limit the temperature
-tempMin                    = -5.0    # Limit the temperature
-saliMax                    = -999.0  # Limit the salinity
-saliMin                    = 0.0     # Limit the salinity
-heat_eachStep              = 1       # 1=heat each timestep, 0=heat each usertimestep
-rhoAirRhoWater             = 1       # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
-nudgeTimeUni               = 3600.0  # Uniform nudge relaxation time [s]
-iniWithNudge               = 2       # Initialize salinity and temperature with nudge variables
-secondaryFlow              = 0       # Secondary flow (0: no, 1: yes)
-betaSpiral                 = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
+unifFrictCoef                  = 0.028   # Uniform friction coefficient (0: no friction)
+unifFrictType                  = 1       # Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)
+unifFrictCoef1D                = 0.023   # Uniform friction coefficient in 1D links (0: no friction).
+unifFrictCoefLin               = 0.0     # Uniform linear friction coefficient (0: no friction).
+vicouv                         = 0.1     # Uniform horizontal eddy viscosity (m2/s)
+dicouv                         = 0.1     # Uniform horizontal eddy diffusivity (m2/s)
+vicoww                         = 0.0001  # Uniform vertical eddy viscosity (m2/s)
+dicoww                         = 1.5e-05 # Uniform vertical eddy diffusivity (m2/s)
+vicwminb                       = 0.0     # Minimum visc in prod and buoyancy term (m2/s)
+xlozmidov                      = 0.0     # Ozmidov length scale (m), default=0.0, no contribution of internal waves to vertical diffusion
+smagorinsky                    = 0.2     # Smagorinsky factor in horizontal turbulence, e.g. 0.15
+elder                          = 0.0     # Elder factor in horizontal turbulence
+irov                           = 0       # 0=free slip, 1 = partial slip using wall_ks
+wall_ks                        = 0.0     # Nikuradse roughness [m] for side walls, wall_z0=wall_ks/30.
+rhomean                        = 1023.0  # Average water density (kg/m3)
+idensform                      = 2       # Density calulation (0: uniform, 1: Eckart, 2: Unesco, 3: baroclinic case)
+ag                             = 9.813   # Gravitational acceleration
+tidalForcing                   = 1       # Tidal forcing, if jsferic=1 (0: no, 1: yes)
+ITcap                          = 1.0     # Upper limit on internal tides dissipation (W/m^2)
+doodsonStart                   = 55.565  # TRIWAQ: 55.565, D3D: 57.555
+doodsonStop                    = 375.575 # TRIWAQ: 375.575, D3D: 275.555
+doodsonEps                     = 0.0     # TRIWAQ = 0.0  400 cmps , D3D = 0.03   60 cmps
+villemonteCD1                  = 1.0     # Calibration coefficient for Villemonte. Default = 1.0.  NB. For Bloemberg data set 0.8 is recommended.
+villemonteCD2                  = 10.0    # Calibration coefficient for Villemonte. Default = 10.0. NB. For Bloemberg data set 0.8 is recommended.
+salinity                       = 1       # Include salinity, (0=no, 1=yes)
+initialSalinity                = 34.0    # Uniform initial salinity concentration (ppt)
+sal0AboveZLev                  = -999.0  # Salinity 0 above level [m].
+deltaSalinity                  = -999.0  # uniform initial salinity [ppt].
+backgroundSalinity             = 35.0    # Background salinity for eqn. of state (psu) if salinity not computed
+temperature                    = 1       # Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model)
+initialTemperature             = 27.0    # Uniform initial water temperature (degC)
+backgroundWaterTemperature     = 10.0    # Background water temperature for eqn. of state (deg C) if temperature not computed
+secchiDepth                    = 4.0     # Water clarity parameter (m)
+stanton                        = 0.0013  # Coefficient for convective heat flux, if negative, Ccon = abs(Stanton)*Cdwind
+dalton                         = 0.0013  # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
+tempMax                        = 50.0    # Limit the temperature
+tempMin                        = -5.0    # Limit the temperature
+salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing point (0 = no, 1 = yes). tempMin should be below 0 degrees Celsius.
+saliMax                        = -999.0  # Limit the salinity
+saliMin                        = 0.0     # Limit the salinity
+heat_eachStep                  = 1       # 1=heat each timestep, 0=heat each usertimestep
+rhoAirRhoWater                 = 1       # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
+nudgeTimeUni                   = 3600.0  # Uniform nudge relaxation time [s]
+iniWithNudge                   = 2       # Initialize salinity and temperature with nudge variables
+secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
+betaSpiral                     = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
 
 [Sediment]
 Sedimentmodelnr = 0 # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
@@ -210,6 +210,7 @@ windPartialDry       = 1         # Reduce windstress on water if link partially 
 pavBnd               = 101330.0  # Average air pressure on open boundaries (N/m2) (only applied if > 0)
 pavIni               = 0.0       # Initial air pressure [N/m2], only applied if value > 0.
 computedAirdensity   = 0         # Compute air density yes/no (), 1/0, default 0.
+rhoWaterInWindStress = 0         # Water density used in computation of wind stress (0: space and time constant value specified via keyword Rhomean, 1: space and time varying local (surface) density of model)
 stressToWind         = 0         # Switch between Wind speed (=0) and wind stress (=1) approach for wind forcing.
 
 [Time]

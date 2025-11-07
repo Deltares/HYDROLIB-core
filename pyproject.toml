@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.9.7"
+version = "0.10.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -49,11 +49,8 @@ commitizen = "^4.0"
 isort = "^5.8"
 black = "^24.8.0"
 mypy = "^1.13"
-openpyxl = "^3.0.9"
 jinja2 = "^3.0"
 markupsafe = "<2.1"
-jupyter = "^1.0.0"
-ipykernel = "^6.15.0"
 # matplotlib >=3.8 supports numpy 2.0
 matplotlib = "^3.8"
 # xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
@@ -80,11 +77,14 @@ mkdocs-panzoom-plugin = "^0.4.2"
 
 [tool.poetry.group.examples.dependencies]
 geopandas = "*"
+openpyxl = "^3.0.9"
+jupyter = "^1.0.0"
+ipykernel = "^6.15.0"
 
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.9.7"
+version = "0.10.0"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",

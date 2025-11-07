@@ -1,7 +1,7 @@
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -20,13 +20,14 @@ from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
 )
-from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
 )
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+from hydrolib.tools.extforce_convert.utils import UnSupportedQuantitiesError
 
 
 class TestExtOldToNewFromMDU:
@@ -91,7 +92,7 @@ class TestExtOldToNewFromMDU:
             recursive_converter(path, suppress_errors=True)
 
     @pytest.mark.parametrize(
-        "mdu_file_content, input_files, expected",
+        "mdu_file_content, input_files, expected, content",
         [
             (
                 {
@@ -106,6 +107,12 @@ class TestExtOldToNewFromMDU:
                 },
                 (None, None, None),
                 ("new_forcing.ext", "initial_conditions.ini", "structures.ini"),
+                [
+                    "extforcefile=old_forcing.ext",
+                    "extforcefilenew=new_forcing.ext",
+                    "inifieldfile=initial_conditions.ini",
+                    "structurefile=structures.ini",
+                ],
             ),
             (
                 {
@@ -119,6 +126,11 @@ class TestExtOldToNewFromMDU:
                 },
                 ("user_provided.ext", None, None),
                 ("user_provided.ext", "initial_conditions.ini", "structures.ini"),
+                [
+                    "extforcefile=old_forcing.ext",
+                    "inifieldfile=initial_conditions.ini",
+                    "structurefile=structures.ini",
+                ],
             ),
             (
                 {
@@ -132,6 +144,11 @@ class TestExtOldToNewFromMDU:
                 },
                 (None, "user_initial_conditions.ini", None),
                 ("new_forcing.ext", "user_initial_conditions.ini", "structures.ini"),
+                [
+                    "extforcefile=old_forcing.ext",
+                    "extforcefilenew=new_forcing.ext",
+                    "structurefile=structures.ini",
+                ],
             ),
             (
                 {
@@ -145,6 +162,11 @@ class TestExtOldToNewFromMDU:
                 },
                 (None, None, "user_structures.ini"),
                 ("new_forcing.ext", "initial_conditions.ini", "user_structures.ini"),
+                [
+                    "extforcefile=old_forcing.ext",
+                    "extforcefilenew=new_forcing.ext",
+                    "inifieldfile=initial_conditions.ini",
+                ],
             ),
             (
                 {
@@ -159,6 +181,12 @@ class TestExtOldToNewFromMDU:
                 },
                 (None, None, None),
                 ("old_forcing-new.ext", "initial_conditions.ini", "structures.ini"),
+                [
+                    "extforcefile=old_forcing.ext",
+                    "extforcefilenew=",
+                    "inifieldfile=initial_conditions.ini",
+                    "structurefile=structures.ini",
+                ],
             ),
         ],
         ids=[
@@ -175,6 +203,7 @@ class TestExtOldToNewFromMDU:
         input_files: Tuple[Optional[str], Optional[str], Optional[str]],
         expected: Tuple[str, str, str],
         tmp_path: Path,
+        content: List[str],
     ):
         # ext_file, inifield_file, structure_file
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
@@ -185,6 +214,9 @@ class TestExtOldToNewFromMDU:
             patch(
                 "hydrolib.tools.extforce_convert.mdu_parser.MDUParser._load_with_fm_model"
             ) as mock_get_mdu_info,
+            patch.object(
+                MDUParser, "content", new_callable=PropertyMock
+            ) as mock_content,
             patch(
                 "hydrolib.tools.extforce_convert.mdu_parser.MDUParser.get_temperature_salinity_data"
             ),
@@ -196,6 +228,7 @@ class TestExtOldToNewFromMDU:
             ),
         ):
             mock_get_mdu_info.return_value = mdu_file_content
+            mock_content.return_value = content
 
             converter = ExternalForcingConverter.from_mdu(
                 mdu_file, input_files[0], input_files[1], input_files[2]
@@ -496,6 +529,84 @@ class TestExternalFocingConverter:
         assert len(converter.inifield_model.initial) == 1
         initial_file = tmp_path / "new-initial-conditions.ini"
         assert setup_absolute_path_files["raw_poly_file"] in initial_file.read_text()
+
+    @pytest.fixture
+    def old_model(self) -> Dict[str, Any]:
+        return {
+            "forcing": [
+                {
+                    "quantity": "InternalTidesFrictionCoefficient",
+                    "filename": "file.xyz",
+                    "filetype": 7,
+                    "method": 1,
+                    "operand": "O",
+                },
+                {
+                    "quantity": "unsupported_quantity",
+                    "filename": "file2.xyz",
+                    "filetype": 7,
+                    "method": 4,
+                    "operand": "O",
+                    "value": 0.0125,
+                },
+            ]
+        }
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_debug_unsupported_quantities_conversion(
+        self, old_model, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter.update()
+
+        assert converter.un_supported_quantities == {unsupported_quantity.lower()}
+        assert ext_old_model.forcing[0].quantity == unsupported_quantity
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_no_debug_unsupported_quantities_conversion(
+        self, old_model, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        with pytest.raises(UnSupportedQuantitiesError) as error:
+            ExternalForcingConverter(extold_model=ext_old_model, debug=False)
+        quantity = {unsupported_quantity.lower()}
+        assert (
+            f"The following quantities are not supported by the converter yet: {quantity}"
+            in str(error)
+        )
+
+    @pytest.mark.parametrize(
+        "unsupported_quantity",
+        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+    )
+    def test_debug_unsupported_quantities_save(
+        self, old_model, tmp_path: Path, unsupported_quantity: str
+    ):
+        old_model["forcing"][1]["quantity"] = unsupported_quantity
+        ext_old_model = ExtOldModel(**old_model)
+        ext_old_model.filepath = tmp_path / "mock_file.ext"
+        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter.update()
+        with patch(
+            "hydrolib.tools.extforce_convert.main_converter.ExtOldModel.save"
+        ) as mock_save:
+            converter.save()
+            mock_save.assert_called_once()
+            assert converter.un_supported_quantities == {unsupported_quantity.lower()}
 
 
 class TestUpdate:

@@ -1,5 +1,6 @@
 """Utility functions for converting old external forcing files to new format."""
 
+import os
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
@@ -38,7 +39,19 @@ __all__ = [
     "IgnoreUnknownKeyWordClass",
     "backup_file",
     "construct_filemodel_new_or_existing",
+    "path_relative_to_parent",
 ]
+
+
+AVERAGING_TYPE_DICT = {
+    1: AveragingType.mean,
+    2: AveragingType.nearestnb,
+    3: AveragingType.max,
+    4: AveragingType.min,
+    5: AveragingType.invdist,
+    6: AveragingType.minabs,
+    7: AveragingType.median,
+}
 
 
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
@@ -155,20 +168,41 @@ def oldmethod_to_interpolation_method(
     return interpolation_method
 
 
-def oldmethod_to_averaging_type(
-    oldmethod: int,
+def map_method_to_averaging_type(
+    old_forcing_method: int,
+    averaging_type: int,
 ) -> Union[AveragingType, str]:
-    """Convert old external forcing `METHOD` integer value to valid `averagingType` string value.
+    """Convert an old external forcing `METHOD` integer value to a valid ` averagingType ` string value.
 
     Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
+        old_forcing_method (int):
+            The `METHOD` value in an old external forcings file.
+        averaging_type (int):
+            The `AVERAGINGTYPE` value in an old external forcings file.
+            AVERAGINGTYPE (ONLY WHEN METHOD=6)
+            ```ini
+            =1  : SIMPLE AVERAGING
+            =2  : NEAREST NEIGHBOUR
+            =3  : MAX (HIGHEST)
+            =4  : MIN (LOWEST)
+            =5  : INVERSE WEIGHTED DISTANCE-AVERAGE
+            =6  : MINABS
+            =7  : KDTREE (LIKE 1, BUT FAST AVERAGING)
+            ```
+
+    Notes:
+        - The new external forcing will have an Averaging type if the old external forcings had a `Method = 6`.
+
 
     Returns:
-        Union[AveragingType,str]: Corresponding value for `averagingType`,
-            or "unknown" for invalid input.
+        Union[AveragingType,str]:
+            Corresponding value for `averagingType`, or "unknown" for invalid input.
     """
-    if oldmethod == 6:
-        averaging_type = AveragingType.mean
+    if old_forcing_method == 6:
+        if averaging_type is None:
+            averaging_type = AveragingType.mean
+        else:
+            averaging_type = AVERAGING_TYPE_DICT.get(int(averaging_type), "unknown")
     else:
         averaging_type = "unknown"
 
@@ -192,7 +226,9 @@ def convert_interpolation_data(
     """
     data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
-        data["averagingtype"] = oldmethod_to_averaging_type(forcing.method)
+        data["averagingtype"] = map_method_to_averaging_type(
+            forcing.method, forcing.averagingtype
+        )
         data["averagingrelsize"] = forcing.relativesearchcellsize
         data["averagingnummin"] = forcing.nummin
         data["averagingpercentile"] = forcing.percentileminmax
@@ -200,14 +236,58 @@ def convert_interpolation_data(
     return data
 
 
+def path_relative_to_parent(
+    forcing: ExtOldForcing,
+    inifile_path: Path,
+    ext_old_path: Path,
+    mdu_parser: Any,
+) -> Path:
+    """Resolve the path of the forcing file relative to the parent file if needed.
+
+    Args:
+        forcing (ExtOldForcing):
+            The old forcing block with the filename to resolve.
+        inifile_path (Path):
+            The path to the inifields file.
+        ext_old_path (Path):
+            The path to the old external forcing file.
+        mdu_parser (MDUParser):
+            The MDU parser object containing the loaded MDU data.
+            This holds the "pathsRelativeToParent" setting.
+
+    Returns:
+        Path: The resolved path of the forcing file.
+    """
+    if mdu_parser is None:
+        resolve_parent = False
+    else:
+        resolve_parent = mdu_parser.is_relative_to_parent
+
+    update_path_condition = (
+        forcing.filename.filepath.is_absolute() or not resolve_parent
+    )
+
+    forcing_path = (
+        forcing.filename.filepath
+        if update_path_condition
+        else os.path.relpath(
+            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
+        )
+    )
+    return forcing_path
+
+
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
+    new_forcing_path: Path,
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
     Args:
         forcing: [ExtOldForcing]
             External forcing block from the old external forcings file.
+        new_forcing_path: [Path]
+            The path to the new forcing file.
 
     Returns:
         Dict[str, str]:
@@ -220,7 +300,7 @@ def create_initial_cond_and_parameter_input_dict(
     )
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(forcing.filename.filepath),
+        "datafile": DiskOnlyFileModel(new_forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
     if block_data["datafiletype"] == "polygon":

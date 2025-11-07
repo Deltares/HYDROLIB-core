@@ -22,12 +22,19 @@ from hydrolib.core.dflowfm.inifield.models import (
     ParameterField,
 )
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
-from hydrolib.tools.extforce_convert.converters import ConverterFactory
+from hydrolib.tools.extforce_convert.converters import (
+    BoundaryConditionConverter,
+    ConverterFactory,
+    InitialConditionConverter,
+    ParametersConverter,
+    SourceSinkConverter,
+)
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
+    path_relative_to_parent,
 )
 
 
@@ -104,14 +111,19 @@ class ExternalForcingConverter:
             ```
         """
         if isinstance(extold_model, Path) or isinstance(extold_model, str):
+            # if the extold model is given as path/str then read the file
             extold_model = self._read_old_file(extold_model, path_style=path_style)
-            rdir = extold_model.filepath.parent
         else:
             if not isinstance(extold_model, ExtOldModel):
                 raise TypeError(
                     "extold_model must be a PathOrStr or ExtOldModel instance."
                 )
-            rdir = Path(".").resolve()
+
+        # if the mdu is not given then the root dir is the same as the extold model
+        if mdu_parser is not None:
+            rdir = mdu_parser.mdu_path.parent
+        else:
+            rdir = extold_model.filepath.parent
 
         self._extold_model = extold_model
         self._verbose = verbose
@@ -316,7 +328,7 @@ class ExternalForcingConverter:
             total=num_quantities, desc="Converting forcings", unit="forcing"
         ) as progress_bar:
             for forcing in self.extold_model.forcing:
-                if forcing.quantity in self.un_supported_quantities:
+                if forcing.quantity.lower() in self.un_supported_quantities:
                     print(
                         f"The quantity {forcing.quantity} is not supported, and the debug mode is {self.debug}. "
                         "So the forcing will not be converted (stay in the old external forcing file)."
@@ -347,10 +359,11 @@ class ExternalForcingConverter:
             self._update_mdu_file()
 
         if self.un_supported_quantities:
+            # replace the forcings by the forcings that were not converted (the unsupported quantities)
             forcing = [
                 forcing
                 for forcing in self.extold_model.forcing
-                if forcing.quantity in self.un_supported_quantities
+                if forcing.quantity.lower() in self.un_supported_quantities
             ]
             self.extold_model.forcing = forcing
 
@@ -367,7 +380,7 @@ class ExternalForcingConverter:
         converter_class.root_dir = self.root_dir
 
         # only the SourceSink converter needs the quantities' list
-        if converter_class.__class__.__name__ == "SourceSinkConverter":
+        if isinstance(converter_class, SourceSinkConverter):
 
             if self.temperature_salinity_data is None:
                 raise ValueError(
@@ -381,12 +394,22 @@ class ExternalForcingConverter:
             new_quantity_block = converter_class.convert(
                 forcing, quantities, start_time=start_time, **temp_salinity_mdu
             )
-        elif converter_class.__class__.__name__ == "BoundaryConditionConverter":
+        elif isinstance(converter_class, BoundaryConditionConverter):
             if self.temperature_salinity_data is None:
                 raise ValueError("FM model is required to convert Boundary conditions.")
             else:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
+        elif isinstance(
+            converter_class, (InitialConditionConverter, ParametersConverter)
+        ):
+            forcing_path = path_relative_to_parent(
+                forcing,
+                self.inifield_model.filepath,
+                self.extold_model.filepath,
+                self.mdu_parser,
+            )
+            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 

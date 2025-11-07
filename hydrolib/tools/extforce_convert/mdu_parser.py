@@ -16,7 +16,7 @@ from hydrolib.tools.extforce_convert.utils import (
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
-
+PATH_RELATIVE_TO_PARENT = "PathsRelativeToParent"
 
 __all__ = ["MDUParser"]
 
@@ -663,6 +663,50 @@ class MDUParser:
             raise ValueError("new_forcing_filename must be a str or Path")
         self._new_forcing_file = file_name
 
+    @property
+    def is_relative_to_parent(self) -> bool:
+        """Check if the `PathsRelativeToParent` entry is set to 1.
+
+        - True (1) if the file paths are relative to the direct parent file.
+        - False (0) if the file paths are relative to mdu file.
+        - Default is False, relative to the mdu file.
+        """
+        val = self.get_keyword(PATH_RELATIVE_TO_PARENT)
+        if val is None:
+            val = False
+        else:
+            if val == "1":
+                val = True
+            else:
+                val = False
+
+        return val
+
+    def get_keyword(self, keyword: str) -> Optional[str]:
+        """Get the value of the specified keyword.
+
+        Args:
+            keyword (str):
+                the keyword to get the value of.
+
+        Returns:
+            str:
+                The value of the specified keyword if exists, None if does not exist.
+
+        Notes:
+            - The method is not a case-sensitive.
+            - If the keyword is not found, it will return None.
+            - If the is found, but the value is empty, it will return "" (empty string after =).
+        """
+        ind = self.find_keyword_lines(keyword)
+
+        if ind is None:
+            val = None
+        else:
+            line = Line(self.content[ind])
+            val = line.value
+        return val
+
     def _read_file(self) -> List[str]:
         """Read the MDU file into a list of strings.
 
@@ -705,15 +749,15 @@ class MDUParser:
         Returns:
             bool: True if an inifield file is defined, False otherwise
         """
-        return self.has_field("IniFieldFile")
+        return self.has_field(INIFIELD_FILE_LINE)
 
     def has_structure_file(self) -> bool:
-        """Check if the MDU file has an inifield file defined.
+        """Check if the MDU file has an structure file defined.
 
         Returns:
-            bool: True if an inifield file is defined, False otherwise
+            bool: True if an structure file is defined, False otherwise
         """
-        return self.has_field("StructureFile")
+        return self.has_field(STRUCTURE_FILE_LINE)
 
     def has_field(self, field_name: str) -> bool:
         """Check if the MDU file has a given file defined.
@@ -1060,18 +1104,17 @@ class MDUParser:
         self,
         inifield_file: Optional[PathOrStr],
     ) -> Path:
-        inifieldfile_mdu = self.geometry.get("inifieldfile")
-
+        ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
         if inifield_file is not None:
             # user defined initial field file
             inifield_file = root_dir / inifield_file
-        elif isinstance(inifieldfile_mdu, Path):
+        elif isinstance(ini_field_file, Path):
             # from the LegacyFMModel
-            inifield_file = inifieldfile_mdu.resolve()
-        elif isinstance(inifieldfile_mdu, str):
+            inifield_file = ini_field_file.resolve()
+        elif isinstance(ini_field_file, str):
             # from reading the geometry section
-            inifield_file = root_dir / inifieldfile_mdu
+            inifield_file = root_dir / ini_field_file
         else:
             print(
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
@@ -1081,24 +1124,25 @@ class MDUParser:
 
     def get_structure_file(
         self,
-        structure_file: Optional[PathOrStr],
+        usr_structure_file: Optional[PathOrStr],
     ) -> Path:
-        structurefile_mdu = self.geometry.get("structurefile")
-        if structure_file is not None:
+        structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
+
+        if usr_structure_file is not None:
             # user defined structure file
-            structure_file = self.mdu_path / structure_file
-        elif isinstance(structurefile_mdu, Path):
+            usr_structure_file = self.mdu_path / usr_structure_file
+        elif isinstance(structure_file, Path):
             # from the LegacyFMModel
-            structure_file = structurefile_mdu.resolve()
-        elif isinstance(structurefile_mdu, str):
+            usr_structure_file = structure_file.resolve()
+        elif isinstance(structure_file, str):
             # from reading the geometry section
-            structure_file = self.mdu_path / structurefile_mdu
+            usr_structure_file = self.mdu_path / structure_file
         else:
             print(
                 "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {structure_file}."
+                f"given: {usr_structure_file}."
             )
-        return structure_file
+        return usr_structure_file
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:

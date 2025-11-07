@@ -35,7 +35,9 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_quantity_block = InitialConditionConverter().convert(forcing)
+        new_quantity_block = InitialConditionConverter().convert(
+            forcing, forcing.filename.filepath
+        )
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
@@ -49,7 +51,9 @@ class TestConvertInitialCondition:
             method="4",
             operand="O",
         )
-        new_quantity_block = InitialConditionConverter().convert(forcing)
+        new_quantity_block = InitialConditionConverter().convert(
+            forcing, forcing.filename.filepath
+        )
         assert new_quantity_block.datafiletype == "polygon"
         assert new_quantity_block.interpolationmethod == "constant"
         assert np.isclose(new_quantity_block.value, 0.0)
@@ -73,10 +77,14 @@ class TestConvertInitialCondition:
             TRACERFALLVELOCITY=0.1,
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        new_focing_dict = create_initial_cond_and_parameter_input_dict(
+            forcing, forcing.filename.filepath
+        )
         assert "tracerfallvelocity" in new_focing_dict.keys()
 
-        new_quantity_block = InitialConditionConverter().convert(forcing)
+        new_quantity_block = InitialConditionConverter().convert(
+            forcing, forcing.filename.filepath
+        )
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
 
@@ -116,11 +124,13 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(
+            forcing, forcing.filename.filepath
+        )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, InitialConditionConverter)
-        new_quantity_block = converter.convert(forcing)
+        new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.quantity == expected_quantity
 
@@ -135,7 +145,9 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = ParametersConverter().convert(forcing)
+        new_quantity_block = ParametersConverter().convert(
+            forcing, forcing.filename.filepath
+        )
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
@@ -157,10 +169,14 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        new_focing_dict = create_initial_cond_and_parameter_input_dict(
+            forcing, forcing.filename.filepath
+        )
         assert new_focing_dict["quantity"] == "bedrockSurfaceElevation"
 
-        new_quantity_block = ParametersConverter().convert(forcing)
+        new_quantity_block = ParametersConverter().convert(
+            forcing, forcing.filename.filepath
+        )
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
 
@@ -213,11 +229,13 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_forcing_dict = create_initial_cond_and_parameter_input_dict(forcing)
+        new_forcing_dict = create_initial_cond_and_parameter_input_dict(
+            forcing, forcing.filename.filepath
+        )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, ParametersConverter)
-        new_quantity_block = converter.convert(forcing)
+        new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == expected_quantity
 

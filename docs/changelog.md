@@ -1,13 +1,45 @@
+## 0.10.0 (2025-11-06)
+
+## 0.9.9 (2025-11-03)
+
+### Feat
+
+- **FMModel**: update physics parameters and handle new keywords (#994)
+- **extforce_convert**: enhance parameter and prefix quantity handling (#976)
+
+### Fix
+
+- **extforce_convert**: ensure case-insensitive matching for unsupported quantities (#988)
+- **average-type**: add average type as mean if not given (#991)
+- **extforce_convert**: correct averaging type parsing and mapping (#987)
+- **mdu_parser**: improve `path_relative_to_parent` handling (#982)
+
+### Refactor
+
+- **mdu_parser**: improve `path_relative_to_parent` handling
+
+## 0.9.8 (2025-10-20)
+
+### Feat
+
+- **extforce_convert**: improve relative path resolution for initial and parameter files (#966)
+- **mdu**: support `yyyymmdd` for startDateTime/stopDateTime (#953)
+- **cli**: add --path-style argument to control file path formatting (#951)
+
+### Fix
+
+- **netcdf-reader**: map link1d2d_contact_type to avoid IndexError
+- **mdu_parser**: only update field value if unset (#962)
+- **inifield**: set averaging fields default to None
+
 ## 0.9.7 (2025-09-26)
 
 ### Fix
 
 - **path**: resolve root dir with UNC-compatible relative paths (#950)
-- **path**: resolve root dir with UNC-compatible relative paths (#950)
 
 ### Refactor
 
-- **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
 - **extforce**: sync quantities with kernel and centralize unsupported/deprecated handling (#929)
 
 ## 0.9.6 (2025-09-04)
@@ -21,21 +53,17 @@
 ### Fix
 
 - **extforce_convert**: ensure all fields are saved in IniFieldModel (#938)
-- **extforce_convert**: ensure all fields are saved in IniFieldModel
 - **mdu_parser**: improve deprecated keyword handling and clean logic (#934)
-- **mdu_parser**: improve deprecated keyword handling and clean logic
 
 ### Refactor
 
 - **extold**: externalize quantities and headers to YAML (#925)
-- **extold**: externalize quantities and headers to YAML
 
 ## 0.9.4 (2025-08-29)
 
 ### Feat
 
 - **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods (#924)
-- **mdu_parser**: extend MDUParser with delete_line, repr, and clean methods
 
 ### Fix
 
@@ -46,10 +74,8 @@
 ### Feat
 
 - **extforce**: add new parameter quantities and extend converter support (#909)
-- **extforce**: add new parameter quantities and extend converter support
 - **converter**: support dynamic attributes (tracerFallVelocity and tracerdecaytime) for the extoldforcing (#817)
 - **ci**: improve release workflow with version and branch setup (#878)
-- **ci**: improve release workflow with version and branch setup
 
 ### Fix
 
@@ -74,7 +100,6 @@
 ### Feat
 
 - **converter**: support relative paths, polygon meteo files, and extend boundary condition handling (#861)
-- **converter**: support relative paths, polygon meteo files, and extend boundary condition handling
 - also write <process> in case of fmcomponent.process==1 (#854)
 
 ## 0.9.1 (2025-05-30)
@@ -82,20 +107,16 @@
 ### Feat
 
 - **parser**: refactor and enhance `read_polyfile` functionality (#550) (#828)
-- **parser**: refactor and enhance `read_polyfile` functionality
 - **CrossLocModel**:  extend CrossLocModel to accept a single cross-section (#820)
 - **crossloc**: improve validation and test support for single cross-section use
 
 ### Fix
 
 - **path**: improve relative and case-insensitive path resolution (#829)
-- **path**: improve relative and case-insensitive path resolution
 - **test**: ignore version lines in file comparison to prevent test failures (#819)
-- **test**: ignore version lines in file comparison to prevent test failures
 
 ### Refactor
 
-- **core**: restructure base and model modules, improve test coverage (#834)
 - **core**: restructure base and model modules, improve test coverage (#834)
 - **dimr**: refactor dirm tests and modules (#826)
 
@@ -104,9 +125,7 @@
 ### Feat
 
 - **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553) (#647)
-- **extforce**: Introduce External forcing conversion tool with modular converters (UNST-8490, UNST-8528, UNST-8553)
 - **meshkernel**: support refined parameters and clipping inside polygons with holes (#776)
-- **meshkernel**: support refined parameters and clipping inside polygons with holes
 
 ## 0.8.1 (2025-02-04)
 
@@ -327,7 +346,7 @@
 * Cross section definition and location classes have been moved from `hydrolib.core.io.ini.models`
   to `hydrolib.core.io.crosssection.models`. ({{gh_issue(149)}})
 * Changed behavior for file paths in saved files ({{gh_issue(96)}}).
-  More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/loading_and_saving_a_model.md).
+  More information about: [technical background](topics/loadsave.md) and a [tutorial](tutorials/basic_tutorials/loading_and_saving_a_model.md).
 
 
 ### Fixed
