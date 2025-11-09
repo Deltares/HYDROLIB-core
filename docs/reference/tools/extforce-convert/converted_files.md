@@ -164,3 +164,52 @@ StructureFile  = new-structure.ini             ; only if structures exist
 ### Backups and cleanup
 - `save(backup=True)` creates `.bak` backups for files that will be overwritten.
 - `clean()` removes any converter-reported legacy artifacts (e.g., generated `.tim` files) and, if no unsupported quantities remain, deletes the legacy `old-forcings.ext`.
+
+
+### Legacy files removed by ExternalForcingConverter.clean
+
+The `clean()` method performs two types of removals after a successful conversion:
+
+1) Converter-reported legacy artifacts
+- What: Any files recorded in `converter.legacy_files` during `update()`.
+- Source: Each concrete converter (boundary conditions, sources/sinks, etc.) adds to this list when it encounters legacy input files that are no longer needed after conversion.
+- Typical examples (non-exhaustive):
+  - `.tim` time-series files referenced by the legacy `.ext` for boundary or source/sink quantities.
+  - `.t3d` 3D profile files used for boundary conditions (e.g., 3D salinity/temperature profiles).
+  - `.cmp` composition files used for astronomic/harmonic boundary forcing compositions.
+- Behavior: `clean()` prints a line for each removal (e.g., `Removing legacy file:<path>`) and deletes the file from disk.
+- Safety: Only files explicitly collected by converters are deleted. If a converter did not mark a file as legacy, `clean()` will not remove it.
+
+2) The legacy external forcings file (`.ext`)
+- What: The original legacy external forcings file that you started from.
+- Condition: Removed only when there are no remaining unsupported quantities.
+  - If unsupported quantities exist (especially when running with `debug=True`), the legacy `.ext` is retained and contains only those unsupported entries after `update()`.
+- Path: Resolved from `ExtOldModel.filepath`.
+
+How are `legacy_files` populated?
+- Boundary condition conversion scans for related time-series or composition files next to the location file (e.g., `.pli`) and records found `.tim`, `.t3d`, and `.cmp` files as legacy artifacts.
+- Source/sink conversion records the corresponding `.tim` file for the polyline location.
+- These paths are resolved relative to the converter `root_dir` (the MDU directory when using `from_mdu`, otherwise the legacy `.ext` directory).
+
+How to trigger cleanup
+- Programmatic:
+
+```python
+from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+
+converter = ExternalForcingConverter("path/to/old-forcings.ext")
+converter.update()
+converter.save()
+converter.clean()
+```
+
+- Batch conversion:
+
+```python
+from hydrolib.tools.extforce_convert.main_converter import recursive_converter
+recursive_converter(root_dir="path/to/projects", remove_legacy=True)  # clean() is called per MDU
+```
+
+Recommendations and cautions
+- Review `converter.legacy_files` and the console output to ensure none of the files are still needed by other workflows.
+- Use version control or make backups of legacy artifacts if in doubt. Note that `save(backup=True)` creates backups for overwritten files, but deletions performed by `clean()` are permanent.
