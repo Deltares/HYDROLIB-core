@@ -147,5 +147,6 @@ nav:
           - reference/gui.md
       - Tools:
           - Extforce-convert:
-              - reference/tools/extforce_convert.md
+              - reference/tools/extforce-convert/converted_files.md
+              - reference/tools/extforce-convert/extforce_convert.md
   - Release notes: "changelog.md"
