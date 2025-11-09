@@ -26,7 +26,7 @@ project/
 ```
 
 ### Example MDU file
-#### before the 
+#### before the conversion
 ```ini
 
 [General]
