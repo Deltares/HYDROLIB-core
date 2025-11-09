@@ -259,7 +259,7 @@ Important invariants/constraints:
 
 ---
 
-### 3. Mermaid Diagrams (Derived from Code)
+### 3. Diagrams
 
 #### 3.1. Class Structure Diagram
 

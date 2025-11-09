@@ -24,6 +24,10 @@ plugins:
   - search
   - autorefs
   - mkdocs-jupyter
+  - panzoom:
+      hint_location: "top"
+      key: "ctrl"
+      full_screen: true
   - macros:
       module_name: docs/include/mkdocs-macros/main
   - table-reader
@@ -141,4 +145,7 @@ nav:
           - reference/rr/meteo.md
       - GUI:
           - reference/gui.md
+      - Tools:
+          - Extforce-convert:
+              - reference/tools/extforce_convert.md
   - Release notes: "changelog.md"
