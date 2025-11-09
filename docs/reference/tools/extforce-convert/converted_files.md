@@ -347,6 +347,33 @@ How it’s used during conversion:
 - Time units:
   - Absolute time reference (e.g., `minutes since <RefDate>`) is derived from the MDU `RefDate`.
 
+
+##### `.bc` (time series) file
+
+```ini
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name              = any-name-1
+function          = timeseries
+timeInterpolation = linear
+offset            = 0.0
+factor            = 1.0
+quantity          = time
+unit              = minutes since 2015-01-01 00:00:00
+quantity          = waterlevelbnd
+unit              = m
+0.0    1.00
+100.0  1.20
+200.0  1.15
+```
+
+Notes
+- Each `[Forcing]` block carries one series (or vector). The first `quantity`/`unit` pair describes time with an absolute reference derived from the MDU `RefDate`.
+- Subsequent `quantity`/`unit` pairs describe the physical variable (e.g., `waterlevelbnd`, `dischargebnd`), followed by rows of `<time> <value>`.
+
 #### 3) Legacy `.t3d` → new `.bc` (3D profiles)
 
 - If `*.t3d` files are present next to the boundary polyline, they are parsed and converted to T3D forcing entries in the `.bc` file.
@@ -354,11 +381,85 @@ How it’s used during conversion:
 - The same `.bc` file is used as for the time series.
 - All `*.t3d` files that were used are added to `converter.legacy_files`.
 
+At a glance: a `.t3d` file (input) and how it looks in `.bc`
+
+##### Input `.t3d` (3D vertical profiles over time):
+```text
+LAYER_TYPE=SIGMA
+LAYERS=0.0 0.2 0.6 0.8 1.0
+TIME = 0 seconds since 2006-01-01 00:00:00 +00:00
+1.0 1.0 1.0 1.0 1.0
+TIME = 180 seconds since 2006-01-01 00:00:00 +00:00
+2.0 2.0 2.0 2.0 2.0
+```
+Resulting `.bc` (function = `t3d`) snippet:
+```ini
+[Forcing]
+name              = L1_0001
+function          = t3d
+vertPositions     = 0.0 0.2 0.6 0.8 1.0
+vertInterpolation = linear
+vertPositionType  = percBed
+timeInterpolation = linear
+quantity          = time
+unit              = MINUTES SINCE 2006-01-01 00:00:00 +00:00
+quantity          = salinitybnd
+unit              = ppt
+vertPositionIndex = 1
+quantity          = salinitybnd
+unit              = ppt
+vertPositionIndex = 2
+; ... one pair per vertical position
+0.0   1.0  1.0  1.0  1.0  1.0
+180.0 2.0  2.0  2.0  2.0  2.0
+```
+
 #### 4) Legacy `.cmp` → new `.bc` (harmonic/astronomic compositions)
 
 - If `*.cmp` files are found next to the boundary polyline, their harmonic/astronomic records are converted to corresponding sections in the `.bc` file.
 - Labels are derived from the polyline label and file stems.
 - All `*.cmp` files that were used are added to `converter.legacy_files`.
+
+At a glance: a `.cmp` file (input) and how it looks in `.bc`
+
+##### Input `.cmp` (harmonic/astronomic components):
+```text
+* COLUMN1=Period (min) or Astronomical Component name
+* COLUMN2=Amplitude
+* COLUMN3=Phase (deg)
+745.0000000     0.1053834     0.0000000
+745.0000000     1.0000000     45.1200000
+```
+Resulting `.bc` harmonic snippet (period/amplitude/phase):
+```ini
+[Forcing]
+name     = L1_0001
+function = harmonic
+quantity = harmonic component
+unit     = minutes
+quantity = waterlevelbnd amplitude
+unit     = m
+quantity = waterlevelbnd phase
+unit     = deg
+745.0  0.1053834  0.0
+745.0  1.0000000  45.12
+```
+Resulting `.bc` astronomic snippet (named component):
+```ini
+[Forcing]
+name     = L1_0002
+function = astronomic
+quantity = astronomic component
+unit     = -
+quantity = waterlevelbnd amplitude
+unit     = m
+quantity = waterlevelbnd phase
+unit     = deg
+M2  1.234  15.0
+```
+
+Tip
+- The converter picks labels (`name = ...`) from the polyline label and file stems (e.g., `L1_0001`). Units for amplitude are taken from the CMP model when available; examples above are illustrative.
 
 #### 5) Path handling rules (relative vs absolute)
 
