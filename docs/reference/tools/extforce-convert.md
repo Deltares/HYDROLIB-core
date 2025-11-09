@@ -313,46 +313,52 @@ sequenceDiagram
     participant NewExt as ExtModel
     participant NewIni as IniFieldModel
     participant NewStr as StructureModel
+    participant CF as ConverterFactory
+    participant FS as FileSystem
 
-    Client->>Conv: from_mdu("model.mdu")
-    Conv->>MDU: parse mdu_file
+    Client->>Conv: from_mdu(model.mdu)
+    Conv->>MDU: parse mdu file
     MDU-->>Conv: extforce file, refdate, temp/salinity flags
-    Conv->>Old: load legacy .ext (if given as path)
-
-    Client->>Conv: update()
-    loop For each forcing in Old.forcing
+    Conv->>Old: load legacy ext (if given as path)
+    Conv->>NewExt: load new ext (if given as path)
+    Conv->>NewIni: load New initialfield file (if given as path)
+    Conv->>NewStr: load New initialfield file (if given as path)
+  
+    Client->>Conv: update
+    loop each forcing in Old.forcing
         Conv->>Conv: check unsupported quantity
         alt unsupported
-            Conv-->>Client: print skip message
+            Conv-->>Client: skip and log
         else supported
-            Conv->>ConverterFactory: create_converter(quantity)
-            ConverterFactory-->>Conv: converter
-            alt converter needs MDU context
-                Conv->>MDU: get refdate/temp/salinity
+            Conv->>CF: create converter for quantity
+            CF-->>Conv: converter instance
+            alt needs MDU context
+                Conv->>MDU: get refdate and temp/salinity
             end
-            Conv->>Conv: _convert_forcing(forcing)
-            Conv->>NewExt: append block (if Boundary/Lateral/Meteo/SourceSink)
-            Conv->>NewIni: append block (if Initial/Parameter)
-            Conv->>NewStr: append block (if Structure)
+            Conv->>Conv: convert forcing
+            Conv->>NewExt: append if Boundary/Lateral/Meteo/SourceSink
+            Conv->>NewIni: append if Initial/Parameter
+            Conv->>NewStr: append if Structure
         end
     end
     alt mdu_parser present
-        Conv->>MDU: update file refs
+        Conv->>MDU: update file references
     end
 
-    Client->>Conv: save(backup=True)
-    Conv->>NewIni: save()
-    Conv->>NewStr: save()
-    Conv->>Old: save() (unsupported-only, if any)
-    Conv->>NewExt: save()
+    Client->>Conv: save (backup=true)
+    Conv->>NewIni: save
+    Conv->>NewStr: save
+    Conv->>Old: save unsupported-only (if any)
+    Conv->>NewExt: save
     alt mdu_parser present
-        Conv->>MDU: clean(); save()
+        Conv->>MDU: clean
+        Conv->>MDU: save
     end
 
     opt cleanup
-        Client->>Conv: clean()
+        Client->>Conv: clean
         Conv->>FS: delete legacy files
-        Conv->>FS: delete old .ext (if fully converted)
+        Conv->>FS: delete old ext (if fully converted)
     end
 ```
 
@@ -360,41 +366,41 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A[update()] --> B[Log details if verbose]
+    A[update] --> B[Log details if verbose]
     B --> C[Get number of forcings]
     C --> D{Loop forcings}
-    D -->|for each forcing| E{quantity unsupported?}
-    E -->|Yes| F[print skip message; progress++]
-    E -->|No| G[_convert_forcing(forcing)]
-    G --> H{map type via _type_field_map}
-    H -->|found| I[append to proper model list]
-    H -->|not found| J[raise NotImplementedError]
-    I --> K[progress++]
-    F --> L{more forcings?}
+    D -->|each forcing| E{Quantity unsupported?}
+    E -->|Yes| F[Leave the quantity in the \n old external forcing file]
+    E -->|No| G[Convert forcing]
+    G --> H{Map type to target model}
+    H -->|Found| I[Append to target model]
+    H -->|Not found| J[Raise error]
+    I --> K[Increment progress]
+    F --> L{More forcings?}
     K --> L
     L -->|Yes| D
-    L -->|No| M{mdu_parser present?}
-    M -->|Yes| N[_update_mdu_file()]
-    M -->|No| O[skip]
-    N --> P{unsupported_quantities exist?}
+    L -->|No| M{MDU parser present?}
+    M -->|Yes| N[Update MDU file]
+    M -->|No| O[Skip]
+    N --> P{Unsupported quantities exist?}
     O --> P
-    P -->|Yes| Q[prune extold_model.forcing to unsupported only]
-    P -->|No| R[leave extold_model empty]
-    Q --> S[return models]
-    R --> S[return models]
+    P -->|Yes| Q[Keep legacy model with unsupported only]
+    P -->|No| R[The Legacy model is empty, \n then delete]
+    Q --> S[Return models]
+    R --> S[Return models]
 
     subgraph convert
-        G1[_convert_forcing]
-        G1 --> C1[converter = ConverterFactory.create(quantity)]
-        C1 --> D1{converter type}
-        D1 -->|SourceSinkConverter| E1[require temp/salinity, refdate]
-        D1 -->|BoundaryConditionConverter| E2[require refdate]
-        D1 -->|Initial/Parameters| E3[path_relative_to_parent()]
-        D1 -->|Other| E4[simple convert(forcing)]
-        E1 --> F1[converter.convert(forcing, quantities, start_time, ...)]
-        E2 --> F2[converter.convert(forcing, start_time)]
-        E3 --> F3[converter.convert(forcing, forcing_path)]
-        E4 --> F4[converter.convert(forcing)]
+        G1[Convert forcing]
+        G1 --> C1[Create converter for quantity]
+        C1 --> D1{Converter type}
+        D1 -->|SourceSink| E1[Needs temp salinity and refdate]
+        D1 -->|Boundary| E2[Needs refdate]
+        D1 -->|Initial or Parameters| E3[Resolve relative path]
+        D1 -->|Other| E4[Simple convert]
+        E1 --> F1[Convert with quantities and start time]
+        E2 --> F2[Convert with start time]
+        E3 --> F3[Convert with forcing path]
+        E4 --> F4[Convert]
     end
 ```
 
@@ -407,7 +413,7 @@ This class maintains state (models, flags) but does not have a small, finite set
 ```mermaid
 graph LR
     subgraph Filesystem
-      OldExt[(old .ext file)]
+      OldExt[(old.ext file)]
       NewExt[(new external forcings .ext)]
       NewIni[(inifields.ini)]
       NewStr[(structures.ini)]
@@ -499,10 +505,15 @@ converter.save()
 4) Programmatic inspection after update
 
 ```python
-ext_model, ini_model, struct_model = converter.update()
-print(len(ext_model.meteo), len(ext_model.boundary))
-print(len(ini_model.initial), len(ini_model.parameter))
-print(len(struct_model.structure))
+from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+
+# Create a converter (example path; adjust as needed)
+converter = ExternalForcingConverter("path/to/old-forcings.ext")  # doctest: +SKIP
+
+ext_model, ini_model, struct_model = converter.update()  # doctest: +SKIP
+print(len(ext_model.meteo), len(ext_model.boundary))      # doctest: +SKIP
+print(len(ini_model.initial), len(ini_model.parameter))   # doctest: +SKIP
+print(len(struct_model.structure))                        # doctest: +SKIP
 ```
 
 ---
