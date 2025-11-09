@@ -261,23 +261,39 @@ Important invariants/constraints:
 
 ### 3. Diagrams
 
-#### 3.1. Class Structure Diagram
+#### 3.1. Component / Integration Diagram
+
+```mermaid
+graph LR
+    subgraph Filesystem
+      OldExt[(old.ext file)]
+      NewExt[(new external forcings .ext)]
+      NewIni[(inifields.ini)]
+      NewStr[(structures.ini)]
+      Backups[(.bak backups)]
+    end
+
+    Client[[Caller]] --> Conv[ExternalForcingConverter]
+    Conv --> OldExt
+    Conv --> NewExt
+    Conv --> NewIni
+    Conv --> NewStr
+    Conv -. optional .-> Backups
+
+    subgraph FM
+      MDU[MDUParser]
+      MDUFile[(model.mdu)]
+    end
+
+    Conv <--> MDU
+    MDU <--> MDUFile
+```
+
+#### 3.2. Class Structure Diagram
 
 ```mermaid
 classDiagram
     class ExternalForcingConverter {
-        - _extold_model: ExtOldModel
-        - _ext_model: ExtModel
-        - _inifield_model: IniFieldModel
-        - _structure_model: StructureModel
-        - _legacy_files: list~Path~
-        - _verbose: bool
-        - _root_dir: Path
-        - _path_style: PathStyle
-        - debug: bool
-        - un_supported_quantities: list~str~
-        - _mdu_parser?: MDUParser
-        - temperature_salinity_data?: Dict~str, int~
         + __init__(extold_model, ext_file, inifield_file, structure_file, mdu_parser, verbose, path_style, debug)
         + from_mdu(mdu_file, ext_file_user, inifield_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
         + update() tuple~ExtModel, IniFieldModel, StructureModel~
@@ -292,6 +308,9 @@ classDiagram
         + path_style: PathStyle
         + mdu_parser: MDUParser
         + legacy_files: list~Path~
+        - debug: bool
+        - un_supported_quantities: list~str~
+        - temperature_salinity_data?: Dict~str, int~
     }
 
     ExternalForcingConverter --> ExtOldModel : reads
@@ -303,7 +322,7 @@ classDiagram
     ConverterFactory <.. ExternalForcingConverter : create_converter()
 ```
 
-#### 3.2. Main Usage / Sequence Diagram
+#### 3.3. Main Usage / Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -363,7 +382,7 @@ sequenceDiagram
     end
 ```
 
-#### 3.3. Control Flow / Logic Diagram
+#### 3.4. Control Flow / Logic Diagram
 
 ```mermaid
 flowchart TD
@@ -405,37 +424,6 @@ flowchart TD
     end
 ```
 
-#### 3.4. State Diagram
-
-This class maintains state (models, flags) but does not have a small, finite set of modes with strict transitions. Therefore, a formal state diagram is omitted.
-
-#### 3.5. Component / Integration Diagram
-
-```mermaid
-graph LR
-    subgraph Filesystem
-      OldExt[(old.ext file)]
-      NewExt[(new external forcings .ext)]
-      NewIni[(inifields.ini)]
-      NewStr[(structures.ini)]
-      Backups[(.bak backups)]
-    end
-
-    Client[[Caller]] --> Conv[ExternalForcingConverter]
-    Conv --> OldExt
-    Conv --> NewExt
-    Conv --> NewIni
-    Conv --> NewStr
-    Conv -. optional .-> Backups
-
-    subgraph FM
-      MDU[MDUParser]
-      MDUFile[(model.mdu)]
-    end
-
-    Conv <--> MDU
-    MDU <--> MDUFile
-```
 
 ---
 
