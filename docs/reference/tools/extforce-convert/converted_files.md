@@ -213,3 +213,167 @@ recursive_converter(root_dir="path/to/projects", remove_legacy=True)  # clean() 
 Recommendations and cautions
 - Review `converter.legacy_files` and the console output to ensure none of the files are still needed by other workflows.
 - Use version control or make backups of legacy artifacts if in doubt. Note that `save(backup=True)` creates backups for overwritten files, but deletions performed by `clean()` are permanent.
+
+
+
+## Legacy formats and value mappings
+
+This section explains how legacy files looked and how their values are mapped into the new files produced by `ExternalForcingConverter`.
+
+Notes
+- Examples are illustrative; exact keys depend on the quantity and converter.
+- Field names use the new models’ casing (`quantity`, `forcingfile`, etc.).
+- Some legacy options are no longer supported; see “Unsupported/changed fields”.
+
+### 1) Legacy `.ext` blocks → new models
+
+A single legacy block may be routed to different destination models depending on the quantity:
+- Meteo quantities → `[meteo]` block in `new-external-forcing.ext`.
+- Boundary quantities → `[boundary]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
+- Source/sink quantities → `[sourcesink]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
+- Initial/parameter quantities → `[initial]` / `[parameter]` block in `new-initial-conditions.ini`.
+- Structures → `[structure]` in `new-structure.ini`.
+
+#### 1.1) Meteo Block (new external forcing file)
+```ini
+QUANTITY=rainfall_rate
+FILENAME=rainschematic.tim
+FILETYPE=7
+METHOD=1
+OPERAND=O
+```
+Mapped to `[meteo]` (new external forcings):
+- `QUANTITY` → `quantity`
+- `FILENAME` → `forcingfile` (path preserved; path style may be normalized)
+- `FILETYPE` → `forcingfiletype` via mapping (see table below)
+- `METHOD` → `interpolationmethod` (and possibly `averaging*` fields; see below)
+- `OPERAND` → `operand`
+- Legacy `VARNAME` (if present) → `forcingVariableName`
+- If `SOURCEMASK` is present → not supported (conversion raises error)
+- Extrapolation options:
+  - `EXTRAPOLATIONMETHOD`/`EXTRAPOLATION_METHOD` (int/flag) → `extrapolationAllowed` (boolean)
+  - `MAXSEARCHRADIUS` → `extrapolationSearchRadius`
+
+#### 1.2) Boundary block (new external forcing file)
+```ini
+QUANTITY=waterlevelbnd
+FILENAME=OB_001_orgsize.pli
+FILETYPE=4
+METHOD=3
+OPERAND=O
+```
+Mapped to `[boundary]` (new external forcings) plus a `.bc` file:
+- `QUANTITY` → `quantity`
+- `FILENAME` (polyline `.pli`) → `locationfile` (polyline is parsed to derive labels)
+- Related time-series/profile/composition files are discovered next to the `.pli`:
+  - `*.tim`, `*.t3d`, `*.cmp` with the same stem are located and merged/converted into a `ForcingModel`.
+- `.bc` file path:
+  - For boundary: same path as the `.pli` but with `.bc` extension (e.g., `OB_001_orgsize.bc`).
+  - The new `[boundary]` block gets `forcingfile = <that bc file>`.
+- Requires MDU `RefDate` (start time) for absolute-time conversion.
+- Legacy files `*.tim`/`*.t3d`/`*.cmp` are recorded to `converter.legacy_files` (eligible for `clean()`).
+
+#### 1.3) SourceSink block (new external forcing file) 
+```ini
+QUANTITY=discharge_salinity_temperature_sorsin
+FILENAME=my_sourcesink.poly
+FILETYPE=9
+METHOD=1
+```
+Mapped to `[sourcesink]` (new external forcings) plus a `.bc` file:
+- Polyline `FILENAME` → geometry (`numcoordinates`, `xcoordinates`, `ycoordinates`); optional `area` is preserved.
+- A `*.tim` file is required next to the polyline (same stem). Columns in the TIM become separate time series in the generated `.bc` file.
+- `.bc` file path: relative to MDU root, derived from the TIM path with `.bc` extension.
+- MDU required: `RefDate`; temperature/salinity flags determine which quantities to include.
+- If `zsource`/`zsink` elevations are present in the polyline, they are preserved.
+
+#### 1.4) initial/parameter block (polygon)
+```ini
+QUANTITY=initialwaterlevel
+FILENAME=start_area.pol
+FILETYPE=10
+METHOD=6
+AVERAGINGTYPE=2
+OPERAND=O
+VALUE=0.15
+```
+Mapped to `new-initial-conditions.ini`:
+- `QUANTITY` → `[initial].quantity` (with special-case rename for bedrock to `bedrockSurfaceElevation`)
+- `FILENAME` → `datafile`
+- `FILETYPE=10` → `datafiletype = polygon`
+- `METHOD`/`AVERAGINGTYPE` → `interpolationmethod` and `averaging*` fields (see below)
+- `OPERAND` → `operand`
+- `VALUE` is preserved for polygon data
+- Any `tracer*` keys present are copied as-is
+
+##### FILETYPE mapping (legacy → new)
+- 1 → `uniform`
+- 2 → `unimagdir`
+- 4 → `arcinfo`
+- 5 → `spiderweb`
+- 6 → `curvigrid`
+- 7 → `sample`
+- 10 → `polygon` (initial/parameter)
+- 11 → `netcdf`
+- 3 (spatially varying wind/pressure) → not supported (raises error)
+- 8 (magnitude+direction timeseries on stations) → not supported (raises error)
+
+##### METHOD and averaging mapping
+- `METHOD` → `interpolationmethod`.
+- When `METHOD = 6` (averaging), the following additional fields are set:
+  - `averagingtype` from `AVERAGINGTYPE` using mapping:
+    - 1 mean, 2 nearestnb, 3 max, 4 min, 5 invdist, 6 minabs, 7 median
+  - `averagingrelsize` from `RELATIVESEARCHCELLSIZE`
+  - `averagingnummin` from `NUMMIN`
+  - `averagingpercentile` from `PERCENTILEMINMAX`
+
+#### 2) Legacy `.tim` → new `.bc` (time series)
+
+Minimal legacy TIM example
+```
+* time  value
+0.0  10.0
+3600  12.5
+7200  15.0
+```
+How it’s used during conversion:
+- Boundary conversion:
+  - All `*.tim` files located for a boundary are merged into a single time series model.
+  - Each TIM file contributes one column/series; its stem becomes the label in the `.bc` file.
+  - The `.bc` filepath is `<polyline>.bc`.
+- Source/sink conversion:
+  - A single `*.tim` is parsed; its columns become separate series.
+  - Labels are set to the polyline stem; the same `.bc` model is referenced for all series inside the `[sourcesink]` block.
+- Time units:
+  - Absolute time reference (e.g., `minutes since <RefDate>`) is derived from the MDU `RefDate`.
+
+#### 3) Legacy `.t3d` → new `.bc` (3D profiles)
+
+- If `*.t3d` files are present next to the boundary polyline, they are parsed and converted to T3D forcing entries in the `.bc` file.
+- Quantity names are repeated per vertical layer; user-defined labels are constructed from the polyline label and file stems.
+- The same `.bc` file is used as for the time series.
+- All `*.t3d` files that were used are added to `converter.legacy_files`.
+
+#### 4) Legacy `.cmp` → new `.bc` (harmonic/astronomic compositions)
+
+- If `*.cmp` files are found next to the boundary polyline, their harmonic/astronomic records are converted to corresponding sections in the `.bc` file.
+- Labels are derived from the polyline label and file stems.
+- All `*.cmp` files that were used are added to `converter.legacy_files`.
+
+#### 5) Path handling rules (relative vs absolute)
+
+- For boundary/sourcesink `.bc` paths:
+  - Boundary: `<polyline>.bc` (same directory as the `.pli`).
+  - Source/sink: relative to the MDU root based on the TIM file location, with `.bc` extension.
+- For initial/parameter `datafile` paths:
+  - If the MDU setting `PathsRelativeToParent = 1`, absolute or MDU-relative filenames inside the legacy `.ext` may be rewritten relative to the inifield file location to keep references consistent.
+  - Otherwise, the original path is kept.
+
+#### 6) Unsupported/changed fields
+
+- `SOURCEMASK` is no longer supported for meteo/initial/parameter blocks; conversion raises an error when encountered.
+- Some legacy `FILETYPE` values are no longer supported (see mapping table above).
+- Boundary and source/sink conversions require MDU context:
+  - `RefDate` must be present.
+  - Temperature/salinity switches must be specified for source/sink to include corresponding series.
+
