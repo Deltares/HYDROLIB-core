@@ -1,3 +1,4 @@
+# External Forcing Converter
 ### 2.1. High-Level Overview
 
 `ExternalForcingConverter` converts legacy D-Flow FM external forcings files (old `.ext` format, represented by `ExtOldModel`) into the newer model structure consisting of:
@@ -201,10 +202,10 @@ forcing_model_data = {
     'comment': [' Example (old-style) external forcings file'],
     'forcing': [forcing_data]
 }
-old_model = ExtOldModel(**forcing_model_data)  # doctest: +SKIP
-converter = ExternalForcingConverter(extold_model=old_model, verbose=True)  # doctest: +SKIP
-ext_model, ini_model, struct_model = converter.update()  # doctest: +SKIP
-converter.save(backup=True)  # doctest: +SKIP
+old_model = ExtOldModel(**forcing_model_data)  
+converter = ExternalForcingConverter(extold_model=old_model, verbose=True)  
+ext_model, ini_model, struct_model = converter.update()  
+converter.save(backup=True)  
 ```
 
 - From legacy file path
@@ -212,9 +213,9 @@ converter.save(backup=True)  # doctest: +SKIP
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-converter = ExternalForcingConverter("old-external-forcing.ext", verbose=True)  # doctest: +SKIP
-converter.update()  # doctest: +SKIP
-converter.save()  # doctest: +SKIP
+converter = ExternalForcingConverter("old-external-forcing.ext", verbose=True)  
+converter.update()  
+converter.save()  
 ```
 
 - From MDU file (recommended for quantities needing FM metadata)
@@ -222,11 +223,11 @@ converter.save()  # doctest: +SKIP
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-converter = ExternalForcingConverter.from_mdu("model.mdu", debug=False)  # doctest: +SKIP
-converter.update()  # doctest: +SKIP
-converter.save(backup=True)  # doctest: +SKIP
+converter = ExternalForcingConverter.from_mdu("model.mdu", debug=False)  
+converter.update()  
+converter.save(backup=True)  
 # Optional: remove legacy artifacts if nothing left unsupported
-converter.clean()  # doctest: +SKIP
+converter.clean()  
 ```
 
 ### 2.4. Lifecycle & Control Flow Explanation
@@ -508,12 +509,12 @@ converter.save()
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
 # Create a converter (example path; adjust as needed)
-converter = ExternalForcingConverter("path/to/old-forcings.ext")  # doctest: +SKIP
+converter = ExternalForcingConverter("path/to/old-forcings.ext")  
 
-ext_model, ini_model, struct_model = converter.update()  # doctest: +SKIP
-print(len(ext_model.meteo), len(ext_model.boundary))      # doctest: +SKIP
-print(len(ini_model.initial), len(ini_model.parameter))   # doctest: +SKIP
-print(len(struct_model.structure))                        # doctest: +SKIP
+ext_model, ini_model, struct_model = converter.update()  
+print(len(ext_model.meteo), len(ext_model.boundary))      
+print(len(ini_model.initial), len(ini_model.parameter))   
+print(len(struct_model.structure))                        
 ```
 
 ---
