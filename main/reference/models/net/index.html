@@ -50,6 +50,8 @@
     
       <link rel="stylesheet" href="../../../stylesheets/extra.css">
     
+      <link rel="stylesheet" href="../../../assets/stylesheets/panzoom.css">
+    
     <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -57,7 +59,8 @@
     
     
     
-  </head>
+  <meta name="panzoom-theme" content="material">
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3010,6 +3013,161 @@ You're not viewing the latest release version.
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_5_1" id="__nav_5_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Extforce-convert
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            Extforce-convert
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/extforce-convert/extforce_convert/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External Forcing Converter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tools/extforce-convert/converted_files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Converted files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3482,7 +3640,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">318</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
+<span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span>
@@ -3728,8 +3887,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">561</span>
 <span class="normal">562</span>
 <span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">:</span>
+<span class="normal">564</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">geometry</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -4103,7 +4261,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">360</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">359</span>
+<span class="normal">360</span>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
@@ -4126,8 +4285,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_nodes</span><span class="p">(</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_nodes</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4204,7 +4362,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">551</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">550</span>
+<span class="normal">551</span>
 <span class="normal">552</span>
 <span class="normal">553</span>
 <span class="normal">554</span>
@@ -4217,8 +4376,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">561</span>
 <span class="normal">562</span>
 <span class="normal">563</span>
-<span class="normal">564</span>
-<span class="normal">565</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="normal">564</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length</span>
 
 <span class="sd">    Args:</span>
@@ -4341,7 +4499,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">568</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">567</span>
+<span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
 <span class="normal">571</span>
@@ -4454,8 +4613,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Link1d2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">681</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Link1d2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Link1d2d defines the 1D2D Links of a model network.</span>
 
 <span class="sd">    Attributes:</span>
@@ -4600,7 +4758,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">628</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">627</span>
+<span class="normal">628</span>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
@@ -4608,8 +4767,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">633</span>
 <span class="normal">634</span>
 <span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">636</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
@@ -4663,13 +4821,13 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">610</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">609</span>
+<span class="normal">610</span>
 <span class="normal">611</span>
 <span class="normal">612</span>
 <span class="normal">613</span>
 <span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">615</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
 
 <span class="sd">    Returns:</span>
@@ -4728,15 +4886,15 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">618</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">617</span>
+<span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
 <span class="normal">622</span>
 <span class="normal">623</span>
 <span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">625</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this</span>
 
 <span class="sd">    Args:</span>
@@ -4784,7 +4942,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 685</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 684</span>
+<span class="normal"> 685</span>
 <span class="normal"> 686</span>
 <span class="normal"> 687</span>
 <span class="normal"> 688</span>
@@ -5184,8 +5343,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1082</span>
 <span class="normal">1083</span>
 <span class="normal">1084</span>
-<span class="normal">1085</span>
-<span class="normal">1086</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh1d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">1085</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh1d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
 
     <span class="n">meshkernel</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span><span class="p">)</span>
@@ -5617,7 +5775,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1071</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1070</span>
+<span class="normal">1071</span>
 <span class="normal">1072</span>
 <span class="normal">1073</span>
 <span class="normal">1074</span>
@@ -5631,8 +5790,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1082</span>
 <span class="normal">1083</span>
 <span class="normal">1084</span>
-<span class="normal">1085</span>
-<span class="normal">1086</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">1085</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list&quot;&quot;&quot;</span>
 
     <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -5734,7 +5892,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 46</span>
+<span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -6001,8 +6160,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mesh2d defines a single two dimensional grid.</span>
 
 <span class="sd">    Attributes:</span>
@@ -6700,7 +6858,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">226</span>
+<span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
@@ -6758,8 +6917,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">282</span>
 <span class="normal">283</span>
 <span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span>
+<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">geometrylist</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
     <span class="n">deletemeshoption</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="o">.</span><span class="n">INSIDE_NOT_INTERSECTED</span><span class="p">,</span>
@@ -6926,7 +7084,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">187</span>
+<span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
@@ -6953,8 +7112,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds</span>
 
 <span class="sd">    Args:</span>
@@ -7035,14 +7193,14 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
+<span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object</span>
 
 <span class="sd">    Args:</span>
@@ -7094,13 +7252,13 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
+<span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2d</span><span class="p">:</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2d</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mesh2d as represented in the MeshKernel</span>
 
 <span class="sd">    Returns:</span>
@@ -7151,13 +7309,13 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">153</span>
+<span class="normal">154</span>
 <span class="normal">155</span>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether this Mesh2d is empty.</span>
 
 <span class="sd">    Returns:</span>
@@ -7216,14 +7374,14 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
+<span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Mesh2d from the file at file_path.</span>
 
 <span class="sd">    Args:</span>
@@ -7315,7 +7473,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
+<span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
@@ -7341,8 +7500,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">refine</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -7405,7 +7563,8 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1089</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1088</span>
+<span class="normal">1089</span>
 <span class="normal">1090</span>
 <span class="normal">1091</span>
 <span class="normal">1092</span>
@@ -7547,8 +7706,7 @@ and <a href="../../glossary/#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1228</span>
 <span class="normal">1229</span>
 <span class="normal">1230</span>
-<span class="normal">1231</span>
-<span class="normal">1232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">:</span>
+<span class="normal">1231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_geographic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_geographic</span><span class="p">:</span>
             <span class="n">projection</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">ProjectionType</span><span class="o">.</span><span class="n">CARTESIAN</span>
@@ -7825,7 +7983,8 @@ present, and loads them one by one.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1104</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1103</span>
+<span class="normal">1104</span>
 <span class="normal">1105</span>
 <span class="normal">1106</span>
 <span class="normal">1107</span>
@@ -7847,8 +8006,7 @@ present, and loads them one by one.</p>
 <span class="normal">1123</span>
 <span class="normal">1124</span>
 <span class="normal">1125</span>
-<span class="normal">1126</span>
-<span class="normal">1127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">1126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Network</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read network from file. This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
 <span class="sd">    present, and loads them one by one.</span>
@@ -7925,14 +8083,14 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1168</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1167</span>
+<span class="normal">1168</span>
 <span class="normal">1169</span>
 <span class="normal">1170</span>
 <span class="normal">1171</span>
 <span class="normal">1172</span>
 <span class="normal">1173</span>
-<span class="normal">1174</span>
-<span class="normal">1175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1174</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular</span>
 <span class="sd">    directly, but is easier accessible for users.</span>
 
@@ -7992,7 +8150,8 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1215</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1214</span>
+<span class="normal">1215</span>
 <span class="normal">1216</span>
 <span class="normal">1217</span>
 <span class="normal">1218</span>
@@ -8008,8 +8167,7 @@ directly, but is easier accessible for users.</p>
 <span class="normal">1228</span>
 <span class="normal">1229</span>
 <span class="normal">1230</span>
-<span class="normal">1231</span>
-<span class="normal">1232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">1231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a plot of the 1d2d links and edges within this network.</span>
 
 <span class="sd">    Args:</span>
@@ -8079,15 +8237,15 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1129</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1128</span>
+<span class="normal">1129</span>
 <span class="normal">1130</span>
 <span class="normal">1131</span>
 <span class="normal">1132</span>
 <span class="normal">1133</span>
 <span class="normal">1134</span>
 <span class="normal">1135</span>
-<span class="normal">1136</span>
-<span class="normal">1137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">1136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Write network to file</span>
 
 <span class="sd">    Args:</span>
@@ -8135,7 +8293,8 @@ directly, but is easier accessible for users.</p>
 
               <details class="quote">
                 <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1235</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1234</span>
+<span class="normal">1235</span>
 <span class="normal">1236</span>
 <span class="normal">1237</span>
 <span class="normal">1238</span>
@@ -8203,8 +8362,7 @@ directly, but is easier accessible for users.</p>
 <span class="normal">1300</span>
 <span class="normal">1301</span>
 <span class="normal">1302</span>
-<span class="normal">1303</span>
-<span class="normal">1304</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NetworkModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">1303</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NetworkModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Network model representation.&quot;&quot;&quot;</span>
 
     <span class="n">network</span><span class="p">:</span> <span class="n">Network</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Network</span><span class="p">)</span>
@@ -8383,7 +8541,8 @@ directly, but is easier accessible for users.</p>
 
             <details class="quote">
               <summary>Source code in <code>hydrolib/core/dflowfm/net/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
@@ -8403,8 +8562,7 @@ directly, but is easier accessible for users.</p>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_by</span><span class="p">(</span><span class="n">gl</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_by</span><span class="p">(</span><span class="n">gl</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to split mk.GeometryList by seperator.</span>
 
 <span class="sd">    Args:</span>
@@ -8522,6 +8680,10 @@ directly, but is easier accessible for users.</p>
     
     
       <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../assets/javascripts/panzoom.min.js"></script>
+      
+        <script src="../../../assets/javascripts/zoompan.js"></script>
       
     
   </body>
