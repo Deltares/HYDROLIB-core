@@ -60,7 +60,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1321,7 +1321,7 @@ You're not viewing the latest release version.
   
   
   <span class="md-ellipsis">
-    List of D-HYDRO functionalities and support in HYDROLIB-core
+    Macro Rendering Error
     
   </span>
   
@@ -3538,14 +3538,15 @@ You're not viewing the latest release version.
 
 <span class="na">QUANTITY</span><span class="o">=</span><span class="s">waterlevelbnd</span>
 <span class="na">FILENAME</span><span class="o">=</span><span class="s">OB_001_orgsize.pli</span>
-<span class="na">FILETYPE</span><span class="o">=</span><span class="s">4</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">9</span>
 <span class="na">METHOD</span><span class="o">=</span><span class="s">3</span>
 <span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
 
 <span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
-<span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.tim</span>
-<span class="na">FILETYPE</span><span class="o">=</span><span class="s">7</span>
-<span class="na">METHOD</span><span class="o">=</span><span class="s">1</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">era_20181001.nc</span>
+<span class="na">VARNAME</span><span class="o">=</span><span class="s">mer</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">11</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">3</span>
 <span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
 </code></pre></div>
 <h3 id="after-new-external-forcings-new-external-forcingext">After: new external forcings (<code>new-external-forcing.ext</code>)<a class="headerlink" href="#after-new-external-forcings-new-external-forcingext" title="Permanent link">&para;</a></h3>
@@ -3555,15 +3556,18 @@ You're not viewing the latest release version.
 <span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">extForce</span>
 
 <span class="k">[boundary]</span>
-<span class="na">quantity</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd</span>
-<span class="na">nodeId</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">OB_001</span><span class="w">                    </span><span class="c1"># derived from your boundary setup</span>
-<span class="na">forcingfile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">BoundaryConditions.bc</span><span class="w">     </span><span class="c1"># converter provides the correct BC file</span>
+<span class="na">quantity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd</span>
+<span class="na">locationFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">OB_001_orgsize.pli</span>
+<span class="na">forcingfile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">BoundaryConditions.bc</span><span class="w">     </span><span class="c1"># converter provides the correct BC file</span>
 
 <span class="k">[meteo]</span>
 <span class="na">Quantity</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">rainfall_rate</span>
-<span class="na">LocationType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">global</span>
-<span class="na">ForcingFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">rainschematic.tim</span>
-<span class="na">ForcingFileType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">uniform</span>
+<span class="na">ForcingFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">era_20181001.nc</span>
+<span class="na">forcingVariableName</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">mer</span><span class="w">               </span><span class="c1"># Variable name used in forcingfile associated with this forcing. See UM Section C.5.3</span>
+<span class="na">forcingFileType</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">netcdf</span><span class="w">            </span><span class="c1"># Type of forcingFile.</span>
+<span class="na">interpolationMethod</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">linearSpaceTime</span><span class="w">   </span><span class="c1"># Type of (spatial) interpolation.</span>
+<span class="na">operand</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">+</span><span class="w">                 </span><span class="c1"># How this data is combined with previous data for the same quantity (if any).</span>
+<span class="na">extrapolationAllowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span><span class="w">                 </span><span class="c1"># Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.</span>
 </code></pre></div>
 <ul>
 <li>Boundary/lateral/meteorology/source-sink entries go to <code>new-external-forcing.ext</code>.</li>
