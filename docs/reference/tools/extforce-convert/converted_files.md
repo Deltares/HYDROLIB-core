@@ -75,14 +75,15 @@ A minimal legacy file with two forcings (boundary water level and global rainfal
 
 QUANTITY=waterlevelbnd
 FILENAME=OB_001_orgsize.pli
-FILETYPE=4
+FILETYPE=9
 METHOD=3
 OPERAND=O
 
 QUANTITY=rainfall_rate
-FILENAME=rainschematic.tim
-FILETYPE=7
-METHOD=1
+FILENAME=era_20181001.nc
+VARNAME=mer
+FILETYPE=11
+METHOD=3
 OPERAND=O
 ```
 
@@ -95,15 +96,18 @@ fileVersion = 1.00
 fileType    = extForce
 
 [boundary]
-quantity    = waterlevelbnd
-nodeId      = OB_001                    # derived from your boundary setup
-forcingfile = BoundaryConditions.bc     # converter provides the correct BC file
+quantity     = waterlevelbnd
+locationFile = OB_001_orgsize.pli
+forcingfile  = BoundaryConditions.bc     # converter provides the correct BC file
 
 [meteo]
 Quantity        = rainfall_rate
-LocationType    = global
-ForcingFile     = rainschematic.tim
-ForcingFileType = uniform
+ForcingFile     = era_20181001.nc
+forcingVariableName  = mer               # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
+forcingFileType      = netcdf            # Type of forcingFile.
+interpolationMethod  = linearSpaceTime   # Type of (spatial) interpolation.
+operand              = +                 # How this data is combined with previous data for the same quantity (if any).
+extrapolationAllowed = 0                 # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
 ```
 
 - Boundary/lateral/meteorology/source-sink entries go to `new-external-forcing.ext`.
