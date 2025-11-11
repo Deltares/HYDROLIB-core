@@ -119,6 +119,7 @@ nav:
       - D-Flow FM:
           - MDU:
             - reference/dflowfm/mdu/mdu.md
+            - reference/dflowfm/mdu/fm-model.md
             - reference/dflowfm/mdu/onedfield.md
             - reference/dflowfm/mdu/research.md
           - External Forcing:
