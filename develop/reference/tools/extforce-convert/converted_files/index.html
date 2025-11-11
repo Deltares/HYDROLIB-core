@@ -1,0 +1,4199 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../extforce_convert/">
+      
+      
+        <link rel="next" href="../../../../changelog/">
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>Converted files - hydrolib-core documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/panzoom.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  <meta name="panzoom-theme" content="material">
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="deltares" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#external-forcing-files-before-and-after" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+          <aside class="md-banner md-banner--warning">
+            <div class="md-banner__inner md-grid md-typeset">
+              
+You're not viewing the latest release version.
+<a href="../../../../..">
+    <strong>Click here to go to latest release.</strong>
+</a>
+
+            </div>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../../../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+          </aside>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="hydrolib-core documentation" class="md-header__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  <img src="../../../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            hydrolib-core documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Converted files
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="deltares" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Deltares/hydrolib-core" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../guides/setup/" class="md-tabs__link">
+          
+  
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../tutorials/basic_tutorials/tutorials/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../topics/dhydro_support/" class="md-tabs__link">
+          
+  
+  
+  Topics
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../glossary/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Release notes
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="hydrolib-core documentation" class="md-nav__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+      
+  <img src="../../../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+
+    </a>
+    hydrolib-core documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Deltares/hydrolib-core" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    deltares/hydrolib-core
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    How-to
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            How-to
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pip install
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/devcontainers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Developer container
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/poetry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Poetry
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Contributing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/developers-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Developer Guide
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/getting-help/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Support
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Basic Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/basic_tutorials/tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction to tutorials
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/basic_tutorials/build_basic_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Build a basic model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/basic_tutorials/loading_and_saving_a_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Loading and saving a model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/basic_tutorials/dataframe_handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dataframe handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/basic_tutorials/plotting_a_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Plotting a network
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    DSD
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            DSD
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/dsd/instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    HYDROLIB-core guide for the Delft Software Days 2025
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_2" id="__nav_3_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Demo
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Demo
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/dsd/demo/demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Deltares Software Days 2025: A simple hydrolib-core demo
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2_3" id="__nav_3_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Magdalena Workflow
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Magdalena Workflow
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a Delft3D FM 1D2D fluvial flood model of Magdalena river
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Creating a Delft3D FM 1D2D fluvial flood model of Magdalena river
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    External Forcing Conversion
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            External Forcing Conversion
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/extforce-convert/external_forcing_conversion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    extforce-convert Command Line Interface (CLI) Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Topics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Topics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../topics/dhydro_support/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    List of D-HYDRO functionalities and support in HYDROLIB-core
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../topics/principles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    First principles
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../topics/pydantic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Pydantic
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../topics/loadsave/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Loading and Saving within HYDROLIB-core
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            Introduction
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_1_2" id="__nav_5_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    base
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            base
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../base/base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base Module
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../base/api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../base/model-tree-traverser/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ModelTreeTraverser
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../base/ini/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    INI format
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../base/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    D-Flow FM
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            D-Flow FM
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_1" id="__nav_5_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    MDU
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            MDU
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/fm-model-attributes-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FMModel attributes: consolidated diagram
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/fm-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FMModel: diagrams and internals
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/fm-model-attributes-detailed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FMModel attributes: detailed class diagrams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/mdu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MDU file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/onedfield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    1D field INI files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/mdu/research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Research FM Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_2" id="__nav_5_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    External Forcing
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            External Forcing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/extold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External forcings file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/ext/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External forcings file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/forcing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Forcings .bc file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/inifield/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Initial and parameter field files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    None
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_2_6" id="__nav_5_2_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Structures
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_2_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            Structures
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/structures/structure-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structure overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/external-forcing/structures/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Structure .ini files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_3" id="__nav_5_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Attribute Files
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Attribute Files
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/attribute-files/polyfile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Polyline/Polygon Files Documentation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/attribute-files/tim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Timeseries .tim files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/attribute-files/xyz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sample files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_4" id="__nav_5_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Cross-Sections
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            Cross-Sections
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/cross-sections/friction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Friction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/cross-sections/crosssection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cross section files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_5" id="__nav_5_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Topology and Network
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            Topology and Network
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/topology-network/net/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Net/grid file
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/topology-network/storagenode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Storage node .ini files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/topology-network/observationpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Observation point files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dflowfm/topology-network/observationcrosssection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Observation cross section files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_6" id="__nav_5_2_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    DIMR
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_6">
+            <span class="md-nav__icon md-icon"></span>
+            DIMR
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dimr/dimr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DIMR xml files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    RainfallRunoff
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            RainfallRunoff
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rr/rr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RainfallRunoff file models
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../rr/meteo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The Rainfall Runoff meteo layer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    GUI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            GUI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../gui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GUI files
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_5" id="__nav_5_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tools
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            Tools
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_5_1" id="__nav_5_5_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Extforce-convert
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_5_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            Extforce-convert
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extforce_convert/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External Forcing Converter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Converted files
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Converted files
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#external-forcing-files-before-and-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      External Forcing files: Before and after
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External Forcing files: Before and after">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-project-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example project layout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-mdu-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example MDU file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example MDU file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-the-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      before the conversion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-legacy-ext-old-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Before: legacy .ext (old format)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-new-external-forcings-new-external-forcingext" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: new external forcings (new-external-forcing.ext)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-initialparameter-fields-new-initial-conditionsini" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: initial/parameter fields (new-initial-conditions.ini)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-structures-new-structureini" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: structures (new-structure.ini)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdu-references-before-vs-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      MDU references: before vs after
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backups-and-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backups and cleanup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legacy-files-removed-by-externalforcingconverterclean" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy files removed by ExternalForcingConverter.clean
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-formats-and-value-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy formats and value mappings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Legacy formats and value mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-legacy-ext-blocks-new-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Legacy .ext blocks → new models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1) Legacy .ext blocks → new models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-meteo-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1) Meteo Block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-boundary-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2) Boundary block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-sourcesink-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3) SourceSink block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-initialparameter-block-polygon" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4) initial/parameter block (polygon)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.4) initial/parameter block (polygon)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filetype-mapping-legacy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      FILETYPE mapping (legacy → new)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-and-averaging-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      METHOD and averaging mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-legacy-tim-new-bc-time-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Legacy .tim → new .bc (time series)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2) Legacy .tim → new .bc (time series)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bc-time-series-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      .bc (time series) file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-legacy-t3d-new-bc-3d-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Legacy .t3d → new .bc (3D profiles)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3) Legacy .t3d → new .bc (3D profiles)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-t3d-3d-vertical-profiles-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input .t3d (3D vertical profiles over time):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-legacy-cmp-new-bc-harmonicastronomic-compositions" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Legacy .cmp → new .bc (harmonic/astronomic compositions)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4) Legacy .cmp → new .bc (harmonic/astronomic compositions)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-cmp-harmonicastronomic-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input .cmp (harmonic/astronomic components):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-path-handling-rules-relative-vs-absolute" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Path handling rules (relative vs absolute)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-unsupportedchanged-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Unsupported/changed fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Release notes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#external-forcing-files-before-and-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      External Forcing files: Before and after
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External Forcing files: Before and after">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-project-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example project layout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-mdu-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example MDU file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example MDU file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-the-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      before the conversion
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-legacy-ext-old-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      Before: legacy .ext (old format)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-new-external-forcings-new-external-forcingext" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: new external forcings (new-external-forcing.ext)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-initialparameter-fields-new-initial-conditionsini" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: initial/parameter fields (new-initial-conditions.ini)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-structures-new-structureini" class="md-nav__link">
+    <span class="md-ellipsis">
+      After: structures (new-structure.ini)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mdu-references-before-vs-after" class="md-nav__link">
+    <span class="md-ellipsis">
+      MDU references: before vs after
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backups-and-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backups and cleanup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legacy-files-removed-by-externalforcingconverterclean" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy files removed by ExternalForcingConverter.clean
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#legacy-formats-and-value-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Legacy formats and value mappings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Legacy formats and value mappings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-legacy-ext-blocks-new-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Legacy .ext blocks → new models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1) Legacy .ext blocks → new models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-meteo-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.1) Meteo Block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-boundary-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.2) Boundary block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-sourcesink-block-new-external-forcing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.3) SourceSink block (new external forcing file)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-initialparameter-block-polygon" class="md-nav__link">
+    <span class="md-ellipsis">
+      1.4) initial/parameter block (polygon)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.4) initial/parameter block (polygon)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filetype-mapping-legacy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      FILETYPE mapping (legacy → new)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-and-averaging-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      METHOD and averaging mapping
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-legacy-tim-new-bc-time-series" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Legacy .tim → new .bc (time series)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2) Legacy .tim → new .bc (time series)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bc-time-series-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      .bc (time series) file
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-legacy-t3d-new-bc-3d-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Legacy .t3d → new .bc (3D profiles)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3) Legacy .t3d → new .bc (3D profiles)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-t3d-3d-vertical-profiles-over-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input .t3d (3D vertical profiles over time):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-legacy-cmp-new-bc-harmonicastronomic-compositions" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Legacy .cmp → new .bc (harmonic/astronomic compositions)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4) Legacy .cmp → new .bc (harmonic/astronomic compositions)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-cmp-harmonicastronomic-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input .cmp (harmonic/astronomic components):
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-path-handling-rules-relative-vs-absolute" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Path handling rules (relative vs absolute)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-unsupportedchanged-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Unsupported/changed fields
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Converted files</h1>
+
+<h2 id="external-forcing-files-before-and-after">External Forcing files: Before and after<a class="headerlink" href="#external-forcing-files-before-and-after" title="Permanent link">&para;</a></h2>
+<p>This section shows how a typical legacy external forcings file looked before, and how the files look after running <code>ExternalForcingConverter</code>.</p>
+<p>Notes
+- Examples are illustrative. Exact fields depend on the specific quantity and converter used.
+- Paths may be rewritten according to <code>path_style</code> and the MDU location.
+- When unsupported quantities exist and <code>debug=True</code>, those entries remain in the legacy <code>.ext</code> file after <code>update()</code>; only supported ones are moved to the new files.</p>
+<h3 id="example-project-layout">Example project layout<a class="headerlink" href="#example-project-layout" title="Permanent link">&para;</a></h3>
+<p>Before conversion
+<div class="highlight"><pre><span></span><code>project/
+├─ model.mdu
+└─ old-forcings.ext
+</code></pre></div></p>
+<p>After conversion
+<div class="highlight"><pre><span></span><code>project/
+├─ model.mdu                      # updated to reference new files
+├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
+├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
+└─ new-structure.ini              # StructureModel: structures (if any)
+</code></pre></div></p>
+<h3 id="example-mdu-file">Example MDU file<a class="headerlink" href="#example-mdu-file" title="Permanent link">&para;</a></h3>
+<h4 id="before-the-conversion">before the conversion<a class="headerlink" href="#before-the-conversion" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="k">[General]</span>
+<span class="na">Program</span><span class="w">                             </span><span class="o">=</span><span class="w"> </span><span class="s">D-Flow FM</span><span class="w">                  </span><span class="c1"># Program</span>
+<span class="na">Version</span><span class="w">                             </span><span class="o">=</span><span class="w"> </span><span class="s">1.2.100.66357</span><span class="w">              </span><span class="c1"># Version number of computational kernel</span>
+<span class="na">FileVersion</span><span class="w">                         </span><span class="o">=</span><span class="w"> </span><span class="s">1.09</span><span class="w">                       </span><span class="c1"># File format version (do not edit this)</span>
+<span class="na">PathsRelativeToParent</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="s">0</span><span class="w">                          </span><span class="c1"># Default: 0. Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir.</span>
+
+
+<span class="k">[geometry]</span>
+<span class="na">NetFile</span><span class="w">                             </span><span class="o">=</span><span class="w"> </span><span class="s">my-project_FM_grid_20190603_net.nc</span><span class="w">         </span><span class="c1"># Unstructured grid file *_net.nc</span>
+<span class="na">IniFieldFile</span><span class="w">                        </span><span class="o">=</span><span class="w"> </span><span class="s">inifield.ini</span><span class="w">                               </span><span class="c1"># Initial values and parameter fields file</span>
+<span class="na">StructureFile</span><span class="w">                       </span><span class="o">=</span><span class="w"> </span><span class="s">structures.ini</span><span class="w">                             </span><span class="c1"># Hydraulic structure file (*.ini)</span>
+<span class="na">...</span>
+
+<span class="k">[physics]</span>
+<span class="na">...</span>
+<span class="na">Salinity</span><span class="w">                            </span><span class="o">=</span><span class="w"> </span><span class="s">1</span><span class="w">                                         </span><span class="c1"># Include salinity, (0=no, 1=yes)</span>
+<span class="na">...</span>
+<span class="na">Temperature</span><span class="w">                         </span><span class="o">=</span><span class="w"> </span><span class="s">5</span><span class="w">                                         </span><span class="c1"># Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model)</span>
+<span class="na">...</span>
+
+<span class="k">[time]</span>
+<span class="na">RefDate</span><span class="w">                             </span><span class="o">=</span><span class="w"> </span><span class="s">20160101</span><span class="w">                                  </span><span class="c1"># Reference date (yyyymmdd)</span>
+
+<span class="k">[external forcing]</span>
+<span class="na">ExtForceFile</span><span class="w">                        </span><span class="o">=</span><span class="w"> </span><span class="s">my-project-FM_bnd.ext</span><span class="w">                                              </span><span class="c1"># Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification</span>
+<span class="na">ExtForceFileNew</span><span class="w">                     </span><span class="o">=</span><span class="w">                                                                     </span><span class="c1"># New format for external forcings file *.ext, link with bc-format boundary conditions specification</span>
+</code></pre></div>
+- The MDU file is updated to reference the new files.
+- If the converter detects unsupported quantities, the <code>ExtForceFile</code> entry is left in place and the unsupported 
+  quantities are reported in the log.
+- If all the quantities are converted the <code>ExtForceFile</code> entry is removed and the <code>ExtForceFileNew</code> entry is updated to 
+  point to the new file.
+- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing 
+  file.
+- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new 
+  entries, save it, and update the MDU file to reference it.</p>
+<h3 id="before-legacy-ext-old-format">Before: legacy <code>.ext</code> (old format)<a class="headerlink" href="#before-legacy-ext-old-format" title="Permanent link">&para;</a></h3>
+<p>A minimal legacy file with two forcings (boundary water level and global rainfall). Values (e.g., <code>FILETYPE</code>, <code>METHOD</code>) may differ in your model.</p>
+<div class="highlight"><pre><span></span><code><span class="na">* Example (old-style) external forcings file</span>
+
+<span class="na">QUANTITY</span><span class="o">=</span><span class="s">waterlevelbnd</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">OB_001_orgsize.pli</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">9</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">3</span>
+<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
+
+<span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">era_20181001.nc</span>
+<span class="na">VARNAME</span><span class="o">=</span><span class="s">mer</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">11</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">3</span>
+<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
+</code></pre></div>
+<h3 id="after-new-external-forcings-new-external-forcingext">After: new external forcings (<code>new-external-forcing.ext</code>)<a class="headerlink" href="#after-new-external-forcings-new-external-forcingext" title="Permanent link">&para;</a></h3>
+<p>Converted forcings are routed to the appropriate sections in the new ExtModel file. For example:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
+<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
+<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">extForce</span>
+
+<span class="k">[boundary]</span>
+<span class="na">quantity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd</span>
+<span class="na">locationFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">OB_001_orgsize.pli</span>
+<span class="na">forcingfile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">BoundaryConditions.bc</span><span class="w">     </span><span class="c1"># converter provides the correct BC file</span>
+
+<span class="k">[meteo]</span>
+<span class="na">Quantity</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">rainfall_rate</span>
+<span class="na">ForcingFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">era_20181001.nc</span>
+<span class="na">forcingVariableName</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">mer</span><span class="w">               </span><span class="c1"># Variable name used in forcingfile associated with this forcing. See UM Section C.5.3</span>
+<span class="na">forcingFileType</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">netcdf</span><span class="w">            </span><span class="c1"># Type of forcingFile.</span>
+<span class="na">interpolationMethod</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">linearSpaceTime</span><span class="w">   </span><span class="c1"># Type of (spatial) interpolation.</span>
+<span class="na">operand</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">+</span><span class="w">                 </span><span class="c1"># How this data is combined with previous data for the same quantity (if any).</span>
+<span class="na">extrapolationAllowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span><span class="w">                 </span><span class="c1"># Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.</span>
+</code></pre></div>
+<ul>
+<li>Boundary/lateral/meteorology/source-sink entries go to <code>new-external-forcing.ext</code>.</li>
+<li>Initial/parameter fields go to <code>new-initial-conditions.ini</code>.</li>
+<li>Structures go to <code>new-structure.ini</code>.</li>
+</ul>
+<h3 id="after-initialparameter-fields-new-initial-conditionsini">After: initial/parameter fields (<code>new-initial-conditions.ini</code>)<a class="headerlink" href="#after-initialparameter-fields-new-initial-conditionsini" title="Permanent link">&para;</a></h3>
+<p>Only created and saved if there are converted initial or parameter entries.</p>
+<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
+<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
+<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">inifield</span>
+
+<span class="k">[initial]</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevel</span>
+<span class="na">value</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">0.0</span>
+
+<span class="k">[parameter]</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">roughness</span>
+<span class="na">value</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">0.03</span>
+</code></pre></div>
+<h3 id="after-structures-new-structureini">After: structures (<code>new-structure.ini</code>)<a class="headerlink" href="#after-structures-new-structureini" title="Permanent link">&para;</a></h3>
+<p>Only created and saved if there are converted structures.</p>
+<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
+<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
+<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">structure</span>
+
+<span class="k">[structure]</span>
+<span class="na">id</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="s">weir_001</span>
+<span class="na">class</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">weir</span>
+<span class="na">branchId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">main_channel</span>
+<span class="na">chainage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1234.0</span>
+</code></pre></div>
+<h3 id="mdu-references-before-vs-after">MDU references: before vs after<a class="headerlink" href="#mdu-references-before-vs-after" title="Permanent link">&para;</a></h3>
+<p>If an <code>MDUParser</code> is supplied (e.g., when using <code>from_mdu</code>), the MDU file is updated to reference the new files.</p>
+<p>Before (simplified)
+<div class="highlight"><pre><span></span><code><span class="k">[external forcing]</span>
+<span class="na">ExtForceFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">old-forcings.ext</span>
+</code></pre></div></p>
+<p>After (simplified)
+<div class="highlight"><pre><span></span><code><span class="k">[external forcing]</span>
+<span class="na">ExtForceFileNew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">new-external-forcing.ext</span>
+
+<span class="k">[geometry]</span>
+<span class="na">IniFieldFile</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">new-initial-conditions.ini</span><span class="w">    </span><span class="c1">; only if inifield has entries</span>
+<span class="na">StructureFile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">new-structure.ini</span><span class="w">             </span><span class="c1">; only if structures exist</span>
+</code></pre></div></p>
+<h3 id="backups-and-cleanup">Backups and cleanup<a class="headerlink" href="#backups-and-cleanup" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>save(backup=True)</code> creates <code>.bak</code> backups for files that will be overwritten.</li>
+<li><code>clean()</code> removes any converter-reported legacy artifacts (e.g., generated <code>.tim</code> files) and, if no unsupported quantities remain, deletes the legacy <code>old-forcings.ext</code>.</li>
+</ul>
+<h3 id="legacy-files-removed-by-externalforcingconverterclean">Legacy files removed by ExternalForcingConverter.clean<a class="headerlink" href="#legacy-files-removed-by-externalforcingconverterclean" title="Permanent link">&para;</a></h3>
+<p>The <code>clean()</code> method performs two types of removals after a successful conversion:</p>
+<p>1) Converter-reported legacy artifacts
+- What: Any files recorded in <code>converter.legacy_files</code> during <code>update()</code>.
+- Source: Each concrete converter (boundary conditions, sources/sinks, etc.) adds to this list when it encounters legacy input files that are no longer needed after conversion.
+- Typical examples (non-exhaustive):
+  - <code>.tim</code> time-series files referenced by the legacy <code>.ext</code> for boundary or source/sink quantities.
+  - <code>.t3d</code> 3D profile files used for boundary conditions (e.g., 3D salinity/temperature profiles).
+  - <code>.cmp</code> composition files used for astronomic/harmonic boundary forcing compositions.
+- Behavior: <code>clean()</code> prints a line for each removal (e.g., <code>Removing legacy file:&lt;path&gt;</code>) and deletes the file from disk.
+- Safety: Only files explicitly collected by converters are deleted. If a converter did not mark a file as legacy, <code>clean()</code> will not remove it.</p>
+<p>2) The legacy external forcings file (<code>.ext</code>)
+- What: The original legacy external forcings file that you started from.
+- Condition: Removed only when there are no remaining unsupported quantities.
+  - If unsupported quantities exist (especially when running with <code>debug=True</code>), the legacy <code>.ext</code> is retained and contains only those unsupported entries after <code>update()</code>.
+- Path: Resolved from <code>ExtOldModel.filepath</code>.</p>
+<p>How are <code>legacy_files</code> populated?
+- Boundary condition conversion scans for related time-series or composition files next to the location file (e.g., <code>.pli</code>) and records found <code>.tim</code>, <code>.t3d</code>, and <code>.cmp</code> files as legacy artifacts.
+- Source/sink conversion records the corresponding <code>.tim</code> file for the polyline location.
+- These paths are resolved relative to the converter <code>root_dir</code> (the MDU directory when using <code>from_mdu</code>, otherwise the legacy <code>.ext</code> directory).</p>
+<p>How to trigger cleanup
+- Programmatic:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
+
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span><span class="s2">&quot;path/to/old-forcings.ext&quot;</span><span class="p">)</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li>Batch conversion:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">recursive_converter</span>
+<span class="n">recursive_converter</span><span class="p">(</span><span class="n">root_dir</span><span class="o">=</span><span class="s2">&quot;path/to/projects&quot;</span><span class="p">,</span> <span class="n">remove_legacy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># clean() is called per MDU</span>
+</code></pre></div>
+<p>Recommendations and cautions
+- Review <code>converter.legacy_files</code> and the console output to ensure none of the files are still needed by other workflows.
+- Use version control or make backups of legacy artifacts if in doubt. Note that <code>save(backup=True)</code> creates backups for overwritten files, but deletions performed by <code>clean()</code> are permanent.</p>
+<h2 id="legacy-formats-and-value-mappings">Legacy formats and value mappings<a class="headerlink" href="#legacy-formats-and-value-mappings" title="Permanent link">&para;</a></h2>
+<p>This section explains how legacy files looked and how their values are mapped into the new files produced by <code>ExternalForcingConverter</code>.</p>
+<p>Notes
+- Examples are illustrative; exact keys depend on the quantity and converter.
+- Field names use the new models’ casing (<code>quantity</code>, <code>forcingfile</code>, etc.).
+- Some legacy options are no longer supported; see “Unsupported/changed fields”.</p>
+<h3 id="1-legacy-ext-blocks-new-models">1) Legacy <code>.ext</code> blocks → new models<a class="headerlink" href="#1-legacy-ext-blocks-new-models" title="Permanent link">&para;</a></h3>
+<p>A single legacy block may be routed to different destination models depending on the quantity:
+- Meteo quantities → <code>[meteo]</code> block in <code>new-external-forcing.ext</code>.
+- Boundary quantities → <code>[boundary]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
+- Source/sink quantities → <code>[sourcesink]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
+- Initial/parameter quantities → <code>[initial]</code> / <code>[parameter]</code> block in <code>new-initial-conditions.ini</code>.
+- Structures → <code>[structure]</code> in <code>new-structure.ini</code>.</p>
+<h4 id="11-meteo-block-new-external-forcing-file">1.1) Meteo Block (new external forcing file)<a class="headerlink" href="#11-meteo-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.tim</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">7</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">1</span>
+<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
+</code></pre></div>
+Mapped to <code>[meteo]</code> (new external forcings):
+- <code>QUANTITY</code> → <code>quantity</code>
+- <code>FILENAME</code> → <code>forcingfile</code> (path preserved; path style may be normalized)
+- <code>FILETYPE</code> → <code>forcingfiletype</code> via mapping (see table below)
+- <code>METHOD</code> → <code>interpolationmethod</code> (and possibly <code>averaging*</code> fields; see below)
+- <code>OPERAND</code> → <code>operand</code>
+- Legacy <code>VARNAME</code> (if present) → <code>forcingVariableName</code>
+- If <code>SOURCEMASK</code> is present → not supported (conversion raises error)
+- Extrapolation options:
+  - <code>EXTRAPOLATIONMETHOD</code>/<code>EXTRAPOLATION_METHOD</code> (int/flag) → <code>extrapolationAllowed</code> (boolean)
+  - <code>MAXSEARCHRADIUS</code> → <code>extrapolationSearchRadius</code></p>
+<h4 id="12-boundary-block-new-external-forcing-file">1.2) Boundary block (new external forcing file)<a class="headerlink" href="#12-boundary-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">waterlevelbnd</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">OB_001_orgsize.pli</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">4</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">3</span>
+<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
+</code></pre></div>
+Mapped to <code>[boundary]</code> (new external forcings) plus a <code>.bc</code> file:
+- <code>QUANTITY</code> → <code>quantity</code>
+- <code>FILENAME</code> (polyline <code>.pli</code>) → <code>locationfile</code> (polyline is parsed to derive labels)
+- Related time-series/profile/composition files are discovered next to the <code>.pli</code>:
+  - <code>*.tim</code>, <code>*.t3d</code>, <code>*.cmp</code> with the same stem are located and merged/converted into a <code>ForcingModel</code>.
+- <code>.bc</code> file path:
+  - For boundary: same path as the <code>.pli</code> but with <code>.bc</code> extension (e.g., <code>OB_001_orgsize.bc</code>).
+  - The new <code>[boundary]</code> block gets <code>forcingfile = &lt;that bc file&gt;</code>.
+- Requires MDU <code>RefDate</code> (start time) for absolute-time conversion.
+- Legacy files <code>*.tim</code>/<code>*.t3d</code>/<code>*.cmp</code> are recorded to <code>converter.legacy_files</code> (eligible for <code>clean()</code>).</p>
+<h4 id="13-sourcesink-block-new-external-forcing-file">1.3) SourceSink block (new external forcing file)<a class="headerlink" href="#13-sourcesink-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">discharge_salinity_temperature_sorsin</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">my_sourcesink.poly</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">9</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</code> file:
+- Polyline <code>FILENAME</code> → geometry (<code>numcoordinates</code>, <code>xcoordinates</code>, <code>ycoordinates</code>); optional <code>area</code> is preserved.
+- A <code>*.tim</code> file is required next to the polyline (same stem). Columns in the TIM become separate time series in the generated <code>.bc</code> file.
+- <code>.bc</code> file path: relative to MDU root, derived from the TIM path with <code>.bc</code> extension.
+- MDU required: <code>RefDate</code>; temperature/salinity flags determine which quantities to include.
+- If <code>zsource</code>/<code>zsink</code> elevations are present in the polyline, they are preserved.</p>
+<h4 id="14-initialparameter-block-polygon">1.4) initial/parameter block (polygon)<a class="headerlink" href="#14-initialparameter-block-polygon" title="Permanent link">&para;</a></h4>
+<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">initialwaterlevel</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">start_area.pol</span>
+<span class="na">FILETYPE</span><span class="o">=</span><span class="s">10</span>
+<span class="na">METHOD</span><span class="o">=</span><span class="s">6</span>
+<span class="na">AVERAGINGTYPE</span><span class="o">=</span><span class="s">2</span>
+<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
+<span class="na">VALUE</span><span class="o">=</span><span class="s">0.15</span>
+</code></pre></div>
+Mapped to <code>new-initial-conditions.ini</code>:
+- <code>QUANTITY</code> → <code>[initial].quantity</code> (with special-case rename for bedrock to <code>bedrockSurfaceElevation</code>)
+- <code>FILENAME</code> → <code>datafile</code>
+- <code>FILETYPE=10</code> → <code>datafiletype = polygon</code>
+- <code>METHOD</code>/<code>AVERAGINGTYPE</code> → <code>interpolationmethod</code> and <code>averaging*</code> fields (see below)
+- <code>OPERAND</code> → <code>operand</code>
+- <code>VALUE</code> is preserved for polygon data
+- Any <code>tracer*</code> keys present are copied as-is</p>
+<h5 id="filetype-mapping-legacy-new">FILETYPE mapping (legacy → new)<a class="headerlink" href="#filetype-mapping-legacy-new" title="Permanent link">&para;</a></h5>
+<ul>
+<li>1 → <code>uniform</code></li>
+<li>2 → <code>unimagdir</code></li>
+<li>4 → <code>arcinfo</code></li>
+<li>5 → <code>spiderweb</code></li>
+<li>6 → <code>curvigrid</code></li>
+<li>7 → <code>sample</code></li>
+<li>10 → <code>polygon</code> (initial/parameter)</li>
+<li>11 → <code>netcdf</code></li>
+<li>3 (spatially varying wind/pressure) → not supported (raises error)</li>
+<li>8 (magnitude+direction timeseries on stations) → not supported (raises error)</li>
+</ul>
+<h5 id="method-and-averaging-mapping">METHOD and averaging mapping<a class="headerlink" href="#method-and-averaging-mapping" title="Permanent link">&para;</a></h5>
+<ul>
+<li><code>METHOD</code> → <code>interpolationmethod</code>.</li>
+<li>When <code>METHOD = 6</code> (averaging), the following additional fields are set:</li>
+<li><code>averagingtype</code> from <code>AVERAGINGTYPE</code> using mapping:<ul>
+<li>1 mean, 2 nearestnb, 3 max, 4 min, 5 invdist, 6 minabs, 7 median</li>
+</ul>
+</li>
+<li><code>averagingrelsize</code> from <code>RELATIVESEARCHCELLSIZE</code></li>
+<li><code>averagingnummin</code> from <code>NUMMIN</code></li>
+<li><code>averagingpercentile</code> from <code>PERCENTILEMINMAX</code></li>
+</ul>
+<h4 id="2-legacy-tim-new-bc-time-series">2) Legacy <code>.tim</code> → new <code>.bc</code> (time series)<a class="headerlink" href="#2-legacy-tim-new-bc-time-series" title="Permanent link">&para;</a></h4>
+<p>Minimal legacy TIM example
+<div class="highlight"><pre><span></span><code>* time  value
+0.0  10.0
+3600  12.5
+7200  15.0
+</code></pre></div>
+How it’s used during conversion:
+- Boundary conversion:
+  - All <code>*.tim</code> files located for a boundary are merged into a single time series model.
+  - Each TIM file contributes one column/series; its stem becomes the label in the <code>.bc</code> file.
+  - The <code>.bc</code> filepath is <code>&lt;polyline&gt;.bc</code>.
+- Source/sink conversion:
+  - A single <code>*.tim</code> is parsed; its columns become separate series.
+  - Labels are set to the polyline stem; the same <code>.bc</code> model is referenced for all series inside the <code>[sourcesink]</code> block.
+- Time units:
+  - Absolute time reference (e.g., <code>minutes since &lt;RefDate&gt;</code>) is derived from the MDU <code>RefDate</code>.</p>
+<h5 id="bc-time-series-file"><code>.bc</code> (time series) file<a class="headerlink" href="#bc-time-series-file" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
+<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.01</span>
+<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">boundConds</span>
+
+<span class="k">[Forcing]</span>
+<span class="na">name</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">any-name-1</span>
+<span class="na">function</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">timeseries</span>
+<span class="na">timeInterpolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">linear</span>
+<span class="na">offset</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s">0.0</span>
+<span class="na">factor</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s">1.0</span>
+<span class="na">quantity</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">time</span>
+<span class="na">unit</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">minutes since 2015-01-01 00:00:00</span>
+<span class="na">quantity</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd</span>
+<span class="na">unit</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">m</span>
+<span class="na">0.0    1.00</span>
+<span class="na">100.0  1.20</span>
+<span class="na">200.0  1.15</span>
+</code></pre></div>
+<p>Notes
+- Each <code>[Forcing]</code> block carries one series (or vector). The first <code>quantity</code>/<code>unit</code> pair describes time with an absolute reference derived from the MDU <code>RefDate</code>.
+- Subsequent <code>quantity</code>/<code>unit</code> pairs describe the physical variable (e.g., <code>waterlevelbnd</code>, <code>dischargebnd</code>), followed by rows of <code>&lt;time&gt; &lt;value&gt;</code>.</p>
+<h4 id="3-legacy-t3d-new-bc-3d-profiles">3) Legacy <code>.t3d</code> → new <code>.bc</code> (3D profiles)<a class="headerlink" href="#3-legacy-t3d-new-bc-3d-profiles" title="Permanent link">&para;</a></h4>
+<ul>
+<li>If <code>*.t3d</code> files are present next to the boundary polyline, they are parsed and converted to T3D forcing entries in the <code>.bc</code> file.</li>
+<li>Quantity names are repeated per vertical layer; user-defined labels are constructed from the polyline label and file stems.</li>
+<li>The same <code>.bc</code> file is used as for the time series.</li>
+<li>All <code>*.t3d</code> files that were used are added to <code>converter.legacy_files</code>.</li>
+</ul>
+<p>At a glance: a <code>.t3d</code> file (input) and how it looks in <code>.bc</code></p>
+<h5 id="input-t3d-3d-vertical-profiles-over-time">Input <code>.t3d</code> (3D vertical profiles over time):<a class="headerlink" href="#input-t3d-3d-vertical-profiles-over-time" title="Permanent link">&para;</a></h5>
+<p><div class="highlight"><pre><span></span><code>LAYER_TYPE=SIGMA
+LAYERS=0.0 0.2 0.6 0.8 1.0
+TIME = 0 seconds since 2006-01-01 00:00:00 +00:00
+1.0 1.0 1.0 1.0 1.0
+TIME = 180 seconds since 2006-01-01 00:00:00 +00:00
+2.0 2.0 2.0 2.0 2.0
+</code></pre></div>
+Resulting <code>.bc</code> (function = <code>t3d</code>) snippet:
+<div class="highlight"><pre><span></span><code><span class="k">[Forcing]</span>
+<span class="na">name</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">L1_0001</span>
+<span class="na">function</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">t3d</span>
+<span class="na">vertPositions</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">0.0 0.2 0.6 0.8 1.0</span>
+<span class="na">vertInterpolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">linear</span>
+<span class="na">vertPositionType</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">percBed</span>
+<span class="na">timeInterpolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">linear</span>
+<span class="na">quantity</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">time</span>
+<span class="na">unit</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">MINUTES SINCE 2006-01-01 00:00:00 +00:00</span>
+<span class="na">quantity</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">salinitybnd</span>
+<span class="na">unit</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">ppt</span>
+<span class="na">vertPositionIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+<span class="na">quantity</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s">salinitybnd</span>
+<span class="na">unit</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">ppt</span>
+<span class="na">vertPositionIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2</span>
+<span class="c1">; ... one pair per vertical position</span>
+<span class="na">0.0   1.0  1.0  1.0  1.0  1.0</span>
+<span class="na">180.0 2.0  2.0  2.0  2.0  2.0</span>
+</code></pre></div></p>
+<h4 id="4-legacy-cmp-new-bc-harmonicastronomic-compositions">4) Legacy <code>.cmp</code> → new <code>.bc</code> (harmonic/astronomic compositions)<a class="headerlink" href="#4-legacy-cmp-new-bc-harmonicastronomic-compositions" title="Permanent link">&para;</a></h4>
+<ul>
+<li>If <code>*.cmp</code> files are found next to the boundary polyline, their harmonic/astronomic records are converted to corresponding sections in the <code>.bc</code> file.</li>
+<li>Labels are derived from the polyline label and file stems.</li>
+<li>All <code>*.cmp</code> files that were used are added to <code>converter.legacy_files</code>.</li>
+</ul>
+<p>At a glance: a <code>.cmp</code> file (input) and how it looks in <code>.bc</code></p>
+<h5 id="input-cmp-harmonicastronomic-components">Input <code>.cmp</code> (harmonic/astronomic components):<a class="headerlink" href="#input-cmp-harmonicastronomic-components" title="Permanent link">&para;</a></h5>
+<p><div class="highlight"><pre><span></span><code>* COLUMN1=Period (min) or Astronomical Component name
+* COLUMN2=Amplitude
+* COLUMN3=Phase (deg)
+745.0000000     0.1053834     0.0000000
+745.0000000     1.0000000     45.1200000
+</code></pre></div>
+Resulting <code>.bc</code> harmonic snippet (period/amplitude/phase):
+<div class="highlight"><pre><span></span><code><span class="k">[Forcing]</span>
+<span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">L1_0001</span>
+<span class="na">function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">harmonic</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">harmonic component</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">minutes</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd amplitude</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">m</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd phase</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">deg</span>
+<span class="na">745.0  0.1053834  0.0</span>
+<span class="na">745.0  1.0000000  45.12</span>
+</code></pre></div>
+Resulting <code>.bc</code> astronomic snippet (named component):
+<div class="highlight"><pre><span></span><code><span class="k">[Forcing]</span>
+<span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">L1_0002</span>
+<span class="na">function</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">astronomic</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">astronomic component</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">-</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd amplitude</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">m</span>
+<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevelbnd phase</span>
+<span class="na">unit</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">deg</span>
+<span class="na">M2  1.234  15.0</span>
+</code></pre></div></p>
+<p>Tip
+- The converter picks labels (<code>name = ...</code>) from the polyline label and file stems (e.g., <code>L1_0001</code>). Units for amplitude are taken from the CMP model when available; examples above are illustrative.</p>
+<h4 id="5-path-handling-rules-relative-vs-absolute">5) Path handling rules (relative vs absolute)<a class="headerlink" href="#5-path-handling-rules-relative-vs-absolute" title="Permanent link">&para;</a></h4>
+<ul>
+<li>For boundary/sourcesink <code>.bc</code> paths:</li>
+<li>Boundary: <code>&lt;polyline&gt;.bc</code> (same directory as the <code>.pli</code>).</li>
+<li>Source/sink: relative to the MDU root based on the TIM file location, with <code>.bc</code> extension.</li>
+<li>For initial/parameter <code>datafile</code> paths:</li>
+<li>If the MDU setting <code>PathsRelativeToParent = 1</code>, absolute or MDU-relative filenames inside the legacy <code>.ext</code> may be rewritten relative to the inifield file location to keep references consistent.</li>
+<li>Otherwise, the original path is kept.</li>
+</ul>
+<h4 id="6-unsupportedchanged-fields">6) Unsupported/changed fields<a class="headerlink" href="#6-unsupportedchanged-fields" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>SOURCEMASK</code> is no longer supported for meteo/initial/parameter blocks; conversion raises an error when encountered.</li>
+<li>Some legacy <code>FILETYPE</code> values are no longer supported (see mapping table above).</li>
+<li>Boundary and source/sink conversions require MDU context:</li>
+<li><code>RefDate</code> must be present.</li>
+<li>Temperature/salinity switches must be specified for source/sink to include corresponding series.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2022 Deltares
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/Deltares/hydrolib-core" target="_blank" rel="noopener" title="Source code" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://gitter.im/Deltares/hydrolib" target="_blank" rel="noopener" title="Chat with us on Gitter" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M66.4 322.5H16V0h50.4zM166.9 76.1h-50.4V512h50.4zm100.6 0h-50.4V512h50.4zM368 76h-50.4v247H368z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../../assets/javascripts/panzoom.min.js"></script>
+      
+        <script src="../../../../assets/javascripts/zoompan.js"></script>
+      
+    
+  </body>
+</html>
