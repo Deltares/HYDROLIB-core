@@ -110,11 +110,11 @@ nav:
   - API Reference:
       - Introduction:
           - reference/glossary.md
-          - reference/ini.md
           - base:
               - reference/base/base.md
               - reference/base/api.md
               - reference/base/model-tree-traverser.md
+              - reference/base/ini.md
               - reference/base/overview.md
       - D-Flow FM:
           - MDU:
