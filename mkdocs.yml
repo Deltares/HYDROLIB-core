@@ -23,7 +23,10 @@ theme:
 plugins:
   - search
   - autorefs
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      allow_errors: false
   - panzoom:
       hint_location: "top"
       key: "ctrl"
