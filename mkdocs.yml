@@ -118,8 +118,10 @@ nav:
               - reference/base/overview.md
       - D-Flow FM:
           - MDU:
-            - reference/dflowfm/mdu/mdu.md
+            - reference/dflowfm/mdu/fm-model-attributes-overview.md
             - reference/dflowfm/mdu/fm-model.md
+            - reference/dflowfm/mdu/fm-model-attributes-detailed.md
+            - reference/dflowfm/mdu/mdu.md
             - reference/dflowfm/mdu/onedfield.md
             - reference/dflowfm/mdu/research.md
           - External Forcing:
@@ -128,6 +130,9 @@ nav:
             - reference/dflowfm/external-forcing/forcing.md
             - reference/dflowfm/external-forcing/inifield.md
             - reference/dflowfm/external-forcing/structure.md
+            - Structures:
+                - reference/dflowfm/external-forcing/structures/structure-overview.md
+                - reference/dflowfm/external-forcing/structures/structure.md
           - Attribute Files:
             - reference/dflowfm/attribute-files/polyfile.md
             - reference/dflowfm/attribute-files/tim.md
