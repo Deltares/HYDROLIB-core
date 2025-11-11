@@ -118,25 +118,25 @@ classDiagram
     class Particles
     class Vegetation
 
-    FMModel *-- General : 1
-    FMModel *-- Geometry : 1
-    FMModel *-- VolumeTables : 1
-    FMModel *-- Numerics : 1
-    FMModel *-- Physics : 1
-    FMModel *-- Sediment : 1
-    FMModel *-- Wind : 1
-    FMModel o-- Waves : 0..1
-    FMModel *-- Time : 1
-    FMModel *-- Restart : 1
-    FMModel *-- ExternalForcing : 1
-    FMModel *-- Hydrology : 1
-    FMModel *-- Trachytopes : 1
-    FMModel *-- Output : 1
-    FMModel o-- Calibration : 0..1
-    FMModel o-- GroundWater : 0..1
-    FMModel o-- Processes : 0..1
-    FMModel o-- Particles : 0..1
-    FMModel o-- Vegetation : 0..1
+    FMModel *-- General
+    FMModel *-- Geometry
+    FMModel *-- VolumeTables
+    FMModel *-- Numerics
+    FMModel *-- Physics
+    FMModel *-- Sediment
+    FMModel *-- Wind
+    FMModel o-- Waves : Optional
+    FMModel *-- Time
+    FMModel *-- Restart
+    FMModel *-- ExternalForcing
+    FMModel *-- Hydrology
+    FMModel *-- Trachytopes
+    FMModel *-- Output
+    FMModel o-- Calibration : Optional
+    FMModel o-- GroundWater : Optional
+    FMModel o-- Processes : Optional
+    FMModel o-- Particles : Optional
+    FMModel o-- Vegetation : Optional
 ```
 
 Notes
