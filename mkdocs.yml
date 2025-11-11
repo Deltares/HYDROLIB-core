@@ -120,6 +120,7 @@ nav:
           - MDU:
             - reference/dflowfm/mdu/mdu.md
             - reference/dflowfm/mdu/onedfield.md
+            - reference/dflowfm/mdu/research.md
           - External Forcing:
             - reference/dflowfm/external-forcing/extold.md
             - reference/dflowfm/external-forcing/ext.md
