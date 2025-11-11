@@ -23,7 +23,10 @@ theme:
 plugins:
   - search
   - autorefs
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      allow_errors: false
   - panzoom:
       hint_location: "top"
       key: "ctrl"
@@ -110,36 +113,43 @@ nav:
   - API Reference:
       - Introduction:
           - reference/glossary.md
-          - reference/ini.md
           - base:
               - reference/base/base.md
               - reference/base/api.md
               - reference/base/model-tree-traverser.md
+              - reference/base/ini.md
+              - reference/base/overview.md
       - D-Flow FM:
           - MDU:
-            - reference/models/mdu.md
-            - reference/models/onedfield.md
+            - reference/dflowfm/mdu/fm-model-attributes-overview.md
+            - reference/dflowfm/mdu/fm-model.md
+            - reference/dflowfm/mdu/fm-model-attributes-detailed.md
+            - reference/dflowfm/mdu/mdu.md
+            - reference/dflowfm/mdu/onedfield.md
+            - reference/dflowfm/mdu/research.md
           - External Forcing:
-            - reference/models/extold.md
-            - reference/models/ext.md
-            - reference/models/forcing.md
-            - reference/models/inifield.md
-            - reference/models/structure.md
+            - reference/dflowfm/external-forcing/extold.md
+            - reference/dflowfm/external-forcing/ext.md
+            - reference/dflowfm/external-forcing/forcing.md
+            - reference/dflowfm/external-forcing/inifield.md
+            - reference/dflowfm/external-forcing/structure.md
+            - Structures:
+                - reference/dflowfm/external-forcing/structures/structure-overview.md
+                - reference/dflowfm/external-forcing/structures/structure.md
           - Attribute Files:
-            - reference/models/polyfile.md
-            - reference/models/tim.md
-            - reference/models/xyz.md
+            - reference/dflowfm/attribute-files/polyfile.md
+            - reference/dflowfm/attribute-files/tim.md
+            - reference/dflowfm/attribute-files/xyz.md
           - Cross-Sections:
-            - reference/models/friction.md
-            - reference/models/crosssection.md
+            - reference/dflowfm/cross-sections/friction.md
+            - reference/dflowfm/cross-sections/crosssection.md
           - Topology and Network:
-            - reference/models/net.md
-            - reference/models/storagenode.md
-            - reference/models/observationpoint.md
-            - reference/models/observationcrosssection.md
-
+            - reference/dflowfm/topology-network/net.md
+            - reference/dflowfm/topology-network/storagenode.md
+            - reference/dflowfm/topology-network/observationpoint.md
+            - reference/dflowfm/topology-network/observationcrosssection.md
           - DIMR:
-              - reference/models/dimr.md
+              - reference/dimr/dimr.md
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
