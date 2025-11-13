@@ -1,9 +1,9 @@
 
-# HYDROLIB-core guide for the Delft Software Days 2023
+# HYDROLIB-core guide for the Delft Software Days 2025
 
 ## Contents
 
-- [HYDROLIB-core guide for the Delft Software Days 2023](#hydrolib-core-guide-for-the-delft-software-days-2023)
+- [HYDROLIB-core guide for the Delft Software Days 2025](#hydrolib-core-guide-for-the-delft-software-days-2025)
   - [Contents](#contents)
   - [Introduction](#introduction)
   - [User guide](#user-guide)
@@ -30,7 +30,7 @@ Anaconda is an open-source distribution for Python and contains the package mana
 (!) Make sure to add Anaconda to your PATH environment variable during installation.
 
 ### Installation
-Once you've installed the required software, you can create a Python 3.12 environment with HYDROLIB-core 0.10.0, the latest release.
+Once you've installed the required software, you can create a Python 3.12 environment with HYDROLIB-core 0.10.1, the latest release.
 Note that the environment that we are creating now contains not only HYDROLIB-core, but also the other packages that are needed today during the breakout sessions.
 
 Follow these steps:

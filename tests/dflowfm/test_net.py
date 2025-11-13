@@ -360,27 +360,9 @@ def test_read_net_nc_nondefault_linkvarnames(tmp_path):
         test_input_dir
         / "e02/f152_1d2d_projectmodels_rhu/c04_DHydamo-MGB-initialisation/fm/moergestels_broek_net.nc"
     )
-    nc_renamed = tmp_path / "moergestels_broek_renamed_net.nc"
-
-    ds = xr.open_dataset(nc_original)
-
-    # rename the link1d2d to links, this breaks if the link1d2d_contact_type variable
-    # is hard-coded, but still works if the variable is used via the mapping.
-    rename_dict = {
-        "link1d2d": "links",
-        "link1d2d_ids": "links_ids",
-        "link1d2d_long_names": "links_long_names",
-        "link1d2d_contact_type": "links_contact_type",
-    }
-    ds = ds.rename_vars(rename_dict)
-    ds.links.attrs["contact_type"] = "links_contact_type"
-    ds.links.attrs["contact_ids"] = "links_ids"
-    ds.links.attrs["contact_long_names"] = "links_long_names"
-    ds.to_netcdf(nc_renamed)
-    ds.close()
 
     # open the network with the non-default link1d2d variable names
-    network = Network.from_file(nc_renamed)
+    network = Network.from_file(nc_original)
     assert (network._link1d2d.link1d2d_contact_type == 3).all()
 
 
