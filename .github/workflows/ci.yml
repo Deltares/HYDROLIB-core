@@ -13,11 +13,10 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macos-13 # x86_64/free
-          #- macos-14 # arm64/free (fails)
-          - macos-14-large # intel/paid
-          #- macos-15 # arm64/free (fails)
-          - macos-15-intel # intel/free
+          #- macos-14 # arm64 (free) FAILS MKPY TEST BECAUSE OF ARM64
+          #- macos-15 # arm64 (free) FAILS MKPY TEST BECAUSE OF ARM64
+          - macos-15-intel # intel (free)
+          #- macos-26 # arm64 (free) FAILS MKPY TEST BECAUSE OF ARM64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
