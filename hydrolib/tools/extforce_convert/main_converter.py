@@ -2,12 +2,13 @@
 
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.utils import PathStyle
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -430,6 +431,7 @@ class ExternalForcingConverter:
         num_quantities_inifield = len(self.inifield_model.parameter) + len(
             self.inifield_model.initial
         )
+        self._merge_boundaries()
         if num_quantities_inifield > 0:
             self._save_inifield_model(backup, recursive)
 
@@ -456,6 +458,60 @@ class ExternalForcingConverter:
         if self.mdu_parser is not None:
             self.mdu_parser.clean()
             self.mdu_parser.save(backup=backup)
+
+    def _merge_boundaries(self):
+        """Merge boundary conditions that have the same .bc file filepath property.
+
+        When writing a quantity to a .bc file, if the .bc file already exists in another boundary condition,
+        the new quantity should be added to the existing .bc file instead of creating a new one.
+        This method merges the forcings from quantities with the same .bc file filepath property.
+
+        Example:
+            A simplified example of merging boundary conditions with the same .bc file filepath property.
+            - Before merging:
+            boundary:
+                - quantity1
+                - forcingfile:
+                    filepath: 'boundary1.bc'
+                    forcing: [quantity1]
+            boundary:
+                - quantity2
+                - forcingfile:
+                    filepath: 'boundary1.bc'
+                    forcing: [quantity2]
+            - After merging:
+            boundary:
+                - quantity1
+                - forcingfile:
+                    filepath: 'boundary1.bc'
+                    forcing: [quantity1, quantity2]
+            boundary:
+                - quantity2
+                - forcingfile:
+                    filepath: 'boundary1.bc'
+                    forcing: [quantity1, quantity2]
+        """
+        merged_boundaries: Dict[Path, ForcingModel] = {}
+        for boundary in self.ext_model.boundary:
+            if not isinstance(boundary.forcingfile, list):
+                boundary.forcingfile = [boundary.forcingfile]
+            for forcingfile in boundary.forcingfile:
+                bc_filepath = forcingfile.filepath
+                if bc_filepath in merged_boundaries:
+                    merged_boundaries[bc_filepath].forcing.extend(forcingfile.forcing)
+                else:
+                    merged_boundaries[bc_filepath] = forcingfile
+
+        for boundary in self.ext_model.boundary:
+            forcing_list: List[ForcingModel] = []
+            for forcingfile in boundary.forcingfile:
+                bc_filepath = forcingfile.filepath
+                if forcingfile not in forcing_list:
+                    if bc_filepath in merged_boundaries:
+                        forcing_list.append(merged_boundaries[bc_filepath])
+                    else:
+                        forcing_list.append(forcingfile)
+            boundary.forcingfile = forcing_list
 
     def _save_inifield_model(self, backup: bool, recursive: bool):
         """

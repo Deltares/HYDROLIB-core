@@ -63,7 +63,9 @@ class Boundary(INIBasedModel):
     locationfile: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    forcingfile: Union[ForcingModel, List[ForcingModel]] = Field(alias="forcingFile")
+    forcingfile: Union[ForcingModel, List[Union[ForcingModel, DiskOnlyFileModel]]] = (
+        Field(alias="forcingFile")
+    )
     bndwidth1d: Optional[float] = Field(alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(alias="bndBlDepth")
     returntime: Optional[float] = Field(alias="returnTime")
