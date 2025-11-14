@@ -198,9 +198,9 @@ class TestForcingModel:
         assert expected_message2 in str(error.value)
 
     def test_save_forcing_model(
-        self, time_series_values, t3d_values, output_files_dir, reference_files_dir
+        self, time_series_values, t3d_values, tmp_path, reference_files_dir
     ):
-        bc_file = output_files_dir / "test.bc"
+        bc_file = tmp_path / "test.bc"
         reference_file = reference_files_dir / "bc/test.bc"
         forcingmodel = ForcingModel()
         forcingmodel.filepath = bc_file
