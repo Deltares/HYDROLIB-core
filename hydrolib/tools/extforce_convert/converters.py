@@ -710,7 +710,7 @@ class SourceSinkConverter(BaseConverter):
         required_quantities_from_ext = [
             key
             for key in ext_file_quantity_list
-            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
         # Remove duplicate quantities that might be present in the list due to quantities that share names,
         # therefore occurring multiple times in the external forcing file.
