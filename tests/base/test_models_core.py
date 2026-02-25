@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Callable, Dict, List, Optional, Type, TypeVar
+from typing import Any, List
 from unittest.mock import MagicMock, patch
 
 from hydrolib.core.base.file_manager import FileLoadContext
@@ -8,89 +8,20 @@ from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     ModelSaveSettings,
     ModelTreeTraverser,
-    ParsableFileModel,
     SerializerConfig,
     _should_execute,
     _should_traverse,
 )
-from hydrolib.core.base.parser import DummmyParser
-from hydrolib.core.base.serializer import DummySerializer
-
-
-# Common test model classes to reduce duplication
-class SimpleTestModel(BaseModel):
-    """A simple test model with basic properties."""
-
-    name: str
-    value: int
-
-
-class ModelWithLinks(BaseModel):
-    """A test model that overrides link methods."""
-
-    name: str
-
-    def is_file_link(self) -> bool:
-        return True
-
-    def is_intermediate_link(self) -> bool:
-        return True
-
-
-class ChildTestModel(ModelWithLinks):
-    """A child test model for hierarchy testing."""
-
-    value: int
-
-
-class ParentTestModel(ModelWithLinks):
-    """A parent test model for hierarchy testing."""
-
-    child: ChildTestModel
-    children: List[ChildTestModel] = []
-
-
-class BaseModelWithFunc(BaseModel):
-    """A test base model that can track function calls."""
-
-    def test_func(self):
-        """Test function that can be used to track calls."""
-        pass
-
-
-class ChildModelWithFunc(BaseModelWithFunc, ChildTestModel):
-    """A child model that includes the test_func method."""
-
-    pass
-
-
-class ParentModelWithFunc(BaseModelWithFunc, ParentTestModel):
-    """A parent model that includes the test_func method."""
-
-    pass
-
-
-class ParsableModelBase(ParsableFileModel):
-    """Base class for parsable file model tests."""
-
-    name: str = "default"
-    value: int = 0
-
-    @classmethod
-    def _filename(cls) -> str:
-        return "test"
-
-    @classmethod
-    def _ext(cls) -> str:
-        return ".test"
-
-    @classmethod
-    def _get_serializer(cls):
-        return DummySerializer.serialize
-
-    @classmethod
-    def _get_parser(cls):
-        return DummmyParser.parse
+from tests.base.data import (
+    BaseModelWithFunc,
+    ChildModelWithFunc,
+    ChildTestModel,
+    ModelWithLinks,
+    ParentModelWithFunc,
+    ParentTestModel,
+    ParsableModelWithDummies,
+    SimpleTestModel,
+)
 
 
 class TestBaseModelFunctions(unittest.TestCase):
@@ -292,7 +223,7 @@ class TestParsableFileModel(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.TestParsableModel = ParsableModelBase
+        self.TestParsableModel = ParsableModelWithDummies
 
     def test_get_quantity_unit(self):
         """Test _get_quantity_unit method with different quantity types."""

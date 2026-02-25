@@ -74,6 +74,9 @@ Input file for [D-Flow FM](#d-flow-fm) describing model forcings such as [bounda
 ### Face (mesh)
 A geometrical "cell" in a 2D mesh. Formed by 3 or more [mesh nodes](#node-mesh) as its vertices. Building block of the [UGRID-conventions](#ugrid-conventions).
 
+### Fixed weir file
+Input file for [D-Flow FM](#d-flow-fm) containing fixed weir definitions as polylines with crest levels. Format is a [polyline file](#polyline-file) with extended columns. More details in the [Delft3D FM User Manual](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf).
+
 ### Flow link
 An open connection/interface between two [flow nodes](#flow-node) in the [staggered](#staggered-grid) [D-Flow FM](#d-flow-fm) model grid. Is the same as a "velocity point", and corresponds with (but is not equal to) an [edge](#edge-mesh), both in 1D and in 2D. In 3D a flow link corresponds with a 3D [face](#face-mesh) between two [volumes](#volume-mesh).
 
@@ -83,7 +86,7 @@ A single finite volume "cell" in the [staggered](#staggered-grid) [D-Flow FM](#d
 ## G
 ---
 ### Grid
-The computational grid on which a flow simulation is done. The grid for [D-Flow FM](#d-flow-fm) is defined in an input [net file](#net-file]), and also appears (slightly differently) in the output [map file](#map-file).
+The computational grid on which a flow simulation is done. The grid for [D-Flow FM](#d-flow-fm) is defined in an input [net file](#net-file), and also appears (slightly differently) in the output [map file](#map-file).
 
 ### Grid snapping
 The snapping of [D-Flow FM](#d-flow-fm) model input in x,y-coordinates to discrete locations in the [staggered model grid](#staggered-grid). This process makes most model input independent of the chosen model grid and grid resolution.
@@ -102,7 +105,7 @@ Model consisting of more than one model. Typically used when multiple [computati
 Integrated models can be run using the [Deltares Integrated Model Runner (DIMR)](#dimr).
 
 ### INI-files
-Delft3D FM uses several input files that are formatted in an INI-like syntax. The abstract syntax depends on the particular file type, see: [cross section files](#cross-section-files), [initial field file](#initial-field-file), [external forcings file](#external-forcings-file), [MDU file](#mdu-file), [observation files](#observation-files), [rougness file](#roughness-file), [structure file](#structure-file).
+Delft3D FM uses several input files that are formatted in an INI-like syntax. The abstract syntax depends on the particular file type, see: [cross section files](#cross-section-files), [initial field file](#initial-field-file), [external forcings file](#external-forcings-file), [MDU file](#mdu-file), [observation files](#observation-files), [roughness file](#roughness-file), [structure file](#structure-file).
 
 ### Initial field file
 Input file for [D-Flow FM](#d-flow-fm) describing initial conditions and other spatially varying parameter fields.

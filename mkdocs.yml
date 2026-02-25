@@ -23,7 +23,14 @@ theme:
 plugins:
   - search
   - autorefs
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      allow_errors: false
+  - panzoom:
+      hint_location: "top"
+      key: "ctrl"
+      full_screen: true
   - macros:
       module_name: docs/include/mkdocs-macros/main
   - table-reader
@@ -84,19 +91,19 @@ nav:
       - Documentation: guides/documentation.md
       - Support: guides/getting-help.md
   - Tutorials:
-      - tutorials/tutorials.md
-      - tutorials/build_basic_model.ipynb
-      - tutorials/loading_and_saving_a_model.md
-      - tutorials/dataframe_handling.md
-      - tutorials/plotting_a_network.md
-      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena.ipynb
-      - tutorials/tutorial_1d2d_fluvial_flood_model_for_magdalena_with_answers.ipynb
-      - DSD (2023):
-          - tutorials/dsd_2023/instructions.md
-          - tutorials/dsd_2023/demo/demo.ipynb
-          - tutorials/dsd_2023/magdalena_workflow/magdalena_workflow.ipynb
-      - DSD (2022):
-          - tutorials/dsd_2022_demo/demo_dsd.ipynb
+      - Basic Tutorials:
+          - tutorials/basic_tutorials/tutorials.md
+          - tutorials/basic_tutorials/build_basic_model.ipynb
+          - tutorials/basic_tutorials/loading_and_saving_a_model.md
+          - tutorials/basic_tutorials/dataframe_handling.md
+          - tutorials/basic_tutorials/plotting_a_network.md
+      - DSD:
+          - tutorials/dsd/instructions.md
+          - Demo:
+              - tutorials/dsd/demo/demo.ipynb
+          - Magdalena Workflow:
+              - tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises.ipynb
+              - tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs.ipynb
       - External Forcing Conversion:
           - tutorials/extforce-convert/external_forcing_conversion.md
   - Topics:
@@ -107,34 +114,50 @@ nav:
   - API Reference:
       - Introduction:
           - reference/glossary.md
-          - reference/ini.md
           - base:
               - reference/base/base.md
               - reference/base/api.md
               - reference/base/model-tree-traverser.md
+              - reference/base/ini.md
+              - reference/base/overview.md
       - D-Flow FM:
-          - Models:
-              - reference/models/mdu.md
-              - reference/models/extold.md
-              - reference/models/net.md
-              - reference/models/ext.md
-              - reference/models/forcing.md
-              - reference/models/structure.md
-              - reference/models/friction.md
-              - reference/models/crosssection.md
-              - reference/models/storagenode.md
-              - reference/models/inifield.md
-              - reference/models/onedfield.md
-              - reference/models/polyfile.md
-              - reference/models/xyz.md
-              - reference/models/observationpoint.md
-              - reference/models/observationcrosssection.md
-              - reference/models/tim.md
+          - MDU:
+            - reference/dflowfm/mdu/fm-model-attributes-overview.md
+            - reference/dflowfm/mdu/fm-model.md
+            - reference/dflowfm/mdu/fm-model-attributes-detailed.md
+            - reference/dflowfm/mdu/mdu.md
+            - reference/dflowfm/mdu/onedfield.md
+            - reference/dflowfm/mdu/research.md
+          - External Forcing:
+            - reference/dflowfm/external-forcing/extold.md
+            - reference/dflowfm/external-forcing/ext.md
+            - reference/dflowfm/external-forcing/forcing.md
+            - reference/dflowfm/external-forcing/inifield.md
+            - reference/dflowfm/external-forcing/structure.md
+            - Structures:
+                - reference/dflowfm/external-forcing/structures/structure-overview.md
+                - reference/dflowfm/external-forcing/structures/structure.md
+          - Attribute Files:
+            - reference/dflowfm/attribute-files/polyfile.md
+            - reference/dflowfm/attribute-files/tim.md
+            - reference/dflowfm/attribute-files/xyz.md
+          - Cross-Sections:
+            - reference/dflowfm/cross-sections/friction.md
+            - reference/dflowfm/cross-sections/crosssection.md
+          - Topology and Network:
+            - reference/dflowfm/topology-network/net.md
+            - reference/dflowfm/topology-network/storagenode.md
+            - reference/dflowfm/topology-network/observationpoint.md
+            - reference/dflowfm/topology-network/observationcrosssection.md
           - DIMR:
-              - reference/models/dimr.md
+              - reference/dimr/dimr.md
       - RainfallRunoff:
           - reference/rr/rr.md
           - reference/rr/meteo.md
       - GUI:
           - reference/gui.md
+      - Tools:
+          - Extforce-convert:
+              - reference/tools/extforce-convert/extforce_convert.md
+              - reference/tools/extforce-convert/converted_files.md
   - Release notes: "changelog.md"
