@@ -94,7 +94,7 @@ mkdocs-panzoom-plugin = "^0.4.2"
 
 
 [tool.poetry.group.examples.dependencies]
-geopandas = "*"
+geopandas = "^1.0.0"
 
 
 [tool.commitizen]
