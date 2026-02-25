@@ -1,11 +1,11 @@
-name: ci
+name: Test Suite
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  CI:
+  test:
     strategy:
       fail-fast: false
       matrix:
