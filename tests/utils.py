@@ -13,7 +13,35 @@ from pydantic import BaseModel
 from hydrolib.core.base.file_manager import PathOrStr
 
 TWrapper = TypeVar("TWrapper")
-VERSION_LINE_PATTERN = r"^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:[a-zA-Z]+\d*)?(?:\.[\w]+)*\s*$"
+# VERSION_LINE_PATTERN matches lines like:
+#   [optional whitespace][optional #][optional whitespace]written by hydrolib-core [version string][optional suffixes][optional whitespace]
+# Example: "   # written by hydrolib-core 1.2.3alpha4.extra"
+#
+# Components:
+#   ^\s*           : Start of line, optional whitespace
+#   #?             : Optional hash (#)
+#   \s*            : Optional whitespace
+#   written by hydrolib-core : Literal text
+#   \s+            : At least one whitespace
+#   (?P<major>\d+) : Major version number
+#   \.             : Dot
+#   (?P<minor>\d+) : Minor version number
+#   (?:\.(?P<patch>\d+))? : Optional patch version
+#   (?:[a-zA-Z]+(?P<suffix_num>\d*))? : Optional suffix (e.g., alpha4)
+#   (?:\.[\w]+)*   : Optional dot-separated extra suffixes
+#   \s*$           : Optional whitespace, end of line
+VERSION_LINE_PATTERN = (
+    r"^\s*"
+    r"#?"
+    r"\s*"
+    r"written by hydrolib-core"
+    r"\s+"
+    r"(?P<major>\d+)\.(?P<minor>\d+)"
+    r"(?:\.(?P<patch>\d+))?"
+    r"(?:[a-zA-Z]+(?P<suffix_num>\d*))?"
+    r"(?:\.[\w]+)*"
+    r"\s*$"
+)
 
 
 class WrapperTest(BaseModel, Generic[TWrapper]):
