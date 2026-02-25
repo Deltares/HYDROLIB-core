@@ -331,7 +331,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def __repr__(self) -> str:
         data = dict(self)
         data["datablock"] = "<omitted>"
-        representable = BaseModel.model_construct(**data)
+        representable = type(self).model_construct(**data)
         return str(representable)
 
 
