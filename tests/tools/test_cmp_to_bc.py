@@ -115,8 +115,7 @@ def test_cmp_to_forcing_converter(cmp_models: List[CMPModel]):
             datablock=[["4MS10", 1.0, 2.0], ["KO0", 1.0, 2.0]],
         ),
     ]
-    assert forcing_model[0].model_dump() == expected_forcing_model[0].model_dump()
-    assert forcing_model[1].model_dump() == expected_forcing_model[1].model_dump()
+    assert [fm.model_dump() for fm in forcing_model] == [efm.model_dump() for efm in expected_forcing_model]
 
 
 def test_cmp_to_forcing_converter_file(
