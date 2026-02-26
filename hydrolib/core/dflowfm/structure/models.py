@@ -725,7 +725,9 @@ class Compound(Structure):
 
     type: Literal["compound"] = Field("compound", alias="type")
     numstructures: int = Field(alias="numStructures")
-    structureids: List[str] = Field(alias="structureIds", json_schema_extra={"delimiter": ";"})
+    structureids: List[str] = Field(
+        alias="structureIds", json_schema_extra={"delimiter": ";"}
+    )
 
     @field_validator("structureids", mode="before")
     @classmethod
