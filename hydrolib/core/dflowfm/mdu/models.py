@@ -2059,7 +2059,7 @@ class Geometry(INIBasedModel):
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
     structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
-        None, alias="structureFile", delimiter=";"
+        None, alias="structureFile", json_schema_extra={"delimiter": ";"}
     )
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
     waterlevinifile: Annotated[
@@ -2082,7 +2082,7 @@ class Geometry(INIBasedModel):
         None, alias="vertPlizFile"
     )
     frictfile: Optional[List[Union[FrictionModel, DiskOnlyFileModel]]] = Field(
-        None, alias="frictFile", delimiter=";"
+        None, alias="frictFile", json_schema_extra={"delimiter": ";"}
     )
     crossdeffile: Optional[Union[CrossDefModel, DiskOnlyFileModel]] = Field(
         None, alias="crossDefFile"

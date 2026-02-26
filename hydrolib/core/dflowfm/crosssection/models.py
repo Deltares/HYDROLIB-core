@@ -310,9 +310,9 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     mainwidth: Optional[float] = Field(None, alias="mainWidth")
     fp1width: Optional[float] = Field(None, alias="fp1Width")
     fp2width: Optional[float] = Field(None, alias="fp2Width")
-    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
+    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", json_schema_extra={"delimiter": ";"})
     frictiontypes: Optional[List[FrictionType]] = Field(
-        None, alias="frictionTypes", delimiter=";"
+        None, alias="frictionTypes", json_schema_extra={"delimiter": ";"}
     )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
@@ -514,9 +514,9 @@ class YZCrsDef(CrossSectionDefinition):
     conveyance: Optional[str] = Field("segmented")
     sectioncount: Optional[int] = Field(1, alias="sectionCount")
     frictionpositions: Optional[List[float]] = Field(None, alias="frictionPositions")
-    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", delimiter=";")
+    frictionids: Optional[List[str]] = Field(None, alias="frictionIds", json_schema_extra={"delimiter": ";"})
     frictiontypes: Optional[List[FrictionType]] = Field(
-        None, alias="frictionTypes", delimiter=";"
+        None, alias="frictionTypes", json_schema_extra={"delimiter": ";"}
     )
     frictionvalues: Optional[List[float]] = Field(None, alias="frictionValues")
 
