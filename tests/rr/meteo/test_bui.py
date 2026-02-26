@@ -224,8 +224,8 @@ class TestModel:
             def filtered_dict(input_dict: dict) -> dict:
                 return {k: v for k, v in input_dict.items() if k != "filepath"}
 
-            assert filtered_dict(default_bui_model.dict()) == filtered_dict(
-                new_model.dict()
+            assert filtered_dict(default_bui_model.model_dump()) == filtered_dict(
+                new_model.model_dump()
             )
 
         def test_get_station_events_given_valid_station(self):
@@ -633,7 +633,7 @@ class TestSerializer:
         new_path = test_output_dir / "new_path.bui"
         write_bui_file(
             new_path,
-            default_bui_model.dict(),
+            default_bui_model.model_dump(),
             config=SerializerConfig(),
             save_settings=ModelSaveSettings(),
         )
