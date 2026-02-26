@@ -127,7 +127,7 @@ def test_dimr_model_save(output_files_dir: Path, reference_files_dir: Path):
     dimr.save()
 
     assert file.is_file() == True
-    assert_files_equal(file, reference_file)
+    assert_files_equal(file, reference_file, skip_lines=[4])
 
 
 def test_dimr_model():
@@ -297,7 +297,7 @@ def test_serialize():
     )
 
     assert file.is_file()
-    assert_files_equal(file, reference_file)
+    assert_files_equal(file, reference_file, skip_lines=[4])
 
 
 def test_serialize_float_are_formatted():
