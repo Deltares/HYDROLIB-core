@@ -737,7 +737,7 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-markers = {main = "(python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\") and (platform_system == \"Windows\" or sys_platform == \"win32\") and (platform_system == \"Windows\" or extra == \"examples\")", dev = "python_version <= \"3.11\" or python_version >= \"3.12.0.rc1\"", docs = "python_version <= \"3.11\" or python_version >= \"3.12.0.rc1\""}
+markers = {main = "(python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\") and (platform_system == \"Windows\" or extra == \"examples\") and (platform_system == \"Windows\" or sys_platform == \"win32\")", dev = "python_version <= \"3.11\" or python_version >= \"3.12.0.rc1\"", docs = "python_version <= \"3.11\" or python_version >= \"3.12.0.rc1\""}
 
 [[package]]
 name = "comm"
@@ -3534,37 +3534,12 @@ files = [
 
 [[package]]
 name = "meshkernel"
-version = "8.1.3"
-description = "`meshkernel` is a library which can be used to manipulate meshes."
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-markers = "sys_platform == \"darwin\" and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")"
-files = [
-    {file = "meshkernel-8.1.3-py3-none-macosx_13_0_arm64.whl", hash = "sha256:269af9b7ecc535cb870ade7f03f6a0ea73cc2511c613a7a883463f4944f6d3e3"},
-    {file = "meshkernel-8.1.3-py3-none-macosx_13_0_x86_64.whl", hash = "sha256:a03367e248e50cf459764179cd643d3e4c567bce627ce03d1b4a53f7f1711f58"},
-    {file = "meshkernel-8.1.3-py3-none-macosx_14_0_arm64.whl", hash = "sha256:2273e606d77bddbac9aa4e3d76cfa8b4f53bbf5357d31efdc5e869f493c594bf"},
-    {file = "meshkernel-8.1.3-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:8d2fdc10a2f9b346541adcbf0d4e04a936648ad9821d865a48d0a5fb0c4916bc"},
-    {file = "meshkernel-8.1.3-py3-none-win_amd64.whl", hash = "sha256:39818dd8dda40a373abfa952e05e7923111c4e2cf8c45a8690b8b42176b14c4d"},
-]
-
-[package.dependencies]
-matplotlib = ">=3.6"
-numpy = ">=1.22"
-
-[package.extras]
-docs = ["myst-nb", "sphinx", "sphinx-book-theme"]
-lint = ["black", "flake8", "isort"]
-tests = ["nbval", "pytest", "pytest-cov"]
-
-[[package]]
-name = "meshkernel"
 version = "8.2.2"
 description = "`meshkernel` is a library which can be used to manipulate meshes."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "sys_platform != \"darwin\" and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")"
+markers = "python_version <= \"3.11\" or python_version >= \"3.12.0.rc1\""
 files = [
     {file = "meshkernel-8.2.2-py3-none-macosx_14_0_arm64.whl", hash = "sha256:ba51e2caa8bb486af5b81673990ca26117b33ce4b2493af3f169fb9cea5cc172"},
     {file = "meshkernel-8.2.2-py3-none-macosx_15_0_arm64.whl", hash = "sha256:9bd1adc83b98eb7456faa466daedb8bb0382eb7420b72dcd4e9d1528acbad455"},
@@ -4599,7 +4574,7 @@ files = [
     {file = "pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523"},
     {file = "pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f"},
 ]
-markers = {main = "(sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and extra == \"examples\" and sys_platform != \"win32\" and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")", docs = "(sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and sys_platform != \"win32\" and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")"}
+markers = {main = "extra == \"examples\" and (sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and sys_platform != \"win32\" and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")", docs = "(python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\") and (sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and sys_platform != \"win32\""}
 
 [package.dependencies]
 ptyprocess = ">=0.5"
@@ -4969,7 +4944,7 @@ files = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
     {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
 ]
-markers = {main = "extra == \"examples\" and (sys_platform != \"win32\" and sys_platform != \"emscripten\" or os_name != \"nt\" or python_version < \"3.11\") and (sys_platform != \"win32\" or os_name != \"nt\") and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")", docs = "(sys_platform != \"win32\" and sys_platform != \"emscripten\" or os_name != \"nt\" or python_version < \"3.11\") and (sys_platform != \"win32\" or os_name != \"nt\") and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")"}
+markers = {main = "extra == \"examples\" and (os_name != \"nt\" or sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and (os_name != \"nt\" or sys_platform != \"win32\") and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")", docs = "(os_name != \"nt\" or sys_platform != \"win32\" and sys_platform != \"emscripten\" or python_version < \"3.11\") and (os_name != \"nt\" or sys_platform != \"win32\") and (python_version >= \"3.12.0.rc1\" or python_version <= \"3.11\")"}
 
 [[package]]
 name = "pure-eval"
@@ -7175,4 +7150,4 @@ plot = ["matplotlib"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.9,<4"
-content-hash = "7950461eaadc12b09cf044287e6bd9bd29167da2d15c3b57fd90b07f03cad98b"
+content-hash = "1ceb85124c5218e261168e5b60d412debe20783e3ad6934b384ee1907a90cd1d"
