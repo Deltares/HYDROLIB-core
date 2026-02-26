@@ -1,8 +1,5 @@
 name: mkdocs-deploy
 
-permissions:
-  contents: write
-
 on:
   push:
     branches:
@@ -15,6 +12,8 @@ jobs:
   deploy-main:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
@@ -54,6 +53,8 @@ jobs:
   deploy-release:
     if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
         with:
