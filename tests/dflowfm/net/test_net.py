@@ -18,7 +18,7 @@ from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
-from tests.utils import test_input_dir, test_output_dir, is_macos
+from tests.utils import is_macos, test_input_dir, test_output_dir
 
 
 @pytest.mark.plots
