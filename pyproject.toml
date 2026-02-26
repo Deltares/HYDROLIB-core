@@ -99,7 +99,7 @@ geopandas = "^1.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.10.1"
+version = "1.0.0b4"
 tag_format = "$version"
 version_files = [
   "hydrolib/core/__init__.py",
