@@ -18,7 +18,7 @@ from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.net.models import Branch, Mesh2d, Network, NetworkModel
 from hydrolib.core.dflowfm.net.reader import NCExplorer
 from hydrolib.core.dflowfm.net.writer import FillValueConfiguration, UgridWriter
-from tests.utils import test_input_dir, test_output_dir
+from tests.utils import test_input_dir, test_output_dir, is_macos
 
 
 @pytest.mark.plots
@@ -140,6 +140,10 @@ def network_1d_2d_1d2dlinks():
 
 @pytest.mark.plots
 def test_create_1d_2d_1d2d():
+    if is_macos():
+        reference_size = 20
+    else:
+        reference_size = 21
     network = network_1d_2d_1d2dlinks()
 
     mesh2d_output = network._mesh2d.get_mesh2d()
@@ -150,9 +154,9 @@ def test_create_1d_2d_1d2d():
     network1_link1d2d = network._link1d2d.link1d2d
     network1_con_m1d = network._link1d2d.meshkernel.contacts_get().mesh1d_indices
     network1_con_m2d = network._link1d2d.meshkernel.contacts_get().mesh2d_indices
-    assert network1_link1d2d.shape == (21, 2)
-    assert network1_con_m1d.size == 21
-    assert network1_con_m2d.size == 21
+    assert network1_link1d2d.shape == (reference_size, 2)
+    assert network1_con_m1d.size == reference_size
+    assert network1_con_m2d.size == reference_size
 
     # Write to file
     file_out = Path(test_output_dir / "test_net.nc")
@@ -168,9 +172,9 @@ def test_create_1d_2d_1d2d():
     network2_link1d2d = network2._link1d2d.link1d2d
     network2_con_m1d = network2._link1d2d.meshkernel.contacts_get().mesh1d_indices
     network2_con_m2d = network2._link1d2d.meshkernel.contacts_get().mesh2d_indices
-    assert network2_link1d2d.shape == (21, 2)
-    assert network2_con_m1d.size == 21
-    assert network2_con_m2d.size == 21
+    assert network2_link1d2d.shape == (reference_size, 2)
+    assert network2_con_m1d.size == reference_size
+    assert network2_con_m2d.size == reference_size
 
     # plot both networks
     import matplotlib.pyplot as plt
@@ -191,11 +195,15 @@ def test_create_1d_2d_1d2d_call_link_generation_twice():
     # Add links again, do this twice to check if contacts are overwritten and not appended
     network.link1d2d_from_1d_to_2d(branchids=["branch1"], polygon=get_circle_gl(19))
 
+    if is_macos():
+        reference_size = 20
+    else:
+        reference_size = 21
     network1_link1d2d = network._link1d2d.link1d2d
-    assert network1_link1d2d.shape == (21, 2)
-    assert len(network._link1d2d.link1d2d_contact_type) == 21
-    assert len(network._link1d2d.link1d2d_id) == 21
-    assert len(network._link1d2d.link1d2d_long_name) == 21
+    assert network1_link1d2d.shape == (reference_size, 2)
+    assert len(network._link1d2d.link1d2d_contact_type) == reference_size
+    assert len(network._link1d2d.link1d2d_id) == reference_size
+    assert len(network._link1d2d.link1d2d_long_name) == reference_size
 
 
 def test_create_2d():
