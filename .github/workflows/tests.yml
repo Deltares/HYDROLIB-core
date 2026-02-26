@@ -26,6 +26,7 @@ jobs:
         uses: abatilo/actions-poetry@v4
         with:
           poetry-version: 2.2.1
+
       - name: Cache Poetry virtualenv
         uses: actions/cache@v4
         id: cache
@@ -37,6 +38,11 @@ jobs:
         run: |
           poetry config virtualenvs.in-project false
           poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: install GCC for macos (provides libgomp foe meshkernel)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install gcc@12
 
       - name: Install Dependencies
         run: poetry install
