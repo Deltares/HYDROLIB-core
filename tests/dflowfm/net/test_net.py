@@ -140,6 +140,20 @@ def network_1d_2d_1d2dlinks():
 
 @pytest.mark.plots
 def test_create_1d_2d_1d2d():
+    # TODO: There is a known issue with the meshkernel package that needs to be
+    # investigated. The reference_size values (20 for macOS, 21 for other platforms)
+    # may change depending on the version of meshkernel used. If this test fails,
+    # please check whether a newer version of the meshkernel package has altered the
+    # contact/link generation behaviour and update the expected values accordingly.
+    import warnings
+
+    warnings.warn(
+        "Known issue: the meshkernel package may produce different numbers of "
+        "1d2d links depending on the version. Please verify the meshkernel package "
+        "behaviour if this test fails.",
+        UserWarning,
+        stacklevel=1,
+    )
     if is_macos():
         reference_size = 20
     else:
@@ -190,6 +204,21 @@ def test_create_1d_2d_1d2d_call_link_generation_twice():
     this testcase checks whether that is the case.
     Related issue: https://github.com/Deltares/HYDROLIB-core/issues/546
     """
+    # TODO: There is a known issue with the meshkernel package that needs to be
+    # investigated. The reference_size values (20 for macOS, 21 for other platforms)
+    # may change depending on the version of meshkernel used. If this test fails,
+    # please check whether a newer version of the meshkernel package has altered the
+    # contact/link generation behaviour and update the expected values accordingly.
+    import warnings
+
+    warnings.warn(
+        "Known issue: the meshkernel package may produce different numbers of "
+        "1d2d links depending on the version. Please verify the meshkernel package "
+        "behaviour if this test fails.",
+        UserWarning,
+        stacklevel=1,
+    )
+
     network = network_1d_2d_1d2dlinks()
 
     # Add links again, do this twice to check if contacts are overwritten and not appended
