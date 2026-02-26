@@ -196,49 +196,46 @@ class StorageNode(INIBasedModel):
         return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
-    @classmethod
-    def check_list_length_levels(cls, values: "StorageNode") -> "StorageNode":
+    def check_list_length_levels(self) -> "StorageNode":
         """Validates that the length of the levels field is as expected."""
         validate_correct_length(
-            values.model_dump(),
+            self.model_dump(),
             "levels",
             "storagearea",
             length_name="numlevels",
             list_required_with_length=True,
         )
-        return values
+        return self
 
     @model_validator(mode="after")
-    @classmethod
     def validate_that_required_fields_are_present_when_using_tables(
-        cls, values: "StorageNode"
+        self,
     ) -> "StorageNode":
         """Validates that the specified fields are present when the usetable field is also present."""
         validate_required_fields(
-            values.model_dump(),
+            self.model_dump(),
             "numlevels",
             "levels",
             "storagearea",
             conditional_field_name="usetable",
             conditional_value=True,
         )
-        return values
+        return self
 
     @model_validator(mode="after")
-    @classmethod
     def validate_that_required_fields_are_present_when_not_using_tables(
-        cls, values: "StorageNode"
+        self,
     ) -> "StorageNode":
         """Validates that the specified fields are present."""
         validate_required_fields(
-            values.model_dump(),
+            self.model_dump(),
             "bedlevel",
             "area",
             "streetlevel",
             conditional_field_name="usetable",
             conditional_value=False,
         )
-        return values
+        return self
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")

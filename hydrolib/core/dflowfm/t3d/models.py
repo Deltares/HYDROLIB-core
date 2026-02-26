@@ -197,18 +197,18 @@ class T3DModel(ParsableFileModel):
         return value
 
     @model_validator(mode="after")
-    def validate_quantities_names(cls, value: "T3DModel") -> "T3DModel":
+    def validate_quantities_names(self) -> "T3DModel":
         """
         Validate that the number of quantities names is equal to the number of values in the records.
         """
-        record = value.records
+        record = self.records
         record_len = len(record[0].data)
-        quantities_names = value.quantities_names
+        quantities_names = self.quantities_names
         if quantities_names is not None and len(quantities_names) != record_len:
             raise ValueError(
                 "The number of quantities names must be equal to the number of values in the records."
             )
-        return value
+        return self
 
     @property
     def size(self) -> Tuple[int, int]:

@@ -93,29 +93,27 @@ class OneDFieldBranch(INIBasedModel):
         return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
-    @classmethod
-    def check_list_length_values(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
+    def check_list_length_values(self) -> "OneDFieldBranch":
         """Validates that the length of the values field is as expected."""
         validate_correct_length(
-            values.model_dump(),
+            self.model_dump(),
             "values",
             length_name="numlocations",
             list_required_with_length=True,
             min_length=1,
         )
-        return values
+        return self
 
     @model_validator(mode="after")
-    @classmethod
-    def check_list_length_chainage(cls, values: "OneDFieldBranch") -> "OneDFieldBranch":
+    def check_list_length_chainage(self) -> "OneDFieldBranch":
         """Validates that the length of the chainage field is as expected."""
         validate_correct_length(
-            values.model_dump(),
+            self.model_dump(),
             "chainage",
             length_name="numlocations",
             list_required_with_length=True,
         )
-        return values
+        return self
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("branchid")

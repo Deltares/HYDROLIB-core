@@ -58,10 +58,9 @@ class Node(BaseModel):
         return super().model_dump(*args, **kwargs)
 
     @model_validator(mode="after")
-    @classmethod
-    def _validate_node_type(cls, values: "Node") -> "Node":
-        values_dict = values.model_dump()
-        cls._raise_if_invalid_type(
+    def _validate_node_type(self) -> "Node":
+        values_dict = self.model_dump()
+        self._raise_if_invalid_type(
             values_dict,
             "mt",
             set(nodetypes_netter_to_rr.values()),
@@ -73,9 +72,9 @@ class Node(BaseModel):
         # modelnodetype=6 ("boundary node") is a special case that allows various netter nodetypes,
         # so therefore it always validates well.
         if modelnodetype == 6:
-            return values
+            return self
 
-        cls._raise_if_invalid_type(
+        self._raise_if_invalid_type(
             values_dict,
             "nt",
             set(nodetypes_netter_to_rr.keys()),
@@ -90,7 +89,7 @@ class Node(BaseModel):
                 f"{modelnodetype} is not a supported model node type (mt) when netter node type (nt) is {netternodetype}. Supported value: {modelnodetype_expected}."
             )
 
-        return values
+        return self
 
     @classmethod
     def _raise_if_invalid_type(

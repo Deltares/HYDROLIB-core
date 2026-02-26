@@ -240,29 +240,27 @@ class FrictBranch(INIBasedModel):
         return v
 
     @model_validator(mode="after")
-    @classmethod
-    def validate_all(cls, values):
-        v = values
-        if v.levels is not None:
-            if v.numlevels is None or len(v.levels) != v.numlevels:
+    def validate_all(self) -> "FrictBranch":
+        if self.levels is not None:
+            if self.numlevels is None or len(self.levels) != self.numlevels:
                 raise ValueError(
-                    f"Number of values for levels should be equal to the numLevels value (branchId={v.branchid})."
+                    f"Number of values for levels should be equal to the numLevels value (branchId={self.branchid})."
                 )
 
-        if v.chainage is not None and len(v.chainage) != v.numlocations:
+        if self.chainage is not None and len(self.chainage) != self.numlocations:
             raise ValueError(
-                f"Number of values for chainage should be equal to the numLocations value (branchId={v.branchid})."
+                f"Number of values for chainage should be equal to the numLocations value (branchId={self.branchid})."
             )
 
-        if v.frictionvalues is not None:
-            numlevels = 1 if not v.numlevels else v.numlevels
-            numvals = max(1, v.numlocations) * numlevels
-            if len(v.frictionvalues) != numvals:
+        if self.frictionvalues is not None:
+            numlevels = 1 if not self.numlevels else self.numlevels
+            numvals = max(1, self.numlocations) * numlevels
+            if len(self.frictionvalues) != numvals:
                 raise ValueError(
-                    f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={v.branchid})."
+                    f"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId={self.branchid})."
                 )
 
-        return v
+        return self
 
 
 class FrictionModel(INIModel):

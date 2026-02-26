@@ -3,7 +3,7 @@ namespace for storing the branches as branches.gui file
 """
 
 import logging
-from typing import Annotated, Any, List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
 from pydantic import BeforeValidator, Field, field_validator, model_validator
 
@@ -73,16 +73,15 @@ class Branch(INIBasedModel):
         return data.get("name")
 
     @model_validator(mode="after")
-    @classmethod
-    def _validate_branch(cls, model: Any):
-        if model.branchtype == 2 and (
-            model.sourcecompartmentname is None and model.targetcompartmentname is None
+    def _validate_branch(self) -> "Branch":
+        if self.branchtype == 2 and (
+            self.sourcecompartmentname is None and self.targetcompartmentname is None
         ):
             raise ValueError(
                 "Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."
             )
 
-        return model
+        return self
 
     @field_validator("branchtype")
     @classmethod
