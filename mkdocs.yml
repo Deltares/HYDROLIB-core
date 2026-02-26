@@ -87,6 +87,7 @@ nav:
           - Poetry: guides/poetry.md
       - Contributing: guides/contributing.md
       - Developer Guide: guides/developers-guide.md
+      - Release workflow: guides/release-workflow.md
       - Documentation: guides/documentation.md
       - Support: guides/getting-help.md
   - Tutorials:

@@ -115,7 +115,9 @@ def test_cmp_to_forcing_converter(cmp_models: List[CMPModel]):
             datablock=[["4MS10", 1.0, 2.0], ["KO0", 1.0, 2.0]],
         ),
     ]
-    assert forcing_model == expected_forcing_model
+    assert [fm.model_dump() for fm in forcing_model] == [
+        efm.model_dump() for efm in expected_forcing_model
+    ]
 
 
 def test_cmp_to_forcing_converter_file(
@@ -127,7 +129,7 @@ def test_cmp_to_forcing_converter_file(
     converted_bc_path = tmpdir / "converted.bc"
     model = CMPToForcingConverter.convert([cmp_model], ["L1_0001"])
     forcing = ForcingModel(forcing=model)
-    forcing.save(converted_bc_path)
+    forcing.save(Path(converted_bc_path))
 
     diff = compare_two_files(converted_bc_path, reference_path)
     assert diff == []

@@ -235,7 +235,7 @@ def compare_data(new_quantity_block: SourceSink):
         "initialtracer_anyname",
     ]
 
-    assert all(quantity in new_quantity_block.__dict__ for quantity in quantity_list)
+    assert all(hasattr(new_quantity_block, quantity) for quantity in quantity_list)
     # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
     # and this forcingModel is duplicated in the sourcesink_salinitydelta, sourcesink_temperatureDelta, and initialtracer_anyname
     # to be able to save them in the same .bc file.
