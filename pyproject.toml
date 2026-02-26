@@ -103,8 +103,6 @@ version = "1.0.0b4"
 tag_format = "$version"
 version_files = [
   "pyproject.toml:version",
-  "tests/data/reference/dimr/test_serialize.xml:createdBy",
-  "tests/data/reference/model/test_dimr_model_save.xml:createdBy",
 ]
 changelog_file = "docs/changelog.md"
 
