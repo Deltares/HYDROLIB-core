@@ -35,7 +35,11 @@ numpy = [
 pydantic = "^2.5"
 # lxml 5.0 is from December 2023
 lxml = "^5.0"
-meshkernel = "^8.1.3"
+meshkernel = [
+    # meshkernel >=8.2 requires libgomp from gcc@12 and targets macOS 15+, which breaks on older macOS runners
+    { version = ">=8.1.3,<8.2", markers = "sys_platform == 'darwin'" },
+    { version = "^8.1.3", markers = "sys_platform != 'darwin'" },
+]
 strenum = "^0"
 tqdm = "^4.67.1"
 pandas = "^2.0.0"
