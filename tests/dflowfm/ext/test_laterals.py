@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 import pytest
-from pydantic.v1 import ValidationError
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
 from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral
@@ -349,7 +349,7 @@ class TestValidateFromCtor:
 
         # 3. Validate final expectations.
         for key, value in location_values.items():
-            assert new_lateral.dict()[key] == value
+            assert new_lateral.model_dump()[key] == value
 
     @pytest.mark.parametrize(
         "location_dict",
@@ -394,7 +394,7 @@ class TestValidateFromCtor:
         # 3. Validate expectations.
         assert isinstance(lateral_cls, INIBasedModel)
         for key, value in lateral_dict.items():
-            assert lateral_cls.dict()[key] == value
+            assert lateral_cls.model_dump()[key] == value
 
 
 class TestValidateForcingData:

@@ -1,5 +1,8 @@
 name: Automated release workflow
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -89,8 +92,8 @@ jobs:
           USER_JSON=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ github.actor }}")
           USER_NAME=$(echo "$USER_JSON" | jq -r .name)
           USER_EMAIL=$(echo "$USER_JSON" | jq -r .email)
-          echo "::set-output name=name::$USER_NAME"
-          echo "::set-output name=email::$USER_EMAIL"
+          echo "name=$USER_NAME" >> $GITHUB_OUTPUT
+          echo "email=$USER_EMAIL" >> $GITHUB_OUTPUT
 
       - name: Configure git
         run: |
@@ -102,6 +105,8 @@ jobs:
           set -e  # Exit immediately if a command exits with a non-zero status
           echo "Bumping version to ${{ steps.get_version.outputs.VERSION }}"
           poetry run cz bump --yes --check-consistency "${{ steps.get_version.outputs.VERSION }}"
+
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
           echo "Pushing changes to repository"
           if ! git push; then
