@@ -1,0 +1,115 @@
+name: mkdocs-deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["Automated release workflow"]
+    types: [completed]
+
+jobs:
+  deploy-main:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.13
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: 2.2.1
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: venv-${{ runner.os }}-3.13-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set Poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install Dependencies
+        run: poetry install --with docs
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Setup doc deploy
+        run: |
+          git config --global user.name "$ACTOR"
+          git config --global user.email "$ACTOR@users.noreply.github.com"
+        env:
+          ACTOR: ${{ github.actor }}
+
+      - run: poetry run mike deploy --push main
+
+  deploy-release:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Get release tag and checkout
+        run: |
+          RELEASE_TAG_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          if [ -z "${RELEASE_TAG_VERSION}" ]; then
+            echo "::error::No release found"
+            exit 1
+          fi
+          echo "RELEASE_TAG_VERSION=${RELEASE_TAG_VERSION}" >> $GITHUB_ENV
+          git checkout "${RELEASE_TAG_VERSION}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.13
+
+      - name: Run image
+        uses: abatilo/actions-poetry@v4
+        with:
+          poetry-version: 2.2.1
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: venv-${{ runner.os }}-3.13-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Set Poetry config
+        run: |
+          poetry config virtualenvs.in-project false
+          poetry config virtualenvs.path ~/.virtualenvs
+
+      - name: Install Dependencies
+        run: poetry install --with docs
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Setup doc deploy
+        run: |
+          git config --global user.name "$ACTOR"
+          git config --global user.email "$ACTOR@users.noreply.github.com"
+        env:
+          ACTOR: ${{ github.actor }}
+
+      - name: Deploy release docs
+        run: |
+          if echo "${RELEASE_TAG_VERSION}" | grep -qE '(a|b|rc)[0-9]+$'; then
+            poetry run mike deploy --push "${RELEASE_TAG_VERSION}"
+          else
+            poetry run mike deploy --push --update-aliases "${RELEASE_TAG_VERSION}" latest
+            poetry run mike set-default --push latest
+          fi
