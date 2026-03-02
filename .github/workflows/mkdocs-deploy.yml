@@ -105,6 +105,11 @@ jobs:
         env:
           ACTOR: ${{ github.actor }}
 
-      - run: |
-          poetry run mike deploy --push --update-aliases ${RELEASE_TAG_VERSION} latest
-          poetry run mike set-default --push latest
+      - name: Deploy release docs
+        run: |
+          if echo "${RELEASE_TAG_VERSION}" | grep -qE '(a|b|rc)[0-9]+$'; then
+            poetry run mike deploy --push "${RELEASE_TAG_VERSION}"
+          else
+            poetry run mike deploy --push --update-aliases "${RELEASE_TAG_VERSION}" latest
+            poetry run mike set-default --push latest
+          fi
