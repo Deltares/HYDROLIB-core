@@ -33,7 +33,7 @@ def open_file_with_fallback_encoding(filepath: Path) -> str:
             logger.debug(
                 f"Failed to decode {filepath} with {encoding}, trying next encoding.",
             )
-    # Unreachable: latin-1 decodes all byte values so the loop always returns.
+
     raise AssertionError("All fallback encodings failed.")  # pragma: no cover
 
 
