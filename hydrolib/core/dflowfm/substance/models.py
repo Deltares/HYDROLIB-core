@@ -94,7 +94,7 @@ class SubstanceModel(ParsableFileModel):
     @classmethod
     def _get_serializer(
         cls,
-    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+    ) -> Callable[..., None]:
         return SubstanceSerializer.serialize
 
     @classmethod
