@@ -12,10 +12,14 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
 
-from pydantic.v1 import BaseModel as PydanticBaseModel
-from pydantic.v1 import validator
-from pydantic.v1.error_wrappers import ErrorWrapper, ValidationError
-from pydantic.v1.fields import ModelField, PrivateAttr
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import (
+    ConfigDict,
+    PrivateAttr,
+    ValidationError,
+    ValidationInfo,
+    field_validator,
+)
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -28,6 +32,7 @@ from hydrolib.core.base.parser import DummmyParser
 from hydrolib.core.base.serializer import DummySerializer
 from hydrolib.core.base.utils import (
     PathStyle,
+    PathToDictionaryConverter,
     get_path_style_for_current_operating_system,
     to_key,
 )
@@ -44,30 +49,23 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
     return model.is_file_link()
 
 
-def validator_set_default_disk_only_file_model_when_none() -> classmethod:
-    """Validator to ensure a default empty DiskOnlyFileModel is created
-    when the corresponding field is initialized with None.
-
-    Returns:
-        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects
-    """
-
-    def adjust_none(v: Any, field: "ModelField") -> Any:
-        if field.type_ is DiskOnlyFileModel and v is None:
-            return {"filepath": None}
-        return v
-
-    return validator("*", allow_reuse=True, pre=True)(adjust_none)
+def set_default_disk_only_file_model(v: Any):
+    if v is None:
+        return {"filepath": None}
+    elif isinstance(v, (Path, str)):
+        return {"filepath": Path(v)}
+    return v
 
 
 class BaseModel(PydanticBaseModel):
-    class Config:
-        arbitrary_types_allowed = True
-        validate_assignment = True
-        use_enum_values = True
-        extra = "forbid"  # will throw errors so we can fix our models
-        allow_population_by_field_name = True
-        alias_generator = to_key
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_assignment=True,
+        use_enum_values=True,
+        extra="forbid",
+        populate_by_name=True,
+        alias_generator=to_key,
+    )
 
     def __init__(self, **data: Any) -> None:
         """Initialize a BaseModel with the provided data.
@@ -78,17 +76,13 @@ class BaseModel(PydanticBaseModel):
         try:
             super().__init__(**data)
         except ValidationError as e:
-
             # Give a special message for faulty list input
-            for re in e.raw_errors:
-                if (
-                    hasattr(re, "_loc")
-                    and hasattr(re.exc, "msg_template")
-                    and isinstance(data.get(to_key(re._loc)), list)
-                ):
-                    re.exc.msg_template += (
-                        f". The key {re._loc} might be duplicated in the input file."
-                    )
+            for error in e.errors():
+                loc = error.get("loc", [])
+                if loc and isinstance(data.get(to_key(loc[0])), list):
+                    error[
+                        "msg"
+                    ] += f". The key {loc[0]} might be duplicated in the input file."
 
             # Update error with specific model location name
             identifier = self._get_identifier(data)
@@ -96,7 +90,16 @@ class BaseModel(PydanticBaseModel):
                 raise e
             else:
                 # If there is an identifier, include this in the ValidationError messages.
-                raise ValidationError([ErrorWrapper(e, loc=identifier)], self.__class__)
+                # Create a new ValidationError with the identifier as the location
+                errors = e.errors()
+                title = e.title or "Validation Error"
+                for error in errors:
+                    error["loc"] = (identifier,) + tuple(error.get("loc", ()))
+                    error.pop("url", None)
+
+                raise ValidationError.from_exception_data(
+                    title=title, line_errors=errors
+                )
 
     def is_file_link(self) -> bool:
         """Generic attribute for models backed by a file."""
@@ -311,7 +314,6 @@ class FileModel(BaseModel, ABC):
             cwd / filename.extension
     """
 
-    __slots__ = ["__weakref__"]
     # Use WeakValueDictionary to keep track of file paths with their respective parsed file models.
     _file_models_cache: WeakValueDictionary = WeakValueDictionary()
     filepath: Optional[Path] = None
@@ -491,40 +493,12 @@ class FileModel(BaseModel, ABC):
 
         return updated_file_path
 
+    @field_validator("*", mode="before")
     @classmethod
-    def validate(cls: Type["FileModel"], value: Any):
-        from hydrolib.core.base.models import (
-            DiskOnlyFileModel,  # because of circular import
-        )
-
-        with file_load_context() as context:
-            if (
-                hasattr(context, "_load_settings")
-                and context._load_settings is not None
-                and not context._load_settings.recurse
-            ) and hasattr(value, "filepath"):
-                return DiskOnlyFileModel(value.filepath)
-
-        # Enable initialization with a Path.
-        if isinstance(value, (Path, str)):
-            # Check if we're in a file load context and if recurse is False
-            with file_load_context() as context:
-                if (
-                    hasattr(context, "_load_settings")
-                    and context._load_settings is not None
-                    and not context._load_settings.recurse
-                ):
-                    # If recurse is False, return the Path object as-is
-                    return DiskOnlyFileModel(value)
-            # Pydantic Model init requires a dict
-            value = {"filepath": Path(value)}
-        elif value is None:
-            return None
-        elif not isinstance(value, cls) and not isinstance(value, dict):
-            raise ValueError(
-                f"Expected {cls.__name__} or dict, got {type(value).__name__}"
-            )
-        return super().validate(value)
+    def convert_path_to_dictionary(
+        cls, value: Any, info: ValidationInfo
+    ) -> Dict[str, Any]:
+        return PathToDictionaryConverter.convert(cls, value, info)
 
     def save(
         self,
@@ -743,7 +717,8 @@ class FileModel(BaseModel, ABC):
         else:
             return Path(filepath)
 
-    @validator("filepath")
+    @field_validator("filepath")
+    @classmethod
     def _conform_filepath_to_pathlib(cls, value):
         return FileModel._change_to_path(value)
 
@@ -813,7 +788,7 @@ class ParsableFileModel(FileModel):
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
-        self._serialize(self.dict(), save_settings)
+        self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
         """Serializes the data to file. Should not be called directly, only through `_save`.
@@ -829,9 +804,9 @@ class ParsableFileModel(FileModel):
         path.parent.mkdir(parents=True, exist_ok=True)
         self._get_serializer()(path, data, self.serializer_config, save_settings)
 
-    def dict(self, *args, **kwargs):
+    def model_dump(self, *args, **kwargs):
         kwargs["exclude"] = self._exclude_fields()
-        return super().dict(*args, **kwargs)
+        return super().model_dump(*args, **kwargs)
 
     @classmethod
     def _exclude_fields(cls) -> Set[str]:
@@ -969,3 +944,6 @@ class DiskOnlyFileModel(FileModel):
         # If the filepath is not None, there is an underlying file, and as such we need
         # to traverse it.
         return self.filepath is not None
+
+
+# FileModel.model_rebuild()

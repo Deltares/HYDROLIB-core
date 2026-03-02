@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic.v1 import BaseModel, Extra, Field, validator
+from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -319,7 +319,7 @@ def create_initial_cond_and_parameter_input_dict(
         block_data["extrapolationmethod"] = (
             "yes" if forcing.extrapolation == 1 else "no"
         )
-    for key, value in forcing.dict().items():
+    for key, value in forcing.model_dump().items():
         if key.lower().startswith("tracer") and value is not None:
             block_data[key] = value
     return block_data
@@ -384,8 +384,7 @@ class IgnoreUnknownKeyWord(type):
         """Dynamically create and instantiate a subclass of base_class."""
 
         class DynamicClass(base_class):
-            class Config:
-                extra = Extra.ignore
+            model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
                 valid_fields = self.__annotations__.keys()
@@ -436,7 +435,7 @@ class MDUConfig(BaseModel):
     deprecated_keywords: Set[str] = Field(default_factory=set)
     deprecated_value: int = 0
 
-    @validator("deprecated_keywords", pre=True)
+    @field_validator("deprecated_keywords", mode="before")
     def _to_set(cls, v):
         """convert the deprecated keywords to a set."""
         if v is None:
@@ -451,7 +450,9 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: List[str] = Field(default_factory=list)
     unsupported_prefixes: List[str] = Field(default_factory=list)
 
-    @validator("unsupported_quantity_names", "unsupported_prefixes", pre=True)
+    @field_validator(
+        "unsupported_quantity_names", "unsupported_prefixes", mode="before"
+    )
     def ensure_unique(cls, v: List[str]) -> List[str]:
         return check_unique(v)
 
@@ -479,7 +480,7 @@ class ExternalForcingConfigs(BaseModel):
 
 
 class ConverterData(BaseModel):
-    version: str
+    version: float
     mdu: MDUConfig = Field(default_factory=MDUConfig)
     external_forcing: ExternalForcingConfigs = Field(
         default_factory=ExternalForcingConfigs

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hydrolib-core"
-version = "0.10.1"
+version = "1.0.0b5"
 description = "Python wrappers around D-HYDRO Suite."
 authors = ["Deltares"]
 license = "MIT"
@@ -40,6 +40,7 @@ strenum = "^0"
 tqdm = "^4.67.1"
 pandas = "^2.0.0"
 pyyaml = "^6.0.2"
+pydantic-settings = "^2.11.0"
 
 ## Optional dependencies for examples extra
 geopandas = { version = "^1.0.0", optional = true }
@@ -92,15 +93,16 @@ mkdocs-mermaid2-plugin = "^1.2.1"
 mkdocs-panzoom-plugin = "^0.4.2"
 
 
+[tool.poetry.group.examples.dependencies]
+geopandas = "^1.0.0"
+
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "0.10.1"
+version = "1.0.0b5"
 tag_format = "$version"
 version_files = [
   "pyproject.toml:version",
-  "tests/data/reference/dimr/test_serialize.xml:createdBy",
-  "tests/data/reference/model/test_dimr_model_save.xml:createdBy",
 ]
 changelog_file = "docs/changelog.md"
 

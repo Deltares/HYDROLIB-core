@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.core.basemodel import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
@@ -87,7 +87,7 @@ class TestSourceSinks:
 
         assert len(ext_model.boundary) == 1
         boundary = ext_model.boundary[0]
-        assert boundary.forcingfile.filepath == boundary_paths["bc_relative_path"]
+        assert boundary.forcingfile[0].filepath == boundary_paths["bc_relative_path"]
 
         converter.save()
 
