@@ -297,9 +297,7 @@ class SubstanceParser:
         return result, i
 
     @staticmethod
-    def _parse_output_block(
-        lines: List[str], start: int
-    ) -> Tuple[Dict[str, str], int]:
+    def _parse_output_block(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
         """Parse an ``output … end-output`` block.
 
         The opening line has the form ``output 'Name'``. The block
@@ -374,9 +372,7 @@ class SubstanceParser:
             if lower.startswith("name"):
                 quoted = SubstanceParser._extract_quoted_values(line)
                 if len(quoted) >= 2:
-                    processes.append(
-                        {"name": quoted[0], "description": quoted[1]}
-                    )
+                    processes.append({"name": quoted[0], "description": quoted[1]})
 
             i += 1
 

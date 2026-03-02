@@ -56,9 +56,9 @@ class TestSubstance:
             description="Dissolved Oxygen",
             concentration_unit="(g/m3)",
         )
-        assert substance.waste_load_unit == "-", (
-            f"Expected '-', got '{substance.waste_load_unit}'"
-        )
+        assert (
+            substance.waste_load_unit == "-"
+        ), f"Expected '-', got '{substance.waste_load_unit}'"
 
     def test_default_type_is_active(self):
         """Test that type defaults to 'active' when not provided.
@@ -71,9 +71,9 @@ class TestSubstance:
             description="Dissolved Oxygen",
             concentration_unit="(g/m3)",
         )
-        assert substance.type == SubstanceType.Active, (
-            f"Expected Active, got {substance.type}"
-        )
+        assert (
+            substance.type == SubstanceType.Active
+        ), f"Expected Active, got {substance.type}"
 
 
 class TestParameter:
@@ -212,8 +212,12 @@ class TestSubstanceModel:
         """
         path = input_files_dir / "substances" / "empty-file.sub"
         model = SubstanceModel(filepath=path)
-        assert len(model.substances) == 0, f"Expected 0 substances, got {len(model.substances)}"
-        assert len(model.parameters) == 0, f"Expected 0 parameters, got {len(model.parameters)}"
+        assert (
+            len(model.substances) == 0
+        ), f"Expected 0 substances, got {len(model.substances)}"
+        assert (
+            len(model.parameters) == 0
+        ), f"Expected 0 parameters, got {len(model.parameters)}"
 
     def test_load_inactive_substances(self, input_files_dir: Path):
         """Test loading file with active and inactive substances.
@@ -226,7 +230,9 @@ class TestSubstanceModel:
         assert model.substances[0].type == SubstanceType.Active
         assert model.substances[1].type == SubstanceType.Inactive
 
-    def test_roundtrip_inactive_type(self, input_files_dir: Path, output_files_dir: Path):
+    def test_roundtrip_inactive_type(
+        self, input_files_dir: Path, output_files_dir: Path
+    ):
         """Test that inactive substance type survives roundtrip.
 
         Test scenario:
@@ -239,11 +245,13 @@ class TestSubstanceModel:
         model.save(filepath=output_path)
         reloaded = SubstanceModel(filepath=output_path)
 
-        assert reloaded.substances[1].type == SubstanceType.Inactive, (
-            f"Expected inactive, got {reloaded.substances[1].type}"
-        )
+        assert (
+            reloaded.substances[1].type == SubstanceType.Inactive
+        ), f"Expected inactive, got {reloaded.substances[1].type}"
 
-    def test_roundtrip_parameter_precision(self, input_files_dir: Path, output_files_dir: Path):
+    def test_roundtrip_parameter_precision(
+        self, input_files_dir: Path, output_files_dir: Path
+    ):
         """Test that parameter values maintain precision through roundtrip.
 
         Test scenario:
@@ -257,9 +265,9 @@ class TestSubstanceModel:
         reloaded = SubstanceModel(filepath=output_path)
 
         for orig, rt in zip(model.parameters, reloaded.parameters):
-            assert orig.value == pytest.approx(rt.value), (
-                f"Parameter {orig.name}: {orig.value} != {rt.value}"
-            )
+            assert orig.value == pytest.approx(
+                rt.value
+            ), f"Parameter {orig.name}: {orig.value} != {rt.value}"
 
     def test_load_nonexistent_file_raises(self):
         """Test that loading a non-existent file raises ValueError.
@@ -272,12 +280,12 @@ class TestSubstanceModel:
 
     def test_model_ext(self):
         """Test that SubstanceModel._ext returns '.sub'."""
-        assert SubstanceModel._ext() == ".sub", (
-            f"Expected '.sub', got '{SubstanceModel._ext()}'"
-        )
+        assert (
+            SubstanceModel._ext() == ".sub"
+        ), f"Expected '.sub', got '{SubstanceModel._ext()}'"
 
     def test_model_filename(self):
         """Test that SubstanceModel._filename returns 'substance'."""
-        assert SubstanceModel._filename() == "substance", (
-            f"Expected 'substance', got '{SubstanceModel._filename()}'"
-        )
+        assert (
+            SubstanceModel._filename() == "substance"
+        ), f"Expected 'substance', got '{SubstanceModel._filename()}'"

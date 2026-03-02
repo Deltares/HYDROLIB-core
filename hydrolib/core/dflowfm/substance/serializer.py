@@ -136,9 +136,7 @@ class SubstanceSerializer:
             lines.extend(SubstanceSerializer._serialize_substance(substance))
 
         for parameter in data.get("parameters", []):
-            lines.extend(
-                SubstanceSerializer._serialize_parameter(parameter, config)
-            )
+            lines.extend(SubstanceSerializer._serialize_parameter(parameter, config))
 
         for output in data.get("outputs", []):
             lines.extend(SubstanceSerializer._serialize_output(output))
@@ -146,9 +144,7 @@ class SubstanceSerializer:
         active_processes = data.get("active_processes", {})
         processes = active_processes.get("processes", [])
         if processes:
-            lines.extend(
-                SubstanceSerializer._serialize_active_processes(processes)
-            )
+            lines.extend(SubstanceSerializer._serialize_active_processes(processes))
 
         with path.open("w", encoding="utf8") as f:
             f.write("\n".join(lines))

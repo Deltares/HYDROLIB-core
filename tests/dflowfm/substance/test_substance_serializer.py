@@ -31,12 +31,16 @@ class TestSubstanceSerializerConfig:
             Default config should produce scientific notation with 4 decimal places.
         """
         config = SubstanceSerializerConfig()
-        assert config.float_format == ".4E", f"Expected '.4E', got '{config.float_format}'"
+        assert (
+            config.float_format == ".4E"
+        ), f"Expected '.4E', got '{config.float_format}'"
 
     def test_custom_float_format(self):
         """Test that float format can be customized."""
         config = SubstanceSerializerConfig(float_format=".2f")
-        assert config.float_format == ".2f", f"Expected '.2f', got '{config.float_format}'"
+        assert (
+            config.float_format == ".2f"
+        ), f"Expected '.2f', got '{config.float_format}'"
 
 
 class TestSubstanceSerializerSerializeSubstance:
@@ -58,7 +62,9 @@ class TestSubstanceSerializerSerializeSubstance:
         lines = SubstanceSerializer._serialize_substance(substance)
         assert len(lines) == 5, f"Expected 5 lines, got {len(lines)}"
         assert lines[0] == "substance 'OXY' active", f"Got header: {lines[0]}"
-        assert lines[1] == "   description        'Dissolved Oxygen'", f"Got desc: {lines[1]}"
+        assert (
+            lines[1] == "   description        'Dissolved Oxygen'"
+        ), f"Got desc: {lines[1]}"
         assert lines[2] == "   concentration-unit '(g/m3)'", f"Got conc: {lines[2]}"
         assert lines[3] == "   waste-load-unit    '-'", f"Got wl: {lines[3]}"
         assert lines[4] == "end-substance", f"Got end: {lines[4]}"
@@ -161,7 +167,9 @@ class TestSubstanceSerializerSerializeOutput:
         lines = SubstanceSerializer._serialize_output(output)
         assert len(lines) == 3, f"Expected 3 lines, got {len(lines)}"
         assert lines[0] == "output 'Chlfa'", f"Got header: {lines[0]}"
-        assert lines[1] == "   description   'Chlorophyll-a concentration'", f"Got desc: {lines[1]}"
+        assert (
+            lines[1] == "   description   'Chlorophyll-a concentration'"
+        ), f"Got desc: {lines[1]}"
         assert lines[2] == "end-output", f"Got end: {lines[2]}"
 
     def test_output_empty_description(self):
@@ -187,7 +195,9 @@ class TestSubstanceSerializerSerializeActiveProcesses:
         lines = SubstanceSerializer._serialize_active_processes(processes)
         assert len(lines) == 4, f"Expected 4 lines, got {len(lines)}"
         assert lines[0] == "active-processes", f"Got opening: {lines[0]}"
-        assert lines[1] == "   name  'RearOXY' 'Reaeration of oxygen'", f"Got line 1: {lines[1]}"
+        assert (
+            lines[1] == "   name  'RearOXY' 'Reaeration of oxygen'"
+        ), f"Got line 1: {lines[1]}"
         assert lines[3] == "end-active-processes", f"Got closing: {lines[3]}"
 
     def test_empty_processes_list(self):
@@ -228,7 +238,9 @@ class TestSubstanceSerializerSerialize:
             "active_processes": {"processes": []},
         }
         output_path = tmp_path / "test.sub"
-        SubstanceSerializer.serialize(output_path, data, default_config, default_save_settings)
+        SubstanceSerializer.serialize(
+            output_path, data, default_config, default_save_settings
+        )
         assert output_path.exists(), "Output file should exist"
 
     def test_serialize_empty_data(
@@ -246,7 +258,9 @@ class TestSubstanceSerializerSerialize:
             "active_processes": {"processes": []},
         }
         output_path = tmp_path / "empty.sub"
-        SubstanceSerializer.serialize(output_path, data, default_config, default_save_settings)
+        SubstanceSerializer.serialize(
+            output_path, data, default_config, default_save_settings
+        )
         assert output_path.exists(), "Output file should exist even for empty data"
         content = output_path.read_text(encoding="utf-8")
         assert content.strip() == "", f"Expected empty content, got: {content!r}"
@@ -259,9 +273,16 @@ class TestSubstanceSerializerSerialize:
         Test scenario:
             Path with non-existent parent directories should be created automatically.
         """
-        data = {"substances": [], "parameters": [], "outputs": [], "active_processes": {"processes": []}}
+        data = {
+            "substances": [],
+            "parameters": [],
+            "outputs": [],
+            "active_processes": {"processes": []},
+        }
         output_path = tmp_path / "deep" / "nested" / "dir" / "test.sub"
-        SubstanceSerializer.serialize(output_path, data, default_config, default_save_settings)
+        SubstanceSerializer.serialize(
+            output_path, data, default_config, default_save_settings
+        )
         assert output_path.exists(), "File should be created with parent dirs"
 
     def test_serialize_skips_empty_active_processes(
@@ -287,11 +308,13 @@ class TestSubstanceSerializerSerialize:
             "active_processes": {"processes": []},
         }
         output_path = tmp_path / "no_procs.sub"
-        SubstanceSerializer.serialize(output_path, data, default_config, default_save_settings)
-        content = output_path.read_text(encoding="utf-8")
-        assert "active-processes" not in content, (
-            f"active-processes block should not appear: {content}"
+        SubstanceSerializer.serialize(
+            output_path, data, default_config, default_save_settings
         )
+        content = output_path.read_text(encoding="utf-8")
+        assert (
+            "active-processes" not in content
+        ), f"active-processes block should not appear: {content}"
 
     def test_serialize_includes_active_processes_when_present(
         self, tmp_path: Path, default_config, default_save_settings
@@ -310,7 +333,13 @@ class TestSubstanceSerializerSerialize:
             },
         }
         output_path = tmp_path / "with_procs.sub"
-        SubstanceSerializer.serialize(output_path, data, default_config, default_save_settings)
+        SubstanceSerializer.serialize(
+            output_path, data, default_config, default_save_settings
+        )
         content = output_path.read_text(encoding="utf-8")
-        assert "active-processes" in content, f"Expected active-processes block: {content}"
-        assert "end-active-processes" in content, f"Expected end-active-processes: {content}"
+        assert (
+            "active-processes" in content
+        ), f"Expected active-processes block: {content}"
+        assert (
+            "end-active-processes" in content
+        ), f"Expected end-active-processes: {content}"
