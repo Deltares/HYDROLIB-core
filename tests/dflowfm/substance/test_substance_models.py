@@ -15,6 +15,11 @@ from hydrolib.core.dflowfm.substance import (
 
 class TestSubstance:
     def test_instantiation(self):
+        """Test creating a Substance with all fields.
+
+        Test scenario:
+            All fields provided, type should map to SubstanceType.Active enum.
+        """
         substance_data = {
             "name": "substance1",
             "type": "active",
@@ -27,6 +32,11 @@ class TestSubstance:
         assert substance.type == SubstanceType.Active
 
     def test_inactive_substance(self):
+        """Test creating an inactive substance.
+
+        Test scenario:
+            Type 'inactive' should map to SubstanceType.Inactive.
+        """
         substance = Substance(
             name="DetCS1",
             type="inactive",
@@ -34,6 +44,36 @@ class TestSubstance:
             concentration_unit="(gC/m2)",
         )
         assert substance.type == SubstanceType.Inactive
+
+    def test_default_waste_load_unit(self):
+        """Test that waste_load_unit defaults to '-' when not provided.
+
+        Test scenario:
+            Omitting waste_load_unit should default to '-'.
+        """
+        substance = Substance(
+            name="OXY",
+            description="Dissolved Oxygen",
+            concentration_unit="(g/m3)",
+        )
+        assert substance.waste_load_unit == "-", (
+            f"Expected '-', got '{substance.waste_load_unit}'"
+        )
+
+    def test_default_type_is_active(self):
+        """Test that type defaults to 'active' when not provided.
+
+        Test scenario:
+            Omitting type should default to SubstanceType.Active.
+        """
+        substance = Substance(
+            name="OXY",
+            description="Dissolved Oxygen",
+            concentration_unit="(g/m3)",
+        )
+        assert substance.type == SubstanceType.Active, (
+            f"Expected Active, got {substance.type}"
+        )
 
 
 class TestParameter:
@@ -151,6 +191,7 @@ class TestSubstanceModel:
             assert orig.value == pytest.approx(rt.value)
 
     def test_save_creates_file(self, output_files_dir: Path):
+        """Test that save creates the output file."""
         model = SubstanceModel()
         model.substances = [
             Substance(
@@ -162,3 +203,81 @@ class TestSubstanceModel:
         output_path = output_files_dir / "substances" / "test_save.sub"
         model.save(filepath=output_path)
         assert output_path.exists()
+
+    def test_load_empty_file(self, input_files_dir: Path):
+        """Test loading an empty .sub file produces empty model.
+
+        Test scenario:
+            An empty file should load successfully with empty lists.
+        """
+        path = input_files_dir / "substances" / "empty-file.sub"
+        model = SubstanceModel(filepath=path)
+        assert len(model.substances) == 0, f"Expected 0 substances, got {len(model.substances)}"
+        assert len(model.parameters) == 0, f"Expected 0 parameters, got {len(model.parameters)}"
+
+    def test_load_inactive_substances(self, input_files_dir: Path):
+        """Test loading file with active and inactive substances.
+
+        Test scenario:
+            First substance should be active, second inactive.
+        """
+        path = input_files_dir / "substances" / "inactive-substances.sub"
+        model = SubstanceModel(filepath=path)
+        assert model.substances[0].type == SubstanceType.Active
+        assert model.substances[1].type == SubstanceType.Inactive
+
+    def test_roundtrip_inactive_type(self, input_files_dir: Path, output_files_dir: Path):
+        """Test that inactive substance type survives roundtrip.
+
+        Test scenario:
+            Load → save → reload should preserve 'inactive' type.
+        """
+        input_path = input_files_dir / "substances" / "inactive-substances.sub"
+        output_path = output_files_dir / "substances" / "inactive-roundtrip.sub"
+
+        model = SubstanceModel(filepath=input_path)
+        model.save(filepath=output_path)
+        reloaded = SubstanceModel(filepath=output_path)
+
+        assert reloaded.substances[1].type == SubstanceType.Inactive, (
+            f"Expected inactive, got {reloaded.substances[1].type}"
+        )
+
+    def test_roundtrip_parameter_precision(self, input_files_dir: Path, output_files_dir: Path):
+        """Test that parameter values maintain precision through roundtrip.
+
+        Test scenario:
+            Scientific notation values should be numerically equivalent after roundtrip.
+        """
+        input_path = input_files_dir / "substances" / "only-parameters.sub"
+        output_path = output_files_dir / "substances" / "precision-roundtrip.sub"
+
+        model = SubstanceModel(filepath=input_path)
+        model.save(filepath=output_path)
+        reloaded = SubstanceModel(filepath=output_path)
+
+        for orig, rt in zip(model.parameters, reloaded.parameters):
+            assert orig.value == pytest.approx(rt.value), (
+                f"Parameter {orig.name}: {orig.value} != {rt.value}"
+            )
+
+    def test_load_nonexistent_file_raises(self):
+        """Test that loading a non-existent file raises ValueError.
+
+        Test scenario:
+            Path pointing to a file that doesn't exist should raise.
+        """
+        with pytest.raises(ValueError, match="not found"):
+            SubstanceModel(filepath=Path("nonexistent_dir/missing.sub"))
+
+    def test_model_ext(self):
+        """Test that SubstanceModel._ext returns '.sub'."""
+        assert SubstanceModel._ext() == ".sub", (
+            f"Expected '.sub', got '{SubstanceModel._ext()}'"
+        )
+
+    def test_model_filename(self):
+        """Test that SubstanceModel._filename returns 'substance'."""
+        assert SubstanceModel._filename() == "substance", (
+            f"Expected 'substance', got '{SubstanceModel._filename()}'"
+        )
