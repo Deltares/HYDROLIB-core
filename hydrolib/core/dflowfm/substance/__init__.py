@@ -4,13 +4,16 @@ from .models import (
     Output,
     Parameter,
     Substance,
+    SubstanceModel,
     SubstanceType,
 )
 
-# __all__ = [
-#     "Description",
-#     "Metadata",
-#     "Point",
-#     "PolyObject",
-#     "PolyFile",
-# ]
+__all__ = [
+    "ActiveProcess",
+    "ActiveProcesses",
+    "Output",
+    "Parameter",
+    "Substance",
+    "SubstanceModel",
+    "SubstanceType",
+]
