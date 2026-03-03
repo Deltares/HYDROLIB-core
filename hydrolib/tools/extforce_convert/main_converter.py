@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     InitialField,
     ParameterField,
 )
+from hydrolib.core.dflowfm.substance.models import SubstanceModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
@@ -370,6 +371,15 @@ class ExternalForcingConverter:
         return self.ext_model, self.inifield_model, self.structure_model
 
     def _convert_source_sink(self, converter_class, forcing):
+        substance_file = self.mdu_parser.get_keyword("SubstanceFile")
+        if substance_file:
+            substance_file = (self.mdu_parser.mdu_path.parent / substance_file).resolve()
+            if not substance_file.exists():
+                raise FileNotFoundError(
+                    f"Substance file {substance_file} not found, required to convert SourceSink quantities."
+                )
+            substance_model = SubstanceModel(substance_file)
+
         if self.temperature_salinity_data is None:
             raise ValueError(
                 "FM model is required to convert SourcesSink quantities."
