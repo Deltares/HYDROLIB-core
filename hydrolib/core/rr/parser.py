@@ -2,7 +2,7 @@
 
 from typing import Dict, Iterable, Optional
 
-from pydantic.v1.types import FilePath
+from pathlib import Path
 
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:
@@ -44,7 +44,7 @@ def parse(keys: Iterable[str], lines: Iterable[str]) -> Dict:
     return dict(zip(keys, values))
 
 
-def read(keys: Iterable[str], path: FilePath) -> Dict:
+def read(keys: Iterable[str], path: Path) -> Dict:
     """Parse the file at the specified path into a RainfallRunoffModel
 
     Args:
