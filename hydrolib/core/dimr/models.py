@@ -1,6 +1,6 @@
 """Dimr models."""
 
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Callable, Dict, List, Literal, Optional, Type, Union
@@ -65,7 +65,8 @@ class Component(BaseModel, ABC):
     def filepath(self):
         return self.workingDir / self.inputFile
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
