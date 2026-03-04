@@ -583,8 +583,7 @@ class ExternalForcingConverter:
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
         if self.verbose:
-            workdir = os.getcwd() + "\\"
-            print(f"Work dir: {workdir}")
+            print(f"Work dir: {os.getcwd()}")
             print("Using attribute files:")
             print("Input:")
             print(f"* {self.extold_model.filepath}")
