@@ -407,7 +407,8 @@ class SubstanceModel(ParsableFileModel):
     @field_validator("parameters", mode="before")
     @classmethod
     def _replace_fortran_notation_in_parameters(
-        cls, v: List[Any],
+        cls,
+        v: List[Any],
     ) -> List[Any]:
         """Convert Fortran scientific notation in parameter values.
 

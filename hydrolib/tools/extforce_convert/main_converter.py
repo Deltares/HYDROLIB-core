@@ -1,5 +1,7 @@
 """Converter for old external forcing files to the new format."""
+
 from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
@@ -381,9 +383,7 @@ class ExternalForcingConverter:
             substance_model = SubstanceModel(substance_file)
 
         if self.temperature_salinity_data is None:
-            raise ValueError(
-                "FM model is required to convert SourcesSink quantities."
-            )
+            raise ValueError("FM model is required to convert SourcesSink quantities.")
         else:
             temp_salinity_mdu = self.temperature_salinity_data
             start_time = self.temperature_salinity_data.get("refdate")

@@ -16,12 +16,18 @@ class TestSubstanceParserParse:
         """
         path = input_files_dir / "substances" / "substance-file.sub"
         data = SubstanceParser.parse(path)
-        assert len(data["substances"]) == 2, f"Expected 2 substances, got {len(data['substances'])}"
-        assert len(data["parameters"]) == 2, f"Expected 2 parameters, got {len(data['parameters'])}"
-        assert len(data["outputs"]) == 2, f"Expected 2 outputs, got {len(data['outputs'])}"
-        assert len(data["active_processes"]["processes"]) == 2, (
-            f"Expected 2 processes, got {len(data['active_processes']['processes'])}"
-        )
+        assert (
+            len(data["substances"]) == 2
+        ), f"Expected 2 substances, got {len(data['substances'])}"
+        assert (
+            len(data["parameters"]) == 2
+        ), f"Expected 2 parameters, got {len(data['parameters'])}"
+        assert (
+            len(data["outputs"]) == 2
+        ), f"Expected 2 outputs, got {len(data['outputs'])}"
+        assert (
+            len(data["active_processes"]["processes"]) == 2
+        ), f"Expected 2 processes, got {len(data['active_processes']['processes'])}"
 
     def test_parse_empty_file(self, input_files_dir: Path):
         """Test that parse returns empty collections for an empty file.
@@ -31,12 +37,16 @@ class TestSubstanceParserParse:
         """
         path = input_files_dir / "substances" / "empty-file.sub"
         data = SubstanceParser.parse(path)
-        assert data["substances"] == [], f"Expected empty substances, got {data['substances']}"
-        assert data["parameters"] == [], f"Expected empty parameters, got {data['parameters']}"
+        assert (
+            data["substances"] == []
+        ), f"Expected empty substances, got {data['substances']}"
+        assert (
+            data["parameters"] == []
+        ), f"Expected empty parameters, got {data['parameters']}"
         assert data["outputs"] == [], f"Expected empty outputs, got {data['outputs']}"
-        assert data["active_processes"]["processes"] == [], (
-            f"Expected empty processes, got {data['active_processes']['processes']}"
-        )
+        assert (
+            data["active_processes"]["processes"] == []
+        ), f"Expected empty processes, got {data['active_processes']['processes']}"
 
     def test_parse_only_parameters(self, input_files_dir: Path):
         """Test parsing a file with only parameter blocks.
@@ -46,9 +56,15 @@ class TestSubstanceParserParse:
         """
         path = input_files_dir / "substances" / "only-parameters.sub"
         data = SubstanceParser.parse(path)
-        assert len(data["substances"]) == 0, f"Expected 0 substances, got {len(data['substances'])}"
-        assert len(data["parameters"]) == 3, f"Expected 3 parameters, got {len(data['parameters'])}"
-        assert len(data["outputs"]) == 0, f"Expected 0 outputs, got {len(data['outputs'])}"
+        assert (
+            len(data["substances"]) == 0
+        ), f"Expected 0 substances, got {len(data['substances'])}"
+        assert (
+            len(data["parameters"]) == 3
+        ), f"Expected 3 parameters, got {len(data['parameters'])}"
+        assert (
+            len(data["outputs"]) == 0
+        ), f"Expected 0 outputs, got {len(data['outputs'])}"
 
     def test_parse_inactive_substances(self, input_files_dir: Path):
         """Test parsing a file with both active and inactive substances.
@@ -58,13 +74,15 @@ class TestSubstanceParserParse:
         """
         path = input_files_dir / "substances" / "inactive-substances.sub"
         data = SubstanceParser.parse(path)
-        assert len(data["substances"]) == 2, f"Expected 2 substances, got {len(data['substances'])}"
-        assert data["substances"][0]["type"] == "active", (
-            f"Expected first substance active, got {data['substances'][0]['type']}"
-        )
-        assert data["substances"][1]["type"] == "inactive", (
-            f"Expected second substance inactive, got {data['substances'][1]['type']}"
-        )
+        assert (
+            len(data["substances"]) == 2
+        ), f"Expected 2 substances, got {len(data['substances'])}"
+        assert (
+            data["substances"][0]["type"] == "active"
+        ), f"Expected first substance active, got {data['substances'][0]['type']}"
+        assert (
+            data["substances"][1]["type"] == "inactive"
+        ), f"Expected second substance inactive, got {data['substances'][1]['type']}"
 
     def test_parse_returns_all_keys(self, input_files_dir: Path):
         """Test that parse always returns all four required keys.
@@ -76,9 +94,9 @@ class TestSubstanceParserParse:
         path = input_files_dir / "substances" / "empty-file.sub"
         data = SubstanceParser.parse(path)
         expected_keys = {"substances", "parameters", "outputs", "active_processes"}
-        assert set(data.keys()) == expected_keys, (
-            f"Expected keys {expected_keys}, got {set(data.keys())}"
-        )
+        assert (
+            set(data.keys()) == expected_keys
+        ), f"Expected keys {expected_keys}, got {set(data.keys())}"
 
 
 class TestSubstanceParserSubstanceBlock:
@@ -96,9 +114,15 @@ class TestSubstanceParserSubstanceBlock:
         sub = data["substances"][0]
         assert sub["name"] == "Any-substance-name-1", f"Got name: {sub['name']}"
         assert sub["type"] == "active", f"Got type: {sub['type']}"
-        assert sub["description"] == "Any description here", f"Got description: {sub['description']}"
-        assert sub["concentration_unit"] == "Any Unit", f"Got concentration_unit: {sub['concentration_unit']}"
-        assert sub["waste_load_unit"] == "-", f"Got waste_load_unit: {sub['waste_load_unit']}"
+        assert (
+            sub["description"] == "Any description here"
+        ), f"Got description: {sub['description']}"
+        assert (
+            sub["concentration_unit"] == "Any Unit"
+        ), f"Got concentration_unit: {sub['concentration_unit']}"
+        assert (
+            sub["waste_load_unit"] == "-"
+        ), f"Got waste_load_unit: {sub['waste_load_unit']}"
 
     def test_parse_inactive_substance_type(self, input_files_dir: Path):
         """Test that 'inactive' type is correctly parsed.
@@ -123,11 +147,15 @@ class TestSubstanceParserSubstanceBlock:
         filepath.write_text(content, encoding="utf-8")
 
         data = SubstanceParser.parse(filepath)
-        assert len(data["substances"]) == 1, f"Expected 1 substance, got {len(data['substances'])}"
-        assert data["substances"][0]["name"] == "Orphan", f"Got name: {data['substances'][0]['name']}"
-        assert data["substances"][0]["description"] == "no end", (
-            f"Got description: {data['substances'][0]['description']}"
-        )
+        assert (
+            len(data["substances"]) == 1
+        ), f"Expected 1 substance, got {len(data['substances'])}"
+        assert (
+            data["substances"][0]["name"] == "Orphan"
+        ), f"Got name: {data['substances'][0]['name']}"
+        assert (
+            data["substances"][0]["description"] == "no end"
+        ), f"Got description: {data['substances'][0]['description']}"
 
 
 class TestSubstanceParserParameterBlock:
@@ -153,15 +181,15 @@ class TestSubstanceParserParameterBlock:
         """
         path = input_files_dir / "substances" / "only-parameters.sub"
         data = SubstanceParser.parse(path)
-        assert data["parameters"][0]["value"] == "0.1500E+02", (
-            f"Got value: {data['parameters'][0]['value']}"
-        )
-        assert data["parameters"][1]["value"] == "0.3500E+02", (
-            f"Got value: {data['parameters'][1]['value']}"
-        )
-        assert data["parameters"][2]["value"] == "-0.9990E+03", (
-            f"Got value: {data['parameters'][2]['value']}"
-        )
+        assert (
+            data["parameters"][0]["value"] == "0.1500E+02"
+        ), f"Got value: {data['parameters'][0]['value']}"
+        assert (
+            data["parameters"][1]["value"] == "0.3500E+02"
+        ), f"Got value: {data['parameters'][1]['value']}"
+        assert (
+            data["parameters"][2]["value"] == "-0.9990E+03"
+        ), f"Got value: {data['parameters'][2]['value']}"
 
     def test_parse_parameter_all_fields(self, input_files_dir: Path):
         """Test that all parameter fields are parsed.
@@ -173,9 +201,9 @@ class TestSubstanceParserParameterBlock:
         data = SubstanceParser.parse(path)
         param = data["parameters"][0]
         assert param["name"] == "Temp", f"Got name: {param['name']}"
-        assert param["description"] == "ambient water temperature", (
-            f"Got description: {param['description']}"
-        )
+        assert (
+            param["description"] == "ambient water temperature"
+        ), f"Got description: {param['description']}"
         assert param["unit"] == "(oC)", f"Got unit: {param['unit']}"
 
 
@@ -192,7 +220,9 @@ class TestSubstanceParserOutputBlock:
         data = SubstanceParser.parse(path)
         out = data["outputs"][0]
         assert out["name"] == "Any-output-name-1", f"Got name: {out['name']}"
-        assert out["description"] == "Any description", f"Got description: {out['description']}"
+        assert (
+            out["description"] == "Any description"
+        ), f"Got description: {out['description']}"
 
     def test_parse_output_block_without_terminator(self, tmp_path: Path):
         """Test parsing an output block that lacks end-output.
@@ -205,7 +235,9 @@ class TestSubstanceParserOutputBlock:
         filepath.write_text(content, encoding="utf-8")
 
         data = SubstanceParser.parse(filepath)
-        assert len(data["outputs"]) == 1, f"Expected 1 output, got {len(data['outputs'])}"
+        assert (
+            len(data["outputs"]) == 1
+        ), f"Expected 1 output, got {len(data['outputs'])}"
         assert data["outputs"][0]["description"] == "no end"
 
 
@@ -222,9 +254,9 @@ class TestSubstanceParserActiveProcessesBlock:
         data = SubstanceParser.parse(path)
         procs = data["active_processes"]["processes"]
         assert procs[0]["name"] == "Any-name-1", f"Got name: {procs[0]['name']}"
-        assert procs[0]["description"] == "any description 1", (
-            f"Got description: {procs[0]['description']}"
-        )
+        assert (
+            procs[0]["description"] == "any description 1"
+        ), f"Got description: {procs[0]['description']}"
         assert procs[1]["name"] == "Any-name-2", f"Got name: {procs[1]['name']}"
 
     def test_parse_active_processes_empty_block(self, tmp_path: Path):
@@ -238,9 +270,9 @@ class TestSubstanceParserActiveProcessesBlock:
         filepath.write_text(content, encoding="utf-8")
 
         data = SubstanceParser.parse(filepath)
-        assert data["active_processes"]["processes"] == [], (
-            f"Expected empty processes, got {data['active_processes']['processes']}"
-        )
+        assert (
+            data["active_processes"]["processes"] == []
+        ), f"Expected empty processes, got {data['active_processes']['processes']}"
 
     def test_parse_name_line_with_single_quote(self, tmp_path: Path):
         """Test that a name line with fewer than 2 quoted values is skipped.
@@ -253,9 +285,9 @@ class TestSubstanceParserActiveProcessesBlock:
         filepath.write_text(content, encoding="utf-8")
 
         data = SubstanceParser.parse(filepath)
-        assert data["active_processes"]["processes"] == [], (
-            "Name line with < 2 quoted values should be skipped"
-        )
+        assert (
+            data["active_processes"]["processes"] == []
+        ), "Name line with < 2 quoted values should be skipped"
 
 
 class TestSubstanceParserExtractQuotedValues:
@@ -268,7 +300,9 @@ class TestSubstanceParserExtractQuotedValues:
 
     def test_multiple_quoted_values(self):
         """Test extracting multiple quoted values."""
-        result = SubstanceParser._extract_quoted_values("name  'proc1' 'description here'")
+        result = SubstanceParser._extract_quoted_values(
+            "name  'proc1' 'description here'"
+        )
         assert result == ["proc1", "description here"], f"Got {result}"
 
     def test_no_quotes(self):
@@ -336,7 +370,9 @@ class TestSubstanceParserParseFieldLine:
             ``concentration-unit '(g/m3)'`` should return key as ``concentration-unit``.
         """
         key, value = SubstanceParser._parse_field_line("   concentration-unit '(g/m3)'")
-        assert key == "concentration-unit", f"Expected 'concentration-unit', got '{key}'"
+        assert (
+            key == "concentration-unit"
+        ), f"Expected 'concentration-unit', got '{key}'"
         assert value == "(g/m3)", f"Expected '(g/m3)', got '{value}'"
 
     def test_extra_whitespace(self):
