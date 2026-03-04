@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
