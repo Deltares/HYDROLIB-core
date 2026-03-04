@@ -1,8 +1,7 @@
 """parser.py defines the read method for the RainfallRunoffModel."""
 
-from typing import Dict, Iterable, Optional
-
 from pathlib import Path
+from typing import Dict, Iterable, Optional
 
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:
