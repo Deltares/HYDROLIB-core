@@ -610,7 +610,7 @@ class SourceSinkError(Exception):
 
     def __init__(self, error_message: str):
         """SourceSinkError constructor."""
-        print(error_message)
+        super().__init__(error_message)
 
 
 class InitialFieldError(Exception):
@@ -618,7 +618,7 @@ class InitialFieldError(Exception):
 
     def __init__(self, error_message: str):
         """InitialFieldError constructor."""
-        print(error_message)
+        super().__init__(error_message)
 
 
 class MeteoError(Exception):
@@ -626,7 +626,7 @@ class MeteoError(Exception):
 
     def __init__(self, error_message: str):
         """MeteoError constructor."""
-        print(error_message)
+        super().__init__(error_message)
 
 
 class BoundaryError(Exception):
@@ -634,7 +634,7 @@ class BoundaryError(Exception):
 
     def __init__(self, error_message: str):
         """BoundaryError constructor."""
-        print(error_message)
+        super().__init__(error_message)
 
 
 class ParameterFieldError(Exception):
@@ -642,4 +642,4 @@ class ParameterFieldError(Exception):
 
     def __init__(self, error_message: str):
         """ParameterFieldError constructor."""
-        print(error_message)
+        super().__init__(error_message)

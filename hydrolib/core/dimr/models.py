@@ -1,6 +1,6 @@
 """Dimr models."""
 
-from abc import ABC, abstractclassmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Callable, Dict, List, Literal, Optional, Type, Union
@@ -65,7 +65,8 @@ class Component(BaseModel, ABC):
     def filepath(self):
         return self.workingDir / self.inputFile
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def get_model(cls) -> Type[FileModel]:
         raise NotImplementedError("Model not implemented yet.")
 
@@ -399,12 +400,12 @@ class DIMR(ParsableFileModel):
                 pass
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
-        dimr_as_dict = self._update_dimr_dictonary_with_adjusted_fmcomponent_values(
+        dimr_as_dict = self._update_dimr_dictionary_with_adjusted_fmcomponent_values(
             data
         )
         super()._serialize(dimr_as_dict, save_settings)
 
-    def _update_dimr_dictonary_with_adjusted_fmcomponent_values(
+    def _update_dimr_dictionary_with_adjusted_fmcomponent_values(
         self, dimr_as_dict: Dict
     ):
         fmcomponents = [
@@ -442,7 +443,7 @@ class DIMR(ParsableFileModel):
                 fmcomponent_process_value = " ".join(
                     str(i) for i in range(fmcomponent.process)
                 )
-                fmcomponent_as_dict = self._update_component_dictonary(
+                fmcomponent_as_dict = self._update_component_dictionary(
                     fmcomponent, fmcomponent_process_value
                 )
 
@@ -450,7 +451,7 @@ class DIMR(ParsableFileModel):
 
         return list_of_fm_components_as_dict
 
-    def _update_component_dictonary(
+    def _update_component_dictionary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
     ) -> Dict:
         fmcomponent_as_dict = fmcomponent.model_dump()

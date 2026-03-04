@@ -166,13 +166,9 @@ class T3DModel(ParsableFileModel):
         (2, 4)
         >>> model.quantities_names = ["quantity-1", "quantity-2", "quantity-3"] # doctest: +SKIP
         Traceback (most recent call last):
-            model.quantities_names = ["quantity-1", "quantity-2", "quantity-3"]
-            ^^^^^^^^^^^^^^^^^^^^^^
-          File "...\Lib\site-packages\pydantic\v1\main.py", line 397, in __setattr__
-            raise ValidationError(errors, self.__class__)
-        pydantic.v1.error_wrappers.ValidationError: 1 validation error for T3DModel
-        __root__
-          The number of quantities names must be equal to the number of values in the records. (type=value_error)
+            ...
+        pydantic_core._pydantic_core.ValidationError: 1 validation error for T3DModel
+          Value error, The number of quantities names must be equal to the number of values in the records.
         >>> model.quantities_names = ["quantity-1", "quantity-2", "quantity-3", "quantity-4"]
         >>> print(model.quantities_names)
         ['quantity-1', 'quantity-2', 'quantity-3', 'quantity-4']

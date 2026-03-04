@@ -13,7 +13,8 @@ class BaseParser:
             lines (List[str]): Lines from the the file which is read.
 
         Returns:
-            Tuple of List[str] and int, the List[str] contains the commenst from the header, the int is the start index of the data.
+            Tuple of List[str] and int, the List[str] contains the comment from the header, the int is the start
+            index of the data.
         """
         comments: List[str] = []
         start_timeseries_index = 0
