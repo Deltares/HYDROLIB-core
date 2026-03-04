@@ -13,7 +13,6 @@ from hydrolib.core.dflowfm.ini.util import ensure_list
 logger = logging.getLogger(__name__)
 
 
-# FIXME: GUI does not recongnize this section yet
 class BranchGeneral(INIGeneral):
     """The branches.gui file's `[General]` section with file meta data."""
 
