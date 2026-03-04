@@ -1,5 +1,40 @@
+import logging
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+logger = logging.getLogger(__name__)
+
+_FALLBACK_ENCODINGS = ("utf-8", "latin-1")
+
+
+def open_file_with_fallback_encoding(filepath: Path) -> str:
+    """Read a file trying UTF-8 first, then falling back to Latin-1.
+
+    D-Flow FM model files may contain non-UTF-8 characters (e.g. the degree
+    symbol ``°`` encoded as 0xB0 in Latin-1/Windows-1252).  This helper
+    attempts UTF-8 first and, on failure, retries with Latin-1 which can
+    decode any byte value in 0x00–0xFF.
+
+    Args:
+        filepath: Path to the file to read.
+
+    Returns:
+        The file content as a string.
+
+    Raises:
+        UnicodeDecodeError: If the file cannot be decoded with any of the
+            attempted encodings (should not happen because Latin-1 accepts
+            every byte).
+    """
+    for encoding in _FALLBACK_ENCODINGS:
+        try:
+            return filepath.read_text(encoding=encoding)
+        except UnicodeDecodeError:
+            logger.debug(
+                f"Failed to decode {filepath} with {encoding}, trying next encoding.",
+            )
+
+    raise AssertionError("All fallback encodings failed.")  # pragma: no cover
 
 
 class BaseParser:

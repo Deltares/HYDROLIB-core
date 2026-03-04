@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.base.parser import BaseParser
+from hydrolib.core.base.parser import BaseParser, open_file_with_fallback_encoding
 
 TimData = Dict[str, List[str]]
 
@@ -31,10 +31,10 @@ class TimParser(BaseParser):
             ValueError: If the file contains a comment that is not at the start of the file.
             ValueError: If the data of the timeseries is empty.
         """
-        with filepath.open(encoding="utf8") as file:
-            lines = file.readlines()
-            comments, start_timeseries_index = TimParser._read_header_comments(lines)
-            timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
+        content = open_file_with_fallback_encoding(filepath)
+        lines = content.splitlines(keepends=True)
+        comments, start_timeseries_index = TimParser._read_header_comments(lines)
+        timeseries = TimParser._read_time_series_data(lines, start_timeseries_index)
 
         return {"comments": comments, "timeseries": timeseries}
 
