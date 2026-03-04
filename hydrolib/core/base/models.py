@@ -7,7 +7,7 @@ also represents a file on disk.
 
 import logging
 import shutil
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
 from weakref import WeakValueDictionary
@@ -663,7 +663,8 @@ class FileModel(BaseModel, ABC):
         """
         return ResolveRelativeMode.ToParent
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _generate_name(cls) -> Optional[Path]:
         """Generate a (default) name for this FileModel.
 
@@ -822,21 +823,25 @@ class ParsableFileModel(FileModel):
         name, ext = cls._filename(), cls._ext()
         return Path(f"{name}{ext}")
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _filename(cls) -> str:
         return "test"
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _ext(cls) -> str:
         return ".test"
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_serializer(
         cls,
     ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DummySerializer.serialize
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return DummmyParser.parse
 
