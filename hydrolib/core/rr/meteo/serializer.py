@@ -1,3 +1,5 @@
+"""Serializers for .bui precipitation files used in Rainfall-Runoff simulations."""
+
 import inspect
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -7,9 +9,7 @@ from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class BuiEventSerializer:
-    """
-    Serializer class to transform a bui event into a text block.
-    """
+    """Serializer class to transform a bui event into a text block."""
 
     bui_event_template = inspect.cleandoc(
         """
@@ -58,8 +58,8 @@ class BuiEventSerializer:
 
     @staticmethod
     def get_timedelta_fields(duration: timedelta) -> Dict:
-        """
-        Gets a dictionary containing the time delta in days, hours, minutes and seconds.
+        """Gets a dictionary containing the time delta in days, hours, minutes and seconds.
+
         This means that the seconds field does not contain the accumulative value of days
         hours and minutes.
 
@@ -119,7 +119,8 @@ class BuiEventSerializer:
     def serialize_precipitation_per_timestep(
         data_to_serialize: List[List[float]], config: SerializerConfig
     ) -> str:
-        """
+        """Serialize all precipitation data per timestep into a single string.
+
         Serialized the data containing all the precipitations per timestep (and station)
         into a single string ready to be mapped.
 
@@ -142,9 +143,7 @@ class BuiEventSerializer:
 
 
 class BuiSerializer:
-    """
-    Serializer class to transform an object into a .bui file text format.
-    """
+    """Serializer class to transform an object into a .bui file text format."""
 
     bui_template = inspect.cleandoc(
         """
@@ -164,8 +163,8 @@ class BuiSerializer:
 
     @staticmethod
     def serialize(bui_data: Dict, config: SerializerConfig) -> str:
-        """
-        Formats the bui_template with the content of the given data.
+        """Format the bui_template with the content of the given data.
+
         NOTE: It requires that caller injects file_path into bui_data prior to this call.
         Otherwise it will crash.
 
@@ -189,8 +188,7 @@ class BuiSerializer:
     def serialize_event_list(
         data_to_serialize: List[Dict], config: SerializerConfig
     ) -> str:
-        """
-        Serializes a event list dictionary into a single text block.
+        """Serializes an event list dictionary into a single text block.
 
         Args:
             data_to_serialize (Dict): Dictionary containing list of events.
