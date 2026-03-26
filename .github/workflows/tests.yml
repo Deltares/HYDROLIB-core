@@ -55,7 +55,7 @@ jobs:
       - name: list env contents
         run: |
           poetry show
-          pip list
+          #pip list
 
       - name: Test with pytest
         run: |
