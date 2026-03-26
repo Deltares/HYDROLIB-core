@@ -1,11 +1,16 @@
+"""Base parser classes for HYDROLIB-core file models."""
+
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 
 class BaseParser:
+    """Base class providing shared parsing utilities for file parsers."""
+
     @staticmethod
     def _read_header_comments(lines: List[str]) -> Tuple[List[str], int]:
         """Read the header comments of the lines from the file.
+
         The comments are only expected at the start of the file.
         When a non comment line is encountered, all comments from the header will be retuned together with the start index of the data.
 
@@ -44,6 +49,8 @@ class BaseParser:
 
 
 class DummmyParser:
+    """Dummy parser that returns an empty dictionary for any filepath."""
+
     @staticmethod
     def parse(filepath: Path) -> Dict:
         return {}

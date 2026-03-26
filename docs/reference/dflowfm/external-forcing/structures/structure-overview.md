@@ -180,7 +180,7 @@ flowchart TD
     K -->|no| Err3[Error: need one of: branchId+chainage OR num/x/y]
 
     subgraph Notes
-      N1[Mutual exclusion: polylinefile cannot be combined with x/y] 
+      N1[Mutual exclusion: polylinefile cannot be combined with x/y]
       N2[Coordinates check: numCoordinates >= 2 and lengths of x/y match num]
       N3[branchId presence requires chainage and non-empty branchId]
     end
@@ -491,7 +491,7 @@ class GeneralStructure(Structure):
     extraresistance: float | None = Field(0.0, alias="extraResistance")
     gateheight: float | None = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = 
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
         Field(GateOpeningHorizontalDirection.symmetric.value,
               alias="gateOpeningHorizontalDirection")
     usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Dict, Generator, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Dict, Generator, List, Optional, Tuple, Union
 
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
@@ -15,6 +15,9 @@ from hydrolib.core.base.utils import (
     get_path_style_for_current_operating_system,
     str_is_empty_or_none,
 )
+
+if TYPE_CHECKING:
+    from hydrolib.core.base.models import FileModel
 
 PathOrStr = Union[Path, str]
 # We use ContextVars to keep a reference to the folder
@@ -695,9 +698,7 @@ class FileLoadContext:
         return file_path
 
     def convert_path_style(self, file_path: Path) -> Path:
-        """convert_path_style.
-
-        Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+        """Convert the file path from its own style to the path style for the current operating system.
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
@@ -705,7 +706,6 @@ class FileLoadContext:
         Returns:
             Path: The resolved file path.
         """
-
         if file_path.is_absolute():
             return file_path
 
@@ -762,9 +762,7 @@ path_style_validator = PathStyleValidator()
 
 
 def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
-    """
-    Resolve a file path relative to a root directory, handling both relative
-    and absolute input paths robustly.
+    """Resolve a file path relative to a root directory, handling both relative and absolute input paths robustly.
 
     This function ensures that a given `filepath` is correctly resolved under
     the `root_dir`. It supports cases where the `filepath` is:

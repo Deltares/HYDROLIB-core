@@ -30,7 +30,7 @@ Package operations: 67 installs, 0 updates, 0 removals
   * Installing six (1.16.0)
 [..]
 Installing the current project: hydrolib-core (0.1.5)
-(base) PS C:\checkouts\HYDROLIB-core_git> 
+(base) PS C:\checkouts\HYDROLIB-core_git>
 ```  
    If you need to use an already existing Python installation, you can activate it and run `poetry env use system` before `poetry install`.
 
@@ -62,7 +62,7 @@ tests\test_utils.py .......                                                     
 
 ============================== 471 passed, 2 deselected in 3.50s ===============================
 (base) PS C:\checkouts\HYDROLIB-core_git>
-```   
+```  
 4. Start using hydrolib-core. You can launch your favourite editor (for example VS Code)
 by first starting a poetry shell with the virtual hydrolib-core environment:
 ```
@@ -83,4 +83,3 @@ by first starting a poetry shell with the virtual hydrolib-core environment:
   Delete the `AppData\Local\pypoetry\Cache` directory.
   Then run `conda deactivate` to return to the base environment.
   Finally, rerun `poetry install`.
-

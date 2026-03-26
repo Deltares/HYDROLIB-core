@@ -12,7 +12,7 @@ pip install hydrolib-core
 ## Conda specifics
 !!! note
     If you use `conda`, it is advisable to install hydrolib-core
-    within a new environment with only `conda-forge` as channel. 
+    within a new environment with only `conda-forge` as channel.
 
 If you want to create a fresh test environment for hydrolib-core, you could use the following command (only once):
 ``` bash

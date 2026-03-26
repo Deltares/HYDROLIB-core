@@ -30,15 +30,15 @@ For each issue or feature, a separate branch should be created from the main. To
 After this prefix, preferrably add the issue number, followed by a brief title using underscores. For example: `feat/160_obsfile` or, `fix/197_validation_pump_stages`.
 
 ### Pull requests
-When starting development on a branch, a pull request should be created for reviews and continous integration. 
+When starting development on a branch, a pull request should be created for reviews and continous integration.
 In the description text area on GitHub, use a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) such that this PR will be automatically linked to the issue.
 For example: `Fixes #160`.
 
-During continuous integration, the checks will be run with several Python versions on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud. 
+During continuous integration, the checks will be run with several Python versions on Windows, Ubuntu and MacOS. The checks consist of running the tests, checking the code formatting and running SonarCloud.
 We advise to use a draft pull request, to prevent the branch to be merged back before developement is finished. When the branch is ready for review, you can update the status of the pull request to "ready for review".
 
 ### Reviews
-When an issue is ready for review, it should be moved to the "Ready for review" column on the GitHub board for visibility. 
+When an issue is ready for review, it should be moved to the "Ready for review" column on the GitHub board for visibility.
 
 ### Merging
 Merging a branch can only happen when a pull request is accepted through review. When a pull request is accepted the changes should be merged back with the "squash and merge" option.
@@ -49,7 +49,7 @@ The merge commit message should adhere to the [conventional commit guidelines](h
 
 ### Coding guidelines
 * If there is code that needs to be tested, there should be tests written for it.
-* If there are any additions or changes to the public API, the documentation should be updated. 
+* If there are any additions or changes to the public API, the documentation should be updated.
 * Files should be added to the appropriate folder to keep modules and objects within the correct scope.
 
 ## Releasing

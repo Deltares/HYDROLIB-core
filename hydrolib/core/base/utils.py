@@ -1,3 +1,5 @@
+"""Utility classes and functions for HYDROLIB-core base module."""
+
 import platform
 import re
 from enum import Enum, auto
@@ -28,14 +30,13 @@ valid_types = (
 
 
 def to_key(string: str) -> str:
-    """
-    Construct a key name from a given field name.
+    """Construct a key name from a given field name.
+
     The given field name may be a Pydantic Field alias, and the key name
     is intended to be used as a BaseModel class member variable name.
 
     Args:
-        string (str): input field name
-
+        string (str): input field name.
     """
     # First replace any leading digits, because those are undesirable
     # in variable names.
@@ -71,7 +72,6 @@ def to_list(item: Any) -> List[Any]:
     Returns:
         List: A list with the specified item.
     """
-
     if not isinstance(item, list):
         return [item]
     return item
@@ -114,7 +114,6 @@ def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     Returns:
         str: The substring if found; otherwise, `None`.
     """
-
     index_start = source.find(start)
     if index_start == -1:
         return None
@@ -129,9 +128,7 @@ def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
 
 
 def operator_str(operator_func: Callable) -> str:
-    """
-    Make string representation of some of operator's built-in operator
-    functions, for use in prettyprinting.
+    """Make string representation of some of operator's built-in operator functions, for use in prettyprinting.
 
     Args:
         operator_func (Callable): Typically one of operator's built-in
@@ -191,6 +188,7 @@ def resolve_file_model(
 
 
 class PathToDictionaryConverter:
+    """Converter that transforms Path and string values into dictionaries for FileModel fields."""
 
     @staticmethod
     def convert(cls, value: Any, info: ValidationInfo):
@@ -231,7 +229,9 @@ class PathToDictionaryConverter:
         return value
 
     @staticmethod
-    def make_dict(value: Union[str, Path]) -> Union[dict, "DiskOnlyFileModel"]:
+    def make_dict(
+        value: Union[str, Path],
+    ) -> Union[dict, "DiskOnlyFileModel"]:  # noqa: F821
         """Convert a value to a dictionary with a 'filepath' key.
 
         Args:
@@ -387,7 +387,6 @@ class FilePathStyleConverter:
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
-
         return FilePathStyleConverter._convert(
             file_path, source_path_style, self._os_path_style
         )
@@ -407,7 +406,6 @@ class FilePathStyleConverter:
         Raises:
             NotImplementedError: When this function is called with a PathStyle other than WINDOWSLIKE or UNIXLIKE.
         """
-
         return FilePathStyleConverter._convert(
             file_path, self._os_path_style, target_path_style
         )
@@ -469,9 +467,7 @@ class FilePathStyleConverter:
 
 
 class FileChecksumCalculator:
-    """
-    FileChecksumCalculator calculator used to calculate the checksum of a file.
-    """
+    """FileChecksumCalculator calculator used to calculate the checksum of a file."""
 
     @staticmethod
     def calculate_checksum(filepath: Path) -> Optional[str]:
@@ -520,9 +516,7 @@ class FortranUtils:
 
     @staticmethod
     def replace_fortran_scientific_notation(value):
-        """Replace Fortran scientific notation ("D" in exponent) with standard
-        scientific notation ("e" in exponent).
-        """
+        """Replace Fortran scientific notation (D exponent) with standard Python scientific notation (e exponent)."""
         if isinstance(value, str):
             return SCIENTIFIC_NOTATION_REGEX.sub(PYTHON_STYLES, value)
         elif isinstance(value, list):
@@ -532,11 +526,11 @@ class FortranUtils:
 
 
 class FortranScientificNotationConverter:
+    """Converter for transforming FORTRAN-style scientific notation to Python-compatible format."""
 
     @classmethod
     def convert(cls, value: Union[str, List[str]]) -> Union[str, List[str]]:
-        """
-        Replaces FORTRAN-style scientific notation in a value.
+        """Replace FORTRAN-style scientific notation in a value.
 
         Args:
             value (Any): The value to process.
@@ -555,7 +549,7 @@ class FortranScientificNotationConverter:
 
     @classmethod
     def convert_fields(cls, values: dict, field_definitions: dict) -> dict:
-        """Convert Fields
+        """Convert fields.
 
         Converts values in a dictionary using Fortran-style scientific notation
         to Python floats for fields defined as float or List[float].
