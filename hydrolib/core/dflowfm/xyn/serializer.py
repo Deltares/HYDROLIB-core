@@ -1,3 +1,5 @@
+"""Serializer for D-Flow FM observation station (xyn) files."""
+
 from pathlib import Path
 from typing import Dict
 
@@ -5,6 +7,8 @@ from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class XYNSerializer:
+    """Serializer for XYNModel data to .xyn file format."""
+
     @staticmethod
     def serialize(
         path: Path,

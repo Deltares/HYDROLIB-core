@@ -1,3 +1,5 @@
+"""Observation point model definitions for D-Flow FM."""
+
 from typing import Annotated, Dict, List, Literal, Optional
 
 from pydantic import BeforeValidator, Field, field_validator, model_validator
@@ -17,6 +19,8 @@ class ObservationPointGeneral(INIGeneral):
     """The observation point file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ObservationPointGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -40,6 +44,8 @@ class ObservationPoint(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ObservationPoint section fields."""
+
         name: Optional[str] = "Name of the observation point (max. 255 characters)."
         locationtype: Optional[str] = (
             "Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point."

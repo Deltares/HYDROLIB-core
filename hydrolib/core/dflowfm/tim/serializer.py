@@ -1,3 +1,5 @@
+"""Serializer for D-Flow FM time series (tim) files."""
+
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -15,6 +17,8 @@ class TimSerializerConfig(SerializerConfig):
 
 
 class TimSerializer:
+    """Serializer for TimModel data to .tim file format."""
+
     @staticmethod
     def serialize(
         path: Path,

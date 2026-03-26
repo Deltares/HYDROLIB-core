@@ -1,4 +1,4 @@
-"""T3D file"""
+"""T3D file model for D-Flow FM time-varying 3D boundary conditions."""
 
 import re
 from pathlib import Path
@@ -18,9 +18,7 @@ from hydrolib.core.dflowfm.t3d.serializer import T3DSerializer
 
 
 class LayerType(StrEnum):
-    """
-    Layer types in the t3d file.
-    """
+    """Layer types in the t3d file."""
 
     sigma = "SIGMA"
     z = "Z"
@@ -194,9 +192,7 @@ class T3DModel(ParsableFileModel):
 
     @model_validator(mode="after")
     def validate_quantities_names(self) -> "T3DModel":
-        """
-        Validate that the number of quantities names is equal to the number of values in the records.
-        """
+        """Validate that the number of quantities names is equal to the number of values in the records."""
         record = self.records
         record_len = len(record[0].data)
         quantities_names = self.quantities_names
