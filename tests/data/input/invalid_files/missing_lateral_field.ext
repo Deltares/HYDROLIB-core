@@ -1,6 +1,6 @@
 [General]
-    fileVersion           = 2.01                
-    fileType              = extForce            
+    fileVersion           = 2.01
+    fileType              = extForce
 
 [Lateral]
 id=Lateral1

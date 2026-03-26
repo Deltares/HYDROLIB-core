@@ -1,26 +1,26 @@
 [General]
     fileVersion           = 1.01
-    fileType              = boundConds          
+    fileType              = boundConds
 
 [forcing]
-    name                  = Boundary1          
-    function              = constant            
-    time-interpolation    = linear  
-    quantity              = waterlevelbnd         
-    unit                  = m                   
-    2.5 
+    name                  = Boundary1
+    function              = constant
+    time-interpolation    = linear
+    quantity              = waterlevelbnd
+    unit                  = m
+    2.5
 
 [forcing]
-    name                  = Boundary2          
-    function              = constant            
-    time-interpolation    = linear  
-    unit                  = m³/s                
-    100 
+    name                  = Boundary2
+    function              = constant
+    time-interpolation    = linear
+    unit                  = m³/s
+    100
 
 [forcing]
-    name                  = Boundary3         
-    function              = constant            
-    time-interpolation    = linear  
-    quantity              = waterlevelbnd         
-    unit                  = m                   
+    name                  = Boundary3
+    function              = constant
+    time-interpolation    = linear
+    quantity              = waterlevelbnd
+    unit                  = m
     2.5

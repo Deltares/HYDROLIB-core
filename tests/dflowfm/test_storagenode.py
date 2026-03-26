@@ -168,7 +168,7 @@ def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_fl
     tmp_path,
 ):
 
-    file_data = """        
+    file_data = """
 [General]
     fileVersion           = 2.00
     fileType              = storageNodes
@@ -185,7 +185,7 @@ def test_scientific_notation_in_ini_file_are_correctly_parsed_for_strings_and_fl
     storageType           = Reservoir
     streetStorageArea     = 1d2
     CompartmentShape      = Unknown
-    useTable              = False            
+    useTable              = False
     """
 
     temporary_file_path_node_file = tmp_path / "nodeFile.ini"

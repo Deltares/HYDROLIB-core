@@ -1,13 +1,12 @@
 [General]
-    fileVersion           = 1.01                
-    fileType              = boundConds          
+    fileVersion           = 1.01
+    fileType              = boundConds
 
 ### test:
 [forcing]
-    name                  = 10637             
-    function              = constant            
-    timeInterpolation     = linear    
+    name                  = 10637
+    function              = constant
+    timeInterpolation     = linear
     quantity              = lateral_discharge
-    unit                  = m3 s-1                   
+    unit                  = m3 s-1
     -999
-

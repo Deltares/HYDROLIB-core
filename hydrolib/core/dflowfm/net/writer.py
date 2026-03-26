@@ -1,3 +1,5 @@
+"""Writer for UGRID netCDF files used by D-Flow FM network models."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -31,9 +33,15 @@ class FillValueConfiguration(BaseModel):
 
 
 class UgridWriter:
-    """Writer for netCDF files with UGrid convention"""
+    """Writer for netCDF files with UGrid convention."""
 
     def __init__(self, fill_value_config: Optional[FillValueConfiguration] = None):
+        """Initialize UgridWriter with optional fill value configuration.
+
+        Args:
+            fill_value_config (Optional[FillValueConfiguration]): Configuration for fill values.
+                Defaults to None, which uses FillValueConfiguration defaults.
+        """
         self.idstrlength = 40
         self.longstrlength = 80
 
@@ -51,8 +59,7 @@ class UgridWriter:
         dimr_version: str = "",
         suite_version: str = "",
     ) -> None:
-        """write ugrid file from GWSW model"""
-
+        """Write ugrid file from GWSW model."""
         ncfile = self._create_netcdf(path, dfm_version, dimr_version, suite_version)
         self._write_mesh1d_to(network._mesh1d, ncfile)
         self._write_mesh2d_to(network._mesh2d, ncfile)
@@ -83,7 +90,7 @@ class UgridWriter:
 
     @staticmethod
     def to_char_list(lst: List[str], size: int) -> List[str]:
-        """Convert list of strings to list of stings with a fixed number of characters"""
+        """Convert list of strings to list of strings with a fixed number of characters."""
         return [item.ljust(size)[:size] for item in lst]
 
     def _create_netcdf(

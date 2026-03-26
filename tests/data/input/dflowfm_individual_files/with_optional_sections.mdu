@@ -371,8 +371,8 @@ Wrimap_Qin                                = 0                   # Write sum of a
 Wrimap_every_dt                           = 0                   # Write output to map file every dt, based on start and stop from MapInterval, 0=no (default), 1=yes
 
 [particles]
-ParticlesFile                             = 
-ParticlesReleaseFile                      = 
+ParticlesFile                             =
+ParticlesReleaseFile                      =
 AddTracer                                 = 0                   # add tracer (1) or not (other)
 StartTime                                 = 0.                  # starttime (if >0)
 TimeStep                                  = 0.                  # time step (>0) or every computational time step

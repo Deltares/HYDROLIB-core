@@ -69,7 +69,7 @@ def test_universal_construction_with_parser():
         type              = universalWeir    # Structure type
         allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
-        yValues           = 1.0 2.0          # y-values of the cross section (m) 
+        yValues           = 1.0 2.0          # y-values of the cross section (m)
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
         crestLevel        = 10.5             # Crest level of weir (m AD)
         dischargeCoeff    = 0.5              # Discharge coefficient c_e (-)
@@ -120,7 +120,7 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         type              = universalWeir    # Structure type; must read universalWeir
         allowedFlowDir    = positive         # Possible values: both, positive, negative, none.
         numLevels         = 2                # Number of yz-Values.
-        yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels) 
+        yValues           = 1.0 2.0          # y-values of the cross section (m). (number of values = numLevels)
         zValues           = 3.0 4.0          # z-values of the cross section (m). (number of values = numLevels)
         crestLevel        = 10.5             # Crest level of weir (m AD).
         dischargeCoeff    = 0.5              # Discharge coefficient c_e (-).

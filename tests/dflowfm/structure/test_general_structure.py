@@ -202,39 +202,39 @@ class TestGeneralStructure:
         input_str = inspect.cleandoc(
             """
             [Structure]
-            id                             = potato_id        
-            name                           = structure_potato 
-            type                           = generalStructure 
-            branchId                       = branch           
+            id                             = potato_id
+            name                           = structure_potato
+            type                           = generalStructure
+            branchId                       = branch
             chainage                       = 3.53   # My own special comment 1
-            allowedFlowDir                 = positive         
-            upstream1Width                 = 11.0             
-            upstream1Level                 = 12.0             
-            upstream2Width                 = 13.0             
-            upstream2Level                 = 14.0             
-            crestWidth                     = 15.0             
-            crestLevel                     = 16.0             
-            crestLength                    = 17.0             
-            downstream1Width               = 18.0             
-            downstream1Level               = 19.0             
-            downstream2Width               = 19.1             
-            downstream2Level               = 19.2             
-            gateLowerEdgeLevel             = 19.3             
-            posFreeGateFlowCoeff           = 19.4             
-            posDrownGateFlowCoeff          = 19.5             
-            posFreeWeirFlowCoeff           = 19.6             
-            posDrownWeirFlowCoeff          = 19.7             
-            posContrCoefFreeGate           = 19.8             
-            negFreeGateFlowCoeff           = 19.9             
-            negDrownGateFlowCoeff          = 18.1             
-            negFreeWeirFlowCoeff           = 18.2             
-            negDrownWeirFlowCoeff          = 18.3             
-            negContrCoefFreeGate           = 18.4             
-            extraResistance                = 18.5             
+            allowedFlowDir                 = positive
+            upstream1Width                 = 11.0
+            upstream1Level                 = 12.0
+            upstream2Width                 = 13.0
+            upstream2Level                 = 14.0
+            crestWidth                     = 15.0
+            crestLevel                     = 16.0
+            crestLength                    = 17.0
+            downstream1Width               = 18.0
+            downstream1Level               = 19.0
+            downstream2Width               = 19.1
+            downstream2Level               = 19.2
+            gateLowerEdgeLevel             = 19.3
+            posFreeGateFlowCoeff           = 19.4
+            posDrownGateFlowCoeff          = 19.5
+            posFreeWeirFlowCoeff           = 19.6
+            posDrownWeirFlowCoeff          = 19.7
+            posContrCoefFreeGate           = 19.8
+            negFreeGateFlowCoeff           = 19.9
+            negDrownGateFlowCoeff          = 18.1
+            negFreeWeirFlowCoeff           = 18.2
+            negDrownWeirFlowCoeff          = 18.3
+            negContrCoefFreeGate           = 18.4
+            extraResistance                = 18.5
             gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7              
-            gateOpeningHorizontalDirection = fromLeft         
-            useVelocityHeight              = 0    # My own special comment 2            
+            gateOpeningWidth               = 18.7
+            gateOpeningHorizontalDirection = fromLeft
+            useVelocityHeight              = 0    # My own special comment 2
             """
         )
 
@@ -289,42 +289,42 @@ class TestGeneralStructure:
         input_str = inspect.cleandoc(
             """
             [Structure]
-            id                             = id        
+            id                             = id
             name                           = extravagante_waarde
 
             # ----------------------------------------------------------------------
             unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
-            type                           = generalStructure 
+            type                           = generalStructure
             branchId                       = stump
-            chainage                       = 13.53  
-            allowedFlowDir                 = positive         
-            upstream1Width                 = 111.0             
-            upstream1Level                 = 112.0             
-            upstream2Width                 = 113.0             
-            upstream2Level                 = 114.0             
-            crestWidth                     = 115.0             
-            crestLevel                     = 116.0             
-            crestLength                    = 117.0             
-            downstream1Width               = 118.0             
-            downstream1Level               = 119.0             
-            downstream2Width               = 119.1             
-            downstream2Level               = 119.2             
-            gateLowerEdgeLevel             = 119.3             
-            posFreeGateFlowCoeff           = 119.4             
-            posDrownGateFlowCoeff          = 119.5             
-            posFreeWeirFlowCoeff           = 119.6             
-            posDrownWeirFlowCoeff          = 119.7             
-            posContrCoefFreeGate           = 119.8             
-            negFreeGateFlowCoeff           = 119.9             
-            negDrownGateFlowCoeff          = 118.1             
-            negFreeWeirFlowCoeff           = 118.2             
-            negDrownWeirFlowCoeff          = 118.3             
-            negContrCoefFreeGate           = 118.4             
-            extraResistance                = 118.5             
+            chainage                       = 13.53
+            allowedFlowDir                 = positive
+            upstream1Width                 = 111.0
+            upstream1Level                 = 112.0
+            upstream2Width                 = 113.0
+            upstream2Level                 = 114.0
+            crestWidth                     = 115.0
+            crestLevel                     = 116.0
+            crestLength                    = 117.0
+            downstream1Width               = 118.0
+            downstream1Level               = 119.0
+            downstream2Width               = 119.1
+            downstream2Level               = 119.2
+            gateLowerEdgeLevel             = 119.3
+            posFreeGateFlowCoeff           = 119.4
+            posDrownGateFlowCoeff          = 119.5
+            posFreeWeirFlowCoeff           = 119.6
+            posDrownWeirFlowCoeff          = 119.7
+            posContrCoefFreeGate           = 119.8
+            negFreeGateFlowCoeff           = 119.9
+            negDrownGateFlowCoeff          = 118.1
+            negFreeWeirFlowCoeff           = 118.2
+            negDrownWeirFlowCoeff          = 118.3
+            negContrCoefFreeGate           = 118.4
+            extraResistance                = 118.5
             gateHeight                     = 118.6
-            gateOpeningWidth               = 118.7              
+            gateOpeningWidth               = 118.7
             gateOpeningHorizontalDirection = fromRight
             useVelocityHeight              = 0
             """
