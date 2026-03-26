@@ -1,5 +1,4 @@
-"""util.py provides additional utility methods related to handling ini files.
-"""
+"""util.py provides additional utility methods related to handling ini files."""
 
 from datetime import datetime
 from enum import Enum
@@ -65,6 +64,20 @@ def enum_value_parser(
 def parse_enum(
     v, enum: Type[Enum], alternative_enum_values: Optional[Dict[str, List[str]]] = None
 ):
+    """Parse a value into an Enum member, with optional alternative string representations.
+
+    Args:
+        v: The value to parse.
+        enum (Type[Enum]): The Enum type to parse into.
+        alternative_enum_values (Optional[Dict[str, List[str]]]): Optional mapping from
+            enum values to alternative string representations.
+
+    Returns:
+        Enum: The matching enum member.
+
+    Raises:
+        ValueError: If the value does not match any valid enum entry.
+    """
     result = None
 
     if isinstance(v, enum):
@@ -109,6 +122,7 @@ def ensure_list(v: Any):
 
 
 def make_list(v: Any):
+    """Wrap a non-list value in a list, or return the value unchanged if it is already a list."""
     if not isinstance(v, list):
         v = [v]
     return v
@@ -122,8 +136,7 @@ def validate_correct_length(
     list_required_with_length: bool = False,
     min_length: int = 0,
 ):
-    """
-    Validate the correct length (and presence) of several list fields in an object.
+    """Validate the correct length (and presence) of several list fields in an object.
 
     Args:
         values (Dict):
@@ -151,8 +164,7 @@ def validate_correct_length(
     """
 
     def _get_incorrect_length_validation_message() -> str:
-        """Make a string with a validation message, ready to be format()ed with
-        field name and length name."""
+        """Make a validation message string, ready to be format()ed with field name and length name."""
         incrstring = f" + {length_incr}" if length_incr != 0 else ""
         minstring = f" (and at least {min_length})" if min_length > 0 else ""
 
@@ -167,7 +179,6 @@ def validate_correct_length(
         field_name: str, field: Optional[List[Any]], requiredlength: int
     ):
         """Validate the length of a single field, which should be a list."""
-
         if field is not None and len(field) != requiredlength:
             raise ValueError(
                 _get_incorrect_length_validation_message().format(
@@ -198,8 +209,8 @@ def validate_forbidden_fields(
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
 ) -> Dict:
-    """
-    Validates whether certain fields are *not* provided, if `conditional_field_name` is equal to `conditional_value`.
+    """Validates whether certain fields are *not* provided, if `conditional_field_name` equals `conditional_value`.
+
     The equality check can be overridden with another comparison operator function.
 
     Args:
@@ -236,8 +247,8 @@ def validate_required_fields(
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
 ):
-    """
-    Validates whether the specified fields are provided, if `conditional_field_name` is equal to `conditional_value`.
+    """Validates whether the specified fields are provided, if `conditional_field_name` equals `conditional_value`.
+
     The equality check can be overridden with another comparison operator function.
 
     Args:
@@ -253,7 +264,6 @@ def validate_required_fields(
     Returns:
         Dict: Validated dictionary of input class fields.
     """
-
     if (val := values.get(conditional_field_name)) is None or not comparison_func(
         val, conditional_value
     ):
@@ -273,8 +283,8 @@ def validate_conditionally(
     conditional_value: Any,
     comparison_func: Callable[[Any, Any], bool] = eq,
 ) -> Dict:
-    """
-    Validate whether certain fields are *not* provided, if `conditional_field_name` is equal to `conditional_value`.
+    """Validate whether certain fields are *not* provided, if `conditional_field_name` equals `conditional_value`.
+
     The equality check can be overridden with another comparison operator function.
 
     Args:
@@ -342,8 +352,8 @@ def validate_datetime_string(
 
 
 def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str) -> str:
-    """
-    Gets a value that corresponds with the default field value of one of the subclasses.
+    """Gets a value that corresponds with the default field value of one of the subclasses.
+
     If the subclass doesn't have the specified field, it will look into its own subclasses
     recursively for the specified fieldname.
 
@@ -368,12 +378,12 @@ def get_from_subclass_defaults(cls: Type[BaseModel], fieldname: str, value: str)
 def _try_get_default_value(
     c: Type[BaseModel], fieldname: str, value: str
 ) -> Optional[str]:
-    """Helper subroutine to get the default value for a particular field in
-    the given class or any of its descendant classes, if it matches the input
-    value (case insensitive).
+    """Helper subroutine to get the default value for a particular field in the given class.
 
+    Also searches any descendant classes if the value matches the input value (case insensitive).
     This method recurses depth-first topdown into the class'es subclasses.
 
+    Args:
         c (Type[BaseModel]): The base model type where the search starts.
         fieldname (str): The field name for which retrieve the default for.
         value (str): The value to compare with.
@@ -459,9 +469,7 @@ def validate_location_specification(
     config: Optional[LocationValidationConfiguration] = None,
     fields: Optional[LocationValidationFieldNames] = None,
 ) -> Dict:
-    """
-    Validates whether the correct location specification is given in
-    typical 1D2D input in an IniBasedModel class.
+    """Validates whether the correct location specification is given in typical 1D2D input in an IniBasedModel class.
 
     Validates for presence of at least one of: nodeId, branchId with chainage,
     xCoordinates with yCoordinates, or xCoordinates with yCoordinates and numCoordinates.
@@ -487,7 +495,6 @@ def validate_location_specification(
     Returns:
         Dict: Validated dictionary of input class fields.
     """
-
     if config is None:
         config = LocationValidationConfiguration()
 
@@ -617,14 +624,12 @@ def validate_location_specification(
 def rename_keys_for_backwards_compatibility(
     values: Dict, keys_to_rename: Dict[str, List[str]]
 ) -> Dict:
-    """
-    Renames the provided keys to support backwards compatibility.
+    """Renames the provided keys to support backwards compatibility.
 
     Args:
-
         values (Dict): Dictionary of input class fields.
         keys_to_rename (Dict[str, List[str]]): Dictionary of keys and a list of old keys that
-        should be converted to the current key.
+            should be converted to the current key.
 
     Returns:
         Dict: Dictionary where the provided keys are renamed.
@@ -645,8 +650,8 @@ def rename_keys_for_backwards_compatibility(
 
 
 class UnknownKeywordErrorManager:
-    """
-    Error manager for unknown keys.
+    """Error manager for unknown keys.
+
     Detects unknown keys and manages the Error to the user.
     """
 
@@ -683,8 +688,7 @@ class UnknownKeywordErrorManager:
         fields: Dict[str, FieldInfo],
         excluded_fields: Set,
     ) -> List[str]:
-        """
-        Get all unknown keywords in the data.
+        """Get all unknown keywords in the data.
 
         Args:
             data: Dict[str, Any]:
@@ -708,9 +712,9 @@ class UnknownKeywordErrorManager:
     def _is_unknown_keyword(
         keyword: str, fields: Dict[str, FieldInfo], excluded_fields: Set
     ) -> bool:
-        """
-        Check if the given field name equals to any of the model field names or aliases, if not, the function checks if
-        the field is not in the excluded_fields parameter.
+        """Check if the given field name equals to any of the model field names or aliases.
+
+        If not, the function checks if the field is not in the excluded_fields parameter.
 
         Args:
             keyword: str: Name of the field.
@@ -718,8 +722,8 @@ class UnknownKeywordErrorManager:
             excluded_fields: Set[str]: Fields which should be excluded from the check for unknown keywords.
 
         Returns:
-            bool: True if the field is unknown (not a field name or alias and and not in the exclude list),
-            False otherwise
+            bool: True if the field is unknown (not a field name or alias and not in the exclude list),
+            False otherwise.
         """
         exists = keyword in fields or any(
             hasattr(field_info, "alias") and keyword == field_info.alias

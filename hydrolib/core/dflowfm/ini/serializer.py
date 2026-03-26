@@ -1,3 +1,5 @@
+"""Serializer for Deltares INI file formats."""
+
 from itertools import chain, count, repeat
 from pathlib import Path
 from typing import Any, Iterable, Optional, Sequence
@@ -16,7 +18,7 @@ from hydrolib.core.dflowfm.ini.io_models import (
 
 
 class INISerializerConfig(SerializerConfig):
-    """SerializerConfig defines the configuration options of the Serializer
+    """SerializerConfig defines the configuration options of the Serializer.
 
     Attributes:
         section_indent (int):
@@ -48,12 +50,12 @@ class INISerializerConfig(SerializerConfig):
 
     @property
     def total_property_indent(self) -> int:
-        """The combined property indentation, i.e. section_indent + property_indent"""
+        """The combined property indentation, i.e. section_indent + property_indent."""
         return self.section_indent + self.property_indent
 
     @property
     def total_datablock_indent(self) -> int:
-        """The combined datablock indentation, i.e. section_indent + datablock_indent"""
+        """The combined datablock indentation, i.e. section_indent + datablock_indent."""
         return self.section_indent + self.datablock_indent
 
 
@@ -62,7 +64,7 @@ class DataBlockINIBasedSerializerConfig(INISerializerConfig):
 
     float_format_datablock: str = ""
     """str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string.
-    
+
     Examples:
         Input value = 123.456
 
@@ -79,15 +81,15 @@ class DataBlockINIBasedSerializerConfig(INISerializerConfig):
         "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
         ">15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
         "*>15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
-        "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.     
-        ".3%"     | 12345.600%      | Format percentage with 3 decimal places.  
+        "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.
+        ".3%"     | 12345.600%      | Format percentage with 3 decimal places.
 
         More information: https://docs.python.org/3/library/string.html#format-specification-mini-language
     """
 
 
 class MaxLengths(BaseModel):
-    """MaxLengths defines the maxmimum lengths of the parts of a section
+    """MaxLengths defines the maxmimum lengths of the parts of a section.
 
     Attributes:
         key (int):
@@ -108,13 +110,13 @@ class MaxLengths(BaseModel):
 
     @classmethod
     def from_section(cls, section: Section) -> "MaxLengths":
-        """Generate a MaxLengths instance from the given Section
+        """Generate a MaxLengths instance from the given Section.
 
         Args:
-            section (Section): The section of which the MaxLengths are calculated
+            section (Section): The section of which the MaxLengths are calculated.
 
         Returns:
-            MaxLengths: The MaxLengths corresponding with the provided section
+            MaxLengths: The MaxLengths corresponding with the provided section.
         """
         properties = list(p for p in section.content if isinstance(p, Property))
 
@@ -152,7 +154,7 @@ def _serialize_comment_block(
     indent_size: int = 0,
 ) -> Lines:
     indent = " " * indent_size
-    return (f"{indent}{delimiter} {l}" for l in block.lines)
+    return (f"{indent}{delimiter} {line}" for line in block.lines)
 
 
 def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
@@ -161,32 +163,32 @@ def _get_offset_whitespace(key: Optional[str], max_length: int) -> str:
 
 
 class SectionSerializer:
-    """SectionSerializer provides the serialize method to serialize a Section
+    """SectionSerializer provides the serialize method to serialize a Section.
 
     The entrypoint of this method is the serialize method, which will construct
     an actual instance and serializes the Section with it.
     """
 
     def __init__(self, config: INISerializerConfig, max_length: MaxLengths):
-        """Create a new SectionSerializer
+        """Create a new SectionSerializer.
 
         Args:
-            config (SerializerConfig): The config describing the serialization options
-            max_length (MaxLengths): The max lengths of the section being serialized
+            config (SerializerConfig): The config describing the serialization options.
+            max_length (MaxLengths): The max lengths of the section being serialized.
         """
         self._config = config
         self._max_length = max_length
 
     @classmethod
     def serialize(cls, section: Section, config: INISerializerConfig) -> Lines:
-        """Serialize the provided section with the given config
+        """Serialize the provided section with the given config.
 
         Args:
-            section (Section): The section to serialize
-            config (SerializerConfig): The config describing the serialization options
+            section (Section): The section to serialize.
+            config (SerializerConfig): The config describing the serialization options.
 
         Returns:
-            Lines: The iterable lines of the serialized section
+            Lines: The iterable lines of the serialized section.
         """
         serializer = cls(config, MaxLengths.from_section(section))
         return serializer._serialize_section(section)
@@ -314,7 +316,7 @@ class Serializer:
 
 
 def write_ini(path: Path, document: Document, config: INISerializerConfig) -> None:
-    """Write the provided document to the specified path
+    """Write the provided document to the specified path.
 
     If the provided path already exists, it will be overwritten. If the parent folder
     do not exist, they will be created.
@@ -324,7 +326,6 @@ def write_ini(path: Path, document: Document, config: INISerializerConfig) -> No
         document (Document): The document to serialize to the specified path.
         config (INISerializerConfig): The configuration settings for the serializer.
     """
-
     serializer = Serializer(config)
 
     path.parent.mkdir(parents=True, exist_ok=True)

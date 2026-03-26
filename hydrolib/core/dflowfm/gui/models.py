@@ -1,6 +1,4 @@
-"""
-namespace for storing the branches as branches.gui file
-"""
+"""Namespace for storing the branches as branches.gui file."""
 
 import logging
 from typing import Annotated, List, Literal, Optional
@@ -17,6 +15,8 @@ class BranchGeneral(INIGeneral):
     """The branches.gui file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the BranchGeneral section."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -32,11 +32,11 @@ class BranchGeneral(INIGeneral):
 
 
 class Branch(INIBasedModel):
-    """
-    A branch that is included in the branches.gui file.
-    """
+    """A branch that is included in the branches.gui file."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Branch section."""
+
         name: Optional[str] = "Unique branch id."
         branchtype: Optional[str] = Field(
             "Channel = 0, SewerConnection = 1, Pipe = 2.", alias="branchType"

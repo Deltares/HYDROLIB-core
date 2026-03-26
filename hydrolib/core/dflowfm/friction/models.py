@@ -1,3 +1,5 @@
+"""Friction model definitions for D-Flow FM roughness files."""
+
 import logging
 from pathlib import Path
 from typing import Annotated, List, Literal, Optional
@@ -27,9 +29,10 @@ logger = logging.getLogger(__name__)
 
 
 class FrictionType(StrEnum):
-    """
-    Enum class containing the valid values for the frictionType
-    attribute in several subclasses of Structure/CrossSection/friction.models.
+    """Enum class containing the valid values for the frictionType attribute.
+
+    Contains valid values for the frictionType attribute in several subclasses
+    of Structure/CrossSection/friction.models.
 
     Args:
         chezy: str
@@ -61,6 +64,8 @@ class FrictGeneral(INIGeneral):
     """The friction file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the FrictGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -100,6 +105,8 @@ class FrictGlobal(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the FrictGlobal section fields."""
+
         frictionid: Optional[str] = Field(
             "Name of the roughness variable.", alias="frictionId"
         )
@@ -135,6 +142,8 @@ class FrictBranch(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the FrictBranch section fields."""
+
         branchid: Optional[str] = Field("The name of the branch.", alias="branchId")
         frictiontype: Optional[str] = Field(
             "The roughness type to be used on this branch.", alias="frictionType"

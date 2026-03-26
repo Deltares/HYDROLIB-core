@@ -1,3 +1,5 @@
+"""Initial field model package for D-Flow FM."""
+
 from .models import (
     AveragingType,
     DataFileType,

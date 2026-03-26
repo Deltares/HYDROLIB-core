@@ -1,3 +1,5 @@
+"""Common I/O utilities for the old external forcings file format."""
+
 from typing import List
 
 ORDERED_FORCING_FIELDS: List[str] = [

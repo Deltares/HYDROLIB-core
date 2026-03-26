@@ -1,3 +1,5 @@
+"""Package for D-Flow FM network (net) file models."""
+
 from .models import Branch, Link1d2d, Mesh1d, Mesh2d, Network, NetworkModel
 
 __all__ = [

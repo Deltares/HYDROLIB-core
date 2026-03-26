@@ -1,3 +1,5 @@
+"""Serializer for the old external forcings file format."""
+
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -36,7 +38,6 @@ class Serializer:
             config (SerializerConfig): Configuration settings for the serializer.
             save_settings (ModelSaveSettings): Settings for how the model should be saved.
         """
-
         path.parent.mkdir(parents=True, exist_ok=True)
 
         serialized_comments: List[str] = []
