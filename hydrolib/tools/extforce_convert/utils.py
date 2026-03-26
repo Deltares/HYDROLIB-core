@@ -78,7 +78,7 @@ def construct_filemodel_new_or_existing(
         **kwargs: Additional keywords arguments to pass to the ModelClass constructor
     """
     if Path(filepath).is_file():
-        model = model_class(filepath=filepath, *args, **kwargs)
+        model = model_class(*args, filepath=filepath, **kwargs)
     else:
         model = model_class(*args, **kwargs)
         model.filepath = filepath
@@ -437,7 +437,7 @@ class MDUConfig(BaseModel):
 
     @field_validator("deprecated_keywords", mode="before")
     def _to_set(cls, v):
-        """convert the deprecated keywords to a set."""
+        """Convert the deprecated keywords to a set."""
         if v is None:
             return set()
 
@@ -501,4 +501,6 @@ CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
 
 class UnSupportedQuantitiesError(Exception):
+    """Exception raised when unsupported quantities are encountered."""
+
     pass

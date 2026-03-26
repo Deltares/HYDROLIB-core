@@ -5,7 +5,7 @@ from typing import Dict, Iterable, Optional
 
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:
-    return (l.strip() for l in lines)
+    return (line.strip() for line in lines)
 
 
 def _is_empty(line: str) -> bool:
@@ -44,7 +44,7 @@ def parse(keys: Iterable[str], lines: Iterable[str]) -> Dict:
 
 
 def read(keys: Iterable[str], path: Path) -> Dict:
-    """Parse the file at the specified path into a RainfallRunoffModel
+    """Parse the file at the specified path into a RainfallRunoffModel.
 
     Args:
         keys (Iterable[str]): The property keys of the RainfallRunoffModel.
