@@ -216,7 +216,7 @@ def test_create_1d_2d_1d2d_call_link_generation_twice():
         "1d2d links depending on the version. Please verify the meshkernel package "
         "behaviour if this test fails. \n"
         "Hydrolib core - Github Issue https://github.com/Deltares/HYDROLIB-core/issues/635 \n"
-        "MeshkernelPy = Github Issue https://github.com/Deltares/MeshKernelPy/issues/164",
+        "MeshkernelPy - Github Issue https://github.com/Deltares/MeshKernelPy/issues/164",
         UserWarning,
         stacklevel=1,
     )
