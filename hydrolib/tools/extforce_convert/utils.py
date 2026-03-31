@@ -387,7 +387,7 @@ class IgnoreUnknownKeyWord(type):
             model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
-                valid_fields = self.__annotations__.keys()
+                valid_fields = type(self).model_fields.keys()
                 filtered_data = {k: v for k, v in data.items() if k in valid_fields}
                 super().__init__(**filtered_data)
 
