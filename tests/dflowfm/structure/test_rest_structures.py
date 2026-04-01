@@ -400,14 +400,14 @@ class TestWeir:
         input_str = inspect.cleandoc(
             """
             [Structure]
-            id                = weir_id     
-            name              = weir        
-            branchId          = branch      
+            id                = weir_id
+            name              = weir
+            branchId          = branch
             chainage          = 3.0         # My own special comment 1
-            type              = weir        
-            allowedFlowDir    = positive    
-            crestLevel        = 10.5        
-            crestWidth        =             
+            type              = weir
+            allowedFlowDir    = positive
+            crestLevel        = 10.5
+            crestWidth        =
             useVelocityHeight = false       # My own special comment 2
             """
         )

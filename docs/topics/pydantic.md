@@ -11,7 +11,7 @@ We override de `__init__` method to catch all validation errors and reissue them
 ### FileModel override
 We override both `__new__` and `__init__` of the `FileModel` to cache models from disk.
 The `FileModel` utilises the `FileLoadContext` to resolve relative paths and to retrieve
-models previously read as part of the loading of a root model. 
+models previously read as part of the loading of a root model.
 
 
 Specifically we also use it to load a filepath from disk.

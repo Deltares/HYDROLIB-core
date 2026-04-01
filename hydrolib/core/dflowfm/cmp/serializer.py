@@ -1,3 +1,5 @@
+"""Serializer for the harmonic/astronomic components (.cmp) file format."""
+
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -5,6 +7,8 @@ from hydrolib.core.base.models import ModelSaveSettings
 
 
 class CMPSerializer:
+    """Serializer for .cmp files containing harmonic and astronomic component data."""
+
     @staticmethod
     def serialize(
         path: Path,

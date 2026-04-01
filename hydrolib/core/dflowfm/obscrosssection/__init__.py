@@ -1,3 +1,5 @@
+"""Observation cross section model package for D-Flow FM."""
+
 from .models import (
     ObservationCrossSection,
     ObservationCrossSectionGeneral,

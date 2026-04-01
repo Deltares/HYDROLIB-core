@@ -1,4 +1,4 @@
 [Meteo]
 quantity         = rainfall
-forcingFile      = timeseries.nc      # 
-forcingFileType  = netcdf             # 
+forcingFile      = timeseries.nc      #
+forcingFileType  = netcdf             #

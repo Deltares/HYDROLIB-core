@@ -20,5 +20,5 @@ An observation cross section .ini file is described by the classes below.
 # Legacy observation cross section .pli files
 Legacy .pli files for observation points are supported via the generic `polyfile` module.
 
-For details on the polyfile format and classes (`Description`, `Metadata`, `Point`, `PolyObject`, `PolyFile`), 
+For details on the polyfile format and classes (`Description`, `Metadata`, `Point`, `PolyObject`, `PolyFile`),
 see the [Polyfile documentation](polyfile.md).

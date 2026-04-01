@@ -49,11 +49,11 @@ classDiagram
     BaseParser <|-- DummmyParser
     ParsableFileModel --> DummmyParser
     ParsableFileModel --> DummySerializer
-    
+
     class PydanticBaseModel {
         +Config
     }
-    
+
     class BaseModel {
         +Config
         +__init__(**data)
@@ -63,7 +63,7 @@ classDiagram
         +_apply_recurse(f, *args, **kwargs)
         +_get_identifier(data)
     }
-    
+
     class FileModel {
         +__new__(filepath, *args, **kwargs)
         +__init__(filepath, resolve_casing, recurse, path_style, *args, **kwargs)
@@ -85,7 +85,7 @@ classDiagram
         +_load(filepath)
         +__str__()
     }
-    
+
     class ParsableFileModel {
         +_load(filepath)
         +_save(save_settings)
@@ -101,7 +101,7 @@ classDiagram
         +_get_identifier(data)
         +_get_quantity_unit(quantities_names)
     }
-    
+
     class DiskOnlyFileModel {
         +_post_init_load()
         +_load(filepath)
@@ -110,7 +110,7 @@ classDiagram
         +_generate_name()
         +is_intermediate_link()
     }
-    
+
     class ModelTreeTraverser {
         +__init__(should_traverse, should_execute, pre_traverse_func, post_traverse_func)
         +_should_execute(model, acc)
@@ -119,7 +119,7 @@ classDiagram
         +_should_traverse(value, acc)
         +traverse(model, acc)
     }
-    
+
     class FileLoadContext {
         +__init__()
         +initialize_load_settings(recurse, resolve_casing, path_style)
@@ -135,16 +135,16 @@ classDiagram
         +convert_path_style(file_path)
         +is_content_changed(path)
     }
-    
+
     class BaseParser {
         +_read_header_comments(lines)
         +_raise_error_if_contains_comment(line, line_index)
     }
-    
+
     class DummmyParser {
         +parse(filepath)
     }
-    
+
     class DummySerializer {
         +serialize(path, data, config, save_settings)
     }
@@ -398,7 +398,7 @@ sequenceDiagram
     participant FileLoadContext
     participant FileModelCache
     participant Parser
-    
+
     Client->>FileModel: __init__(filepath)
     FileModel->>FileLoadContext: initialize_load_settings()
     FileModel->>FileLoadContext: retrieve_model(filepath)
@@ -508,7 +508,7 @@ sequenceDiagram
     participant FileModel
     participant FileLoadContext
     participant Serializer
-    
+
     Client->>FileModel: save(filepath, recurse)
     FileModel->>FileModel: _save_tree(context, save_settings)
     loop For each model in tree
@@ -552,12 +552,12 @@ from pathlib import Path
 
 class MyModel(ParsableFileModel):
     # Define model fields here
-    
+
     @classmethod
     def _get_parser(cls):
         # Return a parser for this model
         return MyParser()
-    
+
     @classmethod
     def _get_serializer(cls):
         # Return a serializer for this model

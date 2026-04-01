@@ -1,15 +1,15 @@
-"""
+"""Pydantic BaseModel definitions for HYDROLIB-core file models.
+
 Here we define our Pydantic `BaseModel` with custom settings,
 as well as a `FileModel` that inherits from a `BaseModel` but
 also represents a file on disk.
-
 """
 
 import logging
 import shutil
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Callable, Dict, Generic, List, Optional, Set, Type, TypeVar
+from typing import Any, Callable, Dict, Generic, List, Optional, Set, TypeVar
 from weakref import WeakValueDictionary
 
 from pydantic import BaseModel as PydanticBaseModel
@@ -50,6 +50,7 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
 
 
 def set_default_disk_only_file_model(v: Any):
+    """Return a default DiskOnlyFileModel dict from the given value."""
     if v is None:
         return {"filepath": None}
     elif isinstance(v, (Path, str)):
@@ -58,6 +59,8 @@ def set_default_disk_only_file_model(v: Any):
 
 
 class BaseModel(PydanticBaseModel):
+    """Base Pydantic model with shared configuration for all HYDROLIB-core models."""
+
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
         validate_assignment=True,
@@ -156,8 +159,7 @@ class BaseModel(PydanticBaseModel):
 
 
 class ModelTreeTraverser(Generic[TAcc]):
-    """ModelTreeTraverser is responsible for traversing a ModelTree using the provided
-    functions.
+    """ModelTreeTraverser is responsible for traversing a ModelTree using the provided functions.
 
     The ModelTreeTraverser will only traverse BaseModel and derived objects.
     Type parameter TAcc defines the type of Accumulator to be used.
@@ -216,8 +218,7 @@ class ModelTreeTraverser(Generic[TAcc]):
         )
 
     def traverse(self, model: BaseModel, acc: TAcc) -> TAcc:
-        """Traverse the model tree of BaseModels including the model as the root, with
-        the provided state of the acc and return the final accumulator.
+        """Traverse the model tree of BaseModels including the model as the root, with the provided state of the acc and return the final accumulator.
 
         The actual executed functions as well as the predicates defining whether these
         functions should be executed for this model as well as whether child BaseModel
@@ -266,7 +267,6 @@ class ModelSaveSettings:
             path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.
             exclude_unset (bool, optional): Whether or not to exclude unset values when saving the model. Defaults to False.
         """
-
         if path_style is None:
             path_style = self._os_path_style
 
@@ -324,6 +324,7 @@ class FileModel(BaseModel, ABC):
         cls, filepath: Optional[PathOrStr] = None, *args, **kwargs
     ) -> "FileModel":
         """Create a new model.
+
         If the file at the provided file path was already parsed, this instance is returned.
 
         Args:
@@ -417,7 +418,8 @@ class FileModel(BaseModel, ABC):
 
     @classmethod
     def _should_load_model(cls, context: FileLoadContext) -> bool:
-        """Determines whether the file model should be loaded or not.
+        """Determine whether the file model should be loaded or not.
+
         A file model should be loaded when either all models should be loaded recursively,
         or when no file model has been loaded yet.
 
@@ -427,7 +429,8 @@ class FileModel(BaseModel, ABC):
         return context.load_settings.recurse or context.cache_is_empty()
 
     def _post_init_load(self) -> None:
-        """
+        """Provide a hook into the __init__ of the FileModel for subclasses.
+
         _post_init_load provides a hook into the __init__ of the FileModel which can be
         used in subclasses for logic that requires the FileModel FileLoadContext.
 
@@ -446,7 +449,7 @@ class FileModel(BaseModel, ABC):
 
     @property
     def save_location(self) -> Optional[Path]:
-        """Get the current save location which will be used when calling `save()`
+        """Get the current save location which will be used when calling `save()`.
 
         This value can be None if the filepath is None and no name can be generated.
 
@@ -467,6 +470,7 @@ class FileModel(BaseModel, ABC):
 
     def _get_updated_file_path(self, file_path: Path, loading_path: Path) -> Path:
         """Update the file path with the resolved casing from the loading path.
+
         Logs an information message if a file path is updated.
 
         For example, given:
@@ -482,7 +486,6 @@ class FileModel(BaseModel, ABC):
         Returns:
             Path: The updated file path.
         """
-
         updated_file_parts = loading_path.parts[-len(file_path.parts) :]  # noqa: E203
         updated_file_path = Path(*updated_file_parts)
 
@@ -608,9 +611,7 @@ class FileModel(BaseModel, ABC):
         save_traverser.traverse(self, context)
 
     def synchronize_filepaths(self) -> None:
-        """Synchronize the save_location properties of all child models respective to
-        this FileModel's save_location.
-        """
+        """Synchronize the save_location properties of all child models respective to this FileModel's save_location."""
 
         def sync_pre(model: BaseModel, acc: FileLoadContext) -> FileLoadContext:
             if isinstance(model, FileModel):
@@ -663,7 +664,8 @@ class FileModel(BaseModel, ABC):
         """
         return ResolveRelativeMode.ToParent
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _generate_name(cls) -> Optional[Path]:
         """Generate a (default) name for this FileModel.
 
@@ -706,6 +708,7 @@ class FileModel(BaseModel, ABC):
         raise NotImplementedError()
 
     def __str__(self) -> str:
+        """Return the string representation of this FileModel's filepath."""
         return str(self.filepath if self.filepath else "")
 
     @staticmethod
@@ -753,8 +756,7 @@ class SerializerConfig(BaseModel, ABC):
 
 
 class ParsableFileModel(FileModel):
-    """ParsableFileModel defines a FileModel which can be parsed
-    and serialized with a serializer .
+    """ParsableFileModel defines a FileModel which can be parsed and serialized with a serializer.
 
     Each ParsableFileModel has a default _filename and _ext,
     which are used to generate the file name of any instance where
@@ -822,21 +824,25 @@ class ParsableFileModel(FileModel):
         name, ext = cls._filename(), cls._ext()
         return Path(f"{name}{ext}")
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _filename(cls) -> str:
         return "test"
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _ext(cls) -> str:
         return ".test"
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_serializer(
         cls,
     ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
         return DummySerializer.serialize
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return DummmyParser.parse
 
@@ -888,8 +894,7 @@ class ParsableFileModel(FileModel):
 
 
 class DiskOnlyFileModel(FileModel):
-    """DiskOnlyFileModel provides a stub implementation for file based
-    models which are not explicitly implemented within hydrolib.core.
+    """DiskOnlyFileModel provides a stub implementation for file based models which are not explicitly implemented within hydrolib.core.
 
     It implements the FileModel with a void parser and serializer, and a
     save method which copies the file associated with the FileModel

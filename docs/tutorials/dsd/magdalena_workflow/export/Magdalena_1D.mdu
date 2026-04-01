@@ -371,4 +371,3 @@ wrimap_chezy_on_flow_links        = 0      # Write chezy roughness on flow links
 writepart_domain                  = 1      # Write partition domain info. for postprocessing (0: no, 1: yes).
 VelocityDirectionClassesInterval  = 0.0    # Class map's step size of class values for velocity direction.
 VelocityMagnitudeClasses          = 0.0    # Class map's list of class values for velocity magnitudes.
-

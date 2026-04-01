@@ -22,6 +22,7 @@ repos:
         types : [file, python ]
       - id: check-json
         name: "[json -  check] validate json"
+        exclude: '^\.devcontainer/'
       - id: check-merge-conflict
         name: "[git  -  check] merge conflict"
       - id: debug-statements
@@ -39,6 +40,7 @@ repos:
         args: [ --autofix,
                 --indent=4,
                 --no-sort-keys ]
+        exclude: '^\.devcontainer/'
       - id: requirements-txt-fixer
         name: "[reqs - format] fix requirements.txt"
       - id: check-yaml
@@ -48,7 +50,7 @@ repos:
     rev: 7.2.0
     hooks:
       - id: flake8
-        additional_dependencies: [Flake8-pyproject, flake8-bugbear, flake8-docstrings, flake8-black]
+        additional_dependencies: [Flake8-pyproject, flake8-bugbear, flake8-docstrings]
         name: "[py   - check] flake8"
         exclude: ^(examples/|tests/)
   - repo: https://github.com/pycqa/isort
@@ -103,6 +105,7 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
+        exclude: '\.ipynb$'
   - repo: https://github.com/bridgecrewio/checkov
     rev: 3.2.424
     hooks:

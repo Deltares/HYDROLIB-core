@@ -1,12 +1,11 @@
 """parser.py defines the read method for the RainfallRunoffModel."""
 
+from pathlib import Path
 from typing import Dict, Iterable, Optional
-
-from pydantic.v1.types import FilePath
 
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:
-    return (l.strip() for l in lines)
+    return (line.strip() for line in lines)
 
 
 def _is_empty(line: str) -> bool:
@@ -44,8 +43,8 @@ def parse(keys: Iterable[str], lines: Iterable[str]) -> Dict:
     return dict(zip(keys, values))
 
 
-def read(keys: Iterable[str], path: FilePath) -> Dict:
-    """Parse the file at the specified path into a RainfallRunoffModel
+def read(keys: Iterable[str], path: Path) -> Dict:
+    """Parse the file at the specified path into a RainfallRunoffModel.
 
     Args:
         keys (Iterable[str]): The property keys of the RainfallRunoffModel.

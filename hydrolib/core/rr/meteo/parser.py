@@ -1,11 +1,13 @@
+"""Parsers for .bui precipitation files used in Rainfall-Runoff simulations."""
+
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Iterator, List, Tuple
 
 
 class BuiEventParser:
-    """
-    A parser for the precipitation event section within a .bui file.
+    """A parser for the precipitation event section within a .bui file.
+
     It resembles something like this:
     StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)
     PrecipitationPerTimestep
@@ -45,7 +47,8 @@ class BuiEventParser:
 
     @staticmethod
     def parse_event_time_reference(raw_text: str) -> Dict:
-        """
+        """Parses a single event time reference line into a dictionary.
+
         Parses a single event time reference line containing both the start time
         and the timeseries length into a dictionary.
 
@@ -76,7 +79,8 @@ class BuiEventParser:
 
 
 class BuiEventListParser:
-    """
+    """A parser for .bui events.
+
     A parser for .bui events which are like this:
     StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)
     PrecipitationPerTimestep
@@ -95,7 +99,8 @@ class BuiEventListParser:
 
     @staticmethod
     def parse(raw_text: str, n_events: int, timestep: int) -> List[Dict]:
-        """
+        """Parses a given raw text containing precipitation event text blocks.
+
         Parses a given raw text containing 0 to many text blocks representing a precipitation event.
 
         Args:
@@ -131,7 +136,8 @@ class BuiEventListParser:
 
 
 class BuiParser:
-    """
+    """A parser for .bui files.
+
     A parser for .bui files which are like this:
     * comments
     Dataset type to use (always 1).
@@ -148,7 +154,8 @@ class BuiParser:
 
     @staticmethod
     def parse(filepath: Path) -> Dict:
-        """
+        """Parses a given file into a dictionary mappable to BuiModel.
+
         Parses a given file, in case valid, into a dictionary which can later be mapped
         to the BuiModel.
 

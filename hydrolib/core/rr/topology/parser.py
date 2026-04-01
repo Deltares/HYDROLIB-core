@@ -1,3 +1,5 @@
+"""Parser for RR network topology files."""
+
 from pathlib import Path
 from typing import Iterable
 from warnings import warn
@@ -14,7 +16,6 @@ class NetworkTopologyFileParser:
         Args:
             enclosing_tag (str): The enclosing tag for the enclosed topology data per record.
         """
-
         self._enclosing_tag = enclosing_tag
 
     def parse(self, path: Path) -> dict:
@@ -23,7 +24,6 @@ class NetworkTopologyFileParser:
         Args:
             path (Path): Path to the network topology file.
         """
-
         file_content = self._read_file(path)
         return self._parse_lines(file_content)
 
@@ -45,7 +45,7 @@ class NetworkTopologyFileParser:
         for line in lines:
 
             substring = get_substring_between(line, key_start, key_end)
-            if substring == None:
+            if substring is None:
                 continue
 
             record = self._parse_line(substring)

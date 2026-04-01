@@ -18,7 +18,7 @@
 ## Introduction
 This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2025.
 
-HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content. 
+HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content.
 HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.
 
 ## User guide
@@ -26,7 +26,7 @@ HYDROLIB-core serves as the basis for various pre- and postprocessing tools for 
 Before getting started with HYDROLIB-core, make sure you have the following software and tools installed:
 
 - **Anaconda**: https://www.anaconda.com/download
-Anaconda is an open-source distribution for Python and contains the package manager "conda". 
+Anaconda is an open-source distribution for Python and contains the package manager "conda".
 (!) Make sure to add Anaconda to your PATH environment variable during installation.
 
 ### Installation
@@ -57,7 +57,7 @@ conda remove -n dsd_env --all
 ```
 
 This will remove all the packages in the environment and the environment folder itself.
-  
+
 
 ### Run the demo notebook
 
@@ -78,7 +78,7 @@ jupyter notebook
 
 In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.
 
-The table below contains the models relevant for today's exercises. 
+The table below contains the models relevant for today's exercises.
 
 ### Kernel files vs HYDROLIB-core FileModels
 | **Kernel file**                                    	| **FileModel** 	| **File reference**                                         	|
@@ -95,7 +95,7 @@ The table below contains the models relevant for today's exercises.
 | Structures file (structures.ini)            	| StructureModel   	| Model definition file > geometry > structureFile           	|
 
 ### Commonly used functions of a FileModel
-Each FileModel offers a set of commonly used functions. 
+Each FileModel offers a set of commonly used functions.
 
 **__init__()** --- Initialize a new file model instance
 
@@ -103,7 +103,7 @@ Parameters (all optional):
 * `filepath (Path)`: The file path from which the file model should be loaded. Default to None.
 * `resolve_casing (bool)`: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
 * `recurse (bool)`: Whether or not to recursively load the model. Defaults to True.
-* `path_style (str)`: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system. 
+* `path_style (str)`: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system.
 
 **save()** --- Export the file model data to a file
 

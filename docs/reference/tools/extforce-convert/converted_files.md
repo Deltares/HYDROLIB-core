@@ -57,13 +57,13 @@ ExtForceFile                        = my-project-FM_bnd.ext                     
 ExtForceFileNew                     =                                                                     # New format for external forcings file *.ext, link with bc-format boundary conditions specification
 ```
 - The MDU file is updated to reference the new files.
-- If the converter detects unsupported quantities, the `ExtForceFile` entry is left in place and the unsupported 
+- If the converter detects unsupported quantities, the `ExtForceFile` entry is left in place and the unsupported
   quantities are reported in the log.
-- If all the quantities are converted the `ExtForceFile` entry is removed and the `ExtForceFileNew` entry is updated to 
+- If all the quantities are converted the `ExtForceFile` entry is removed and the `ExtForceFileNew` entry is updated to
   point to the new file.
-- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` already exist, the converter will append the new entries to the existing 
+- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` already exist, the converter will append the new entries to the existing
   file.
-- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new 
+- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
 
 
@@ -277,7 +277,7 @@ Mapped to `[boundary]` (new external forcings) plus a `.bc` file:
 - Requires MDU `RefDate` (start time) for absolute-time conversion.
 - Legacy files `*.tim`/`*.t3d`/`*.cmp` are recorded to `converter.legacy_files` (eligible for `clean()`).
 
-#### 1.3) SourceSink block (new external forcing file) 
+#### 1.3) SourceSink block (new external forcing file)
 ```ini
 QUANTITY=discharge_salinity_temperature_sorsin
 FILENAME=my_sourcesink.poly
@@ -481,4 +481,3 @@ Tip
 - Boundary and source/sink conversions require MDU context:
   - `RefDate` must be present.
   - Temperature/salinity switches must be specified for source/sink to include corresponding series.
-

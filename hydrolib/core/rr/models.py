@@ -28,9 +28,7 @@ from .topology.models import LinkFile, NodeFile
 
 
 class ImmutableDiskOnlyFileModel(DiskOnlyFileModel):
-    """
-    ImmutableDiskOnlyFileModel modifies the DiskOnlyFileModel to provide faux
-    immutablitity.
+    """ImmutableDiskOnlyFileModel modifies the DiskOnlyFileModel to provide faux immutablitity.
 
     This behaviour is required for the mappix properties, which should always
     have the same name and path and should not be modified by users.
@@ -57,6 +55,7 @@ _mappix_salt_concentrations_name = "saltdt.his"
 
 
 def validate_mappix_value(field_name: str, expected: str, v) -> classmethod:
+    """Validate that a mappix field holds the expected fixed value."""
     if str(v.filepath) != expected:
         actual_value = v or "None"
         raise ValueError(
@@ -66,9 +65,7 @@ def validate_mappix_value(field_name: str, expected: str, v) -> classmethod:
 
 
 class RainfallRunoffModel(ParsableFileModel):
-    """The RainfallRunoffModel contains all paths and sub-models related to the
-    Rainfall Runoff model.
-    """
+    """The RainfallRunoffModel contains all paths and sub-models related to the Rainfall Runoff model."""
 
     # Note that order is defined by the .fnm file type and is used for parsing the data.
     control_file: Annotated[

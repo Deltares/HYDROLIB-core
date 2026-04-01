@@ -1,3 +1,5 @@
+"""Models for D-Flow FM sample/forcing (xyz) files."""
+
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 

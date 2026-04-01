@@ -50,14 +50,14 @@ AngLon                            = 0.                  # Angle of longitude E-W
 Conveyance2D                      = -1                  # -1: R=HU,0: R=H, 1: R=A/P, 2: K=analytic-1D conv, 3: K=analytic-2D conv
 Slotw2D                           = 0.                  # -
 NonLin1D                          = 0
-1D2DLinkFile                      = # File containing the custom parameterization of 1D-2D links. 
+1D2DLinkFile                      = # File containing the custom parameterization of 1D-2D links.
 PartitionFile                     = # *_part.pol, polyline(s) x,y
 Blmeanbelow                       = -999.               # if not -999d0, below this level the cell centre bedlevel is the mean of surrouding netnodes
 Blminabove                        = -999.               # if not -999d0, above this level the cell centre bedlevel is the min of surrouding netnodes
 Nonlin2D                          = 0                   # Non-linear 2D volumes, only i.c.m. ibedlevtype = 3 and Conveyance2D>=1
 Sillheightmin                     = 0.0                 # Weir treatment only if both sills larger than this value (m)
 Makeorthocenters                  = 0                   # 1=yes, 0=no switch from circumcentres to orthocentres in geominit
-Dcenterinside                     = 1.                  # limit cell center; 1.0:in cell <-> 0.0:on c/g 
+Dcenterinside                     = 1.                  # limit cell center; 1.0:in cell <-> 0.0:on c/g
 Bamin                             = 1.d-6               # Minimum gridcell area, i.c.m. cutcells
 OpenBoundaryTolerance             = 3.                  # Search tolerance factor between boundary polyline and grid cells. Unit: in cell size units (i.e., not metres).
 RenumberFlowNodes                 = 1                   # Renumber the flow nodes (1: yes, 0: no)
@@ -197,4 +197,3 @@ FullGridOutput                    = 0                   # Full grid output mode 
 EulerVelocities                   = 0                   # Euler velocities output (0: GLM, 1: Euler velocities)
 Wrirst_bnd                        = 1                   # Write waterlevel, bedlevel and coordinates of boundaries to restart files
 Writepart_domain                  = 1                   # Write partition domain info. for postprocessing
-

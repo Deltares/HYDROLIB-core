@@ -1,3 +1,5 @@
+"""Reader for UGRID netCDF files used by D-Flow FM network models."""
+
 from __future__ import annotations
 
 import json
@@ -36,9 +38,7 @@ class UgridReader:
         self._explorer = NCExplorer.from_file_path(self._ncfile_path)
 
     def read_mesh1d_network1d(self, mesh1d: Mesh1d) -> None:
-        """
-        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
-        specified mesh1d.
+        """Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the specified mesh1d.
 
         Args:
             mesh1d (Mesh1d): The object to which the read network1d is added.
@@ -72,9 +72,7 @@ class UgridReader:
         ds.close()
 
     def read_mesh2d(self, mesh2d: Mesh2d) -> None:
-        """
-        Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the
-        specified mesh2d.
+        """Read the Ugrid from the netcdf and add the dflowfm cstructure with grid to the specified mesh2d.
 
         Args:
             mesh2d (Mesh2d): The object to which the read network1d is added.
@@ -139,6 +137,7 @@ class UgridReader:
 
     def _read_nc_attribute(self, attr: nc._netCDF4.Variable) -> np.ndarray:
         """Read values from netcdf attribute.
+
         - Character arrays are converted to strings
         - Masked arrays are converted to regular arrays where the masked values are filled with the fillvalue
         - The numerical arrays are subtracted by the start value. This is often 1, while python is 0-based.
@@ -168,8 +167,10 @@ class UgridReader:
 
 
 class NCExplorer(BaseModel):
-    """NCExplorer provides the mapping of the UGRID variable names as used within
-    HYDROLIB models to the actual values used within the netCDF file.
+    """NCExplorer provides the mapping of the UGRID variable names to netCDF file values.
+
+    Maps the UGRID variable names as used within HYDROLIB models to the actual values
+    used within the netCDF file.
 
     If a component is not present, the corresponding mapping is set to None.
     A NCExplorer can be constructed from a file by using the `from_file_path`

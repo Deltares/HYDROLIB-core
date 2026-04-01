@@ -3,7 +3,7 @@
 We use MKdocs for documentation.
 For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
-The documentation itself is written with https://documentation.divio.com/ structure in mind, 
+The documentation itself is written with https://documentation.divio.com/ structure in mind,
 creating different categories:
 - Guides
 - Tutorials

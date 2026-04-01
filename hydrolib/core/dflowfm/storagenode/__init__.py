@@ -1,3 +1,5 @@
+"""Storage node model package for D-Flow FM."""
+
 from .models import (
     Interpolation,
     NodeType,

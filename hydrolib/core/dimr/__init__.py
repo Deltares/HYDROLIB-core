@@ -1,3 +1,5 @@
+"""DIMR coupling framework package."""
+
 from .models import (
     DIMR,
     Component,

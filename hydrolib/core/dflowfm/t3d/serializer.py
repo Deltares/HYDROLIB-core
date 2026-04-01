@@ -1,3 +1,5 @@
+"""Serializer for D-Flow FM T3D (time-varying 3D) files."""
+
 from pathlib import Path
 
 from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
@@ -11,6 +13,7 @@ class T3DSerializerConfig(SerializerConfig):
 
 
 class T3DSerializer:
+    """Serializer for T3D model data to .t3d file format."""
 
     @staticmethod
     def serialize(
@@ -19,8 +22,9 @@ class T3DSerializer:
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
     ) -> None:
-        """
-        Serialize the T3D model data (comments, layer_type, layers, and records)
+        """Serialize the T3D model data into a .t3d file.
+
+        Serializes the T3D model data (comments, layer_type, layers, and records)
         into the file at `path`, conforming to the typical .t3d format.
 
         Args:

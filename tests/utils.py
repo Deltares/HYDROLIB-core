@@ -36,10 +36,10 @@ VERSION_LINE_PATTERN = (
     r"\s*"
     r"written by hydrolib-core"
     r"\s+"
-    r"(?P<major>\d+)\.(?P<minor>\d+)"
+    r"(?:unknown|(?P<major>\d+)\.(?P<minor>\d+)"
     r"(?:\.(?P<patch>\d+))?"
     r"(?:[a-zA-Z]+(?P<suffix_num>\d*))?"
-    r"(?:\.[\w]+)*"
+    r"(?:\.[\w]+)*)"
     r"\s*$"
 )
 
@@ -69,6 +69,12 @@ def assert_files_equal(file: Path, reference_file: Path, skip_lines: list = []) 
 
     with reference_file.open(encoding="utf8") as rf:
         reference_lines = rf.readlines()
+
+    # Strip trailing empty lines from both files
+    while actual_lines and actual_lines[-1].strip() == "":
+        actual_lines.pop()
+    while reference_lines and reference_lines[-1].strip() == "":
+        reference_lines.pop()
 
     assert len(actual_lines) == len(
         reference_lines

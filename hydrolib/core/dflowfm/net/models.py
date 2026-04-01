@@ -1,3 +1,5 @@
+"""Models for D-Flow FM network (net) file structures."""
+
 from __future__ import annotations
 
 import logging
@@ -132,7 +134,7 @@ class Mesh2d(BaseModel):
 
     @property
     def mesh2d_face_nodes(self) -> np.ndarray[int, int]:
-        """The node indices of the mesh faces
+        """The node indices of the mesh faces.
 
         Returns:
             np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, maxNodesPerFace) containg the node indices for each face.
@@ -177,7 +179,7 @@ class Mesh2d(BaseModel):
         self.meshkernel.mesh2d_set(mesh2d)
 
     def get_mesh2d(self) -> mk.Mesh2d:
-        """Get the mesh2d as represented in the MeshKernel
+        """Get the mesh2d as represented in the MeshKernel.
 
         Returns:
             (mk.Mesh2d): The mesh2d as represented in the MeshKernel
@@ -185,7 +187,7 @@ class Mesh2d(BaseModel):
         return self.meshkernel.mesh2d_get()
 
     def create_rectilinear(self, extent: tuple, dx: float, dy: float) -> None:
-        """Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds
+        """Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds.
 
         Args:
             extent (tuple): Bounding box of mesh (left, bottom, right, top)
@@ -195,7 +197,6 @@ class Mesh2d(BaseModel):
         Raises:
             NotImplementedError: MultiPolygons
         """
-
         xmin, ymin, xmax, ymax = extent
 
         rows = int((ymax - ymin) / dy)
@@ -215,7 +216,7 @@ class Mesh2d(BaseModel):
         mesh2d_input.curvilinear_convert_to_mesh2d()  # convert to ugrid/mesh2d
 
     def create_triangular(self, geometry_list: mk.GeometryList) -> None:
-        """Create triangular grid within GeometryList object
+        """Create triangular grid within GeometryList object.
 
         Args:
             geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.
@@ -231,12 +232,10 @@ class Mesh2d(BaseModel):
     ) -> None:
         """Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.
 
-
         Args:
             geometrylist (GeometryList): Polygon stored as GeometryList
             deletemeshoption (int, optional): [description]. Defaults to 1.
         """
-
         # For clipping outside
         if not inside:
             # Check if a multipolygon was provided when clipping outside
@@ -290,7 +289,7 @@ class Mesh2d(BaseModel):
         level: int,
         parameters: mk.MeshRefinementParameters = None,
     ):
-        """Refine the mesh within a polygon, by a number of steps (level)
+        """Refine the mesh within a polygon, by a number of steps (level).
 
         Args:
             polygon (GeometryList): Polygon in which to refine
@@ -315,12 +314,21 @@ class Mesh2d(BaseModel):
 
 
 class Branch:
+    """Represents a 1D network branch with geometry and mesh node positions."""
+
     def __init__(
         self,
         geometry: np.ndarray,
         branch_offsets: np.ndarray = None,
         mask: np.ndarray = None,
     ) -> None:
+        """Initialize a Branch with geometry and optional node offsets and mask.
+
+        Args:
+            geometry (np.ndarray): Array of (x, y) coordinates defining the branch shape.
+            branch_offsets (np.ndarray): Chainage offsets along the branch for mesh nodes.
+            mask (np.ndarray): Boolean mask indicating which nodes to exclude.
+        """
         # Check that the array has two collumns (x and y)
         assert geometry.shape[1] == 2
 
@@ -442,7 +450,6 @@ class Branch:
         Returns:
             List[float]: A list with the updated limits.
         """
-
         additional = []
 
         # Skip the first and the last, these are no structures
@@ -524,9 +531,7 @@ class Branch:
     def _generate_1d_spacing(
         anchor_pts: List[float], mesh1d_edge_length: float
     ) -> np.ndarray:
-        """
-        Generates 1d distances, called by function generate offsets
-        """
+        """Generates 1d distances, called by function generate offsets."""
         offsets = []
         # Loop through anchor point pairs
         for i in range(len(anchor_pts) - 1):
@@ -548,7 +553,7 @@ class Branch:
         return np.asarray(offsets)
 
     def interpolate(self, distance: npt.ArrayLike) -> np.ndarray:
-        """Interpolate coordinates along branch by length
+        """Interpolate coordinates along branch by length.
 
         Args:
             distance (npt.ArrayLike): Length
@@ -615,17 +620,16 @@ class Link1d2d(BaseModel):
         return self.link1d2d.size == 0
 
     def read_file(self, file_path: Path) -> None:
-        """Read the Link1d2d data from the specified netCDF file at file_path into this
+        """Read the Link1d2d data from the specified netCDF file at file_path into this.
 
         Args:
             file_path (Path): Path to the netCDF file.
         """
-
         reader = UgridReader(file_path)
         reader.read_link1d2d(self)
 
     def clear(self) -> None:
-        """Remove all saved links from the links administration"""
+        """Remove all saved links from the links administration."""
         self.link1d2d_id = np.empty(0, object)
         self.link1d2d_long_name = np.empty(0, object)
         self.link1d2d_contact_type = np.empty(0, np.int32)
@@ -638,9 +642,11 @@ class Link1d2d(BaseModel):
     def _link_from_1d_to_2d(
         self, node_mask: np.ndarray, polygon: mk.GeometryList = None
     ):
-        """Connect 1d nodes to 2d face circumcenters. A list of branchid's can be given
-        to indicate where the 1d-side of the connections should be made. A polygon can
-        be given to indicate where the 2d-side of the connections should be made.
+        """Connect 1d nodes to 2d face circumcenters.
+
+        A list of branchid's can be given to indicate where the 1d-side of the
+        connections should be made. A polygon can be given to indicate where the
+        2d-side of the connections should be made.
 
         Note that the links are added to the already existing links. To remove these, use the method "clear".
 
@@ -648,7 +654,6 @@ class Link1d2d(BaseModel):
             node_mask (np.ndarray): Array indicating what 1d nodes should be connected. Defaults to None.
             polygon (mk.GeometryList): Coordinates of the area within which the 2d side of the links are connected.
         """
-
         # Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.
         # The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.
         self.meshkernel.contacts_compute_single(
@@ -661,7 +666,7 @@ class Link1d2d(BaseModel):
     def _link_from_2d_to_1d_embedded(
         self, node_mask: np.ndarray, polygons: mk.GeometryList
     ):
-        """"""
+        """Connect 2d faces to embedded 1d nodes using point-based contact computation."""
         self.meshkernel.contacts_compute_with_points(
             node_mask=node_mask, polygons=polygons
         )
@@ -682,7 +687,7 @@ class Link1d2d(BaseModel):
 
 
 class Mesh1d(BaseModel):
-    """"""
+    """Represents a 1D mesh network with branches, nodes, and edge connectivity."""
 
     meshkernel: mk.MeshKernel = Field(default_factory=mk.MeshKernel)
 
@@ -743,8 +748,11 @@ class Mesh1d(BaseModel):
         return self.mesh1d_node_x.size == 0
 
     def _get_mesh1d(self) -> mk.Mesh1d:
-        """Return mesh1d from meshkernel. Note that the meshkernel.Mesh1d instance
-        does not contain all mesh attributes that are contained in this class"""
+        """Return mesh1d from meshkernel.
+
+        Note that the meshkernel.Mesh1d instance does not contain all mesh attributes
+        that are contained in this class.
+        """
         return self.meshkernel.mesh1d_get()
 
     def _set_mesh1d(self) -> None:
@@ -757,9 +765,7 @@ class Mesh1d(BaseModel):
         )
 
     def _process_network1d(self) -> None:
-        """
-        Determine x, y locations of mesh1d nodes based on the network1d
-        """
+        """Determine x, y locations of mesh1d nodes based on the network1d."""
         # Create a list of coordinates to create the branches from
         ngeom = list(zip(self.network1d_geom_x, self.network1d_geom_y))
 
@@ -816,7 +822,7 @@ class Mesh1d(BaseModel):
         self.mesh1d_edge_y = edge_y
 
     def _network1d_node_position(self, x: float, y: float) -> Union[np.int32, None]:
-        """Determine the position (index) of a x, y coordinate in the network nodes
+        """Determine the position (index) of a x, y coordinate in the network nodes.
 
         Args:
             x (float): x-coordinate
@@ -828,7 +834,7 @@ class Mesh1d(BaseModel):
         return self._node_position(self.network1d_node_x, self.network1d_node_y, x, y)
 
     def _mesh1d_node_position(self, x: float, y: float) -> Union[np.int32, None]:
-        """Determine the position (index) of a x, y coordinate in the mesh nodes
+        """Determine the position (index) of a x, y coordinate in the mesh nodes.
 
         Args:
             x (float): x-coordinate
@@ -842,7 +848,7 @@ class Mesh1d(BaseModel):
     def _node_position(
         self, arrx: np.ndarray, arry: np.ndarray, x: float, y: float
     ) -> Union[np.int32, None]:
-        """Determine the position (index) of a x, y coordinate in a given x and y array
+        """Determine the position (index) of a x, y coordinate in a given x and y array.
 
         Args:
             arrx (np.ndarray): x-coordinates in which the position is sought
@@ -877,7 +883,7 @@ class Mesh1d(BaseModel):
         long_name: str = None,
         force_midpoint: bool = True,
     ):
-        """Add the branch to mesh1d
+        """Add the branch to mesh1d.
 
         Args:
             branch (Branch): branch to add to the mesh1d
@@ -889,7 +895,6 @@ class Mesh1d(BaseModel):
         Returns:
             Str: name of the branch.
         """
-
         # Check if branch had coordinate discretization
         if branch.branch_offsets.size == 0:
             raise ValueError(
@@ -1068,8 +1073,7 @@ class Mesh1d(BaseModel):
         return name
 
     def get_node_mask(self, branchids: List[str] = None):
-        """Get node mask, give a mask with True for each node that is in the given branchid list"""
-
+        """Get node mask, give a mask with True for each node that is in the given branchid list."""
         mask = np.full(self.mesh1d_node_id.shape, False, dtype=bool)
         if branchids is None:
             mask[:] = True
@@ -1086,7 +1090,14 @@ class Mesh1d(BaseModel):
 
 
 class Network:
+    """Represents a D-Flow FM network combining 1D, 2D mesh and 1D2D links."""
+
     def __init__(self, is_geographic: bool = False) -> None:
+        """Initialize a Network with optional geographic projection.
+
+        Args:
+            is_geographic (bool): If True, uses spherical projection. Defaults to False (Cartesian).
+        """
         if not is_geographic:
             projection = mk.ProjectionType.CARTESIAN
         else:
@@ -1102,7 +1113,9 @@ class Network:
 
     @classmethod
     def from_file(cls, file_path: Path) -> Network:
-        """Read network from file. This classmethod checks what mesh components (mesh1d & network1d, mesh2d, link1d2d) are
+        """Read network from file.
+
+        This classmethod checks what mesh components (mesh1d & network1d, mesh2d, link1d2d) are
         present, and loads them one by one.
 
         Args:
@@ -1111,7 +1124,6 @@ class Network:
         Returns:
             Network: The instance of the class itself that is returned
         """
-
         network = cls()
         ds = nc.Dataset(file_path)  # type: ignore[import]
 
@@ -1126,12 +1138,11 @@ class Network:
         return network
 
     def to_file(self, file: Path) -> None:
-        """Write network to file
+        """Write network to file.
 
         Args:
             file (Path): File where _net.nc is written to.
         """
-
         writer = UgridWriter()
         writer.write(self, file)
 
@@ -1165,8 +1176,9 @@ class Network:
         self._mesh2d.create_rectilinear(extent=extent, dx=dx, dy=dy)
 
     def mesh2d_create_triangular_within_polygon(self, polygon: mk.GeometryList) -> None:
-        """Create triangular grid within GeometryList object. Calls _mesh2d.create_triangular
-        directly, but is easier accessible for users.
+        """Create triangular grid within GeometryList object.
+
+        Calls _mesh2d.create_triangular directly, but is easier accessible for users.
 
         Args:
             polygon (mk.GeometryList): GeometryList representing a polygon within which the mesh is generated.
@@ -1237,10 +1249,7 @@ class NetworkModel(ParsableFileModel):
     network: Network = Field(default_factory=Network)
 
     def _post_init_load(self) -> None:
-        """
-        Load the network file if the filepath exists relative to the
-        current FileLoadContext.
-        """
+        """Load the network file if the filepath exists relative to the current FileLoadContext."""
         super()._post_init_load()
 
         if self.filepath is None:

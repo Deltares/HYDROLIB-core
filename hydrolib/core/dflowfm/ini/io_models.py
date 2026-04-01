@@ -1,3 +1,5 @@
+"""IO models for Deltares INI file structures (Document, Section, Property, CommentBlock)."""
+
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
@@ -11,19 +13,19 @@ class CommentBlock(BaseModel):
     """CommentBlock defines a comment block within a deltares ini file.
 
     Attributes:
-        lines (List[str]): The actual lines of the CommentBlock
+        lines (List[str]): The actual lines of the CommentBlock.
     """
 
     lines: List[str] = Field(default_factory=list)
 
 
 class Property(BaseModel):
-    """Property defines a deltares ini property
+    """Property defines a deltares ini property.
 
     Attributes:
-        key (str): The key of this Property
-        value (Optional[str]): The value associated with this Property
-        comment (Optional[str]): The comment associated with this Property
+        key (str): The key of this Property.
+        value (Optional[str]): The value associated with this Property.
+        comment (Optional[str]): The comment associated with this Property.
     """
 
     key: str
@@ -50,7 +52,7 @@ Datablock = Sequence[DatablockRow]
 
 
 class Section(BaseModel):
-    """Section defines a deltares ini section
+    """Section defines a deltares ini section.
 
     A deltares ini section consists of a header and an ordered list of
     properties and comments.
@@ -136,13 +138,13 @@ class Section(BaseModel):
 
 
 class Document(BaseModel):
-    """Document defines a Deltares ini document
+    """Document defines a Deltares ini document.
 
     Attributes:
         header_comment (List[CommentBlock]):
-            An ordered list of comment blocks defined in the header of the Document
+            An ordered list of comment blocks defined in the header of the Document.
         sections (List[Section]):
-            An ordered list of sections defined in this Document
+            An ordered list of sections defined in this Document.
     """
 
     header_comment: List[CommentBlock] = []

@@ -343,7 +343,7 @@ sequenceDiagram
     Conv->>NewExt: load new ext (if given as path)
     Conv->>NewIni: load New initialfield file (if given as path)
     Conv->>NewStr: load New initialfield file (if given as path)
-  
+
     Client->>Conv: update
     loop each forcing in Old.forcing
         Conv->>Conv: check unsupported quantity
@@ -500,9 +500,9 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 converter = ExternalForcingConverter("path/to/old-forcings.ext")  
 
 ext_model, ini_model, struct_model = converter.update()  
-print(len(ext_model.meteo), len(ext_model.boundary))      
-print(len(ini_model.initial), len(ini_model.parameter))   
-print(len(struct_model.structure))                        
+print(len(ext_model.meteo), len(ext_model.boundary))  
+print(len(ini_model.initial), len(ini_model.parameter))  
+print(len(struct_model.structure))  
 ```
 
 ---

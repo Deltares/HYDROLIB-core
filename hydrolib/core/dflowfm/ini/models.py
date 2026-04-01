@@ -1,3 +1,5 @@
+"""Models for INI-based D-Flow FM file formats, including INIBasedModel and INIModel."""
+
 import logging
 from abc import ABC
 from enum import Enum
@@ -56,8 +58,7 @@ logger = logging.getLogger(__name__)
 
 
 class INIBasedModel(BaseModel, ABC):
-    """INIBasedModel defines the base model for blocks/chapters
-    inside an INIModel (*.ini file).
+    """INIBasedModel defines the base model for blocks/chapters inside an INIModel (*.ini file).
 
     - Abstract base class for representing INI-style configuration file blocks or chapters.
     - This class serves as the foundational model for handling blocks within INI configuration files.
@@ -155,10 +156,9 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def get_list_delimiter(cls) -> str:
-        """List delimiter string that will be used for serializing
-        list field values for any IniBasedModel, **if** that field has
-        no custom list delimiter.
+        """List delimiter string that will be used for serializing list field values for any IniBasedModel.
 
+        Only applies **if** that field has no custom list delimiter.
         This function should be overridden by any subclass for a particular
         filetype that needs a specific/different list separator.
         """
@@ -166,8 +166,8 @@ class INIBasedModel(BaseModel, ABC):
 
     @classmethod
     def get_list_field_delimiter(cls, field_key: str) -> str:
-        """List delimiter string that will be used for serializing
-        the given field's value.
+        """List delimiter string that will be used for serializing the given field's value.
+
         The returned delimiter is either the field's custom list delimiter
         if that was specified using Field(.., delimiter=".."), or the
         default list delimiter for the model class that this field belongs
@@ -281,10 +281,7 @@ class INIBasedModel(BaseModel, ABC):
         return v
 
     def __setattr__(self, key, value) -> None:
-        """
-        Custom setter to handle Fortran-style scientific notation conversion
-        for float fields when setting attributes.
-        """
+        """Custom setter to handle Fortran-style scientific notation conversion for float fields when setting attributes."""
         field = self.__class__.model_fields.get(key)
         if field is None:
             super().__setattr__(key, value)
@@ -315,6 +312,7 @@ class INIBasedModel(BaseModel, ABC):
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
+        """Return a Pydantic core schema with input preprocessing applied before validation."""
         schema = handler(source_type)
 
         return core_schema.no_info_before_validator_function(
@@ -663,7 +661,7 @@ class DataBlockINIBasedModel(INIBasedModel):
         return None
 
     def as_dataframe(self) -> DataFrame:
-        """Convert the datablock as a pandas DataFrame
+        """Convert the datablock as a pandas DataFrame.
 
         - The first number from each list in the block as an index for that row.
 
@@ -776,6 +774,8 @@ class DataBlockINIBasedModel(INIBasedModel):
 
 
 class INIGeneral(INIBasedModel):
+    """Represents the [General] section common to all INI-based model files."""
+
     _header: Literal["General"] = "General"
     fileversion: str = Field("3.00", alias="fileVersion")
     filetype: str = Field(alias="fileType")
@@ -834,9 +834,7 @@ class INIModel(ParsableFileModel):
         return Document(header_comment=[header], sections=sections)
 
     def _serialize(self, _: dict, save_settings: ModelSaveSettings) -> None:
-        """
-        Create a `Document` from the model and write it to the file.
-        """
+        """Create a `Document` from the model and write it to the file."""
         write_ini(
             self._resolved_filepath,
             self._to_document(save_settings),

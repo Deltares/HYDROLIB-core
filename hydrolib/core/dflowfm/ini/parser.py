@@ -1,3 +1,5 @@
+"""Parser for Deltares INI file formats."""
+
 from enum import IntEnum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
@@ -14,7 +16,7 @@ from hydrolib.core.dflowfm.ini.io_models import (
 
 
 class ParserConfig(BaseModel):
-    """ParserConfig defines the configuration options of the Parser
+    """ParserConfig defines the configuration options of the Parser.
 
     Note that we cannot set both allow_only_keywords and parse_datablocks to True
     because we cannot distinguish between datablocks and key only properties. As
@@ -126,10 +128,10 @@ class Parser:
         PARSING_DATABLOCK = 2
 
     def __init__(self, config: ParserConfig) -> None:
-        """Creates a new Parser configured with the provided config
+        """Creates a new Parser configured with the provided config.
 
         Args:
-            config (ParserConfig): The configuration of this Parser
+            config (ParserConfig): The configuration of this Parser.
         """
         self._config = config
         self._document = Document()
@@ -269,7 +271,6 @@ class Parser:
             Tuple with the comment and string value, respectively. If no comment is
             present, the first tuple element is None.
         """
-
         if self._config.parse_comments and self._config.comment_delimiter in line:
             line = line.strip()
             parts = line.split(self._config.comment_delimiter)

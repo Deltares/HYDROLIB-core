@@ -1,3 +1,5 @@
+"""Boundary conditions (.bc) file model and related classes."""
+
 from .models import (
     T3D,
     Astronomic,

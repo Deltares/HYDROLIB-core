@@ -1,3 +1,5 @@
+"""One-dimensional field model definitions for D-Flow FM."""
+
 import logging
 from typing import Annotated, List, Literal, Optional
 
@@ -24,6 +26,8 @@ class OneDFieldGeneral(INIGeneral):
     """The 1D field file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the OneDFieldGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -43,6 +47,8 @@ class OneDFieldGlobal(INIBasedModel):
     """The `[Global]` block with a uniform value for use inside a 1D field file."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the OneDFieldGlobal section fields."""
+
         quantity: Optional[str] = Field("The name of the quantity", alias="quantity")
         unit: Optional[str] = Field("The unit of the quantity", alias="unit")
         value: Optional[str] = Field(
@@ -65,6 +71,8 @@ class OneDFieldBranch(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the OneDFieldBranch section fields."""
+
         branchid: Optional[str] = Field("The name of the branch", alias="branchId")
         numlocations: Optional[str] = Field(
             "Number of locations on branch. The default 0 value implies branch uniform values.",

@@ -10,7 +10,7 @@ AutoStart         = 0
 PathsRelativeToParent= 0
 
 [geometry]
-NetFile           = 
+NetFile           =
 BathymetryFile    =
 DryPointsFile     =
 GridEnclosureFile =
@@ -19,15 +19,15 @@ LandBoundaryFile  =
 ThinDamFile       =
 FixedWeirFile     =
 PillarFile        =
-StructureFile     = 
+StructureFile     =
 VertplizFile      =
 CrossDefFile      =
 CrossLocFile      =
-FrictFile         = 
+FrictFile         =
 StorageNodeFile   =
 RoofsFile         =
 ProfdefxyzFile    =
-IniFieldFile      = 
+IniFieldFile      =
 Uniformwidth1D    = 2
 ManholeFile       =
 WaterLevIni       = 0
@@ -166,7 +166,7 @@ RestartDateTime   =
 
 [external forcing]
 ExtForceFile      =
-ExtForceFileNew   = 
+ExtForceFileNew   =
 QExt              = 0
 
 [trachytopes]

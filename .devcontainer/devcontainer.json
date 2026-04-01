@@ -2,7 +2,7 @@
 //   A guide how to utilise dev containers within HYDROLIB can be found here:
 //       https://deltares.github.io/HYDROLIB-core/guides/devcontainers/
 //
-//   For additional information about this file: 
+//   For additional information about this file:
 //       https://aka.ms/devcontainer.json.
 {
 	"name": "Existing Dockerfile",
@@ -21,6 +21,6 @@
 	"mounts": [
 		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
 	],
-	// This ensures the HYDROLIB environment is properly installed. 
+	// This ensures the HYDROLIB environment is properly installed.
 	"postCreateCommand": "poetry install --no-root --no-interaction --no-ansi"
 }

@@ -1,4 +1,5 @@
-import os
+"""Serializers for RR node and link topology files."""
+
 from pathlib import Path
 from typing import Any, Dict
 
@@ -15,8 +16,7 @@ class NodeFileSerializer:
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
     ):
-        """
-        Serializes the RR node topology data to the file at the specified path.
+        """Serializes the RR node topology data to the file at the specified path.
 
         Args:
             path (Path): The path to the destination file.
@@ -24,7 +24,6 @@ class NodeFileSerializer:
             config (SerializerConfig): The serialization configuration.
             save_settings (ModelSaveSettings): The model save settings.
         """
-
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with path.open("w", encoding="utf8") as f:
@@ -59,8 +58,7 @@ class LinkFileSerializer:
         config: SerializerConfig,
         save_settings: ModelSaveSettings,
     ):
-        """
-        Serializes the RR link topology data to the file at the specified path.
+        """Serializes the RR link topology data to the file at the specified path.
 
         Args:
             path (Path): The path to the destination file.
@@ -68,7 +66,6 @@ class LinkFileSerializer:
             config (SerializerConfig): The serialization configuration.
             save_settings (ModelSaveSettings): The model save settings.
         """
-
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with path.open("w", encoding="utf8") as f:
