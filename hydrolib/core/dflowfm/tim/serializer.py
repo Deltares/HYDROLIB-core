@@ -119,7 +119,7 @@ class TimSerializer:
         lines = []
         lines.extend(commentlines)
         lines.extend(timeserieslines)
-        file_content = "\n".join(lines)
+        file_content = "\n".join(lines) + "\n"
         return file_content
 
     @staticmethod
