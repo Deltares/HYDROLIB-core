@@ -105,7 +105,7 @@ class TimSerializer:
                 )
                 row_elements.append(value + whitespace_offset)
 
-            line = column_space.join(row_elements)
+            line = column_space.join(row_elements).rstrip()
             timeserieslines.append(line)
         return timeserieslines
 
