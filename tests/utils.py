@@ -36,10 +36,10 @@ VERSION_LINE_PATTERN = (
     r"\s*"
     r"written by hydrolib-core"
     r"\s+"
-    r"(?P<major>\d+)\.(?P<minor>\d+)"
+    r"(?:unknown|(?P<major>\d+)\.(?P<minor>\d+)"
     r"(?:\.(?P<patch>\d+))?"
     r"(?:[a-zA-Z]+(?P<suffix_num>\d*))?"
-    r"(?:\.[\w]+)*"
+    r"(?:\.[\w]+)*)"
     r"\s*$"
 )
 
