@@ -7,6 +7,7 @@ from their sub-modules (e.g. ``from hydrolib.core.dflowfm.bc import T3D``).
 
 # File-level models (each represents a complete file)
 from .bc import (
+    T3D,
     Astronomic,
     Constant,
     ForcingModel,
