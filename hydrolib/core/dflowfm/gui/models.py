@@ -117,7 +117,7 @@ class BranchModel(INIModel):
     """
 
     general: BranchGeneral = BranchGeneral()
-    branch: Annotated[List[Branch], BeforeValidator(ensure_list)]
+    branch: Annotated[List[Branch], BeforeValidator(ensure_list)] = Field(default_factory=list)
 
     @classmethod
     def _ext(cls) -> str:
