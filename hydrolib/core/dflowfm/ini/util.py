@@ -511,7 +511,11 @@ def validate_location_specification(
     # ----- Local validation functions
     def get_length(field: str):
         value = values[field.lower()]
-        return len(to_list(value))
+        if isinstance(value, str):
+            result = len(value.split())
+        else:
+            result = len(to_list(value))
+        return result
 
     def validate_location_type(expected_location_type: LocationType) -> None:
         location_type = values.get(fields.location_type.lower(), None)
@@ -525,7 +529,7 @@ def validate_location_specification(
     def validate_coordinates_with_num_coordinates() -> None:
         length_x_coordinates = get_length(fields.x_coordinates)
         length_y_coordinates = get_length(fields.y_coordinates)
-        num_coordinates = values[fields.num_coordinates.lower()]
+        num_coordinates = int(values[fields.num_coordinates.lower()])
 
         if not num_coordinates == length_x_coordinates == length_y_coordinates:
             raise ValueError(
