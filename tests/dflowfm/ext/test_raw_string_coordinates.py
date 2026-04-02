@@ -183,15 +183,23 @@ class TestLateralRawStringCoordinates:
             discharge=1.0,
         )
 
-        assert lateral.numcoordinates == 5, (
-            f"Expected numcoordinates=5, got {lateral.numcoordinates}"
-        )
-        assert lateral.xcoordinates == [1.0, 2.0, 3.0, 4.0, 5.0], (
-            f"Expected 5 x-coordinates, got {lateral.xcoordinates}"
-        )
-        assert lateral.ycoordinates == [6.0, 7.0, 8.0, 9.0, 10.0], (
-            f"Expected 5 y-coordinates, got {lateral.ycoordinates}"
-        )
+        assert (
+            lateral.numcoordinates == 5
+        ), f"Expected numcoordinates=5, got {lateral.numcoordinates}"
+        assert lateral.xcoordinates == [
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+        ], f"Expected 5 x-coordinates, got {lateral.xcoordinates}"
+        assert lateral.ycoordinates == [
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+        ], f"Expected 5 y-coordinates, got {lateral.ycoordinates}"
 
     def test_lateral_with_raw_string_single_coordinate(self):
         """Test Lateral accepts a single coordinate as raw string.
@@ -208,12 +216,12 @@ class TestLateralRawStringCoordinates:
             discharge=1.0,
         )
 
-        assert lateral.numcoordinates == 1, (
-            f"Expected numcoordinates=1, got {lateral.numcoordinates}"
-        )
-        assert lateral.xcoordinates == [663197.49], (
-            f"Expected [663197.49], got {lateral.xcoordinates}"
-        )
+        assert (
+            lateral.numcoordinates == 1
+        ), f"Expected numcoordinates=1, got {lateral.numcoordinates}"
+        assert lateral.xcoordinates == [
+            663197.49
+        ], f"Expected [663197.49], got {lateral.xcoordinates}"
 
     def test_lateral_with_list_coordinates_still_works(self):
         """Test Lateral still works with pre-parsed list coordinates.
@@ -230,9 +238,10 @@ class TestLateralRawStringCoordinates:
             discharge=1.0,
         )
 
-        assert lateral.xcoordinates == [1.1, 2.2], (
-            f"Expected [1.1, 2.2], got {lateral.xcoordinates}"
-        )
+        assert lateral.xcoordinates == [
+            1.1,
+            2.2,
+        ], f"Expected [1.1, 2.2], got {lateral.xcoordinates}"
 
     def test_lateral_with_raw_string_mismatched_numcoordinates_raises(self):
         """Test Lateral rejects raw string coordinates with wrong numcoordinates.
@@ -264,9 +273,9 @@ class TestLateralRawStringCoordinates:
             discharge=1.0,
         )
 
-        assert lateral.branchid == "branch_7", (
-            f"Expected branchid='branch_7', got '{lateral.branchid}'"
-        )
+        assert (
+            lateral.branchid == "branch_7"
+        ), f"Expected branchid='branch_7', got '{lateral.branchid}'"
 
 
 class TestSourceSinkRawStringCoordinates:
@@ -290,9 +299,9 @@ class TestSourceSinkRawStringCoordinates:
             discharge=5.0,
         )
 
-        assert ss.numcoordinates == 2, (
-            f"Expected numcoordinates=2, got {ss.numcoordinates}"
-        )
+        assert (
+            ss.numcoordinates == 2
+        ), f"Expected numcoordinates=2, got {ss.numcoordinates}"
 
     def test_source_sink_with_raw_string_many_coordinates(self):
         """Test SourceSink accepts many raw string coordinates.
@@ -309,9 +318,9 @@ class TestSourceSinkRawStringCoordinates:
             discharge=5.0,
         )
 
-        assert ss.numcoordinates == 5, (
-            f"Expected numcoordinates=5, got {ss.numcoordinates}"
-        )
+        assert (
+            ss.numcoordinates == 5
+        ), f"Expected numcoordinates=5, got {ss.numcoordinates}"
 
     def test_source_sink_with_list_coordinates_still_works(self):
         """Test SourceSink still works with pre-parsed list coordinates.
@@ -327,9 +336,10 @@ class TestSourceSinkRawStringCoordinates:
             discharge=5.0,
         )
 
-        assert ss.xcoordinates == [1.0, 2.0], (
-            f"Expected [1.0, 2.0], got {ss.xcoordinates}"
-        )
+        assert ss.xcoordinates == [
+            1.0,
+            2.0,
+        ], f"Expected [1.0, 2.0], got {ss.xcoordinates}"
 
     def test_source_sink_with_raw_string_mismatched_raises(self):
         """Test SourceSink rejects raw strings with mismatched counts.
