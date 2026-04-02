@@ -15,11 +15,7 @@ import pytest
 from pydantic import field_validator
 
 from hydrolib.core.base.file_manager import FileLoadContext, FileModelCache
-from hydrolib.core.base.models import (
-    DiskOnlyFileModel,
-    FileModel,
-    ModelSaveSettings,
-)
+from hydrolib.core.base.models import DiskOnlyFileModel, FileModel, ModelSaveSettings
 
 
 class ValidFileModel(FileModel):
@@ -81,15 +77,15 @@ class TestFileModelCacheUnregister:
         model = ValidFileModel()
         cache.register_model(path, model)
 
-        assert cache.retrieve_model(path) is model, (
-            "Model should be retrievable before unregistering"
-        )
+        assert (
+            cache.retrieve_model(path) is model
+        ), "Model should be retrievable before unregistering"
 
         cache.unregister_model(path)
 
-        assert cache.retrieve_model(path) is None, (
-            "Model should be None after unregistering"
-        )
+        assert (
+            cache.retrieve_model(path) is None
+        ), "Model should be None after unregistering"
 
     def test_unregister_nonexistent_path_is_noop(self, tmp_path: Path):
         """Test that unregistering a path not in the cache does not raise.
@@ -103,9 +99,9 @@ class TestFileModelCacheUnregister:
 
         cache.unregister_model(path)
 
-        assert cache.retrieve_model(path) is None, (
-            "Cache should remain empty after unregistering nonexistent path"
-        )
+        assert (
+            cache.retrieve_model(path) is None
+        ), "Cache should remain empty after unregistering nonexistent path"
 
     def test_unregister_leaves_other_entries_intact(self, tmp_path: Path):
         """Test that unregistering one path does not affect other cached models.
@@ -124,12 +120,12 @@ class TestFileModelCacheUnregister:
 
         cache.unregister_model(path_a)
 
-        assert cache.retrieve_model(path_a) is None, (
-            "Unregistered model should be removed"
-        )
-        assert cache.retrieve_model(path_b) is model_b, (
-            "Other cached model should remain"
-        )
+        assert (
+            cache.retrieve_model(path_a) is None
+        ), "Unregistered model should be removed"
+        assert (
+            cache.retrieve_model(path_b) is model_b
+        ), "Other cached model should remain"
 
     def test_cache_is_empty_after_unregistering_only_entry(self, tmp_path: Path):
         """Test that the cache reports empty after its only entry is removed.
@@ -143,9 +139,7 @@ class TestFileModelCacheUnregister:
 
         cache.unregister_model(path)
 
-        assert cache.is_empty(), (
-            "Cache should be empty after removing its only entry"
-        )
+        assert cache.is_empty(), "Cache should be empty after removing its only entry"
 
 
 class TestFileLoadContextUnregister:
@@ -163,15 +157,15 @@ class TestFileLoadContextUnregister:
         model = ValidFileModel()
         context.register_model(path, model)
 
-        assert context.retrieve_model(path) is model, (
-            "Model should be retrievable before unregistering"
-        )
+        assert (
+            context.retrieve_model(path) is model
+        ), "Model should be retrievable before unregistering"
 
         context.unregister_model(path)
 
-        assert context.retrieve_model(path) is None, (
-            "Model should be None after unregistering via context"
-        )
+        assert (
+            context.retrieve_model(path) is None
+        ), "Model should be None after unregistering via context"
 
     @pytest.mark.parametrize(
         ("register_path", "unregister_path"),
@@ -242,12 +236,10 @@ class TestFileModelInitCacheCleanup:
 
         model = ValidFileModel(filepath=file_path)
 
-        assert model.name == "loaded", (
-            f"Expected name 'loaded', got '{model.name}'"
-        )
-        assert hasattr(model, "__pydantic_fields_set__"), (
-            "Model should have __pydantic_fields_set__ after successful init"
-        )
+        assert model.name == "loaded", f"Expected name 'loaded', got '{model.name}'"
+        assert hasattr(
+            model, "__pydantic_fields_set__"
+        ), "Model should have __pydantic_fields_set__ after successful init"
 
     def test_failed_init_does_not_leave_zombie_in_cache(self, tmp_path: Path):
         """Test that a failed init cleans up so DiskOnlyFileModel loads fresh.
@@ -284,9 +276,7 @@ class TestFileModelInitCacheCleanup:
         with pytest.raises(Exception, match="INVALID_DATA"):
             FailingFileModel(filepath=file_path)
 
-    def test_failed_init_does_not_corrupt_subsequent_loads(
-        self, tmp_path: Path
-    ):
+    def test_failed_init_does_not_corrupt_subsequent_loads(self, tmp_path: Path):
         """Test that a DiskOnlyFileModel can load after a FileModel fails.
 
         Test scenario:
@@ -309,13 +299,11 @@ class TestFileModelInitCacheCleanup:
             "Cache cleanup likely failed — the broken FailingFileModel "
             "instance leaked through."
         )
-        assert fallback.filepath == file_path, (
-            f"Expected filepath {file_path}, got {fallback.filepath}"
-        )
+        assert (
+            fallback.filepath == file_path
+        ), f"Expected filepath {file_path}, got {fallback.filepath}"
 
-    def test_failed_init_does_not_affect_different_filepath(
-        self, tmp_path: Path
-    ):
+    def test_failed_init_does_not_affect_different_filepath(self, tmp_path: Path):
         """Test that a failed init for one path doesn't affect another.
 
         Test scenario:
@@ -332,12 +320,10 @@ class TestFileModelInitCacheCleanup:
 
         model = ValidFileModel(filepath=valid_path)
 
-        assert isinstance(model, ValidFileModel), (
-            f"Expected ValidFileModel, got {type(model).__name__}"
-        )
-        assert model.name == "loaded", (
-            f"Expected name 'loaded', got '{model.name}'"
-        )
+        assert isinstance(
+            model, ValidFileModel
+        ), f"Expected ValidFileModel, got {type(model).__name__}"
+        assert model.name == "loaded", f"Expected name 'loaded', got '{model.name}'"
 
 
 class TestPydanticUnionFallback:
@@ -361,18 +347,16 @@ class TestPydanticUnionFallback:
         from hydrolib.core.base.models import BaseModel
 
         class ParentModel(BaseModel):
-            child: Optional[Union[FailingFileModel, DiskOnlyFileModel]] = Field(
-                None
-            )
+            child: Optional[Union[FailingFileModel, DiskOnlyFileModel]] = Field(None)
 
         file_path = tmp_path / "union_test.txt"
         file_path.write_text("content")
 
         parent = ParentModel(child={"filepath": file_path})
 
-        assert isinstance(parent.child, DiskOnlyFileModel), (
-            f"Expected DiskOnlyFileModel fallback, got {type(parent.child).__name__}"
-        )
+        assert isinstance(
+            parent.child, DiskOnlyFileModel
+        ), f"Expected DiskOnlyFileModel fallback, got {type(parent.child).__name__}"
 
     def test_union_field_uses_primary_type_when_valid(self, tmp_path: Path):
         """Test that a Union field uses the primary type when it validates.
@@ -387,18 +371,16 @@ class TestPydanticUnionFallback:
         from hydrolib.core.base.models import BaseModel
 
         class ParentModel(BaseModel):
-            child: Optional[Union[ValidFileModel, DiskOnlyFileModel]] = Field(
-                None
-            )
+            child: Optional[Union[ValidFileModel, DiskOnlyFileModel]] = Field(None)
 
         file_path = tmp_path / "valid_union.txt"
         file_path.write_text("content")
 
         parent = ParentModel(child={"filepath": file_path})
 
-        assert isinstance(parent.child, ValidFileModel), (
-            f"Expected ValidFileModel, got {type(parent.child).__name__}"
-        )
+        assert isinstance(
+            parent.child, ValidFileModel
+        ), f"Expected ValidFileModel, got {type(parent.child).__name__}"
 
     def test_union_field_none_default_stays_none(self):
         """Test that a Union field with default None remains None when omitted.
@@ -412,12 +394,10 @@ class TestPydanticUnionFallback:
         from hydrolib.core.base.models import BaseModel
 
         class ParentModel(BaseModel):
-            child: Optional[Union[FailingFileModel, DiskOnlyFileModel]] = Field(
-                None
-            )
+            child: Optional[Union[FailingFileModel, DiskOnlyFileModel]] = Field(None)
 
         parent = ParentModel()
 
-        assert parent.child is None, (
-            f"Expected None default, got {type(parent.child).__name__}"
-        )
+        assert (
+            parent.child is None
+        ), f"Expected None default, got {type(parent.child).__name__}"
