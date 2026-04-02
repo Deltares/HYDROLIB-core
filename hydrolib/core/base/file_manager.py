@@ -462,6 +462,14 @@ class FileModelCache:
         checksum = self._get_checksum(path)
         self._cache_dict[path] = CachedFileModel(model, checksum)
 
+    def unregister_model(self, path: Path) -> None:
+        """Remove the model associated with the specified path from the cache.
+
+        Args:
+            path (Path): The path to remove from the cache.
+        """
+        self._cache_dict.pop(path, None)
+
     def is_empty(self) -> bool:
         """Whether or not this file model cache is empty.
 
@@ -633,6 +641,18 @@ class FileLoadContext:
         """
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
+
+    def unregister_model(self, path: Path) -> None:
+        """Remove the model associated with the provided path from the cache.
+
+        Relative paths will be resolved based on the current state of the
+        FileLoadContext.
+
+        Args:
+            path (Path): The relative path to remove from the cache.
+        """
+        absolute_path = self._path_resolver.resolve(path)
+        self._cache.unregister_model(absolute_path)
 
     def cache_is_empty(self) -> bool:
         """Whether or not the file model cache is empty.
