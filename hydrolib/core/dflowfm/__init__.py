@@ -13,6 +13,7 @@ from .bc import (
     Harmonic,
     QuantityUnitPair,
     TimeSeries,
+    T3D,
 )
 from .cmp import CMPModel
 from .common import LocationType, Operand
