@@ -147,6 +147,9 @@ class VectorQuantityUnitPairs(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _validate_quantity_element_names(cls, values: Dict):
+        if not isinstance(values, dict) or "quantityunitpair" not in values:
+            return values
+
         for idx, name in enumerate(
             [qup.quantity for qup in values["quantityunitpair"]]
         ):

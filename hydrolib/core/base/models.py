@@ -411,7 +411,13 @@ class FileModel(BaseModel, ABC):
             relative_mode = self._get_relative_mode_from_data(data)
             context.push_new_parent(filepath.parent, relative_mode)
 
-            super().__init__(*args, **kwargs)
+            try:
+                super().__init__(*args, **kwargs)
+            except Exception:
+                context.unregister_model(filepath)
+                context.pop_last_parent()
+                raise
+
             self._post_init_load()
 
             context.pop_last_parent()

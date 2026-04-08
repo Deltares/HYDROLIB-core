@@ -46,6 +46,16 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
 )
 
 
+def _coordinate_length(v) -> int:
+    """Return the number of coordinates in a raw string or list."""
+    result = 0
+    if isinstance(v, str):
+        result = len(v.split())
+    elif isinstance(v, list):
+        result = len(v)
+    return result
+
+
 FILETYPE_FILEMODEL_MAPPING = {
     "bcascii": ForcingModel,
     "uniform": TimModel,
@@ -307,6 +317,11 @@ class SourceSink(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -358,7 +373,9 @@ class SourceSink(INIBasedModel):
             numcoordinates is not None
             and xcoordinates is not None
             and ycoordinates is not None
-            and len(xcoordinates) == len(ycoordinates) == numcoordinates
+            and _coordinate_length(xcoordinates)
+            == _coordinate_length(ycoordinates)
+            == int(numcoordinates)
         )
 
         if not (has_locationfile or has_coordinates):
