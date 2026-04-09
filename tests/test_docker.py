@@ -1,12 +1,11 @@
 from pathlib import Path
 
 import pytest
-from devtools import debug
 
 from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.core.dimr.models import DIMR, FMComponent, Start
-from tests.utils import test_input_dir, test_output_dir
+from tests.utils import test_input_dir
 
 from .utils import test_output_dir
 
@@ -16,7 +15,6 @@ def test_from_scratch_docker():
     dimr = DIMR()
     fm = FMModel()
     fm.filepath = Path("test.mdu")
-    # debug(fm.geometry.netfile)
     # manipulate the model
     # Start adding geometry
     # fm.geometry.netfile.network.mesh1d_add_branch()

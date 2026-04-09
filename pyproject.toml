@@ -1,102 +1,89 @@
-[tool.poetry]
+[project]
 name = "hydrolib-core"
 version = "1.0.0b5"
 description = "Python wrappers around D-HYDRO Suite."
-authors = ["Deltares"]
+authors = [{name = "Deltares"}]
 license = "MIT"
-packages = [{ include = "hydrolib" }]
 readme = "README.md"
-repository = "https://github.com/deltares/hydrolib-core"
-documentation = "https://deltares.github.io/HYDROLIB-core"
-homepage = "https://deltares.github.io/HYDROLIB-core"
+requires-python = ">=3.10,<4"
 
-include = [
-    { path = "hydrolib/tools/extforce_convert/data/**", format = "wheel" },
-    { path = "hydrolib/tools/extforce_convert/data/**", format = "sdist" },
-    { path = "hydrolib/core/dflowfm/extold/data/**", format = "wheel" },
-    { path = "hydrolib/core/dflowfm/extold/data/**", format = "sdist" },
+dependencies = [
+    # exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
+    "netCDF4>=1.5,<2,!=1.7.0,!=1.7.1",
+    # numpy v2 is required for python 3.13 support
+    "numpy>=1.25,<3; python_version < '3.13'",
+    "numpy>=2.1,<3; python_version >= '3.13'",
+    "pydantic>=2.5,<3",
+    "lxml>=6.0,<7",
+    "meshkernel>=8.1.3,<9",
+    "strenum>=0,<1",
+    "tqdm>=4.67.1,<5",
+    "pandas>=2.0.0",
+    "pyyaml>=6.0.2,<7",
+    "pydantic-settings>=2.11.0,<3",
 ]
 
-[tool.poetry.urls]
-"issue tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
-
-[tool.poetry.scripts]
-extforce-convert = 'hydrolib.tools.extforce_convert.cli:main'
-
-[tool.poetry.dependencies]
-python = ">=3.9,<4"
-# exclude yanked netcdf versions 1.7.0 and 1.7.1, but include 1.7.2 (first with python 3.12 support)
-netCDF4 = "^1.5,!=1.7.0,!=1.7.1"
-# no caret here, since numpy v2 is required for future python 3.13 support, but this is not yet widely supported by packages numpy v1 support is also still required.
-numpy = [
-    { version = ">=1.25,<3", python = "^3.9" },
-    { version = "^2.1", python = "^3.13" }
-]
-pydantic = "^2.5"
-# lxml 6.0 is from June 2025
-lxml = "^6.0"
-meshkernel = "^8.1.3"
-strenum = "^0"
-tqdm = "^4.67.1"
-pandas = ">=2.0.0"
-pyyaml = "^6.0.2"
-pydantic-settings = "^2.11.0"
-
-## Optional dependencies for examples extra
-geopandas = { version = "^1.0.0", optional = true }
-openpyxl = { version = "^3.1.5", optional = true }
-jupyter = { version = "^1.0.0", optional = true }
-ipykernel = { version = "^6.15.0", optional = true }
-matplotlib = { version = "^3.8", optional = true }
-
-[tool.poetry.extras]
+[project.optional-dependencies]
 examples = [
-    "geopandas",
-    "openpyxl",
-    "jupyter",
-    "ipykernel",
+    "geopandas>=1.0.0,<2",
+    "openpyxl>=3.1.5,<4",
+    "jupyter>=1.0.0,<2",
+    "ipykernel>=7.0,<8",
 ]
 plot = [
-    "matplotlib",
+    "matplotlib>=3.8,<4",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=9.0,<10",
+    "pytest-cov>=7.0,<8",
+    "commitizen>=4.0,<5",
+    "isort>=6.0,<7",
+    "black>=24.8.0,<25",
+    "mypy>=1.13,<2",
+    "jinja2>=3.0,<4",
+    "markupsafe>=3.0,<4",
+    # xarray >=2024.6.0 supports numpy 2.0
+    "xarray>=2024.6.0",
+    "pyfakefs>=6.0,<7",
+    "geopandas>=1.0.0,<2",
+]
+docs = [
+    "openpyxl>=3.1.5,<4",
+    "mkdocs>=1.2,<2",
+    "mkdocs-material>=9.5,<10",
+    "mkdocstrings>=1.0,<2",
+    "pymdown-extensions>=10.12,<11",
+    "mkdocs-autorefs>=1.2,<2",
+    "mkdocs-macros-plugin>=1.3.7,<2",
+    "mkdocs-table-reader-plugin>=3.1.0,<4",
+    "mkdocs-jupyter>=0.26.0,<0.27",
+    "mike>=2.0.0,<3",
+    "jupyter>=1.0.0,<2",
+    "notebook>=7.3.2,<8",
+    "mkdocstrings-python>=2.0,<3",
+    "mkdocs-mermaid2-plugin>=1.2.1,<2",
+    "mkdocs-panzoom-plugin>=0.4.2,<0.5",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0"
-pytest-cov = "^6.0"
-devtools = "^0.12.2"
-commitizen = "^4.0"
-isort = "^5.8"
-black = "^24.8.0"
-mypy = "^1.13"
-jinja2 = "^3.0"
-markupsafe = "<2.1"
-# xarray >=2024.6.0 supports numpy 2.0, but consider looser version if adding it as actual package dependencies
-xarray = ">=2024.6.0"
-pyfakefs = "^5.7.4"
+[project.urls]
+Repository = "https://github.com/deltares/hydrolib-core"
+Documentation = "https://deltares.github.io/HYDROLIB-core"
+Homepage = "https://deltares.github.io/HYDROLIB-core"
+"Issue Tracker" = "https://github.com/Deltares/HYDROLIB-core/issues"
 
+[project.scripts]
+extforce-convert = "hydrolib.tools.extforce_convert.cli:main"
 
-[tool.poetry.group.docs.dependencies]
-openpyxl = "^3.1.5"
-mkdocs = "^1.2"
-mkdocs-material = "^9.5"
-mkdocstrings = "^0.27.0"
-pymdown-extensions = "^10.12"
-mkdocs-autorefs = "^1.2"
-mkdocs-macros-plugin = "^1.3.7"
-mkdocs-table-reader-plugin = "^3.1.0"
-mkdocs-jupyter = "^0.25.1"
-mike = "^1.1.2"
-jupyter = "^1.0.0"
-notebook = "^7.3.2"
-mkdocstrings-python = "^1.13.0"
-mkdocs-mermaid2-plugin = "^1.2.1"
-mkdocs-panzoom-plugin = "^0.4.2"
-
-
-[tool.poetry.group.examples.dependencies]
-geopandas = "^1.0.0"
-
+[tool.poetry]
+packages = [{include = "hydrolib"}]
+include = [
+    {path = "hydrolib/tools/extforce_convert/data/**", format = "wheel"},
+    {path = "hydrolib/tools/extforce_convert/data/**", format = "sdist"},
+    {path = "hydrolib/core/dflowfm/extold/data/**", format = "wheel"},
+    {path = "hydrolib/core/dflowfm/extold/data/**", format = "sdist"},
+]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -109,7 +96,7 @@ changelog_file = "docs/changelog.md"
 
 [tool.black]
 line-length = 88
-target-version = ['py39', 'py310', 'py311', 'py312']
+target-version = ['py310', 'py311', 'py312', 'py313']
 exclude = '''
 (
   /(
