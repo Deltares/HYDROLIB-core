@@ -28,7 +28,7 @@ jobs:
       - name: Run image
         uses: abatilo/actions-poetry@v4
         with:
-          poetry-version: 2.2.1
+          poetry-version: 2.3.3
 
       - name: Build wheel
         run: poetry build -f wheel
