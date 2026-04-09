@@ -59,8 +59,9 @@ logger = logging.getLogger(__name__)
 
 
 class VerticalInterpolation(StrEnum):
-    """Enum class containing the valid values for the vertical position type,
-    which defines what the numeric values for vertical position specification mean.
+    """Enum class containing the valid values for the vertical position type.
+
+    Defines what the numeric values for vertical position specification mean.
     """
 
     linear = "linear"
@@ -115,8 +116,10 @@ class QuantityUnitPair(BaseModel):
     """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
     def _to_properties(self):
-        """Generator function that yields the ini Property objects for a single
-        QuantityUnitPair object."""
+        """Generator function that yields the ini Property objects for a single QuantityUnitPair object.
+
+        Yields ini Property objects for quantity, unit, and optional vertPositionIndex.
+        """
         yield Property(key="quantity", value=self.quantity)
         yield Property(key="unit", value=self.unit)
         if self.vertpositionindex is not None:
@@ -124,9 +127,11 @@ class QuantityUnitPair(BaseModel):
 
 
 class VectorQuantityUnitPairs(BaseModel):
-    """A subset of .bc file header lines containing a vector quantity definition,
-    followed by all component quantity names, their unit and optionally their
-    vertical position indexes."""
+    """A subset of .bc file header lines containing a vector quantity definition.
+
+    Followed by all component quantity names, their unit and optionally their
+    vertical position indexes.
+    """
 
     model_config = ConfigDict(validate_assignment=True)
 
@@ -142,6 +147,9 @@ class VectorQuantityUnitPairs(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def _validate_quantity_element_names(cls, values: Dict):
+        if not isinstance(values, dict) or "quantityunitpair" not in values:
+            return values
+
         for idx, name in enumerate(
             [qup.quantity for qup in values["quantityunitpair"]]
         ):
@@ -157,13 +165,16 @@ class VectorQuantityUnitPairs(BaseModel):
         return vectorname + ":" + ",".join(elementname)
 
     def __str__(self) -> str:
+        """Return the vector definition string representation."""
         return VectorQuantityUnitPairs._to_vectordefinition_string(
             self.vectorname, self.elementname
         )
 
     def _to_properties(self):
-        """Generator function that yields the ini Property objects for a single
-        VectorQuantityUnitPairs object."""
+        """Generator function that yields the ini Property objects for a single VectorQuantityUnitPairs object.
+
+        Yields a vector Property and the properties for each QuantityUnitPair.
+        """
         yield Property(key="vector", value=str(self))
 
         for qup in self.quantityunitpair:
@@ -274,6 +285,7 @@ class ForcingBase(DataBlockINIBasedModel):
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
+        """Return a Pydantic core schema with quantity preprocessing applied before validation."""
         schema = handler(source_type)
 
         return core_schema.no_info_before_validator_function(
@@ -329,6 +341,7 @@ class ForcingBase(DataBlockINIBasedModel):
     model_config = ConfigDict(extra="ignore")
 
     def __repr__(self) -> str:
+        """Return a string representation omitting the datablock for brevity."""
         data = dict(self)
         data["datablock"] = "<omitted>"
         representable = type(self).model_construct(**data)
@@ -336,9 +349,7 @@ class ForcingBase(DataBlockINIBasedModel):
 
 
 class VectorForcingBase(ForcingBase):
-    """
-    The base class of a single [Forcing] block that supports vectors in a .bc forcings file.
-    """
+    """The base class of a single [Forcing] block that supports vectors in a .bc forcings file."""
 
     @model_validator(mode="before")
     def validate_and_update_quantityunitpairs(cls, values: Dict) -> Dict:
@@ -374,9 +385,9 @@ class VectorForcingBase(ForcingBase):
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
     ) -> None:
-        """
-        Processes the given vector definition header lines from a .bc file
-        or, if absent, checks whether the existing VectorQuantityUnitPairs
+        """Processes the given vector definition header lines from a .bc file.
+
+        If absent, checks whether the existing VectorQuantityUnitPairs
         objects already have the correct vector length.
 
         Args:
@@ -390,7 +401,6 @@ class VectorForcingBase(ForcingBase):
                 Quantity lines. Typically used for 3D quantities, using the
                 number of vertical layers.
         """
-
         if vectordefs is not None and not any(
             map(lambda qup: isinstance(qup, VectorQuantityUnitPairs), quantityunitpairs)
         ):
@@ -412,11 +422,10 @@ class VectorForcingBase(ForcingBase):
         quantityunitpairs: List[ScalarOrVectorQUP],
         number_of_element_repetitions: int,
     ) -> None:
-        """
-        Validates the given vector definition header lines from a .bc file
-        for a ForcingBase subclass and updates the existing QuantityUnitPair list
-        by packing the vector elements into a VectorQuantityUnitPairs object
-        for each vector definition.
+        """Validates the given vector definition header lines from a .bc file for a ForcingBase subclass.
+
+        Updates the existing QuantityUnitPair list by packing the vector elements into a
+        VectorQuantityUnitPairs object for each vector definition.
 
         Args:
             vectordefs (List[str]): List of vector definition values, e.g.,
@@ -429,7 +438,6 @@ class VectorForcingBase(ForcingBase):
                 Quantity lines. Typically used for 3D quantities, using the
                 number of vertical layers.
         """
-
         if vectordefs is None:
             return
 
@@ -500,9 +508,9 @@ class VectorForcingBase(ForcingBase):
         vqu_pair: VectorQuantityUnitPairs,
         number_of_element_repetitions,
     ) -> bool:
-        """
-        Checks whether the number of QuantityUnitPairs in a vector quantity
-        matches exactly with number of vector elements in the definition and,
+        """Checks whether the number of QuantityUnitPairs in a vector quantity is correct.
+
+        Matches exactly with number of vector elements in the definition and,
         optionally, the number of vertical layers.
 
         Args:
@@ -520,7 +528,6 @@ class VectorForcingBase(ForcingBase):
             ValueError: If number of QuantityUnitPair objects in vqu_pair is not equal
                 to number of element names * number_of_element_repetitions.
         """
-
         if not (
             valid := len(vqu_pair.quantityunitpair)
             == len(vqu_pair.elementname) * number_of_element_repetitions
@@ -704,9 +711,6 @@ class T3D(VectorForcingBase):
             The vertical position type of the verticalpositions values.
         timeinterpolation (TimeInterpolation): default is linear
             The type of time interpolation.
-
-    Examples:
-
     """
 
     function: Literal["t3d"] = "t3d"
@@ -733,6 +737,7 @@ class T3D(VectorForcingBase):
     def __get_pydantic_core_schema__(
         cls, source_type: Any, handler: GetCoreSchemaHandler
     ) -> core_schema.CoreSchema:
+        """Return a Pydantic core schema with key renaming applied before validation."""
         schema = super().__get_pydantic_core_schema__(source_type, handler)
         return core_schema.no_info_before_validator_function(
             cls.rename_keys,  # this is called BEFORE validation
@@ -1181,11 +1186,9 @@ class ForcingModel(INIModel):
 
 
 class RealTime(StrEnum):
-    """
-    Enum class containing the valid value for the "realtime" reserved
-    keyword for real-time controlled forcing data, e.g., for hydraulic
-    structures.
+    """Enum class containing the valid value for the "realtime" reserved keyword.
 
+    For real-time controlled forcing data, e.g., for hydraulic structures.
     This class is used inside the ForcingData Union, to force detection
     of the realtime keyword, prior to considering it a filename.
     """

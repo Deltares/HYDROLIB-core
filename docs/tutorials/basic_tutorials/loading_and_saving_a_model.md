@@ -1,7 +1,7 @@
 # Loading and saving a model
 
 In this article we will look at loading and saving a model. First we will load a model,
-and store it in a new location. Then make adjustments to one of the sub models, and 
+and store it in a new location. Then make adjustments to one of the sub models, and
 store the model in place. Lastly, we will look at some caveats of saving and loading
 models.
 
@@ -35,8 +35,8 @@ new_path = Path("some/other/path/dimr_config.xml")
 dimr_model.save(filepath=new_path, recurse=True)
 ```
 
-By setting `recurse` to `True` we will ensure all files (which are supported by HYDROLIB-core) 
-are written to the new location, relative to the file path of the root model. 
+By setting `recurse` to `True` we will ensure all files (which are supported by HYDROLIB-core)
+are written to the new location, relative to the file path of the root model.
 Providing the `filepath` argument has the same result as first setting the filepath, and then
 calling save:
 
@@ -59,7 +59,7 @@ fm_component = dimr_model.component[1]  # Index 0 corresponds with the RRCompone
 fm_model = fm_component.model
 ```
 
-We can adjust the model, by for example changing some of the properties. For example let's change the 
+We can adjust the model, by for example changing some of the properties. For example let's change the
 `MapInterval` from 60 to 30:
 
 ```python
@@ -72,8 +72,8 @@ With that change made we can go ahead and save just this specific sub model, in 
 fm_model.save()
 ```
 
-By default, if no `filepath` is selected, it will be stored in the current `save_location`. This should 
-correspond with the place where it was last stored on disk. Furthermore, by default `recurse` is set to 
+By default, if no `filepath` is selected, it will be stored in the current `save_location`. This should
+correspond with the place where it was last stored on disk. Furthermore, by default `recurse` is set to
 `False`, as such we will only rewrite the `.mdu` file.
 
 If we now inspect the `.mdu` file, we should see that the `MapInterval` in the `output` header has been set to 30:
@@ -87,7 +87,7 @@ MapInterval       = 30.0
 ```
 
 ## Loading models on case-sensitive systems
-Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error. 
+Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error.
 To aid users in migrating their models, HYDROLIB-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.
 
 Consider an MDU model file that references a network file: `Network/flowfm_net.nc`.
@@ -165,7 +165,7 @@ fm_model.synchronize_filepaths()  # This has no effect.
 
 Because the `save_location` of the `fm_model` has not been changed, none of the child models will change either.
 
-Furthermore, extra care needs to be taken when dealing with FM models with the `pathsRelativeToParent` set to 
+Furthermore, extra care needs to be taken when dealing with FM models with the `pathsRelativeToParent` set to
 `False`. This option will make all relative paths of child models relative to the `.mdu`. If `synchronize_filepaths` is called on a child model of the fm model, it will instead make all `save_locations` relative to this child model, which is incorrect.
 
 It is recommended to not use `pathsRelativeToParent` set to `False`.

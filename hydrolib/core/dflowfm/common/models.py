@@ -1,10 +1,12 @@
+"""Common model types for D-Flow FM files, including LocationType and Operand enums."""
+
 from strenum import StrEnum
 
 
 class LocationType(StrEnum):
-    """
-    Enum class containing the valid values for the locationType
-    attribute in several classes such as Lateral and ObservationPoint.
+    """Enum class containing the valid values for the locationType attribute.
+
+    Used in several classes such as Lateral and ObservationPoint.
     """
 
     oned = "1d"
@@ -18,9 +20,9 @@ class LocationType(StrEnum):
 
 
 class Operand(StrEnum):
-    """
-    Enum class containing the valid values for the operand
-    attribute in several subclasses of AbstractIniField and ExtOldForcing.
+    """Enum class containing the valid values for the operand attribute.
+
+    Used in several subclasses of AbstractIniField and ExtOldForcing.
     """
 
     override = "O"

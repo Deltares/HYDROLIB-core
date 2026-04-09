@@ -152,7 +152,7 @@ AutoTimestepNoStruct= 1
 
 [restart]
 RestartFile       =
-RestartDateTime   = 
+RestartDateTime   =
 
 [external forcing]
 ExtForceFile      =

@@ -1,3 +1,5 @@
+"""Configuration settings for HYDROLIB-core."""
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

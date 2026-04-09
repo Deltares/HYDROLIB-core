@@ -1,3 +1,5 @@
+"""Parser for the harmonic/astronomic components (.cmp) file format."""
+
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
@@ -10,6 +12,7 @@ CMPData = Dict[str, Tuple[AstronomicData, HarmonicData]]
 
 class CMPParser(BaseParser):
     """Parser for .cmp files.
+
     Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
     No other comments are supported.
     """

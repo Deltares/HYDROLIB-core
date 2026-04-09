@@ -1,3 +1,5 @@
+"""MDU model definitions for D-Flow FM."""
+
 from enum import IntEnum
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
@@ -35,6 +37,7 @@ DEPRECATED_VARIABLE = "Deprecated variable."
 
 
 def load_crs(value):
+    """Load an observation cross section model from a file path."""
     file_suffix_model_map = {
         ".pli": PolyFile,
         ".ini": ObservationCrossSectionModel,
@@ -43,6 +46,7 @@ def load_crs(value):
 
 
 def load_point(value):
+    """Load an observation point model from a file path."""
     file_suffix_model_map = {
         ".ini": ObservationPointModel,
         ".xyn": XYNModel,
@@ -51,6 +55,7 @@ def load_point(value):
 
 
 def load_dry(value):
+    """Load a dry points model from a file path."""
     file_suffix_model_map = {
         ".xyz": XYZModel,
         ".pli": PolyFile,
@@ -68,9 +73,10 @@ def load_model(value, file_suffix_model_map):
 
 
 class AutoStartOption(IntEnum):
-    """
-    Enum class containing the valid values for the AutoStart
-    attribute in the [General][hydrolib.core.dflowfm.mdu.models.General] class.
+    """Enum class containing the valid values for the AutoStart attribute.
+
+    Contains valid values for the AutoStart attribute in the
+    [General][hydrolib.core.dflowfm.mdu.models.General] class.
     """
 
     no = 0
@@ -82,6 +88,8 @@ class General(INIGeneral):
     """The MDU file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the General section fields."""
+
         program: Optional[str] = Field("Program.", alias="program")
         version: Optional[str] = Field(
             "Version number of computational kernel", alias="version"
@@ -124,6 +132,8 @@ class Numerics(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Numerics section fields."""
+
         cflmax: Optional[str] = Field("Maximum Courant nr.", alias="CFLMax")
         epsmaxlev: Optional[str] = Field(
             "Stop criterium for non linear iteration", alias="EpsMaxlev"
@@ -431,6 +441,8 @@ class VolumeTables(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the VolumeTables section fields."""
+
         usevolumetables: Optional[str] = Field(
             "Use 1D volume tables (0: no, 1: yes).",
             alias="useVolumeTables",
@@ -462,6 +474,8 @@ class Physics(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Physics section fields."""
+
         uniffrictcoef: Optional[str] = Field(
             "Uniform friction coefficient (0: no friction).", alias="unifFrictCoef"
         )
@@ -673,7 +687,11 @@ class Physics(INIBasedModel):
 
 
 class Sediment(INIBasedModel):
+    """The `[Sediment]` section in an MDU file."""
+
     class Comments(INIBasedModel.Comments):
+        """Comments for the Sediment section fields."""
+
         sedimentmodelnr: Optional[str] = Field(
             "Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).",
             alias="Sedimentmodelnr",
@@ -708,6 +726,8 @@ class Wind(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Wind section fields."""
+
         icdtyp: Optional[str] = Field(
             "Wind drag coefficient type (1: Const, 2: Smith&Banke (2 pts), 3: S&B (3 pts), 4: Charnock 1955, 5: Hwang 2005, 6: Wuest 2005, 7: Hersbach 2010 (2 pts), 8: 4+viscous).",
             alias="iCdTyp",
@@ -791,6 +811,8 @@ class Waves(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Waves section fields."""
+
         wavemodelnr: Optional[str] = Field(
             "Wave model nr. (0: none, 1: fetch/depth limited hurdlestive, 2: Young-Verhagen, 3: SWAN, 5: uniform, 6: SWAN-NetCDF",
             alias="waveModelNr",
@@ -822,6 +844,8 @@ class Time(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Time section fields."""
+
         refdate: Optional[str] = Field("Reference date [yyyymmdd].", alias="refDate")
         tzone: Optional[str] = Field(
             "Data Sources in GMT are interrogated with time in minutes since refdat-Tzone*60 [min].",
@@ -909,6 +933,8 @@ class Restart(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Restart section fields."""
+
         restartfile: Optional[str] = Field(
             "Restart file, only from netCDF-file, hence: either *_rst.nc or *_map.nc.",
             alias="restartFile",
@@ -943,6 +969,8 @@ class ExternalForcing(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ExternalForcing section fields."""
+
         extforcefile: Optional[str] = Field(
             "Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.",
             alias="extForceFile",
@@ -999,6 +1027,8 @@ class Hydrology(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Hydrology section fields."""
+
         interceptionmodel: Optional[str] = Field(
             "Interception model (0: none, 1: on, via layer thickness).",
             alias="interceptionModel",
@@ -1021,6 +1051,8 @@ class Trachytopes(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Trachytopes section fields."""
+
         trtrou: Optional[str] = Field(
             "Flag for trachytopes (Y=on, N=off).", alias="trtRou"
         )
@@ -1068,6 +1100,8 @@ class Output(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Output section fields."""
+
         wrishp_crs: Optional[str] = Field(
             "Writing cross sections to shape file (0=no, 1=yes).", alias="wrishp_crs"
         )
@@ -1801,6 +1835,8 @@ class Geometry(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Geometry section fields."""
+
         netfile: Optional[str] = Field("The net file <*_net.nc>", alias="netFile")
         bathymetryfile: Optional[str] = Field(
             "Removed since March 2022. See [geometry] keyword BedLevelFile.",
@@ -2202,6 +2238,8 @@ class Calibration(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Calibration section fields."""
+
         usecalibration: Optional[str] = Field(
             "Activate calibration factor friction multiplier (0: no, 1: yes).",
             alias="UseCalibration",
@@ -2228,9 +2266,10 @@ class Calibration(INIBasedModel):
 
 
 class InfiltrationMethod(IntEnum):
-    """
-    Enum class containing the valid values for the Infiltrationmodel
-    attribute in the [GroundWater][hydrolib.core.dflowfm.mdu.models.GroundWater] class.
+    """Enum class containing the valid values for the Infiltrationmodel attribute.
+
+    Contains valid values for the Infiltrationmodel attribute in the
+    [GroundWater][hydrolib.core.dflowfm.mdu.models.GroundWater] class.
     """
 
     NoInfiltration = 0
@@ -2251,6 +2290,8 @@ class GroundWater(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the GroundWater section fields."""
+
         groundwater: Optional[str] = Field(
             "0=No (horizontal) groundwater flow, 1=With groundwater flow",
             alias="GroundWater",
@@ -2305,9 +2346,10 @@ class GroundWater(INIBasedModel):
 
 
 class ProcessFluxIntegration(IntEnum):
-    """
-    Enum class containing the valid values for the ProcessFluxIntegration
-    attribute in the [Processes][hydrolib.core.dflowfm.mdu.models.Processes] class.
+    """Enum class containing the valid values for the ProcessFluxIntegration attribute.
+
+    Contains valid values for the ProcessFluxIntegration attribute in the
+    [Processes][hydrolib.core.dflowfm.mdu.models.Processes] class.
     """
 
     WAQ = 1
@@ -2325,6 +2367,8 @@ class Processes(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Processes section fields."""
+
         substancefile: Optional[str] = Field(
             "Substance file name.", alias="SubstanceFile"
         )
@@ -2388,9 +2432,9 @@ class Processes(INIBasedModel):
 
 
 class ParticlesThreeDType(IntEnum):
-    """
-    Enum class containing the valid values for the 3Dtype
-    attribute in the `Particles` class.
+    """Enum class containing the valid values for the 3Dtype attribute.
+
+    Contains valid values for the 3Dtype attribute in the `Particles` class.
     """
 
     DepthAveraged = 0
@@ -2408,6 +2452,8 @@ class Particles(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Particles section fields."""
+
         particlesfile: Optional[str] = Field(
             "Initial particle locations file (*.xyz).", alias="ParticlesFile"
         )
@@ -2445,9 +2491,10 @@ class Particles(INIBasedModel):
 
 
 class VegetationModelNr(IntEnum):
-    """
-    Enum class containing the valid values for the VegetationModelNr
-    attribute in the [Vegetation][hydrolib.core.dflowfm.mdu.models.Vegetation] class.
+    """Enum class containing the valid values for the VegetationModelNr attribute.
+
+    Contains valid values for the VegetationModelNr attribute in the
+    [Vegetation][hydrolib.core.dflowfm.mdu.models.Vegetation] class.
     """
 
     No = 0
@@ -2465,6 +2512,8 @@ class Vegetation(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Vegetation section fields."""
+
         vegetationmodelnr: Optional[str] = Field(
             "Vegetation model nr, (0: no, 1: Baptist DFM).", alias="Vegetationmodelnr"
         )

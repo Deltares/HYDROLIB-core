@@ -383,4 +383,3 @@ VelocityMagnitudeClasses          = 0.0                                         
 UseCalibration = 0 # Activate calibration factor friction multiplier (1 = yes, 0 = no)
 DefinitionFile =   # File (*.cld) including calibration definitions
 AreaFile       =   # File (*.cll) including area distribution of calibration definitions
-

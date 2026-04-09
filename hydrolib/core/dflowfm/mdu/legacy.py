@@ -1,3 +1,5 @@
+"""Legacy MDU model definitions for D-Flow FM."""
+
 from typing import Literal
 
 from pydantic import Field

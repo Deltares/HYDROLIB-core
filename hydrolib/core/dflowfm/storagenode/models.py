@@ -1,3 +1,5 @@
+"""Storage node model definitions for D-Flow FM."""
+
 from typing import Annotated, List, Literal, Optional
 
 from pydantic import (
@@ -21,10 +23,7 @@ from hydrolib.core.dflowfm.ini.util import (
 
 
 class NodeType(StrEnum):
-    """
-    Enum class containing the valid values for the node type
-    as used in StorageNode.
-    """
+    """Enum class containing the valid values for the node type as used in StorageNode."""
 
     inspection = "inspection"
     soakawaydrain = "soakawayDrain"
@@ -33,20 +32,14 @@ class NodeType(StrEnum):
 
 
 class StorageType(StrEnum):
-    """
-    Enum class containing the valid values for the storage type
-    as used in StorageNode.
-    """
+    """Enum class containing the valid values for the storage type as used in StorageNode."""
 
     reservoir = "reservoir"
     closed = "closed"
 
 
 class Interpolation(StrEnum):
-    """
-    Enum class containing the valid values for the interpolation type
-    as used for a storage area table in StorageNode.
-    """
+    """Enum class containing the valid values for the interpolation type as used for a storage area table in StorageNode."""
 
     linear = "linear"
     block = "block"
@@ -56,6 +49,8 @@ class StorageNodeGeneral(INIGeneral):
     """The storage node file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the StorageNodeGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -86,6 +81,8 @@ class StorageNode(INIBasedModel):
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the StorageNode section fields."""
+
         id: Optional[str] = Field("Unique id of the storage node.", alias="id")
         name: Optional[str] = Field("Long name in the user interface.", alias="name")
         manholeid: Optional[str] = Field(
@@ -170,9 +167,7 @@ class StorageNode(INIBasedModel):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """
-        The StorageNode does not currently support raising an error on unknown keywords.
-        """
+        """The StorageNode does not currently support raising an error on unknown keywords."""
         return None
 
     @field_validator("interpolate", mode="before")
@@ -261,10 +256,11 @@ class StorageNodeModel(INIModel):
 
     @field_validator("storagenode", mode="after")
     def _validate(cls, storagenodes: List[StorageNode], info: ValidationInfo):
-        """Validates for each storage node whether the streetStorageArea value is provided
+        """Validate the streetStorageArea for each storage node.
+
+        Validates for each storage node whether the streetStorageArea value is provided
         when the general useStreetStorage is True and the storage node useTable is False.
         """
-
         usestreetstorage = info.data["general"].usestreetstorage
 
         for storagenode in storagenodes:

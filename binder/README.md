@@ -1,7 +1,7 @@
 # HYDROLIB-Core - Binder Support
 
-HYDROLIB-Core binder support is done via Docker. This allows us to get python 3.9 and 
-all necessary dependencies. [The Dockerfile](Dockerfile) copies the current 
+HYDROLIB-Core binder support is done via Docker. This allows us to get python 3.9 and
+all necessary dependencies. [The Dockerfile](Dockerfile) copies the current
 HYDROLIB-Core root directory to home, and installs it, after which HYDROLIB-Core and all
 necessary dependencies are available from within binder.
 

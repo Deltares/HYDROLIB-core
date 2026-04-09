@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import IntEnum
 from pathlib import Path
-from typing import Dict, Generator, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Dict, Generator, List, Optional, Tuple, Union
 
 from hydrolib.core.base.utils import (
     FileChecksumCalculator,
@@ -15,6 +15,9 @@ from hydrolib.core.base.utils import (
     get_path_style_for_current_operating_system,
     str_is_empty_or_none,
 )
+
+if TYPE_CHECKING:
+    from hydrolib.core.base.models import FileModel
 
 PathOrStr = Union[Path, str]
 # We use ContextVars to keep a reference to the folder
@@ -459,6 +462,14 @@ class FileModelCache:
         checksum = self._get_checksum(path)
         self._cache_dict[path] = CachedFileModel(model, checksum)
 
+    def unregister_model(self, path: Path) -> None:
+        """Remove the model associated with the specified path from the cache.
+
+        Args:
+            path (Path): The path to remove from the cache.
+        """
+        self._cache_dict.pop(path, None)
+
     def is_empty(self) -> bool:
         """Whether or not this file model cache is empty.
 
@@ -631,6 +642,18 @@ class FileLoadContext:
         absolute_path = self._path_resolver.resolve(path)
         self._cache.register_model(absolute_path, model)
 
+    def unregister_model(self, path: Path) -> None:
+        """Remove the model associated with the provided path from the cache.
+
+        Relative paths will be resolved based on the current state of the
+        FileLoadContext.
+
+        Args:
+            path (Path): The relative path to remove from the cache.
+        """
+        absolute_path = self._path_resolver.resolve(path)
+        self._cache.unregister_model(absolute_path)
+
     def cache_is_empty(self) -> bool:
         """Whether or not the file model cache is empty.
 
@@ -695,9 +718,7 @@ class FileLoadContext:
         return file_path
 
     def convert_path_style(self, file_path: Path) -> Path:
-        """convert_path_style.
-
-        Resolve the file path by converting it from its own file path style to the path style for the current operating system.
+        """Convert the file path from its own style to the path style for the current operating system.
 
         Args:
             file_path (Path): The file path to convert to the OS path style.
@@ -705,7 +726,6 @@ class FileLoadContext:
         Returns:
             Path: The resolved file path.
         """
-
         if file_path.is_absolute():
             return file_path
 
@@ -762,9 +782,7 @@ path_style_validator = PathStyleValidator()
 
 
 def resolve_relative_to_root(file_path: Path, root_dir: Path) -> Path:
-    """
-    Resolve a file path relative to a root directory, handling both relative
-    and absolute input paths robustly.
+    """Resolve a file path relative to a root directory, handling both relative and absolute input paths robustly.
 
     This function ensures that a given `filepath` is correctly resolved under
     the `root_dir`. It supports cases where the `filepath` is:

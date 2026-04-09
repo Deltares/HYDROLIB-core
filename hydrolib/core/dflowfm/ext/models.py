@@ -1,3 +1,5 @@
+"""Models for the external forcings file (new format) of D-Flow FM."""
+
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -44,6 +46,16 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
 )
 
 
+def _coordinate_length(v) -> int:
+    """Return the number of coordinates in a raw string or list."""
+    result = 0
+    if isinstance(v, str):
+        result = len(v.split())
+    elif isinstance(v, list):
+        result = len(v)
+    return result
+
+
 FILETYPE_FILEMODEL_MAPPING = {
     "bcascii": ForcingModel,
     "uniform": TimModel,
@@ -57,9 +69,9 @@ FILETYPE_FILEMODEL_MAPPING = {
 
 
 class Boundary(INIBasedModel):
-    """
-    A `[Boundary]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+    """A `[Boundary]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the boundary input as described in
     [UM Sec.C.5.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.1).
@@ -147,7 +159,7 @@ class Boundary(INIBasedModel):
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         """
-        Retrieves the identifier for a boundary, which is the nodeid
+        Retrieves the identifier for a boundary, which is the nodeid.
 
         Args:
             data (dict): Dictionary of values for this boundary.
@@ -190,9 +202,9 @@ class Boundary(INIBasedModel):
 
 
 class Lateral(INIBasedModel):
-    """
-    A `[Lateral]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+    """A `[Lateral]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
     [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
@@ -275,9 +287,9 @@ class Lateral(INIBasedModel):
 
 
 class SourceSink(INIBasedModel):
-    """
-    A `[SourceSink]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
+    """A `[SourceSink]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
 
     All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
@@ -305,6 +317,11 @@ class SourceSink(INIBasedModel):
     def is_intermediate_link(self) -> bool:
         return True
 
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
+        return split_string_on_delimiter(cls, v, info)
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -319,6 +336,7 @@ class SourceSink(INIBasedModel):
     model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
+        """Initialize SourceSink and set dynamic tracer attributes."""
         super().__init__(**data)
         # Add dynamic attributes for fields starting with 'tracer'
         for key, value in data.items():
@@ -355,7 +373,9 @@ class SourceSink(INIBasedModel):
             numcoordinates is not None
             and xcoordinates is not None
             and ycoordinates is not None
-            and len(xcoordinates) == len(ycoordinates) == numcoordinates
+            and _coordinate_length(xcoordinates)
+            == _coordinate_length(ycoordinates)
+            == int(numcoordinates)
         )
 
         if not (has_locationfile or has_coordinates):
@@ -381,10 +401,7 @@ class SourceSink(INIBasedModel):
 
 
 class MeteoForcingFileType(StrEnum):
-    """
-    Enum class containing the valid values for the forcingFileType
-    attribute in Meteo class.
-    """
+    """Enum class containing the valid values for the forcingFileType attribute in Meteo class."""
 
     bcascii = "bcAscii"
     """str: Space-uniform time series in <*.bc> file."""
@@ -414,10 +431,7 @@ class MeteoForcingFileType(StrEnum):
 
 
 class MeteoInterpolationMethod(StrEnum):
-    """
-    Enum class containing the valid values for the interpolationMethod
-    attribute in Meteo class.
-    """
+    """Enum class containing the valid values for the interpolationMethod attribute in Meteo class."""
 
     nearestnb = "nearestNb"
     """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
@@ -428,15 +442,17 @@ class MeteoInterpolationMethod(StrEnum):
 
 
 class Meteo(INIBasedModel):
-    """
-    A `[Meteo]` block for use inside an external forcings file,
-    i.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+    """A `[Meteo]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the meteo input as described in
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Meteo block fields."""
+
         quantity: Optional[str] = Field(
             "Name of the quantity. See UM Section C.5.3", alias="quantity"
         )
@@ -479,9 +495,7 @@ class Meteo(INIBasedModel):
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """
-        The Meteo does not currently support raising an error on unknown keywords.
-        """
+        """The Meteo does not currently support raising an error on unknown keywords."""
         return None
 
     _header: Literal["Meteo"] = "Meteo"
@@ -609,37 +623,37 @@ class SourceSinkError(Exception):
     """SourceSinkError."""
 
     def __init__(self, error_message: str):
-        """SourceSinkError constructor."""
-        print(error_message)
+        """Initialize with an error message."""
+        super().__init__(error_message)
 
 
 class InitialFieldError(Exception):
     """InitialFieldError."""
 
     def __init__(self, error_message: str):
-        """InitialFieldError constructor."""
-        print(error_message)
+        """Initialize with an error message."""
+        super().__init__(error_message)
 
 
 class MeteoError(Exception):
     """MeteoError."""
 
     def __init__(self, error_message: str):
-        """MeteoError constructor."""
-        print(error_message)
+        """Initialize with an error message."""
+        super().__init__(error_message)
 
 
 class BoundaryError(Exception):
     """BoundaryError."""
 
     def __init__(self, error_message: str):
-        """BoundaryError constructor."""
-        print(error_message)
+        """Initialize with an error message."""
+        super().__init__(error_message)
 
 
 class ParameterFieldError(Exception):
     """ParameterFieldError."""
 
     def __init__(self, error_message: str):
-        """ParameterFieldError constructor."""
-        print(error_message)
+        """Initialize with an error message."""
+        super().__init__(error_message)

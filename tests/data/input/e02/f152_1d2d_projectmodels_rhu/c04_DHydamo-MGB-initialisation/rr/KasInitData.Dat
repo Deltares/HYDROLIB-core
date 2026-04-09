@@ -32784,4 +32784,3 @@ INIT id 'Periodic kas initialisation data' PDIN 1 1 '31536000' pdin TBLE
 '1994/12/31;23:59:00' 0 0 0 0 0 0 0 0 0 0 <
 tble
 init
-

@@ -36,7 +36,7 @@ classDiagram
         +_can_copy_to()
         +is_intermediate_link()
     }
-    
+
     class ParsableFileModel{
         -serializer_config: SerializerConfig
         +_load()
@@ -210,17 +210,17 @@ classDiagram
 
 %% Inheritance Relationships
     FileModel <|-- DiskOnlyFileModel
-    
+
     BaseModel <|-- FileModel
     BaseModel <|-- INIBasedModel
     BaseModel <|-- CachedFileModel
     BaseModel <|-- ParsableFileModel
     ParsableFileModel <|-- FileModel
-    
+
     FileModelCache *-- CachedFileModel
 %%    FilePathResolver *-- ResolveRelativeMode
     ModelTreeTraverser o-- TAcc
-    
+
     INIBasedModel <|-- DataBlockINIBasedModel
     INIBasedModel <|-- INIGeneral
     INIBasedModel <|-- INIModel
@@ -242,7 +242,7 @@ classDiagram
     FileModelCache *-- CachedFileModel
     FileLoadContext --> FileModelCache : uses
     FileLoadContext --> FileChecksumCalculator : uses
-    
+
     ParsableFileModel --> SerializerConfig : configures
     ParsableFileModel --> ModelSaveSettings : uses
     ParsableFileModel --> ModelLoadSettings : uses

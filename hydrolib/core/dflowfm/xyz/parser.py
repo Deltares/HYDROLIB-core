@@ -1,3 +1,5 @@
+"""Parser for D-Flow FM sample/forcing (xyz) files."""
+
 import re
 from pathlib import Path
 from typing import Dict
@@ -6,8 +8,9 @@ xyzpattern = re.compile(r"\s+")
 
 
 class XYZParser:
-    """
-    A parser for .xyz files which are like this:
+    """A parser for .xyz files.
+
+    Files have contents like this:
 
     number number    number
     number number number # comment
@@ -32,7 +35,6 @@ class XYZParser:
             ValueError: if a line in the file contains no values that
                 could be parsed.
         """
-
         data: Dict = dict(points=[])
 
         with filepath.open(encoding="utf8") as f:
@@ -46,7 +48,7 @@ class XYZParser:
                     x, y, z, *c = re.split(xyzpattern, line, maxsplit=3)
                 except ValueError:
                     raise ValueError(
-                        f"Error parsing XYZ file '{filepath}', line {linenr+1}."
+                        f"Error parsing XYZ file '{filepath}', line {linenr + 1}."
                     )
 
                 c = c[0] if len(c) > 0 else ""

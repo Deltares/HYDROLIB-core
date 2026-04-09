@@ -1,3 +1,5 @@
+"""HYDROLIB-core package for D-HYDRO model file wrappers."""
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:

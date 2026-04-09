@@ -22,7 +22,7 @@ A rectangular basin as given in \Fref{fig:wavesinbasinfricno} is adopted. The ba
 To mimic the semi-analytical solution of Taylor, the water level elevation at the open boundary at $x=L$ is prescribed. This elevation, denoted by $\zeta$, is the sum of the incoming and outgoing Kelvin wave, based on the solution for an infinitely long channel bounded by sidewalls at $y = 0$ and $y = B$. These so-called pseudo-standing Kelvin waves are described by the following expression:
 \begin{eqnarray}
 \zeta(y) &=& \frac{2c}{g}U_0 \exp \left(-\frac{fB}{2c} \right) \cdot  \cosh \left(\frac{f}{c} \left(\frac{B}{2}-y \right) \right) \cdot \cos kx \cos \omega t   \\
-         &+& \frac{2c}{g}U_0 \exp \left(-\frac{fB}{2c} \right) \cdot  \sinh \left(\frac{f}{c} \left(\frac{B}{2}-y \right) \right) \cdot \sin kx \sin \omega t 
+         &+& \frac{2c}{g}U_0 \exp \left(-\frac{fB}{2c} \right) \cdot  \sinh \left(\frac{f}{c} \left(\frac{B}{2}-y \right) \right) \cdot \sin kx \sin \omega t
 \end{eqnarray}
 in which $B$ is the width of the basin, $g$ the gravitational accelaration, $f$ the Coriolis parameter being $f = 2 \Omega \sin \varphi$, with $\Omega$ the Earth's rotation $2\pi/24/3600 = 7.2722\cdot10^{-5}$ rad/s and $\varphi$ the latitude, $c$ the phase speed of the forcing's wave equal to $\sqrt{gH}$, with $H$ the water depth. The parameters $k$ and $\omega$ are the wavenumber and wavefrequency, respectively, and $U_0$ is the forcing's amplitude.
 
@@ -45,7 +45,7 @@ The computational domain is the rectangular basin as shown in \Fref{fig:wavesinb
 \end{itemize}
 The friction is turned off; the horizontal eddy viscosity has the uniform value of 0 m$^2$/s. The sidewalls are impermeable, but frictionless (normal velocities equal zero). At $x = L$ the phase lag between $\zeta_{in}$ and $\zeta_{out}$ can be computed as $45.12\degr$.
 
-Three computational grids are examined: 
+Three computational grids are examined:
 \begin{enumerate}
 \item a coarse Cartesian grid consisting of $72 \times 22$ cells of $25.0 \times 25.0$ km$^2$,
 \item a fine Cartesian grid consisting of $144 \times 44$ cells of $12.5 \times 12.5$ km$^2$,
@@ -62,9 +62,9 @@ The results for each of the three grids are shown in \Fref{fig:kelvinfricno} in 
 \end{center}\caption{Semi-analytical solution (bottom panel) for the Coriolis test without friction. The upper three panels show the computational result from D-Flow FM on the triangular grid (upper panel), the fine Cartesian grid (second panel) and the coarse Cartesian grid (third panel). The colors span surface elevations from 0 m to 2.8 m. \label{fig:kelvinfricno}}
 \end{figure}
 
-The bottom panel (semi-analytical solution) shows a symmetric image of the absolute surface elevations. The solution, basically a superposition of the two Kelvin waves and a large number of Poincar\'e waves) consists of three amphidromic points. 
+The bottom panel (semi-analytical solution) shows a symmetric image of the absolute surface elevations. The solution, basically a superposition of the two Kelvin waves and a large number of Poincar\'e waves) consists of three amphidromic points.
 
-The computational results (the three top panels) show that D-Flow FM has difficulties in reproducing the amplitudes of the surface elevation. The location of the amphidromic points seems to agree with the semi-analytical solution. However, the image is diffuse. It should further be investigated what the explanation for this diffuse picture is. 
+The computational results (the three top panels) show that D-Flow FM has difficulties in reproducing the amplitudes of the surface elevation. The location of the amphidromic points seems to agree with the semi-analytical solution. However, the image is diffuse. It should further be investigated what the explanation for this diffuse picture is.
 
 
 
@@ -80,5 +80,3 @@ This test has been carried out with version dflow-fm-x64-1.1.136.39235.
 
 \paragraph*{Acknowledgement}
 The writer is thankful to mr. Koen Berends for providing Matlab-scripts to compute the semi-analytical solution. These Matlab-scripts are based on: Roos, P.C., Velema, J.J., Hulscher, S.J.M.H., Stolk, A. (2011), An idealized model of tidal dynamics in the North Sea: resonance properties and response to large-scale changes, Ocean Dynamics, 61 (12), 2019-2035.
-
-

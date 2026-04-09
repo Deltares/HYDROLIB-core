@@ -215,7 +215,7 @@ class TestCmpParser:
         with pytest.raises(ValueError) as error:
             CMPParser.parse(cmp_file)
 
-        expected_error_msg = "too many values to unpack (expected 3)"
+        expected_error_msg = "too many values to unpack (expected 3"
         assert expected_error_msg in str(error.value)
 
     def test__is_float_value_none(self):

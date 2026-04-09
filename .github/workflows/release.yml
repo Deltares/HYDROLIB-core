@@ -1,8 +1,5 @@
 name: Automated release workflow
 
-permissions:
-  contents: write
-
 on:
   workflow_dispatch:
     inputs:
@@ -36,8 +33,14 @@ on:
         type: string
 
 jobs:
+  wheel-test:
+    uses: ./.github/workflows/wheel-test.yml
+
   release:
+    needs: wheel-test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out the code
         uses: actions/checkout@v5
@@ -63,9 +66,9 @@ jobs:
           python-version: 3.13
 
       - name: Run image
-        uses: abatilo/actions-poetry@v4
+        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
         with:
-          poetry-version: 2.2.1
+          poetry-version: 2.3.3
 
       - name: Cache Poetry virtualenv
         uses: actions/cache@v4

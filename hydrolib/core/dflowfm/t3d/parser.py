@@ -7,8 +7,8 @@ from hydrolib.core.base.parser import BaseParser
 
 
 class T3DParser(BaseParser):
-    """
-    A parser for .t3d files.
+    """A parser for .t3d files.
+
     Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
     No other comments are supported.
     """

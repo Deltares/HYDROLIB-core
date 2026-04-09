@@ -1,3 +1,5 @@
+"""Models for RR topology node and link files."""
+
 from pathlib import Path
 from typing import Callable, ClassVar, Dict, List, Optional
 
@@ -96,9 +98,9 @@ class Node(BaseModel):
         cls, values, field_name: str, supported_values: set, description: str
     ):
         """Validates the node type for the provided `field_name`.
+
         The specified node type should contain a supported value,
         otherwise a `ValueError` is raised.
-
 
         Args:
             values ([type]): Dictionary with values that are used to create this `Node`.

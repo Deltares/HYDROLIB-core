@@ -18,4 +18,3 @@ forcingFile  = boundaryconditions.bc
 quantity     = waterlevelbnd
 nodeId       = 441306.810437_1140614.443396
 forcingFile  = boundaryconditions.bc
-

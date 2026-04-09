@@ -1,3 +1,5 @@
+"""Research FM model definitions with experimental research keywords for D-Flow FM."""
+
 from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import Field, ValidationInfo, field_validator
@@ -31,6 +33,8 @@ class ResearchGeneral(General):
     """An extended [general] section that includes highly experimental research keywords."""
 
     class Comments(General.Comments):
+        """Comments for the ResearchGeneral section fields."""
+
         research_modelspecific: Optional[str] = Field(
             "Optional 'model specific ID', to enable certain custom runtime function calls (instead of via MDU name).",
             alias="modelspecific",
@@ -50,6 +54,8 @@ class ResearchGeometry(Geometry):
     """An extended [geometry] section that includes highly experimental research keywords."""
 
     class Comments(Geometry.Comments):
+        """Comments for the ResearchGeometry section fields."""
+
         research_toplayminthick: Optional[str] = Field(
             "Minimum top layer thickness(m), only for Z-layers.",
             alias="toplayminthick",
@@ -192,6 +198,8 @@ class ResearchNumerics(Numerics):
     """An extended [numerics] section that includes highly experimental research keywords."""
 
     class Comments(Numerics.Comments):
+        """Comments for the ResearchNumerics section fields."""
+
         research_faclaxturb: Optional[str] = Field(
             "Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty.",
             alias="faclaxturb",
@@ -509,6 +517,8 @@ class ResearchPhysics(Physics):
     """An extended [physics] section that includes highly experimental research keywords."""
 
     class Comments(Physics.Comments):
+        """Comments for the ResearchPhysics section fields."""
+
         research_surftempsmofac: Optional[str] = Field(
             "Hor. Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no.",
             alias="surftempsmofac",
@@ -606,6 +616,8 @@ class ResearchSediment(Sediment):
     """An extended [sediment] section that includes highly experimental research keywords."""
 
     class Comments(Sediment.Comments):
+        """Comments for the ResearchSediment section fields."""
+
         research_mxgrkrone: Optional[str] = Field(
             "Highest fraction index treated by Krone.", alias="mxgrkrone"
         )
@@ -634,6 +646,8 @@ class ResearchWind(Wind):
     """An extended [wind] section that includes highly experimental research keywords."""
 
     class Comments(Wind.Comments):
+        """Comments for the ResearchWind section fields."""
+
         research_windhuorzwsbased: Optional[str] = Field(
             "Wind hu or zws based, 0 = hu, 1 = zws.", alias="windhuorzwsbased"
         )
@@ -661,6 +675,8 @@ class ResearchWaves(Waves):
     """An extended [waves] section that includes highly experimental research keywords."""
 
     class Comments(Waves.Comments):
+        """Comments for the ResearchWaves section fields."""
+
         research_waveswartdelwaq: Optional[str] = Field(
             "If WaveSwartDelwaq == 1 .and. Tiwaq > 0 then increase tauwave to Delwaq with 0.5rhofwuorbuorb.",
             alias="waveswartdelwaq",
@@ -736,6 +752,8 @@ class ResearchTime(Time):
     """An extended [time] section that includes highly experimental research keywords."""
 
     class Comments(Time.Comments):
+        """Comments for the ResearchTime section fields."""
+
         research_timestepanalysis: Optional[str] = Field(
             "Write time steps analysis file *.steps (0: no, 1: yes).",
             alias="timestepanalysis",
@@ -760,6 +778,8 @@ class ResearchRestart(Restart):
     """An extended [restart] section that includes highly experimental research keywords."""
 
     class Comments(Restart.Comments):
+        """Comments for the ResearchRestart section fields."""
+
         research_rstignorebl: Optional[str] = Field(
             "Flag indicating whether bed level from restart should be ignored (0=no (default), 1=yes).",
             alias="rstignorebl",
@@ -774,6 +794,8 @@ class ResearchTrachytopes(Trachytopes):
     """An extended [trachytopes] section that includes highly experimental research keywords."""
 
     class Comments(Trachytopes.Comments):
+        """Comments for the ResearchTrachytopes section fields."""
+
         research_trtmth: Optional[str] = Field(
             "Area averaging method, (1=Nikuradse k based, 2=Chezy C based (parallel and serial)).",
             alias="trtmth",
@@ -805,6 +827,8 @@ class ResearchOutput(Output):
     """An extended [output] section that includes highly experimental research keywords."""
 
     class Comments(Output.Comments):
+        """Comments for the ResearchOutput section fields."""
+
         research_mbalumpsourcesinks: Optional[str] = Field(
             "Lump MBA source/sink mass balance terms (1: yes, 0: no).",
             alias="mbalumpsourcesinks",
@@ -960,6 +984,8 @@ class ResearchProcesses(Processes):
     """An extended [processes] section that includes highly experimental research keywords."""
 
     class Comments(Processes.Comments):
+        """Comments for the ResearchProcesses section fields."""
+
         research_substancedensitycoupling: Optional[str] = Field(
             "Substance rho coupling (0=no, 1=yes).", alias="substancedensitycoupling"
         )
@@ -975,6 +1001,8 @@ class ResearchSedtrails(INIBasedModel):
     """The `[Sedtrails]` section in an MDU file."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ResearchSedtrails section fields."""
+
         research_sedtrailsgrid: Optional[str] = Field(
             "Grid file for sedtrails output locations on corners.",
             alias="sedtrailsgrid",
@@ -1021,9 +1049,7 @@ class ResearchSedtrails(INIBasedModel):
 
 
 class ResearchFMModel(FMModel):
-    """
-    An extended FMModel that includes highly experimental research sections and keywords.
-    """
+    """An extended FMModel that includes highly experimental research sections and keywords."""
 
     general: ResearchGeneral = Field(default_factory=ResearchGeneral)
     geometry: ResearchGeometry = Field(default_factory=ResearchGeometry)

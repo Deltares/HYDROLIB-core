@@ -1,3 +1,5 @@
+"""Parser for D-Flow FM time series (tim) files."""
+
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -7,8 +9,8 @@ TimData = Dict[str, List[str]]
 
 
 class TimParser(BaseParser):
-    """
-    A parser for .tim files.
+    """A parser for .tim files.
+
     Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.
     No other comments are supported.
     """

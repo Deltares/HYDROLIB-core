@@ -1,3 +1,5 @@
+"""Observation cross section model definitions for D-Flow FM."""
+
 from typing import List, Literal, Optional
 
 from pydantic import Field, ValidationInfo, field_validator, model_validator
@@ -14,6 +16,8 @@ class ObservationCrossSectionGeneral(INIGeneral):
     """The observation cross section file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ObservationCrossSectionGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -27,16 +31,16 @@ class ObservationCrossSectionGeneral(INIGeneral):
 
 
 class ObservationCrossSection(INIBasedModel):
-    """
-    The observation cross section that is included in the
-    observation cross section file.
+    """The observation cross section that is included in the observation cross section file.
 
-    All lowercased attributes match with the observation cross
-    section output as described in [UM Sec.F2.4.1]
+    All lowercased attributes match with the observation cross section output as described
+    in [UM Sec.F2.4.1]
     (https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the ObservationCrossSection section fields."""
+
         name: Optional[str] = "Name of the cross section (max. 255 characters)."
         branchid: Optional[str] = Field(
             "(optional) Branch on which the cross section is located.", alias="branchId"
@@ -92,10 +96,7 @@ class ObservationCrossSection(INIBasedModel):
 
 
 class ObservationCrossSectionModel(INIModel):
-    """
-    The overall observation cross section model that contains the contents
-    of one observation cross section file.
-    """
+    """The overall observation cross section model that contains the contents of one observation cross section file."""
 
     general: ObservationCrossSectionGeneral = ObservationCrossSectionGeneral()
     observationcrosssection: List[ObservationCrossSection] = []

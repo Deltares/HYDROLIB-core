@@ -1,3 +1,5 @@
+"""Parser for the old external forcings file format."""
+
 from pathlib import Path
 from typing import Dict, List
 
@@ -27,7 +29,6 @@ class Parser:
             "QUANTITY", "FILENAME", "VARNAME", "SOURCEMASK", "FILETYPE", "METHOD", "OPERAND", "VALUE", "FACTOR", "IFRCTYP",
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
-
         with filepath.open(encoding="utf8") as file:
             lines = file.readlines()
 
@@ -93,7 +94,6 @@ class Parser:
         - The fields are compared case insensitive.
         - For each KNOWN field that was parsed the order is checked.
         """
-
         parsed_fields_upper = [f.upper() for f in forcing.keys()]
         model_fields_upper = [f.upper() for f in ORDERED_FORCING_FIELDS]
 

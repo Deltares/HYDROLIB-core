@@ -1,7 +1,6 @@
-"""Enum class containing the valid values for the Spatial parameter category
-of the external forcings.
+"""Enum class containing the valid values for the Spatial parameter category of the external forcings.
 
-for more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
+For more details check D-Flow FM User Manual 1D2D, Chapter D.3.1, Table D.2
 https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D.pdf
 """
 
@@ -102,7 +101,8 @@ INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
 
 
 class _ExtOldInitialConditionQuantity(StrEnum):
-    """
+    """StrEnum for initial condition quantities in the old external forcings format.
+
     If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
     [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
     and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).

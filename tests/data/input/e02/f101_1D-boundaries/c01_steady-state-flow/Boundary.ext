@@ -41,4 +41,3 @@ forcingfile = BoundaryConditions.bc
 quantity    = qhbnd
 nodeId      = T4_Dwn_Bnd
 forcingfile = BoundaryConditions.bc
-

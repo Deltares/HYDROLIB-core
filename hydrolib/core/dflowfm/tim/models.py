@@ -1,3 +1,5 @@
+"""Models for D-Flow FM time series (tim) files."""
+
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 

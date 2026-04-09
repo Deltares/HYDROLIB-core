@@ -1,3 +1,5 @@
+"""Models for D-Flow FM observation station (xyn) files."""
+
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 

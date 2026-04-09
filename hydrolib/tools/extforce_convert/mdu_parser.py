@@ -616,11 +616,12 @@ class MDUParser:
         self.file_style_properties = FileStyleProperties(self._content)
 
     def __repr__(self):
+        """Return a string representation of the MDU parser."""
         message = f"""
             path: {self.mdu_path}
             No lines: {len(self._content)}
             inifield: {self.has_inifield_file()}
-            structure: {self.has_structure_file()} 
+            structure: {self.has_structure_file()}
         """
         return message
 
@@ -916,7 +917,7 @@ class MDUParser:
         return line_number
 
     def insert_line(self, line: str, index: int) -> None:
-        """Insert a line at the specified index in the MDU file content.
+        r"""Insert a line at the specified index in the MDU file content.
 
         Args:
             index: The 0-based index where the line should be inserted.
@@ -940,8 +941,7 @@ class MDUParser:
         keyword: Optional[str] = None,
         case_sensitive: bool = False,
     ) -> None:
-        """
-        Delete a line from the MDU file content by index or keyword.
+        r"""Delete a line from the MDU file content by index or keyword.
 
         Exactly one of `index` or `keyword` must be provided. If `index` is given, deletes the line at that index.
         If `keyword` is given, deletes the first line starting with the keyword (case sensitivity optional).
@@ -1065,15 +1065,13 @@ class MDUParser:
                 self.content.pop(index)
 
     def clean(self):
-        """
-        Remove the deprecated mdu keywords from the file
+        """Remove the deprecated mdu keywords from the file.
 
         Notes:
             - The `clean` function only removes the first occurrence of the deprecated keywords from the file. if a
             keyword is repeated in the file, the `clean` function will only remove the first one.
             not remove the deprecated
         """
-
         for keyword in CONVERTER_DATA.mdu.deprecated_keywords:
             ind = self.find_keyword_lines(keyword)
             if ind is not None:

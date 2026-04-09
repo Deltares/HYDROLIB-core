@@ -1,3 +1,5 @@
+"""Serializer for D-Flow FM sample/forcing (xyz) files."""
+
 from pathlib import Path
 from typing import Dict, Generator
 
@@ -5,6 +7,8 @@ from hydrolib.core.base.models import ModelSaveSettings, SerializerConfig
 
 
 class XYZSerializer:
+    """Serializer for XYZModel data to .xyz file format."""
+
     @staticmethod
     def serialize(
         path: Path,

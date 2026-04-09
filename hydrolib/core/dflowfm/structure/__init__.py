@@ -1,3 +1,5 @@
+"""Structure model package for D-Flow FM."""
+
 from .models import (
     Bridge,
     Compound,

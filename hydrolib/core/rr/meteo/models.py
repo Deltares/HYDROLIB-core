@@ -1,3 +1,5 @@
+"""Models for .bui precipitation files used in Rainfall-Runoff simulations."""
+
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
@@ -14,6 +16,8 @@ from .serializer import write_bui_file
 
 
 class BuiPrecipitationEvent(BaseModel):
+    """Represents a single precipitation event within a .bui file."""
+
     start_time: datetime
     timeseries_length: timedelta
     precipitation_per_timestep: List[List[float]]
@@ -50,9 +54,7 @@ class BuiPrecipitationEvent(BaseModel):
 
 
 class BuiModel(ParsableFileModel):
-    """
-    Model that represents the file structure of a .bui file.
-    """
+    """Model that represents the file structure of a .bui file."""
 
     default_dataset: int = 1  # Default value (always)
     number_of_stations: int

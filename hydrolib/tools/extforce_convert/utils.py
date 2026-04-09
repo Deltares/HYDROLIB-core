@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Extra, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -78,7 +78,7 @@ def construct_filemodel_new_or_existing(
         **kwargs: Additional keywords arguments to pass to the ModelClass constructor
     """
     if Path(filepath).is_file():
-        model = model_class(filepath=filepath, *args, **kwargs)
+        model = model_class(*args, filepath=filepath, **kwargs)
     else:
         model = model_class(*args, **kwargs)
         model.filepath = filepath
@@ -387,7 +387,7 @@ class IgnoreUnknownKeyWord(type):
             model_config = ConfigDict(extra="ignore")
 
             def __init__(self, **data):
-                valid_fields = self.__annotations__.keys()
+                valid_fields = type(self).model_fields.keys()
                 filtered_data = {k: v for k, v in data.items() if k in valid_fields}
                 super().__init__(**filtered_data)
 
@@ -437,7 +437,7 @@ class MDUConfig(BaseModel):
 
     @field_validator("deprecated_keywords", mode="before")
     def _to_set(cls, v):
-        """convert the deprecated keywords to a set."""
+        """Convert the deprecated keywords to a set."""
         if v is None:
             return set()
 
@@ -501,4 +501,6 @@ CONVERTER_DATA = ConverterData(**CONVERTER_DATA)
 
 
 class UnSupportedQuantitiesError(Exception):
+    """Exception raised when unsupported quantities are encountered."""
+
     pass

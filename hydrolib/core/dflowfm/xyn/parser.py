@@ -1,10 +1,13 @@
+"""Parser for D-Flow FM observation station (xyn) files."""
+
 from pathlib import Path
 from typing import Dict
 
 
 class XYNParser:
-    """
-    A parser for .xyn files with contents like this:
+    """A parser for .xyn files.
+
+    Files have contents like this:
 
     number number id
 
@@ -61,12 +64,12 @@ class XYNParser:
                     x, y, n = line.split(maxsplit=2)
                 except ValueError:
                     raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr+1}."
+                        f"Error parsing XYN file '{filepath}', line {linenr + 1}."
                     )
 
                 if contains_whitespace_while_not_allowed(n):
                     raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr+1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
+                        f"Error parsing XYN file '{filepath}', line {linenr + 1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
                     )
 
                 if is_surrounded_by_quotes(n):

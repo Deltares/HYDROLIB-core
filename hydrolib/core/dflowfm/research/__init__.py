@@ -1,3 +1,5 @@
+"""Research FM model package with experimental research keywords for D-Flow FM."""
+
 from .models import (
     ResearchFMModel,
     ResearchGeneral,

@@ -1,7 +1,9 @@
+"""Initial field model definitions for D-Flow FM inifield files."""
+
 import logging
 from abc import ABC
 from pathlib import Path
-from typing import Annotated, Dict, List, Literal, Optional, Set
+from typing import Annotated, Dict, List, Literal, Optional
 
 from pydantic import (
     BeforeValidator,
@@ -28,9 +30,10 @@ logger = logging.getLogger(__name__)
 
 
 class DataFileType(StrEnum):
-    """
-    Enum class containing the valid values for the dataFileType
-    attribute in several subclasses of AbstractIniField.
+    """Enum class containing the valid values for the dataFileType attribute.
+
+    Contains valid values for the dataFileType attribute in several subclasses
+    of AbstractIniField.
     """
 
     arcinfo = "arcinfo"
@@ -45,9 +48,10 @@ class DataFileType(StrEnum):
 
 
 class InterpolationMethod(StrEnum):
-    """
-    Enum class containing the valid values for the interpolationMethod
-    attribute in several subclasses of AbstractIniField.
+    """Enum class containing the valid values for the interpolationMethod attribute.
+
+    Contains valid values for the interpolationMethod attribute in several
+    subclasses of AbstractIniField.
     """
 
     constant = "constant"  # only with dataFileType=polygon .
@@ -59,9 +63,10 @@ class InterpolationMethod(StrEnum):
 
 
 class AveragingType(StrEnum):
-    """
-    Enum class containing the valid values for the averagingType
-    attribute in several subclasses of AbstractIniField.
+    """Enum class containing the valid values for the averagingType attribute.
+
+    Contains valid values for the averagingType attribute in several subclasses
+    of AbstractIniField.
     """
 
     mean = "mean"  # simple average
@@ -81,6 +86,8 @@ class IniFieldGeneral(INIGeneral):
     """The initial field file's `[General]` section with file meta data."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the IniFieldGeneral section fields."""
+
         fileversion: Optional[str] = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
@@ -96,14 +103,14 @@ class IniFieldGeneral(INIGeneral):
 
 
 class AbstractSpatialField(INIBasedModel, ABC):
-    """
-    Abstract base class for `[Initial]` and `[Parameter]` block data in
-    inifield files.
+    """Abstract base class for `[Initial]` and `[Parameter]` block data in inifield files.
 
     Defines all common fields. Used via subclasses InitialField and ParameterField.
     """
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the AbstractSpatialField section fields."""
+
         quantity: Optional[str] = Field(
             "Name of the quantity. See UM Table D.2.", alias="quantity"
         )
@@ -266,10 +273,10 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
 
 class InitialField(AbstractSpatialField):
-    """
-    Initial condition field definition, represents an `[Initial]` block in
-    an inifield file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
+    """Initial condition field definition, represents an `[Initial]` block in an inifield file.
+
+    Typically inside the definition list of a
+    [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.initial[..]`
 
     All lowercased attributes match with the initial field input as described in
     [UM Sec.D.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.2).
@@ -279,10 +286,10 @@ class InitialField(AbstractSpatialField):
 
 
 class ParameterField(AbstractSpatialField):
-    """
-    Parameter field definition, represents a `[Parameter]` block in
-    an inifield file.
-    Typically inside the definition list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
+    """Parameter field definition, represents a `[Parameter]` block in an inifield file.
+
+    Typically inside the definition list of a
+    [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
     """
 
     _header: Literal["Parameter"] = "Parameter"

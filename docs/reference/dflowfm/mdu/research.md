@@ -152,7 +152,7 @@ classDiagram
         +Optional modelspecific
         +Optional inputspecific
     }
-  
+
     class ResearchGeometry {
         +Comments comments
         +Optional toplayminthick
@@ -161,7 +161,7 @@ classDiagram
         +Optional zlayeratubybob
         +Optional shipdeffile
     }
-  
+
     class ResearchNumerics {
         +Comments comments
         +Optional faclaxturb
@@ -170,7 +170,7 @@ classDiagram
         +Optional lincontin
         +Optional cfexphormom
     }
-  
+
     class ResearchPhysics {
         +Comments comments
         +Optional surftempsmofac
@@ -178,7 +178,7 @@ classDiagram
         +Optional nfentrainmentmomentum
         +Optional uniffrictcoef1d2d
     }
-  
+
     class ResearchSediment {
         +Comments comments
         +Optional mxgrkrone
@@ -186,14 +186,14 @@ classDiagram
         +Optional implicitfallvelocity
         +Optional nr_of_sedfractions
     }
-  
+
     class ResearchWind {
         +Comments comments
         +Optional windhuorzwsbased
         +Optional varyingairdensity
         +Optional wind_eachstep
     }
-  
+
     class ResearchWaves {
         +Comments comments
         +Optional waveswartdelwaq
@@ -201,26 +201,26 @@ classDiagram
         +Optional tifetchcomp
         +Optional phiwavuni
     }
-  
+
     class ResearchTime {
         +Comments comments
         +Optional timestepanalysis
         +Optional autotimestepvisc
         +Optional tstarttlfsmo
     }
-  
+
     class ResearchRestart {
         +Comments comments
         +Optional rstignorebl
     }
-  
+
     class ResearchTrachytopes {
         +Comments comments
         +Optional trtmth
         +Optional trtmnh
         +Optional trtcll
     }
-  
+
     class ResearchOutput {
         +Comments comments
         +Optional mbalumpsourcesinks
@@ -228,12 +228,12 @@ classDiagram
         +Optional writedfminterpretedvalues
         +Optional deleteobspointsoutsidegrid
     }
-  
+
     class ResearchProcesses {
         +Comments comments
         +Optional substancedensitycoupling
     }
-  
+
     class ResearchSedtrails {
         +Comments comments
         +Optional sedtrailsgrid
@@ -241,7 +241,7 @@ classDiagram
         +Optional sedtrailsinterval
         +Optional sedtrailsoutputfile
     }
-  
+
     class ResearchFMModel {
         +ResearchGeneral general
         +ResearchGeometry geometry
@@ -257,16 +257,16 @@ classDiagram
         +ResearchProcesses processes
         +ResearchSedtrails sedtrails
     }
-  
+
     class LegacyGeneralAsModel {
         +_header: Literal["Model"]
         +mduformatversion: str
     }
-  
+
     class LegacyFMModel {
         +LegacyGeneralAsModel model
     }
-  
+
     class General {
         +Comments comments
         +Optional program
@@ -274,7 +274,7 @@ classDiagram
         +Optional filetype
         +Optional fileversion
     }
-  
+
     class Numerics {
         +Comments comments
         +Optional cflmax
@@ -282,20 +282,20 @@ classDiagram
         +Optional epsmaxlevm
         +Optional advectype
     }
-  
+
     class Physics {
         +Comments comments
         +Optional uniffrictcoef
         +Optional uniffricttype
         +Optional uniffrictcoef1d
     }
-  
+
     class FMModel {
         +General general
         +Numerics numerics
         +Physics physics
     }
-  
+
     ResearchFMModel --> ResearchGeneral
     ResearchFMModel --> ResearchGeometry
     ResearchFMModel --> ResearchNumerics
@@ -309,9 +309,9 @@ classDiagram
     ResearchFMModel --> ResearchOutput
     ResearchFMModel --> ResearchProcesses
     ResearchFMModel --> ResearchSedtrails
-  
+
     LegacyFMModel --> LegacyGeneralAsModel
-  
+
     FMModel --> General
     FMModel --> Numerics
     FMModel --> Physics

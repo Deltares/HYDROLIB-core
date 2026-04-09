@@ -1,3 +1,5 @@
+"""Models for the harmonic/astronomic components (.cmp) file format."""
+
 from enum import Enum
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -44,6 +46,8 @@ class HarmonicRecord(BaseModel):
 
 
 class AstronomicName(Enum):
+    """Enum of valid astronomic component names for use in .cmp files."""
+
     A0 = "A0"
     SA = "SA"
     SSA = "SSA"
@@ -347,6 +351,7 @@ class CMPSet(BaseModel):
 
 class CMPModel(ParsableFileModel):
     """Class representing a cmp (*.cmp) file.
+
     This class is used to parse and serialize cmp files, which contain
     information about various components such as harmonics and astronomics.
 

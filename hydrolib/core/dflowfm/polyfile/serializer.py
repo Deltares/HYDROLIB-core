@@ -1,3 +1,5 @@
+"""Serializer for D-Flow FM polyline/polygon (pol/pli/pliz) files."""
+
 from itertools import chain
 from pathlib import Path
 from typing import Generator, Iterable, Optional, Sequence
@@ -82,7 +84,6 @@ class Serializer:
         Returns:
             str: The serialised equivalent of this PolyObject
         """
-
         description = Serializer.serialize_description(obj.description)
         metadata = Serializer.serialize_metadata(obj.metadata)
         points = [Serializer.serialize_point(obj, config) for obj in obj.points]
@@ -92,7 +93,7 @@ class Serializer:
 def write_polyfile(
     path: Path, data: Sequence[PolyObject], config: SerializerConfig
 ) -> None:
-    """Write the data to a new file at path
+    """Write the data to a new file at path.
 
     Args:
         path (Path): The path to write the data to

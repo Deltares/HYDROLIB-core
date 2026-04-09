@@ -1,5 +1,4 @@
-"""models.py defines all classes and functions related to representing pol/pli(z) files.
-"""
+"""Models for representing pol/pli(z) polyline and polygon files."""
 
 from typing import Callable, List, Optional, Sequence, Tuple
 

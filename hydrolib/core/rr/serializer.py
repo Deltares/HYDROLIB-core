@@ -120,7 +120,7 @@ def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
         {}    *  41. Restart file input                                                   I
         {}    *  42. Restart file output                                                  O
         {}    *  43. Binary file input                                                    I
-        {}    *  44. Sacramento input I        
+        {}    *  44. Sacramento input I
         {}    *  45. Uitvoer ASCII file met debieten van/naar randknopen                  O
         {}    *  46. Uitvoer ASCII file met zoutconcentratie op rand                      O
         {}    *  47. Zout uitvoer in ASCII file                                           O
@@ -156,7 +156,7 @@ def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
         {}    *  77. Industry tabellen                                                    I
         {}    *  78. Maalstop                                                             I
         {}    *  79. Temperature time series                                              I
-        {}    *  80. Runoff time series              
+        {}    *  80. Runoff time series
         {}    *  81. Totalen/lozingen op randknopen                                       O
         {}    *  82. Language file                                                        I
         {}    *  83. OW-volume                                                            O
@@ -164,8 +164,8 @@ def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
         {}    *  85. Balans file                                                          O
         {}    *  86. 3B-arealen in HIS file                                               O
         {}    *  87. 3B-structure data in HIS file                                        O
-        {}    *  88. RR Runoff his file              
-        {}    *  89. Sacramento HIS file              
+        {}    *  88. RR Runoff his file
+        {}    *  89. Sacramento HIS file
         {}    *  90. rwzi HIS file                                                        O
         {}    *  91. Industry HIS file                                                    O
         {}    *  92. CTRL.INI                                                             I
@@ -180,8 +180,8 @@ def serialize(data: Dict, save_settings: ModelSaveSettings) -> str:
         {}    * 101. Link flows                                                           O
         {}    * 102. Modflow-RR                                                           O
         {}    * 103. RR-Modflow                                                           O
-        {}    * 104. RR-balance for WLM              
-        {}    * 105. Sacramento ASCII output              
+        {}    * 104. RR-balance for WLM
+        {}    * 105. Sacramento ASCII output
         {}    * 106. Additional NWRW input file with DWA table                            I
         {}    * 107. RR balans
         {}    * 108. Kasklasse, new format                                                I

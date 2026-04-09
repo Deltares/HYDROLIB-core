@@ -1,20 +1,19 @@
 [General]
-    fileVersion           = 1.01                
-    fileType              = boundConds          
+    fileVersion           = 1.01
+    fileType              = boundConds
 
 [forcing]
-    name                  = Node001             
-    function              = constant            
-    timeInterpolation     = linear              
-    quantity              = dischargebnd        
-    unit                  = m³/s                
-    0 
+    name                  = Node001
+    function              = constant
+    timeInterpolation     = linear
+    quantity              = dischargebnd
+    unit                  = m³/s
+    0
 
 [forcing]
-    name                  = Node002             
-    function              = constant            
-    timeInterpolation     = linear              
-    quantity              = dischargebnd        
-    unit                  = m³/s                
-    0 
-
+    name                  = Node002
+    function              = constant
+    timeInterpolation     = linear
+    quantity              = dischargebnd
+    unit                  = m³/s
+    0

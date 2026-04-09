@@ -58,6 +58,8 @@ class Structure(INIBasedModel):
     """Structure model."""
 
     class Comments(INIBasedModel.Comments):
+        """Comments for the Structure section fields."""
+
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
         polylinefile: Optional[str] = Field(
@@ -333,6 +335,8 @@ class Weir(Structure):
     """
 
     class Comments(Structure.Comments):
+        """Comments for the Weir section fields."""
+
         type: Optional[str] = Field("Structure type; must read weir", alias="type")
         allowedflowdir: Optional[str] = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowdir"
@@ -379,6 +383,8 @@ class UniversalWeir(Structure):
     """
 
     class Comments(Structure.Comments):
+        """Comments for the UniversalWeir section fields."""
+
         type: Optional[str] = Field(
             "Structure type; must read universalWeir", alias="type"
         )
@@ -801,6 +807,8 @@ class GeneralStructure(Structure):
     """
 
     class Comments(Structure.Comments):
+        """Comments for the GeneralStructure section fields."""
+
         type: Optional[str] = Field(
             "Structure type; must read generalStructure", alias="type"
         )
@@ -961,6 +969,8 @@ class Dambreak(Structure):
     """
 
     class Comments(Structure.Comments):
+        """Comments for the Dambreak section fields."""
+
         type: Optional[str] = Field("Structure type; must read dambreak", alias="type")
         startlocationx: Optional[str] = Field(
             "x-coordinate of breach starting point.", alias="startLocationX"
@@ -1167,6 +1177,8 @@ class Bridge(Structure):
     """
 
     class Comments(Structure.Comments):
+        """Comments for the Bridge section fields."""
+
         type: Optional[str] = Field("Structure type; must read bridge", alias="type")
         allowedflowdir: Optional[str] = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowdir"
