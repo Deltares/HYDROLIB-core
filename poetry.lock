@@ -44,7 +44,7 @@ files = [
     {file = "appnope-0.1.4-py2.py3-none-any.whl", hash = "sha256:502575ee11cd7a28c0205f379b525beefebab9d161b7c964670864014ed7213c"},
     {file = "appnope-0.1.4.tar.gz", hash = "sha256:1de3860566df9caf38f01f86f65e0e13e379af54f9e4bee1e66b48f2efffd1ee"},
 ]
-markers = {main = "platform_system == \"Darwin\" and extra == \"examples\"", docs = "platform_system == \"Darwin\""}
+markers = {main = "extra == \"examples\" and platform_system == \"Darwin\"", docs = "platform_system == \"Darwin\""}
 
 [[package]]
 name = "argcomplete"
@@ -323,7 +323,7 @@ version = "2026.2.25"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
-groups = ["main", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "certifi-2026.2.25-py3-none-any.whl", hash = "sha256:027692e4402ad994f1c42e52a4997a9763c646b73e4096e4d5d6db8af1d6f0fa"},
     {file = "certifi-2026.2.25.tar.gz", hash = "sha256:e887ab5cee78ea814d3472169153c2d12cd43b14bd03329a39a9c6e2e80bfba7"},
@@ -1286,7 +1286,7 @@ version = "1.1.3"
 description = "Geographic pandas extensions"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "examples"]
+groups = ["main", "dev"]
 files = [
     {file = "geopandas-1.1.3-py3-none-any.whl", hash = "sha256:90d62a64f95eaa3be2ccc115c5f3d6e24208bb11983b390fdc0621a3eccd0230"},
     {file = "geopandas-1.1.3.tar.gz", hash = "sha256:91a31989b6f566012838d21d5f8033f37dce882079ccb7cfdc40d5ccce7f284f"},
@@ -3319,7 +3319,7 @@ description = "Provides an object-oriented python interface to the netCDF versio
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.11\" or platform_system != \"Windows\" or platform_machine != \"ARM64\""
+markers = "platform_system != \"Windows\" or platform_machine != \"ARM64\" or python_version >= \"3.11\""
 files = [
     {file = "netcdf4-1.7.4-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:b1c1a7ea3678db76bf33d14f7e202385d634db38c5e70d8cf4895971023eebb9"},
     {file = "netcdf4-1.7.4-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:d3f9497873454207f9480847d02b1b19a4bc81ad6e9166e1c17d4e2f8f3555d1"},
@@ -3349,8 +3349,8 @@ files = [
 certifi = "*"
 cftime = "*"
 numpy = [
-    {version = ">=2.3.0", markers = "platform_system == \"Windows\" and platform_machine == \"ARM64\""},
     {version = ">=1.21.2", markers = "platform_system != \"Windows\" or platform_machine != \"ARM64\""},
+    {version = ">=2.3.0", markers = "platform_system == \"Windows\" and platform_machine == \"ARM64\""},
 ]
 
 [package.extras]
@@ -3407,7 +3407,7 @@ version = "2.2.6"
 description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 markers = "python_version == \"3.10\""
 files = [
     {file = "numpy-2.2.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:b412caa66f72040e6d268491a59f2c43bf03eb6c96dd8f0307829feb7fa2b6fb"},
@@ -3473,7 +3473,7 @@ version = "2.4.4"
 description = "Fundamental package for array computing in Python"
 optional = false
 python-versions = ">=3.11"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 markers = "python_version >= \"3.11\""
 files = [
     {file = "numpy-2.4.4-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f983334aea213c99992053ede6168500e5f086ce74fbc4acc3f2b00f5762e9db"},
@@ -3585,7 +3585,7 @@ version = "26.0"
 description = "Core utilities for Python packages"
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "packaging-26.0-py3-none-any.whl", hash = "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"},
     {file = "packaging-26.0.tar.gz", hash = "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4"},
@@ -3613,7 +3613,7 @@ version = "2.3.3"
 description = "Powerful data structures for data analysis, time series, and statistics"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 markers = "python_version == \"3.10\""
 files = [
     {file = "pandas-2.3.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:376c6446ae31770764215a6c937f72d917f214b43560603cd60da6408f183b6c"},
@@ -3710,7 +3710,7 @@ version = "3.0.2"
 description = "Powerful data structures for data analysis, time series, and statistics"
 optional = false
 python-versions = ">=3.11"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 markers = "python_version >= \"3.11\""
 files = [
     {file = "pandas-3.0.2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:a727a73cbdba2f7458dc82449e2315899d5140b449015d822f515749a46cbbe0"},
@@ -3856,7 +3856,7 @@ files = [
     {file = "pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523"},
     {file = "pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f"},
 ]
-markers = {main = "extra == \"examples\" and sys_platform != \"win32\" and sys_platform != \"emscripten\"", docs = "sys_platform != \"win32\" and sys_platform != \"emscripten\""}
+markers = {main = "sys_platform != \"win32\" and sys_platform != \"emscripten\" and extra == \"examples\"", docs = "sys_platform != \"win32\" and sys_platform != \"emscripten\""}
 
 [package.dependencies]
 ptyprocess = ">=0.5"
@@ -4347,7 +4347,7 @@ version = "0.12.1"
 description = "Vectorized spatial vector file format I/O using GDAL/OGR"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "examples"]
+groups = ["main", "dev"]
 files = [
     {file = "pyogrio-0.12.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:5c4735235ca0d8dcdb4ecd69bd73e66762d161bce913b10d4458a18137cc7062"},
     {file = "pyogrio-0.12.1-cp310-cp310-macosx_12_0_x86_64.whl", hash = "sha256:3249d06c2520857b622f3ff0f1b7b4849291ee1fb72f21587825f5fd0f24b787"},
@@ -4427,7 +4427,7 @@ version = "3.7.1"
 description = "Python interface to PROJ (cartographic projections and coordinate transformations library)"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "examples"]
+groups = ["main", "dev"]
 files = [
     {file = "pyproj-3.7.1-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:bf09dbeb333c34e9c546364e7df1ff40474f9fddf9e70657ecb0e4f670ff0b0e"},
     {file = "pyproj-3.7.1-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:6575b2e53cc9e3e461ad6f0692a5564b96e7782c28631c7771c668770915e169"},
@@ -4463,7 +4463,7 @@ files = [
     {file = "pyproj-3.7.1-cp313-cp313-win_amd64.whl", hash = "sha256:d3caac7473be22b6d6e102dde6c46de73b96bc98334e577dfaee9886f102ea2e"},
     {file = "pyproj-3.7.1.tar.gz", hash = "sha256:60d72facd7b6b79853f19744779abcd3f804c4e0d4fa8815469db20c9f640a47"},
 ]
-markers = {main = "python_version == \"3.10\" and extra == \"examples\"", examples = "python_version == \"3.10\""}
+markers = {main = "python_version == \"3.10\" and extra == \"examples\"", dev = "python_version == \"3.10\""}
 
 [package.dependencies]
 certifi = "*"
@@ -4474,7 +4474,7 @@ version = "3.7.2"
 description = "Python interface to PROJ (cartographic projections and coordinate transformations library)"
 optional = false
 python-versions = ">=3.11"
-groups = ["main", "examples"]
+groups = ["main", "dev"]
 files = [
     {file = "pyproj-3.7.2-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:2514d61f24c4e0bb9913e2c51487ecdaeca5f8748d8313c933693416ca41d4d5"},
     {file = "pyproj-3.7.2-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:8693ca3892d82e70de077701ee76dd13d7bca4ae1c9d1e739d72004df015923a"},
@@ -4532,7 +4532,7 @@ files = [
     {file = "pyproj-3.7.2-cp314-cp314t-win_arm64.whl", hash = "sha256:d9d25bae416a24397e0d85739f84d323b55f6511e45a522dd7d7eae70d10c7e4"},
     {file = "pyproj-3.7.2.tar.gz", hash = "sha256:39a0cf1ecc7e282d1d30f36594ebd55c9fae1fda8a2622cee5d100430628f88c"},
 ]
-markers = {main = "python_version >= \"3.11\" and extra == \"examples\"", examples = "python_version >= \"3.11\""}
+markers = {main = "python_version >= \"3.11\" and extra == \"examples\"", dev = "python_version >= \"3.11\""}
 
 [package.dependencies]
 certifi = "*"
@@ -4587,7 +4587,7 @@ version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
     {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
@@ -4633,7 +4633,7 @@ version = "2026.1.post1"
 description = "World timezone definitions, modern and historical"
 optional = false
 python-versions = "*"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 markers = "python_version == \"3.10\""
 files = [
     {file = "pytz-2026.1.post1-py2.py3-none-any.whl", hash = "sha256:f2fd16142fda348286a75e1a524be810bb05d444e5a081f37f7affc635035f7a"},
@@ -5146,7 +5146,7 @@ version = "2.1.2"
 description = "Manipulation and analysis of geometric objects"
 optional = false
 python-versions = ">=3.10"
-groups = ["main", "examples"]
+groups = ["main", "dev"]
 files = [
     {file = "shapely-2.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:7ae48c236c0324b4e139bea88a306a04ca630f49be66741b340729d380d8f52f"},
     {file = "shapely-2.1.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:eba6710407f1daa8e7602c347dfc94adc02205ec27ed956346190d66579eb9ea"},
@@ -5221,7 +5221,7 @@ version = "1.17.0"
 description = "Python 2 and 3 compatibility utilities"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
     {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
@@ -5532,12 +5532,12 @@ version = "2026.1"
 description = "Provider of IANA time zone data"
 optional = false
 python-versions = ">=2"
-groups = ["main", "dev", "docs", "examples"]
+groups = ["main", "dev", "docs"]
 files = [
     {file = "tzdata-2026.1-py2.py3-none-any.whl", hash = "sha256:4b1d2be7ac37ceafd7327b961aa3a54e467efbdb563a23655fbfe0d39cfc42a9"},
     {file = "tzdata-2026.1.tar.gz", hash = "sha256:67658a1903c75917309e753fdc349ac0efd8c27db7a0cb406a25be4840f87f98"},
 ]
-markers = {main = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or extra == \"examples\" or python_version == \"3.10\"", dev = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or python_version == \"3.10\"", examples = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or python_version == \"3.10\""}
+markers = {main = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or extra == \"examples\" or python_version == \"3.10\"", dev = "sys_platform == \"win32\" or sys_platform == \"emscripten\" or python_version == \"3.10\""}
 
 [[package]]
 name = "uri-template"
@@ -5866,4 +5866,4 @@ plot = ["matplotlib"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4"
-content-hash = "12a5d322513c70b9879ffe19b893422b79a0e33af4ceee4ff8eb4f8ba465f1e5"
+content-hash = "e6377797201087802a94f1fb3a26ea8a8e7bc254f3ca7ab34c415785f3ccdc1f"
