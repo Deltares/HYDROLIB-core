@@ -38,7 +38,6 @@ plot = [
 dev = [
     "pytest>=9.0,<10",
     "pytest-cov>=7.0,<8",
-    "devtools>=0.12.2,<0.13",
     "commitizen>=4.0,<5",
     "isort>=6.0,<7",
     "black>=24.8.0,<25",
