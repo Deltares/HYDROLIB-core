@@ -36,7 +36,11 @@ on:
         type: string
 
 jobs:
+  wheel-test:
+    uses: ./.github/workflows/wheel-test.yml
+
   release:
+    needs: wheel-test
     runs-on: ubuntu-latest
     steps:
       - name: Check out the code
