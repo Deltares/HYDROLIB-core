@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1496,7 +1524,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -4355,13 +4383,13 @@ You're not viewing the latest release version.
 <span class="na">ExtForceFileNew</span><span class="w">                     </span><span class="o">=</span><span class="w">                                                                     </span><span class="c1"># New format for external forcings file *.ext, link with bc-format boundary conditions specification</span>
 </code></pre></div>
 - The MDU file is updated to reference the new files.
-- If the converter detects unsupported quantities, the <code>ExtForceFile</code> entry is left in place and the unsupported 
+- If the converter detects unsupported quantities, the <code>ExtForceFile</code> entry is left in place and the unsupported
   quantities are reported in the log.
-- If all the quantities are converted the <code>ExtForceFile</code> entry is removed and the <code>ExtForceFileNew</code> entry is updated to 
+- If all the quantities are converted the <code>ExtForceFile</code> entry is removed and the <code>ExtForceFileNew</code> entry is updated to
   point to the new file.
-- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing 
+- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing
   file.
-- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new 
+- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.</p>
 <h3 id="before-legacy-ext-old-format">Before: legacy <code>.ext</code> (old format)<a class="headerlink" href="#before-legacy-ext-old-format" title="Permanent link">&para;</a></h3>
 <p>A minimal legacy file with two forcings (boundary water level and global rainfall). Values (e.g., <code>FILETYPE</code>, <code>METHOD</code>) may differ in your model.</p>
@@ -4803,10 +4831,10 @@ Resulting <code>.bc</code> astronomic snippet (named component):
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

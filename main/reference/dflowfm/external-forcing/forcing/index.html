@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1496,7 +1524,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -2573,10 +2601,21 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="md-nav__link">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__get_pydantic_core_schema__" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validate
+        __get_pydantic_core_schema__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __repr__
       
     </span>
   </a>
@@ -2807,6 +2846,17 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.T3D.__get_pydantic_core_schema__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __get_pydantic_core_schema__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.bc.models.T3D.rename_keys" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3011,6 +3061,17 @@ You're not viewing the latest release version.
     <span class="md-ellipsis">
       
         vectorname
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.VectorQuantityUnitPairs.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
       
     </span>
   </a>
@@ -4474,10 +4535,21 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="md-nav__link">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__get_pydantic_core_schema__" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validate
+        __get_pydantic_core_schema__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__repr__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __repr__
       
     </span>
   </a>
@@ -4708,6 +4780,17 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.T3D.__get_pydantic_core_schema__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __get_pydantic_core_schema__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.bc.models.T3D.rename_keys" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4912,6 +4995,17 @@ You're not viewing the latest release version.
     <span class="md-ellipsis">
       
         vectorname
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.bc.models.VectorQuantityUnitPairs.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
       
     </span>
   </a>
@@ -5262,7 +5356,9 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
 
 
 
@@ -5290,9 +5386,11 @@ Hold "Ctrl" to enable pan &amp; zoom
 *   a scalar float constant
 *   "realtime" keyword, indicating externally controlled.
 *   A ForcingModel coming from a .bc file.</p>
+
     </div>
 
 </div>
+
 
 
 <div class="doc doc-object doc-class">
@@ -5311,6 +5409,7 @@ Hold "Ctrl" to enable pan &amp; zoom
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with astronomic components data.</p>
 
 
@@ -5318,15 +5417,17 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">682</span>
-<span class="normal">683</span>
-<span class="normal">684</span>
-<span class="normal">685</span>
-<span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Astronomic</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Astronomic</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with astronomic components data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;astronomic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;astronomic&quot;</span>
@@ -5338,7 +5439,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -5364,9 +5465,11 @@ Hold "Ctrl" to enable pan &amp; zoom
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are multiplied with the factor. Defaults to 1.0.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -5394,6 +5497,7 @@ Hold "Ctrl" to enable pan &amp; zoom
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with astronomic components correction data.</p>
 
 
@@ -5401,12 +5505,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
-<span class="normal">700</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AstronomicCorrection</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AstronomicCorrection</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with astronomic components correction data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;astronomic-correction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;astronomic-correction&quot;</span>
@@ -5415,7 +5521,8 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -5449,6 +5556,7 @@ Hold "Ctrl" to enable pan &amp; zoom
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with constant value data.</p>
 
 
@@ -5456,18 +5564,20 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">920</span>
-<span class="normal">921</span>
-<span class="normal">922</span>
-<span class="normal">923</span>
-<span class="normal">924</span>
-<span class="normal">925</span>
-<span class="normal">926</span>
-<span class="normal">927</span>
-<span class="normal">928</span>
-<span class="normal">929</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constant</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">932</span>
+<span class="normal">933</span>
+<span class="normal">934</span>
+<span class="normal">935</span>
+<span class="normal">936</span>
+<span class="normal">937</span>
+<span class="normal">938</span>
+<span class="normal">939</span>
+<span class="normal">940</span>
+<span class="normal">941</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Constant</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with constant value data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;constant&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span>
@@ -5482,7 +5592,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -5508,6 +5618,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are multiplied with the factor. Defaults to 1.0.</p>
+
     </div>
 
 </div>
@@ -5530,9 +5641,11 @@ Hold "Ctrl" to enable pan &amp; zoom
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -5560,6 +5673,7 @@ Hold "Ctrl" to enable pan &amp; zoom
               Bases: <code><a class="autorefs autorefs-internal" title="DataBlockINIBasedModel (hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel)" href="../../../base/ini/#hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel">DataBlockINIBasedModel</a></code></p>
 
 
+
         <p>The base class of a single [Forcing] block in a .bc forcings file.</p>
 <p>The <code>ForcingBase</code> class is used as the foundational model for various types
 of forcing data blocks, such as TimeSeries, Harmonic, Astronomic, and others.
@@ -5579,7 +5693,12 @@ and serializing the forcing data.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="name (hydrolib.core.dflowfm.bc.models.ForcingBase.name)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.name">name</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="name = Field(alias='name')
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.ForcingBase.name)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.name">name</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5590,7 +5709,12 @@ and serializing the forcing data.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="function (hydrolib.core.dflowfm.bc.models.ForcingBase.function)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.function">function</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="function = Field(alias='function')
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.ForcingBase.function)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.function">function</a></code></td>
             <td>
                   <code><span title="str">str</span></code>
             </td>
@@ -5603,7 +5727,11 @@ constant, qhtable.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="quantityunitpair (hydrolib.core.dflowfm.bc.models.ForcingBase.quantityunitpair)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.quantityunitpair">quantityunitpair</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="quantityunitpair
+
+  
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.ForcingBase.quantityunitpair)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase.quantityunitpair">quantityunitpair</a></code></td>
             <td>
                   <code><span title="typing.List">List</span>[<span title="hydrolib.core.dflowfm.bc.models.ScalarOrVectorQUP">ScalarOrVectorQUP</span>]</code>
             </td>
@@ -5709,36 +5837,11 @@ velocity
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
@@ -5896,7 +5999,9 @@ velocity
 <span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
-<span class="normal">346</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingBase</span><span class="p">(</span><span class="n">DataBlockINIBasedModel</span><span class="p">):</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingBase</span><span class="p">(</span><span class="n">DataBlockINIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The base class of a single [Forcing] block in a .bc forcings file.</span>
 
@@ -5992,71 +6097,46 @@ velocity
     <span class="k">def</span><span class="w"> </span><span class="nf">_duplicate_keys_as_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantityunitpair</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with quantity preprocessing applied before validation.&quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">handler</span><span class="p">(</span><span class="n">source_type</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">preprocess_quantities</span><span class="p">,</span>  <span class="c1"># this is called BEFORE validation</span>
+            <span class="n">schema</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_quantities</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
         <span class="n">quantityunitpairkey</span> <span class="o">=</span> <span class="s2">&quot;quantityunitpair&quot;</span>
 
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">quantityunitpairkey</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">values</span>
-
         <span class="n">quantities</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">quantities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quantity is not provided&quot;</span><span class="p">)</span>
-        <span class="n">units</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unit is not provided&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">values</span><span class="p">[</span><span class="n">quantityunitpairkey</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">QuantityUnitPair</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="n">quantities</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="k">return</span> <span class="n">values</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">quantities</span> <span class="o">=</span> <span class="p">[</span><span class="n">quantities</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">units</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Number of quantities should be equal to number of units&quot;</span>
-                <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;quantity&#39; and &#39;unit&#39; must be a string or a list.&quot;</span><span class="p">)</span>
 
-            <span class="n">values</span><span class="p">[</span><span class="n">quantityunitpairkey</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">QuantityUnitPair</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="n">quantity</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">unit</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
-            <span class="p">]</span>
-            <span class="k">return</span> <span class="n">values</span>
-
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of quantities should be equal to number of units&quot;</span><span class="p">)</span>
-
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">get_from_subclass_defaults</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Try to initialize subclass based on the `function` field.</span>
-<span class="sd">        This field is compared to each `function` field of the derived models of `ForcingBase`</span>
-<span class="sd">        or models derived from derived models.</span>
-<span class="sd">        The derived model with an equal function type will be initialized.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: When the given type is not a known structure type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># should be replaced by discriminated unions once merged</span>
-        <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">function_string</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-            <span class="n">function_type</span> <span class="o">=</span> <span class="n">get_type_based_on_subclass_default_value</span><span class="p">(</span>
-                <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">function_string</span>
-            <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">function_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">function_type</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Function of </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with name=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> and function=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not recognized.&quot;</span>
-                <span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantities</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Number of quantities should be equal to number of units.&quot;</span><span class="p">)</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">quantityunitpairkey</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">QuantityUnitPair</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="n">quantity</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">unit</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">quantities</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">values</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
@@ -6074,20 +6154,20 @@ velocity
 
         <span class="k">return</span> <span class="n">section</span>
 
-    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="n">Extra</span><span class="o">.</span><span class="n">ignore</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation omitting the datablock for brevity.&quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;omitted&gt;&quot;</span>
-        <span class="n">representable</span> <span class="o">=</span> <span class="n">BaseModel</span><span class="o">.</span><span class="n">construct</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">representable</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">representable</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -6113,6 +6193,7 @@ velocity
     <div class="doc doc-contents ">
 
         <p>str: Function type of the data in the actual datablock.</p>
+
     </div>
 
 </div>
@@ -6135,6 +6216,7 @@ velocity
     <div class="doc doc-contents ">
 
         <p>str: Unique identifier that identifies the location for this forcing data.</p>
+
     </div>
 
 </div>
@@ -6156,110 +6238,88 @@ velocity
     <div class="doc doc-contents ">
 
         <p>List[ScalarOrVectorQUP]: List of header lines for one or more quantities and their unit. Describes the columns in the actual datablock.</p>
+
     </div>
 
 </div>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
-<h3 id="hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">validate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
+<h3 id="hydrolib.core.dflowfm.bc.models.ForcingBase.__get_pydantic_core_schema__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__get_pydantic_core_schema__</span><span class="p">(</span><span class="n">source_type</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
   </span>
 
-<a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.validate" class="headerlink" title="Permanent link">&para;</a></h3>
+<a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__get_pydantic_core_schema__" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
     <div class="doc doc-contents ">
 
-        <p>Try to initialize subclass based on the <code>function</code> field.
-This field is compared to each <code>function</code> field of the derived models of <code>ForcingBase</code>
-or models derived from derived models.
-The derived model with an equal function type will be initialized.</p>
+        <p>Return a Pydantic core schema with quantity preprocessing applied before validation.</p>
 
 
-<p><span class="doc-section-title">Raises:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="ValueError">ValueError</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>When the given type is not a known structure type.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">295</span>
-<span class="normal">296</span>
-<span class="normal">297</span>
-<span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to initialize subclass based on the `function` field.</span>
-<span class="sd">    This field is compared to each `function` field of the derived models of `ForcingBase`</span>
-<span class="sd">    or models derived from derived models.</span>
-<span class="sd">    The derived model with an equal function type will be initialized.</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with quantity preprocessing applied before validation.&quot;&quot;&quot;</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">handler</span><span class="p">(</span><span class="n">source_type</span><span class="p">)</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: When the given type is not a known structure type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">preprocess_quantities</span><span class="p">,</span>  <span class="c1"># this is called BEFORE validation</span>
+        <span class="n">schema</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
 
-    <span class="c1"># should be replaced by discriminated unions once merged</span>
-    <span class="c1"># https://github.com/samuelcolvin/pydantic/pull/2336</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">function_string</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">function_type</span> <span class="o">=</span> <span class="n">get_type_based_on_subclass_default_value</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">function_string</span>
-        <span class="p">)</span>
+</div>
 
-        <span class="k">if</span> <span class="n">function_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">function_type</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
+<div class="doc doc-object doc-function">
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Function of </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with name=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> and function=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;function&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not recognized.&quot;</span>
-            <span class="p">)</span>
-    <span class="k">return</span> <span class="n">v</span>
+
+<h3 id="hydrolib.core.dflowfm.bc.models.ForcingBase.__repr__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__repr__</span><span class="p">()</span></code>
+
+<a href="#hydrolib.core.dflowfm.bc.models.ForcingBase.__repr__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a string representation omitting the datablock for brevity.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a string representation omitting the datablock for brevity.&quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;datablock&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&lt;omitted&gt;&quot;</span>
+    <span class="n">representable</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">model_construct</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">representable</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6287,7 +6347,8 @@ The derived model with an equal function type will be initialized.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="hydrolib.core.dflowfm.ini.models.INIGeneral">INIGeneral</span></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="INIGeneral (hydrolib.core.dflowfm.ini.models.INIGeneral)" href="../../../base/ini/#hydrolib.core.dflowfm.ini.models.INIGeneral">INIGeneral</a></code></p>
+
 
 
         <p><code>[General]</code> section with .bc file metadata.</p>
@@ -6297,15 +6358,17 @@ The derived model with an equal function type will be initialized.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">932</span>
-<span class="normal">933</span>
-<span class="normal">934</span>
-<span class="normal">935</span>
-<span class="normal">936</span>
-<span class="normal">937</span>
-<span class="normal">938</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">944</span>
+<span class="normal">945</span>
+<span class="normal">946</span>
+<span class="normal">947</span>
+<span class="normal">948</span>
+<span class="normal">949</span>
+<span class="normal">950</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;`[General]` section with .bc file metadata.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;1.01&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
@@ -6317,7 +6380,7 @@ The derived model with an equal function type will be initialized.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -6343,9 +6406,11 @@ The derived model with an equal function type will be initialized.</p>
     <div class="doc doc-contents ">
 
         <p>str: The file version.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -6373,6 +6438,7 @@ The derived model with an equal function type will be initialized.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="INIModel (hydrolib.core.dflowfm.ini.models.INIModel)" href="../../../base/ini/#hydrolib.core.dflowfm.ini.models.INIModel">INIModel</a></code></p>
 
 
+
         <p>The overall model that contains the contents of one .bc forcings file.</p>
 <p>The <code>ForcingModel</code> class is the top-level model that aggregates metadata
 and multiple <code>[Forcing]</code> blocks. It provides functionality for parsing,
@@ -6390,7 +6456,12 @@ serializing, and managing data within a .bc file.</p>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="general (hydrolib.core.dflowfm.bc.models.ForcingModel.general)" href="#hydrolib.core.dflowfm.bc.models.ForcingModel.general">general</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="general = ForcingGeneral()
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.ForcingModel.general)" href="#hydrolib.core.dflowfm.bc.models.ForcingModel.general">general</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="ForcingGeneral (hydrolib.core.dflowfm.bc.models.ForcingGeneral)" href="#hydrolib.core.dflowfm.bc.models.ForcingGeneral">ForcingGeneral</a></code>
             </td>
@@ -6401,7 +6472,12 @@ serializing, and managing data within a .bc file.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="forcing (hydrolib.core.dflowfm.bc.models.ForcingModel.forcing)" href="#hydrolib.core.dflowfm.bc.models.ForcingModel.forcing">forcing</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="forcing = Field(default_factory=list)
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.ForcingModel.forcing)" href="#hydrolib.core.dflowfm.bc.models.ForcingModel.forcing">forcing</a></code></td>
             <td>
                   <code>(<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a>], <span title="optional">optional</span>, <span title="Defaults">Defaults</span> is [])</code>
             </td>
@@ -6535,33 +6611,11 @@ unit               <span class="o">=</span> m³<span class="o">/</span>s
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 941</span>
-<span class="normal"> 942</span>
-<span class="normal"> 943</span>
-<span class="normal"> 944</span>
-<span class="normal"> 945</span>
-<span class="normal"> 946</span>
-<span class="normal"> 947</span>
-<span class="normal"> 948</span>
-<span class="normal"> 949</span>
-<span class="normal"> 950</span>
-<span class="normal"> 951</span>
-<span class="normal"> 952</span>
-<span class="normal"> 953</span>
-<span class="normal"> 954</span>
-<span class="normal"> 955</span>
-<span class="normal"> 956</span>
-<span class="normal"> 957</span>
-<span class="normal"> 958</span>
-<span class="normal"> 959</span>
-<span class="normal"> 960</span>
-<span class="normal"> 961</span>
-<span class="normal"> 962</span>
-<span class="normal"> 963</span>
-<span class="normal"> 964</span>
-<span class="normal"> 965</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 965</span>
 <span class="normal"> 966</span>
 <span class="normal"> 967</span>
 <span class="normal"> 968</span>
@@ -6732,7 +6786,56 @@ unit               <span class="o">=</span> m³<span class="o">/</span>s
 <span class="normal">1133</span>
 <span class="normal">1134</span>
 <span class="normal">1135</span>
-<span class="normal">1136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">1136</span>
+<span class="normal">1137</span>
+<span class="normal">1138</span>
+<span class="normal">1139</span>
+<span class="normal">1140</span>
+<span class="normal">1141</span>
+<span class="normal">1142</span>
+<span class="normal">1143</span>
+<span class="normal">1144</span>
+<span class="normal">1145</span>
+<span class="normal">1146</span>
+<span class="normal">1147</span>
+<span class="normal">1148</span>
+<span class="normal">1149</span>
+<span class="normal">1150</span>
+<span class="normal">1151</span>
+<span class="normal">1152</span>
+<span class="normal">1153</span>
+<span class="normal">1154</span>
+<span class="normal">1155</span>
+<span class="normal">1156</span>
+<span class="normal">1157</span>
+<span class="normal">1158</span>
+<span class="normal">1159</span>
+<span class="normal">1160</span>
+<span class="normal">1161</span>
+<span class="normal">1162</span>
+<span class="normal">1163</span>
+<span class="normal">1164</span>
+<span class="normal">1165</span>
+<span class="normal">1166</span>
+<span class="normal">1167</span>
+<span class="normal">1168</span>
+<span class="normal">1169</span>
+<span class="normal">1170</span>
+<span class="normal">1171</span>
+<span class="normal">1172</span>
+<span class="normal">1173</span>
+<span class="normal">1174</span>
+<span class="normal">1175</span>
+<span class="normal">1176</span>
+<span class="normal">1177</span>
+<span class="normal">1178</span>
+<span class="normal">1179</span>
+<span class="normal">1180</span>
+<span class="normal">1181</span>
+<span class="normal">1182</span>
+<span class="normal">1183</span>
+<span class="normal">1184</span>
+<span class="normal">1185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForcingModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall model that contains the contents of one .bc forcings file.</span>
 
@@ -6864,18 +6967,43 @@ unit               <span class="o">=</span> m³<span class="o">/</span>s
     <span class="n">general</span><span class="p">:</span> <span class="n">ForcingGeneral</span> <span class="o">=</span> <span class="n">ForcingGeneral</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;ForcingGeneral: `[General]` block with file metadata.&quot;&quot;&quot;</span>
 
-    <span class="n">forcing</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ForcingBase</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">forcing</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
+        <span class="nb">list</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">FORCINGS</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)]],</span>
+        <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">),</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List[ForcingBase]: List of `[Forcing]` blocks for all forcing</span>
 <span class="sd">    definitions in a single .bc file. Actual data is stored in</span>
 <span class="sd">    forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock].&quot;&quot;&quot;</span>
-
-    <span class="n">_split_to_list</span> <span class="o">=</span> <span class="n">make_list_validator</span><span class="p">(</span><span class="s2">&quot;forcing&quot;</span><span class="p">)</span>
 
     <span class="n">serializer_config</span><span class="p">:</span> <span class="n">DataBlockINIBasedSerializerConfig</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">DataBlockINIBasedSerializerConfig</span><span class="p">(</span>
             <span class="n">section_indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">property_indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">datablock_indent</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span>
     <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;forcing&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_forcing_case_insensitive</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ForcingBase</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate and convert forcing definitions to ForcingBase subclasses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            values (List[Dict]):</span>
+<span class="sd">                List of forcing definitions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[ForcingBase]:</span>
+<span class="sd">                List of validated and converted forcing definitions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="s2">&quot;function&quot;</span> <span class="ow">in</span> <span class="n">v</span>
+                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">v</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">values</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -6933,7 +7061,7 @@ unit               <span class="o">=</span> m³<span class="o">/</span>s
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -6961,6 +7089,7 @@ unit               <span class="o">=</span> m³<span class="o">/</span>s
         <p>List[ForcingBase]: List of <code>[Forcing]</code> blocks for all forcing
 definitions in a single .bc file. Actual data is stored in
 forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedModel.datablock].</p>
+
     </div>
 
 </div>
@@ -6983,9 +7112,11 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <div class="doc doc-contents ">
 
         <p>ForcingGeneral: <code>[General]</code> block with file metadata.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7060,29 +7191,30 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1116</span>
-<span class="normal">1117</span>
-<span class="normal">1118</span>
-<span class="normal">1119</span>
-<span class="normal">1120</span>
-<span class="normal">1121</span>
-<span class="normal">1122</span>
-<span class="normal">1123</span>
-<span class="normal">1124</span>
-<span class="normal">1125</span>
-<span class="normal">1126</span>
-<span class="normal">1127</span>
-<span class="normal">1128</span>
-<span class="normal">1129</span>
-<span class="normal">1130</span>
-<span class="normal">1131</span>
-<span class="normal">1132</span>
-<span class="normal">1133</span>
-<span class="normal">1134</span>
-<span class="normal">1135</span>
-<span class="normal">1136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1165</span>
+<span class="normal">1166</span>
+<span class="normal">1167</span>
+<span class="normal">1168</span>
+<span class="normal">1169</span>
+<span class="normal">1170</span>
+<span class="normal">1171</span>
+<span class="normal">1172</span>
+<span class="normal">1173</span>
+<span class="normal">1174</span>
+<span class="normal">1175</span>
+<span class="normal">1176</span>
+<span class="normal">1177</span>
+<span class="normal">1178</span>
+<span class="normal">1179</span>
+<span class="normal">1180</span>
+<span class="normal">1181</span>
+<span class="normal">1182</span>
+<span class="normal">1183</span>
+<span class="normal">1184</span>
+<span class="normal">1185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a .bc file and create an instance of `ForcingModel`.</span>
@@ -7133,6 +7265,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with harmonic components data.</p>
 
 
@@ -7140,15 +7273,17 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">673</span>
-<span class="normal">674</span>
-<span class="normal">675</span>
-<span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Harmonic</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Harmonic</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with harmonic components data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;harmonic&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;harmonic&quot;</span>
@@ -7160,7 +7295,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -7186,9 +7321,11 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are multiplied with the factor. Defaults to 1.0.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7216,6 +7353,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with harmonic components correction data.</p>
 
 
@@ -7223,12 +7361,14 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">691</span>
-<span class="normal">692</span>
-<span class="normal">693</span>
-<span class="normal">694</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HarmonicCorrection</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">HarmonicCorrection</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with harmonic components correction data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;harmonic-correction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;harmonic-correction&quot;</span>
@@ -7237,7 +7377,8 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -7271,6 +7412,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with Q-h table data.</p>
 
 
@@ -7278,12 +7420,14 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">914</span>
-<span class="normal">915</span>
-<span class="normal">916</span>
-<span class="normal">917</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QHTable</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">926</span>
+<span class="normal">927</span>
+<span class="normal">928</span>
+<span class="normal">929</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QHTable</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with Q-h table data.&quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;qhtable&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;qhtable&quot;</span>
@@ -7292,7 +7436,8 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -7326,6 +7471,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
               Bases: <code><a class="autorefs autorefs-internal" title="BaseModel (hydrolib.core.base.models.BaseModel)" href="../../../base/api/#hydrolib.core.base.models.BaseModel">BaseModel</a></code></p>
 
 
+
         <p>A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index.</p>
 
 
@@ -7333,27 +7479,31 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QuantityUnitPair</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QuantityUnitPair</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A .bc file header lines tuple containing a quantity name, its unit and optionally a vertical position index.&quot;&quot;&quot;</span>
 
     <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span>
@@ -7362,12 +7512,14 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;str: Unit of quantity.&quot;&quot;&quot;</span>
 
-    <span class="n">vertpositionindex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;vertPositionIndex&quot;</span><span class="p">)</span>
+    <span class="n">vertpositionindex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;vertPositionIndex&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only).&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator function that yields the ini Property objects for a single</span>
-<span class="sd">        QuantityUnitPair object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator function that yields the ini Property objects for a single QuantityUnitPair object.</span>
+
+<span class="sd">        Yields ini Property objects for quantity, unit, and optional vertPositionIndex.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">yield</span> <span class="n">Property</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quantity</span><span class="p">)</span>
         <span class="k">yield</span> <span class="n">Property</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertpositionindex</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -7377,7 +7529,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -7402,6 +7554,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <div class="doc doc-contents ">
 
         <p>str: Name of quantity.</p>
+
     </div>
 
 </div>
@@ -7423,6 +7576,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <div class="doc doc-contents ">
 
         <p>str: Unit of quantity.</p>
+
     </div>
 
 </div>
@@ -7432,7 +7586,7 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
 
 
 <h3 id="hydrolib.core.dflowfm.bc.models.QuantityUnitPair.vertpositionindex" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">vertpositionindex</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s1">&#39;vertPositionIndex&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">vertpositionindex</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s1">&#39;vertPositionIndex&#39;</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
@@ -7445,9 +7599,11 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
     <div class="doc doc-contents ">
 
         <p>int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only).</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7475,10 +7631,10 @@ forcing[..].datablock from [hydrolib.core.dflowfm.ini.models.DataBlockINIBasedMo
               Bases: <code><span title="strenum.StrEnum">StrEnum</span></code></p>
 
 
-        <p>Enum class containing the valid value for the "realtime" reserved
-keyword for real-time controlled forcing data, e.g., for hydraulic
-structures.</p>
-<p>This class is used inside the ForcingData Union, to force detection
+
+        <p>Enum class containing the valid value for the "realtime" reserved keyword.</p>
+<p>For real-time controlled forcing data, e.g., for hydraulic structures.
+This class is used inside the ForcingData Union, to force detection
 of the realtime keyword, prior to considering it a filename.</p>
 
 
@@ -7486,25 +7642,23 @@ of the realtime keyword, prior to considering it a filename.</p>
 
 
 
-              <details class="quote">
-                <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1139</span>
-<span class="normal">1140</span>
-<span class="normal">1141</span>
-<span class="normal">1142</span>
-<span class="normal">1143</span>
-<span class="normal">1144</span>
-<span class="normal">1145</span>
-<span class="normal">1146</span>
-<span class="normal">1147</span>
-<span class="normal">1148</span>
-<span class="normal">1149</span>
-<span class="normal">1150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RealTime</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Enum class containing the valid value for the &quot;realtime&quot; reserved</span>
-<span class="sd">    keyword for real-time controlled forcing data, e.g., for hydraulic</span>
-<span class="sd">    structures.</span>
 
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1188</span>
+<span class="normal">1189</span>
+<span class="normal">1190</span>
+<span class="normal">1191</span>
+<span class="normal">1192</span>
+<span class="normal">1193</span>
+<span class="normal">1194</span>
+<span class="normal">1195</span>
+<span class="normal">1196</span>
+<span class="normal">1197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RealTime</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid value for the &quot;realtime&quot; reserved keyword.</span>
+
+<span class="sd">    For real-time controlled forcing data, e.g., for hydraulic structures.</span>
 <span class="sd">    This class is used inside the ForcingData Union, to force detection</span>
 <span class="sd">    of the realtime keyword, prior to considering it a filename.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7516,7 +7670,7 @@ of the realtime keyword, prior to considering it a filename.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -7542,9 +7696,11 @@ of the realtime keyword, prior to considering it a filename.</p>
     <div class="doc doc-contents ">
 
         <p>str: Realtime data source, externally provided</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7570,6 +7726,7 @@ of the realtime keyword, prior to considering it a filename.</p>
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="VectorForcingBase (hydrolib.core.dflowfm.bc.models.VectorForcingBase)" href="#hydrolib.core.dflowfm.bc.models.VectorForcingBase">VectorForcingBase</a></code></p>
+
 
 
         <p>Subclass for a .bc file [Forcing] block with 3D timeseries data.</p>
@@ -7657,16 +7814,22 @@ The type of time interpolation.</p>
           </tr>
       </tbody>
     </table>
-        <p>Examples:</p>
 
 
 
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">703</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">698</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
 <span class="normal">704</span>
 <span class="normal">705</span>
 <span class="normal">706</span>
@@ -7874,7 +8037,19 @@ The type of time interpolation.</p>
 <span class="normal">908</span>
 <span class="normal">909</span>
 <span class="normal">910</span>
-<span class="normal">911</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">T3D</span><span class="p">(</span><span class="n">VectorForcingBase</span><span class="p">):</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
+<span class="normal">916</span>
+<span class="normal">917</span>
+<span class="normal">918</span>
+<span class="normal">919</span>
+<span class="normal">920</span>
+<span class="normal">921</span>
+<span class="normal">922</span>
+<span class="normal">923</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">T3D</span><span class="p">(</span><span class="n">VectorForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with 3D timeseries data.</span>
 
 <span class="sd">    Attributes:</span>
@@ -7890,9 +8065,6 @@ The type of time interpolation.</p>
 <span class="sd">            The vertical position type of the verticalpositions values.</span>
 <span class="sd">        timeinterpolation (TimeInterpolation): default is linear</span>
 <span class="sd">            The type of time interpolation.</span>
-
-<span class="sd">    Examples:</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">function</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;t3d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;t3d&quot;</span>
@@ -7907,7 +8079,7 @@ The type of time interpolation.</p>
         <span class="n">TimeInterpolation</span><span class="o">.</span><span class="n">linear</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;timeInterpolation&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">_keys_to_rename</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">_keys_to_rename</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;timeinterpolation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;time_interpolation&quot;</span><span class="p">],</span>
         <span class="s2">&quot;vertpositions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;vertical_position_specification&quot;</span><span class="p">],</span>
         <span class="s2">&quot;vertinterpolation&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;vertical_interpolation&quot;</span><span class="p">],</span>
@@ -7915,28 +8087,47 @@ The type of time interpolation.</p>
         <span class="s2">&quot;vertpositionindex&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;vertical_position&quot;</span><span class="p">],</span>
     <span class="p">}</span>
 
-    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with key renaming applied before validation.&quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__get_pydantic_core_schema__</span><span class="p">(</span><span class="n">source_type</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">rename_keys</span><span class="p">,</span>  <span class="c1"># this is called BEFORE validation</span>
+            <span class="n">schema</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_keys_to_rename</span><span class="p">)</span>
 
-    <span class="n">_split_to_list</span> <span class="o">=</span> <span class="n">get_split_string_on_delimiter_validator</span><span class="p">(</span>
-        <span class="s2">&quot;vertpositions&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;vertpositions&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_vertpositions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">split_string_on_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
-    <span class="n">_verticalinterpolation_validator</span> <span class="o">=</span> <span class="n">get_enum_validator</span><span class="p">(</span>
-        <span class="s2">&quot;vertinterpolation&quot;</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">VerticalInterpolation</span>
-    <span class="p">)</span>
-    <span class="n">_verticalpositiontype_validator</span> <span class="o">=</span> <span class="n">get_enum_validator</span><span class="p">(</span>
-        <span class="s2">&quot;vertpositiontype&quot;</span><span class="p">,</span>
-        <span class="n">enum</span><span class="o">=</span><span class="n">VerticalPositionType</span><span class="p">,</span>
-        <span class="n">alternative_enum_values</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">VerticalPositionType</span><span class="o">.</span><span class="n">percentage_bed</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;percentage from bed&quot;</span><span class="p">],</span>
-        <span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">_timeinterpolation_validator</span> <span class="o">=</span> <span class="n">get_enum_validator</span><span class="p">(</span>
-        <span class="s2">&quot;timeinterpolation&quot;</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">TimeInterpolation</span>
-    <span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;vertinterpolation&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_vertinterpolation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VerticalInterpolation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">VerticalInterpolation</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;vertpositiontype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_vertpositiontype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VerticalPositionType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span>
+            <span class="n">enum</span><span class="o">=</span><span class="n">VerticalPositionType</span><span class="p">,</span>
+            <span class="n">alternative_enum_values</span><span class="o">=</span><span class="p">{</span>
+                <span class="n">VerticalPositionType</span><span class="o">.</span><span class="n">percentage_bed</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;percentage from bed&quot;</span><span class="p">]</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeinterpolation&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_timeinterpolation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeInterpolation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">TimeInterpolation</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_repetitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -7961,8 +8152,9 @@ The type of time interpolation.</p>
 
         <span class="k">return</span> <span class="n">number_of_verticalpositions</span>
 
-    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantityunitpairs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+
         <span class="n">quantityunitpairs</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span>
 
         <span class="n">T3D</span><span class="o">.</span><span class="n">_validate_that_first_unit_is_time_and_has_no_verticalposition</span><span class="p">(</span>
@@ -8088,7 +8280,8 @@ The type of time interpolation.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -8101,8 +8294,57 @@ The type of time interpolation.</p>
 <div class="doc doc-object doc-function">
 
 
+<h3 id="hydrolib.core.dflowfm.bc.models.T3D.__get_pydantic_core_schema__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">__get_pydantic_core_schema__</span><span class="p">(</span><span class="n">source_type</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#hydrolib.core.dflowfm.bc.models.T3D.__get_pydantic_core_schema__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a Pydantic core schema with key renaming applied before validation.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with key renaming applied before validation.&quot;&quot;&quot;</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__get_pydantic_core_schema__</span><span class="p">(</span><span class="n">source_type</span><span class="p">,</span> <span class="n">handler</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">rename_keys</span><span class="p">,</span>  <span class="c1"># this is called BEFORE validation</span>
+        <span class="n">schema</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h3 id="hydrolib.core.dflowfm.bc.models.T3D.rename_keys" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">rename_keys</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
 
 <a href="#hydrolib.core.dflowfm.bc.models.T3D.rename_keys" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -8111,12 +8353,13 @@ The type of time interpolation.</p>
 
         <p>Renames some old keywords to the currently supported keywords.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span>
-<span class="normal">747</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_keys_to_rename</span><span class="p">)</span>
@@ -8150,6 +8393,7 @@ The type of time interpolation.</p>
               Bases: <code><span title="strenum.StrEnum">StrEnum</span></code></p>
 
 
+
         <p>Enum class containing the valid values for the time interpolation.</p>
 
 
@@ -8157,19 +8401,21 @@ The type of time interpolation.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimeInterpolation</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimeInterpolation</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the time interpolation.&quot;&quot;&quot;</span>
 
     <span class="n">linear</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
@@ -8185,7 +8431,7 @@ The type of time interpolation.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -8211,6 +8457,7 @@ The type of time interpolation.</p>
     <div class="doc doc-contents ">
 
         <p>str: Equal to that at the start of the time interval (latest specified time value).</p>
+
     </div>
 
 </div>
@@ -8233,6 +8480,7 @@ The type of time interpolation.</p>
     <div class="doc doc-contents ">
 
         <p>str: Equal to that at the end of the time interval (upcoming specified time value).</p>
+
     </div>
 
 </div>
@@ -8255,9 +8503,11 @@ The type of time interpolation.</p>
     <div class="doc doc-contents ">
 
         <p>str: Linear interpolation between times.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -8285,6 +8535,7 @@ The type of time interpolation.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="VectorForcingBase (hydrolib.core.dflowfm.bc.models.VectorForcingBase)" href="#hydrolib.core.dflowfm.bc.models.VectorForcingBase">VectorForcingBase</a></code></p>
 
 
+
         <p>Subclass for a .bc file [Forcing] block with timeseries data.</p>
 
 
@@ -8310,7 +8561,12 @@ The type of time interpolation.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="timeinterpolation (hydrolib.core.dflowfm.bc.models.TimeSeries.timeinterpolation)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.timeinterpolation">timeinterpolation</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="timeinterpolation = Field(alias='timeInterpolation')
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.TimeSeries.timeinterpolation)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.timeinterpolation">timeinterpolation</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="TimeInterpolation (hydrolib.core.dflowfm.bc.models.TimeInterpolation)" href="#hydrolib.core.dflowfm.bc.models.TimeInterpolation">TimeInterpolation</a></code>
             </td>
@@ -8321,7 +8577,12 @@ The type of time interpolation.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="offset (hydrolib.core.dflowfm.bc.models.TimeSeries.offset)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.offset">offset</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="offset = Field(0.0, alias='offset')
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.TimeSeries.offset)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.offset">offset</a></code></td>
             <td>
                   <code><span title="float">float</span></code>
             </td>
@@ -8333,7 +8594,12 @@ Defaults to 0.0.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="factor (hydrolib.core.dflowfm.bc.models.TimeSeries.factor)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.factor">factor</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="factor = Field(1.0, alias='factor')
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.bc.models.TimeSeries.factor)" href="#hydrolib.core.dflowfm.bc.models.TimeSeries.factor">factor</a></code></td>
             <td>
                   <code><span title="float">float</span></code>
             </td>
@@ -8420,9 +8686,17 @@ Two quantities:</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">559</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span>
+<span class="normal">556</span>
+<span class="normal">557</span>
+<span class="normal">558</span>
+<span class="normal">559</span>
 <span class="normal">560</span>
 <span class="normal">561</span>
 <span class="normal">562</span>
@@ -8528,12 +8802,7 @@ Two quantities:</p>
 <span class="normal">662</span>
 <span class="normal">663</span>
 <span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimeSeries</span><span class="p">(</span><span class="n">VectorForcingBase</span><span class="p">):</span>
+<span class="normal">665</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimeSeries</span><span class="p">(</span><span class="n">VectorForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass for a .bc file [Forcing] block with timeseries data.</span>
 
 <span class="sd">    Attributes:</span>
@@ -8632,11 +8901,12 @@ Two quantities:</p>
     <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;factor&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;float: All values in the table are multiplied with the factor. Defaults to 1.0.&quot;&quot;&quot;</span>
 
-    <span class="n">_timeinterpolation_validator</span> <span class="o">=</span> <span class="n">get_enum_validator</span><span class="p">(</span>
-        <span class="s2">&quot;timeinterpolation&quot;</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">TimeInterpolation</span>
-    <span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeinterpolation&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_timeinterpolation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeInterpolation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">TimeInterpolation</span><span class="p">)</span>
 
-    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span>
@@ -8650,7 +8920,7 @@ Two quantities:</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -8676,6 +8946,7 @@ Two quantities:</p>
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are multiplied with the factor. Defaults to 1.0.</p>
+
     </div>
 
 </div>
@@ -8698,6 +8969,7 @@ Two quantities:</p>
     <div class="doc doc-contents ">
 
         <p>float: All values in the table are increased by the offset (after multiplication by factor). Defaults to 0.0.</p>
+
     </div>
 
 </div>
@@ -8720,9 +8992,11 @@ Two quantities:</p>
     <div class="doc doc-contents ">
 
         <p>TimeInterpolation: The type of time interpolation.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -8739,17 +9013,18 @@ Two quantities:</p>
 
         <p>Renames some old keywords to the currently supported keywords.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">662</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
 <span class="normal">663</span>
 <span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">665</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">rename_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Renames some old keywords to the currently supported keywords.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">rename_keys_for_backwards_compatibility</span><span class="p">(</span>
@@ -8788,6 +9063,7 @@ Two quantities:</p>
               Bases: <code><a class="autorefs autorefs-internal" title="ForcingBase (hydrolib.core.dflowfm.bc.models.ForcingBase)" href="#hydrolib.core.dflowfm.bc.models.ForcingBase">ForcingBase</a></code></p>
 
 
+
         <p>The base class of a single [Forcing] block that supports vectors in a .bc forcings file.</p>
 
 
@@ -8795,11 +9071,11 @@ Two quantities:</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
@@ -8998,18 +9274,10 @@ Two quantities:</p>
 <span class="normal">547</span>
 <span class="normal">548</span>
 <span class="normal">549</span>
-<span class="normal">550</span>
-<span class="normal">551</span>
-<span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorForcingBase</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The base class of a single [Forcing] block that supports vectors in a .bc forcings file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">550</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorForcingBase</span><span class="p">(</span><span class="n">ForcingBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The base class of a single [Forcing] block that supports vectors in a .bc forcings file.&quot;&quot;&quot;</span>
 
-    <span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_and_update_quantityunitpairs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates and, if required, updates vector quantity unit pairs.</span>
 
@@ -9025,6 +9293,8 @@ Two quantities:</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Dictionary of validates values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">values</span>
         <span class="n">quantityunitpairs</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span>
         <span class="n">vector</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vector&quot;</span><span class="p">)</span>
         <span class="n">number_of_element_repetitions</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_number_of_repetitions</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
@@ -9041,9 +9311,9 @@ Two quantities:</p>
         <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
         <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Processes the given vector definition header lines from a .bc file</span>
-<span class="sd">        or, if absent, checks whether the existing VectorQuantityUnitPairs</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Processes the given vector definition header lines from a .bc file.</span>
+
+<span class="sd">        If absent, checks whether the existing VectorQuantityUnitPairs</span>
 <span class="sd">        objects already have the correct vector length.</span>
 
 <span class="sd">        Args:</span>
@@ -9057,7 +9327,6 @@ Two quantities:</p>
 <span class="sd">                Quantity lines. Typically used for 3D quantities, using the</span>
 <span class="sd">                number of vertical layers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
             <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">qup</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">qup</span><span class="p">,</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">),</span> <span class="n">quantityunitpairs</span><span class="p">)</span>
         <span class="p">):</span>
@@ -9079,11 +9348,10 @@ Two quantities:</p>
         <span class="n">quantityunitpairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ScalarOrVectorQUP</span><span class="p">],</span>
         <span class="n">number_of_element_repetitions</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates the given vector definition header lines from a .bc file</span>
-<span class="sd">        for a ForcingBase subclass and updates the existing QuantityUnitPair list</span>
-<span class="sd">        by packing the vector elements into a VectorQuantityUnitPairs object</span>
-<span class="sd">        for each vector definition.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the given vector definition header lines from a .bc file for a ForcingBase subclass.</span>
+
+<span class="sd">        Updates the existing QuantityUnitPair list by packing the vector elements into a</span>
+<span class="sd">        VectorQuantityUnitPairs object for each vector definition.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            vectordefs (List[str]): List of vector definition values, e.g.,</span>
@@ -9096,7 +9364,6 @@ Two quantities:</p>
 <span class="sd">                Quantity lines. Typically used for 3D quantities, using the</span>
 <span class="sd">                number of vertical layers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">vectordefs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -9167,9 +9434,9 @@ Two quantities:</p>
         <span class="n">vqu_pair</span><span class="p">:</span> <span class="n">VectorQuantityUnitPairs</span><span class="p">,</span>
         <span class="n">number_of_element_repetitions</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checks whether the number of QuantityUnitPairs in a vector quantity</span>
-<span class="sd">        matches exactly with number of vector elements in the definition and,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether the number of QuantityUnitPairs in a vector quantity is correct.</span>
+
+<span class="sd">        Matches exactly with number of vector elements in the definition and,</span>
 <span class="sd">        optionally, the number of vertical layers.</span>
 
 <span class="sd">        Args:</span>
@@ -9187,7 +9454,6 @@ Two quantities:</p>
 <span class="sd">            ValueError: If number of QuantityUnitPair objects in vqu_pair is not equal</span>
 <span class="sd">                to number of element names * number_of_element_repetitions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="n">valid</span> <span class="o">:=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="p">)</span>
             <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vqu_pair</span><span class="o">.</span><span class="n">elementname</span><span class="p">)</span> <span class="o">*</span> <span class="n">number_of_element_repetitions</span>
@@ -9204,10 +9470,6 @@ Two quantities:</p>
 
         <span class="k">return</span> <span class="n">valid</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_function</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">get_from_subclass_defaults</span><span class="p">(</span><span class="n">VectorForcingBase</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_repetitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the number of expected quantityunitpairs for each vector element. Defaults to 1.&quot;&quot;&quot;</span>
@@ -9217,7 +9479,8 @@ Two quantities:</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -9244,12 +9507,13 @@ Two quantities:</p>
 
         <p>Gets the number of expected quantityunitpairs for each vector element. Defaults to 1.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
+<span class="normal">550</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_number_of_repetitions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the number of expected quantityunitpairs for each vector element. Defaults to 1.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">1</span>
@@ -9360,7 +9624,8 @@ update vector quantity unit pairs.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
 <span class="normal">355</span>
@@ -9386,7 +9651,9 @@ update vector quantity unit pairs.</p>
 <span class="normal">375</span>
 <span class="normal">376</span>
 <span class="normal">377</span>
-<span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@root_validator</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_and_update_quantityunitpairs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates and, if required, updates vector quantity unit pairs.</span>
 
@@ -9402,6 +9669,8 @@ update vector quantity unit pairs.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Dictionary of validates values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">values</span>
     <span class="n">quantityunitpairs</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]</span>
     <span class="n">vector</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vector&quot;</span><span class="p">)</span>
     <span class="n">number_of_element_repetitions</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_number_of_repetitions</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
@@ -9441,8 +9710,9 @@ update vector quantity unit pairs.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="BaseModel (hydrolib.core.base.models.BaseModel)" href="../../../base/api/#hydrolib.core.base.models.BaseModel">BaseModel</a></code></p>
 
 
-        <p>A subset of .bc file header lines containing a vector quantity definition,
-followed by all component quantity names, their unit and optionally their
+
+        <p>A subset of .bc file header lines containing a vector quantity definition.</p>
+<p>Followed by all component quantity names, their unit and optionally their
 vertical position indexes.</p>
 
 
@@ -9450,29 +9720,11 @@ vertical position indexes.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
@@ -9498,13 +9750,41 @@ vertical position indexes.</p>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorQuantityUnitPairs</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A subset of .bc file header lines containing a vector quantity definition,</span>
-<span class="sd">    followed by all component quantity names, their unit and optionally their</span>
-<span class="sd">    vertical position indexes.&quot;&quot;&quot;</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VectorQuantityUnitPairs</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A subset of .bc file header lines containing a vector quantity definition.</span>
 
-    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-        <span class="n">validate_assignment</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="sd">    Followed by all component quantity names, their unit and optionally their</span>
+<span class="sd">    vertical position indexes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">vectorname</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;str: Name of the vector quantity.&quot;&quot;&quot;</span>
@@ -9515,9 +9795,12 @@ vertical position indexes.</p>
     <span class="n">quantityunitpair</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">QuantityUnitPair</span><span class="p">]</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components.&quot;&quot;&quot;</span>
 
-    <span class="nd">@root_validator</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantity_element_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;quantityunitpair&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span>
+
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
             <span class="p">[</span><span class="n">qup</span><span class="o">.</span><span class="n">quantity</span> <span class="k">for</span> <span class="n">qup</span> <span class="ow">in</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;quantityunitpair&quot;</span><span class="p">]]</span>
         <span class="p">):</span>
@@ -9533,13 +9816,16 @@ vertical position indexes.</p>
         <span class="k">return</span> <span class="n">vectorname</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elementname</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the vector definition string representation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">VectorQuantityUnitPairs</span><span class="o">.</span><span class="n">_to_vectordefinition_string</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">vectorname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elementname</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator function that yields the ini Property objects for a single</span>
-<span class="sd">        VectorQuantityUnitPairs object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator function that yields the ini Property objects for a single VectorQuantityUnitPairs object.</span>
+
+<span class="sd">        Yields a vector Property and the properties for each QuantityUnitPair.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">yield</span> <span class="n">Property</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;vector&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">qup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantityunitpair</span><span class="p">:</span>
@@ -9550,7 +9836,7 @@ vertical position indexes.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -9575,6 +9861,7 @@ vertical position indexes.</p>
     <div class="doc doc-contents ">
 
         <p>List[str]: List of names of the vector component quantities.</p>
+
     </div>
 
 </div>
@@ -9596,6 +9883,7 @@ vertical position indexes.</p>
     <div class="doc doc-contents ">
 
         <p>List[QuantityUnitPair]: List of QuantityUnitPair that define the vector components.</p>
+
     </div>
 
 </div>
@@ -9617,11 +9905,44 @@ vertical position indexes.</p>
     <div class="doc doc-contents ">
 
         <p>str: Name of the vector quantity.</p>
+
     </div>
 
 </div>
 
 
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="hydrolib.core.dflowfm.bc.models.VectorQuantityUnitPairs.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+<a href="#hydrolib.core.dflowfm.bc.models.VectorQuantityUnitPairs.__str__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the vector definition string representation.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the vector definition string representation.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">VectorQuantityUnitPairs</span><span class="o">.</span><span class="n">_to_vectordefinition_string</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vectorname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elementname</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -9647,31 +9968,36 @@ vertical position indexes.</p>
               Bases: <code><span title="strenum.StrEnum">StrEnum</span></code></p>
 
 
-        <p>Enum class containing the valid values for the vertical position type,
-which defines what the numeric values for vertical position specification mean.</p>
+
+        <p>Enum class containing the valid values for the vertical position type.</p>
+<p>Defines what the numeric values for vertical position specification mean.</p>
 
 
 
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerticalInterpolation</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the vertical position type,</span>
-<span class="sd">    which defines what the numeric values for vertical position specification mean.</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerticalInterpolation</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the vertical position type.</span>
+
+<span class="sd">    Defines what the numeric values for vertical position specification mean.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">linear</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
@@ -9687,7 +10013,7 @@ which defines what the numeric values for vertical position specification mean.<
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -9713,6 +10039,7 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Equal to the value at the directly lower specified vertical position.</p>
+
     </div>
 
 </div>
@@ -9735,6 +10062,7 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Linear interpolation between vertical positions.</p>
+
     </div>
 
 </div>
@@ -9757,9 +10085,11 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Logarithmic interpolation between vertical positions (e.g. vertical velocity profiles).</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -9787,6 +10117,7 @@ which defines what the numeric values for vertical position specification mean.<
               Bases: <code><span title="strenum.StrEnum">StrEnum</span></code></p>
 
 
+
         <p>Enum class containing the valid values for the vertical position type.</p>
 
 
@@ -9794,22 +10125,24 @@ which defines what the numeric values for vertical position specification mean.<
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerticalPositionType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VerticalPositionType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the vertical position type.&quot;&quot;&quot;</span>
 
     <span class="n">percentage_bed</span> <span class="o">=</span> <span class="s2">&quot;percBed&quot;</span>
@@ -9828,7 +10161,7 @@ which defines what the numeric values for vertical position specification mean.<
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -9854,6 +10187,7 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Percentage with respect to the water depth from the bed upward.</p>
+
     </div>
 
 </div>
@@ -9876,6 +10210,7 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Absolute distance from the bed upward.</p>
+
     </div>
 
 </div>
@@ -9898,6 +10233,7 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: z-coordinate with respect to the reference level of the model.</p>
+
     </div>
 
 </div>
@@ -9920,9 +10256,11 @@ which defines what the numeric values for vertical position specification mean.<
     <div class="doc doc-contents ">
 
         <p>str: Absolute distance from the free surface downward.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -10022,10 +10360,10 @@ which defines what the numeric values for vertical position specification mean.<
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

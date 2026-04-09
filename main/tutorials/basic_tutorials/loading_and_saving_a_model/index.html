@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1666,7 +1694,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -3838,7 +3866,7 @@ You're not viewing the latest release version.
 
 <h1 id="loading-and-saving-a-model">Loading and saving a model<a class="headerlink" href="#loading-and-saving-a-model" title="Permanent link">&para;</a></h1>
 <p>In this article we will look at loading and saving a model. First we will load a model,
-and store it in a new location. Then make adjustments to one of the sub models, and 
+and store it in a new location. Then make adjustments to one of the sub models, and
 store the model in place. Lastly, we will look at some caveats of saving and loading
 models.</p>
 <p>If you do not have a DIMR model, you can use <a href="https://github.com/Deltares/HYDROLIB-core/tree/main/tests/data/input/e02/c11_korte-woerden-1d/dimr_model">the example model in the test data</a>.</p>
@@ -3859,8 +3887,8 @@ file path to this model:</p>
 <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
 <span class="n">dimr_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">new_path</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
-<p>By setting <code>recurse</code> to <code>True</code> we will ensure all files (which are supported by HYDROLIB-core) 
-are written to the new location, relative to the file path of the root model. 
+<p>By setting <code>recurse</code> to <code>True</code> we will ensure all files (which are supported by HYDROLIB-core)
+are written to the new location, relative to the file path of the root model.
 Providing the <code>filepath</code> argument has the same result as first setting the filepath, and then
 calling save:</p>
 <div class="highlight"><pre><span></span><code><span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
@@ -3875,15 +3903,15 @@ We can retrieve the FM sub model as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="n">fm_component</span> <span class="o">=</span> <span class="n">dimr_model</span><span class="o">.</span><span class="n">component</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Index 0 corresponds with the RRComponent.</span>
 <span class="n">fm_model</span> <span class="o">=</span> <span class="n">fm_component</span><span class="o">.</span><span class="n">model</span>
 </code></pre></div>
-<p>We can adjust the model, by for example changing some of the properties. For example let's change the 
+<p>We can adjust the model, by for example changing some of the properties. For example let's change the
 <code>MapInterval</code> from 60 to 30:</p>
 <div class="highlight"><pre><span></span><code><span class="n">fm_model</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">mapinterval</span> <span class="o">=</span> <span class="mf">30.0</span>
 </code></pre></div>
 <p>With that change made we can go ahead and save just this specific sub model, in order to update the values on disk:</p>
 <div class="highlight"><pre><span></span><code><span class="n">fm_model</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
-<p>By default, if no <code>filepath</code> is selected, it will be stored in the current <code>save_location</code>. This should 
-correspond with the place where it was last stored on disk. Furthermore, by default <code>recurse</code> is set to 
+<p>By default, if no <code>filepath</code> is selected, it will be stored in the current <code>save_location</code>. This should
+correspond with the place where it was last stored on disk. Furthermore, by default <code>recurse</code> is set to
 <code>False</code>, as such we will only rewrite the <code>.mdu</code> file.</p>
 <p>If we now inspect the <code>.mdu</code> file, we should see that the <code>MapInterval</code> in the <code>output</code> header has been set to 30:</p>
 <div class="highlight"><pre><span></span><code>...
@@ -3893,7 +3921,7 @@ MapInterval       = 30.0
 ...
 </code></pre></div>
 <h2 id="loading-models-on-case-sensitive-systems">Loading models on case-sensitive systems<a class="headerlink" href="#loading-models-on-case-sensitive-systems" title="Permanent link">&para;</a></h2>
-<p>Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error. 
+<p>Model files may contain references to other model files of which the casing does not match with the file on disk. On Windows, loading a model with differently cased references will work just fine, since Windows is case-insensitive. However on Linux, the referenced file cannot be found and will raise an error.
 To aid users in migrating their models, HYDROLIB-core offers a feature to resolve the casing of referenced files and supports three operating systems: Windows, Linux and MacOS.</p>
 <p>Consider an MDU model file that references a network file: <code>Network/flowfm_net.nc</code>.
 The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
@@ -3942,7 +3970,7 @@ changes mode in a parent model:</p>
 fm_model.synchronize_filepaths()  # This has no effect.
 </code></pre></div>
 <p>Because the <code>save_location</code> of the <code>fm_model</code> has not been changed, none of the child models will change either.</p>
-<p>Furthermore, extra care needs to be taken when dealing with FM models with the <code>pathsRelativeToParent</code> set to 
+<p>Furthermore, extra care needs to be taken when dealing with FM models with the <code>pathsRelativeToParent</code> set to
 <code>False</code>. This option will make all relative paths of child models relative to the <code>.mdu</code>. If <code>synchronize_filepaths</code> is called on a child model of the fm model, it will instead make all <code>save_locations</code> relative to this child model, which is incorrect.</p>
 <p>It is recommended to not use <code>pathsRelativeToParent</code> set to <code>False</code>.</p>
 
@@ -4025,10 +4053,10 @@ fm_model.synchronize_filepaths()  # This has no effect.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1496,7 +1524,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -3371,6 +3399,23 @@ You're not viewing the latest release version.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Branch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.gui.models.Branch.Comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3381,6 +3426,23 @@ You're not viewing the latest release version.
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="BranchGeneral">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.gui.models.BranchGeneral.Comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3686,6 +3748,23 @@ You're not viewing the latest release version.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Branch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.gui.models.Branch.Comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3696,6 +3775,23 @@ You're not viewing the latest release version.
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="BranchGeneral">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hydrolib.core.dflowfm.gui.models.BranchGeneral.Comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3744,7 +3840,7 @@ You're not viewing the latest release version.
 <a id="hydrolib.core.dflowfm.gui.models"></a>
     <div class="doc doc-contents first">
 
-        <p>namespace for storing the branches as branches.gui file</p>
+        <p>Namespace for storing the branches as branches.gui file.</p>
 
 
 
@@ -3753,7 +3849,10 @@ You're not viewing the latest release version.
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -3778,6 +3877,7 @@ You're not viewing the latest release version.
               Bases: <code><a class="autorefs autorefs-internal" title="INIBasedModel (hydrolib.core.dflowfm.ini.models.INIBasedModel)" href="../base/ini/#hydrolib.core.dflowfm.ini.models.INIBasedModel">INIBasedModel</a></code></p>
 
 
+
         <p>A branch that is included in the branches.gui file.</p>
 
 
@@ -3785,9 +3885,15 @@ You're not viewing the latest release version.
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/gui/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 38</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
 <span class="normal"> 39</span>
 <span class="normal"> 40</span>
 <span class="normal"> 41</span>
@@ -3854,16 +3960,12 @@ You're not viewing the latest release version.
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A branch that is included in the branches.gui file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A branch that is included in the branches.gui file.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the Branch section.&quot;&quot;&quot;</span>
+
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unique branch id.&quot;</span>
         <span class="n">branchtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Channel = 0, SewerConnection = 1, Pipe = 2.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchType&quot;</span>
@@ -3898,20 +4000,19 @@ You're not viewing the latest release version.
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 
-    <span class="nd">@root_validator</span>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branch</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchtype&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sourcecompartmentname&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;targetcompartmentname&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Branch&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sourcecompartmentname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">targetcompartmentname</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2.&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">values</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;branchtype&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;branchtype&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branchtype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">branchtype</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">allowed_branchtypes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">branchtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_branchtypes</span><span class="p">:</span>
@@ -3921,7 +4022,8 @@ You're not viewing the latest release version.
 
         <span class="k">return</span> <span class="n">branchtype</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;material&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;material&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_material</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">allowed_materials</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">material</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_materials</span><span class="p">:</span>
@@ -3935,7 +4037,7 @@ You're not viewing the latest release version.
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -3943,6 +4045,102 @@ You're not viewing the latest release version.
 
 
 
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.gui.models.Branch.Comments" class="doc doc-heading">
+            <code>Comments</code>
+
+
+<a href="#hydrolib.core.dflowfm.gui.models.Branch.Comments" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Comments (hydrolib.core.dflowfm.ini.models.INIBasedModel.Comments)" href="../base/ini/#hydrolib.core.dflowfm.ini.models.INIBasedModel.Comments">Comments</a></code></p>
+
+
+
+        <p>Comments for the Branch section.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>hydrolib/core/dflowfm/gui/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Branch section.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unique branch id.&quot;</span>
+    <span class="n">branchtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;Channel = 0, SewerConnection = 1, Pipe = 2.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchType&quot;</span>
+    <span class="p">)</span>
+    <span class="n">islengthcustom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;branch length specified by user.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;isLengthCustom&quot;</span>
+    <span class="p">)</span>
+    <span class="n">sourcecompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sourceCompartmentName&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">targetcompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetCompartmentName&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, &quot;</span>
+        <span class="s2">&quot;5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -3966,7 +4164,8 @@ You're not viewing the latest release version.
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="hydrolib.core.dflowfm.ini.models.INIGeneral">INIGeneral</span></code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="INIGeneral (hydrolib.core.dflowfm.ini.models.INIGeneral)" href="../base/ini/#hydrolib.core.dflowfm.ini.models.INIGeneral">INIGeneral</a></code></p>
+
 
 
         <p>The branches.gui file's <code>[General]</code> section with file meta data.</p>
@@ -3976,9 +4175,17 @@ You're not viewing the latest release version.
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/gui/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
@@ -3989,14 +4196,12 @@ You're not viewing the latest release version.
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The branches.gui file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the BranchGeneral section.&quot;&quot;&quot;</span>
+
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
@@ -4014,7 +4219,7 @@ You're not viewing the latest release version.
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -4022,6 +4227,78 @@ You're not viewing the latest release version.
 
 
 
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="hydrolib.core.dflowfm.gui.models.BranchGeneral.Comments" class="doc doc-heading">
+            <code>Comments</code>
+
+
+<a href="#hydrolib.core.dflowfm.gui.models.BranchGeneral.Comments" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Comments (hydrolib.core.dflowfm.ini.models.INIBasedModel.Comments)" href="../base/ini/#hydrolib.core.dflowfm.ini.models.INIBasedModel.Comments">Comments</a></code></p>
+
+
+
+        <p>Comments for the BranchGeneral section.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>hydrolib/core/dflowfm/gui/models.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the BranchGeneral section.&quot;&quot;&quot;</span>
+
+    <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
+    <span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;File type. Should be &#39;branches&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
 
 
 
@@ -4046,6 +4323,7 @@ You're not viewing the latest release version.
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="INIModel (hydrolib.core.dflowfm.ini.models.INIModel)" href="../base/ini/#hydrolib.core.dflowfm.ini.models.INIModel">INIModel</a></code></p>
+
 
 
         <p>The overall branch model that contains the contents of one branches.gui file.</p>
@@ -4092,9 +4370,15 @@ You're not viewing the latest release version.
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/gui/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -4112,11 +4396,7 @@ You're not viewing the latest release version.
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall branch model that contains the contents of one branches.gui file.</span>
 
@@ -4128,9 +4408,9 @@ You're not viewing the latest release version.
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">BranchGeneral</span> <span class="o">=</span> <span class="n">BranchGeneral</span><span class="p">()</span>
-    <span class="n">branch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Branch</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="n">_make_list</span> <span class="o">=</span> <span class="n">make_list_validator</span><span class="p">(</span><span class="s2">&quot;branch&quot;</span><span class="p">)</span>
+    <span class="n">branch</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Branch</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">ensure_list</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
+    <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -4144,7 +4424,8 @@ You're not viewing the latest release version.
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4250,10 +4531,10 @@ You're not viewing the latest release version.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../assets/javascripts/panzoom.min.js"></script>
       

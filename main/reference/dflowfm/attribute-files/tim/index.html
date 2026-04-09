@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1496,7 +1524,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -4209,8 +4237,8 @@ You're not viewing the latest release version.
 
 
 <h1 id="timeseries-tim-files">Timeseries .tim files<a class="headerlink" href="#timeseries-tim-files" title="Permanent link">&para;</a></h1>
-<p><em>.tim files contain time series data of a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.
-The support of </em>.tim files for boundary time series will be discontinued. Instead, these will be replaced by the <a href="../glossary.md#bc-file">*.bc file</a>.</p>
+<p><em>.tim files contain time series data of a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.
+The support of </em>.tim files for boundary time series will be discontinued. Instead, these will be replaced by the <a href="../../../glossary/#bc-file">*.bc file</a>.</p>
 <p>They are represented by the classes below.</p>
 <h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
 
@@ -4222,6 +4250,7 @@ The support of </em>.tim files for boundary time series will be discontinued. In
 <a id="hydrolib.core.dflowfm.tim.models"></a>
     <div class="doc doc-contents first">
 
+        <p>Models for D-Flow FM time series (tim) files.</p>
 
 
 
@@ -4229,7 +4258,11 @@ The support of </em>.tim files for boundary time series will be discontinued. In
 
 
 
-  <div class="doc doc-children">
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -4254,6 +4287,7 @@ The support of </em>.tim files for boundary time series will be discontinued. In
               Bases: <code><a class="autorefs autorefs-internal" title="ParsableFileModel (hydrolib.core.base.models.ParsableFileModel)" href="../../../base/api/#hydrolib.core.base.models.ParsableFileModel">ParsableFileModel</a></code></p>
 
 
+
         <p>Class representing a tim (*.tim) file.</p>
 
 
@@ -4268,7 +4302,12 @@ The support of </em>.tim files for boundary time series will be discontinued. In
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="serializer_config (hydrolib.core.dflowfm.tim.models.TimModel.serializer_config)" href="#hydrolib.core.dflowfm.tim.models.TimModel.serializer_config">serializer_config</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="serializer_config = TimSerializerConfig()
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.tim.models.TimModel.serializer_config)" href="#hydrolib.core.dflowfm.tim.models.TimModel.serializer_config">serializer_config</a></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="TimSerializerConfig (hydrolib.core.dflowfm.tim.serializer.TimSerializerConfig)" href="#hydrolib.core.dflowfm.tim.serializer.TimSerializerConfig">TimSerializerConfig</a></code>
             </td>
@@ -4279,7 +4318,12 @@ The support of </em>.tim files for boundary time series will be discontinued. In
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="comments (hydrolib.core.dflowfm.tim.models.TimModel.comments)" href="#hydrolib.core.dflowfm.tim.models.TimModel.comments">comments</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="comments = Field(default_factory=list)
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.tim.models.TimModel.comments)" href="#hydrolib.core.dflowfm.tim.models.TimModel.comments">comments</a></code></td>
             <td>
                   <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
             </td>
@@ -4290,7 +4334,12 @@ The support of </em>.tim files for boundary time series will be discontinued. In
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="timeseries (hydrolib.core.dflowfm.tim.models.TimModel.timeseries)" href="#hydrolib.core.dflowfm.tim.models.TimModel.timeseries">timeseries</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="timeseries = Field(default_factory=list)
+
+  
+      class-attribute
+      instance-attribute
+   (hydrolib.core.dflowfm.tim.models.TimModel.timeseries)" href="#hydrolib.core.dflowfm.tim.models.TimModel.timeseries">timeseries</a></code></td>
             <td>
                   <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="TimRecord (hydrolib.core.dflowfm.tim.models.TimRecord)" href="#hydrolib.core.dflowfm.tim.models.TimRecord">TimRecord</a>]</code>
             </td>
@@ -4366,7 +4415,7 @@ Validates the timeseries data.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="as_dataframe (hydrolib.core.dflowfm.tim.models.TimModel.as_dataframe)" href="#hydrolib.core.dflowfm.tim.models.TimModel.as_dataframe">as_dataframe</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="as_dataframe(columns=None) (hydrolib.core.dflowfm.tim.models.TimModel.as_dataframe)" href="#hydrolib.core.dflowfm.tim.models.TimModel.as_dataframe">as_dataframe</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>List[Any] = None) -&gt; DataFrame:
@@ -4474,10 +4523,11 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 24</span>
-<span class="normal"> 25</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
 <span class="normal"> 28</span>
@@ -4841,7 +4891,8 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">389</span>
+<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a tim (*.tim) file.</span>
 
 <span class="sd">    Attributes:</span>
@@ -4940,7 +4991,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">        - `TIM file format &lt;https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4&gt;`_</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">serializer_config</span> <span class="o">=</span> <span class="n">TimSerializerConfig</span><span class="p">()</span>
+    <span class="n">serializer_config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span> <span class="o">=</span> <span class="n">TimSerializerConfig</span><span class="p">()</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TimSerializerConfig: The serialization configuration for the tim file.&quot;&quot;&quot;</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
@@ -4989,7 +5040,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">parse</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">check_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">replace_fortran_scientific_notation_for_floats</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -5009,7 +5060,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_timeseries_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimRecord</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TimRecord</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.</span>
@@ -5056,15 +5107,15 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
                 <span class="p">)</span>
             <span class="n">seen_times</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;quantities_names&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantities_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;quantities_names&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantities_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate if the number of quantities_names matches the number of columns in the timeseries.</span>
 
 <span class="sd">        The validator compared the amount of quantities_names with the number of columns in the first record of</span>
 <span class="sd">        the timeseries.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">first_records_data</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">first_records_data</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_records_data</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;The number of quantities_names (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match the number of columns in the Tim file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">first_records_data</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
@@ -5212,7 +5263,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -5238,6 +5289,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <div class="doc doc-contents ">
 
         <p>List[str]: A list with the header comment of the tim file.</p>
+
     </div>
 
 </div>
@@ -5260,6 +5312,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <div class="doc doc-contents ">
 
         <p>TimSerializerConfig: The serialization configuration for the tim file.</p>
+
     </div>
 
 </div>
@@ -5282,9 +5335,11 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <div class="doc doc-contents ">
 
         <p>List[TimRecord]: A list containing the timeseries.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -5364,10 +5419,10 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
-<span class="normal">135</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span>
@@ -5384,7 +5439,8 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">152</span>
+<span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">quantities_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -5506,10 +5562,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="p">[</span><span class="n">TimRecord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]),</span> <span class="n">TimRecord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">])]</span>
 </code></pre></div>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
-<span class="normal">255</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
@@ -5545,7 +5601,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
-<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">291</span>
+<span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new values to each TimRecord in the timeseries, representing a new location.</span>
 
@@ -5692,10 +5749,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
     20.0    4.565    5.676    6.787
     30.0    1.500    2.600    3.700</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
@@ -5741,7 +5798,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span>
-<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the timeseries as a pandas DataFrame.</span>
 
 <span class="sd">    Args:</span>
@@ -5867,10 +5925,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="p">}</span>
 </code></pre></div>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
-<span class="normal">343</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
@@ -5895,7 +5953,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="normal">368</span>
+<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract time series data from a TIM model.</span>
 
 <span class="sd">    Extract the time series data (each column) from the TimModel object</span>
@@ -5974,10 +6033,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="p">[</span><span class="s1">&#39;m3/s&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;degC&#39;</span><span class="p">,</span> <span class="s1">&#39;1e-3&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">]</span>
 </code></pre></div></p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
-<span class="normal">371</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
@@ -5995,7 +6054,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">386</span>
 <span class="normal">387</span>
 <span class="normal">388</span>
-<span class="normal">389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="normal">389</span>
+<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the units for each quantity in the timeseries.</span>
 
 <span class="sd">    Returns:</span>
@@ -6045,6 +6105,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
               Bases: <code><a class="autorefs autorefs-internal" title="BaseModel (hydrolib.core.base.models.BaseModel)" href="../../../base/api/#hydrolib.core.base.models.BaseModel">BaseModel</a></code></p>
 
 
+
         <p>Single tim record, representing a time and a list of data.</p>
 
 
@@ -6052,16 +6113,18 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/tim/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
-<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimRecord</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimRecord</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Single tim record, representing a time and a list of data.&quot;&quot;&quot;</span>
 
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span>
@@ -6074,7 +6137,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -6100,6 +6163,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
     <div class="doc doc-contents ">
 
         <p>List[float]: Record of the time record.</p>
+
     </div>
 
 </div>
@@ -6121,9 +6185,11 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
     <div class="doc doc-contents ">
 
         <p>float: Time of the time record.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -6152,6 +6218,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <a id="hydrolib.core.dflowfm.tim.parser"></a>
     <div class="doc doc-contents first">
 
+        <p>Parser for D-Flow FM time series (tim) files.</p>
 
 
 
@@ -6159,7 +6226,11 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
 
 
-  <div class="doc doc-children">
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -6184,8 +6255,9 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
               Bases: <code><span title="hydrolib.core.base.parser.BaseParser">BaseParser</span></code></p>
 
 
-        <p>A parser for .tim files.
-Full line comments at the start of the file are supported. Comment lines start with either a <code>*</code> or a <code>#</code>.
+
+        <p>A parser for .tim files.</p>
+<p>Full line comments at the start of the file are supported. Comment lines start with either a <code>*</code> or a <code>#</code>.
 No other comments are supported.</p>
 
 
@@ -6193,11 +6265,11 @@ No other comments are supported.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/tim/parser.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
@@ -6252,9 +6324,11 @@ No other comments are supported.</p>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A parser for .tim files.</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for .tim files.</span>
+
 <span class="sd">    Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.</span>
 <span class="sd">    No other comments are supported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6315,7 +6389,8 @@ No other comments are supported.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -6455,11 +6530,10 @@ No other comments are supported.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/parser.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -6480,7 +6554,9 @@ No other comments are supported.</p>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a .tim file into a dictionary with comments and time series data.</span>
 
@@ -6535,6 +6611,7 @@ No other comments are supported.</p>
 <a id="hydrolib.core.dflowfm.tim.serializer"></a>
     <div class="doc doc-contents first">
 
+        <p>Serializer for D-Flow FM time series (tim) files.</p>
 
 
 
@@ -6542,7 +6619,11 @@ No other comments are supported.</p>
 
 
 
-  <div class="doc doc-children">
+
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -6566,15 +6647,18 @@ No other comments are supported.</p>
 
 
 
+        <p>Serializer for TimModel data to .tim file format.</p>
 
 
 
 
-              <details class="quote">
+
+
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/tim/serializer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 17</span>
-<span class="normal"> 18</span>
-<span class="normal"> 19</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
 <span class="normal"> 20</span>
 <span class="normal"> 21</span>
 <span class="normal"> 22</span>
@@ -6689,7 +6773,13 @@ No other comments are supported.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializer</span><span class="p">:</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer for TimModel data to .tim file format.&quot;&quot;&quot;</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -6776,7 +6866,7 @@ No other comments are supported.</p>
                 <span class="p">)</span>
                 <span class="n">row_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">whitespace_offset</span><span class="p">)</span>
 
-            <span class="n">line</span> <span class="o">=</span> <span class="n">column_space</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row_elements</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">column_space</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row_elements</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
             <span class="n">timeserieslines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">timeserieslines</span>
 
@@ -6790,7 +6880,7 @@ No other comments are supported.</p>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">commentlines</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">timeserieslines</span><span class="p">)</span>
-        <span class="n">file_content</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">file_content</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">file_content</span>
 
     <span class="nd">@staticmethod</span>
@@ -6812,7 +6902,8 @@ No other comments are supported.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -6922,13 +7013,10 @@ No other comments are supported.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/tim/serializer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -6957,7 +7045,11 @@ No other comments are supported.</p>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
-<span class="normal">51</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
@@ -7021,6 +7113,7 @@ No other comments are supported.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="SerializerConfig (hydrolib.core.base.models.SerializerConfig)" href="../../../base/api/#hydrolib.core.base.models.SerializerConfig">SerializerConfig</a></code></p>
 
 
+
         <p>Configuration settings for the TimSerializer.</p>
 
 
@@ -7028,13 +7121,15 @@ No other comments are supported.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/tim/serializer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializerConfig</span><span class="p">(</span><span class="n">SerializerConfig</span><span class="p">):</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializerConfig</span><span class="p">(</span><span class="n">SerializerConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration settings for the TimSerializer.&quot;&quot;&quot;</span>
 
     <span class="n">column_spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
@@ -7044,7 +7139,7 @@ No other comments are supported.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -7070,9 +7165,11 @@ No other comments are supported.</p>
     <div class="doc doc-contents ">
 
         <p>(int): The number of spaces to include between columns in the serialized .tim file.</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7172,10 +7269,10 @@ No other comments are supported.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

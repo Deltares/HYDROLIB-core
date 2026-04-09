@@ -12,14 +12,14 @@
         <link rel="prev" href="../contributing/">
       
       
-        <link rel="next" href="../documentation/">
+        <link rel="next" href="../release-workflow/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -801,6 +801,34 @@ You're not viewing the latest release version.
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1588,7 +1616,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -3691,7 +3719,7 @@ You're not viewing the latest release version.
 In addition to being a useful resource for developing, this documentation can also be helpful for code reviews.</p>
 <h2 id="explicitly-exposing-the-public-api">Explicitly exposing the public API<a class="headerlink" href="#explicitly-exposing-the-public-api" title="Permanent link">&para;</a></h2>
 <p>Whenever you add new functionality that should (or could) be used by the users, make sure you explicitly expose them in the correct <code>__init__.py</code> files.</p>
-<p>For example, you have developed a new <code>TimModel</code> class that represents a <code>.tim</code> file. The <code>TimModel</code> makes use of the <code>TimParser</code> class and <code>TimSerializer</code> class. While the <code>TimModel</code> class should be publicly exposed to the users, because it is part of the public API, the parser and serializer classes are implementation details that users should not be concerned with. The parser and serializer should therefore not be publicly exposed to the users. </p>
+<p>For example, you have developed a new <code>TimModel</code> class that represents a <code>.tim</code> file. The <code>TimModel</code> makes use of the <code>TimParser</code> class and <code>TimSerializer</code> class. While the <code>TimModel</code> class should be publicly exposed to the users, because it is part of the public API, the parser and serializer classes are implementation details that users should not be concerned with. The parser and serializer should therefore not be publicly exposed to the users.</p>
 <p>To expose the <code>TimModel</code> explicitly to our users, you have to update both the <code>hydrolib/core/dflowfm/tim/__init__.py</code> (assuming you created a new <code>tim</code> folder for this new functionality) and the <code>hydrolib/core/dflowfm/__init__.py</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># hydrolib/core/dflowfm/tim/__init__.py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimModel</span>
@@ -3707,10 +3735,10 @@ In addition to being a useful resource for developing, this documentation can al
 </code></pre></div>
 <h2 id="updating-the-documentation">Updating the documentation<a class="headerlink" href="#updating-the-documentation" title="Permanent link">&para;</a></h2>
 <p>In the hydrolib-core repository there are several reference files that are used to automatically generate the <a href="../../reference/base/api/">API reference</a>. If you add or make changes to the existing API, always make sure the API reference is still up to date.</p>
-<p>Let's use the example mentioned before, where the <code>TimModel</code> was introduced in hydrolib-core. Since this is new functionality that affects the API, we have to update the reference files. The API reference files are located at <code>docs\reference</code>. Since the <code>TimModel</code> was newly introduced, we should create a new file named <code>tim.md</code>. The contents of this file include a short description about what the '.tim' file is and what it is used for, followed by the actual API. You do not have to manually write the API, that is done for us by mkdocs. Since the newly introduced <code>TimParser</code> and <code>TimSerializer</code> are not part of the public API, they should not be added to the reference file. </p>
+<p>Let's use the example mentioned before, where the <code>TimModel</code> was introduced in hydrolib-core. Since this is new functionality that affects the API, we have to update the reference files. The API reference files are located at <code>docs\reference</code>. Since the <code>TimModel</code> was newly introduced, we should create a new file named <code>tim.md</code>. The contents of this file include a short description about what the '.tim' file is and what it is used for, followed by the actual API. You do not have to manually write the API, that is done for us by mkdocs. Since the newly introduced <code>TimParser</code> and <code>TimSerializer</code> are not part of the public API, they should not be added to the reference file.</p>
 <p>An example of such an <code>.md</code> can be found below:</p>
 <div class="highlight"><pre><span></span><code><span class="gh"># Timeseries .tim files</span>
-Timeseries .tim files are timeseries input files 
+Timeseries .tim files are timeseries input files
 for a [<span class="nt">D-Flow FM</span>](<span class="na">../reference/glossary.md#d-flow-fm</span>) model.
 The support of .tim files is discontinued and are replaced by the [<span class="nt">.bc file</span>](<span class="na">#bc-file</span>).
 
@@ -3801,10 +3829,10 @@ They are represented by the class below.
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../assets/javascripts/panzoom.min.js"></script>
       

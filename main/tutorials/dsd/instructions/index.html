@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1666,7 +1694,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -3856,14 +3884,14 @@ You're not viewing the latest release version.
 </ul>
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p>This document contains instructions about the installation and usage of HYDROLIB-core during the Delft Software Days 2025.</p>
-<p>HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content. 
+<p>HYDROLIB-core is a Python package that offers functionality to process D-HYDRO input files. It offers Python-wrapped classes that represent these files and their content.
 HYDROLIB-core serves as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations in D-HYDRO.</p>
 <h2 id="user-guide">User guide<a class="headerlink" href="#user-guide" title="Permanent link">&para;</a></h2>
 <h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h3>
 <p>Before getting started with HYDROLIB-core, make sure you have the following software and tools installed:</p>
 <ul>
 <li><strong>Anaconda</strong>: https://www.anaconda.com/download
-Anaconda is an open-source distribution for Python and contains the package manager "conda". 
+Anaconda is an open-source distribution for Python and contains the package manager "conda".
 (!) Make sure to add Anaconda to your PATH environment variable during installation.</li>
 </ul>
 <h3 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h3>
@@ -3900,7 +3928,7 @@ conda deactivate
 </ol>
 <h2 id="cheat-sheet">Cheat sheet<a class="headerlink" href="#cheat-sheet" title="Permanent link">&para;</a></h2>
 <p>In HYDROLIB-core, there is a class called FileModel, which is used to represent an individual kernel file. This class has multiple derived implementations, with each one corresponding to a specific kernel file. Every FileModel, except for the root model, is referenced within another FileModel, following the same hierarchy as the kernel files themselves.</p>
-<p>The table below contains the models relevant for today's exercises. </p>
+<p>The table below contains the models relevant for today's exercises.</p>
 <h3 id="kernel-files-vs-hydrolib-core-filemodels">Kernel files vs HYDROLIB-core FileModels<a class="headerlink" href="#kernel-files-vs-hydrolib-core-filemodels" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3964,13 +3992,13 @@ conda deactivate
 </tbody>
 </table>
 <h3 id="commonly-used-functions-of-a-filemodel">Commonly used functions of a FileModel<a class="headerlink" href="#commonly-used-functions-of-a-filemodel" title="Permanent link">&para;</a></h3>
-<p>Each FileModel offers a set of commonly used functions. </p>
+<p>Each FileModel offers a set of commonly used functions.</p>
 <p><strong><strong>init</strong>()</strong> --- Initialize a new file model instance</p>
 <p>Parameters (all optional):
 * <code>filepath (Path)</code>: The file path from which the file model should be loaded. Default to None.
 * <code>resolve_casing (bool)</code>: Whether or not to resolve the file name references so that they match the case with what is on disk. Defaults to False.
 * <code>recurse (bool)</code>: Whether or not to recursively load the model. Defaults to True.
-* <code>path_style (str)</code>: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system. </p>
+* <code>path_style (str)</code>: Which path style is used in the loaded files. Options: 'unix', 'windows'. Defaults to the path style that matches the current operating system.</p>
 <p><strong>save()</strong> --- Export the file model data to a file</p>
 <p>Parameters (all optional):
 * <code>filepath (Path)</code>: The file path at which this model is saved. If None is specified it defaults to the filepath currently stored in the filemodel. Defaults to None.
@@ -4057,10 +4085,10 @@ conda deactivate
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       

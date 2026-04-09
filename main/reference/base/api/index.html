@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -701,6 +701,34 @@ You're not viewing the latest release version.
     
   
     Developer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/release-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release workflow
   
 
     
@@ -1496,7 +1524,7 @@ You're not viewing the latest release version.
   <span class="md-ellipsis">
     
   
-    Macro Rendering Error
+    List of D-HYDRO functionalities and support in HYDROLIB-core
   
 
     
@@ -2031,6 +2059,17 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.base.models.FileModel.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.base.models.FileModel.save" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2192,10 +2231,10 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#hydrolib.core.base.models.validator_set_default_disk_only_file_model_when_none" class="md-nav__link">
+  <a href="#hydrolib.core.base.models.set_default_disk_only_file_model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validator_set_default_disk_only_file_model_when_none
+        set_default_disk_only_file_model
       
     </span>
   </a>
@@ -4051,6 +4090,17 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#hydrolib.core.base.models.FileModel.__str__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __str__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hydrolib.core.base.models.FileModel.save" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4212,10 +4262,10 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#hydrolib.core.base.models.validator_set_default_disk_only_file_model_when_none" class="md-nav__link">
+  <a href="#hydrolib.core.base.models.set_default_disk_only_file_model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validator_set_default_disk_only_file_model_when_none
+        set_default_disk_only_file_model
       
     </span>
   </a>
@@ -4255,7 +4305,8 @@ These build upon the <em>pydantic</em> package for data validation.</p>
 <a id="hydrolib.core.base.models"></a>
     <div class="doc doc-contents first">
 
-        <p>Here we define our Pydantic <code>BaseModel</code> with custom settings,
+        <p>Pydantic BaseModel definitions for HYDROLIB-core file models.</p>
+<p>Here we define our Pydantic <code>BaseModel</code> with custom settings,
 as well as a <code>FileModel</code> that inherits from a <code>BaseModel</code> but
 also represents a file on disk.</p>
 
@@ -4266,7 +4317,10 @@ also represents a file on disk.</p>
 
 
 
-  <div class="doc doc-children">
+
+
+<div class="doc doc-children">
+
 
 
 
@@ -4288,7 +4342,11 @@ also represents a file on disk.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic.v1.BaseModel">BaseModel</span></code></p>
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+        <p>Base Pydantic model with shared configuration for all HYDROLIB-core models.</p>
 
 
 
@@ -4296,9 +4354,12 @@ also represents a file on disk.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 63</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
 <span class="normal"> 64</span>
 <span class="normal"> 65</span>
 <span class="normal"> 66</span>
@@ -4387,14 +4448,23 @@ also represents a file on disk.</p>
 <span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
-<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseModel</span><span class="p">(</span><span class="n">PydanticBaseModel</span><span class="p">):</span>
-    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
-        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">validate_assignment</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">use_enum_values</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span>  <span class="c1"># will throw errors so we can fix our models</span>
-        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">to_key</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BaseModel</span><span class="p">(</span><span class="n">PydanticBaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Pydantic model with shared configuration for all HYDROLIB-core models.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
+        <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">validate_assignment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_enum_values</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">,</span>
+        <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alias_generator</span><span class="o">=</span><span class="n">to_key</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a BaseModel with the provided data.</span>
@@ -4405,17 +4475,13 @@ also represents a file on disk.</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-
             <span class="c1"># Give a special message for faulty list input</span>
-            <span class="k">for</span> <span class="n">re</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">raw_errors</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">re</span><span class="p">,</span> <span class="s2">&quot;_loc&quot;</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">exc</span><span class="p">,</span> <span class="s2">&quot;msg_template&quot;</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_key</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">_loc</span><span class="p">)),</span> <span class="nb">list</span><span class="p">)</span>
-                <span class="p">):</span>
-                    <span class="n">re</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">msg_template</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;. The key </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">_loc</span><span class="si">}</span><span class="s2"> might be duplicated in the input file.&quot;</span>
-                    <span class="p">)</span>
+            <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">():</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="n">loc</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_key</span><span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">error</span><span class="p">[</span>
+                        <span class="s2">&quot;msg&quot;</span>
+                    <span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;. The key </span><span class="si">{</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> might be duplicated in the input file.&quot;</span>
 
             <span class="c1"># Update error with specific model location name</span>
             <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_identifier</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -4423,7 +4489,16 @@ also represents a file on disk.</p>
                 <span class="k">raise</span> <span class="n">e</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># If there is an identifier, include this in the ValidationError messages.</span>
-                <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">([</span><span class="n">ErrorWrapper</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">identifier</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+                <span class="c1"># Create a new ValidationError with the identifier as the location</span>
+                <span class="n">errors</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">()</span>
+                <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">&quot;Validation Error&quot;</span>
+                <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+                    <span class="n">error</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">identifier</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="p">()))</span>
+                    <span class="n">error</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="n">ValidationError</span><span class="o">.</span><span class="n">from_exception_data</span><span class="p">(</span>
+                    <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">line_errors</span><span class="o">=</span><span class="n">errors</span>
+                <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_file_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generic attribute for models backed by a file.&quot;&quot;&quot;</span>
@@ -4482,7 +4557,8 @@ also represents a file on disk.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4517,7 +4593,7 @@ also represents a file on disk.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="pydantic.v1.error_wrappers.ValidationError">ValidationError</span></code>
+                  <code><span title="pydantic.ValidationError">ValidationError</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4528,36 +4604,42 @@ also represents a file on disk.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span>
-<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a BaseModel with the provided data.</span>
 
 <span class="sd">    Raises:</span>
@@ -4566,17 +4648,13 @@ also represents a file on disk.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-
         <span class="c1"># Give a special message for faulty list input</span>
-        <span class="k">for</span> <span class="n">re</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">raw_errors</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="n">re</span><span class="p">,</span> <span class="s2">&quot;_loc&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">exc</span><span class="p">,</span> <span class="s2">&quot;msg_template&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_key</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">_loc</span><span class="p">)),</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="n">re</span><span class="o">.</span><span class="n">exc</span><span class="o">.</span><span class="n">msg_template</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;. The key </span><span class="si">{</span><span class="n">re</span><span class="o">.</span><span class="n">_loc</span><span class="si">}</span><span class="s2"> might be duplicated in the input file.&quot;</span>
-                <span class="p">)</span>
+        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">():</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">loc</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">to_key</span><span class="p">(</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">error</span><span class="p">[</span>
+                    <span class="s2">&quot;msg&quot;</span>
+                <span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;. The key </span><span class="si">{</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> might be duplicated in the input file.&quot;</span>
 
         <span class="c1"># Update error with specific model location name</span>
         <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_identifier</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -4584,7 +4662,16 @@ also represents a file on disk.</p>
             <span class="k">raise</span> <span class="n">e</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># If there is an identifier, include this in the ValidationError messages.</span>
-            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">([</span><span class="n">ErrorWrapper</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">identifier</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+            <span class="c1"># Create a new ValidationError with the identifier as the location</span>
+            <span class="n">errors</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">()</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">&quot;Validation Error&quot;</span>
+            <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+                <span class="n">error</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">identifier</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;loc&quot;</span><span class="p">,</span> <span class="p">()))</span>
+                <span class="n">error</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">ValidationError</span><span class="o">.</span><span class="n">from_exception_data</span><span class="p">(</span>
+                <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">line_errors</span><span class="o">=</span><span class="n">errors</span>
+            <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4604,11 +4691,12 @@ also represents a file on disk.</p>
 
         <p>Generic attribute for models backed by a file.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_file_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_file_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic attribute for models backed by a file.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">False</span>
 </code></pre></div></td></tr></table></div>
@@ -4630,11 +4718,12 @@ also represents a file on disk.</p>
 
         <p>Generic attribute for models that have children fields that could contain files.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generic attribute for models that have children fields that could contain files.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_file_link</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4656,15 +4745,10 @@ also represents a file on disk.</p>
 
         <p>Recursive print function for showing a tree of a model.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
@@ -4676,7 +4760,13 @@ also represents a file on disk.</p>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
-<span class="normal">127</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">show_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursive print function for showing a tree of a model.&quot;&quot;&quot;</span>
     <span class="n">angle</span> <span class="o">=</span> <span class="s2">&quot;∟&quot;</span> <span class="k">if</span> <span class="n">indent</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
@@ -4725,8 +4815,8 @@ also represents a file on disk.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="FileModel (hydrolib.core.base.models.FileModel)" href="#hydrolib.core.base.models.FileModel">FileModel</a></code></p>
 
 
-        <p>DiskOnlyFileModel provides a stub implementation for file based
-models which are not explicitly implemented within hydrolib.core.</p>
+
+        <p>DiskOnlyFileModel provides a stub implementation for file based models which are not explicitly implemented within hydrolib.core.</p>
 <p>It implements the FileModel with a void parser and serializer, and a
 save method which copies the file associated with the FileModel
 to a new location if it exists.</p>
@@ -4740,9 +4830,24 @@ DiskOnlyFileModel and instead inherit directly from FileModel.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">915</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">902</span>
+<span class="normal">903</span>
+<span class="normal">904</span>
+<span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span>
+<span class="normal">912</span>
+<span class="normal">913</span>
+<span class="normal">914</span>
+<span class="normal">915</span>
 <span class="normal">916</span>
 <span class="normal">917</span>
 <span class="normal">918</span>
@@ -4784,23 +4889,8 @@ DiskOnlyFileModel and instead inherit directly from FileModel.</p>
 <span class="normal">954</span>
 <span class="normal">955</span>
 <span class="normal">956</span>
-<span class="normal">957</span>
-<span class="normal">958</span>
-<span class="normal">959</span>
-<span class="normal">960</span>
-<span class="normal">961</span>
-<span class="normal">962</span>
-<span class="normal">963</span>
-<span class="normal">964</span>
-<span class="normal">965</span>
-<span class="normal">966</span>
-<span class="normal">967</span>
-<span class="normal">968</span>
-<span class="normal">969</span>
-<span class="normal">970</span>
-<span class="normal">971</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DiskOnlyFileModel</span><span class="p">(</span><span class="n">FileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;DiskOnlyFileModel provides a stub implementation for file based</span>
-<span class="sd">    models which are not explicitly implemented within hydrolib.core.</span>
+<span class="normal">957</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DiskOnlyFileModel</span><span class="p">(</span><span class="n">FileModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DiskOnlyFileModel provides a stub implementation for file based models which are not explicitly implemented within hydrolib.core.</span>
 
 <span class="sd">    It implements the FileModel with a void parser and serializer, and a</span>
 <span class="sd">    save method which copies the file associated with the FileModel</span>
@@ -4860,7 +4950,8 @@ DiskOnlyFileModel and instead inherit directly from FileModel.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -4892,6 +4983,7 @@ DiskOnlyFileModel and instead inherit directly from FileModel.</p>
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
               Bases: <code><a class="autorefs autorefs-internal" title="BaseModel (hydrolib.core.base.models.BaseModel)" href="#hydrolib.core.base.models.BaseModel">BaseModel</a></code>, <code><span title="abc.ABC">ABC</span></code></p>
+
 
 
         <p>Base class to represent models with a file representation.</p>
@@ -4932,7 +5024,11 @@ model.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><a class="autorefs autorefs-internal" title="save_location (hydrolib.core.base.models.FileModel.save_location)" href="#hydrolib.core.base.models.FileModel.save_location">save_location</a></code></td>
+            <td><code><a class="autorefs autorefs-internal" title="save_location
+
+  
+      property
+   (hydrolib.core.base.models.FileModel.save_location)" href="#hydrolib.core.base.models.FileModel.save_location">save_location</a></code></td>
             <td>
                   <code><span title="pathlib.Path">Path</span></code>
             </td>
@@ -4954,12 +5050,11 @@ cwd / filename.extension</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
@@ -5404,23 +5499,7 @@ cwd / filename.extension</p>
 <span class="normal">729</span>
 <span class="normal">730</span>
 <span class="normal">731</span>
-<span class="normal">732</span>
-<span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span>
-<span class="normal">747</span>
-<span class="normal">748</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FileModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">732</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FileModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class to represent models with a file representation.</span>
 
 <span class="sd">    It therefore always has a `filepath` and if it is given on</span>
@@ -5450,7 +5529,6 @@ cwd / filename.extension</p>
 <span class="sd">            cwd / filename.extension</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;__weakref__&quot;</span><span class="p">]</span>
     <span class="c1"># Use WeakValueDictionary to keep track of file paths with their respective parsed file models.</span>
     <span class="n">_file_models_cache</span><span class="p">:</span> <span class="n">WeakValueDictionary</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -5461,6 +5539,7 @@ cwd / filename.extension</p>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new model.</span>
+
 <span class="sd">        If the file at the provided file path was already parsed, this instance is returned.</span>
 
 <span class="sd">        Args:</span>
@@ -5547,14 +5626,21 @@ cwd / filename.extension</p>
             <span class="n">relative_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_relative_mode_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">push_new_parent</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">relative_mode</span><span class="p">)</span>
 
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">unregister_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">pop_last_parent</span><span class="p">()</span>
+                <span class="k">raise</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_post_init_load</span><span class="p">()</span>
 
             <span class="n">context</span><span class="o">.</span><span class="n">pop_last_parent</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_should_load_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">FileLoadContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines whether the file model should be loaded or not.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether the file model should be loaded or not.</span>
+
 <span class="sd">        A file model should be loaded when either all models should be loaded recursively,</span>
 <span class="sd">        or when no file model has been loaded yet.</span>
 
@@ -5564,7 +5650,8 @@ cwd / filename.extension</p>
         <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">load_settings</span><span class="o">.</span><span class="n">recurse</span> <span class="ow">or</span> <span class="n">context</span><span class="o">.</span><span class="n">cache_is_empty</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide a hook into the __init__ of the FileModel for subclasses.</span>
+
 <span class="sd">        _post_init_load provides a hook into the __init__ of the FileModel which can be</span>
 <span class="sd">        used in subclasses for logic that requires the FileModel FileLoadContext.</span>
 
@@ -5583,7 +5670,7 @@ cwd / filename.extension</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current save location which will be used when calling `save()`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current save location which will be used when calling `save()`.</span>
 
 <span class="sd">        This value can be None if the filepath is None and no name can be generated.</span>
 
@@ -5604,6 +5691,7 @@ cwd / filename.extension</p>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_updated_file_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">loading_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the file path with the resolved casing from the loading path.</span>
+
 <span class="sd">        Logs an information message if a file path is updated.</span>
 
 <span class="sd">        For example, given:</span>
@@ -5619,7 +5707,6 @@ cwd / filename.extension</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            Path: The updated file path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">updated_file_parts</span> <span class="o">=</span> <span class="n">loading_path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span> <span class="p">:]</span>  <span class="c1"># noqa: E203</span>
         <span class="n">updated_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="o">*</span><span class="n">updated_file_parts</span><span class="p">)</span>
 
@@ -5630,40 +5717,12 @@ cwd / filename.extension</p>
 
         <span class="k">return</span> <span class="n">updated_file_path</span>
 
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;FileModel&quot;</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.base.models</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-            <span class="n">DiskOnlyFileModel</span><span class="p">,</span>  <span class="c1"># because of circular import</span>
-        <span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">&quot;_load_settings&quot;</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">_load_settings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">_load_settings</span><span class="o">.</span><span class="n">recurse</span>
-            <span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;filepath&quot;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
-
-        <span class="c1"># Enable initialization with a Path.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
-            <span class="c1"># Check if we&#39;re in a file load context and if recurse is False</span>
-            <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s2">&quot;_load_settings&quot;</span><span class="p">)</span>
-                    <span class="ow">and</span> <span class="n">context</span><span class="o">.</span><span class="n">_load_settings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">_load_settings</span><span class="o">.</span><span class="n">recurse</span>
-                <span class="p">):</span>
-                    <span class="c1"># If recurse is False, return the Path object as-is</span>
-                    <span class="k">return</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="c1"># Pydantic Model init requires a dict</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)}</span>
-        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> or dict, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_path_to_dictionary</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">PathToDictionaryConverter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5773,9 +5832,7 @@ cwd / filename.extension</p>
         <span class="n">save_traverser</span><span class="o">.</span><span class="n">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">synchronize_filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to</span>
-<span class="sd">        this FileModel&#39;s save_location.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to this FileModel&#39;s save_location.&quot;&quot;&quot;</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">sync_pre</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">FileLoadContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileLoadContext</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">FileModel</span><span class="p">):</span>
@@ -5828,7 +5885,8 @@ cwd / filename.extension</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ResolveRelativeMode</span><span class="o">.</span><span class="n">ToParent</span>
 
-    <span class="nd">@abstractclassmethod</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a (default) name for this FileModel.</span>
 
@@ -5871,6 +5929,7 @@ cwd / filename.extension</p>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the string representation of this FileModel&#39;s filepath.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -5882,7 +5941,8 @@ cwd / filename.extension</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
-    <span class="nd">@validator</span><span class="p">(</span><span class="s2">&quot;filepath&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;filepath&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_conform_filepath_to_pathlib</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">FileModel</span><span class="o">.</span><span class="n">_change_to_path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5890,7 +5950,7 @@ cwd / filename.extension</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -5914,7 +5974,7 @@ cwd / filename.extension</p>
 
     <div class="doc doc-contents ">
 
-        <p>Get the current save location which will be used when calling <code>save()</code></p>
+        <p>Get the current save location which will be used when calling <code>save()</code>.</p>
 <p>This value can be None if the filepath is None and no name can be generated.</p>
 
 
@@ -5939,9 +5999,11 @@ cwd / filename.extension</p>
           </tr>
       </tbody>
     </table>
+
     </div>
 
 </div>
+
 
 
 
@@ -6063,12 +6125,10 @@ If the filepath is provided, it is read from disk.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">346</span>
 <span class="normal">347</span>
 <span class="normal">348</span>
 <span class="normal">349</span>
@@ -6136,7 +6196,16 @@ If the filepath is provided, it is read from disk.</p>
 <span class="normal">411</span>
 <span class="normal">412</span>
 <span class="normal">413</span>
-<span class="normal">414</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">resolve_casing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -6204,7 +6273,13 @@ If the filepath is provided, it is read from disk.</p>
         <span class="n">relative_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_relative_mode_from_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">context</span><span class="o">.</span><span class="n">push_new_parent</span><span class="p">(</span><span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">relative_mode</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">unregister_model</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">pop_last_parent</span><span class="p">()</span>
+            <span class="k">raise</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_init_load</span><span class="p">()</span>
 
         <span class="n">context</span><span class="o">.</span><span class="n">pop_last_parent</span><span class="p">()</span>
@@ -6225,8 +6300,8 @@ If the filepath is provided, it is read from disk.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Create a new model.
-If the file at the provided file path was already parsed, this instance is returned.</p>
+        <p>Create a new model.</p>
+<p>If the file at the provided file path was already parsed, this instance is returned.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -6282,11 +6357,10 @@ If the file at the provided file path was already parsed, this instance is retur
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
@@ -6304,10 +6378,14 @@ If the file at the provided file path was already parsed, this instance is retur
 <span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
-<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__new__</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathOrStr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FileModel&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new model.</span>
+
 <span class="sd">    If the file at the provided file path was already parsed, this instance is returned.</span>
 
 <span class="sd">    Args:</span>
@@ -6325,6 +6403,33 @@ If the file at the provided file path was already parsed, this instance is retur
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">_has_been_loaded_from_cache</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="hydrolib.core.base.models.FileModel.__str__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__str__</span><span class="p">()</span></code>
+
+<a href="#hydrolib.core.base.models.FileModel.__str__" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the string representation of this FileModel's filepath.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">716</span>
+<span class="normal">717</span>
+<span class="normal">718</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the string representation of this FileModel&#39;s filepath.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6466,9 +6571,27 @@ Defaults to False.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">529</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
+<span class="normal">520</span>
+<span class="normal">521</span>
+<span class="normal">522</span>
+<span class="normal">523</span>
+<span class="normal">524</span>
+<span class="normal">525</span>
+<span class="normal">526</span>
+<span class="normal">527</span>
+<span class="normal">528</span>
+<span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
@@ -6512,24 +6635,7 @@ Defaults to False.</p>
 <span class="normal">570</span>
 <span class="normal">571</span>
 <span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
-<span class="normal">584</span>
-<span class="normal">585</span>
-<span class="normal">586</span>
-<span class="normal">587</span>
-<span class="normal">588</span>
-<span class="normal">589</span>
-<span class="normal">590</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
+<span class="normal">573</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">recurse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -6608,40 +6714,36 @@ Defaults to False.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Synchronize the save_location properties of all child models respective to
-this FileModel's save_location.</p>
+        <p>Synchronize the save_location properties of all child models respective to this FileModel's save_location.</p>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">636</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
 <span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">synchronize_filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to</span>
-<span class="sd">    this FileModel&#39;s save_location.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal">642</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">synchronize_filepaths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synchronize the save_location properties of all child models respective to this FileModel&#39;s save_location.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sync_pre</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">FileLoadContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileLoadContext</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">FileModel</span><span class="p">):</span>
@@ -6692,6 +6794,7 @@ this FileModel's save_location.</p>
     <div class="doc doc-contents ">
 
 
+
         <p>A class that holds the global settings for model saving.</p>
 
 
@@ -6699,13 +6802,11 @@ this FileModel's save_location.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
@@ -6730,7 +6831,10 @@ this FileModel's save_location.</p>
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span>
-<span class="normal">281</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ModelSaveSettings</span><span class="p">:</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ModelSaveSettings</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that holds the global settings for model saving.&quot;&quot;&quot;</span>
 
     <span class="n">_os_path_style</span> <span class="o">=</span> <span class="n">get_path_style_for_current_operating_system</span><span class="p">()</span>
@@ -6744,7 +6848,6 @@ this FileModel's save_location.</p>
 <span class="sd">            path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.</span>
 <span class="sd">            exclude_unset (bool, optional): Whether or not to exclude unset values when saving the model. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">path_style</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">path_style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_os_path_style</span>
 
@@ -6765,7 +6868,7 @@ this FileModel's save_location.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -6813,9 +6916,11 @@ this FileModel's save_location.</p>
           </tr>
       </tbody>
     </table>
+
     </div>
 
 </div>
+
 
 
 
@@ -6879,13 +6984,10 @@ this FileModel's save_location.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">261</span>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
@@ -6896,7 +6998,10 @@ this FileModel's save_location.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">path_style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathStyle</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initializes a new instance of the ModelSaveSettings class.</span>
@@ -6905,7 +7010,6 @@ this FileModel's save_location.</p>
 <span class="sd">        path_style (Optional[PathStyle], optional): Which file path style to use when saving the model. Defaults to the path style that matches the current operating system.</span>
 <span class="sd">        exclude_unset (bool, optional): Whether or not to exclude unset values when saving the model. Defaults to False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="n">path_style</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">path_style</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_os_path_style</span>
 
@@ -6942,8 +7046,8 @@ this FileModel's save_location.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="hydrolib.core.base.models.TAcc">TAcc</span>]</code></p>
 
 
-        <p>ModelTreeTraverser is responsible for traversing a ModelTree using the provided
-functions.</p>
+
+        <p>ModelTreeTraverser is responsible for traversing a ModelTree using the provided functions.</p>
 <p>The ModelTreeTraverser will only traverse BaseModel and derived objects.
 Type parameter TAcc defines the type of Accumulator to be used.</p>
 
@@ -6952,15 +7056,11 @@ Type parameter TAcc defines the type of Accumulator to be used.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
@@ -7048,9 +7148,12 @@ Type parameter TAcc defines the type of Accumulator to be used.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ModelTreeTraverser</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">TAcc</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;ModelTreeTraverser is responsible for traversing a ModelTree using the provided</span>
-<span class="sd">    functions.</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ModelTreeTraverser</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">TAcc</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ModelTreeTraverser is responsible for traversing a ModelTree using the provided functions.</span>
 
 <span class="sd">    The ModelTreeTraverser will only traverse BaseModel and derived objects.</span>
 <span class="sd">    Type parameter TAcc defines the type of Accumulator to be used.</span>
@@ -7109,8 +7212,7 @@ Type parameter TAcc defines the type of Accumulator to be used.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">TAcc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TAcc</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with</span>
-<span class="sd">        the provided state of the acc and return the final accumulator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with the provided state of the acc and return the final accumulator.</span>
 
 <span class="sd">        The actual executed functions as well as the predicates defining whether these</span>
 <span class="sd">        functions should be executed for this model as well as whether child BaseModel</span>
@@ -7148,7 +7250,8 @@ Type parameter TAcc defines the type of Accumulator to be used.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -7259,14 +7362,10 @@ i.e. bottom-up traversal. Defaults to None.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
@@ -7295,7 +7394,12 @@ i.e. bottom-up traversal. Defaults to None.</p>
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
-<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">should_traverse</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">should_execute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">TAcc</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7347,8 +7451,7 @@ i.e. bottom-up traversal. Defaults to None.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Traverse the model tree of BaseModels including the model as the root, with
-the provided state of the acc and return the final accumulator.</p>
+        <p>Traverse the model tree of BaseModels including the model as the root, with the provided state of the acc and return the final accumulator.</p>
 <p>The actual executed functions as well as the predicates defining whether these
 functions should be executed for this model as well as whether child BaseModel
 objects should be traversed are provided in the constructor of the
@@ -7425,14 +7528,10 @@ ModelTreeTraverser.</p>
       </tbody>
     </table>
 
-            <details class="quote">
+
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
@@ -7461,9 +7560,12 @@ ModelTreeTraverser.</p>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
-<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">TAcc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TAcc</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with</span>
-<span class="sd">    the provided state of the acc and return the final accumulator.</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">traverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">acc</span><span class="p">:</span> <span class="n">TAcc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TAcc</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Traverse the model tree of BaseModels including the model as the root, with the provided state of the acc and return the final accumulator.</span>
 
 <span class="sd">    The actual executed functions as well as the predicates defining whether these</span>
 <span class="sd">    functions should be executed for this model as well as whether child BaseModel</span>
@@ -7526,8 +7628,8 @@ ModelTreeTraverser.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="FileModel (hydrolib.core.base.models.FileModel)" href="#hydrolib.core.base.models.FileModel">FileModel</a></code></p>
 
 
-        <p>ParsableFileModel defines a FileModel which can be parsed
-and serialized with a serializer .</p>
+
+        <p>ParsableFileModel defines a FileModel which can be parsed and serialized with a serializer.</p>
 <p>Each ParsableFileModel has a default _filename and _ext,
 which are used to generate the file name of any instance where
 the filepath is not (yet) set.</p>
@@ -7544,9 +7646,27 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">780</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span>
+<span class="normal">769</span>
+<span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
 <span class="normal">783</span>
@@ -7665,22 +7785,8 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 <span class="normal">896</span>
 <span class="normal">897</span>
 <span class="normal">898</span>
-<span class="normal">899</span>
-<span class="normal">900</span>
-<span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
-<span class="normal">904</span>
-<span class="normal">905</span>
-<span class="normal">906</span>
-<span class="normal">907</span>
-<span class="normal">908</span>
-<span class="normal">909</span>
-<span class="normal">910</span>
-<span class="normal">911</span>
-<span class="normal">912</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParsableFileModel</span><span class="p">(</span><span class="n">FileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;ParsableFileModel defines a FileModel which can be parsed</span>
-<span class="sd">    and serialized with a serializer .</span>
+<span class="normal">899</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParsableFileModel</span><span class="p">(</span><span class="n">FileModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ParsableFileModel defines a FileModel which can be parsed and serialized with a serializer.</span>
 
 <span class="sd">    Each ParsableFileModel has a default _filename and _ext,</span>
 <span class="sd">    which are used to generate the file name of any instance where</span>
@@ -7714,7 +7820,7 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 <span class="sd">        Args:</span>
 <span class="sd">            save_settings (ModelSaveSettings): The model save settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="n">save_settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span> <span class="n">save_settings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes the data to file. Should not be called directly, only through `_save`.</span>
@@ -7730,9 +7836,9 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
         <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_serializer</span><span class="p">()(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">serializer_config</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_exclude_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -7748,21 +7854,25 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
         <span class="n">name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_filename</span><span class="p">(),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ext</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="nd">@abstractclassmethod</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;test&quot;</span>
 
-    <span class="nd">@abstractclassmethod</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;.test&quot;</span>
 
-    <span class="nd">@abstractclassmethod</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">ModelSaveSettings</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">DummySerializer</span><span class="o">.</span><span class="n">serialize</span>
 
-    <span class="nd">@abstractclassmethod</span>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">DummmyParser</span><span class="o">.</span><span class="n">parse</span>
 
@@ -7816,7 +7926,8 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
+
 
 
 
@@ -7850,6 +7961,7 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="BaseModel (hydrolib.core.base.models.BaseModel)" href="#hydrolib.core.base.models.BaseModel">BaseModel</a></code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Class that holds the configuration settings for serialization.</p>
 
 
@@ -7857,9 +7969,27 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 
 
 
-              <details class="quote">
+
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">751</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
 <span class="normal">752</span>
 <span class="normal">753</span>
 <span class="normal">754</span>
@@ -7869,23 +7999,7 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 <span class="normal">758</span>
 <span class="normal">759</span>
 <span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
-<span class="normal">777</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SerializerConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">761</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SerializerConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that holds the configuration settings for serialization.&quot;&quot;&quot;</span>
 
     <span class="n">float_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -7917,7 +8031,7 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 
 
 
-  <div class="doc doc-children">
+<div class="doc doc-children">
 
 
 
@@ -7962,9 +8076,11 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.
 ".3%"     | 12345.600%      | Format percentage with 3 decimal places.</p>
 <p>More information: https://docs.python.org/3/library/string.html#format-specification-mini-language</p>
+
     </div>
 
 </div>
+
 
 
 
@@ -7980,69 +8096,32 @@ to skip the _get_serializer and _get_parser methods respectively.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="hydrolib.core.base.models.validator_set_default_disk_only_file_model_when_none" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">validator_set_default_disk_only_file_model_when_none</span><span class="p">()</span></code>
+<h2 id="hydrolib.core.base.models.set_default_disk_only_file_model" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_default_disk_only_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></code>
 
-<a href="#hydrolib.core.base.models.validator_set_default_disk_only_file_model_when_none" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#hydrolib.core.base.models.set_default_disk_only_file_model" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Validator to ensure a default empty DiskOnlyFileModel is created
-when the corresponding field is initialized with None.</p>
+        <p>Return a default DiskOnlyFileModel dict from the given value.</p>
 
 
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-<th>Name</th>          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-<td><code>classmethod</code></td>            <td>
-                  <code><span title="classmethod">classmethod</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Validator to adjust None values to empty DiskOnlyFileModel objects</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/base/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validator_set_default_disk_only_file_model_when_none</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">classmethod</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validator to ensure a default empty DiskOnlyFileModel is created</span>
-<span class="sd">    when the corresponding field is initialized with None.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        classmethod: Validator to adjust None values to empty DiskOnlyFileModel objects</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">adjust_none</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="s2">&quot;ModelField&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">type_</span> <span class="ow">is</span> <span class="n">DiskOnlyFileModel</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">v</span>
-
-    <span class="k">return</span> <span class="n">validator</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">adjust_none</span><span class="p">)</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_default_disk_only_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a default DiskOnlyFileModel dict from the given value.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;filepath&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">(</span><span class="n">v</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">v</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8136,10 +8215,10 @@ when the corresponding field is initialized with None.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       
