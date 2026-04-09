@@ -33,7 +33,7 @@ jobs:
       - name: Build wheel
         run: poetry build -f wheel
 
-      - name: Create fresh venv and install wheel
+      - name: Install wheel in fresh venv and run tests
         shell: bash
         run: |
           python -m venv test-venv
@@ -45,14 +45,4 @@ jobs:
 
           pip install dist/*.whl
           pip install pytest
-
-      - name: Run tests against installed wheel
-        shell: bash
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            source test-venv/Scripts/activate
-          else
-            source test-venv/bin/activate
-          fi
-
           pytest -v
