@@ -1,8 +1,5 @@
 name: Automated release workflow
 
-permissions:
-  contents: write
-
 on:
   workflow_dispatch:
     inputs:
@@ -42,6 +39,8 @@ jobs:
   release:
     needs: wheel-test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out the code
         uses: actions/checkout@v5
