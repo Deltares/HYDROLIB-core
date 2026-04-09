@@ -44,5 +44,5 @@ jobs:
           fi
 
           pip install dist/*.whl
-          pip install pytest
+          pip install pytest pyfakefs xarray
           pytest -v
