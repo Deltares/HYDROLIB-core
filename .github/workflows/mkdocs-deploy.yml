@@ -24,7 +24,7 @@ jobs:
           python-version: 3.13
 
       - name: Run image
-        uses: abatilo/actions-poetry@v4
+        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
         with:
           poetry-version: 2.2.1
       - name: Cache Poetry virtualenv
@@ -79,7 +79,7 @@ jobs:
           python-version: 3.13
 
       - name: Run image
-        uses: abatilo/actions-poetry@v4
+        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
         with:
           poetry-version: 2.2.1
       - name: Cache Poetry virtualenv
