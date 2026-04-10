@@ -75,6 +75,53 @@ class TestSubstance:
             substance.type == SubstanceType.Active
         ), f"Expected Active, got {substance.type}"
 
+    def test_is_active_returns_true_for_active_substance(self):
+        """Test is_active returns True for an active substance.
+
+        Test scenario:
+            A substance with default type (active) should return True.
+        """
+        substance = Substance(
+            name="OXY",
+            description="Dissolved Oxygen",
+            concentration_unit="(g/m3)",
+        )
+        assert substance.is_active() is True, (
+            f"Expected is_active()=True for active substance, got {substance.is_active()}"
+        )
+
+    def test_is_active_returns_false_for_inactive_substance(self):
+        """Test is_active returns False for an inactive substance.
+
+        Test scenario:
+            A substance with type='inactive' should return False.
+        """
+        substance = Substance(
+            name="DetCS1",
+            type="inactive",
+            description="DetC in layer S1",
+            concentration_unit="(gC/m2)",
+        )
+        assert substance.is_active() is False, (
+            f"Expected is_active()=False for inactive substance, got {substance.is_active()}"
+        )
+
+    def test_is_active_with_explicit_active_type(self):
+        """Test is_active returns True when type is explicitly set to 'active'.
+
+        Test scenario:
+            Explicitly passing type='active' should behave identically to the default.
+        """
+        substance = Substance(
+            name="NH4",
+            type="active",
+            description="Ammonium",
+            concentration_unit="(g/m3)",
+        )
+        assert substance.is_active() is True, (
+            f"Expected is_active()=True for explicitly active substance, got {substance.is_active()}"
+        )
+
 
 class TestParameter:
     def test_instantiation(self):
@@ -289,3 +336,83 @@ class TestSubstanceModel:
         assert (
             SubstanceModel._filename() == "substance"
         ), f"Expected 'substance', got '{SubstanceModel._filename()}'"
+
+    def test_get_active_substances_empty_model(self):
+        """Test get_active_substances on an empty model.
+
+        Test scenario:
+            A model with no substances should return an empty list.
+        """
+        model = SubstanceModel()
+        result = model.get_active_substances()
+        assert result == [], f"Expected empty list, got {result}"
+
+    def test_get_active_substances_all_active(self):
+        """Test get_active_substances when all substances are active.
+
+        Test scenario:
+            A model with only active substances should return all of them.
+        """
+        substances = [
+            Substance(name="OXY", description="Oxygen", concentration_unit="(g/m3)"),
+            Substance(name="NH4", description="Ammonium", concentration_unit="(g/m3)"),
+        ]
+        model = SubstanceModel()
+        model.substances = substances
+        result = model.get_active_substances()
+        assert len(result) == 2, f"Expected 2 active substances, got {len(result)}"
+
+    def test_get_active_substances_all_inactive(self):
+        """Test get_active_substances when all substances are inactive.
+
+        Test scenario:
+            A model with only inactive substances should return an empty list.
+        """
+        substances = [
+            Substance(
+                name="DetCS1", type="inactive",
+                description="DetC S1", concentration_unit="(gC/m2)",
+            ),
+            Substance(
+                name="DetCS2", type="inactive",
+                description="DetC S2", concentration_unit="(gC/m2)",
+            ),
+        ]
+        model = SubstanceModel()
+        model.substances = substances
+        result = model.get_active_substances()
+        assert result == [], f"Expected empty list, got {len(result)} substances"
+
+    def test_get_active_substances_mixed(self):
+        """Test get_active_substances with a mix of active and inactive.
+
+        Test scenario:
+            Only active substances should be returned, preserving order.
+        """
+        substances = [
+            Substance(name="OXY", description="Oxygen", concentration_unit="(g/m3)"),
+            Substance(
+                name="DetCS1", type="inactive",
+                description="DetC S1", concentration_unit="(gC/m2)",
+            ),
+            Substance(name="NH4", description="Ammonium", concentration_unit="(g/m3)"),
+        ]
+        model = SubstanceModel()
+        model.substances = substances
+        result = model.get_active_substances()
+        assert len(result) == 2, f"Expected 2 active substances, got {len(result)}"
+        assert result[0].name == "OXY", f"Expected 'OXY', got '{result[0].name}'"
+        assert result[1].name == "NH4", f"Expected 'NH4', got '{result[1].name}'"
+
+    def test_get_active_substances_from_file(self, input_files_dir: Path):
+        """Test get_active_substances on a model loaded from file.
+
+        Test scenario:
+            inactive-substances.sub has 1 active + 1 inactive substance.
+            Only the active one should be returned.
+        """
+        path = input_files_dir / "substances" / "inactive-substances.sub"
+        model = SubstanceModel(filepath=path)
+        result = model.get_active_substances()
+        assert len(result) == 1, f"Expected 1 active substance, got {len(result)}"
+        assert result[0].name == "ActiveSub", f"Expected 'ActiveSub', got '{result[0].name}'"

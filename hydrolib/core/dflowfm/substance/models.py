@@ -128,6 +128,14 @@ class Substance(BaseModel):
     concentration_unit: str
     waste_load_unit: Optional[str] = Field(default="-")
 
+    def is_active(self) -> bool:
+        """Return whether this substance is actively computed.
+
+        Returns:
+            bool: True if the substance type is ``SubstanceType.Active``.
+        """
+        return self.type == SubstanceType.Active
+
 
 class Parameter(BaseModel):
     """A single parameter definition in a D-WAQ substance file.
