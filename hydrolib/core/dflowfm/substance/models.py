@@ -123,19 +123,10 @@ class Substance(BaseModel):
     """
 
     name: str = Field(...)
-    """str: Substance identifier."""
-
     description: str = Field(...)
-    """str: Human-readable description."""
-
     type: SubstanceType = Field(default=SubstanceType.Active)
-    """SubstanceType: Whether the substance is active or inactive."""
-
     concentration_unit: str
-    """str: Unit string for concentrations, e.g. ``'(g/m3)'``."""
-
     waste_load_unit: Optional[str] = Field(default="-")
-    """Optional[str]: Unit string for waste loads. Defaults to ``'-'``."""
 
 
 class Parameter(BaseModel):
@@ -311,7 +302,6 @@ class ActiveProcesses(BaseModel):
     """
 
     processes: List[ActiveProcess] = Field(default_factory=list)
-    """List[ActiveProcess]: Active water-quality process entries."""
 
 
 class SubstanceModel(ParsableFileModel):
@@ -372,19 +362,10 @@ class SubstanceModel(ParsableFileModel):
     """
 
     serializer_config: SubstanceSerializerConfig = SubstanceSerializerConfig()
-    """SubstanceSerializerConfig: Serialization configuration (float format, etc.)."""
-
     substances: List[Substance] = Field(default_factory=list)
-    """List[Substance]: Substance definitions in the file."""
-
     parameters: List[Parameter] = Field(default_factory=list)
-    """List[Parameter]: Parameter definitions in the file."""
-
     outputs: List[Output] = Field(default_factory=list)
-    """List[Output]: Output variable definitions in the file."""
-
     active_processes: ActiveProcesses = Field(default_factory=ActiveProcesses)
-    """ActiveProcesses: Active water-quality processes block."""
 
     @classmethod
     def _ext(cls) -> str:
