@@ -607,7 +607,11 @@ class SourceSinkConverter(BaseConverter):
         return keys
 
     def parse_tim_model(
-        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
+        self,
+        tim_file: Path,
+        ext_file_quantity_list: List[str],
+        active_substance_names: List[str] = None,
+        **mdu_quantities,
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
@@ -729,6 +733,7 @@ class SourceSinkConverter(BaseConverter):
             ["sourcesink_discharge"]
             + final_temp_salinity
             + required_quantities_from_ext
+            + active_substance_names
         )
 
         if len(time_series) != len(final_quantities_list):
@@ -798,6 +803,7 @@ class SourceSinkConverter(BaseConverter):
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
         start_time: str = None,
+        active_substance_names: List[str] = None,
         **temp_salinity_mdu,
     ) -> SourceSink:
         """Source and sink converter.
@@ -862,7 +868,7 @@ class SourceSinkConverter(BaseConverter):
         self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
-            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+            tim_file, ext_file_quantity_list, active_substance_names, **temp_salinity_mdu
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 

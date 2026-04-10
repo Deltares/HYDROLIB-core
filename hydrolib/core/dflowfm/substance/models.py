@@ -393,6 +393,14 @@ class SubstanceModel(ParsableFileModel):
     def _get_parser(cls) -> Callable[[Path], Dict]:
         return SubstanceParser.parse
 
+    def get_active_substances(self) -> List[Substance]:
+        """Return all substances with type ``SubstanceType.Active``.
+
+        Returns:
+            List[Substance]: Active substance definitions.
+        """
+        return [s for s in self.substances if s.is_active()]
+
     @field_validator("parameters", mode="before")
     @classmethod
     def _replace_fortran_notation_in_parameters(

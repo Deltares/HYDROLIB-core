@@ -374,6 +374,7 @@ class ExternalForcingConverter:
 
     def _convert_source_sink(self, converter_class, forcing):
         substance_file = self.mdu_parser.get_keyword("SubstanceFile")
+        active_substance_names = None
         if substance_file:
             substance_file = (self.mdu_parser.mdu_path.parent / substance_file).resolve()
             if not substance_file.exists():
@@ -381,6 +382,8 @@ class ExternalForcingConverter:
                     f"Substance file {substance_file} not found, required to convert SourceSink quantities."
                 )
             substance_model = SubstanceModel(substance_file)
+            active_substances = substance_model.get_active_substances()
+            active_substance_names = [s.name for s in active_substances]
 
         if self.temperature_salinity_data is None:
             raise ValueError("FM model is required to convert SourcesSink quantities.")
@@ -390,7 +393,11 @@ class ExternalForcingConverter:
 
         quantities = self.extold_model.quantities
         new_quantity_block = converter_class.convert(
-            forcing, quantities, start_time=start_time, **temp_salinity_mdu
+            forcing,
+            quantities,
+            start_time=start_time,
+            active_substance_names=active_substance_names,
+            **temp_salinity_mdu
         )
         return new_quantity_block
 
