@@ -1,3 +1,30 @@
+## 1.0.0 (2026-04-13)
+
+### BREAKING CHANGE
+
+- Bumped version from 0.9.2 to 1.0.0b5 reflecting
+breaking changes introduced by the full Pydantic v2 migration.
+
+### Fix
+
+- update wheel-test workflow to accept dynamic Git ref input
+- **deps**: add pytest-env dependency for testing environment
+- **docs**: remove reference to model engines in library description
+- **docs**: update CI badge to point to the test suite in documentation
+- **mdu**: preserve empty string on Output.outputdir assignment (#1049)
+- Install missing deps in the wheel-test workflow (#1048)
+- **core**: clean up Pydantic v2 validation issues across multiple models (#1033)
+- Restore T3D global import (#1031)
+- **core**: clean up remaining Pydantic v2 migration issues (#1022)
+- **docs**: fix broken links (#1024)
+- **docs**: fix broken links and add openpyxl dependency for supported functionalities
+  table
+- **ci**: consolidate docs workflows and fix security and deployment bugs (#1018)
+
+### Refactor
+
+- **core**: migrate to Pydantic v2 and fix deprecated API usage
+
 ## 1.0.0b5 (2026-02-26)
 
 ### Feat

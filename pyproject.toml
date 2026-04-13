@@ -1,6 +1,6 @@
 [project]
 name = "hydrolib-core"
-version = "1.0.0b5"
+version = "1.0.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = [{name = "Deltares"}]
 license = "MIT"
@@ -88,7 +88,7 @@ include = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.0.0b5"
+version = "1.0.0"
 tag_format = "$version"
 version_files = [
   "pyproject.toml:version",
