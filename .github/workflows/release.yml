@@ -35,6 +35,8 @@ on:
 jobs:
   wheel-test:
     uses: ./.github/workflows/wheel-test.yml
+    with:
+      ref: ${{ github.event.inputs.release_branch }}
 
   release:
     needs: wheel-test
