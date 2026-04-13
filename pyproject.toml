@@ -1,6 +1,6 @@
 [project]
 name = "hydrolib-core"
-version = "1.0.0b5"
+version = "1.0.0"
 description = "Python wrappers around D-HYDRO Suite."
 authors = [{name = "Deltares"}]
 license = "MIT"
@@ -48,6 +48,7 @@ dev = [
     "xarray>=2024.6.0",
     "pyfakefs>=6.0,<7",
     "geopandas>=1.0.0,<2",
+    "pytest-env>=1.1,<2",
 ]
 docs = [
     "openpyxl>=3.1.5,<4",
@@ -87,7 +88,7 @@ include = [
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.0.0b5"
+version = "1.0.0"
 tag_format = "$version"
 version_files = [
   "pyproject.toml:version",
@@ -134,6 +135,9 @@ markers = [
     "e2e: marks tests as end-to-end tests (deselect with '-m \"not e2e\"')",
     "unit: marks a test as unit test(deselect with '-m \"not unit\"')",
     "integration: marks a test as integration test (deselect with '-m \"not integration\"')",
+]
+env = [
+    "MPLBACKEND=Agg",
 ]
 
 [build-system]

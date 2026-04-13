@@ -1,3 +1,43 @@
+## 1.0.0 (2026-04-13)
+
+First stable major release. This version consolidates the Pydantic v2 migration
+and modernizes the CI/packaging infrastructure. See the notes below before
+upgrading from `0.x`.
+
+### BREAKING CHANGE
+
+- **core**: migrate all model modules to Pydantic v2. Pydantic v1 validator
+  decorators (`@validator`, `@root_validator`) are replaced with Pydantic v2
+  equivalents (`@field_validator`, `@model_validator`, `@model_serializer`,
+  `ConfigDict`). Downstream code that relied on Pydantic v1 validation APIs or
+  model internals must be updated.
+- **core**: clean up remaining Pydantic v2 migration issues (#1022).
+- **ci**: modernize CI and packaging infrastructure (#1040). The project now
+  builds and is tested against Python 3.10–3.14 on Linux, macOS, and Windows.
+
+### Feat
+
+- **deps**: support Python 3.14 (#1011).
+- **deps**: allow pandas 2.x and 3.x (#1027).
+- **config**: add `pydantic-settings` for enhanced configuration management
+  (included in the 1.0.0b5 preview, promoted in 1.0.0).
+
+### Fix
+
+- **mdu**: preserve empty string on `Output.outputdir` assignment (#1049).
+- Install missing deps in the wheel-test workflow (#1048).
+- **core**: clean up Pydantic v2 validation issues across multiple models
+  (#1033).
+- **docs**: fix broken links (#1024).
+- **docs**: fix broken links and add openpyxl dependency for supported
+  functionalities table.
+- **ci**: consolidate docs workflows and fix security and deployment bugs
+  (#1018).
+- **deps**: add `pytest-env` dependency for testing environment.
+- **docs**: update CI badge to point to the test suite in documentation.
+- **docs**: remove reference to model engines in library description.
+- update wheel-test workflow to accept dynamic Git ref input.
+
 ## 1.0.0b5 (2026-02-26)
 
 ### Feat
