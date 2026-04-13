@@ -4,7 +4,13 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
-from pydantic import BeforeValidator, Field, ValidationInfo, field_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    WrapValidator,
+    field_validator,
+)
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
@@ -34,6 +40,13 @@ from hydrolib.core.dflowfm.xyn.models import XYNModel
 from hydrolib.core.dflowfm.xyz.models import XYZModel
 
 DEPRECATED_VARIABLE = "Deprecated variable."
+
+
+def _preserve_empty_string(value, handler):
+    # Empty string bypasses Path coercion, which would otherwise become Path(".").
+    if value == "":
+        return ""
+    return handler(value)
 
 
 def load_crs(value):
@@ -1618,7 +1631,9 @@ class Output(INIBasedModel):
     wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
-    outputdir: Optional[Path] = Field("", alias="outputDir")
+    outputdir: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="outputDir")
     waqoutputdir: Optional[Path] = Field("", alias="waqOutputDir")
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
