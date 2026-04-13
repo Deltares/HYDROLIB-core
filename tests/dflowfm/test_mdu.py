@@ -716,6 +716,154 @@ class TestOutput:
                 assert excluded_field not in str(exc_err.value)
 
 
+class TestOutputDir:
+    """Tests for the Output.outputdir field.
+
+    Covers the WrapValidator that preserves empty strings verbatim instead of letting
+    Pydantic coerce them to ``Path("")`` (which ``pathlib`` normalizes to ``Path(".")``).
+    The field remains typed as ``Optional[Path]``; real path strings still coerce to
+    ``Path`` as expected.
+    """
+
+    def test_default_is_empty_string(self):
+        """Default value is the empty string, not a Path.
+
+        Test scenario:
+            Constructing ``FMModel()`` without arguments leaves ``outputdir`` as the
+            raw default ``""``. Pydantic v2 does not validate defaults, so the
+            WrapValidator is not hit on this path. Present as a regression guard.
+        """
+        model = FMModel()
+        result = model.output.outputdir
+        assert result == "", f"Expected '', got {result!r}"
+        assert isinstance(result, str), f"Expected str, got {type(result).__name__}"
+
+    def test_assign_empty_string_preserved(self):
+        """Assigning '' preserves the empty string instead of becoming Path('.').
+
+        Test scenario:
+            With ``validate_assignment=True`` on the base model, assigning ``""`` used
+            to coerce to ``Path("")`` → ``Path(".")``. The WrapValidator short-circuits
+            empty strings and returns them verbatim.
+        """
+        model = FMModel()
+        model.output.outputdir = ""
+        result = model.output.outputdir
+        assert result == "", f"Expected '', got {result!r}"
+        assert not isinstance(result, Path), (
+            f"Empty string should not be coerced to Path, got {type(result).__name__}"
+        )
+
+    def test_init_with_empty_string_preserved(self):
+        """Constructing with outputdir='' keeps the empty string.
+
+        Test scenario:
+            Passing ``""`` via the constructor goes through field validation. The
+            WrapValidator must preserve it as an empty string, not a ``Path(".")``.
+        """
+        model = FMModel(**{"output": {"outputdir": ""}})
+        result = model.output.outputdir
+        assert result == "", f"Expected '', got {result!r}"
+        assert not isinstance(result, Path), (
+            f"Empty string should not be coerced to Path, got {type(result).__name__}"
+        )
+
+    def test_init_with_none_falls_back_to_default_empty_string(self):
+        """Constructing with outputdir=None falls back to the field default ''.
+
+        Test scenario:
+            The INIBasedModel construction path replaces a ``None`` value with the
+            field's default (here ``""``) before Pydantic validation runs. The net
+            result is an empty string — which is also what end users comparing against
+            ``""`` expect.
+        """
+        model = FMModel(**{"output": {"outputdir": None}})
+        result = model.output.outputdir
+        assert result == "", f"Expected '', got {result!r}"
+        assert not isinstance(result, Path), (
+            f"Expected str fallback, got {type(result).__name__}"
+        )
+
+    def test_assign_none_stays_none(self):
+        """Assigning None replaces the value with None.
+
+        Test scenario:
+            Assignment of ``None`` on an Optional[Path] field must be preserved as
+            ``None`` (validate_assignment path).
+        """
+        model = FMModel()
+        model.output.outputdir = None
+        result = model.output.outputdir
+        assert result is None, f"Expected None, got {result!r}"
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            "output",
+            "./out",
+            "sub/dir",
+            "/tmp/out",
+        ],
+        ids=["relative_name", "dot_relative", "nested_relative", "absolute"],
+    )
+    def test_assign_real_path_coerces_to_path(self, value):
+        """Non-empty strings are still coerced to pathlib.Path.
+
+        Args:
+            value: A non-empty directory string.
+
+        Test scenario:
+            The WrapValidator only short-circuits ``""``. Any other string must
+            continue flowing to Pydantic's standard ``Path`` validator and result in
+            a ``Path`` instance equal to ``Path(value)``.
+        """
+        model = FMModel()
+        model.output.outputdir = value
+        result = model.output.outputdir
+        assert isinstance(result, Path), f"Expected Path, got {type(result).__name__}"
+        assert result == Path(value), f"Expected Path({value!r}), got {result!r}"
+
+    def test_init_with_real_path_coerces_to_path(self):
+        """Constructor path strings still coerce to Path.
+
+        Test scenario:
+            The normal happy path: the WrapValidator delegates to the handler for
+            non-empty values so ``Path`` coercion behavior is unchanged.
+        """
+        model = FMModel(**{"output": {"outputdir": "results"}})
+        result = model.output.outputdir
+        assert isinstance(result, Path), f"Expected Path, got {type(result).__name__}"
+        assert result == Path("results"), f"Expected Path('results'), got {result!r}"
+
+    def test_pathlib_baseline_still_normalizes(self):
+        """Sanity: pathlib still normalizes Path('') to Path('.').
+
+        Test scenario:
+            Documents the upstream behavior the WrapValidator is guarding against.
+            If this ever changes in a future Python/pathlib version, the workaround
+            may no longer be necessary.
+        """
+        assert Path("") == Path("."), (
+            "pathlib behavior changed: Path('') no longer equals Path('.')"
+        )
+
+    def test_waqoutputdir_untouched(self):
+        """waqoutputdir intentionally retains original (buggy) coercion behavior.
+
+        Test scenario:
+            Scope of the fix was limited to ``outputdir``. This regression guard
+            confirms ``waqoutputdir`` was not silently changed at the same time.
+            If ``waqoutputdir`` later receives the same WrapValidator treatment,
+            update/remove this test.
+        """
+        model = FMModel()
+        model.output.waqoutputdir = ""
+        result = model.output.waqoutputdir
+        assert result == Path("."), (
+            f"waqoutputdir expected to still coerce '' to Path('.'), got {result!r}"
+        )
+
+
 class TestTime:
     @pytest.mark.parametrize(
         "start_date_time, stop_date_time",
