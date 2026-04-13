@@ -387,6 +387,38 @@ class SourceSink(INIBasedModel):
         return values
 
     @model_validator(mode="before")
+    def validate_locationfile_z_conflict(cls, values):
+        """Reject `locationFile` combined with explicit `zSource` or `zSink`.
+
+        A `.pliz` location file already encodes vertical placement via its
+        column count (3 or 5 cols). Combining it with explicit `zSource` or
+        `zSink` is ambiguous and is rejected by the kernel.
+        """
+        locationfile = values.get("locationfile", values.get("locationFile"))
+        zsource = values.get("zsource", values.get("zSource"))
+        zsink = values.get("zsink", values.get("zSink"))
+
+        has_locationfile = locationfile is not None
+        if hasattr(locationfile, "filepath"):
+            has_locationfile = locationfile.filepath is not None
+
+        conflict_field = None
+        if has_locationfile and zsource is not None:
+            conflict_field = "zSource"
+        elif has_locationfile and zsink is not None:
+            conflict_field = "zSink"
+
+        if conflict_field is not None:
+            raise ValueError(
+                f"`locationFile` cannot be combined with explicit `{conflict_field}` "
+                f"for the SourceSink block `{values.get('id')}`. "
+                f"Either remove `{conflict_field}` or provide inline coordinates "
+                f"(`numCoordinates`, `xCoordinates`, `yCoordinates`) instead of `locationFile`."
+            )
+
+        return values
+
+    @model_validator(mode="before")
     @classmethod
     def validate_locationfile(cls, data: Any) -> Any:
         file_location = data.get("locationfile") or data.get("locationFile")

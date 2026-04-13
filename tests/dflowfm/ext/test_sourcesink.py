@@ -34,7 +34,9 @@ class TestSourceSink:
                 {
                     "id": "L1",
                     "name": "L1",
-                    "locationFile": "foobar.pli",
+                    "numCoordinates": 2,
+                    "xCoordinates": [0.0, 1.0],
+                    "yCoordinates": [0.0, 1.0],
                     "zSink": 0.0,
                     "zSource": 0.0,
                     "area": 1.0,
@@ -114,3 +116,77 @@ class TestSourceSinkValidator:
                 ycoordinates=[3.0, 4.0],
                 discharge=None,
             )
+
+    def test_locationfile_with_zsource_raises(self):
+        with pytest.raises(
+            ValueError, match="locationFile.*cannot be combined with.*zSource"
+        ):
+            SourceSink(
+                id="left",
+                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                zsource=-7.5,
+                discharge=1.0,
+            )
+
+    def test_locationfile_with_zsink_raises(self):
+        with pytest.raises(
+            ValueError, match="locationFile.*cannot be combined with.*zSink"
+        ):
+            SourceSink(
+                id="left",
+                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                zsink=-2.5,
+                discharge=1.0,
+            )
+
+    def test_locationfile_with_zsource_list_raises(self):
+        with pytest.raises(
+            ValueError, match="locationFile.*cannot be combined with.*zSource"
+        ):
+            SourceSink(
+                id="left",
+                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                zsource=[-7.5, -3.01],
+                discharge=1.0,
+            )
+
+    def test_inline_with_zsource_list(self):
+        """Range source: zSource carries two values (zmin, zmax)."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=1,
+            xcoordinates=[25.0],
+            ycoordinates=[5.0],
+            zsource=[-7.5, -3.01],
+            discharge=1.0,
+        )
+        assert block.zsource == [-7.5, -3.01]
+        assert block.zsink is None
+
+    def test_inline_with_zsource_and_zsink_lists(self):
+        """Coupled range source-sink: both zSource and zSink are 2-value lists."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=[-2.5, -1.1],
+            zsink=[-7.5, -2.2],
+            discharge=1.0,
+        )
+        assert block.zsource == [-2.5, -1.1]
+        assert block.zsink == [-7.5, -2.2]
+
+    def test_inline_with_scalar_zsource_zsink(self):
+        """Coupled point source-sink: scalar zSource + scalar zSink."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
