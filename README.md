@@ -6,7 +6,7 @@
 [![Supported versions](https://img.shields.io/pypi/pyversions/hydrolib-core.svg)](https://pypi.org/project/hydrolib-core)
 
 # HYDROLIB-core
-HYDROLIB-core is the core library of Python wrappers around the D-HYDRO model files (input and output) and model engines (kernel libraries).
+HYDROLIB-core is the core library of Python wrappers around the D-HYDRO model files (input and output).
 It can serve as the basis for various pre- and postprocessing tools for a modelling workflow of hydrodynamic simulations.
 
 <div align="center">
