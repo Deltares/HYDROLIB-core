@@ -1,6 +1,6 @@
 [![Join the chat at https://gitter.im/Deltares/hydrolib](https://badges.gitter.im/Deltares/hydrolib.svg)](https://gitter.im/Deltares/hydrolib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![ci](https://github.com/Deltares/HYDROLIB-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Deltares/HYDROLIB-core/actions/workflows/ci.yml)
+[![Test Suite](https://github.com/Deltares/HYDROLIB-core/actions/workflows/tests.yml/badge.svg)](https://github.com/Deltares/HYDROLIB-core/actions/workflows/tests.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Deltares_HYDROLIB-core&metric=alert_status)](https://sonarcloud.io/dashboard?id=Deltares_HYDROLIB-core)
 [![codecov](https://img.shields.io/codecov/c/github/deltares/HYDROLIB-core.svg?style=flat-square)](https://app.codecov.io/gh/deltares/HYDROLIB-core?displayType=list)
 [![Supported versions](https://img.shields.io/pypi/pyversions/hydrolib-core.svg)](https://pypi.org/project/hydrolib-core)
@@ -17,9 +17,9 @@ It can serve as the basis for various pre- and postprocessing tools for a modell
 Much more information is available from the dedicated package website.
 
 Some quickstarts:
-* First users: [Installation](https://deltares.github.io/HYDROLIB-core/latest/guides/setup/) and [Tutorials](https://deltares.github.io/HYDROLIB-core/main/tutorials/basic_tutorials/tutorials/).
+* First users: [Installation](https://deltares.github.io/HYDROLIB-core/latest/guides/setup/) and [Tutorials](https://deltares.github.io/HYDROLIB-core/latest/tutorials/basic_tutorials/tutorials/).
 * Developers: [List of supported functionalities](https://deltares.github.io/HYDROLIB-core/latest/topics/dhydro_support/),
-  [API reference](https://deltares.github.io/HYDROLIB-core/latest/reference/api/), and
+  [API reference](https://deltares.github.io/HYDROLIB-core/latest/reference/base/api/), and
   [How to contribute](https://deltares.github.io/HYDROLIB-core/latest/guides/contributing/).
 * Releases: [hydrolib-core on PyPI](https://pypi.org/project/hydrolib-core/), [ChangeLog](https://deltares.github.io/HYDROLIB-core/latest/changelog/).
 * Known issues and requested features: via [GitHub issues](https://github.com/Deltares/HYDROLIB-core/issues).
