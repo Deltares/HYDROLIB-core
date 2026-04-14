@@ -1,0 +1,15 @@
+parameter 'Temp'
+   description   'ambient water temperature'
+   unit          '(oC)'
+   value          0.1500E+02
+end-parameter
+parameter 'Salinity'
+   description   'salinity'
+   unit          '(g/kg)'
+   value          0.3500E+02
+end-parameter
+parameter 'NegativeVal'
+   description   'a negative value'
+   unit          '(-)'
+   value         -0.9990E+03
+end-parameter
