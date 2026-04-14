@@ -452,6 +452,7 @@ class TestFmComponentProcessIntegrationWithDimr:
     <library>dflowfm</library>
     <workingDir>.</workingDir>
     <inputFile>test.mdu</inputFile>
+    <process>0</process>
     <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
   </component>
 </dimrConfig>
