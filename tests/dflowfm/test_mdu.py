@@ -753,6 +753,15 @@ class TestOutputDir:
         assert not isinstance(result, Path), (
             f"Empty string should not be coerced to Path, got {type(result).__name__}"
         )
+        model.output.waqoutputdir = ""
+        result = model.output.waqoutputdir
+        assert result == "", f"Expected '', got {result!r}"
+        model.trachytopes.trtdef = ""
+        result = model.trachytopes.trtdef
+        assert result == "", f"Expected '', got {result!r}"
+        model.trachytopes.trtl = ""
+        result = model.trachytopes.trtl
+        assert result == "", f"Expected '', got {result!r}"
 
     def test_init_with_empty_string_preserved(self):
         """Constructing with outputdir='' keeps the empty string.
@@ -845,22 +854,6 @@ class TestOutputDir:
         """
         assert Path("") == Path("."), (
             "pathlib behavior changed: Path('') no longer equals Path('.')"
-        )
-
-    def test_waqoutputdir_untouched(self):
-        """waqoutputdir intentionally retains original (buggy) coercion behavior.
-
-        Test scenario:
-            Scope of the fix was limited to ``outputdir``. This regression guard
-            confirms ``waqoutputdir`` was not silently changed at the same time.
-            If ``waqoutputdir`` later receives the same WrapValidator treatment,
-            update/remove this test.
-        """
-        model = FMModel()
-        model.output.waqoutputdir = ""
-        result = model.output.waqoutputdir
-        assert result == Path("."), (
-            f"waqoutputdir expected to still coerce '' to Path('.'), got {result!r}"
         )
 
 
