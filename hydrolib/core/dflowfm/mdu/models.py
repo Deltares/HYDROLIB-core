@@ -1089,8 +1089,12 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Optional[Path] = Field("", alias="trtDef")
-    trtl: Optional[Path] = Field("", alias="trtL")
+    trtdef: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="trtDef")
+    trtl: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
@@ -1634,7 +1638,9 @@ class Output(INIBasedModel):
     outputdir: Annotated[
         Optional[Path], WrapValidator(_preserve_empty_string)
     ] = Field("", alias="outputDir")
-    waqoutputdir: Optional[Path] = Field("", alias="waqOutputDir")
+    waqoutputdir: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="waqOutputDir")
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
