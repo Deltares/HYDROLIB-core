@@ -340,9 +340,7 @@ class SourceSink(INIBasedModel):
                 result = [float(p) for p in parts]
         return result
 
-    @field_validator(
-        "discharge", "salinitydelta", "temperaturedelta", mode="before"
-    )
+    @field_validator("discharge", "salinitydelta", "temperaturedelta", mode="before")
     @classmethod
     def resolve_forcing_reference(cls, v):
         """Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel.
@@ -452,10 +450,9 @@ class SourceSink(INIBasedModel):
         elif isinstance(locationfile, (str, Path)):
             locationfile_path = Path(locationfile)
 
-        file_has_z = (
-            locationfile_path is not None
-            and str(locationfile_path).lower().endswith(".pliz")
-        )
+        file_has_z = locationfile_path is not None and str(
+            locationfile_path
+        ).lower().endswith(".pliz")
 
         conflict_field = None
         if file_has_z and zsource is not None:
@@ -782,8 +779,8 @@ class ExtModel(INIModel):
     sourcesink: Annotated[List[SourceSink], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
-    bubblescreen: Annotated[List[BubbleScreen], BeforeValidator(make_list)] = (
-        Field(default_factory=list)
+    bubblescreen: Annotated[List[BubbleScreen], BeforeValidator(make_list)] = Field(
+        default_factory=list
     )
     meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
         default_factory=list
