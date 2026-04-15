@@ -488,11 +488,87 @@ class SourceSink(INIBasedModel):
 class BubbleScreen(INIBasedModel):
     """A `[BubbleScreen]` block for use inside an external forcings file.
 
-    Represents a bubble screen (air curtain). Location is specified either
-    via a `locationFile` (a `.pli`) or via inline `numCoordinates`/
-    `xCoordinates`/`yCoordinates`. Unlike SourceSink, BubbleScreen polylines
-    do not carry z information; vertical placement is given by the required
-    `zLevel` field.
+    Represents a bubble screen (air curtain): a row of nozzles on the waterway
+    bed that releases air bubbles to create a hydraulic barrier. Location is
+    specified either via a ``locationFile`` (a plain `.pli`) or via inline
+    ``numCoordinates``/``xCoordinates``/``yCoordinates``. Unlike ``SourceSink``,
+    BubbleScreen polylines carry no z information; vertical placement is given
+    exclusively by the required ``zLevel`` field.
+
+    Attributes:
+        id: Unique identifier for the block within the ext file.
+        name: Human-readable label. Defaults to an empty string.
+        locationfile: Reference to an external `.pli` polyline file that
+            defines the screen location. Mutually exclusive with inline
+            coordinates.
+        numcoordinates: Number of vertices in the inline polyline.
+        xcoordinates: X-coordinates of the inline polyline vertices.
+        ycoordinates: Y-coordinates of the inline polyline vertices.
+        zlevel: Depth of the nozzle row in model vertical coordinate units.
+        discharge: Volumetric air-flow rate. Accepts a scalar ``float``,
+            the string ``"realtime"``, or a path to a ``.bc`` forcing file.
+
+    Raises:
+        ValidationError: If neither ``locationFile`` nor the full set of inline
+            coordinate fields (``numCoordinates``, ``xCoordinates``,
+            ``yCoordinates``) is provided.
+        ValidationError: If ``numCoordinates`` does not match the length of
+            ``xCoordinates`` or ``yCoordinates``.
+
+    Examples:
+        - Build a block with inline coordinates and inspect the geometry:
+            ```python
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="air_curtain",
+            ...     numcoordinates=2,
+            ...     xcoordinates=[100.0, 200.0],
+            ...     ycoordinates=[50.0, 50.0],
+            ...     zlevel=-3.5,
+            ...     discharge=1.2,
+            ... )
+            >>> screen.id
+            'air_curtain'
+            >>> screen.zlevel
+            -3.5
+            >>> screen.xcoordinates
+            [100.0, 200.0]
+
+            ```
+        - Build a block that references an external polyline file:
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.core.base.models import DiskOnlyFileModel
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="canal_lock",
+            ...     locationfile=DiskOnlyFileModel(filepath=Path("lock_screen.pli")),
+            ...     zlevel=-6.0,
+            ...     discharge=0.8,
+            ... )
+            >>> screen.id
+            'canal_lock'
+            >>> str(screen.locationfile.filepath)
+            'lock_screen.pli'
+
+            ```
+        - Omitting both location forms raises ``ValidationError``:
+            ```python
+            >>> from pydantic import ValidationError
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> try:
+            ...     BubbleScreen(id="bad", zlevel=-5.0, discharge=1.0)
+            ... except ValidationError:
+            ...     print("location is required")
+            location is required
+
+            ```
+
+    See Also:
+        SourceSink: Sister block for water and solute injection or extraction.
+        ExtModel: The new-format external forcings file model that hosts
+            ``[BubbleScreen]`` blocks under its ``bubblescreen`` list.
+
     """
 
     _header: Literal["BubbleScreen"] = "BubbleScreen"
