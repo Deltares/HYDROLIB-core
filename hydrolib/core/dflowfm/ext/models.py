@@ -498,12 +498,12 @@ class BubbleScreen(INIBasedModel):
     _header: Literal["BubbleScreen"] = "BubbleScreen"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationfile: Optional[DiskOnlyFileModel] = Field(
+    locationfile: DiskOnlyFileModel | None = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
-    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
     zlevel: float = Field(alias="zLevel")
     discharge: ForcingData = Field(alias="discharge")
 
@@ -512,7 +512,7 @@ class BubbleScreen(INIBasedModel):
 
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
+    def split_coordinates(cls, v, info: ValidationInfo) -> list[float]:
         return split_string_on_delimiter(cls, v, info)
 
     @field_validator("discharge", mode="before")

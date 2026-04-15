@@ -7,7 +7,6 @@ new-format direct read.
 """
 
 from pathlib import Path
-from typing import List, Tuple
 from unittest.mock import patch
 
 import pytest
@@ -46,9 +45,9 @@ COUPLED_EQUIVALENT_PAIRS = [
 ]
 
 
-def _as_list(value) -> List[float]:
+def _as_list(value) -> list[float]:
     """Normalise a scalar, list, or None to a list for comparison."""
-    result: List[float] = []
+    result: list[float] = []
     if value is None:
         result = []
     elif isinstance(value, (list, tuple)):
@@ -71,7 +70,7 @@ def _convert_old_ext(mdu_path: Path) -> ExtModel:
 
 def _resolve_geometry(
     block: SourceSink, folder: Path
-) -> Tuple[List[float], List[float], List[float], List[float]]:
+) -> tuple[list[float], list[float], list[float], list[float]]:
     """Return (x, y, zsource, zsink) with `locationFile` resolved if used.
 
     When a block specifies `locationFile` instead of inline coordinates,
