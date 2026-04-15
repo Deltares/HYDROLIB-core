@@ -12,7 +12,6 @@ from .bc import (
     Constant,
     ForcingModel,
     Harmonic,
-    QuantityUnitPair,
     TimeSeries,
 )
 from .cmp import CMPModel
@@ -96,7 +95,6 @@ __all__ = [
     "Harmonic",
     "Astronomic",
     "Constant",
-    "QuantityUnitPair",
     # Network / mesh
     "Network",
     "Mesh1d",

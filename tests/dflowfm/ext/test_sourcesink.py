@@ -119,7 +119,8 @@ class TestSourceSinkValidator:
 
     def test_locationfile_with_zsource_raises(self):
         with pytest.raises(
-            ValueError, match="locationFile.*cannot be combined with.*zSource"
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
         ):
             SourceSink(
                 id="left",
@@ -130,7 +131,8 @@ class TestSourceSinkValidator:
 
     def test_locationfile_with_zsink_raises(self):
         with pytest.raises(
-            ValueError, match="locationFile.*cannot be combined with.*zSink"
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSink",
         ):
             SourceSink(
                 id="left",
@@ -139,9 +141,26 @@ class TestSourceSinkValidator:
                 discharge=1.0,
             )
 
+    def test_pli_locationfile_with_zsource_allowed(self):
+        """Plain `.pli` (no z column) + explicit zSource is valid.
+
+        Used for coupled source-sink where the polyline only provides x,y and
+        vertical placement comes from explicit zSource/zSink fields.
+        """
+        block = SourceSink(
+            id="left",
+            locationfile=DiskOnlyFileModel(filepath=Path("left.pli")),
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
+
     def test_locationfile_with_zsource_list_raises(self):
         with pytest.raises(
-            ValueError, match="locationFile.*cannot be combined with.*zSource"
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
         ):
             SourceSink(
                 id="left",
