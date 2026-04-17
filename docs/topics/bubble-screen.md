@@ -92,6 +92,7 @@ both work when constructing a block from a dict.
 ```python
 from hydrolib.core.dflowfm.ext import ExtModel
 
+# read the saved forcings.ext file saved above
 ext = ExtModel("forcings.ext")
 for screen in ext.bubblescreen:
     print(screen.id, screen.zlevel, screen.discharge)
@@ -117,13 +118,13 @@ The companion `.bc` file uses the quantity name `bubblescreen_discharge`, analog
 The two look similar — both are INI blocks with an `id`, a polyline/locationFile, and a
 `discharge` — but they model different physics and have different field shapes:
 
-|                        | `BubbleScreen`                         | `SourceSink`                                        |
-|------------------------|----------------------------------------|-----------------------------------------------------|
-| Models                 | Air-bubble curtain                     | Water / solute injection or extraction              |
-| Vertical placement     | Single `zLevel: float`                 | `zSource` and `zSink`, each scalar **or** 2-value range |
-| Paired injector/extractor | No — nozzles are always sources of air | Yes — multi-point polyline pairs a source with a sink |
-| Polyline carries z     | No (plain `.pli` only)                 | Yes — 3- or 5-column `.pliz` encodes vertical placement |
-| Legacy `QUANTITY=` form | No — new format only                  | Yes: `discharge_salinity_temperature_sorsin`        |
+|                           | `BubbleScreen`                         | `SourceSink`                                            |
+|---------------------------|----------------------------------------|---------------------------------------------------------|
+| Models                    | Air-bubble curtain                     | Water / solute injection or extraction                  |
+| Vertical placement        | Single `zLevel: float`                 | `zSource` and `zSink`, each scalar **or** 2-value range |
+| Paired injector/extractor | No — nozzles are always sources of air | Yes — multi-point polyline pairs a source with a sink   |
+| Polyline carries z        | No (plain `.pli` only)                 | Yes — 3- or 5-column `.pliz` encodes vertical placement |
+| Legacy `QUANTITY=` form   | No — new format only                   | Yes: `discharge_salinity_temperature_sorsin`            |
 
 If your model previously used a `SourceSink` block to *approximate* a bubble screen, the
 migration is straightforward: replace `zSource` with `zLevel`, drop any `zSink`, and
@@ -146,10 +147,6 @@ HYDROLIB-core's validator rules for a `BubbleScreen` block:
 
 - `zLevel` is currently a single `float`. If a future kernel revision accepts a vertical
   range the way `SourceSink.zSource` does, this field will need widening.
-- BubbleScreen is not handled by the `extforce-convert` CLI because no legacy
-  `QUANTITY=` form exists. Running `extforce-convert` on a model that contains a
-  `[BubbleScreen]` block leaves that block intact; only the legacy-format quantities
-  are rewritten.
 
 ## See also
 

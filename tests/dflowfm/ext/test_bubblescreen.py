@@ -55,7 +55,7 @@ class TestBubbleScreenInit:
     """Tests for ``BubbleScreen.__init__`` construction and field validators.
 
     In Pydantic v2 the ``__init__`` entrypoint runs every field/model validator
-    (``split_coordinates``, ``resolve_forcing_reference``,
+    (``split_coordinates``, ``resolve_forcing_referexnce``,
     ``validate_location_specification``, ``validate_locationfile``), so
     construction scenarios are the right surface to exercise them.
     """
