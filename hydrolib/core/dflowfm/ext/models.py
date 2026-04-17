@@ -322,6 +322,49 @@ class SourceSink(INIBasedModel):
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
+    @field_validator("zsource", "zsink", mode="before")
+    @classmethod
+    def split_z_values(cls, v):
+        """Parse `zSource`/`zSink` from a space-separated string.
+
+        Range sources are written as e.g. `zSource = -7.5 -3.01` in the ext
+        file; the parser delivers this as a single string that Pydantic
+        cannot coerce to `float` or `List[float]`.
+        """
+        result = v
+        if isinstance(v, str):
+            parts = v.split()
+            if len(parts) == 1:
+                result = float(parts[0])
+            else:
+                result = [float(p) for p in parts]
+        return result
+
+    @field_validator("discharge", "salinitydelta", "temperaturedelta", mode="before")
+    @classmethod
+    def resolve_forcing_reference(cls, v):
+        """Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel.
+
+        The kernel accepts three kinds of value for a forcing-data field:
+        a scalar number, the literal `realtime`, or a `.bc` filename. This
+        validator mirrors `Lateral.validate_discharge` so that filename
+        references in the ext file are resolved to a `ForcingModel`.
+        """
+        result = v
+        if isinstance(v, str):
+            try:
+                result = float(v)
+            except ValueError:
+                try:
+                    result = RealTime(v.lower())
+                except ValueError:
+                    result = resolve_file_model(v, ForcingModel)
+        elif isinstance(v, Path):
+            result = resolve_file_model(v, ForcingModel)
+        elif isinstance(v, dict):
+            result = ForcingModel(**v)
+        return result
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -387,12 +430,221 @@ class SourceSink(INIBasedModel):
         return values
 
     @model_validator(mode="before")
+    def validate_locationfile_z_conflict(cls, values):
+        """Reject `.pliz` locationFile combined with explicit `zSource`/`zSink`.
+
+        A `.pliz` polyline already encodes vertical placement via its column
+        count (3 or 5 cols). Combining it with explicit `zSource`/`zSink` is
+        ambiguous and is rejected by the kernel. A plain `.pli` polyline
+        carries no z, so combining it with explicit `zSource`/`zSink` is
+        allowed (and required for a coupled source-sink specified via
+        `locationFile`).
+        """
+        locationfile = values.get("locationfile", values.get("locationFile"))
+        zsource = values.get("zsource", values.get("zSource"))
+        zsink = values.get("zsink", values.get("zSink"))
+
+        locationfile_path = None
+        if hasattr(locationfile, "filepath"):
+            locationfile_path = locationfile.filepath
+        elif isinstance(locationfile, (str, Path)):
+            locationfile_path = Path(locationfile)
+
+        file_has_z = locationfile_path is not None and str(
+            locationfile_path
+        ).lower().endswith(".pliz")
+
+        conflict_field = None
+        if file_has_z and zsource is not None:
+            conflict_field = "zSource"
+        elif file_has_z and zsink is not None:
+            conflict_field = "zSink"
+
+        if conflict_field is not None:
+            raise ValueError(
+                f"`locationFile` (a `.pliz` polyline) cannot be combined with explicit "
+                f"`{conflict_field}` for the SourceSink block `{values.get('id')}`. "
+                f"The `.pliz` file already encodes vertical placement. "
+                f"Either remove `{conflict_field}` or use a `.pli` locationFile "
+                f"(no z column) so the explicit z-values are unambiguous."
+            )
+
+        return values
+
+    @model_validator(mode="before")
     @classmethod
     def validate_locationfile(cls, data: Any) -> Any:
         file_location = data.get("locationfile") or data.get("locationFile")
         data.pop("locationFile", None)  # Remove alias if present
 
         # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        else:
+            data["locationfile"] = file_location
+        return data
+
+
+class BubbleScreen(INIBasedModel):
+    """A `[BubbleScreen]` block for use inside an external forcings file.
+
+    Represents a bubble screen (air curtain): a row of nozzles on the waterway
+    bed that releases air bubbles to create a hydraulic barrier. Location is
+    specified either via a ``locationFile`` (a plain `.pli`) or via inline
+    ``numCoordinates``/``xCoordinates``/``yCoordinates``. Unlike ``SourceSink``,
+    BubbleScreen polylines carry no z information; vertical placement is given
+    exclusively by the required ``zLevel`` field.
+
+    Attributes:
+        id: Unique identifier for the block within the ext file.
+        name: Human-readable label. Defaults to an empty string.
+        locationfile: Reference to an external `.pli` polyline file that
+            defines the screen location. Mutually exclusive with inline
+            coordinates.
+        numcoordinates: Number of vertices in the inline polyline.
+        xcoordinates: X-coordinates of the inline polyline vertices.
+        ycoordinates: Y-coordinates of the inline polyline vertices.
+        zlevel: Depth of the nozzle row in model vertical coordinate units.
+        discharge: Volumetric air-flow rate. Accepts a scalar ``float``,
+            the string ``"realtime"``, or a path to a ``.bc`` forcing file.
+
+    Raises:
+        ValidationError: If neither ``locationFile`` nor the full set of inline
+            coordinate fields (``numCoordinates``, ``xCoordinates``,
+            ``yCoordinates``) is provided.
+        ValidationError: If ``numCoordinates`` does not match the length of
+            ``xCoordinates`` or ``yCoordinates``.
+
+    Examples:
+        - Build a block with inline coordinates and inspect the geometry:
+            ```python
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="air_curtain",
+            ...     numcoordinates=2,
+            ...     xcoordinates=[100.0, 200.0],
+            ...     ycoordinates=[50.0, 50.0],
+            ...     zlevel=-3.5,
+            ...     discharge=1.2,
+            ... )
+            >>> screen.id
+            'air_curtain'
+            >>> screen.zlevel
+            -3.5
+            >>> screen.xcoordinates
+            [100.0, 200.0]
+
+            ```
+        - Build a block that references an external polyline file:
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.core.base.models import DiskOnlyFileModel
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="canal_lock",
+            ...     locationfile=DiskOnlyFileModel(filepath=Path("lock_screen.pli")),
+            ...     zlevel=-6.0,
+            ...     discharge=0.8,
+            ... )
+            >>> screen.id
+            'canal_lock'
+            >>> str(screen.locationfile.filepath)
+            'lock_screen.pli'
+
+            ```
+        - Omitting both location forms raises ``ValidationError``:
+            ```python
+            >>> from pydantic import ValidationError
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> try:
+            ...     BubbleScreen(id="bad", zlevel=-5.0, discharge=1.0)
+            ... except ValidationError:
+            ...     print("location is required")
+            location is required
+
+            ```
+
+    See Also:
+        SourceSink: Sister block for water and solute injection or extraction.
+        ExtModel: The new-format external forcings file model that hosts
+            ``[BubbleScreen]`` blocks under its ``bubblescreen`` list.
+
+    """
+
+    _header: Literal["BubbleScreen"] = "BubbleScreen"
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
+    locationfile: DiskOnlyFileModel | None = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    zlevel: float = Field(alias="zLevel")
+    discharge: ForcingData = Field(alias="discharge")
+
+    def is_intermediate_link(self) -> bool:
+        return True
+
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def split_coordinates(cls, v, info: ValidationInfo) -> list[float]:
+        return split_string_on_delimiter(cls, v, info)
+
+    @field_validator("discharge", mode="before")
+    @classmethod
+    def resolve_forcing_reference(cls, v):
+        """Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel."""
+        result = v
+        if isinstance(v, str):
+            try:
+                result = float(v)
+            except ValueError:
+                try:
+                    result = RealTime(v.lower())
+                except ValueError:
+                    result = resolve_file_model(v, ForcingModel)
+        elif isinstance(v, Path):
+            result = resolve_file_model(v, ForcingModel)
+        elif isinstance(v, dict):
+            result = ForcingModel(**v)
+        return result
+
+    @model_validator(mode="before")
+    def validate_location_specification(cls, values):
+        locationfile = values.get("locationfile", values.get("locationFile"))
+        numcoordinates = values.get("numcoordinates", values.get("numCoordinates"))
+        xcoordinates = values.get("xcoordinates", values.get("xCoordinates"))
+        ycoordinates = values.get("ycoordinates", values.get("yCoordinates"))
+
+        has_locationfile = locationfile is not None
+        if hasattr(locationfile, "filepath"):
+            has_locationfile = locationfile.filepath is not None
+
+        has_coordinates = (
+            numcoordinates is not None
+            and xcoordinates is not None
+            and ycoordinates is not None
+            and _coordinate_length(xcoordinates)
+            == _coordinate_length(ycoordinates)
+            == int(numcoordinates)
+        )
+
+        if not (has_locationfile or has_coordinates):
+            raise ValueError(
+                "Either `locationFile` or the combination of `numCoordinates`, "
+                "`xCoordinates`, and `yCoordinates` must be provided "
+                f"for the BubbleScreen block `{values.get('id')}`."
+            )
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)
+
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
         else:
@@ -601,6 +853,9 @@ class ExtModel(INIModel):
         default_factory=list
     )
     sourcesink: Annotated[List[SourceSink], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    bubblescreen: Annotated[List[BubbleScreen], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
     meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
