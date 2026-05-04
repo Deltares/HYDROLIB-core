@@ -19,29 +19,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v6
+      - name: Set up Python with Poetry
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
         with:
-          python-version: 3.13
-
-      - name: Run image
-        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
-        with:
+          python-version: '3.13'
           poetry-version: 2.3.3
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: ~/.virtualenvs
-          key: venv-${{ runner.os }}-3.13-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Set Poetry config
-        run: |
-          poetry config virtualenvs.in-project false
-          poetry config virtualenvs.path ~/.virtualenvs
-
-      - name: Install Dependencies
-        run: poetry install --with docs
-        if: steps.cache.outputs.cache-hit != 'true'
+          install-groups: docs
 
       - name: Setup doc deploy
         run: |
@@ -74,29 +57,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-python@v6
+      - name: Set up Python with Poetry
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
         with:
-          python-version: 3.13
-
-      - name: Run image
-        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
-        with:
+          python-version: '3.13'
           poetry-version: 2.3.3
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: ~/.virtualenvs
-          key: venv-${{ runner.os }}-3.13-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Set Poetry config
-        run: |
-          poetry config virtualenvs.in-project false
-          poetry config virtualenvs.path ~/.virtualenvs
-
-      - name: Install Dependencies
-        run: poetry install --with docs
-        if: steps.cache.outputs.cache-hit != 'true'
+          install-groups: docs
 
       - name: Setup doc deploy
         run: |
