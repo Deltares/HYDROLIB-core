@@ -94,6 +94,7 @@ version_files = [
   "pyproject.toml:version",
 ]
 changelog_file = "docs/changelog.md"
+update_changelog_on_bump = true
 
 [tool.black]
 line-length = 88
