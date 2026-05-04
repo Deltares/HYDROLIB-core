@@ -4,13 +4,18 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - '**'
+  release:
+    types: [published]
   workflow_run:
     workflows: ["Automated release workflow"]
     types: [completed]
 
 jobs:
-  deploy-main:
-    if: github.event_name == 'push'
+  deploy-pr:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,24 +24,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
         with:
+          trigger: pr
+          package-manager: poetry
           python-version: '3.13'
-          poetry-version: 2.3.3
           install-groups: docs
+          deploy-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup doc deploy
-        run: |
-          git config --global user.name "$ACTOR"
-          git config --global user.email "$ACTOR@users.noreply.github.com"
-        env:
-          ACTOR: ${{ github.actor }}
+  deploy-main:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-      - run: poetry run mike deploy --push main
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
+        with:
+          trigger: main
+          package-manager: poetry
+          python-version: '3.13'
+          install-groups: docs
+          deploy-token: ${{ secrets.GITHUB_TOKEN }}
+          main-set-default: 'false'
 
   deploy-release:
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -44,38 +62,38 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
-      - name: Get release tag and checkout
-        run: |
-          RELEASE_TAG_VERSION=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
-          if [ -z "${RELEASE_TAG_VERSION}" ]; then
-            echo "::error::No release found"
-            exit 1
-          fi
-          echo "RELEASE_TAG_VERSION=${RELEASE_TAG_VERSION}" >> $GITHUB_ENV
-          git checkout "${RELEASE_TAG_VERSION}"
+      - name: Resolve release tag and prerelease flag
+        id: meta
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
-        with:
-          python-version: '3.13'
-          poetry-version: 2.3.3
-          install-groups: docs
-
-      - name: Setup doc deploy
         run: |
-          git config --global user.name "$ACTOR"
-          git config --global user.email "$ACTOR@users.noreply.github.com"
-        env:
-          ACTOR: ${{ github.actor }}
-
-      - name: Deploy release docs
-        run: |
-          if echo "${RELEASE_TAG_VERSION}" | grep -qE '(a|b|rc)[0-9]+$'; then
-            poetry run mike deploy --push "${RELEASE_TAG_VERSION}"
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            TAG="${{ github.event.release.tag_name }}"
+            IS_PRERELEASE="${{ github.event.release.prerelease }}"
           else
-            poetry run mike deploy --push --update-aliases "${RELEASE_TAG_VERSION}" latest
-            poetry run mike set-default --push latest
+            TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+            if [ -z "${TAG}" ]; then
+              echo "::error::No release found"
+              exit 1
+            fi
+            git checkout "${TAG}"
+            if echo "${TAG}" | grep -qE '(a|b|rc)[0-9]+$'; then
+              IS_PRERELEASE=true
+            else
+              IS_PRERELEASE=false
+            fi
           fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "prerelease=${IS_PRERELEASE}" >> "$GITHUB_OUTPUT"
+
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
+        with:
+          trigger: release
+          package-manager: poetry
+          python-version: '3.13'
+          install-groups: docs
+          deploy-token: ${{ secrets.GITHUB_TOKEN }}
+          release-tag: ${{ steps.meta.outputs.tag }}
+          release-prerelease: ${{ steps.meta.outputs.prerelease }}
