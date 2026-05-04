@@ -7,30 +7,24 @@ on:
         description: "Branch to create release from"
         required: false
         default: "main"
-      major:
-        description: "The new major version."
-        required: false
-        type: string
-      minor:
-        description: "The new minor version."
-        required: false
-        type: string
-      patch:
-        description: "The new patch version."
-        required: false
-        type: string
       increment:
-        description: "The type of increment."
-        required: false
+        description: "Version increment type (patch for bugfixes, minor for features, major for breaking changes)"
+        required: true
         type: choice
         options:
-          - MAJOR
-          - MINOR
-          - PATCH
-      version:
-        description: "Full version to release (e.g. 1.0.0 or 1.0.0-beta.1)"
+          - patch
+          - minor
+          - major
+      prerelease_type:
+        description: "Prerelease type (none for stable releases)"
         required: false
-        type: string
+        type: choice
+        default: "none"
+        options:
+          - none
+          - alpha
+          - beta
+          - rc
 
 jobs:
   wheel-test:
@@ -50,76 +44,20 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.release_branch }}
 
-      - name: Determine release version
-        id: get_version
-        run: |
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "Using manual version input: ${{ github.event.inputs.version }}"
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
-          else
-            VERSION="${{ github.event.inputs.major }}.${{ github.event.inputs.minor }}.${{ github.event.inputs.patch }}"
-            echo "Using constructed version: $VERSION"
-            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
+      - name: Create release with version bump
+        id: release
+        uses: Deltares-research/github-actions/actions/release/github@main
         with:
+          release-branch: ${{ github.event.inputs.release_branch }}
+          increment: ${{ github.event.inputs.increment }}
+          prerelease-type: ${{ github.event.inputs.prerelease_type }}
+          package-manager: poetry
           python-version: '3.13'
-          poetry-version: 2.3.3
-
-      - name: Generate changelog
-        run: poetry run cz changelog --unreleased-version="${{ steps.get_version.outputs.VERSION }}" --incremental
-
-      - name: Get user info
-        id: user_info
-        run: |
-          USER_JSON=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ github.actor }}")
-          USER_NAME=$(echo "$USER_JSON" | jq -r .name)
-          USER_EMAIL=$(echo "$USER_JSON" | jq -r .email)
-          echo "name=$USER_NAME" >> $GITHUB_OUTPUT
-          echo "email=$USER_EMAIL" >> $GITHUB_OUTPUT
-
-      - name: Configure git
-        run: |
-          git config --local user.email "${{ steps.user_info.outputs.email }}"
-          git config --local user.name "${{ steps.user_info.outputs.name }}"
-
-      - name: Bump version
-        run: |
-          set -e  # Exit immediately if a command exits with a non-zero status
-          echo "Bumping version to ${{ steps.get_version.outputs.VERSION }}"
-          poetry run cz bump --yes --check-consistency "${{ steps.get_version.outputs.VERSION }}"
-
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-
-          echo "Pushing changes to repository"
-          if ! git push; then
-            echo "::error::Failed to push changes to repository"
-            exit 1
-          fi
-
-          echo "Pushing tags to repository"
-          if ! git push --tags; then
-            echo "::error::Failed to push tags to repository"
-            exit 1
-          fi
-
-          echo "Version bump completed successfully"
-
-      - name: Build hydrolib-core package
-        run: poetry build
+          install-groups: 'dev'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          build-wheel: 'true'
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: Release v${{ steps.get_version.outputs.VERSION }}
-          tag_name: "${{ steps.get_version.outputs.VERSION }}"
-          generate_release_notes: true
-          prerelease: ${{ contains(steps.get_version.outputs.VERSION, 'b') }}
-          token: ${{ secrets.GITHUB_TOKEN }}
