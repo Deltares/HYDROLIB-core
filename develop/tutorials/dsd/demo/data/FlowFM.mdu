@@ -276,4 +276,3 @@
     bgrwuni                  =      # uniform level of impervious layer, only used if h_aquiferuni is negative.
     h_unsatini               = 0.2  # initial level groundwater is bedlevel - h_unsatini (m), if negative, sgrw = sgrwini.
     sgrwini                  =      # Initial groundwater level, if h_unsatini < 0.
-
