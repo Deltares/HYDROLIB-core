@@ -738,30 +738,39 @@ class TestOutputDir:
         assert result == "", f"Expected '', got {result!r}"
         assert isinstance(result, str), f"Expected str, got {type(result).__name__}"
 
-    def test_assign_empty_string_preserved(self):
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_assign_empty_string_preserved(self, section_attr, field_attr):
         """Assigning '' preserves the empty string instead of becoming Path('.').
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             With ``validate_assignment=True`` on the base model, assigning ``""`` used
             to coerce to ``Path("")`` → ``Path(".")``. The WrapValidator short-circuits
-            empty strings and returns them verbatim.
+            empty strings and returns them verbatim. Each guarded field is exercised
+            as an independent parametrized case so that a regression on one field is
+            reported in isolation rather than masked by an earlier failure.
         """
         model = FMModel()
-        model.output.outputdir = ""
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, "")
+        result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
         assert not isinstance(result, Path), (
             f"Empty string should not be coerced to Path, got {type(result).__name__}"
         )
-        model.output.waqoutputdir = ""
-        result = model.output.waqoutputdir
-        assert result == "", f"Expected '', got {result!r}"
-        model.trachytopes.trtdef = ""
-        result = model.trachytopes.trtdef
-        assert result == "", f"Expected '', got {result!r}"
-        model.trachytopes.trtl = ""
-        result = model.trachytopes.trtl
-        assert result == "", f"Expected '', got {result!r}"
 
     def test_init_with_empty_string_preserved(self):
         """Constructing with outputdir='' keeps the empty string.
