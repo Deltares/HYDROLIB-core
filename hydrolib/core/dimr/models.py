@@ -429,23 +429,23 @@ class DIMR(ParsableFileModel):
         return dimr_as_dict
 
     def _get_list_of_updated_fm_components(
-        self, fmcomponents: List[FMComponent]
+        self, fm_components: List[FMComponent]
     ) -> List[Dict]:
-        list_of_fm_components_as_dict = []
-        for fmcomponent in fmcomponents:
-            if fmcomponent is None or fmcomponent.process is None:
+        components_dict = []
+        for component in fm_components:
+            if component is None or component.process is None:
                 continue
 
-            fmcomponent_process_value = " ".join(
-                str(i) for i in range(fmcomponent.process)
+            process_value = " ".join(
+                str(i) for i in range(component.process)
             )
-            fmcomponent_as_dict = self._update_component_dictionary(
-                fmcomponent, fmcomponent_process_value
+            process_value_dict = self._update_component_dictionary(
+                component, process_value
             )
 
-            list_of_fm_components_as_dict.append(fmcomponent_as_dict)
+            components_dict.append(process_value_dict)
 
-        return list_of_fm_components_as_dict
+        return components_dict
 
     def _update_component_dictionary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
