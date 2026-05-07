@@ -144,3 +144,14 @@ env = [
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+## Pixi related entries
+[tool.pixi.project]
+channels  = ["conda-forge"]
+platforms = ["linux-64", "win-64"]
+
+[tool.pixi.pypi-dependencies]
+hydrolib-core = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = { features = ["examples", "plot", "dev", "docs"] }
