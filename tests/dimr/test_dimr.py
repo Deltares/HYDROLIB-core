@@ -440,7 +440,7 @@ class TestFmComponentProcessIntegrationWithDimr:
 </dimrConfig>
 """
 
-    def get_fm_dimr_config_data_without_process(self):
+    def get_fm_dimr_config_data_with_single_process(self):
         return """<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
@@ -458,6 +458,23 @@ class TestFmComponentProcessIntegrationWithDimr:
 </dimrConfig>
 """
 
+    def get_fm_dimr_config_data_no_process_element(self):
+        return """<?xml version="1.0" encoding="utf-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+  <documentation>
+    <fileVersion>1.3</fileVersion>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
+    <creationDate>2024-04-25T10:59:21.185365</creationDate>
+  </documentation>
+  <component name="test">
+    <library>dflowfm</library>
+    <workingDir>.</workingDir>
+    <inputFile>test.mdu</inputFile>
+    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
+  </component>
+</dimrConfig>
+"""
+
     def setup_temporary_files(self, tmp_path, dimr_config_data):
         temporary_dimr_config_file = tmp_path / "dimr_config.xml"
         temporary_dimr_config_file.write_text(dimr_config_data)
@@ -467,10 +484,21 @@ class TestFmComponentProcessIntegrationWithDimr:
         temporary_save_location = tmp_path / "saved_dimr_config.xml"
         return temporary_dimr_config_file, temporary_save_location
 
-    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_without_process(
-        self, tmp_path
-    ):
-        dimr_config_data = self.get_fm_dimr_config_data_without_process()
+    def test_dimr_with_fmcomponent_round_trips_single_process(self, tmp_path):
+        dimr_config_data = self.get_fm_dimr_config_data_with_single_process()
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+
+    def test_dimr_with_fmcomponent_round_trips_no_process_element(self, tmp_path):
+        dimr_config_data = self.get_fm_dimr_config_data_no_process_element()
 
         (
             temporary_dimr_config_file,
@@ -537,25 +565,6 @@ class TestFmComponentProcessIntegrationWithDimr:
         dimr_config.save(filepath=temporary_save_location)
 
         assert_files_equal(temporary_dimr_config_file, temporary_save_location)
-
-    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_for_zero(
-        self, tmp_path
-    ):
-        dimr_config_data = self.get_fm_dimr_config_data("0")
-
-        (
-            temporary_dimr_config_file,
-            temporary_save_location,
-        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
-
-        dimr_config_data_expected = self.get_fm_dimr_config_data_without_process()
-        temporary_expected_dimr_config_file = tmp_path / "dimr_expected_config.xml"
-        temporary_expected_dimr_config_file.write_text(dimr_config_data_expected)
-
-        dimr_config = DIMR(filepath=temporary_dimr_config_file)
-        dimr_config.save(filepath=temporary_save_location)
-
-        assert_files_equal(temporary_expected_dimr_config_file, temporary_save_location)
 
     @pytest.mark.parametrize(
         "input_process, expected_process",
