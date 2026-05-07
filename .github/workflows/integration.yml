@@ -21,31 +21,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
+      - name: Set up Python with Poetry
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Run image
-        uses: abatilo/actions-poetry@0dd19c9498c3dc8728967849d0d2eae428a8a3d8 # v4
-        with:
           poetry-version: 2.3.3
-
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v4
-        id: cache
-        with:
-          path: ~/.virtualenvs
-          key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Set Poetry config
-        run: |
-          poetry config virtualenvs.in-project false
-          poetry config virtualenvs.path ~/.virtualenvs
-
-      - name: Install Dependencies
-        run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
