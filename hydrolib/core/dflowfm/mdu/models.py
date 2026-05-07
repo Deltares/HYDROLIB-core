@@ -1644,8 +1644,8 @@ class Output(INIBasedModel):
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
-    obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
+    obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile") # TODO: should be present in mdu
+    crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile") # TODO: should be present in mdu
     foufile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile")
@@ -2114,33 +2114,33 @@ class Geometry(INIBasedModel):
     )
     drypointsfile: Optional[List[DryPointsFile]] = Field(
         None, alias="dryPointsFile"
-    )  # TODO Fix, this will always try XYZ first, alias="]")
+    )  # TODO Fix, this will always try XYZ first, alias="]")  # TODO: should be present in mdu
     structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", json_schema_extra={"delimiter": ";"}
-    )
+    )  # TODO: should be present in mdu
     inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
     waterlevinifile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile")
     landboundaryfile: Optional[List[DiskOnlyFileModel]] = Field(
         None, alias="landBoundaryFile"
-    )
+    ) # TODO: should be present in mdu
     thindamfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
         None, alias="thinDamFile"
-    )
+    ) # TODO: should be present in mdu
     fixedweirfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
         None, alias="fixedWeirFile"
-    )
+    ) # TODO: should be present in mdu
     pillarfile: Optional[List[Union[PolyFile, DiskOnlyFileModel]]] = Field(
         None, alias="pillarFile"
-    )
+    ) # TODO: should be present in mdu
     usecaching: bool = Field(True, alias="useCaching")
     vertplizfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
         None, alias="vertPlizFile"
     )
     frictfile: Optional[List[Union[FrictionModel, DiskOnlyFileModel]]] = Field(
         None, alias="frictFile", json_schema_extra={"delimiter": ";"}
-    )
+    ) # TODO: should be present in mdu
     crossdeffile: Optional[Union[CrossDefModel, DiskOnlyFileModel]] = Field(
         None, alias="crossDefFile"
     )
