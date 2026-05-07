@@ -806,6 +806,16 @@ class TestOutputDir:
         assert result is None, f"Expected None, got {result!r}"
 
     @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    @pytest.mark.parametrize(
         "value",
         [
             "output",
@@ -815,20 +825,27 @@ class TestOutputDir:
         ],
         ids=["relative_name", "dot_relative", "nested_relative", "absolute"],
     )
-    def test_assign_real_path_coerces_to_path(self, value):
-        """Non-empty strings are still coerced to pathlib.Path.
+    def test_assign_real_path_coerces_to_path(self, value, section_attr, field_attr):
+        """Non-empty strings are still coerced to pathlib.Path on every guarded field.
 
         Args:
             value: A non-empty directory string.
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             The WrapValidator only short-circuits ``""``. Any other string must
             continue flowing to Pydantic's standard ``Path`` validator and result in
-            a ``Path`` instance equal to ``Path(value)``.
+            a ``Path`` instance equal to ``Path(value)``. This must hold for every
+            field carrying the ``_preserve_empty_string`` annotation, not just
+            ``outputdir`` — otherwise a future change to the validator could
+            silently break ``Path`` coercion on the other guarded fields.
         """
         model = FMModel()
-        model.output.outputdir = value
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, value)
+        result = getattr(section, field_attr)
         assert isinstance(result, Path), f"Expected Path, got {type(result).__name__}"
         assert result == Path(value), f"Expected Path({value!r}), got {result!r}"
 
