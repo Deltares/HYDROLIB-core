@@ -738,64 +738,146 @@ class TestOutputDir:
         assert result == "", f"Expected '', got {result!r}"
         assert isinstance(result, str), f"Expected str, got {type(result).__name__}"
 
-    def test_assign_empty_string_preserved(self):
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_assign_empty_string_preserved(self, section_attr, field_attr):
         """Assigning '' preserves the empty string instead of becoming Path('.').
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             With ``validate_assignment=True`` on the base model, assigning ``""`` used
             to coerce to ``Path("")`` → ``Path(".")``. The WrapValidator short-circuits
-            empty strings and returns them verbatim.
+            empty strings and returns them verbatim. Each guarded field is exercised
+            as an independent parametrized case so that a regression on one field is
+            reported in isolation rather than masked by an earlier failure.
         """
         model = FMModel()
-        model.output.outputdir = ""
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, "")
+        result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
         assert not isinstance(result, Path), (
             f"Empty string should not be coerced to Path, got {type(result).__name__}"
         )
 
-    def test_init_with_empty_string_preserved(self):
-        """Constructing with outputdir='' keeps the empty string.
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_init_with_empty_string_preserved(self, section_attr, field_attr):
+        """Constructing with an empty-string field keeps the empty string.
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
-            Passing ``""`` via the constructor goes through field validation. The
-            WrapValidator must preserve it as an empty string, not a ``Path(".")``.
+            Passing ``""`` via the constructor goes through field validation, which
+            is a different Pydantic v2 code path than ``validate_assignment``. The
+            WrapValidator must preserve the empty string on both paths and on every
+            guarded field, not just ``outputdir``.
         """
-        model = FMModel(**{"output": {"outputdir": ""}})
-        result = model.output.outputdir
+        model = FMModel(**{section_attr: {field_attr: ""}})
+        section = getattr(model, section_attr)
+        result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
         assert not isinstance(result, Path), (
             f"Empty string should not be coerced to Path, got {type(result).__name__}"
         )
 
-    def test_init_with_none_falls_back_to_default_empty_string(self):
-        """Constructing with outputdir=None falls back to the field default ''.
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_init_with_none_falls_back_to_default_empty_string(
+        self, section_attr, field_attr
+    ):
+        """Constructing with a None field value falls back to the field default ''.
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             The INIBasedModel construction path replaces a ``None`` value with the
             field's default (here ``""``) before Pydantic validation runs. The net
-            result is an empty string — which is also what end users comparing against
-            ``""`` expect.
+            result is an empty string for every guarded field — which is also what
+            end users comparing against ``""`` expect.
         """
-        model = FMModel(**{"output": {"outputdir": None}})
-        result = model.output.outputdir
+        model = FMModel(**{section_attr: {field_attr: None}})
+        section = getattr(model, section_attr)
+        result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
         assert not isinstance(result, Path), (
             f"Expected str fallback, got {type(result).__name__}"
         )
 
-    def test_assign_none_stays_none(self):
-        """Assigning None replaces the value with None.
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_assign_none_stays_none(self, section_attr, field_attr):
+        """Assigning None replaces the value with None on every guarded field.
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             Assignment of ``None`` on an Optional[Path] field must be preserved as
-            ``None`` (validate_assignment path).
+            ``None`` (validate_assignment path). The ``_preserve_empty_string``
+            WrapValidator must not interfere with ``None`` because it short-circuits
+            only on ``""``.
         """
         model = FMModel()
-        model.output.outputdir = None
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, None)
+        result = getattr(section, field_attr)
         assert result is None, f"Expected None, got {result!r}"
 
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
     @pytest.mark.parametrize(
         "value",
         [
@@ -806,20 +888,27 @@ class TestOutputDir:
         ],
         ids=["relative_name", "dot_relative", "nested_relative", "absolute"],
     )
-    def test_assign_real_path_coerces_to_path(self, value):
-        """Non-empty strings are still coerced to pathlib.Path.
+    def test_assign_real_path_coerces_to_path(self, value, section_attr, field_attr):
+        """Non-empty strings are still coerced to pathlib.Path on every guarded field.
 
         Args:
             value: A non-empty directory string.
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             The WrapValidator only short-circuits ``""``. Any other string must
             continue flowing to Pydantic's standard ``Path`` validator and result in
-            a ``Path`` instance equal to ``Path(value)``.
+            a ``Path`` instance equal to ``Path(value)``. This must hold for every
+            field carrying the ``_preserve_empty_string`` annotation, not just
+            ``outputdir`` — otherwise a future change to the validator could
+            silently break ``Path`` coercion on the other guarded fields.
         """
         model = FMModel()
-        model.output.outputdir = value
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, value)
+        result = getattr(section, field_attr)
         assert isinstance(result, Path), f"Expected Path, got {type(result).__name__}"
         assert result == Path(value), f"Expected Path({value!r}), got {result!r}"
 
@@ -845,22 +934,6 @@ class TestOutputDir:
         """
         assert Path("") == Path("."), (
             "pathlib behavior changed: Path('') no longer equals Path('.')"
-        )
-
-    def test_waqoutputdir_untouched(self):
-        """waqoutputdir intentionally retains original (buggy) coercion behavior.
-
-        Test scenario:
-            Scope of the fix was limited to ``outputdir``. This regression guard
-            confirms ``waqoutputdir`` was not silently changed at the same time.
-            If ``waqoutputdir`` later receives the same WrapValidator treatment,
-            update/remove this test.
-        """
-        model = FMModel()
-        model.output.waqoutputdir = ""
-        result = model.output.waqoutputdir
-        assert result == Path("."), (
-            f"waqoutputdir expected to still coerce '' to Path('.'), got {result!r}"
         )
 
 
