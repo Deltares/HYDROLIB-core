@@ -804,32 +804,68 @@ class TestOutputDir:
             f"Empty string should not be coerced to Path, got {type(result).__name__}"
         )
 
-    def test_init_with_none_falls_back_to_default_empty_string(self):
-        """Constructing with outputdir=None falls back to the field default ''.
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_init_with_none_falls_back_to_default_empty_string(
+        self, section_attr, field_attr
+    ):
+        """Constructing with a None field value falls back to the field default ''.
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             The INIBasedModel construction path replaces a ``None`` value with the
             field's default (here ``""``) before Pydantic validation runs. The net
-            result is an empty string — which is also what end users comparing against
-            ``""`` expect.
+            result is an empty string for every guarded field — which is also what
+            end users comparing against ``""`` expect.
         """
-        model = FMModel(**{"output": {"outputdir": None}})
-        result = model.output.outputdir
+        model = FMModel(**{section_attr: {field_attr: None}})
+        section = getattr(model, section_attr)
+        result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
         assert not isinstance(result, Path), (
             f"Expected str fallback, got {type(result).__name__}"
         )
 
-    def test_assign_none_stays_none(self):
-        """Assigning None replaces the value with None.
+    @pytest.mark.parametrize(
+        "section_attr, field_attr",
+        [
+            ("output", "outputdir"),
+            ("output", "waqoutputdir"),
+            ("trachytopes", "trtdef"),
+            ("trachytopes", "trtl"),
+        ],
+        ids=["outputdir", "waqoutputdir", "trtdef", "trtl"],
+    )
+    def test_assign_none_stays_none(self, section_attr, field_attr):
+        """Assigning None replaces the value with None on every guarded field.
+
+        Args:
+            section_attr: The FMModel section attribute hosting the field
+                (``output`` or ``trachytopes``).
+            field_attr: The Path field protected by ``_preserve_empty_string``.
 
         Test scenario:
             Assignment of ``None`` on an Optional[Path] field must be preserved as
-            ``None`` (validate_assignment path).
+            ``None`` (validate_assignment path). The ``_preserve_empty_string``
+            WrapValidator must not interfere with ``None`` because it short-circuits
+            only on ``""``.
         """
         model = FMModel()
-        model.output.outputdir = None
-        result = model.output.outputdir
+        section = getattr(model, section_attr)
+        setattr(section, field_attr, None)
+        result = getattr(section, field_attr)
         assert result is None, f"Expected None, got {result!r}"
 
     @pytest.mark.parametrize(
