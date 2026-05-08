@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -5426,17 +5426,7 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span>
-<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">533</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DIMR model representation.</span>
 
 <span class="sd">    Attributes:</span>
@@ -5532,49 +5522,39 @@ elements under <code>&lt;control&gt;</code>.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_dimr_dictionary_with_adjusted_fmcomponent_values</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">):</span>
-        <span class="n">fmcomponents</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">component</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">FMComponent</span><span class="p">)</span>
-        <span class="p">]</span>
-
-        <span class="n">list_of_fmcomponents_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_list_of_updated_fm_components</span><span class="p">(</span>
-            <span class="n">fmcomponents</span>
-        <span class="p">)</span>
-        <span class="n">dimr_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_dimr_dictionary</span><span class="p">(</span>
-            <span class="n">dimr_as_dict</span><span class="p">,</span> <span class="n">list_of_fmcomponents_as_dict</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">dimr_as_dict</span>
+        <span class="n">components_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_components_with_expanded_process</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_dimr_dictionary</span><span class="p">(</span><span class="n">dimr_as_dict</span><span class="p">,</span> <span class="n">components_as_dict</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_dimr_dictionary</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">list_of_fm_components_as_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">components_as_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_fm_components_as_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">dimr_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">list_of_fm_components_as_dict</span><span class="p">})</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">components_as_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dimr_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">components_as_dict</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="n">dimr_as_dict</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_list_of_updated_fm_components</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">fm_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FMComponent</span><span class="p">]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_components_with_expanded_process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">:</span> <span class="nb">list</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-        <span class="n">components_dict</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">fm_components</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">component</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">components_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">process</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">process_value_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictionary</span><span class="p">(</span>
-                <span class="n">component</span><span class="p">,</span> <span class="n">process_value</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">FMComponent</span><span class="p">)</span> <span class="ow">and</span> <span class="n">component</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">process</span><span class="p">))</span>
+                <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictionary</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">process_value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">component_dict</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="n">components_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">process_value_dict</span><span class="p">)</span>
+            <span class="n">components_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component_dict</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">components_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_component_dictionary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fmcomponent</span><span class="p">:</span> <span class="n">FMComponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+        <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="n">fmcomponent_process_value</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">fmcomponent_as_dict</span>
 
