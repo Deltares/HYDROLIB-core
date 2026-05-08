@@ -639,6 +639,7 @@ class TestFmComponentProcessIntegrationWithDimr:
     @pytest.mark.parametrize(
         "input_process, expected_process_format",
         [
+            pytest.param(1, "0"),
             pytest.param(2, "0 1"),
             pytest.param(3, "0 1 2"),
             pytest.param(4, "0 1 2 3"),
@@ -710,21 +711,14 @@ class TestFmComponentProcessIntegrationWithDimr:
                 line.strip() == line_to_check for line in file
             ), f"File {save_location} does not contain the line: {line_to_check}"
 
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param(None),
-            pytest.param(1),
-        ],
-    )
-    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(
-        self, tmp_path, input_process
+    def test_dimr_with_fm_component_saving_process_when_process_is_none_omits_element(
+        self, tmp_path
     ):
         component = FMComponent(
             name="test",
             workingDir=".",
             inputfile="test.mdu",
-            process=input_process,
+            process=None,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
 
@@ -732,9 +726,8 @@ class TestFmComponentProcessIntegrationWithDimr:
         save_location: Path = tmp_path / "dimr_config.xml"
         dimr.save(filepath=save_location)
 
-        process = "<process>"
+        saved_xml = save_location.read_text()
 
-        with open(save_location, "r") as file:
-            assert (
-                process not in file
-            ), f"File {save_location} does contain the line: {process}"
+        assert (
+            "<process>" not in saved_xml
+        ), f"File {save_location} unexpectedly contains a <process> element"
