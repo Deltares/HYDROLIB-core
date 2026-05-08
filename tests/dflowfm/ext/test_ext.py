@@ -114,10 +114,10 @@ class TestExtModel:
         boundary2 = model.boundary[1]
 
         # Set a field for first boundary
-        boundary1.forcingfile[0].forcing[0].name = "some_new_value"
+        boundary1.forcingfile.forcing[0].name = "some_new_value"
 
         # Field for second boundary is also updated (same instance)
-        assert boundary2.forcingfile[0].forcing[0].name == "some_new_value"
+        assert boundary2.forcingfile.forcing[0].name == "some_new_value"
 
     @pytest.mark.filterwarnings("ignore:File.*not found:UserWarning")
     def test_read_ext_missing_boundary_field_raises_correct_error(self):
