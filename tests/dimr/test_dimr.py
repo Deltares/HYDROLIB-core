@@ -731,3 +731,55 @@ class TestFmComponentProcessIntegrationWithDimr:
         assert (
             "<process>" not in saved_xml
         ), f"File {save_location} unexpectedly contains a <process> element"
+
+    def test_dimr_preserves_fmcomponent_with_process_none_alongside_one_with_process(
+        self, tmp_path
+    ):
+        without_process = FMComponent(
+            name="without_process",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=None,
+        )
+        with_process = FMComponent(
+            name="with_process",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=2,
+        )
+
+        dimr = DIMR(component=[without_process, with_process])
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        saved_xml = save_location.read_text()
+
+        assert 'name="without_process"' in saved_xml
+        assert 'name="with_process"' in saved_xml
+        assert "<process>0 1</process>" in saved_xml
+
+    def test_dimr_preserves_rrcomponent_alongside_fmcomponent_with_process(
+        self, tmp_path
+    ):
+        fm = FMComponent(
+            name="fm",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=2,
+        )
+        rr = RRComponent(
+            name="rr",
+            workingDir=".",
+            inputFile="Sobek_3b.fnm",
+        )
+
+        dimr = DIMR(component=[fm, rr])
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        saved_xml = save_location.read_text()
+
+        assert 'name="fm"' in saved_xml
+        assert 'name="rr"' in saved_xml
+        assert "<library>rr_dll</library>" in saved_xml
+        assert "<process>0 1</process>" in saved_xml

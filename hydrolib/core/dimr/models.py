@@ -408,49 +408,39 @@ class DIMR(ParsableFileModel):
     def _update_dimr_dictionary_with_adjusted_fmcomponent_values(
         self, dimr_as_dict: dict
     ):
-        fmcomponents = [
-            item for item in self.component if isinstance(item, FMComponent)
-        ]
-
-        list_of_fmcomponents_as_dict = self._get_list_of_updated_fm_components(
-            fmcomponents
-        )
-        dimr_as_dict = self._update_dimr_dictionary(
-            dimr_as_dict, list_of_fmcomponents_as_dict
-        )
-        return dimr_as_dict
+        components_as_dict = self._get_components_with_expanded_process(self.component)
+        return self._update_dimr_dictionary(dimr_as_dict, components_as_dict)
 
     def _update_dimr_dictionary(
-        self, dimr_as_dict: dict, list_of_fm_components_as_dict: list[dict]
+        self, dimr_as_dict: dict, components_as_dict: list[dict]
     ) -> dict:
-        if len(list_of_fm_components_as_dict) > 0:
-            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
+        if len(components_as_dict) > 0:
+            dimr_as_dict.update({"component": components_as_dict})
 
         return dimr_as_dict
 
-    def _get_list_of_updated_fm_components(
-        self, fm_components: list[FMComponent]
+    def _get_components_with_expanded_process(
+        self, components: list
     ) -> list[dict]:
-        components_dict = []
-        for component in fm_components:
-            if component is None or component.process is None:
+        components_dict: list[dict] = []
+        for component in components:
+            if component is None:
                 continue
 
-            process_value = " ".join(
-                str(i) for i in range(component.process)
-            )
-            process_value_dict = self._update_component_dictionary(
-                component, process_value
-            )
+            if isinstance(component, FMComponent) and component.process is not None:
+                process_value = " ".join(str(i) for i in range(component.process))
+                component_dict = self._update_component_dictionary(component, process_value)
+            else:
+                component_dict = component.model_dump(exclude_none=True)
 
-            components_dict.append(process_value_dict)
+            components_dict.append(component_dict)
 
         return components_dict
 
     def _update_component_dictionary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
     ) -> dict:
-        fmcomponent_as_dict = fmcomponent.model_dump()
+        fmcomponent_as_dict = fmcomponent.model_dump(exclude_none=True)
         fmcomponent_as_dict.update({"process": fmcomponent_process_value})
         return fmcomponent_as_dict
 
