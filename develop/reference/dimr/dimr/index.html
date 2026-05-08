@@ -4401,7 +4401,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Component.process">process</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+                  <code><span title="int">int</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4412,7 +4412,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Component.setting">setting</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="KeyValuePair (hydrolib.core.dimr.models.KeyValuePair)" href="#hydrolib.core.dimr.models.KeyValuePair">KeyValuePair</a>]]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="KeyValuePair (hydrolib.core.dimr.models.KeyValuePair)" href="#hydrolib.core.dimr.models.KeyValuePair">KeyValuePair</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4423,7 +4423,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Component.parameter">parameter</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="KeyValuePair (hydrolib.core.dimr.models.KeyValuePair)" href="#hydrolib.core.dimr.models.KeyValuePair">KeyValuePair</a>]]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="KeyValuePair (hydrolib.core.dimr.models.KeyValuePair)" href="#hydrolib.core.dimr.models.KeyValuePair">KeyValuePair</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4434,7 +4434,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Component.mpiCommunicator">mpiCommunicator</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4445,7 +4445,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Component.model">model</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="FileModel (hydrolib.core.base.models.FileModel)" href="../../base/api/#hydrolib.core.base.models.FileModel">FileModel</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="FileModel (hydrolib.core.base.models.FileModel)" href="../../base/api/#hydrolib.core.base.models.FileModel">FileModel</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4534,12 +4534,12 @@ represented by the classes below.</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">workingDir</span><span class="p">:</span> <span class="n">Path</span>
     <span class="n">inputFile</span><span class="p">:</span> <span class="n">Path</span>
-    <span class="n">process</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">setting</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">KeyValuePair</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">parameter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">KeyValuePair</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">mpiCommunicator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">process</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">setting</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">KeyValuePair</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">parameter</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">KeyValuePair</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">mpiCommunicator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FileModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FileModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4557,7 +4557,7 @@ represented by the classes below.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -4662,7 +4662,7 @@ represented by the classes below.</p>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4980,7 +4980,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Coupler.item">item</span></code></td>
             <td>
-                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="CoupledItem (hydrolib.core.dimr.models.CoupledItem)" href="#hydrolib.core.dimr.models.CoupledItem">CoupledItem</a>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="CoupledItem (hydrolib.core.dimr.models.CoupledItem)" href="#hydrolib.core.dimr.models.CoupledItem">CoupledItem</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4991,7 +4991,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.Coupler.logger">logger</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="Logger (hydrolib.core.dimr.models.Logger)" href="#hydrolib.core.dimr.models.Logger">Logger</a>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Logger (hydrolib.core.dimr.models.Logger)" href="#hydrolib.core.dimr.models.Logger">Logger</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5053,8 +5053,8 @@ represented by the classes below.</p>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">sourceComponent</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">targetComponent</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">item</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CoupledItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">item</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CoupledItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_item</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
@@ -5064,7 +5064,7 @@ represented by the classes below.</p>
         <span class="c1"># TODO set to True once we replace Paths with FileModels</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5134,7 +5134,7 @@ represented by the classes below.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.DIMR.control">control</span></code></td>
             <td>
-                  <code><span title="typing.List">List</span>[<span title="typing.Union">Union</span>[<a class="autorefs autorefs-internal" title="Start (hydrolib.core.dimr.models.Start)" href="#hydrolib.core.dimr.models.Start">Start</a>, <a class="autorefs autorefs-internal" title="Parallel (hydrolib.core.dimr.models.Parallel)" href="#hydrolib.core.dimr.models.Parallel">Parallel</a>]]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="Start (hydrolib.core.dimr.models.Start)" href="#hydrolib.core.dimr.models.Start">Start</a> | <a class="autorefs autorefs-internal" title="Parallel (hydrolib.core.dimr.models.Parallel)" href="#hydrolib.core.dimr.models.Parallel">Parallel</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5151,11 +5151,11 @@ saving. Similarly, all referenced couplers must be present in <code>coupler</cod
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.DIMR.component">component</span></code></td>
             <td>
-                  <code><span title="typing.List">List</span>[<span title="typing.Union">Union</span>[<a class="autorefs autorefs-internal" title="RRComponent (hydrolib.core.dimr.models.RRComponent)" href="#hydrolib.core.dimr.models.RRComponent">RRComponent</a>, <a class="autorefs autorefs-internal" title="FMComponent (hydrolib.core.dimr.models.FMComponent)" href="#hydrolib.core.dimr.models.FMComponent">FMComponent</a>, <a class="autorefs autorefs-internal" title="Component (hydrolib.core.dimr.models.Component)" href="#hydrolib.core.dimr.models.Component">Component</a>]]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="RRComponent (hydrolib.core.dimr.models.RRComponent)" href="#hydrolib.core.dimr.models.RRComponent">RRComponent</a> | <a class="autorefs autorefs-internal" title="FMComponent (hydrolib.core.dimr.models.FMComponent)" href="#hydrolib.core.dimr.models.FMComponent">FMComponent</a> | <a class="autorefs autorefs-internal" title="Component (hydrolib.core.dimr.models.Component)" href="#hydrolib.core.dimr.models.Component">Component</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>List of
+                <p>list of
 <code>&lt;component&gt;</code> elements that defines which programs can be used inside
 the <code>&lt;control&gt;</code> subelements. Must be non-empty when saving!</p>
               </div>
@@ -5164,7 +5164,7 @@ the <code>&lt;control&gt;</code> subelements. Must be non-empty when saving!</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.DIMR.coupler">coupler</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="Coupler (hydrolib.core.dimr.models.Coupler)" href="#hydrolib.core.dimr.models.Coupler">Coupler</a>]]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="Coupler (hydrolib.core.dimr.models.Coupler)" href="#hydrolib.core.dimr.models.Coupler">Coupler</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5177,7 +5177,7 @@ elements under <code>&lt;control&gt;</code>.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.DIMR.waitFile">waitFile</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5188,7 +5188,7 @@ elements under <code>&lt;control&gt;</code>.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.DIMR.global_settings">global_settings</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<a class="autorefs autorefs-internal" title="GlobalSettings (hydrolib.core.dimr.models.GlobalSettings)" href="#hydrolib.core.dimr.models.GlobalSettings">GlobalSettings</a>]</code>
+                  <code><span title="Optional">Optional</span>[<a class="autorefs autorefs-internal" title="GlobalSettings (hydrolib.core.dimr.models.GlobalSettings)" href="#hydrolib.core.dimr.models.GlobalSettings">GlobalSettings</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5436,38 +5436,34 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DIMR model representation.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        documentation (Documentation): File metadata.</span>
-<span class="sd">        control (List[Union[Start, Parallel]]): The `&lt;control&gt;` element with a list</span>
+<span class="sd">        control (list[Start | Parallel]): The `&lt;control&gt;` element with a list</span>
 <span class="sd">            of [Start][hydrolib.core.dimr.models.Start]</span>
 <span class="sd">            and [Parallel][hydrolib.core.dimr.models.Parallel] sub-elements,</span>
 <span class="sd">            which defines the (sequence of) program(s) to be run.</span>
 <span class="sd">            May be empty while constructing, but must be non-empty when saving!</span>
 <span class="sd">            Also, all referenced components must be present in `component` when</span>
 <span class="sd">            saving. Similarly, all referenced couplers must be present in `coupler`.</span>
-<span class="sd">        component (List[Union[RRComponent, FMComponent, Component]]): List of</span>
+<span class="sd">        component (list[RRComponent | FMComponent | Component]): list of</span>
 <span class="sd">            `&lt;component&gt;` elements that defines which programs can be used inside</span>
 <span class="sd">            the `&lt;control&gt;` subelements. Must be non-empty when saving!</span>
-<span class="sd">        coupler (Optional[List[Coupler]]): optional list of `&lt;coupler&gt;` elements</span>
+<span class="sd">        coupler (list[Coupler] | None): optional list of `&lt;coupler&gt;` elements</span>
 <span class="sd">            that defines which couplers can be used inside the `&lt;parallel&gt;`</span>
 <span class="sd">            elements under `&lt;control&gt;`.</span>
-<span class="sd">        waitFile (Optional[str]): Optional waitfile name for debugging.</span>
+<span class="sd">        waitFile (str | None): Optional waitfile name for debugging.</span>
 <span class="sd">        global_settings (Optional[GlobalSettings]): Optional global DIMR settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Documentation</span> <span class="o">=</span> <span class="n">Documentation</span><span class="p">()</span>
-    <span class="n">control</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Start</span><span class="p">,</span> <span class="n">Parallel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">component</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ComponentUnion</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">coupler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Coupler</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">waitFile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">global_settings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GlobalSettings</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">control</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Start</span> <span class="o">|</span> <span class="n">Parallel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">component</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComponentUnion</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">coupler</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coupler</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">waitFile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">global_settings</span><span class="p">:</span> <span class="n">GlobalSettings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="s2">&quot;coupler&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
@@ -5534,7 +5530,7 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_serialize</span><span class="p">(</span><span class="n">dimr_as_dict</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_dimr_dictionary_with_adjusted_fmcomponent_values</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="n">Dict</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="p">):</span>
         <span class="n">fmcomponents</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">component</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">FMComponent</span><span class="p">)</span>
@@ -5549,39 +5545,35 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="k">return</span> <span class="n">dimr_as_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_dimr_dictionary</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">list_of_fm_components_as_dict</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">list_of_fm_components_as_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_of_fm_components_as_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">dimr_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">list_of_fm_components_as_dict</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="n">dimr_as_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_list_of_updated_fm_components</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">fmcomponents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FMComponent</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="n">list_of_fm_components_as_dict</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">fmcomponent</span> <span class="ow">in</span> <span class="n">fmcomponents</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fmcomponent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">fm_components</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FMComponent</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="n">components_dict</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">fm_components</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">component</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="k">if</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
-                <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">fmcomponent_process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fmcomponent</span><span class="o">.</span><span class="n">process</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictionary</span><span class="p">(</span>
-                    <span class="n">fmcomponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span>
-                <span class="p">)</span>
+            <span class="n">process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">process</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">process_value_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictionary</span><span class="p">(</span>
+                <span class="n">component</span><span class="p">,</span> <span class="n">process_value</span>
+            <span class="p">)</span>
 
-            <span class="n">list_of_fm_components_as_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmcomponent_as_dict</span><span class="p">)</span>
+            <span class="n">components_dict</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">process_value_dict</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">list_of_fm_components_as_dict</span>
+        <span class="k">return</span> <span class="n">components_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_component_dictionary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fmcomponent</span><span class="p">:</span> <span class="n">FMComponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="n">fmcomponent_process_value</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">fmcomponent_as_dict</span>
@@ -5597,7 +5589,7 @@ elements under <code>&lt;control&gt;</code>.</p>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">ModelSaveSettings</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">ModelSaveSettings</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">DIMRSerializer</span><span class="o">.</span><span class="n">serialize</span>
 
     <span class="nd">@classmethod</span>
@@ -5605,15 +5597,15 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="k">return</span> <span class="n">DIMRParser</span><span class="o">.</span><span class="n">parse</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_update_component</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_update_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">component</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span>
 
         <span class="n">process_value</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -5899,7 +5891,7 @@ elements under <code>&lt;control&gt;</code>.</p>
     <span class="n">library</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;dflowfm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dflowfm&quot;</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validation for the process Attribute.</span>
 
@@ -6024,7 +6016,7 @@ elements under <code>&lt;control&gt;</code>.</p>
       <tbody>
           <tr class="doc-section-item">
 <td><code>int</code></td>            <td>
-                  <code><span title="typing.Union">Union</span>[None, <span title="int">int</span>]</code>
+                  <code>None | <span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6098,7 +6090,7 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Validation for the process Attribute.</span>
 
@@ -6776,7 +6768,7 @@ Step wise execution order according to order in parallel control flow.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.StartGroup.start">start</span></code></td>
             <td>
-                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="ComponentOrCouplerRef (hydrolib.core.dimr.models.ComponentOrCouplerRef)" href="#hydrolib.core.dimr.models.ComponentOrCouplerRef">ComponentOrCouplerRef</a>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="ComponentOrCouplerRef (hydrolib.core.dimr.models.ComponentOrCouplerRef)" href="#hydrolib.core.dimr.models.ComponentOrCouplerRef">ComponentOrCouplerRef</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6787,7 +6779,7 @@ Step wise execution order according to order in parallel control flow.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dimr.models.StartGroup.coupler">coupler</span></code></td>
             <td>
-                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="ComponentOrCouplerRef (hydrolib.core.dimr.models.ComponentOrCouplerRef)" href="#hydrolib.core.dimr.models.ComponentOrCouplerRef">ComponentOrCouplerRef</a>]</code>
+                  <code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="ComponentOrCouplerRef (hydrolib.core.dimr.models.ComponentOrCouplerRef)" href="#hydrolib.core.dimr.models.ComponentOrCouplerRef">ComponentOrCouplerRef</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -6836,8 +6828,8 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">time</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">start</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-    <span class="n">coupler</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">coupler</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;coupler&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_start</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
