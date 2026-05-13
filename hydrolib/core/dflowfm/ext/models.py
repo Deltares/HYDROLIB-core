@@ -13,6 +13,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
+from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
@@ -458,7 +459,7 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
-        forcingVariableName: Optional[str] = Field(
+        forcingvariablename: Optional[str] = Field(
             "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
             alias="forcingVariableName",
         )
@@ -477,11 +478,11 @@ class Meteo(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationAllowed: Optional[str] = Field(
+        extrapolationallowed: Optional[str] = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed",
         )
-        extrapolationSearchRadius: Optional[str] = Field(
+        extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
             alias="extrapolationSearchRadius",
         )
@@ -498,7 +499,7 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingVariableName: Optional[str] = Field(None, alias="forcingVariableName")
+    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
@@ -506,13 +507,33 @@ class Meteo(INIBasedModel):
         None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationAllowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
-    extrapolationSearchRadius: Optional[float] = Field(
+    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingType: Optional[int] = Field(None, alias="averagingType")
-    averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
+    averagingtype: Optional[int] = Field(None, alias="averagingType")
+    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
+    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
+
+    # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
+    forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "forcingvariablename", removed_in="2.0.0", since="1.1.0"
+    )
+    extrapolationAllowed = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationallowed", removed_in="2.0.0", since="1.1.0"
+    )
+    extrapolationSearchRadius = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationsearchradius", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingType = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingtype", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingNumMin = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingnummin", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingPercentile = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingpercentile", removed_in="2.0.0", since="1.1.0"
+    )
 
     @model_validator(mode="before")
     @classmethod
