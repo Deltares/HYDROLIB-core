@@ -171,18 +171,16 @@ class Boundary(INIBasedModel):
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
-            ForcingBase: The corresponding forcing data. None when this boundary does not have a forcing file or when the data cannot be found.
+            ForcingBase: The corresponding forcing data, or None when no matching forcing block is found.
         """
         result = None
-        if self.forcingfile is not None:
-            for forcing in self.forcingfile.forcing:
-
-                if self.nodeid == forcing.name and any(
-                    quantity.quantity.startswith(self.quantity)
-                    for quantity in forcing.quantityunitpair
-                ):
-                    result = forcing
-                    break
+        for forcing in self.forcingfile.forcing:
+            if self.nodeid == forcing.name and any(
+                quantity.quantity.startswith(self.quantity)
+                for quantity in forcing.quantityunitpair
+            ):
+                result = forcing
+                break
 
         return result
 
