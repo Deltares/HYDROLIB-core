@@ -9,28 +9,28 @@
       
       
       
-        <link rel="prev" href="../developers-guide/">
+        <link rel="prev" href="../reference/tools/extforce-convert/converted_files/">
       
       
-        <link rel="next" href="../documentation/">
+        <link rel="next" href="../changelog/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Release workflow - hydrolib-core documentation</title>
+        <title>Migration & Deprecations - hydrolib-core documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,13 +49,13 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../stylesheets/extra.css">
     
-      <link rel="stylesheet" href="../../assets/stylesheets/panzoom.css">
+      <link rel="stylesheet" href="../assets/stylesheets/panzoom.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -81,7 +81,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#triggering-a-github-release" class="md-skip">
+        <a href="#migration-deprecations" class="md-skip">
           Skip to content
         </a>
       
@@ -96,12 +96,12 @@
             <div class="md-banner__inner md-grid md-typeset">
               
 You're not viewing the latest release version.
-<a href="../../..">
+<a href="../..">
     <strong>Click here to go to latest release.</strong>
 </a>
 
             </div>
-            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL("../.."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
+            <script>var el=document.querySelector("[data-md-component=outdated]"),base=new URL(".."),outdated=__md_get("__outdated",sessionStorage,base);!0===outdated&&el&&(el.hidden=!1)</script>
           </aside>
         
       </div>
@@ -111,9 +111,9 @@ You're not viewing the latest release version.
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="hydrolib-core documentation" class="md-header__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+    <a href=".." title="hydrolib-core documentation" class="md-header__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
       
-  <img src="../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+  <img src="../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -130,7 +130,7 @@ You're not viewing the latest release version.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Release workflow
+              Migration & Deprecations
             
           </span>
         </div>
@@ -241,7 +241,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
   
@@ -258,8 +258,6 @@ You're not viewing the latest release version.
   
   
   
-    
-  
   
     
     
@@ -267,13 +265,11 @@ You're not viewing the latest release version.
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../setup/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../guides/setup/" class="md-tabs__link">
           
   
   
@@ -303,7 +299,7 @@ You're not viewing the latest release version.
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/basic_tutorials/tutorials/" class="md-tabs__link">
+        <a href="../tutorials/basic_tutorials/tutorials/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@ You're not viewing the latest release version.
     
     
       <li class="md-tabs__item">
-        <a href="../../topics/dhydro_support/" class="md-tabs__link">
+        <a href="../topics/dhydro_support/" class="md-tabs__link">
           
   
   
@@ -353,7 +349,7 @@ You're not viewing the latest release version.
     
     
       <li class="md-tabs__item">
-        <a href="../../reference/glossary/" class="md-tabs__link">
+        <a href="../reference/glossary/" class="md-tabs__link">
           
   
   
@@ -372,9 +368,11 @@ You're not viewing the latest release version.
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../../migration/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -393,7 +391,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-tabs__item">
-      <a href="../../changelog/" class="md-tabs__link">
+      <a href="../changelog/" class="md-tabs__link">
         
   
   
@@ -428,9 +426,9 @@ You're not viewing the latest release version.
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="hydrolib-core documentation" class="md-nav__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
+    <a href=".." title="hydrolib-core documentation" class="md-nav__button md-logo" aria-label="hydrolib-core documentation" data-md-component="logo">
       
-  <img src="../../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
+  <img src="../images/HYDROLIB_logo_notext_mono_eroded.svg" alt="logo">
 
     </a>
     hydrolib-core documentation
@@ -457,7 +455,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -481,31 +479,28 @@ You're not viewing the latest release version.
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
             
   
   
@@ -523,7 +518,7 @@ You're not viewing the latest release version.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -547,13 +542,10 @@ You're not viewing the latest release version.
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -562,7 +554,7 @@ You're not viewing the latest release version.
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
         
           
-          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
             
   
   
@@ -598,7 +590,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../setup/" class="md-nav__link">
+      <a href="../guides/setup/" class="md-nav__link">
         
   
   
@@ -626,7 +618,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../devcontainers/" class="md-nav__link">
+      <a href="../guides/devcontainers/" class="md-nav__link">
         
   
   
@@ -654,7 +646,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../poetry/" class="md-nav__link">
+      <a href="../guides/poetry/" class="md-nav__link">
         
   
   
@@ -690,7 +682,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../guides/contributing/" class="md-nav__link">
         
   
   
@@ -718,7 +710,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../developers-guide/" class="md-nav__link">
+      <a href="../guides/developers-guide/" class="md-nav__link">
         
   
   
@@ -743,37 +735,10 @@ You're not viewing the latest release version.
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Release workflow
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../guides/release-workflow/" class="md-nav__link">
         
   
   
@@ -789,109 +754,6 @@ You're not viewing the latest release version.
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Prerequisites
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-trigger-the-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to trigger the workflow
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#version-input-options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Version input options
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Version input options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-a-full-version-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option A: Full version string
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-b-majorminorpatch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option B: Major/Minor/Patch
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-the-workflow-does" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the workflow does
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-release-tagging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-release tagging
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -904,7 +766,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../documentation/" class="md-nav__link">
+      <a href="../guides/documentation/" class="md-nav__link">
         
   
   
@@ -932,7 +794,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../getting-help/" class="md-nav__link">
+      <a href="../guides/getting-help/" class="md-nav__link">
         
   
   
@@ -1075,7 +937,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/basic_tutorials/tutorials/" class="md-nav__link">
+      <a href="../tutorials/basic_tutorials/tutorials/" class="md-nav__link">
         
   
   
@@ -1103,7 +965,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/basic_tutorials/build_basic_model/" class="md-nav__link">
+      <a href="../tutorials/basic_tutorials/build_basic_model/" class="md-nav__link">
         
   
   
@@ -1131,7 +993,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/basic_tutorials/loading_and_saving_a_model/" class="md-nav__link">
+      <a href="../tutorials/basic_tutorials/loading_and_saving_a_model/" class="md-nav__link">
         
   
   
@@ -1159,7 +1021,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/basic_tutorials/dataframe_handling/" class="md-nav__link">
+      <a href="../tutorials/basic_tutorials/dataframe_handling/" class="md-nav__link">
         
   
   
@@ -1187,7 +1049,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/basic_tutorials/plotting_a_network/" class="md-nav__link">
+      <a href="../tutorials/basic_tutorials/plotting_a_network/" class="md-nav__link">
         
   
   
@@ -1277,7 +1139,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dsd/instructions/" class="md-nav__link">
+      <a href="../tutorials/dsd/instructions/" class="md-nav__link">
         
   
   
@@ -1359,7 +1221,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dsd/demo/demo/" class="md-nav__link">
+      <a href="../tutorials/dsd/demo/demo/" class="md-nav__link">
         
   
   
@@ -1449,7 +1311,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises/" class="md-nav__link">
+      <a href="../tutorials/dsd/magdalena_workflow/magdalena_workbook_exercises/" class="md-nav__link">
         
   
   
@@ -1477,7 +1339,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs/" class="md-nav__link">
+      <a href="../tutorials/dsd/magdalena_workflow/magdalena_workbook_with_outputs/" class="md-nav__link">
         
   
   
@@ -1575,7 +1437,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/extforce-convert/external_forcing_conversion/" class="md-nav__link">
+      <a href="../tutorials/extforce-convert/external_forcing_conversion/" class="md-nav__link">
         
   
   
@@ -1672,7 +1534,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../topics/dhydro_support/" class="md-nav__link">
+      <a href="../topics/dhydro_support/" class="md-nav__link">
         
   
   
@@ -1700,7 +1562,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../topics/principles/" class="md-nav__link">
+      <a href="../topics/principles/" class="md-nav__link">
         
   
   
@@ -1728,7 +1590,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../topics/pydantic/" class="md-nav__link">
+      <a href="../topics/pydantic/" class="md-nav__link">
         
   
   
@@ -1756,7 +1618,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../topics/loadsave/" class="md-nav__link">
+      <a href="../topics/loadsave/" class="md-nav__link">
         
   
   
@@ -1899,7 +1761,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/glossary/" class="md-nav__link">
+      <a href="../reference/glossary/" class="md-nav__link">
         
   
   
@@ -1981,7 +1843,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/base/base/" class="md-nav__link">
+      <a href="../reference/base/base/" class="md-nav__link">
         
   
   
@@ -2009,7 +1871,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/base/api/" class="md-nav__link">
+      <a href="../reference/base/api/" class="md-nav__link">
         
   
   
@@ -2037,7 +1899,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/base/model-tree-traverser/" class="md-nav__link">
+      <a href="../reference/base/model-tree-traverser/" class="md-nav__link">
         
   
   
@@ -2065,7 +1927,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/base/ini/" class="md-nav__link">
+      <a href="../reference/base/ini/" class="md-nav__link">
         
   
   
@@ -2093,7 +1955,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/base/overview/" class="md-nav__link">
+      <a href="../reference/base/overview/" class="md-nav__link">
         
   
   
@@ -2245,7 +2107,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/fm-model-attributes-overview/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/fm-model-attributes-overview/" class="md-nav__link">
         
   
   
@@ -2273,7 +2135,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/fm-model/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/fm-model/" class="md-nav__link">
         
   
   
@@ -2301,7 +2163,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/fm-model-attributes-detailed/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/fm-model-attributes-detailed/" class="md-nav__link">
         
   
   
@@ -2329,7 +2191,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/mdu/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/mdu/" class="md-nav__link">
         
   
   
@@ -2357,7 +2219,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/onedfield/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/onedfield/" class="md-nav__link">
         
   
   
@@ -2385,7 +2247,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/mdu/research/" class="md-nav__link">
+      <a href="../reference/dflowfm/mdu/research/" class="md-nav__link">
         
   
   
@@ -2475,7 +2337,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/extold/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/extold/" class="md-nav__link">
         
   
   
@@ -2503,7 +2365,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/ext/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/ext/" class="md-nav__link">
         
   
   
@@ -2531,7 +2393,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/forcing/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/forcing/" class="md-nav__link">
         
   
   
@@ -2559,7 +2421,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/inifield/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/inifield/" class="md-nav__link">
         
   
   
@@ -2587,7 +2449,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/structure.md" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/structure.md" class="md-nav__link">
         
   
   
@@ -2669,7 +2531,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/structures/structure-overview/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/structures/structure-overview/" class="md-nav__link">
         
   
   
@@ -2697,7 +2559,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/external-forcing/structures/structure/" class="md-nav__link">
+      <a href="../reference/dflowfm/external-forcing/structures/structure/" class="md-nav__link">
         
   
   
@@ -2795,7 +2657,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/attribute-files/polyfile/" class="md-nav__link">
+      <a href="../reference/dflowfm/attribute-files/polyfile/" class="md-nav__link">
         
   
   
@@ -2823,7 +2685,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/attribute-files/tim/" class="md-nav__link">
+      <a href="../reference/dflowfm/attribute-files/tim/" class="md-nav__link">
         
   
   
@@ -2851,7 +2713,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/attribute-files/xyz/" class="md-nav__link">
+      <a href="../reference/dflowfm/attribute-files/xyz/" class="md-nav__link">
         
   
   
@@ -2941,7 +2803,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/cross-sections/friction/" class="md-nav__link">
+      <a href="../reference/dflowfm/cross-sections/friction/" class="md-nav__link">
         
   
   
@@ -2969,7 +2831,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/cross-sections/crosssection/" class="md-nav__link">
+      <a href="../reference/dflowfm/cross-sections/crosssection/" class="md-nav__link">
         
   
   
@@ -3059,7 +2921,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/topology-network/net/" class="md-nav__link">
+      <a href="../reference/dflowfm/topology-network/net/" class="md-nav__link">
         
   
   
@@ -3087,7 +2949,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/topology-network/storagenode/" class="md-nav__link">
+      <a href="../reference/dflowfm/topology-network/storagenode/" class="md-nav__link">
         
   
   
@@ -3115,7 +2977,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/topology-network/observationpoint/" class="md-nav__link">
+      <a href="../reference/dflowfm/topology-network/observationpoint/" class="md-nav__link">
         
   
   
@@ -3143,7 +3005,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dflowfm/topology-network/observationcrosssection/" class="md-nav__link">
+      <a href="../reference/dflowfm/topology-network/observationcrosssection/" class="md-nav__link">
         
   
   
@@ -3233,7 +3095,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/dimr/dimr/" class="md-nav__link">
+      <a href="../reference/dimr/dimr/" class="md-nav__link">
         
   
   
@@ -3331,7 +3193,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/rr/rr/" class="md-nav__link">
+      <a href="../reference/rr/rr/" class="md-nav__link">
         
   
   
@@ -3359,7 +3221,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/rr/meteo/" class="md-nav__link">
+      <a href="../reference/rr/meteo/" class="md-nav__link">
         
   
   
@@ -3449,7 +3311,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/gui/" class="md-nav__link">
+      <a href="../reference/gui/" class="md-nav__link">
         
   
   
@@ -3593,7 +3455,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/tools/extforce-convert/extforce_convert/" class="md-nav__link">
+      <a href="../reference/tools/extforce-convert/extforce_convert/" class="md-nav__link">
         
   
   
@@ -3621,7 +3483,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../reference/tools/extforce-convert/converted_files/" class="md-nav__link">
+      <a href="../reference/tools/extforce-convert/converted_files/" class="md-nav__link">
         
   
   
@@ -3669,10 +3531,37 @@ You're not viewing the latest release version.
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../migration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration & Deprecations
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -3688,6 +3577,76 @@ You're not viewing the latest release version.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-surface-deprecation-warnings-in-your-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to surface deprecation warnings in your project
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#110" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.1.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meteo-attribute-names-lowercased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meteo attribute names lowercased
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3699,7 +3658,7 @@ You're not viewing the latest release version.
   
   
     <li class="md-nav__item">
-      <a href="../../changelog/" class="md-nav__link">
+      <a href="../changelog/" class="md-nav__link">
         
   
   
@@ -3746,10 +3705,10 @@ You're not viewing the latest release version.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
+  <a href="#how-to-surface-deprecation-warnings-in-your-project" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Prerequisites
+        How to surface deprecation warnings in your project
       
     </span>
   </a>
@@ -3757,10 +3716,10 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-trigger-the-workflow" class="md-nav__link">
+  <a href="#quick-reference" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to trigger the workflow
+        Quick reference
       
     </span>
   </a>
@@ -3768,33 +3727,22 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-input-options" class="md-nav__link">
+  <a href="#110" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version input options
+        1.1.0
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Version input options">
+    <nav class="md-nav" aria-label="1.1.0">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#option-a-full-version-string" class="md-nav__link">
+  <a href="#meteo-attribute-names-lowercased" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option A: Full version string
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-b-majorminorpatch" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option B: Major/Minor/Patch
+        Meteo attribute names lowercased
       
     </span>
   </a>
@@ -3803,28 +3751,6 @@ You're not viewing the latest release version.
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-the-workflow-does" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the workflow does
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-release-tagging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pre-release tagging
-      
-    </span>
-  </a>
   
 </li>
       
@@ -3848,43 +3774,162 @@ You're not viewing the latest release version.
   
 
 
-<h1 id="triggering-a-github-release">Triggering a GitHub Release<a class="headerlink" href="#triggering-a-github-release" title="Permanent link">&para;</a></h1>
-<p>This repository ships via the GitHub Actions workflow in <code>.github/workflows/release.yml</code>. It is a manual (workflow_dispatch) workflow that bumps the version, generates the changelog, builds the package, publishes to PyPI, and creates a GitHub release.</p>
-<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<h1 id="migration-deprecations">Migration &amp; Deprecations<a class="headerlink" href="#migration-deprecations" title="Permanent link">&para;</a></h1>
+<p>This page lists deprecated public API symbols in HYDROLIB-core, the version
+in which they were deprecated, the version in which they will be removed,
+and the migration path for each one.</p>
+<p>If you depend on a deprecated name, your code will keep working for the
+current release line but will emit a <code>DeprecationWarning</code> at runtime. We
+recommend migrating before the listed removal release.</p>
+<h2 id="how-to-surface-deprecation-warnings-in-your-project">How to surface deprecation warnings in your project<a class="headerlink" href="#how-to-surface-deprecation-warnings-in-your-project" title="Permanent link">&para;</a></h2>
+<p>Python suppresses <code>DeprecationWarning</code> by default outside of test runs. To
+surface them in your own application or scripts:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                        <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;hydrolib\..*&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Or run a one-off check with:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>-W<span class="w"> </span>default::DeprecationWarning<span class="w"> </span>your_script.py
+</code></pre></div>
+<p>To fail your test suite on any HYDROLIB-core deprecation, configure pytest:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># pyproject.toml or pytest.ini</span>
+<span class="k">[tool.pytest.ini_options]</span>
+<span class="na">filterwarnings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[</span>
+<span class="w">    </span><span class="na">&quot;error</span><span class="o">:</span><span class="s">:DeprecationWarning:hydrolib.*&quot;,</span>
+<span class="na">]</span>
+</code></pre></div>
+<h2 id="quick-reference">Quick reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Deprecated in</th>
+<th>Removal target</th>
+<th>Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Meteo.forcingVariableName</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.forcingvariablename</code></td>
+</tr>
+<tr>
+<td><code>Meteo.extrapolationAllowed</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.extrapolationallowed</code></td>
+</tr>
+<tr>
+<td><code>Meteo.extrapolationSearchRadius</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.extrapolationsearchradius</code></td>
+</tr>
+<tr>
+<td><code>Meteo.averagingType</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.averagingtype</code></td>
+</tr>
+<tr>
+<td><code>Meteo.averagingNumMin</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.averagingnummin</code></td>
+</tr>
+<tr>
+<td><code>Meteo.averagingPercentile</code></td>
+<td>1.1.0</td>
+<td>2.0.0</td>
+<td><code>Meteo.averagingpercentile</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="110">1.1.0<a class="headerlink" href="#110" title="Permanent link">&para;</a></h2>
+<h3 id="meteo-attribute-names-lowercased"><code>Meteo</code> attribute names lowercased<a class="headerlink" href="#meteo-attribute-names-lowercased" title="Permanent link">&para;</a></h3>
+<p>The Python attribute names on
+<a class="autorefs autorefs-internal" title="Meteo" href="../reference/dflowfm/external-forcing/ext/#hydrolib.core.dflowfm.ext.models.Meteo"><code>hydrolib.core.dflowfm.ext.models.Meteo</code></a>
+were inconsistent: most fields used lowercase identifiers
+(<code>forcingfile</code>, <code>targetmaskfile</code>, <code>interpolationmethod</code>, …) while six fields
+used camelCase. These six have been renamed to match the convention.</p>
+<p>The on-disk INI key names (e.g. <code>forcingVariableName = …</code> in <code>.ext</code> files)
+<strong>are unchanged</strong> — only Python attribute access changes. Construction by
+keyword argument also keeps working with the camelCase form (it goes
+through the unchanged Pydantic alias).</p>
+<p><strong>Renamed attributes</strong></p>
+<table>
+<thead>
+<tr>
+<th>Old (deprecated)</th>
+<th>New</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>forcingVariableName</code></td>
+<td><code>forcingvariablename</code></td>
+</tr>
+<tr>
+<td><code>extrapolationAllowed</code></td>
+<td><code>extrapolationallowed</code></td>
+</tr>
+<tr>
+<td><code>extrapolationSearchRadius</code></td>
+<td><code>extrapolationsearchradius</code></td>
+</tr>
+<tr>
+<td><code>averagingType</code></td>
+<td><code>averagingtype</code></td>
+</tr>
+<tr>
+<td><code>averagingNumMin</code></td>
+<td><code>averagingnummin</code></td>
+</tr>
+<tr>
+<td><code>averagingPercentile</code></td>
+<td><code>averagingpercentile</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Migration — attribute access</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before</span>
+<span class="k">if</span> <span class="n">meteo</span><span class="o">.</span><span class="n">extrapolationAllowed</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">meteo</span><span class="o">.</span><span class="n">extrapolationSearchRadius</span>
+<span class="n">meteo</span><span class="o">.</span><span class="n">averagingType</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="c1"># After</span>
+<span class="k">if</span> <span class="n">meteo</span><span class="o">.</span><span class="n">extrapolationallowed</span><span class="p">:</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="n">meteo</span><span class="o">.</span><span class="n">extrapolationsearchradius</span>
+<span class="n">meteo</span><span class="o">.</span><span class="n">averagingtype</span> <span class="o">=</span> <span class="mi">1</span>
+</code></pre></div>
+<p><strong>Migration — <code>model_dump()</code> output keys</strong></p>
+<p>If you call <code>meteo.model_dump()</code> <em>without</em> <code>by_alias=True</code>, the returned dict
+keys reflect the new lowercase attribute names:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Before:                                After:</span>
+<span class="p">{</span><span class="s2">&quot;extrapolationAllowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>     <span class="p">{</span><span class="s2">&quot;extrapolationallowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</code></pre></div>
+<p>If you need the on-disk INI key names, pass <code>by_alias=True</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">meteo</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">by_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># -&gt; {&quot;extrapolationAllowed&quot;: True, ...}</span>
+</code></pre></div>
+<p>The library's own INI serializer always uses <code>by_alias=True</code>, so the
+contents of <code>.ext</code> files on disk are unaffected.</p>
+<p><strong>Not affected</strong></p>
 <ul>
-<li>You have permission to run workflows on the repository.</li>
-<li>Repository secrets are configured:</li>
-<li><code>PYPI_API_TOKEN</code> for publishing to PyPI.</li>
-<li><code>GITHUB_TOKEN</code> is provided automatically by GitHub Actions.</li>
-<li>The release branch (default <code>main</code>) is up to date and protected branch rules allow the workflow to push commits and tags.</li>
+<li>Reading existing <code>.ext</code> files via <code>ExtModel(filepath=...)</code> — wire-format
+  keys are unchanged and parsing is case-insensitive.</li>
+<li>Writing <code>.ext</code> files via <code>model.save(...)</code> — output is byte-identical.</li>
+<li>Constructing <code>Meteo</code> with keyword arguments using either the old or new
+  name: both work via Pydantic alias resolution.</li>
 </ul>
-<h2 id="how-to-trigger-the-workflow">How to trigger the workflow<a class="headerlink" href="#how-to-trigger-the-workflow" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Go to GitHub → <strong>Actions</strong>.</li>
-<li>Select <strong>Automated release workflow</strong>.</li>
-<li>Click <strong>Run workflow</strong>.</li>
-<li>Choose the <code>release_branch</code> (defaults to <code>main</code>).</li>
-<li>Provide a version using one of the two methods below.</li>
-</ol>
-<h2 id="version-input-options">Version input options<a class="headerlink" href="#version-input-options" title="Permanent link">&para;</a></h2>
-<p>Choose exactly one of the following approaches:</p>
-<h3 id="option-a-full-version-string">Option A: Full version string<a class="headerlink" href="#option-a-full-version-string" title="Permanent link">&para;</a></h3>
-<p>Set <code>version</code> to a full release version such as <code>1.2.3</code> or <code>1.2.3-beta.1</code>.<br />
-This is the most reliable option and overrides all other version inputs.</p>
-<h3 id="option-b-majorminorpatch">Option B: Major/Minor/Patch<a class="headerlink" href="#option-b-majorminorpatch" title="Permanent link">&para;</a></h3>
-<p>Provide <code>major</code>, <code>minor</code>, and <code>patch</code> values to construct a version string.<br />
-For example: <code>major=1</code>, <code>minor=2</code>, <code>patch=3</code> → <code>1.2.3</code>.</p>
-<p>Note: The <code>increment</code> input exists in the workflow UI but is not used by the workflow script.</p>
-<h2 id="what-the-workflow-does">What the workflow does<a class="headerlink" href="#what-the-workflow-does" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Checks out the <code>release_branch</code> and determines the target version.</li>
-<li>Generates the changelog for the new version.</li>
-<li>Bumps the version and pushes the commit and tag to the repository.</li>
-<li>Builds the package and publishes it to PyPI.</li>
-<li>Creates a GitHub release for the tag.</li>
-</ul>
-<h2 id="pre-release-tagging">Pre-release tagging<a class="headerlink" href="#pre-release-tagging" title="Permanent link">&para;</a></h2>
-<p>If the version contains the letter <code>b</code> (for example <code>1.2.3b1</code>), the GitHub release is marked as a pre-release.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Meteo</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;rainfall&quot;</span><span class="p">,</span>
+      <span class="n">forcingfile</span><span class="o">=</span><span class="n">ForcingModel</span><span class="p">(),</span>
+      <span class="n">forcingfiletype</span><span class="o">=</span><span class="n">MeteoForcingFileType</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
+      <span class="n">extrapolationAllowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># still works, no warning</span>
+</code></pre></div>
 
 
 
@@ -3965,14 +4010,14 @@ For example: <code>major=1</code>, <code>minor=2</code>, <code>patch=3</code> �
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
-        <script src="../../assets/javascripts/panzoom.min.js"></script>
+        <script src="../assets/javascripts/panzoom.min.js"></script>
       
-        <script src="../../assets/javascripts/zoompan.js"></script>
+        <script src="../assets/javascripts/zoompan.js"></script>
       
     
   </body>
