@@ -23,7 +23,7 @@ def test_existing_file():
     boundary_block = Boundary(**data)
     assert boundary_block.locationfile == DiskOnlyFileModel(Path(polyline))
     assert boundary_block.quantity == "waterlevelbnd"
-    assert boundary_block.forcingfile == [data["forcingfile"]]
+    assert boundary_block.forcingfile == data["forcingfile"]
     assert boundary_block.bndwidth1d is None
     assert boundary_block.bndbldepth is None
 
@@ -51,7 +51,7 @@ def test_given_args_expected_values():
     for key, value in compare_data.items():
         assert created_boundary_dict[key] == value
 
-    assert created_boundary.forcingfile == [dict_values["forcingfile"]]
+    assert created_boundary.forcingfile == dict_values["forcingfile"]
     assert created_boundary_dict["locationfile"]["filepath"] == expected_location_path
 
 
@@ -72,7 +72,7 @@ def test_given_args_as_alias_expected_values():
     assert boundary_as_dict["quantity"] == dict_values["quantity"]
     assert boundary_as_dict["nodeid"] == dict_values["nodeid"]
     assert boundary_as_dict["locationfile"]["filepath"] == dict_values["locationfile"]
-    assert created_boundary.forcingfile == [dict_values["forcingFile"]]
+    assert created_boundary.forcingfile == dict_values["forcingFile"]
     assert boundary_as_dict["bndwidth1d"] == dict_values["bndWidth1D"]
     assert boundary_as_dict["bndbldepth"] == dict_values["bndBlDepth"]
 
@@ -147,7 +147,7 @@ class TestValidateFromCtor:
         ],
     )
     def test_given_no_values_raises_valueerror(self, dict_values: dict):
-        required_values = dict(quantity="aQuantity", forcingfile=[ForcingModel()])
+        required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
         test_values = {**dict_values, **required_values}
         with pytest.raises(ValueError) as exc_mssg:
             Boundary(**test_values)
@@ -173,7 +173,7 @@ class TestValidateFromCtor:
         ],
     )
     def test_given_dict_values_doesnot_raise(self, dict_values: dict):
-        required_values = dict(quantity="aQuantity", forcingfile=[ForcingModel()])
+        required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
         test_values = {**dict_values, **required_values}
         created_boundary = Boundary(**test_values)
 
