@@ -1,5 +1,6 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
+import warnings
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -436,6 +437,29 @@ class MeteoInterpolationMethod(StrEnum):
     allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
 
 
+def _deprecated_camelcase_alias(old_name: str, new_name: str) -> property:
+    """Build a property that exposes a renamed field under its old camelCase name.
+
+    Reading or writing the old name proxies to ``new_name`` and emits a
+    ``DeprecationWarning``. Used to keep the public Python API backward-compatible
+    after lowercasing field names; targeted for removal in version 2.0.0.
+    """
+    message = (
+        f"`{old_name}` is deprecated and will be removed in 2.0.0; "
+        f"use `{new_name}` instead."
+    )
+
+    def fget(self):
+        warnings.warn(message, DeprecationWarning, stacklevel=2)
+        return getattr(self, new_name)
+
+    def fset(self, value):
+        warnings.warn(message, DeprecationWarning, stacklevel=2)
+        setattr(self, new_name, value)
+
+    return property(fget, fset)
+
+
 class Meteo(INIBasedModel):
     """A `[Meteo]` block for use inside an external forcings file.
 
@@ -477,11 +501,11 @@ class Meteo(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationAllowed: Optional[str] = Field(
+        extrapolationallowed: Optional[str] = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed",
         )
-        extrapolationSearchRadius: Optional[str] = Field(
+        extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
             alias="extrapolationSearchRadius",
         )
@@ -506,13 +530,28 @@ class Meteo(INIBasedModel):
         None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationAllowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
-    extrapolationSearchRadius: Optional[float] = Field(
+    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingType: Optional[int] = Field(None, alias="averagingType")
-    averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
+    averagingtype: Optional[int] = Field(None, alias="averagingType")
+    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
+    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
+
+    forcingVariableName = _deprecated_camelcase_alias(
+        "forcingVariableName", "forcingvariablename"
+    )
+    extrapolationAllowed = _deprecated_camelcase_alias(
+        "extrapolationAllowed", "extrapolationallowed"
+    )
+    extrapolationSearchRadius = _deprecated_camelcase_alias(
+        "extrapolationSearchRadius", "extrapolationsearchradius"
+    )
+    averagingType = _deprecated_camelcase_alias("averagingType", "averagingtype")
+    averagingNumMin = _deprecated_camelcase_alias("averagingNumMin", "averagingnummin")
+    averagingPercentile = _deprecated_camelcase_alias(
+        "averagingPercentile", "averagingpercentile"
+    )
 
     @model_validator(mode="before")
     @classmethod

@@ -208,11 +208,11 @@ class TestMeteo:
         assert meteo.targetmaskinvert is None
         assert meteo.interpolationmethod is None
         assert meteo.operand == "O"
-        assert meteo.extrapolationAllowed is None
-        assert meteo.extrapolationSearchRadius is None
-        assert meteo.averagingType is None
-        assert meteo.averagingNumMin is None
-        assert meteo.averagingPercentile is None
+        assert meteo.extrapolationallowed is None
+        assert meteo.extrapolationsearchradius is None
+        assert meteo.averagingtype is None
+        assert meteo.averagingnummin is None
+        assert meteo.averagingpercentile is None
 
     def test_setting_optional_fields(self):
         meteo = Meteo(
@@ -223,21 +223,21 @@ class TestMeteo:
             targetmaskinvert=True,
             interpolationmethod=MeteoInterpolationMethod.nearestnb,
             operand="O",
-            extrapolationAllowed=True,
-            extrapolationSearchRadius=10,
-            averagingType=1,
-            averagingNumMin=0.5,
-            averagingPercentile=90,
+            extrapolationallowed=True,
+            extrapolationsearchradius=10,
+            averagingtype=1,
+            averagingnummin=0.5,
+            averagingpercentile=90,
         )
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is True
         assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
         assert meteo.operand == "O"
-        assert meteo.extrapolationAllowed is True
-        assert meteo.extrapolationSearchRadius == 10
-        assert meteo.averagingType == 1
-        assert np.isclose(meteo.averagingNumMin, 0.5)
-        assert meteo.averagingPercentile == 90
+        assert meteo.extrapolationallowed is True
+        assert meteo.extrapolationsearchradius == 10
+        assert meteo.averagingtype == 1
+        assert np.isclose(meteo.averagingnummin, 0.5)
+        assert meteo.averagingpercentile == 90
 
     def test_invalid_forcingfiletype(self):
         with pytest.raises(ValueError):
@@ -321,6 +321,60 @@ class TestMeteo:
         assert isinstance(meteo.forcingfile, PolyFile)
         assert meteo.forcingfile.filepath == poly_file_path
         assert meteo.forcingfiletype == MeteoForcingFileType.polygon
+
+
+class TestMeteoDeprecatedAliases:
+    """Verify that the camelCase attribute names kept for backward compatibility
+    forward to their lowercase replacements and emit a DeprecationWarning."""
+
+    DEPRECATED_PAIRS = [
+        ("forcingVariableName", "forcingvariablename", "mer"),
+        ("extrapolationAllowed", "extrapolationallowed", True),
+        ("extrapolationSearchRadius", "extrapolationsearchradius", 10.0),
+        ("averagingType", "averagingtype", 1),
+        ("averagingNumMin", "averagingnummin", 0.5),
+        ("averagingPercentile", "averagingpercentile", 90.0),
+    ]
+
+    @staticmethod
+    def _make_meteo() -> Meteo:
+        return Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+        )
+
+    @pytest.mark.parametrize(("old_name", "new_name", "value"), DEPRECATED_PAIRS)
+    def test_deprecated_alias_read_returns_new_attribute(
+        self, old_name, new_name, value
+    ):
+        meteo = self._make_meteo()
+        setattr(meteo, new_name, value)
+        with pytest.warns(DeprecationWarning, match=old_name):
+            result = getattr(meteo, old_name)
+        assert result == value
+
+    @pytest.mark.parametrize(("old_name", "new_name", "value"), DEPRECATED_PAIRS)
+    def test_deprecated_alias_write_updates_new_attribute(
+        self, old_name, new_name, value
+    ):
+        meteo = self._make_meteo()
+        with pytest.warns(DeprecationWarning, match=old_name):
+            setattr(meteo, old_name, value)
+        assert getattr(meteo, new_name) == value
+
+    @pytest.mark.parametrize(("old_name", "new_name", "value"), DEPRECATED_PAIRS)
+    def test_camelcase_kwarg_construction_still_works_without_warning(
+        self, old_name, new_name, value
+    ):
+        kwargs = {
+            "quantity": "rainfall",
+            "forcingfile": ForcingModel(),
+            "forcingfiletype": MeteoForcingFileType.uniform,
+            old_name: value,
+        }
+        meteo = Meteo(**kwargs)
+        assert getattr(meteo, new_name) == value
 
 
 forcing_base_list = [
