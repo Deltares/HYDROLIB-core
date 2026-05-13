@@ -1,11 +1,11 @@
-"""Tests for the generic deprecation helpers in ``hydrolib.core.base.deprecation``."""
+"""Tests for the generic deprecation helpers in `hydrolib.core.base._deprecation`."""
 
 import warnings
 from typing import Optional
 
 import pytest
 
-from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 
 
 class _SampleHolder:

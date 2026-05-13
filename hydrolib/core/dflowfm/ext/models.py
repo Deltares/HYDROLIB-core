@@ -13,7 +13,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,

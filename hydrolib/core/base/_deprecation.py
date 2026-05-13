@@ -1,4 +1,8 @@
-"""Reusable building blocks for deprecating public Python API surface.
+"""Internal building blocks for deprecating public Python API surface.
+
+This module is private (leading-underscore name); it is not part of the
+hydrolib-core public API and may change without notice. It is intended for
+use by hydrolib-core's own modules only.
 
 This module is intended for cases where a public symbol on a class is renamed,
 moved, or scheduled for removal but must keep working — with a clear
@@ -45,7 +49,7 @@ class DeprecatedAttributeAlias(property):
         - Define a class with a deprecated alias and read through it:
             ```python
             >>> import warnings
-            >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+            >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
             >>> class Config:
             ...     timeout_seconds = 30
             ...     timeoutSeconds = DeprecatedAttributeAlias("timeout_seconds", removed_in="2.0.0")
@@ -61,7 +65,7 @@ class DeprecatedAttributeAlias(property):
         - Writing via the deprecated name updates the canonical attribute:
             ```python
             >>> import warnings
-            >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+            >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
             >>> class Settings:
             ...     batch_size = 10
             ...     batchSize = DeprecatedAttributeAlias("batch_size", removed_in="2.0.0")
@@ -76,7 +80,7 @@ class DeprecatedAttributeAlias(property):
             ```
         - Inspect alias metadata directly from the class:
             ```python
-            >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+            >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
             >>> class Service:
             ...     host = "localhost"
             ...     hostName = DeprecatedAttributeAlias("host", removed_in="3.0.0", since="1.5.0")
@@ -115,7 +119,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - Construct with only the required `new_name`:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> alias = DeprecatedAttributeAlias("new_field")
                 >>> alias.new_name
                 'new_field'
@@ -123,7 +127,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - Construct with a removal version and since-version:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> alias = DeprecatedAttributeAlias("real_name", removed_in="2.0.0", since="1.1.0")
                 >>> alias.new_name
                 'real_name'
@@ -153,7 +157,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - The deprecated attribute name is discovered automatically:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Widget:
                 ...     color = "red"
                 ...     colour = DeprecatedAttributeAlias("color")
@@ -164,7 +168,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - The owner class name is also captured for use in warnings:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Engine:
                 ...     speed = 0
                 ...     velocity = DeprecatedAttributeAlias("speed")
@@ -187,7 +191,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - Inspect the forwarding target on a standalone alias:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> alias = DeprecatedAttributeAlias("snake_name")
                 >>> alias.new_name
                 'snake_name'
@@ -195,7 +199,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - Inspect the target from a class-bound alias:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Box:
                 ...     width = 100
                 ...     widthPx = DeprecatedAttributeAlias("width")
@@ -218,7 +222,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - A class-bound alias reports its class-body attribute name:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class User:
                 ...     full_name = ""
                 ...     fullName = DeprecatedAttributeAlias("full_name")
@@ -229,7 +233,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - An unbound descriptor reports `None`:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> orphan = DeprecatedAttributeAlias("real_name")
                 >>> orphan.old_name is None
                 True
@@ -249,7 +253,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - Default message references qualified names and removal version:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Order:
                 ...     total_cents = 0
                 ...     totalCents = DeprecatedAttributeAlias(
@@ -262,7 +266,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - A custom `message` overrides the default formatter verbatim:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Account:
                 ...     id_ = 0
                 ...     account_id = DeprecatedAttributeAlias(
@@ -300,7 +304,7 @@ class DeprecatedAttributeAlias(property):
         Examples:
             - A class-bound alias qualifies with the owner class name:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Server:
                 ...     port = 8080
                 ...     portNumber = DeprecatedAttributeAlias("port")
@@ -311,7 +315,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - An unbound descriptor returns the bare name:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> alias = DeprecatedAttributeAlias("port")
                 >>> alias._qualified("port")
                 'port'
@@ -319,7 +323,7 @@ class DeprecatedAttributeAlias(property):
                 ```
             - Passing `None` falls back to the unknown sentinel:
                 ```python
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> alias = DeprecatedAttributeAlias("port")
                 >>> alias._qualified(None)
                 '<unknown>'
@@ -348,7 +352,7 @@ class DeprecatedAttributeAlias(property):
             - Reading via the deprecated alias returns the canonical value:
                 ```python
                 >>> import warnings
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Profile:
                 ...     full_name = "Ada"
                 ...     fullName = DeprecatedAttributeAlias("full_name")
@@ -364,7 +368,7 @@ class DeprecatedAttributeAlias(property):
             - Each access emits its own `DeprecationWarning`:
                 ```python
                 >>> import warnings
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Item:
                 ...     unit_price = 19.99
                 ...     unitPrice = DeprecatedAttributeAlias("unit_price")
@@ -397,7 +401,7 @@ class DeprecatedAttributeAlias(property):
             - Writing via the deprecated alias updates the canonical attribute:
                 ```python
                 >>> import warnings
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Cache:
                 ...     max_size = 0
                 ...     maxSize = DeprecatedAttributeAlias("max_size")
@@ -413,7 +417,7 @@ class DeprecatedAttributeAlias(property):
             - Each write triggers its own `DeprecationWarning`:
                 ```python
                 >>> import warnings
-                >>> from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
+                >>> from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
                 >>> class Buffer:
                 ...     length = 0
                 ...     bufferLength = DeprecatedAttributeAlias("length")
