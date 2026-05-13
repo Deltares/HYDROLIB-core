@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -367,14 +368,146 @@ class TestMeteoDeprecatedAliases:
     def test_camelcase_kwarg_construction_still_works_without_warning(
         self, old_name, new_name, value
     ):
+        """Constructing with the camelCase kwarg goes through the Pydantic alias path."""
         kwargs = {
             "quantity": "rainfall",
             "forcingfile": ForcingModel(),
             "forcingfiletype": MeteoForcingFileType.uniform,
             old_name: value,
         }
-        meteo = Meteo(**kwargs)
+        with warnings.catch_warnings(record=True) as captured:
+            warnings.simplefilter("always")
+            meteo = Meteo(**kwargs)
+        deprecations = [
+            w for w in captured if issubclass(w.category, DeprecationWarning)
+        ]
+        assert deprecations == [], (
+            f"Constructor with kwarg `{old_name}` must not emit DeprecationWarning,"
+            f" got {len(deprecations)}"
+        )
         assert getattr(meteo, new_name) == value
+
+
+class TestMeteoModelDump:
+    """Pin the public shape of `Meteo.model_dump()` after the field rename."""
+
+    @staticmethod
+    def _make_meteo() -> Meteo:
+        return Meteo(
+            quantity="rainfall",
+            forcingfile=ForcingModel(),
+            forcingfiletype=MeteoForcingFileType.uniform,
+            extrapolationallowed=True,
+            extrapolationsearchradius=10.0,
+            averagingtype=1,
+            averagingnummin=0.5,
+            averagingpercentile=90.0,
+            forcingvariablename="mer",
+        )
+
+    LOWERCASE_KEYS = (
+        "extrapolationallowed",
+        "extrapolationsearchradius",
+        "averagingtype",
+        "averagingnummin",
+        "averagingpercentile",
+        "forcingvariablename",
+    )
+    CAMELCASE_KEYS = (
+        "extrapolationAllowed",
+        "extrapolationSearchRadius",
+        "averagingType",
+        "averagingNumMin",
+        "averagingPercentile",
+        "forcingVariableName",
+    )
+
+    def test_default_dump_uses_lowercase_field_names(self):
+        """Default `model_dump()` emits the canonical lowercase Python field names."""
+        dumped = self._make_meteo().model_dump()
+        for key in self.LOWERCASE_KEYS:
+            assert key in dumped, f"Expected lowercase key `{key}` in default dump"
+        for key in self.CAMELCASE_KEYS:
+            assert key not in dumped, (
+                f"camelCase key `{key}` must NOT appear in default dump"
+            )
+
+    def test_dump_with_by_alias_uses_camelcase_wire_keys(self):
+        """`model_dump(by_alias=True)` emits the on-disk camelCase keys."""
+        dumped = self._make_meteo().model_dump(by_alias=True)
+        for key in self.CAMELCASE_KEYS:
+            assert key in dumped, (
+                f"Expected camelCase key `{key}` in by_alias dump"
+            )
+        for key in self.LOWERCASE_KEYS:
+            assert key not in dumped, (
+                f"lowercase key `{key}` must NOT appear in by_alias dump"
+            )
+
+
+class TestMeteoWireFormatRoundTrip:
+    """End-to-end checks that the rename preserves the on-disk INI wire format."""
+
+    MINIMAL_INI = (
+        "[General]\n"
+        "fileVersion = 2.01\n"
+        "fileType    = extForce\n"
+        "\n"
+        "[Meteo]\n"
+        "quantity             = rainfall\n"
+        "forcingFile          = dummy.amu\n"
+        "forcingFileType      = arcInfo\n"
+        "extrapolationAllowed = 0\n"
+    )
+
+    def test_camelcase_wire_keys_parse_into_lowercase_field(self, tmp_path: Path):
+        """A `.ext` file with `extrapolationAllowed = 0` parses into the lowercase field."""
+        ext_path = tmp_path / "forcings.ext"
+        ext_path.write_text(self.MINIMAL_INI, encoding="utf-8")
+        model = ExtModel(filepath=ext_path)
+        assert len(model.meteo) == 1
+        meteo = model.meteo[0]
+        assert meteo.extrapolationallowed is False, (
+            f"Expected extrapolationallowed=False parsed from `0`, got"
+            f" {meteo.extrapolationallowed!r}"
+        )
+
+    def test_save_preserves_camelcase_wire_key(self, tmp_path: Path):
+        """Saving a Meteo with the lowercase Python field emits the camelCase wire key."""
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=DiskOnlyFileModel(filepath=Path("dummy.amu")),
+            forcingfiletype=MeteoForcingFileType.arcinfo,
+            extrapolationallowed=False,
+        )
+        out_path = tmp_path / "out.ext"
+        ExtModel(meteo=[meteo]).save(filepath=out_path)
+        text = out_path.read_text(encoding="utf-8")
+        assert "extrapolationAllowed" in text, (
+            "Round-tripped INI must keep the camelCase wire key"
+        )
+        assert "extrapolationallowed = " not in text, (
+            "Lowercase Python name must not leak into the serialized INI"
+        )
+
+    def test_save_preserves_inline_comment_text(self, tmp_path: Path):
+        """The inline `#` comment defined on the renamed Comments field still serializes."""
+        meteo = Meteo(
+            quantity="rainfall",
+            forcingfile=DiskOnlyFileModel(filepath=Path("dummy.amu")),
+            forcingfiletype=MeteoForcingFileType.arcinfo,
+            extrapolationallowed=True,
+        )
+        out_path = tmp_path / "with_comments.ext"
+        ExtModel(meteo=[meteo]).save(filepath=out_path)
+        text = out_path.read_text(encoding="utf-8")
+        assert "extrapolationAllowed" in text, (
+            "Saved Meteo must contain the camelCase wire key"
+        )
+        assert "Optionally allow nearest neighbour extrapolation" in text, (
+            "Default Comments docstring for the renamed extrapolationallowed"
+            " field must still be emitted as the inline comment"
+        )
 
 
 forcing_base_list = [

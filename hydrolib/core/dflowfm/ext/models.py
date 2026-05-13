@@ -1,6 +1,5 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
-import warnings
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -14,6 +13,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
+from hydrolib.core.base.deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
@@ -437,29 +437,6 @@ class MeteoInterpolationMethod(StrEnum):
     allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
 
 
-def _deprecated_camelcase_alias(old_name: str, new_name: str) -> property:
-    """Build a property that exposes a renamed field under its old camelCase name.
-
-    Reading or writing the old name proxies to ``new_name`` and emits a
-    ``DeprecationWarning``. Used to keep the public Python API backward-compatible
-    after lowercasing field names; targeted for removal in version 2.0.0.
-    """
-    message = (
-        f"`{old_name}` is deprecated and will be removed in 2.0.0; "
-        f"use `{new_name}` instead."
-    )
-
-    def fget(self):
-        warnings.warn(message, DeprecationWarning, stacklevel=2)
-        return getattr(self, new_name)
-
-    def fset(self, value):
-        warnings.warn(message, DeprecationWarning, stacklevel=2)
-        setattr(self, new_name, value)
-
-    return property(fget, fset)
-
-
 class Meteo(INIBasedModel):
     """A `[Meteo]` block for use inside an external forcings file.
 
@@ -538,22 +515,24 @@ class Meteo(INIBasedModel):
     averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
     averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
-    # Deprecated camelCase aliases for the lowercase fields above. The case-only
-    # clash with the canonical names is intentional and required by the shim;
-    # remove together with these aliases in 2.0.0. See docs/migration.md.
-    forcingVariableName = _deprecated_camelcase_alias(  # NOSONAR: S1845
-        "forcingVariableName", "forcingvariablename"
+    # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
+    forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "forcingvariablename", removed_in="2.0.0", since="1.1.0"
     )
-    extrapolationAllowed = _deprecated_camelcase_alias(  # NOSONAR: S1845
-        "extrapolationAllowed", "extrapolationallowed"
+    extrapolationAllowed = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationallowed", removed_in="2.0.0", since="1.1.0"
     )
-    extrapolationSearchRadius = _deprecated_camelcase_alias(  # NOSONAR: S1845
-        "extrapolationSearchRadius", "extrapolationsearchradius"
+    extrapolationSearchRadius = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationsearchradius", removed_in="2.0.0", since="1.1.0"
     )
-    averagingType = _deprecated_camelcase_alias("averagingType", "averagingtype")  # NOSONAR: S1845
-    averagingNumMin = _deprecated_camelcase_alias("averagingNumMin", "averagingnummin")  # NOSONAR: S1845
-    averagingPercentile = _deprecated_camelcase_alias(  # NOSONAR: S1845
-        "averagingPercentile", "averagingpercentile"
+    averagingType = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingtype", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingNumMin = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingnummin", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingPercentile = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingpercentile", removed_in="2.0.0", since="1.1.0"
     )
 
     @model_validator(mode="before")
