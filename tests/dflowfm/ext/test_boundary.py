@@ -147,7 +147,7 @@ class TestValidateFromCtor:
         ],
     )
     def test_given_no_values_raises_valueerror(self, dict_values: dict):
-        required_values = dict(quantity="aQuantity", forcingfile=[ForcingModel()])
+        required_values = dict(quantity="aQuantity", forcingfile=ForcingModel())
         test_values = {**dict_values, **required_values}
         with pytest.raises(ValueError) as exc_mssg:
             Boundary(**test_values)
