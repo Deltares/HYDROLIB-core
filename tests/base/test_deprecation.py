@@ -13,7 +13,7 @@ class _SampleHolder:
 
     canonical_name: Optional[int] = None
 
-    deprecatedName = DeprecatedAttributeAlias(
+    deprecated_name = DeprecatedAttributeAlias(
         "canonical_name", removed_in="9.9.9", since="1.0.0"
     )
 
@@ -27,15 +27,15 @@ class TestDeprecatedAttributeAlias:
     def test_read_forwards_to_new_name_and_warns(self):
         """Reading the deprecated name yields the canonical value and warns."""
         holder = _SampleHolder(canonical_name=42)
-        with pytest.warns(DeprecationWarning, match="deprecatedName"):
-            result = holder.deprecatedName
+        with pytest.warns(DeprecationWarning, match="deprecated_name"):
+            result = holder.deprecated_name
         assert result == 42, f"Expected forwarded value 42, got {result}"
 
     def test_write_forwards_to_new_name_and_warns(self):
         """Writing the deprecated name updates the canonical attribute and warns."""
         holder = _SampleHolder()
-        with pytest.warns(DeprecationWarning, match="deprecatedName"):
-            holder.deprecatedName = 7
+        with pytest.warns(DeprecationWarning, match="deprecated_name"):
+            holder.deprecated_name = 7
         assert holder.canonical_name == 7, (
             f"Expected canonical_name to be 7 after write, got {holder.canonical_name}"
         )
@@ -44,23 +44,23 @@ class TestDeprecatedAttributeAlias:
         """Default warning text includes qualified names, since-version, and removal-version."""
         holder = _SampleHolder()
         with pytest.warns(DeprecationWarning) as captured:
-            holder.deprecatedName = 1
+            holder.deprecated_name = 1
         message = str(captured[0].message)
-        assert "_SampleHolder.deprecatedName" in message, message
+        assert "_SampleHolder.deprecated_name" in message, message
         assert "_SampleHolder.canonical_name" in message, message
         assert "9.9.9" in message, message
         assert "since 1.0.0" in message, message
 
     def test_class_access_returns_descriptor(self):
         """Accessing the alias on the class (not an instance) returns the descriptor itself."""
-        descriptor = _SampleHolder.__dict__["deprecatedName"]
+        descriptor = _SampleHolder.__dict__["deprecated_name"]
         assert isinstance(descriptor, DeprecatedAttributeAlias)
-        assert descriptor.old_name == "deprecatedName"
+        assert descriptor.old_name == "deprecated_name"
         assert descriptor.new_name == "canonical_name"
 
     def test_class_access_via_getattr_returns_descriptor(self):
         """`Class.alias` (rather than via `__dict__`) also returns the descriptor."""
-        result = _SampleHolder.deprecatedName
+        result = _SampleHolder.deprecated_name
         assert isinstance(result, DeprecatedAttributeAlias)
 
     def test_custom_message_overrides_default(self):
@@ -123,9 +123,9 @@ class TestDeprecatedAttributeAlias:
         holder = _SampleHolder(canonical_name=1)
         with warnings.catch_warnings(record=True) as captured:
             warnings.simplefilter("always")
-            _ = holder.deprecatedName
-            _ = holder.deprecatedName
-            holder.deprecatedName = 2
+            _ = holder.deprecated_name
+            _ = holder.deprecated_name
+            holder.deprecated_name = 2
         deprecations = [
             w for w in captured if issubclass(w.category, DeprecationWarning)
         ]
@@ -160,6 +160,6 @@ class TestDeprecatedAttributeAlias:
 
     def test_constructor_stores_introspection_fields(self):
         """`new_name`/`old_name` properties expose what was passed and discovered."""
-        descriptor = _SampleHolder.__dict__["deprecatedName"]
+        descriptor = _SampleHolder.__dict__["deprecated_name"]
         assert descriptor.new_name == "canonical_name"
-        assert descriptor.old_name == "deprecatedName"
+        assert descriptor.old_name == "deprecated_name"
