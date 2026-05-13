@@ -458,7 +458,7 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
-        forcingVariableName: Optional[str] = Field(
+        forcingvariablename: Optional[str] = Field(
             "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
             alias="forcingVariableName",
         )
@@ -498,7 +498,7 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingVariableName: Optional[str] = Field(None, alias="forcingVariableName")
+    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
