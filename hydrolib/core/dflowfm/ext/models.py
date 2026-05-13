@@ -538,18 +538,21 @@ class Meteo(INIBasedModel):
     averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
     averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
-    forcingVariableName = _deprecated_camelcase_alias(
+    # Deprecated camelCase aliases for the lowercase fields above. The case-only
+    # clash with the canonical names is intentional and required by the shim;
+    # remove together with these aliases in 2.0.0. See docs/migration.md.
+    forcingVariableName = _deprecated_camelcase_alias(  # NOSONAR: S1845
         "forcingVariableName", "forcingvariablename"
     )
-    extrapolationAllowed = _deprecated_camelcase_alias(
+    extrapolationAllowed = _deprecated_camelcase_alias(  # NOSONAR: S1845
         "extrapolationAllowed", "extrapolationallowed"
     )
-    extrapolationSearchRadius = _deprecated_camelcase_alias(
+    extrapolationSearchRadius = _deprecated_camelcase_alias(  # NOSONAR: S1845
         "extrapolationSearchRadius", "extrapolationsearchradius"
     )
-    averagingType = _deprecated_camelcase_alias("averagingType", "averagingtype")
-    averagingNumMin = _deprecated_camelcase_alias("averagingNumMin", "averagingnummin")
-    averagingPercentile = _deprecated_camelcase_alias(
+    averagingType = _deprecated_camelcase_alias("averagingType", "averagingtype")  # NOSONAR: S1845
+    averagingNumMin = _deprecated_camelcase_alias("averagingNumMin", "averagingnummin")  # NOSONAR: S1845
+    averagingPercentile = _deprecated_camelcase_alias(  # NOSONAR: S1845
         "averagingPercentile", "averagingpercentile"
     )
 
