@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Union
 
 from pydantic import (
     BeforeValidator,
@@ -72,6 +72,14 @@ def load_dry(value):
     file_suffix_model_map = {
         ".xyz": XYZModel,
         ".pli": PolyFile,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_particles(value):
+    """Load a particles model from a file path."""
+    file_suffix_model_map = {
+        ".xyz": XYZModel,
     }
     return load_model(value, file_suffix_model_map)
 
@@ -1109,6 +1117,9 @@ ObsCrsFile = Annotated[
 ]
 DryPointsFile = Annotated[
     Union[XYZModel, PolyFile, DiskOnlyFileModel], BeforeValidator(load_dry)
+]
+ParticlesFile = Annotated[
+    XYZModel | DiskOnlyFileModel, BeforeValidator(load_particles)
 ]
 
 

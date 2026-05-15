@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-from typing import Callable, Dict, Union
+from typing import Callable
 
 import pytest
 
@@ -37,6 +37,7 @@ from hydrolib.core.dflowfm.polyfile.models import (
     PolyObject,
 )
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
+from hydrolib.core.dflowfm.xyz.models import XYZModel
 from tests.utils import (
     assert_files_equal,
     assert_objects_equal,
@@ -47,7 +48,7 @@ from tests.utils import (
 )
 
 
-def _create_boundary(data: Dict) -> Boundary:
+def _create_boundary(data: dict) -> Boundary:
     data["quantity"] = ""
     data["forcingfile"] = ForcingModel()
 
@@ -388,9 +389,9 @@ class TestModels:
     )
     def test_model_diskonlyfilemodel_field_is_constructed_correctly(
         self,
-        input: Union[None, Path, DiskOnlyFileModel],
+        input: Path | DiskOnlyFileModel | None,
         input_field: str,
-        create_model: Callable[[Dict], object],
+        create_model: Callable[[dict], object],
         retrieve_field: Callable[[object], DiskOnlyFileModel],
     ):
         data = {input_field: input}
@@ -1049,6 +1050,15 @@ _RECURSE_FALSE_CASES = [
         False,
         DiskOnlyFileModel,
         id="gridenclosurefile-pli",
+    ),
+    pytest.param(
+        "particles.particlesfile",
+        "particles.xyz",
+        _write_xyzfile,
+        XYZModel,
+        False,
+        XYZModel,
+        id="particlesfile-xyz",
     ),
     pytest.param(
         "output.obsfile",
