@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Literal, Union
+from typing import Annotated, Any, Literal, Union, Optional, List
 
 from pydantic import (
     BeforeValidator,
