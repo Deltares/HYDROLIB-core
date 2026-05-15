@@ -57,6 +57,31 @@ def _coordinate_length(v) -> int:
     return result
 
 
+def _resolve_forcing_data(v):
+    """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
+
+    A string is tried as a float, then as the `RealTime` enum (case-insensitive),
+    and finally resolved as a path to a `.bc` forcing file. A `Path` is always
+    resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
+    Any other value (including `None`) is passed through unchanged so that
+    Optional fields and already-validated values still work.
+    """
+    result = v
+    if isinstance(v, str):
+        try:
+            result = float(v)
+        except ValueError:
+            try:
+                result = RealTime(v.lower())
+            except ValueError:
+                result = resolve_file_model(v, ForcingModel)
+    elif isinstance(v, Path):
+        result = resolve_file_model(v, ForcingModel)
+    elif isinstance(v, dict):
+        result = ForcingModel(**v)
+    return result
+
+
 FILETYPE_FILEMODEL_MAPPING = {
     "bcascii": ForcingModel,
     "uniform": TimModel,
@@ -229,23 +254,7 @@ class Lateral(INIBasedModel):
     @field_validator("discharge", mode="before")
     @classmethod
     def validate_discharge(cls, v):
-        result = v
-        if isinstance(v, str):
-            # Try float
-            try:
-                result = float(v)
-            except ValueError:
-                # Try RealTime enum (case-insensitive)
-                try:
-                    result = RealTime(v.lower())
-                except ValueError:
-                    result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, Path):
-            result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, dict):
-            # Try to instantiate ForcingModel from dict
-            result = ForcingModel(**v)
-        return result
+        return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
@@ -317,6 +326,13 @@ class SourceSink(INIBasedModel):
     @classmethod
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
+
+    @field_validator(
+        "discharge", "salinitydelta", "temperaturedelta", mode="before"
+    )
+    @classmethod
+    def validate_forcing_data(cls, v):
+        return _resolve_forcing_data(v)
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
