@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -5160,15 +5160,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2251</span>
-<span class="normal">2252</span>
-<span class="normal">2253</span>
-<span class="normal">2254</span>
-<span class="normal">2255</span>
-<span class="normal">2256</span>
-<span class="normal">2257</span>
-<span class="normal">2258</span>
-<span class="normal">2259</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2259</span>
 <span class="normal">2260</span>
 <span class="normal">2261</span>
 <span class="normal">2262</span>
@@ -5195,7 +5187,15 @@ It is represented by the classes below.</p>
 <span class="normal">2283</span>
 <span class="normal">2284</span>
 <span class="normal">2285</span>
-<span class="normal">2286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Calibration</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2286</span>
+<span class="normal">2287</span>
+<span class="normal">2288</span>
+<span class="normal">2289</span>
+<span class="normal">2290</span>
+<span class="normal">2291</span>
+<span class="normal">2292</span>
+<span class="normal">2293</span>
+<span class="normal">2294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Calibration</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Calibration]` section in an MDU file.</span>
 
@@ -5274,21 +5274,21 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2261</span>
-<span class="normal">2262</span>
-<span class="normal">2263</span>
-<span class="normal">2264</span>
-<span class="normal">2265</span>
-<span class="normal">2266</span>
-<span class="normal">2267</span>
-<span class="normal">2268</span>
-<span class="normal">2269</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2269</span>
 <span class="normal">2270</span>
 <span class="normal">2271</span>
 <span class="normal">2272</span>
 <span class="normal">2273</span>
 <span class="normal">2274</span>
-<span class="normal">2275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2275</span>
+<span class="normal">2276</span>
+<span class="normal">2277</span>
+<span class="normal">2278</span>
+<span class="normal">2279</span>
+<span class="normal">2280</span>
+<span class="normal">2281</span>
+<span class="normal">2282</span>
+<span class="normal">2283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Calibration section fields.&quot;&quot;&quot;</span>
 
     <span class="n">usecalibration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -5632,17 +5632,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2570</span>
-<span class="normal">2571</span>
-<span class="normal">2572</span>
-<span class="normal">2573</span>
-<span class="normal">2574</span>
-<span class="normal">2575</span>
-<span class="normal">2576</span>
-<span class="normal">2577</span>
-<span class="normal">2578</span>
-<span class="normal">2579</span>
-<span class="normal">2580</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2580</span>
 <span class="normal">2581</span>
 <span class="normal">2582</span>
 <span class="normal">2583</span>
@@ -5714,7 +5704,17 @@ It is represented by the classes below.</p>
 <span class="normal">2649</span>
 <span class="normal">2650</span>
 <span class="normal">2651</span>
-<span class="normal">2652</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FMModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">2652</span>
+<span class="normal">2653</span>
+<span class="normal">2654</span>
+<span class="normal">2655</span>
+<span class="normal">2656</span>
+<span class="normal">2657</span>
+<span class="normal">2658</span>
+<span class="normal">2659</span>
+<span class="normal">2660</span>
+<span class="normal">2661</span>
+<span class="normal">2662</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FMModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall FM model that contains the contents of the toplevel MDU file.</span>
 
@@ -6068,13 +6068,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1848</span>
-<span class="normal">1849</span>
-<span class="normal">1850</span>
-<span class="normal">1851</span>
-<span class="normal">1852</span>
-<span class="normal">1853</span>
-<span class="normal">1854</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1854</span>
 <span class="normal">1855</span>
 <span class="normal">1856</span>
 <span class="normal">1857</span>
@@ -6468,7 +6462,15 @@ It is represented by the classes below.</p>
 <span class="normal">2245</span>
 <span class="normal">2246</span>
 <span class="normal">2247</span>
-<span class="normal">2248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Geometry</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2248</span>
+<span class="normal">2249</span>
+<span class="normal">2250</span>
+<span class="normal">2251</span>
+<span class="normal">2252</span>
+<span class="normal">2253</span>
+<span class="normal">2254</span>
+<span class="normal">2255</span>
+<span class="normal">2256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Geometry</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Geometry]` section in an MDU file.</span>
 
@@ -6822,7 +6824,9 @@ It is represented by the classes below.</p>
     <span class="n">dxdoubleat1dendnodes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dxDoubleAt1DEndNodes&quot;</span><span class="p">)</span>
     <span class="n">changevelocityatstructures</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;changeVelocityAtStructures&quot;</span><span class="p">)</span>
     <span class="n">changestructuredimensions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;changeStructureDimensions&quot;</span><span class="p">)</span>
-    <span class="n">gridenclosurefile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PolyFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;gridEnclosureFile&quot;</span><span class="p">)</span>
+    <span class="n">gridenclosurefile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">PolyFile</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;gridEnclosureFile&quot;</span>
+    <span class="p">)</span>
     <span class="n">allowbndatbifurcation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;allowBndAtBifurcation&quot;</span><span class="p">)</span>
     <span class="n">slotw1d</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;slotw1D&quot;</span><span class="p">)</span>
     <span class="n">slotw2d</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;slotw2D&quot;</span><span class="p">)</span>
@@ -6912,13 +6916,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1858</span>
-<span class="normal">1859</span>
-<span class="normal">1860</span>
-<span class="normal">1861</span>
-<span class="normal">1862</span>
-<span class="normal">1863</span>
-<span class="normal">1864</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1864</span>
 <span class="normal">1865</span>
 <span class="normal">1866</span>
 <span class="normal">1867</span>
@@ -7158,7 +7156,13 @@ It is represented by the classes below.</p>
 <span class="normal">2101</span>
 <span class="normal">2102</span>
 <span class="normal">2103</span>
-<span class="normal">2104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2104</span>
+<span class="normal">2105</span>
+<span class="normal">2106</span>
+<span class="normal">2107</span>
+<span class="normal">2108</span>
+<span class="normal">2109</span>
+<span class="normal">2110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Geometry section fields.&quot;&quot;&quot;</span>
 
     <span class="n">netfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The net file &lt;*_net.nc&gt;&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;netFile&quot;</span><span class="p">)</span>
@@ -7469,15 +7473,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2303</span>
-<span class="normal">2304</span>
-<span class="normal">2305</span>
-<span class="normal">2306</span>
-<span class="normal">2307</span>
-<span class="normal">2308</span>
-<span class="normal">2309</span>
-<span class="normal">2310</span>
-<span class="normal">2311</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2311</span>
 <span class="normal">2312</span>
 <span class="normal">2313</span>
 <span class="normal">2314</span>
@@ -7532,7 +7528,15 @@ It is represented by the classes below.</p>
 <span class="normal">2363</span>
 <span class="normal">2364</span>
 <span class="normal">2365</span>
-<span class="normal">2366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GroundWater</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2366</span>
+<span class="normal">2367</span>
+<span class="normal">2368</span>
+<span class="normal">2369</span>
+<span class="normal">2370</span>
+<span class="normal">2371</span>
+<span class="normal">2372</span>
+<span class="normal">2373</span>
+<span class="normal">2374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GroundWater</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Grw]` section in an MDU file.</span>
 
@@ -7639,15 +7643,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2313</span>
-<span class="normal">2314</span>
-<span class="normal">2315</span>
-<span class="normal">2316</span>
-<span class="normal">2317</span>
-<span class="normal">2318</span>
-<span class="normal">2319</span>
-<span class="normal">2320</span>
-<span class="normal">2321</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2321</span>
 <span class="normal">2322</span>
 <span class="normal">2323</span>
 <span class="normal">2324</span>
@@ -7675,7 +7671,15 @@ It is represented by the classes below.</p>
 <span class="normal">2346</span>
 <span class="normal">2347</span>
 <span class="normal">2348</span>
-<span class="normal">2349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2349</span>
+<span class="normal">2350</span>
+<span class="normal">2351</span>
+<span class="normal">2352</span>
+<span class="normal">2353</span>
+<span class="normal">2354</span>
+<span class="normal">2355</span>
+<span class="normal">2356</span>
+<span class="normal">2357</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the GroundWater section fields.&quot;&quot;&quot;</span>
 
     <span class="n">groundwater</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -7938,18 +7942,18 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2289</span>
-<span class="normal">2290</span>
-<span class="normal">2291</span>
-<span class="normal">2292</span>
-<span class="normal">2293</span>
-<span class="normal">2294</span>
-<span class="normal">2295</span>
-<span class="normal">2296</span>
-<span class="normal">2297</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2297</span>
 <span class="normal">2298</span>
 <span class="normal">2299</span>
-<span class="normal">2300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InfiltrationMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="normal">2300</span>
+<span class="normal">2301</span>
+<span class="normal">2302</span>
+<span class="normal">2303</span>
+<span class="normal">2304</span>
+<span class="normal">2305</span>
+<span class="normal">2306</span>
+<span class="normal">2307</span>
+<span class="normal">2308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InfiltrationMethod</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the Infiltrationmodel attribute.</span>
 
 <span class="sd">    Contains valid values for the Infiltrationmodel attribute in the</span>
@@ -9199,13 +9203,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1109</span>
-<span class="normal">1110</span>
-<span class="normal">1111</span>
-<span class="normal">1112</span>
-<span class="normal">1113</span>
-<span class="normal">1114</span>
-<span class="normal">1115</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1115</span>
 <span class="normal">1116</span>
 <span class="normal">1117</span>
 <span class="normal">1118</span>
@@ -9935,7 +9933,13 @@ It is represented by the classes below.</p>
 <span class="normal">1842</span>
 <span class="normal">1843</span>
 <span class="normal">1844</span>
-<span class="normal">1845</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Output</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">1845</span>
+<span class="normal">1846</span>
+<span class="normal">1847</span>
+<span class="normal">1848</span>
+<span class="normal">1849</span>
+<span class="normal">1850</span>
+<span class="normal">1851</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Output</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Output]` section in an MDU file.</span>
 
@@ -10715,13 +10719,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1119</span>
-<span class="normal">1120</span>
-<span class="normal">1121</span>
-<span class="normal">1122</span>
-<span class="normal">1123</span>
-<span class="normal">1124</span>
-<span class="normal">1125</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1125</span>
 <span class="normal">1126</span>
 <span class="normal">1127</span>
 <span class="normal">1128</span>
@@ -11218,7 +11216,13 @@ It is represented by the classes below.</p>
 <span class="normal">1619</span>
 <span class="normal">1620</span>
 <span class="normal">1621</span>
-<span class="normal">1622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">1622</span>
+<span class="normal">1623</span>
+<span class="normal">1624</span>
+<span class="normal">1625</span>
+<span class="normal">1626</span>
+<span class="normal">1627</span>
+<span class="normal">1628</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Output section fields.&quot;&quot;&quot;</span>
 
     <span class="n">wrishp_crs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -11786,15 +11790,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2465</span>
-<span class="normal">2466</span>
-<span class="normal">2467</span>
-<span class="normal">2468</span>
-<span class="normal">2469</span>
-<span class="normal">2470</span>
-<span class="normal">2471</span>
-<span class="normal">2472</span>
-<span class="normal">2473</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2473</span>
 <span class="normal">2474</span>
 <span class="normal">2475</span>
 <span class="normal">2476</span>
@@ -11832,7 +11828,17 @@ It is represented by the classes below.</p>
 <span class="normal">2508</span>
 <span class="normal">2509</span>
 <span class="normal">2510</span>
-<span class="normal">2511</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Particles</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2511</span>
+<span class="normal">2512</span>
+<span class="normal">2513</span>
+<span class="normal">2514</span>
+<span class="normal">2515</span>
+<span class="normal">2516</span>
+<span class="normal">2517</span>
+<span class="normal">2518</span>
+<span class="normal">2519</span>
+<span class="normal">2520</span>
+<span class="normal">2521</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Particles</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Particles]` section in an MDU file.</span>
 
@@ -11867,7 +11873,9 @@ It is represented by the classes below.</p>
 
     <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Particles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Particles&quot;</span>
 
-    <span class="n">particlesfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">XYZModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;ParticlesFile&quot;</span><span class="p">)</span>
+    <span class="n">particlesfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">XYZModel</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;ParticlesFile&quot;</span>
+    <span class="p">)</span>
     <span class="n">particlesreleasefile</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="n">DiskOnlyFileModel</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">set_default_disk_only_file_model</span><span class="p">)</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -11922,15 +11930,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2475</span>
-<span class="normal">2476</span>
-<span class="normal">2477</span>
-<span class="normal">2478</span>
-<span class="normal">2479</span>
-<span class="normal">2480</span>
-<span class="normal">2481</span>
-<span class="normal">2482</span>
-<span class="normal">2483</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2483</span>
 <span class="normal">2484</span>
 <span class="normal">2485</span>
 <span class="normal">2486</span>
@@ -11941,7 +11941,15 @@ It is represented by the classes below.</p>
 <span class="normal">2491</span>
 <span class="normal">2492</span>
 <span class="normal">2493</span>
-<span class="normal">2494</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2494</span>
+<span class="normal">2495</span>
+<span class="normal">2496</span>
+<span class="normal">2497</span>
+<span class="normal">2498</span>
+<span class="normal">2499</span>
+<span class="normal">2500</span>
+<span class="normal">2501</span>
+<span class="normal">2502</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Particles section fields.&quot;&quot;&quot;</span>
 
     <span class="n">particlesfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -12023,14 +12031,14 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2455</span>
-<span class="normal">2456</span>
-<span class="normal">2457</span>
-<span class="normal">2458</span>
-<span class="normal">2459</span>
-<span class="normal">2460</span>
-<span class="normal">2461</span>
-<span class="normal">2462</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParticlesThreeDType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2463</span>
+<span class="normal">2464</span>
+<span class="normal">2465</span>
+<span class="normal">2466</span>
+<span class="normal">2467</span>
+<span class="normal">2468</span>
+<span class="normal">2469</span>
+<span class="normal">2470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParticlesThreeDType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the 3Dtype attribute.</span>
 
 <span class="sd">    Contains valid values for the 3Dtype attribute in the `Particles` class.</span>
@@ -12957,15 +12965,15 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2369</span>
-<span class="normal">2370</span>
-<span class="normal">2371</span>
-<span class="normal">2372</span>
-<span class="normal">2373</span>
-<span class="normal">2374</span>
-<span class="normal">2375</span>
-<span class="normal">2376</span>
-<span class="normal">2377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProcessFluxIntegration</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2377</span>
+<span class="normal">2378</span>
+<span class="normal">2379</span>
+<span class="normal">2380</span>
+<span class="normal">2381</span>
+<span class="normal">2382</span>
+<span class="normal">2383</span>
+<span class="normal">2384</span>
+<span class="normal">2385</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProcessFluxIntegration</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the ProcessFluxIntegration attribute.</span>
 
 <span class="sd">    Contains valid values for the ProcessFluxIntegration attribute in the</span>
@@ -13029,15 +13037,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2380</span>
-<span class="normal">2381</span>
-<span class="normal">2382</span>
-<span class="normal">2383</span>
-<span class="normal">2384</span>
-<span class="normal">2385</span>
-<span class="normal">2386</span>
-<span class="normal">2387</span>
-<span class="normal">2388</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2388</span>
 <span class="normal">2389</span>
 <span class="normal">2390</span>
 <span class="normal">2391</span>
@@ -13101,7 +13101,15 @@ It is represented by the classes below.</p>
 <span class="normal">2449</span>
 <span class="normal">2450</span>
 <span class="normal">2451</span>
-<span class="normal">2452</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Processes</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2452</span>
+<span class="normal">2453</span>
+<span class="normal">2454</span>
+<span class="normal">2455</span>
+<span class="normal">2456</span>
+<span class="normal">2457</span>
+<span class="normal">2458</span>
+<span class="normal">2459</span>
+<span class="normal">2460</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Processes</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Processes]` section in an MDU file.</span>
 
@@ -13217,15 +13225,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2390</span>
-<span class="normal">2391</span>
-<span class="normal">2392</span>
-<span class="normal">2393</span>
-<span class="normal">2394</span>
-<span class="normal">2395</span>
-<span class="normal">2396</span>
-<span class="normal">2397</span>
-<span class="normal">2398</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2398</span>
 <span class="normal">2399</span>
 <span class="normal">2400</span>
 <span class="normal">2401</span>
@@ -13254,7 +13254,15 @@ It is represented by the classes below.</p>
 <span class="normal">2424</span>
 <span class="normal">2425</span>
 <span class="normal">2426</span>
-<span class="normal">2427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2427</span>
+<span class="normal">2428</span>
+<span class="normal">2429</span>
+<span class="normal">2430</span>
+<span class="normal">2431</span>
+<span class="normal">2432</span>
+<span class="normal">2433</span>
+<span class="normal">2434</span>
+<span class="normal">2435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Processes section fields.&quot;&quot;&quot;</span>
 
     <span class="n">substancefile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -14351,17 +14359,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2525</span>
-<span class="normal">2526</span>
-<span class="normal">2527</span>
-<span class="normal">2528</span>
-<span class="normal">2529</span>
-<span class="normal">2530</span>
-<span class="normal">2531</span>
-<span class="normal">2532</span>
-<span class="normal">2533</span>
-<span class="normal">2534</span>
-<span class="normal">2535</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2535</span>
 <span class="normal">2536</span>
 <span class="normal">2537</span>
 <span class="normal">2538</span>
@@ -14393,7 +14391,17 @@ It is represented by the classes below.</p>
 <span class="normal">2564</span>
 <span class="normal">2565</span>
 <span class="normal">2566</span>
-<span class="normal">2567</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Vegetation</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">2567</span>
+<span class="normal">2568</span>
+<span class="normal">2569</span>
+<span class="normal">2570</span>
+<span class="normal">2571</span>
+<span class="normal">2572</span>
+<span class="normal">2573</span>
+<span class="normal">2574</span>
+<span class="normal">2575</span>
+<span class="normal">2576</span>
+<span class="normal">2577</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Vegetation</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The `[Veg]` section in an MDU file.</span>
 
@@ -14479,17 +14487,7 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2535</span>
-<span class="normal">2536</span>
-<span class="normal">2537</span>
-<span class="normal">2538</span>
-<span class="normal">2539</span>
-<span class="normal">2540</span>
-<span class="normal">2541</span>
-<span class="normal">2542</span>
-<span class="normal">2543</span>
-<span class="normal">2544</span>
-<span class="normal">2545</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2545</span>
 <span class="normal">2546</span>
 <span class="normal">2547</span>
 <span class="normal">2548</span>
@@ -14498,7 +14496,17 @@ It is represented by the classes below.</p>
 <span class="normal">2551</span>
 <span class="normal">2552</span>
 <span class="normal">2553</span>
-<span class="normal">2554</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">2554</span>
+<span class="normal">2555</span>
+<span class="normal">2556</span>
+<span class="normal">2557</span>
+<span class="normal">2558</span>
+<span class="normal">2559</span>
+<span class="normal">2560</span>
+<span class="normal">2561</span>
+<span class="normal">2562</span>
+<span class="normal">2563</span>
+<span class="normal">2564</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Vegetation section fields.&quot;&quot;&quot;</span>
 
     <span class="n">vegetationmodelnr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -14581,15 +14589,15 @@ It is represented by the classes below.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/mdu/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2514</span>
-<span class="normal">2515</span>
-<span class="normal">2516</span>
-<span class="normal">2517</span>
-<span class="normal">2518</span>
-<span class="normal">2519</span>
-<span class="normal">2520</span>
-<span class="normal">2521</span>
-<span class="normal">2522</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VegetationModelNr</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">2524</span>
+<span class="normal">2525</span>
+<span class="normal">2526</span>
+<span class="normal">2527</span>
+<span class="normal">2528</span>
+<span class="normal">2529</span>
+<span class="normal">2530</span>
+<span class="normal">2531</span>
+<span class="normal">2532</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VegetationModelNr</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the VegetationModelNr attribute.</span>
 
 <span class="sd">    Contains valid values for the VegetationModelNr attribute in the</span>
