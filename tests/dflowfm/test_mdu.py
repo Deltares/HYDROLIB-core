@@ -1109,21 +1109,24 @@ class TestRecurseFalseDiskOnlyFileModel:
 
     @staticmethod
     def _build_mdu_referencing_file(
-        mdu_path: Path, dotted_path: str, child_path: Path
+        mdu_path: Path, dotted_path: str, child_path: Path, is_list: bool
     ) -> FMModel:
         """Construct an FMModel whose dotted-path field points at ``child_path``.
 
         Instantiates the parent section (e.g. ``Particles``) if it is `None` on
         a default `FMModel`, then assigns either a single sub-model or a
         single-element list depending on the field's declared shape.
+
+        Args:
+            mdu_path: Filepath the constructed `FMModel` should report as its own.
+            dotted_path: Dotted attribute path of the target field.
+            child_path: Path to the child file whose typed sub-model will be
+                bound to the field.
+            is_list: Whether the target field is declared as
+                `Optional[List[...]]` (`True`) or as a scalar `Optional[...]`.
         """
         result = FMModel()
         result.filepath = mdu_path
-        list_valued = dotted_path.rsplit(".", 1)[1] in {
-            "drypointsfile",
-            "obsfile",
-            "crsfile",
-        }
         section_factories = {"particles": Particles}
         parent_segments = dotted_path.split(".")[:-1]
         leaf = dotted_path.split(".")[-1]
@@ -1138,7 +1141,7 @@ class TestRecurseFalseDiskOnlyFileModel:
             ".xyn": lambda p: XYNModel(p),
         }
         loaded = loader_map[child_path.suffix](child_path)
-        setattr(parent, leaf, [loaded] if list_valued else loaded)
+        setattr(parent, leaf, [loaded] if is_list else loaded)
         return result
 
     @pytest.mark.parametrize(
@@ -1186,7 +1189,7 @@ class TestRecurseFalseDiskOnlyFileModel:
         mdu_path = tmp_path / "model.mdu"
 
         save_model = self._build_mdu_referencing_file(
-            mdu_path, dotted_path, child_path
+            mdu_path, dotted_path, child_path, is_list
         )
         save_model.save()
         assert mdu_path.is_file(), f"MDU was not written to {mdu_path}"
@@ -1252,7 +1255,7 @@ class TestRecurseFalseDiskOnlyFileModel:
         mdu_path = tmp_path / "model.mdu"
 
         save_model = self._build_mdu_referencing_file(
-            mdu_path, dotted_path, child_path
+            mdu_path, dotted_path, child_path, is_list
         )
         save_model.save()
 

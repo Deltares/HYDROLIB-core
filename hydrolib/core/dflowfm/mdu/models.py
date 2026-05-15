@@ -1119,7 +1119,7 @@ DryPointsFile = Annotated[
     Union[XYZModel, PolyFile, DiskOnlyFileModel], BeforeValidator(load_dry)
 ]
 ParticlesFile = Annotated[
-    XYZModel | DiskOnlyFileModel, BeforeValidator(load_particles)
+    Union[XYZModel, DiskOnlyFileModel], BeforeValidator(load_particles)
 ]
 
 
