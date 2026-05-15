@@ -2516,9 +2516,7 @@ class Particles(INIBasedModel):
 
     _header: Literal["Particles"] = "Particles"
 
-    particlesfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
-        None, alias="ParticlesFile"
-    )
+    particlesfile: Optional[ParticlesFile] = Field(None, alias="ParticlesFile")
     particlesreleasefile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(
