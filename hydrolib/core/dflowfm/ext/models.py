@@ -57,6 +57,76 @@ def _coordinate_length(v) -> int:
     return result
 
 
+def _is_dynamic_forcing_delta_key(key: Any) -> bool:
+    """Return True if `key` names a dynamic `tracer<...>Delta`/`sedFrac<...>Delta` field.
+
+    Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `[SourceSink]` blocks
+    accept any number of `tracer<tracername>Delta` and `sedFrac<fractionname>Delta`
+    keys, each carrying a scalar Double or the name of a `.bc` file. They are
+    case-insensitive on the wire. Comparison here is also case-insensitive so
+    that both the camelCase Python kwarg form and the lowercased INI-parser
+    form are recognised.
+    """
+    result = False
+    if isinstance(key, str):
+        lowered = key.lower()
+        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
+    return result
+
+
+def _resolve_forcing_data(
+    v: Any, *, allow_realtime: bool = True
+) -> float | RealTime | ForcingModel | None:
+    """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
+
+    A string is tried as a float, then as the `RealTime` enum (case-insensitive),
+    and finally resolved as a path to a `.bc` forcing file. A `Path` is always
+    resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
+    Any other value (including `None`) is passed through unchanged so that
+    Optional fields and already-validated values still work.
+
+    Args:
+        v: The raw value to coerce.
+        allow_realtime: When `False`, the `realtime` keyword is rejected with a
+            `ValueError` instead of mapped to `RealTime.realtime`. The
+            D-Flow FM User Manual Table C.8 (§C.6.2.4) states that
+            `realtime` is "not (yet) available for sediment fractions and
+            tracers", so callers handling `tracer<...>Delta` /
+            `sedFrac<...>Delta` keys should pass `allow_realtime=False`.
+
+    Raises:
+        ValueError: When `v` is the `realtime` keyword (any case) and
+            `allow_realtime=False`.
+
+    Note: this helper returns `RealTime.realtime` for the realtime keyword, but
+    Pydantic's `Union[float, RealTime, ForcingModel]` resolution stores it as
+    the underlying string `"realtime"` on the model field. Compare with `==`
+    (StrEnum equality), not `is`.
+    """
+    result = v
+    if isinstance(v, str):
+        try:
+            result = float(v)
+        except ValueError:
+            try:
+                realtime_match = RealTime(v.lower())
+            except ValueError:
+                result = resolve_file_model(v, ForcingModel)
+            else:
+                if not allow_realtime:
+                    raise ValueError(
+                        "The 'realtime' keyword is not supported for this field. "
+                        "Per D-Flow FM User Manual Table C.8 (§C.6.2.4), realtime "
+                        "is not (yet) available for sediment fractions and tracers."
+                    )
+                result = realtime_match
+    elif isinstance(v, Path):
+        result = resolve_file_model(v, ForcingModel)
+    elif isinstance(v, dict):
+        result = ForcingModel(**v)
+    return result
+
+
 FILETYPE_FILEMODEL_MAPPING = {
     "bcascii": ForcingModel,
     "uniform": TimModel,
@@ -229,23 +299,7 @@ class Lateral(INIBasedModel):
     @field_validator("discharge", mode="before")
     @classmethod
     def validate_discharge(cls, v):
-        result = v
-        if isinstance(v, str):
-            # Try float
-            try:
-                result = float(v)
-            except ValueError:
-                # Try RealTime enum (case-insensitive)
-                try:
-                    result = RealTime(v.lower())
-                except ValueError:
-                    result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, Path):
-            result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, dict):
-            # Try to instantiate ForcingModel from dict
-            result = ForcingModel(**v)
-        return result
+        return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
@@ -318,6 +372,36 @@ class SourceSink(INIBasedModel):
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
+    @field_validator(
+        "discharge", "salinitydelta", "temperaturedelta", mode="before"
+    )
+    @classmethod
+    def validate_forcing_data(cls, v):
+        return _resolve_forcing_data(v)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _resolve_dynamic_forcing_deltas(cls, values: Any) -> Any:
+        """Apply `_resolve_forcing_data` to dynamic `tracer<...>Delta`/`sedFrac<...>Delta` keys.
+
+        Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
+        `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
+        time-series file. The first-class `discharge`/`salinityDelta`/
+        `temperatureDelta` fields are already handled by `validate_forcing_data`;
+        this validator extends the same coercion to the dynamic Delta-suffix
+        fields that arrive via `extra="allow"`.
+
+        Legacy dynamic fields (`initialtracer_*`, `tracerbnd*`, `sedfracbnd_*`,
+        `initialsedfrac_*`) do not end with `delta` and are left untouched.
+        """
+        if isinstance(values, dict):
+            for key in values:
+                if _is_dynamic_forcing_delta_key(key):
+                    values[key] = _resolve_forcing_data(
+                        values[key], allow_realtime=False
+                    )
+        return values
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -325,7 +409,10 @@ class SourceSink(INIBasedModel):
             key
             for key in input_data.keys()
             if key not in fields
-            and key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            and (
+                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+                or _is_dynamic_forcing_delta_key(key)
+            )
         ]
         return set(unknown_keywords)
 
