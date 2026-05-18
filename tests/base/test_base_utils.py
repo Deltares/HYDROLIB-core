@@ -441,6 +441,21 @@ class TestFilePathStyleConverter(unittest.TestCase):
         self.assertEqual(hash(a), hash(b))
         self.assertNotEqual(a, object())
 
+    def test_inequality_for_different_os_styles(self):
+        """Converters built on different OS styles must compare unequal."""
+        with patch(
+            "hydrolib.core.base.utils.get_path_style_for_current_operating_system",
+            return_value=PathStyle.UNIXLIKE,
+        ):
+            unix = FilePathStyleConverter()
+        with patch(
+            "hydrolib.core.base.utils.get_path_style_for_current_operating_system",
+            return_value=PathStyle.WINDOWSLIKE,
+        ):
+            windows = FilePathStyleConverter()
+        self.assertNotEqual(unix, windows)
+        self.assertNotEqual(hash(unix), hash(windows))
+
 
 class TestFileChecksumCalculator(unittest.TestCase):
     """Test cases for the FileChecksumCalculator class."""
