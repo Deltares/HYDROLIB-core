@@ -290,7 +290,7 @@ class TestSourceSinkForcingData:
             Nominal use-case mirroring `discharge` numeric handling.
         """
         source_sink = SourceSink(**_make_sourcesink_kwargs(**{field: 4.0}))
-        assert getattr(source_sink, field) == 4.0, (
+        assert getattr(source_sink, field) == pytest.approx(4.0), (
             f"Field {field} should be 4.0, got {getattr(source_sink, field)!r}"
         )
 

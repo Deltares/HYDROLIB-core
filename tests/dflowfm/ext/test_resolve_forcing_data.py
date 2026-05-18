@@ -122,7 +122,9 @@ class TestResolveForcingData:
             validator runs on an already-instantiated dict from Pydantic).
         """
         result = _resolve_forcing_data(3.14)
-        assert result == 3.14, f"Float should pass through unchanged, got {result!r}"
+        assert result == pytest.approx(3.14), (
+            f"Float should pass through unchanged, got {result!r}"
+        )
 
     def test_realtime_enum_roundtrips(self) -> None:
         """A `RealTime` enum value yields the same enum.
@@ -205,9 +207,9 @@ class TestResolveForcingData:
             so that sed/tracer fields can accept their two valid forms
             (scalar Double and `.bc` file).
         """
-        assert _resolve_forcing_data("1.23", allow_realtime=False) == 1.23, (
-            "Numeric string must still parse as float when realtime is disabled"
-        )
+        assert _resolve_forcing_data("1.23", allow_realtime=False) == pytest.approx(
+            1.23
+        ), "Numeric string must still parse as float when realtime is disabled"
         result = _resolve_forcing_data(str(BC_FIXTURE), allow_realtime=False)
         assert isinstance(result, ForcingModel), (
             f"`.bc` path must still resolve when realtime is disabled, got {type(result).__name__}"

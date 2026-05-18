@@ -70,9 +70,7 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     result = False
     if isinstance(key, str):
         lowered = key.lower()
-        result = lowered.endswith("delta") and (
-            lowered.startswith("tracer") or lowered.startswith("sedfrac")
-        )
+        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
     return result
 
 
@@ -397,7 +395,7 @@ class SourceSink(INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
-            for key in list(values.keys()):
+            for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
