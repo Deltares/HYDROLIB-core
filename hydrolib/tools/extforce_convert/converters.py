@@ -893,12 +893,13 @@ class SourceSinkConverter(BaseConverter):
         data = data | forcings
 
         if None not in z_source:
-            # if the z_source and z_sink are not None, then add them to the data
-            z_source_sink_data = {
-                "zsource": z_source,
-                "zsink": z_sink,
-            }
-            data = data | z_source_sink_data
+            # A single-point polyline is a plain source (no paired sink),
+            # so only `zsource` is emitted. Multi-point polylines describe a
+            # coupled source-sink, where first=sink, last=source.
+            if len(polyline.x) == 1:
+                data = data | {"zsource": z_source}
+            else:
+                data = data | {"zsource": z_source, "zsink": z_sink}
 
         try:
             new_block = SourceSink(**data)
