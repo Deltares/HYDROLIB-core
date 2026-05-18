@@ -4,7 +4,11 @@ from typing import List
 import pytest
 from pydantic import ValidationError
 
+from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
+from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
+from hydrolib.core.dflowfm.structure.models import StructureModel
 from tests.utils import error_occurs_only_once
 
 
@@ -155,3 +159,27 @@ class TestINIBasedModel:
         test_model.float_values = ["1d1", "2d-1"]
 
         assert test_model.float_values == pytest.approx([1e1, 2e-1])
+
+
+class TestINIBasedModelEquality:
+    """Regression tests for Pydantic equality on INI-based file models.
+
+    `IniBasedModel` holds a `FilePathStyleConverter` as a Pydantic private
+    attribute. If that helper compares by identity, two freshly built
+    instances of any INI-based model fail `==`, which surprises users who
+    expect value-based equality (issue #1055).
+    """
+
+    @pytest.mark.parametrize(
+        "model_cls",
+        [
+            INIBasedModel,
+            StructureModel,
+            ExtModel,
+            CrossDefModel,
+            CrossLocModel,
+            FrictionModel,
+        ],
+    )
+    def test_two_empty_models_are_equal(self, model_cls):
+        assert model_cls() == model_cls()
