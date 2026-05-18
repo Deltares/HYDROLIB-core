@@ -57,7 +57,7 @@ def _coordinate_length(v) -> int:
     return result
 
 
-def _resolve_forcing_data(v):
+def _resolve_forcing_data(v: Any) -> float | RealTime | ForcingModel | None:
     """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
 
     A string is tried as a float, then as the `RealTime` enum (case-insensitive),
