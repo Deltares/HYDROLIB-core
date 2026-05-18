@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel, RealTime
@@ -422,3 +423,24 @@ class TestSourceSinkDynamicForcingDeltas:
                 f"Legacy dynamic field {key} should be untouched;"
                 f" expected {expected}, got {actual!r}"
             )
+
+    @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
+    def test_realtime_keyword_rejected_on_dynamic_delta_fields(self, field: str):
+        """`realtime` on a dynamic Delta-suffix field raises a clear `ValueError`.
+
+        Args:
+            field: Dynamic Delta-suffix wire key.
+
+        Test scenario:
+            Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `realtime` is "not
+            (yet) available for sediment fractions and tracers". The
+            `_resolve_dynamic_forcing_deltas` validator passes
+            `allow_realtime=False` to `_resolve_forcing_data` so hydrolib-core
+            rejects the keyword early with a clear error, rather than
+            producing an ext file that the D-Flow FM engine will reject at
+            runtime.
+        """
+        with pytest.raises(
+            ValidationError, match="'realtime' keyword is not supported"
+        ):
+            SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))

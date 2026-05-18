@@ -164,3 +164,51 @@ class TestResolveForcingData:
         assert type(result) is int, (
             f"Helper must not coerce int to float — that is Pydantic's job, got {type(result).__name__}"
         )
+
+    @pytest.mark.parametrize("value", ["realtime", "RealTime", "REALTIME"])
+    def test_realtime_rejected_when_allow_realtime_is_false(self, value: str) -> None:
+        """When `allow_realtime=False`, the realtime keyword raises a clear `ValueError`.
+
+        Args:
+            value: The realtime keyword in varying letter cases.
+
+        Test scenario:
+            Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `realtime` is not
+            available for sediment-fraction and tracer delta fields. The
+            helper must reject it explicitly rather than mapping it to
+            `RealTime.realtime` or cascading into a confusing "file not
+            found" error from `resolve_file_model`. Case-insensitivity is
+            preserved: every casing of the keyword is rejected.
+        """
+        with pytest.raises(ValueError, match="'realtime' keyword is not supported"):
+            _resolve_forcing_data(value, allow_realtime=False)
+
+    def test_realtime_allowed_by_default(self) -> None:
+        """The `allow_realtime` flag defaults to `True` so existing callers are unaffected.
+
+        Test scenario:
+            `Lateral.validate_discharge` and `SourceSink.validate_forcing_data`
+            both delegate to the helper without passing `allow_realtime`. Those
+            call sites must continue to map `"realtime"` to `RealTime.realtime`.
+        """
+        result = _resolve_forcing_data("realtime")
+        assert result is RealTime.realtime, (
+            f"Default behaviour must accept realtime, got {result!r}"
+        )
+
+    def test_non_realtime_string_unaffected_by_allow_realtime_false(self) -> None:
+        """`allow_realtime=False` does not change the float or file-resolution branches.
+
+        Test scenario:
+            Only the `realtime` branch is gated. Numeric strings and `.bc`
+            filenames must still resolve normally when `allow_realtime=False`,
+            so that sed/tracer fields can accept their two valid forms
+            (scalar Double and `.bc` file).
+        """
+        assert _resolve_forcing_data("1.23", allow_realtime=False) == 1.23, (
+            "Numeric string must still parse as float when realtime is disabled"
+        )
+        result = _resolve_forcing_data(str(BC_FIXTURE), allow_realtime=False)
+        assert isinstance(result, ForcingModel), (
+            f"`.bc` path must still resolve when realtime is disabled, got {type(result).__name__}"
+        )
