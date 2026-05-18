@@ -231,7 +231,7 @@ class PathToDictionaryConverter:
     @staticmethod
     def make_dict(
         value: Union[str, Path],
-    ) -> Union[dict, DiskOnlyFileModel]:  # noqa: F821
+    ) -> Union[dict, "DiskOnlyFileModel"]:  # noqa: F821
         """Convert a value to a dictionary with a 'filepath' key.
 
         Args:
