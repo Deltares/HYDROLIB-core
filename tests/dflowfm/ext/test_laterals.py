@@ -397,6 +397,46 @@ class TestValidateFromCtor:
             assert lateral_cls.model_dump()[key] == value
 
 
+class TestLateralAliasInput:
+    """Regression tests: `Lateral` must accept camelCase aliases (e.g. `branchId`)
+    in addition to the lowercase field names, because users construct the model
+    programmatically with either form."""
+
+    def test_construct_with_branch_alias(self):
+        lateral = Lateral(
+            id="lat_GE1_4331",
+            locationtype="1d",
+            branchId="GE1_1",
+            chainage=1488.7,
+            discharge=1.23,
+        )
+        assert lateral.branchid == "GE1_1"
+        assert lateral.chainage == 1488.7
+        assert lateral.locationtype == "1d"
+
+    def test_construct_with_node_alias(self):
+        lateral = Lateral(
+            id="lat_node",
+            locationtype="1d",
+            nodeId="aNodeId",
+            discharge=1.23,
+        )
+        assert lateral.nodeid == "aNodeId"
+
+    def test_construct_with_coordinate_aliases(self):
+        lateral = Lateral(
+            id="lat_coords",
+            locationtype="2d",
+            xCoordinates=[1.0, 2.0],
+            yCoordinates=[3.0, 4.0],
+            numCoordinates=2,
+            discharge=1.23,
+        )
+        assert lateral.xcoordinates == [1.0, 2.0]
+        assert lateral.ycoordinates == [3.0, 4.0]
+        assert lateral.numcoordinates == 2
+
+
 class TestValidateForcingData:
     """
     Class to test the different types of discharge forcings.

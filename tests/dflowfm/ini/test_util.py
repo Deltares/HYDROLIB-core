@@ -186,6 +186,49 @@ class TestLocationSpecificationValidator:
         assert validated_values == values
 
     @pytest.mark.parametrize(
+        "values, expected",
+        [
+            pytest.param(
+                {"branchId": "some_branchid", "chainage": 1.23},
+                {"branchid": "some_branchid", "chainage": 1.23, "locationtype": "1d"},
+                id="branchId alias",
+            ),
+            pytest.param(
+                {"nodeId": "some_nodeid"},
+                {"nodeid": "some_nodeid", "locationtype": "1d"},
+                id="nodeId alias",
+            ),
+            pytest.param(
+                {
+                    "xCoordinates": [4.56, 5.67, 6.78],
+                    "yCoordinates": [7.89, 8.91, 9.12],
+                    "numCoordinates": 3,
+                },
+                {
+                    "xcoordinates": [4.56, 5.67, 6.78],
+                    "ycoordinates": [7.89, 8.91, 9.12],
+                    "numcoordinates": 3,
+                },
+                id="coordinate aliases",
+            ),
+            pytest.param(
+                {"branchId": "b", "chainage": 1.23, "locationType": "1d"},
+                {"branchid": "b", "chainage": 1.23, "locationtype": "1d"},
+                id="locationType alias",
+            ),
+        ],
+    )
+    def test_accepts_camelcase_aliases(self, values: dict, expected: dict):
+        """Regression: before-validators receive raw input where users may pass
+        camelCase aliases. The helper must normalize them to lowercase field
+        names so subsequent Pydantic validation finds the values."""
+        validated_values = validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=3),
+        )
+        assert validated_values == expected
+
+    @pytest.mark.parametrize(
         "values, expected_values",
         [
             pytest.param(
