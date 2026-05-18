@@ -57,6 +57,25 @@ def _coordinate_length(v) -> int:
     return result
 
 
+def _is_dynamic_forcing_delta_key(key: Any) -> bool:
+    """Return True if `key` names a dynamic `tracer<...>Delta`/`sedFrac<...>Delta` field.
+
+    Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `[SourceSink]` blocks
+    accept any number of `tracer<tracername>Delta` and `sedFrac<fractionname>Delta`
+    keys, each carrying a scalar Double or the name of a `.bc` file. They are
+    case-insensitive on the wire. Comparison here is also case-insensitive so
+    that both the camelCase Python kwarg form and the lowercased INI-parser
+    form are recognised.
+    """
+    result = False
+    if isinstance(key, str):
+        lowered = key.lower()
+        result = lowered.endswith("delta") and (
+            lowered.startswith("tracer") or lowered.startswith("sedfrac")
+        )
+    return result
+
+
 def _resolve_forcing_data(v: Any) -> float | RealTime | ForcingModel | None:
     """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
 
@@ -334,6 +353,27 @@ class SourceSink(INIBasedModel):
     def validate_forcing_data(cls, v):
         return _resolve_forcing_data(v)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _resolve_dynamic_forcing_deltas(cls, values: Any) -> Any:
+        """Apply `_resolve_forcing_data` to dynamic `tracer<...>Delta`/`sedFrac<...>Delta` keys.
+
+        Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
+        `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
+        time-series file. The first-class `discharge`/`salinityDelta`/
+        `temperatureDelta` fields are already handled by `validate_forcing_data`;
+        this validator extends the same coercion to the dynamic Delta-suffix
+        fields that arrive via `extra="allow"`.
+
+        Legacy dynamic fields (`initialtracer_*`, `tracerbnd*`, `sedfracbnd_*`,
+        `initialsedfrac_*`) do not end with `delta` and are left untouched.
+        """
+        if isinstance(values, dict):
+            for key in list(values.keys()):
+                if _is_dynamic_forcing_delta_key(key):
+                    values[key] = _resolve_forcing_data(values[key])
+        return values
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
@@ -341,7 +381,10 @@ class SourceSink(INIBasedModel):
             key
             for key in input_data.keys()
             if key not in fields
-            and key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            and (
+                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+                or _is_dynamic_forcing_delta_key(key)
+            )
         ]
         return set(unknown_keywords)
 
