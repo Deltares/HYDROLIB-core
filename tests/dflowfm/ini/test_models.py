@@ -8,7 +8,7 @@ from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocMod
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
-from hydrolib.core.dflowfm.structure.models import StructureModel
+from hydrolib.core.dflowfm.structure.models import StructureModel, Weir
 from tests.utils import error_occurs_only_once
 
 
@@ -183,3 +183,31 @@ class TestINIBasedModelEquality:
     )
     def test_two_empty_models_are_equal(self, model_cls):
         assert model_cls() == model_cls()
+
+    def test_two_populated_structure_models_are_equal(self):
+        # Populated case: same INI-based model class with the same nested
+        # content must also compare equal, not only fresh empty instances.
+        weir_kwargs = dict(
+            id="w1",
+            branchid="b1",
+            chainage=1.0,
+            crestlevel=0.0,
+            allowedflowdir="positive",
+        )
+        a = StructureModel(structure=[Weir(**weir_kwargs)])
+        b = StructureModel(structure=[Weir(**weir_kwargs)])
+        assert a == b
+
+    def test_populated_structure_models_with_different_content_differ(self):
+        # Sanity check: two populated models that differ on a public field
+        # must compare unequal, so the equality contract is not trivially
+        # satisfied by all populated instances.
+        base = dict(
+            branchid="b1",
+            chainage=1.0,
+            crestlevel=0.0,
+            allowedflowdir="positive",
+        )
+        a = StructureModel(structure=[Weir(id="w1", **base)])
+        b = StructureModel(structure=[Weir(id="w2", **base)])
+        assert a != b
