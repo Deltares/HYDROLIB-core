@@ -84,6 +84,11 @@ def _resolve_forcing_data(v: Any) -> float | RealTime | ForcingModel | None:
     resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
     Any other value (including `None`) is passed through unchanged so that
     Optional fields and already-validated values still work.
+
+    Note: this helper returns `RealTime.realtime` for the realtime keyword, but
+    Pydantic's `Union[float, RealTime, ForcingModel]` resolution stores it as
+    the underlying string `"realtime"` on the model field. Compare with `==`
+    (StrEnum equality), not `is`.
     """
     result = v
     if isinstance(v, str):
