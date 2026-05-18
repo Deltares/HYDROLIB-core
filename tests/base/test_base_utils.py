@@ -433,6 +433,14 @@ class TestFilePathStyleConverter(unittest.TestCase):
                 Path("/test/path"), "unsupported", PathStyle.UNIXLIKE
             )
 
+    def test_value_based_equality(self):
+        """Converters with the same OS style compare equal and hash identically."""
+        a = FilePathStyleConverter()
+        b = FilePathStyleConverter()
+        self.assertEqual(a, b)
+        self.assertEqual(hash(a), hash(b))
+        self.assertNotEqual(a, object())
+
 
 class TestFileChecksumCalculator(unittest.TestCase):
     """Test cases for the FileChecksumCalculator class."""
