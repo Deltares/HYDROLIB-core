@@ -374,7 +374,7 @@ class FilePathStyleConverter:
 
     def __eq__(self, other: object) -> bool:
         # Value-based equality so models holding this as a private attribute
-        # compare equal when their state matches.
+        # compare equal when their state matches (issue #1055).
         if not isinstance(other, FilePathStyleConverter):
             return NotImplemented
         result = self._os_path_style == other._os_path_style
