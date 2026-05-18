@@ -231,7 +231,7 @@ class PathToDictionaryConverter:
     @staticmethod
     def make_dict(
         value: Union[str, Path],
-    ) -> Union[dict, "DiskOnlyFileModel"]:  # noqa: F821
+    ) -> Union[dict, DiskOnlyFileModel]:  # noqa: F821
         """Convert a value to a dictionary with a 'filepath' key.
 
         Args:
@@ -371,6 +371,17 @@ class FilePathStyleConverter:
     def __init__(self):
         """Initialize the converter with the current operating system's path style."""
         self._os_path_style = get_path_style_for_current_operating_system()
+
+    def __eq__(self, other: object) -> bool:
+        # Value-based equality so models holding this as a private attribute
+        # compare equal when their state matches.
+        if not isinstance(other, FilePathStyleConverter):
+            return NotImplemented
+        result = self._os_path_style == other._os_path_style
+        return result
+
+    def __hash__(self) -> int:
+        return hash(self._os_path_style)
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Convert the file path from the source path style to the path style of the current operating system.
