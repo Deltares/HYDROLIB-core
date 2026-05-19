@@ -1,3 +1,19 @@
+## 1.0.1 (2026-05-19)
+
+### Fix
+
+- **ini/util**: normalize camelCase alias keys in location validator (#1092)
+- **core**: make FilePathStyleConverter compare by value (#1089)
+- **sourcesink**: support .bc files on discharge and Delta-suffix fields (#1087)
+- **meteo**: lowercase attribute names with deprecated camelCase aliases (#1084)
+- **ext**: restore Boundary.forcingfile single-value form (#1080)
+- **dimr**: always emit <process> and keep mixed components on save (#1056)
+- **mdu**: preserve empty string on waqoutputdir/trtdef/trtl assignment (#1054)
+
+### Refactor
+
+- **ci**: migrate workflows to shared Deltares composite actions (#1065)
+
 ## 1.0.0 (2026-04-13)
 
 First stable major release. This version consolidates the Pydantic v2 migration

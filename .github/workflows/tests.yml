@@ -21,10 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: install GCC for macos (provides libgomp foe meshkernel)
+      - name: install libomp for macos (required by meshkernel)
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gcc@12
+          brew install libomp
 
       - name: Set up Python with Poetry
         uses: Deltares-research/github-actions/actions/python-setup/poetry@main
