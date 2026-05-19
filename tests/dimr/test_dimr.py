@@ -440,7 +440,25 @@ class TestFmComponentProcessIntegrationWithDimr:
 </dimrConfig>
 """
 
-    def get_fm_dimr_config_data_without_process(self):
+    def get_fm_dimr_config_data_with_single_process(self):
+        return """<?xml version="1.0" encoding="utf-8"?>
+<dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
+  <documentation>
+    <fileVersion>1.3</fileVersion>
+    <createdBy>hydrolib-core 0.7.0</createdBy>
+    <creationDate>2024-04-25T10:59:21.185365</creationDate>
+  </documentation>
+  <component name="test">
+    <library>dflowfm</library>
+    <workingDir>.</workingDir>
+    <inputFile>test.mdu</inputFile>
+    <process>0</process>
+    <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
+  </component>
+</dimrConfig>
+"""
+
+    def get_fm_dimr_config_data_no_process_element(self):
         return """<?xml version="1.0" encoding="utf-8"?>
 <dimrConfig xmlns="http://schemas.deltares.nl/dimr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.deltares.nl/dimr http://content.oss.deltares.nl/schemas/dimr-1.3.xsd">
   <documentation>
@@ -466,10 +484,21 @@ class TestFmComponentProcessIntegrationWithDimr:
         temporary_save_location = tmp_path / "saved_dimr_config.xml"
         return temporary_dimr_config_file, temporary_save_location
 
-    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_without_process(
-        self, tmp_path
-    ):
-        dimr_config_data = self.get_fm_dimr_config_data_without_process()
+    def test_dimr_with_fmcomponent_round_trips_single_process(self, tmp_path):
+        dimr_config_data = self.get_fm_dimr_config_data_with_single_process()
+
+        (
+            temporary_dimr_config_file,
+            temporary_save_location,
+        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
+
+        dimr_config = DIMR(filepath=temporary_dimr_config_file)
+        dimr_config.save(filepath=temporary_save_location)
+
+        assert_files_equal(temporary_dimr_config_file, temporary_save_location)
+
+    def test_dimr_with_fmcomponent_round_trips_no_process_element(self, tmp_path):
+        dimr_config_data = self.get_fm_dimr_config_data_no_process_element()
 
         (
             temporary_dimr_config_file,
@@ -536,25 +565,6 @@ class TestFmComponentProcessIntegrationWithDimr:
         dimr_config.save(filepath=temporary_save_location)
 
         assert_files_equal(temporary_dimr_config_file, temporary_save_location)
-
-    def test_dimr_with_fmcomponent_given_correct_style_for_setting_process_for_zero(
-        self, tmp_path
-    ):
-        dimr_config_data = self.get_fm_dimr_config_data("0")
-
-        (
-            temporary_dimr_config_file,
-            temporary_save_location,
-        ) = self.setup_temporary_files(tmp_path, dimr_config_data)
-
-        dimr_config_data_expected = self.get_fm_dimr_config_data_without_process()
-        temporary_expected_dimr_config_file = tmp_path / "dimr_expected_config.xml"
-        temporary_expected_dimr_config_file.write_text(dimr_config_data_expected)
-
-        dimr_config = DIMR(filepath=temporary_dimr_config_file)
-        dimr_config.save(filepath=temporary_save_location)
-
-        assert_files_equal(temporary_expected_dimr_config_file, temporary_save_location)
 
     @pytest.mark.parametrize(
         "input_process, expected_process",
@@ -629,6 +639,7 @@ class TestFmComponentProcessIntegrationWithDimr:
     @pytest.mark.parametrize(
         "input_process, expected_process_format",
         [
+            pytest.param(1, "0"),
             pytest.param(2, "0 1"),
             pytest.param(3, "0 1 2"),
             pytest.param(4, "0 1 2 3"),
@@ -700,21 +711,14 @@ class TestFmComponentProcessIntegrationWithDimr:
                 line.strip() == line_to_check for line in file
             ), f"File {save_location} does not contain the line: {line_to_check}"
 
-    @pytest.mark.parametrize(
-        "input_process",
-        [
-            pytest.param(None),
-            pytest.param(1),
-        ],
-    )
-    def test_dimr_with_fmcomponent_saving_process_when_process_should_be_left_out(
-        self, tmp_path, input_process
+    def test_dimr_with_fm_component_saving_process_when_process_is_none_omits_element(
+        self, tmp_path
     ):
         component = FMComponent(
             name="test",
             workingDir=".",
             inputfile="test.mdu",
-            process=input_process,
+            process=None,
             mpiCommunicator="DFM_COMM_DFMWORLD",
         )
 
@@ -722,9 +726,60 @@ class TestFmComponentProcessIntegrationWithDimr:
         save_location: Path = tmp_path / "dimr_config.xml"
         dimr.save(filepath=save_location)
 
-        process = "<process>"
+        saved_xml = save_location.read_text()
 
-        with open(save_location, "r") as file:
-            assert (
-                process not in file
-            ), f"File {save_location} does contain the line: {process}"
+        assert (
+            "<process>" not in saved_xml
+        ), f"File {save_location} unexpectedly contains a <process> element"
+
+    def test_dimr_preserves_fmcomponent_with_process_none_alongside_one_with_process(
+        self, tmp_path
+    ):
+        without_process = FMComponent(
+            name="without_process",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=None,
+        )
+        with_process = FMComponent(
+            name="with_process",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=2,
+        )
+
+        dimr = DIMR(component=[without_process, with_process])
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        saved_xml = save_location.read_text()
+
+        assert 'name="without_process"' in saved_xml
+        assert 'name="with_process"' in saved_xml
+        assert "<process>0 1</process>" in saved_xml
+
+    def test_dimr_preserves_rrcomponent_alongside_fmcomponent_with_process(
+        self, tmp_path
+    ):
+        fm = FMComponent(
+            name="fm",
+            workingDir=".",
+            inputFile="test.mdu",
+            process=2,
+        )
+        rr = RRComponent(
+            name="rr",
+            workingDir=".",
+            inputFile="Sobek_3b.fnm",
+        )
+
+        dimr = DIMR(component=[fm, rr])
+        save_location: Path = tmp_path / "dimr_config.xml"
+        dimr.save(filepath=save_location)
+
+        saved_xml = save_location.read_text()
+
+        assert 'name="fm"' in saved_xml
+        assert 'name="rr"' in saved_xml
+        assert "<library>rr_dll</library>" in saved_xml
+        assert "<process>0 1</process>" in saved_xml

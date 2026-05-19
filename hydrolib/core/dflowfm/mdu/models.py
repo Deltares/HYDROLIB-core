@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Union, Optional, List, Dict
 
 from pydantic import (
     BeforeValidator,
@@ -72,6 +72,14 @@ def load_dry(value):
     file_suffix_model_map = {
         ".xyz": XYZModel,
         ".pli": PolyFile,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_particles(value):
+    """Load a particles model from a file path."""
+    file_suffix_model_map = {
+        ".xyz": XYZModel,
     }
     return load_model(value, file_suffix_model_map)
 
@@ -1099,11 +1107,20 @@ class Trachytopes(INIBasedModel):
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
 
-ObsFile = Annotated[Union[XYNModel, ObservationPointModel], BeforeValidator(load_point)]
-ObsCrsFile = Annotated[
-    Union[PolyFile, ObservationCrossSectionModel], BeforeValidator(load_crs)
+ObsFile = Annotated[
+    Union[XYNModel, ObservationPointModel, DiskOnlyFileModel],
+    BeforeValidator(load_point),
 ]
-DryPointsFile = Annotated[Union[XYZModel, PolyFile], BeforeValidator(load_dry)]
+ObsCrsFile = Annotated[
+    Union[PolyFile, ObservationCrossSectionModel, DiskOnlyFileModel],
+    BeforeValidator(load_crs),
+]
+DryPointsFile = Annotated[
+    Union[XYZModel, PolyFile, DiskOnlyFileModel], BeforeValidator(load_dry)
+]
+ParticlesFile = Annotated[
+    Union[XYZModel, DiskOnlyFileModel], BeforeValidator(load_particles)
+]
 
 
 class Output(INIBasedModel):
@@ -2199,7 +2216,9 @@ class Geometry(INIBasedModel):
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
-    gridenclosurefile: Optional[PolyFile] = Field(None, alias="gridEnclosureFile")
+    gridenclosurefile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="gridEnclosureFile"
+    )
     allowbndatbifurcation: bool = Field(False, alias="allowBndAtBifurcation")
     slotw1d: float = Field(0.001, alias="slotw1D")
     slotw2d: float = Field(0.001, alias="slotw2D")
@@ -2497,7 +2516,7 @@ class Particles(INIBasedModel):
 
     _header: Literal["Particles"] = "Particles"
 
-    particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
+    particlesfile: Optional[ParticlesFile] = Field(None, alias="ParticlesFile")
     particlesreleasefile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(
