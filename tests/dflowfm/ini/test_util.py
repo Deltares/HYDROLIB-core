@@ -216,6 +216,19 @@ class TestLocationSpecificationValidator:
                 {"branchid": "b", "chainage": 1.23, "locationtype": "1d"},
                 id="locationType alias",
             ),
+            pytest.param(
+                {"branchId": "alias-value", "branchid": "field-name-value", "chainage": 1.0},
+                # When both forms are present the alias key is left untouched (the condition
+                # `lowered not in values` prevents the pop), so branchId survives in the dict.
+                # Pydantic drops it via extra="ignore". The field-name value wins for validation.
+                {
+                    "branchId": "alias-value",
+                    "branchid": "field-name-value",
+                    "chainage": 1.0,
+                    "locationtype": "1d",
+                },
+                id="conflict: field-name wins over alias",
+            ),
         ],
     )
     def test_accepts_camelcase_aliases(self, values: dict, expected: dict):
