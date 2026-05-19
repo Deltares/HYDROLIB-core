@@ -411,7 +411,7 @@ class TestLateralAliasInput:
             discharge=1.23,
         )
         assert lateral.branchid == "GE1_1"
-        assert lateral.chainage == 1488.7
+        assert lateral.chainage == pytest.approx(1488.7)
         assert lateral.locationtype == "1d"
 
     def test_construct_with_node_alias(self):

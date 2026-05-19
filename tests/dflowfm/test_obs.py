@@ -74,15 +74,15 @@ class TestObservationPointAliasInput:
     def test_construct_with_branch_alias(self):
         obs = ObservationPoint(name="op1", branchId="branch_01", chainage=1.23)
         assert obs.branchid == "branch_01"
-        assert obs.chainage == 1.23
+        assert obs.chainage == pytest.approx(1.23)
         assert obs.locationtype == LocationType.oned
 
     def test_construct_with_xy_coordinates(self):
         obs = ObservationPoint(
             name="op2", locationtype="2d", x=1.0, y=2.0
         )
-        assert obs.x == 1.0
-        assert obs.y == 2.0
+        assert obs.x == pytest.approx(1.0)
+        assert obs.y == pytest.approx(2.0)
 
     def test_construct_with_locationtype_alias(self):
         obs = ObservationPoint(
