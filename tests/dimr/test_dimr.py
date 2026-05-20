@@ -1,4 +1,5 @@
-from datetime import datetime
+import warnings
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -64,7 +65,11 @@ def test_dimr_validate():
 
 
 def test_initialize_default_dimr_does_not_raise_exception():
-    DIMR()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        dimr = DIMR()
+
+    assert dimr.documentation.creationDate.tzinfo is timezone.utc
 
 
 def test_dimr_model_save(output_files_dir: Path, reference_files_dir: Path):
