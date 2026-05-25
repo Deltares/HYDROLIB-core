@@ -1,4 +1,5 @@
 import json
+import warnings
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -138,22 +139,26 @@ def network_1d_2d_1d2dlinks():
     return network
 
 
-@pytest.mark.plots
-def test_create_1d_2d_1d2d():
-    # TODO: There is a known issue with the meshkernel package that needs to be
-    # investigated. The reference_size values (20 for macOS, 21 for other platforms)
-    # may change depending on the version of meshkernel used. If this test fails,
-    # please check whether a newer version of the meshkernel package has altered the
-    # contact/link generation behaviour and update the expected values accordingly.
-    import warnings
+def warn_about_macos_meshkernel_link_generation_issue():
+    if not is_macos():
+        return
 
     warnings.warn(
-        "Known issue: the meshkernel package may produce different numbers of "
-        "1d2d links depending on the version. Please verify the meshkernel package "
-        "behaviour if this test fails.",
+        "Known macOS issue: meshkernel may generate a different number of 1d2d "
+        "links on macOS, likely on arm64. If this test fails on macOS, please "
+        "verify the meshkernel link-generation behaviour. "
+        "Hydrolib core - GitHub Issue "
+        "https://github.com/Deltares/HYDROLIB-core/issues/635 "
+        "MeshkernelPy - GitHub Issue "
+        "https://github.com/Deltares/MeshKernelPy/issues/164",
         UserWarning,
-        stacklevel=1,
+        stacklevel=2,
     )
+
+
+@pytest.mark.plots
+def test_create_1d_2d_1d2d():
+    warn_about_macos_meshkernel_link_generation_issue()
     if is_macos():
         reference_size = 20
     else:
@@ -205,21 +210,9 @@ def test_create_1d_2d_1d2d_call_link_generation_twice():
     Related issue: https://github.com/Deltares/HYDROLIB-core/issues/546
     """
     # TODO: There is a known issue with the meshkernel package that needs to be
-    # investigated. The reference_size values (20 for macOS, 21 for other platforms)
-    # may change depending on the version of meshkernel used. If this test fails,
-    # please check whether a newer version of the meshkernel package has altered the
-    # contact/link generation behaviour and update the expected values accordingly.
-    import warnings
-
-    warnings.warn(
-        "Known issue: the meshkernel package may produce different numbers of "
-        "1d2d links depending on the version. Please verify the meshkernel package "
-        "behaviour if this test fails. \n"
-        "Hydrolib core - Github Issue https://github.com/Deltares/HYDROLIB-core/issues/635 \n"
-        "MeshkernelPy - Github Issue https://github.com/Deltares/MeshKernelPy/issues/164",
-        UserWarning,
-        stacklevel=1,
-    )
+    # investigated. The reference_size values reflect the macOS-specific
+    # meshkernel link-generation difference tracked in the linked issues.
+    warn_about_macos_meshkernel_link_generation_issue()
 
     network = network_1d_2d_1d2dlinks()
 
