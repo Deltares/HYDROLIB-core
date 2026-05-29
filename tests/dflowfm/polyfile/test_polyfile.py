@@ -130,7 +130,7 @@ class TestSerializer:
             == expected_str
         )
 
-    def test_serialize_point_with_zero_z_value_includes_z_in_output(self):
+    def test_serialize_point_with_zero_z_values(self):
         point = Point(x=1.0, y=2.0, z=0.0, data=[])
         result = Serializer.serialize_point(point=point, config=SerializerConfig())
         assert result == "    1.0    2.0    0.0"
@@ -245,7 +245,7 @@ def test_determine_has_z_value(
     assert _determine_has_z_value(input_value) == expected_value
 
 
-def test_write_read_polyfile_with_zero_z_values_preserves_data():
+def test_write_polyfile_with_zero_z_values():
     path = test_output_dir / "test_zero_z.pli"
 
     objects = [
