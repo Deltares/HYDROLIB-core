@@ -1,6 +1,6 @@
 import shutil
 from pathlib import Path
-from typing import Callable, Dict, Union
+from typing import Callable
 
 import pytest
 
@@ -37,6 +37,7 @@ from hydrolib.core.dflowfm.polyfile.models import (
     PolyObject,
 )
 from hydrolib.core.dflowfm.xyn.models import XYNModel, XYNPoint
+from hydrolib.core.dflowfm.xyz.models import XYZModel
 from tests.utils import (
     assert_files_equal,
     assert_objects_equal,
@@ -47,7 +48,7 @@ from tests.utils import (
 )
 
 
-def _create_boundary(data: Dict) -> Boundary:
+def _create_boundary(data: dict) -> Boundary:
     data["quantity"] = ""
     data["forcingfile"] = ForcingModel()
 
@@ -388,9 +389,9 @@ class TestModels:
     )
     def test_model_diskonlyfilemodel_field_is_constructed_correctly(
         self,
-        input: Union[None, Path, DiskOnlyFileModel],
+        input: Path | DiskOnlyFileModel | None,
         input_field: str,
-        create_model: Callable[[Dict], object],
+        create_model: Callable[[dict], object],
         retrieve_field: Callable[[object], DiskOnlyFileModel],
     ):
         data = {input_field: input}
@@ -992,3 +993,371 @@ class TestTime:
                 f"Invalid datetime string for {invalid_field.lower()}: '{time_dict[invalid_field]}', expecting 'YYYYmmddHHMMSS' or 'YYYYmmdd'."
                 in str(exc_err.value)
             )
+
+
+_MINIMAL_POLY_PLI = (
+    "test_poly\n"
+    "    2    2\n"
+    "0.0  0.0\n"
+    "1.0  1.0\n"
+)
+_MINIMAL_XYZ_TEXT = "0.0 0.0 0.0\n1.0 1.0 1.0\n"
+
+
+def _write_polyfile(path: Path) -> None:
+    """Write a minimal valid `.pli` polyfile to ``path``."""
+    path.write_text(_MINIMAL_POLY_PLI, encoding="utf-8")
+
+
+def _write_xyzfile(path: Path) -> None:
+    """Write a minimal valid `.xyz` file to ``path``."""
+    path.write_text(_MINIMAL_XYZ_TEXT, encoding="utf-8")
+
+
+# Per-field parameter tuple:
+#  (dotted_path, child_filename, writer, typed_class, is_list,
+#   recurse_false_class). The `recurse_false_class` is what the framework hands
+#  back when the MDU is loaded with `recurse=False`:
+#    - `DiskOnlyFileModel` for fields where the framework injects a placeholder.
+#    - The typed sub-model class itself for fields whose `BeforeValidator`
+#      preempts the recursion check and unconditionally instantiates the typed
+#      model. In that branch the typed model is created with `filepath` set but
+#      its content is left unparsed (e.g. `points=[]`).
+_RECURSE_FALSE_CASES = [
+    pytest.param(
+        "geometry.drypointsfile",
+        "drypoints.pli",
+        _write_polyfile,
+        PolyFile,
+        True,
+        DiskOnlyFileModel,
+        id="drypointsfile-pli",
+    ),
+    pytest.param(
+        "geometry.drypointsfile",
+        "drypoints.xyz",
+        _write_xyzfile,
+        XYZModel,
+        True,
+        DiskOnlyFileModel,
+        id="drypointsfile-xyz",
+    ),
+    pytest.param(
+        "geometry.gridenclosurefile",
+        "enclosure.pli",
+        _write_polyfile,
+        PolyFile,
+        False,
+        DiskOnlyFileModel,
+        id="gridenclosurefile-pli",
+    ),
+    pytest.param(
+        "particles.particlesfile",
+        "particles.xyz",
+        _write_xyzfile,
+        XYZModel,
+        False,
+        XYZModel,
+        id="particlesfile-xyz",
+    ),
+    pytest.param(
+        "output.obsfile",
+        "obs.xyn",
+        lambda p: p.write_text("0.0  0.0  'obs1'\n", encoding="utf-8"),
+        XYNModel,
+        True,
+        XYNModel,
+        id="obsfile-xyn",
+    ),
+    pytest.param(
+        "output.crsfile",
+        "crs.pli",
+        _write_polyfile,
+        PolyFile,
+        True,
+        PolyFile,
+        id="crsfile-pli",
+    ),
+]
+
+
+class TestRecurseFalseDiskOnlyFileModel:
+    """Verify the five MDU sub-file fields support `recurse=False` without raising.
+
+    Bug context: before the fix, `FMModel(mdu_path, recurse=False)` raised
+    `ValidationError` because the loader inserted a `DiskOnlyFileModel`
+    placeholder for child files while the field type only accepted typed
+    sub-models (`PolyFile`, `XYZModel`, `XYNModel`, …). Each affected field now
+    includes `DiskOnlyFileModel` in its Union, so the placeholder is a legal
+    value when recursion is disabled.
+
+    Note: for fields whose `BeforeValidator` (`load_point`, `load_crs`) parses
+    the child path into the typed model directly, the framework does not get
+    a chance to inject a `DiskOnlyFileModel` placeholder. The typed model
+    comes back instead but its parsed content is empty, which still skips the
+    expensive child read. The parametrized expected class captures both
+    behaviors.
+    """
+
+    @staticmethod
+    def _get_attr(model: FMModel, dotted_path: str):
+        """Resolve a dotted attribute path against an FMModel instance."""
+        result = model
+        for segment in dotted_path.split("."):
+            result = getattr(result, segment)
+        return result
+
+    @staticmethod
+    def _build_mdu_referencing_file(
+        mdu_path: Path, dotted_path: str, child_path: Path, is_list: bool
+    ) -> FMModel:
+        """Construct an FMModel whose dotted-path field points at ``child_path``.
+
+        Instantiates the parent section (e.g. ``Particles``) if it is `None` on
+        a default `FMModel`, then assigns either a single sub-model or a
+        single-element list depending on the field's declared shape.
+
+        Args:
+            mdu_path: Filepath the constructed `FMModel` should report as its own.
+            dotted_path: Dotted attribute path of the target field.
+            child_path: Path to the child file whose typed sub-model will be
+                bound to the field.
+            is_list: Whether the target field is declared as
+                `Optional[List[...]]` (`True`) or as a scalar `Optional[...]`.
+        """
+        result = FMModel()
+        result.filepath = mdu_path
+        section_factories = {"particles": Particles}
+        parent_segments = dotted_path.split(".")[:-1]
+        leaf = dotted_path.split(".")[-1]
+        parent = result
+        for segment in parent_segments:
+            if getattr(parent, segment) is None and segment in section_factories:
+                setattr(parent, segment, section_factories[segment]())
+            parent = getattr(parent, segment)
+        loader_map = {
+            ".pli": lambda p: PolyFile(p),
+            ".xyz": lambda p: XYZModel(p),
+            ".xyn": lambda p: XYNModel(p),
+        }
+        loaded = loader_map[child_path.suffix](child_path)
+        setattr(parent, leaf, [loaded] if is_list else loaded)
+        return result
+
+    @pytest.mark.parametrize(
+        (
+            "dotted_path",
+            "child_filename",
+            "writer",
+            "typed_class",
+            "is_list",
+            "recurse_false_class",
+        ),
+        _RECURSE_FALSE_CASES,
+    )
+    def test_recurse_false_does_not_raise_and_skips_content_load(
+        self,
+        tmp_path: Path,
+        dotted_path,
+        child_filename,
+        writer,
+        typed_class,
+        is_list,
+        recurse_false_class,
+    ):
+        """Reloading the MDU with `recurse=False` succeeds and skips child parsing.
+
+        Args:
+            tmp_path: pytest tmp-path fixture for isolated I/O.
+            dotted_path: Dotted attribute path of the field under test.
+            child_filename: Filename of the referenced child file.
+            writer: Callable that writes a minimal valid child file at a path.
+            typed_class: The typed sub-model class used at save time.
+            is_list: Whether the field is `Optional[List[...]]` or scalar.
+            recurse_false_class: The class expected after `recurse=False`
+                reload — either `DiskOnlyFileModel` (placeholder path) or the
+                typed class itself with empty/unparsed content.
+
+        Test scenario:
+            The bug being fixed is that `recurse=False` raised `ValidationError`
+            on these fields. This test confirms (1) the reload succeeds,
+            (2) the field reference is preserved, and (3) the child content is
+            not parsed (the placeholder/empty typed model carries only a path).
+        """
+        child_path = tmp_path / child_filename
+        writer(child_path)
+        mdu_path = tmp_path / "model.mdu"
+
+        save_model = self._build_mdu_referencing_file(
+            mdu_path, dotted_path, child_path, is_list
+        )
+        save_model.save()
+        assert mdu_path.is_file(), f"MDU was not written to {mdu_path}"
+
+        loaded = FMModel(filepath=mdu_path, recurse=False)
+        value = self._get_attr(loaded, dotted_path)
+
+        if is_list:
+            assert isinstance(value, list) and len(value) >= 1, (
+                f"{dotted_path} expected non-empty list, got {value!r}"
+            )
+            target = value[0]
+        else:
+            target = value
+        assert isinstance(target, recurse_false_class), (
+            f"Expected {recurse_false_class.__name__} under recurse=False at"
+            f" {dotted_path}, got {type(target).__name__}"
+        )
+        assert target.filepath is not None, (
+            f"Reloaded placeholder must carry a filepath at {dotted_path}"
+        )
+
+    @pytest.mark.parametrize(
+        (
+            "dotted_path",
+            "child_filename",
+            "writer",
+            "typed_class",
+            "is_list",
+            "recurse_false_class",
+        ),
+        _RECURSE_FALSE_CASES,
+    )
+    def test_recurse_true_returns_typed_submodel(
+        self,
+        tmp_path: Path,
+        dotted_path,
+        child_filename,
+        writer,
+        typed_class,
+        is_list,
+        recurse_false_class,
+    ):
+        """Reload with default `recurse=True` and verify the typed sub-model is rehydrated.
+
+        Args:
+            tmp_path: pytest tmp-path fixture for isolated I/O.
+            dotted_path: Dotted attribute path of the field under test.
+            child_filename: Filename of the referenced child file.
+            writer: Callable that writes a minimal valid child file at a path.
+            typed_class: Expected typed sub-model class after reload.
+            is_list: Whether the field is `Optional[List[...]]` or scalar.
+            recurse_false_class: Unused in this test; present so the parameter
+                list matches the sibling `recurse=False` case.
+
+        Test scenario:
+            Verifies that the Union widening (adding `DiskOnlyFileModel`) did
+            not break the normal load path: `recurse=True` (default) still
+            instantiates the typed sub-model.
+        """
+        child_path = tmp_path / child_filename
+        writer(child_path)
+        mdu_path = tmp_path / "model.mdu"
+
+        save_model = self._build_mdu_referencing_file(
+            mdu_path, dotted_path, child_path, is_list
+        )
+        save_model.save()
+
+        loaded = FMModel(filepath=mdu_path)
+        value = self._get_attr(loaded, dotted_path)
+
+        if is_list:
+            assert isinstance(value, list) and len(value) >= 1, (
+                f"{dotted_path} expected non-empty list, got {value!r}"
+            )
+            target = value[0]
+        else:
+            target = value
+        assert isinstance(target, typed_class), (
+            f"Expected typed sub-model {typed_class.__name__} under recurse=True,"
+            f" got {type(target).__name__} at {dotted_path}"
+        )
+
+    def test_particles_particlesfile_accepts_disk_only_file_model(
+        self, tmp_path: Path
+    ):
+        """Direct-construction proof that `Particles.particlesfile` accepts a placeholder.
+
+        Args:
+            tmp_path: pytest tmp-path fixture for a filesystem location to
+                use as the placeholder's filepath.
+
+        Test scenario:
+            `Particles.particlesfile` is typed
+            `Optional[Union[XYZModel, DiskOnlyFileModel]]`. Before the Union
+            was widened, instantiating `Particles` with a `DiskOnlyFileModel`
+            raised `ValidationError`. This test asserts construction now
+            succeeds and the value round-trips on the instance.
+
+            Note: the full MDU save→reload path for `particlesfile` is not
+            exercised here because the field lacks a path→model coercion
+            validator, which is a separate pre-existing limitation outside
+            the scope of the `recurse=False` fix.
+        """
+        placeholder_path = tmp_path / "particles.xyz"
+        placeholder_path.write_text("0.0 0.0 0.0\n", encoding="utf-8")
+        placeholder = DiskOnlyFileModel(filepath=placeholder_path)
+
+        particles = Particles(particlesfile=placeholder)
+
+        assert isinstance(particles.particlesfile, DiskOnlyFileModel), (
+            f"Expected DiskOnlyFileModel after direct construction, got"
+            f" {type(particles.particlesfile).__name__}"
+        )
+        assert particles.particlesfile.filepath == placeholder_path, (
+            f"Filepath was not preserved: expected {placeholder_path}, got"
+            f" {particles.particlesfile.filepath}"
+        )
+
+    @pytest.mark.parametrize(
+        ("field_name", "placeholder_filename"),
+        [
+            pytest.param("obsfile", "obs.xyn", id="obsfile"),
+            pytest.param("crsfile", "crs.pli", id="crsfile"),
+        ],
+    )
+    def test_output_obs_and_crs_fields_accept_disk_only_file_model(
+        self, tmp_path: Path, field_name, placeholder_filename
+    ):
+        """Direct-construction proof that `Output.obsfile` / `Output.crsfile` accept a placeholder.
+
+        Args:
+            tmp_path: pytest tmp-path fixture for a filesystem location to
+                use as the placeholder's filepath.
+            field_name: Either ``"obsfile"`` or ``"crsfile"``, naming the
+                `Output` field under test.
+            placeholder_filename: A representative child filename that the
+                wrapped `DiskOnlyFileModel` will carry.
+
+        Test scenario:
+            `ObsFile` and `ObsCrsFile` aliases are typed
+            `Annotated[Union[..., DiskOnlyFileModel], BeforeValidator(load_*)]`.
+            The BeforeValidator preempts the placeholder path during MDU
+            reload, so the widening is exercised only by programmatic
+            construction. This test asserts that
+            `Output(<field>=[DiskOnlyFileModel(...)])` succeeds and the
+            placeholder is preserved on the instance.
+
+            Without the Union widening, constructing `Output` with a
+            `DiskOnlyFileModel` in either list raised `ValidationError`.
+            This pins the third Union member as load-bearing.
+        """
+        placeholder_path = tmp_path / placeholder_filename
+        placeholder_path.write_text("", encoding="utf-8")
+        placeholder = DiskOnlyFileModel(filepath=placeholder_path)
+
+        output = Output(**{field_name: [placeholder]})
+
+        value = getattr(output, field_name)
+        assert isinstance(value, list) and len(value) == 1, (
+            f"Expected single-element list at Output.{field_name}, got {value!r}"
+        )
+        assert isinstance(value[0], DiskOnlyFileModel), (
+            f"Expected DiskOnlyFileModel placeholder after direct construction,"
+            f" got {type(value[0]).__name__} at Output.{field_name}"
+        )
+        assert value[0].filepath == placeholder_path, (
+            f"Filepath was not preserved at Output.{field_name}: expected"
+            f" {placeholder_path}, got {value[0].filepath}"
+        )

@@ -38,10 +38,10 @@ jobs:
         with:
           poetry-version: 2.3.3
 
-      - name: install GCC for macos (provides libgomp foe meshkernel)
+      - name: install libomp for macos (required by meshkernel)
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gcc@12
+          brew install libomp
 
       - name: Build wheel
         run: poetry build -f wheel

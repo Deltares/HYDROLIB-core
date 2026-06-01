@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Annotated, Callable, Dict, List, Literal, Optional, Type, Union
+from typing import Annotated, Callable, Literal,  Type
 
 from pydantic import Field, ValidationInfo, field_validator
 
@@ -54,12 +54,12 @@ class Component(BaseModel, ABC):
     name: str
     workingDir: Path
     inputFile: Path
-    process: Optional[int] = Field(default=None)
-    setting: Optional[List[KeyValuePair]] = Field(default_factory=list)
-    parameter: Optional[List[KeyValuePair]] = Field(default_factory=list)
-    mpiCommunicator: Optional[str] = Field(default=None)
+    process: int | None = Field(default=None)
+    setting: list[KeyValuePair] | None = Field(default_factory=list)
+    parameter: list[KeyValuePair] | None = Field(default_factory=list)
+    mpiCommunicator: str | None = Field(default=None)
 
-    model: Optional[FileModel] = Field(default=None)
+    model: FileModel | None = Field(default=None)
 
     @property
     def filepath(self):
@@ -77,7 +77,7 @@ class Component(BaseModel, ABC):
     def is_intermediate_link(self) -> bool:
         return True
 
-    def _get_identifier(self, data: dict) -> Optional[str]:
+    def _get_identifier(self, data: dict) -> str | None:
         return data.get("name")
 
     def model_dump(self, *args, **kwargs):
@@ -92,7 +92,7 @@ class FMComponent(Component):
     library: Literal["dflowfm"] = "dflowfm"
 
     @field_validator("process", mode="before")
-    def validate_process(cls, value, info: ValidationInfo) -> Union[None, int]:
+    def validate_process(cls, value, info: ValidationInfo) -> None | int:
         """
         Validation for the process Attribute.
 
@@ -179,7 +179,7 @@ class ComponentOrCouplerRef(BaseModel):
 
     name: str
 
-    def _get_identifier(self, data: dict) -> Optional[str]:
+    def _get_identifier(self, data: dict) -> str | None:
         return data.get("name")
 
 
@@ -229,8 +229,8 @@ class Coupler(BaseModel):
     name: str
     sourceComponent: str
     targetComponent: str
-    item: List[CoupledItem] = Field(default_factory=list)
-    logger: Optional[Logger] = Field(default=None)
+    item: list[CoupledItem] = Field(default_factory=list)
+    logger: Logger | None = Field(default=None)
 
     @field_validator("item", mode="before")
     def validate_item(cls, v):
@@ -240,7 +240,7 @@ class Coupler(BaseModel):
         # TODO set to True once we replace Paths with FileModels
         return False
 
-    def _get_identifier(self, data: dict) -> Optional[str]:
+    def _get_identifier(self, data: dict) -> str | None:
         return data.get("name")
 
 
@@ -256,8 +256,8 @@ class StartGroup(BaseModel):
     """
 
     time: str
-    start: List[ComponentOrCouplerRef] = Field(default_factory=list)
-    coupler: List[ComponentOrCouplerRef] = Field(default_factory=list)
+    start: list[ComponentOrCouplerRef] = Field(default_factory=list)
+    coupler: list[ComponentOrCouplerRef] = Field(default_factory=list)
 
     @field_validator("start", "coupler", mode="before")
     def validate_start(cls, v):
@@ -308,7 +308,7 @@ class Start(ControlModel):
 
 
 ComponentUnion = Annotated[
-    Union[RRComponent, FMComponent], Field(discriminator="library")
+    RRComponent | FMComponent, Field(discriminator="library")
 ]
 
 
@@ -317,29 +317,29 @@ class DIMR(ParsableFileModel):
 
     Attributes:
         documentation (Documentation): File metadata.
-        control (List[Union[Start, Parallel]]): The `<control>` element with a list
+        control (list[Start | Parallel]): The `<control>` element with a list
             of [Start][hydrolib.core.dimr.models.Start]
             and [Parallel][hydrolib.core.dimr.models.Parallel] sub-elements,
             which defines the (sequence of) program(s) to be run.
             May be empty while constructing, but must be non-empty when saving!
             Also, all referenced components must be present in `component` when
             saving. Similarly, all referenced couplers must be present in `coupler`.
-        component (List[Union[RRComponent, FMComponent, Component]]): List of
+        component (list[RRComponent | FMComponent | Component]): list of
             `<component>` elements that defines which programs can be used inside
             the `<control>` subelements. Must be non-empty when saving!
-        coupler (Optional[List[Coupler]]): optional list of `<coupler>` elements
+        coupler (list[Coupler] | None): optional list of `<coupler>` elements
             that defines which couplers can be used inside the `<parallel>`
             elements under `<control>`.
-        waitFile (Optional[str]): Optional waitfile name for debugging.
+        waitFile (str | None): Optional waitfile name for debugging.
         global_settings (Optional[GlobalSettings]): Optional global DIMR settings.
     """
 
     documentation: Documentation = Documentation()
-    control: List[Union[Start, Parallel]] = Field(default_factory=list)
-    component: List[ComponentUnion] = Field(default_factory=list)
-    coupler: Optional[List[Coupler]] = Field(default_factory=list)
-    waitFile: Optional[str] = Field(default=None)
-    global_settings: Optional[GlobalSettings] = Field(default=None)
+    control: list[Start | Parallel] = Field(default_factory=list)
+    component: list[ComponentUnion] = Field(default_factory=list)
+    coupler: list[Coupler] | None = Field(default_factory=list)
+    waitFile: str | None = Field(default=None)
+    global_settings: GlobalSettings | None = Field(default=None)
 
     @field_validator("component", "coupler", "control", mode="before")
     def validate_component(cls, v):
@@ -406,55 +406,41 @@ class DIMR(ParsableFileModel):
         super()._serialize(dimr_as_dict, save_settings)
 
     def _update_dimr_dictionary_with_adjusted_fmcomponent_values(
-        self, dimr_as_dict: Dict
+        self, dimr_as_dict: dict
     ):
-        fmcomponents = [
-            item for item in self.component if isinstance(item, FMComponent)
-        ]
-
-        list_of_fmcomponents_as_dict = self._get_list_of_updated_fm_components(
-            fmcomponents
-        )
-        dimr_as_dict = self._update_dimr_dictionary(
-            dimr_as_dict, list_of_fmcomponents_as_dict
-        )
-        return dimr_as_dict
+        components_as_dict = self._get_components_with_expanded_process(self.component)
+        return self._update_dimr_dictionary(dimr_as_dict, components_as_dict)
 
     def _update_dimr_dictionary(
-        self, dimr_as_dict: Dict, list_of_fm_components_as_dict: List[Dict]
-    ) -> Dict:
-        if len(list_of_fm_components_as_dict) > 0:
-            dimr_as_dict.update({"component": list_of_fm_components_as_dict})
+        self, dimr_as_dict: dict, components_as_dict: list[dict]
+    ) -> dict:
+        if len(components_as_dict) > 0:
+            dimr_as_dict.update({"component": components_as_dict})
 
         return dimr_as_dict
 
-    def _get_list_of_updated_fm_components(
-        self, fmcomponents: List[FMComponent]
-    ) -> List[Dict]:
-        list_of_fm_components_as_dict = []
-        for fmcomponent in fmcomponents:
-            if fmcomponent is None or fmcomponent.process is None:
+    def _get_components_with_expanded_process(
+        self, components: list
+    ) -> list[dict]:
+        components_dict: list[dict] = []
+        for component in components:
+            if component is None:
                 continue
 
-            if fmcomponent.process == 1:
-                fmcomponent_as_dict = fmcomponent.model_dump()
-                fmcomponent_as_dict.pop("process", None)
+            if isinstance(component, FMComponent) and component.process is not None:
+                process_value = " ".join(str(i) for i in range(component.process))
+                component_dict = self._update_component_dictionary(component, process_value)
             else:
-                fmcomponent_process_value = " ".join(
-                    str(i) for i in range(fmcomponent.process)
-                )
-                fmcomponent_as_dict = self._update_component_dictionary(
-                    fmcomponent, fmcomponent_process_value
-                )
+                component_dict = component.model_dump(exclude_none=True)
 
-            list_of_fm_components_as_dict.append(fmcomponent_as_dict)
+            components_dict.append(component_dict)
 
-        return list_of_fm_components_as_dict
+        return components_dict
 
     def _update_component_dictionary(
         self, fmcomponent: FMComponent, fmcomponent_process_value: str
-    ) -> Dict:
-        fmcomponent_as_dict = fmcomponent.model_dump()
+    ) -> dict:
+        fmcomponent_as_dict = fmcomponent.model_dump(exclude_none=True)
         fmcomponent_as_dict.update({"process": fmcomponent_process_value})
         return fmcomponent_as_dict
 
@@ -469,7 +455,7 @@ class DIMR(ParsableFileModel):
     @classmethod
     def _get_serializer(
         cls,
-    ) -> Callable[[Path, Dict, SerializerConfig, ModelSaveSettings], None]:
+    ) -> Callable[[Path, dict, SerializerConfig, ModelSaveSettings], None]:
         return DIMRSerializer.serialize
 
     @classmethod
@@ -477,15 +463,15 @@ class DIMR(ParsableFileModel):
         return DIMRParser.parse
 
     @classmethod
-    def _parse(cls, path: Path) -> Dict:
+    def _parse(cls, path: Path) -> dict:
         data = super()._parse(path)
         return cls._update_component(data)
 
     @classmethod
-    def _update_component(cls, data: Dict) -> Dict:
+    def _update_component(cls, data: dict) -> dict:
         component = data.get("component", None)
 
-        if not isinstance(component, Dict):
+        if not isinstance(component, dict):
             return data
 
         process_value = component.get("process", None)
