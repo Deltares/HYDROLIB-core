@@ -8,6 +8,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
+from hydrolib.core.dflowfm.ini.io_models import Property, Section
 from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
     FMModel,
@@ -20,7 +21,9 @@ from hydrolib.core.dflowfm.mdu.models import (
     ProcessFluxIntegration,
     Restart,
     Sediment,
+    StemHeightConvention,
     Time,
+    Vegetation,
     VegetationModelNr,
 )
 from hydrolib.core.dflowfm.net.models import Network
@@ -154,6 +157,25 @@ class TestModels:
         assert fm_model.veg.cbveg == pytest.approx(0.0)
         assert fm_model.veg.rhoveg == pytest.approx(0.0)
         assert fm_model.veg.stemheightstd == pytest.approx(0.0)
+
+    def test_vegetation_accepts_stemheightconvention_keyword(self):
+        section = Section(
+            header="Veg",
+            content=[
+                Property(
+                    key="stemheightconvention",
+                    value="downward_from_surface",
+                )
+            ],
+        )
+
+        vegetation = Vegetation.model_validate(section)
+
+        assert (
+            vegetation.stemheightconvention
+            == StemHeightConvention.downward_from_surface
+        )
+        assert Vegetation().stemheightconvention == StemHeightConvention.upward_from_bed
 
     def test_mdu_with_3d_settings(self):
         input_mdu = (

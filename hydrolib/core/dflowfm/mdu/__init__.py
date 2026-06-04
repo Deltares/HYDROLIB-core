@@ -19,6 +19,7 @@ from .models import (
     ProcessFluxIntegration,
     Restart,
     Sediment,
+    StemHeightConvention,
     Time,
     Trachytopes,
     Vegetation,
@@ -52,6 +53,7 @@ __all__ = [
     "ParticlesThreeDType",
     "Particles",
     "VegetationModelNr",
+    "StemHeightConvention",
     "Vegetation",
     "FMModel",
 ]

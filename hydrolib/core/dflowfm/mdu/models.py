@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Literal, Union, Optional, List, Dict
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import (
     BeforeValidator,
@@ -11,6 +11,7 @@ from pydantic import (
     WrapValidator,
     field_validator,
 )
+from strenum import StrEnum
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
@@ -26,6 +27,7 @@ from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
+    enum_value_parser,
     split_string_on_delimiter,
     validate_datetime_string,
 )
@@ -2541,6 +2543,17 @@ class VegetationModelNr(IntEnum):
     BaptistDFM = 1
 
 
+class StemHeightConvention(StrEnum):
+    """Enum class containing the valid values for the StemheightConvention attribute."""
+
+    upward_from_bed = "upward_from_bed"
+    downward_from_surface = "downward_from_surface"
+    allowedvaluestext = (
+        "Stem height convention. Possible values: upward_from_bed, "
+        "downward_from_surface."
+    )
+
+
 class Vegetation(INIBasedModel):
     """
     The `[Veg]` section in an MDU file.
@@ -2567,6 +2580,10 @@ class Vegetation(INIBasedModel):
             "Stem height standard deviation fraction, e.g. 0.1 [-].",
             alias="Stemheightstd",
         )
+        stemheightconvention: Optional[str] = Field(
+            StemHeightConvention.allowedvaluestext,
+            alias="StemheightConvention",
+        )
         densvegminbap: Optional[str] = Field(
             "Minimum vegetation density in Baptist formula. Only in 2D. [1/m2].",
             alias="Densvegminbap",
@@ -2583,7 +2600,16 @@ class Vegetation(INIBasedModel):
     cbveg: Optional[float] = Field(0.0, alias="Cbveg")
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
+    stemheightconvention: Optional[StemHeightConvention] = Field(
+        StemHeightConvention.upward_from_bed,
+        alias="StemheightConvention",
+    )
     densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
+
+    @field_validator("stemheightconvention", mode="before")
+    @classmethod
+    def _validate_stemheightconvention(cls, v: str) -> StemHeightConvention:
+        return enum_value_parser(v, StemHeightConvention)
 
 
 class FMModel(INIModel):
