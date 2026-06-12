@@ -252,9 +252,6 @@ class INIBasedModel(BaseModel, ABC):
         if not isinstance(values, dict):
             return values
 
-        if "comments" in values:
-            values.pop("comments", None)
-
         dropkeys = []
         for k, v in values.items():
             if v is None and k in cls.model_fields.keys():
@@ -266,6 +263,8 @@ class INIBasedModel(BaseModel, ABC):
 
         if "_header" in values:
             values["_header"] = cls._header
+        if "comments" in values:
+            values["comments"] = cls.Comments()
 
         return values
 
