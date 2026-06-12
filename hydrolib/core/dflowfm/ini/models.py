@@ -252,7 +252,8 @@ class INIBasedModel(BaseModel, ABC):
         if not isinstance(values, dict):
             return values
 
-        values.pop("comments", None)
+        if "comments" in values:
+            values.pop("comments", None)
 
         dropkeys = []
         for k, v in values.items():
