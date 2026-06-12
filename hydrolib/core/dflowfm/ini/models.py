@@ -237,6 +237,9 @@ class INIBasedModel(BaseModel, ABC):
         """Drop None fields for known fields.
 
         Filters out None values and sets the model header.
+        Also discards any comments parsed from a file so that the up-to-date
+        default comments defined in the ``Comments`` class are always used on
+        write.
 
         Args:
             values (dict): Dictionary of field values.
@@ -248,6 +251,8 @@ class INIBasedModel(BaseModel, ABC):
         values = cls._convert_section_to_dict(values)
         if not isinstance(values, dict):
             return values
+
+        values.pop("comments", None)
 
         dropkeys = []
         for k, v in values.items():
