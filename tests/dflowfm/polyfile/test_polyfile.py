@@ -244,18 +244,28 @@ def test_determine_has_z_value(
 ):
     assert _determine_has_z_value(input_value) == expected_value
 
+@pytest.mark.parametrize(
+    "z_values,expected_z_values",
+    [
+        pytest.param([0.0, 5.0, 0.0], [0.0, 5.0, 0.0], id="zero_z_values"),
+        pytest.param([None, 5.0, None], [5.0], id="none_z_values", marks=pytest.mark.xfail(raises=ValueError, strict=True)),
 
-def test_write_polyfile_with_zero_z_values():
-    path = test_output_dir / "test_zero_z.pli"
+    ],
+)
+def test_write_polyfile_with_zero_z_values(
+        z_values: List[float | None],
+        expected_z_values: List[float| None]
+):
+    path = test_output_dir / "test_zero_z.pliz"
 
     objects = [
         PolyObject(
             description=None,
-            metadata=Metadata(name="zero-z-line", n_rows=3, n_columns=3),
+            metadata=Metadata(name="test_z_values", n_rows=3, n_columns=3),
             points=[
-                Point(x=1.0, y=2.0, z=0.0, data=[]),
-                Point(x=3.0, y=4.0, z=5.0, data=[]),
-                Point(x=6.0, y=7.0, z=0.0, data=[]),
+                Point(x=1.0, y=2.0, z=z_values[0], data=[]),
+                Point(x=3.0, y=4.0, z=z_values[1], data=[]),
+                Point(x=6.0, y=7.0, z=z_values[2], data=[]),
             ],
         )
     ]
@@ -268,9 +278,9 @@ def test_write_polyfile_with_zero_z_values():
     # Explicitly verify the zero z-values are preserved, used approx because testing
     # equality with floating point values is quite fragile
     points = read_result["objects"][0].points
-    assert points[0].z == pytest.approx(0.0)
-    assert points[2].z == pytest.approx(0.0)
-
+    assert points[0].z == pytest.approx(expected_z_values[0])
+    assert points[1].z == pytest.approx(expected_z_values[1])
+    assert points[2].z == pytest.approx(expected_z_values[2])
 
 def test_write_read_write_should_have_the_same_data():
     path = test_output_dir / "tmp" / "test.pliz"
