@@ -245,28 +245,50 @@ def test_determine_has_z_value(
     assert _determine_has_z_value(input_value) == expected_value
 
 @pytest.mark.parametrize(
-    "z_values,expected_z_values",
+    "points,expected_z_values",
     [
-        pytest.param([0.0, 5.0, 0.0], [0.0, 5.0, 0.0], id="zero_z_values"),
-        pytest.param([None, 5.0, None], [5.0], id="none_z_values", marks=pytest.mark.xfail(raises=ValueError, strict=True)),
-
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, z=0.0, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, z=0.0, data=[]),
+            ],
+            [0.0, 5.0, 0.0],
+            id="zero_z_values",
+        ),
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, z=None, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, z=None, data=[]),
+            ],
+            [5.0],
+            id="none_z_values",
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+        ),
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, data=[]),
+            ],
+            [5.0],
+            id="missing_z_values",
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+        ),
     ],
 )
-def test_write_polyfile_with_zero_z_values(
-        z_values: List[float | None],
-        expected_z_values: List[float| None]
+def test_write_polyfile_with_z_values(
+        points: List[Point],
+        expected_z_values: List[float | None]
 ):
-    path = test_output_dir / "test_zero_z.pliz"
+    path = test_output_dir / "test_z_values.pliz"
 
     objects = [
         PolyObject(
             description=None,
             metadata=Metadata(name="test_z_values", n_rows=3, n_columns=3),
-            points=[
-                Point(x=1.0, y=2.0, z=z_values[0], data=[]),
-                Point(x=3.0, y=4.0, z=z_values[1], data=[]),
-                Point(x=6.0, y=7.0, z=z_values[2], data=[]),
-            ],
+            points=points,
         )
     ]
 
