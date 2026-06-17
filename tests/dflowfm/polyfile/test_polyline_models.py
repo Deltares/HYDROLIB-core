@@ -10,11 +10,12 @@ import pytest
 
 from hydrolib.core.dflowfm.polyfile.models import Point, PolyFile
 from hydrolib.core.dflowfm.polyfile.parser import read_polyfile
+from tests.utils import test_input_dir
 
 
 @pytest.fixture
 def polylines_dir() -> Path:
-    return Path("tests/data/input/dflowfm_individual_files/polylines")
+    return test_input_dir / "dflowfm_individual_files" / "polylines"
 
 
 def test_with_label(polylines_dir: Path):
@@ -117,7 +118,7 @@ class TestGetZSourcesSinks:
               45.20 6.35 -3.00
         ```
         """
-        polyfile = PolyFile("tests/data/input/source-sink/leftsor.pliz")
+        polyfile = PolyFile(test_input_dir / "source-sink" / "leftsor.pliz")
 
         z_source, z_sink = polyfile.get_z_sources_sinks()
         assert z_source == [-3]
@@ -154,7 +155,7 @@ class TestGetZSourcesSinks:
               45.20 6.35 -3.00 -2.90 0
         ```
         """
-        polyfile = PolyFile("tests/data/input/source-sink/leftsor-5-columns.pliz")
+        polyfile = PolyFile(test_input_dir / "source-sink" / "leftsor-5-columns.pliz")
 
         z_source, z_sink = polyfile.get_z_sources_sinks()
         assert z_source == [-3, -2.90]
