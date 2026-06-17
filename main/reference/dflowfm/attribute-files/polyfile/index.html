@@ -9475,7 +9475,7 @@ be reported as warnings.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_point_values</span><span class="p">(</span><span class="n">point</span><span class="p">:</span> <span class="n">Point</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="k">yield</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span>
         <span class="k">yield</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span>
-        <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">point</span><span class="o">.</span><span class="n">z</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">point</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">value</span>
