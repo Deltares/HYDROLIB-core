@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -11,6 +11,7 @@ from hydrolib.core.dimr.models import (
     ComponentOrCouplerRef,
     CoupledItem,
     Coupler,
+    Documentation,
     FMComponent,
     Logger,
     Parallel,
@@ -316,6 +317,12 @@ def test_serialize_float_are_formatted():
     assert file_path.is_file()
     assert_files_equal(file_path, reference_file)
 
+
+class TestDocumentation:
+    def test_creation_date_default_is_timezone_aware(self):
+        doc = Documentation()
+        assert doc.creationDate.tzinfo is not None
+        assert doc.creationDate.tzinfo == timezone.utc
 
 class TestFmComponentProcess:
     @pytest.mark.parametrize(
