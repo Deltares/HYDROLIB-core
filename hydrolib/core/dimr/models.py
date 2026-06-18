@@ -155,7 +155,7 @@ class Documentation(BaseModel):
 
     fileVersion: str = "1.3"
     createdBy: str = f"hydrolib-core {__version__}"
-    creationDate: datetime = Field(default=datetime.now(timezone.utc))
+    creationDate: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class GlobalSettings(BaseModel):
