@@ -116,12 +116,11 @@ class TestResearchFMModel:
 
         model.veg.research_stemheightconvention = "upward_from_bed"
 
-
     def test_vegetation_can_be_loaded_from_mdu(self):
         input_mdu = (
-                test_input_dir
-                / "research"
-                / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+            test_input_dir
+            / "research"
+            / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
         )
 
         model = ResearchFMModel(filepath=input_mdu)
