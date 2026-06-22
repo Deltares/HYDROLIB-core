@@ -289,6 +289,7 @@ Cbveg                                     = 0.                  # Stem stiffness
 Rhoveg                                    = 0.                  # Stem Rho, if > 0, -> bouyant stick procedure, default 0.0 (kg/m3)
 Stemheightstd                             = 0.                  # Stem height standard deviation fraction, e.g. 0.1  ()
 Densvegminbap                             = 0.                  # Minimum vegetation density in Baptist formula  (1/m2)
+Stemheightconvention                      = downward_from_surface
 
 [wind]
 ICdtyp                                    = 2                   # Wind drag coefficient type (1: Const, 2: Smith&Banke (2 pts), 3: S&B (3 pts), 4: Charnock 1955, 5: Hwang 2005, 6: Wuest 2005, 7: Hersbach 2010 (2 pts), 8: Charnock+viscous, 9: Garratt 1977).

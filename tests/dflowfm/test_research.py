@@ -28,7 +28,6 @@ class TestResearchFMModel:
         assert isinstance(model.numerics, ResearchNumerics)
         assert isinstance(model.physics, ResearchPhysics)
         assert isinstance(model.sediment, ResearchSediment)
-        assert isinstance(model.veg, ResearchVegetation)
         assert isinstance(model.wind, ResearchWind)
         assert isinstance(model.time, ResearchTime)
         assert isinstance(model.trachytopes, ResearchTrachytopes)
@@ -110,3 +109,21 @@ class TestResearchFMModel:
         assert model.sedtrails.research_sedtrailsanalysis == "all"
         assert model.sedtrails.research_sedtrailsinterval == [3600.0, 1.1, 2.2]
         assert str(model.sedtrails.research_sedtrailsoutputfile) == r"d:\test2.txt"
+
+    def test_vegetation_fromscratch(self):
+        model = ResearchFMModel()
+        model.veg = ResearchVegetation()
+
+        model.veg.research_stemheightconvention = "upward_from_bed"
+
+
+    def test_vegetation_can_be_loaded_from_mdu(self):
+        input_mdu = (
+                test_input_dir
+                / "research"
+                / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu)
+
+        assert model.veg.research_stemheightconvention == "downward_from_surface"
