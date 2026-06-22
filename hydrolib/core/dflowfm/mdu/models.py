@@ -2571,10 +2571,6 @@ class Vegetation(INIBasedModel):
             "Minimum vegetation density in Baptist formula. Only in 2D. [1/m2].",
             alias="Densvegminbap",
         )
-        stemheightconvention: Optional[str] = Field(
-            "TO BE ADDED",
-            alias="Stemheightconvention",
-        )
 
     comments: Comments = Comments()
     _header: Literal["Veg"] = "Veg"
@@ -2588,7 +2584,6 @@ class Vegetation(INIBasedModel):
     rhoveg: Optional[float] = Field(0.0, alias="Rhoveg")
     stemheightstd: Optional[float] = Field(0.0, alias="Stemheightstd")
     densvegminbap: Optional[float] = Field(0.0, alias="Densvegminbap")
-    stemheightconvention: Optional[int] = Field(0, alias="Stemheightconvention")
 
 
 class FMModel(INIModel):

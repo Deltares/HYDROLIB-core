@@ -20,6 +20,7 @@ from hydrolib.core.dflowfm.mdu import (
     Sediment,
     Time,
     Trachytopes,
+    Vegetation,
     Waves,
     Wind,
 )
@@ -642,6 +643,24 @@ class ResearchSediment(Sediment):
     research_nr_of_sedfractions: Optional[int] = Field(None, alias="nr_of_sedfractions")
 
 
+class ResearchVegetation(Vegetation):
+    """An extended [veg] section that includes highly experimental research keywords."""
+
+    class Comments(Vegetation.Comments):
+        """Comments for the ResearchVegetation section fields."""
+
+        research_stemheightconvention: Optional[str] = Field(
+            "Stem height convention: 'upward_from_bed' or 'downward_from_surface'.",
+            alias="stemheightconvention"
+        )
+
+    comments: Comments = Comments()
+
+    research_stemheightconvention: Optional[
+        Literal["upward_from_bed", "downward_from_surface"]
+    ] = Field(None, alias="stemheightconvention")
+
+
 class ResearchWind(Wind):
     """An extended [wind] section that includes highly experimental research keywords."""
 
@@ -1064,3 +1083,4 @@ class ResearchFMModel(FMModel):
     output: ResearchOutput = Field(default_factory=ResearchOutput)
     processes: Optional[ResearchProcesses] = Field(None)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
+    veg: Optional[Vegetation] = Field(None)
