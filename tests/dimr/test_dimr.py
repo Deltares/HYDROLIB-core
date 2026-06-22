@@ -324,6 +324,7 @@ class TestDocumentation:
         assert doc.creationDate.tzinfo is not None
         assert doc.creationDate.tzinfo == timezone.utc
 
+
 class TestFmComponentProcess:
     @pytest.mark.parametrize(
         "input_process",
