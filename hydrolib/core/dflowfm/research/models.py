@@ -1083,4 +1083,4 @@ class ResearchFMModel(FMModel):
     output: ResearchOutput = Field(default_factory=ResearchOutput)
     processes: Optional[ResearchProcesses] = Field(None)
     sedtrails: Optional[ResearchSedtrails] = Field(None)
-    veg: Optional[Vegetation] = Field(None)
+    veg: Optional[ResearchVegetation] = Field(None)
