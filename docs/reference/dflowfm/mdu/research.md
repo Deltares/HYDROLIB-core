@@ -118,7 +118,7 @@ classDiagram
         +ResearchOutput output
         +ResearchProcesses processes
         +ResearchSedtrails sedtrails
-        +ResearchVegetation vegetation
+        +ResearchVegetation veg
     }
 
     class LegacyGeneralAsModel {
@@ -268,7 +268,7 @@ classDiagram
         +ResearchOutput output
         +ResearchProcesses processes
         +ResearchSedtrails sedtrails
-        +ResearchVegetation vegetation
+        +ResearchVegetation veg
     }
 
     class LegacyGeneralAsModel {
