@@ -230,11 +230,11 @@ class Numerics(INIBasedModel):
             alias="cstBnd",
         )
         maxitverticalforestersal: Optional[str] = Field(
-            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
+            DEPRECATED_VARIABLE,
             alias="maxitVerticalForesterSal",
         )
         maxitverticalforestertem: Optional[str] = Field(
-            "Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).",
+            DEPRECATED_VARIABLE,
             alias="maxitVerticalForesterTem",
         )
         turbulencemodel: Optional[str] = Field(
@@ -409,8 +409,8 @@ class Numerics(INIBasedModel):
     teta0: float = Field(0.55, alias="teta0")
     qhrelax: float = Field(0.01, alias="qhRelax")
     cstbnd: bool = Field(False, alias="cstBnd")
-    maxitverticalforestersal: int = Field(0, alias="maxitVerticalForesterSal")
-    maxitverticalforestertem: int = Field(0, alias="maxitVerticalForesterTem")
+    maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
+    maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
