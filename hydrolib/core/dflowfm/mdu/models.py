@@ -237,6 +237,10 @@ class Numerics(INIBasedModel):
             DEPRECATED_VARIABLE,
             alias="maxitVerticalForesterTem",
         )
+        maxitverticalforester: Optional[str] = Field(
+            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
+            alias="maxitverticalforester",
+        )
         turbulencemodel: Optional[str] = Field(
             "0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.",
             alias="turbulenceModel",
@@ -411,6 +415,7 @@ class Numerics(INIBasedModel):
     cstbnd: bool = Field(False, alias="cstBnd")
     maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
     maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
+    maxitverticalforester: Optional[int] = Field(None, alias="maxitverticalforester")
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
