@@ -415,7 +415,7 @@ class Numerics(INIBasedModel):
     cstbnd: bool = Field(False, alias="cstBnd")
     maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
     maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
-    maxitverticalforester: Optional[int] = Field(None, alias="maxitverticalforester")
+    maxitverticalforester: Optional[int] = Field(0, alias="maxitverticalforester")
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
