@@ -238,7 +238,7 @@ class Numerics(INIBasedModel):
             alias="maxitVerticalForesterTem",
         )
         maxitverticalforester: Optional[str] = Field(
-            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
+            "Forester iterations for all constituents (0: no vertical filter, > 0: max nr of iterations)",
             alias="maxitverticalforester",
         )
         turbulencemodel: Optional[str] = Field(
