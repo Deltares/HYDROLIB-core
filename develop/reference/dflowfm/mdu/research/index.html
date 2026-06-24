@@ -4732,7 +4732,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1051</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1044</span>
+<span class="normal">1045</span>
+<span class="normal">1046</span>
+<span class="normal">1047</span>
+<span class="normal">1048</span>
+<span class="normal">1049</span>
+<span class="normal">1050</span>
+<span class="normal">1051</span>
 <span class="normal">1052</span>
 <span class="normal">1053</span>
 <span class="normal">1054</span>
@@ -4740,14 +4747,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">1056</span>
 <span class="normal">1057</span>
 <span class="normal">1058</span>
-<span class="normal">1059</span>
-<span class="normal">1060</span>
-<span class="normal">1061</span>
-<span class="normal">1062</span>
-<span class="normal">1063</span>
-<span class="normal">1064</span>
-<span class="normal">1065</span>
-<span class="normal">1066</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchFMModel</span><span class="p">(</span><span class="n">FMModel</span><span class="p">):</span>
+<span class="normal">1059</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchFMModel</span><span class="p">(</span><span class="n">FMModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended FMModel that includes highly experimental research sections and keywords.&quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">ResearchGeneral</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">ResearchGeneral</span><span class="p">)</span>
@@ -5878,14 +5878,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span>
-<span class="normal">508</span>
-<span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchNumerics</span><span class="p">(</span><span class="n">Numerics</span><span class="p">):</span>
+<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchNumerics</span><span class="p">(</span><span class="n">Numerics</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [numerics] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Numerics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -6103,10 +6096,6 @@ Hold "Ctrl" to enable pan &amp; zoom
             <span class="n">DEPRECATED_VARIABLE</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;jaembed1d&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">research_maxitverticalforester</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;Forester iterations for salinity (0: no vertical filter for salinity, &gt; 0: max nr of iterations).&quot;</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;maxitverticalforester&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
 
         <span class="n">research_ilutype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;0: parms-default&quot;</span><span class="p">,</span>
@@ -6196,9 +6185,6 @@ Hold "Ctrl" to enable pan &amp; zoom
     <span class="n">research_jaorgsethu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;jaorgsethu&quot;</span><span class="p">)</span>
     <span class="n">research_cflwavefrac</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;cflwavefrac&quot;</span><span class="p">)</span>
     <span class="n">research_jaembed1d</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;jaembed1d&quot;</span><span class="p">)</span>
-    <span class="n">research_maxitverticalforester</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;maxitverticalforester&quot;</span>
-    <span class="p">)</span>
     <span class="n">research_ilutype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;ilutype&quot;</span><span class="p">)</span>
     <span class="n">research_nlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nlevel&quot;</span><span class="p">)</span>
     <span class="n">research_dtol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dtol&quot;</span><span class="p">)</span>
@@ -6472,11 +6458,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span>
-<span class="normal">429</span>
-<span class="normal">430</span>
-<span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Numerics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">427</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Numerics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchNumerics section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_faclaxturb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -6691,10 +6673,6 @@ Hold "Ctrl" to enable pan &amp; zoom
         <span class="n">DEPRECATED_VARIABLE</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;jaembed1d&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">research_maxitverticalforester</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;Forester iterations for salinity (0: no vertical filter for salinity, &gt; 0: max nr of iterations).&quot;</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;maxitverticalforester&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
 
     <span class="n">research_ilutype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;0: parms-default&quot;</span><span class="p">,</span>
@@ -6769,7 +6747,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">826</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">819</span>
+<span class="normal">820</span>
+<span class="normal">821</span>
+<span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
 <span class="normal">827</span>
 <span class="normal">828</span>
 <span class="normal">829</span>
@@ -6916,14 +6901,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">970</span>
 <span class="normal">971</span>
 <span class="normal">972</span>
-<span class="normal">973</span>
-<span class="normal">974</span>
-<span class="normal">975</span>
-<span class="normal">976</span>
-<span class="normal">977</span>
-<span class="normal">978</span>
-<span class="normal">979</span>
-<span class="normal">980</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchOutput</span><span class="p">(</span><span class="n">Output</span><span class="p">):</span>
+<span class="normal">973</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchOutput</span><span class="p">(</span><span class="n">Output</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [output] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Output</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -7121,7 +7099,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">829</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">822</span>
+<span class="normal">823</span>
+<span class="normal">824</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
 <span class="normal">830</span>
 <span class="normal">831</span>
 <span class="normal">832</span>
@@ -7214,14 +7199,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">919</span>
 <span class="normal">920</span>
 <span class="normal">921</span>
-<span class="normal">922</span>
-<span class="normal">923</span>
-<span class="normal">924</span>
-<span class="normal">925</span>
-<span class="normal">926</span>
-<span class="normal">927</span>
-<span class="normal">928</span>
-<span class="normal">929</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Output</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">922</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Output</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchOutput section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_mbalumpsourcesinks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -7383,7 +7361,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">516</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
 <span class="normal">517</span>
 <span class="normal">518</span>
 <span class="normal">519</span>
@@ -7472,14 +7457,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">602</span>
 <span class="normal">603</span>
 <span class="normal">604</span>
-<span class="normal">605</span>
-<span class="normal">606</span>
-<span class="normal">607</span>
-<span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchPhysics</span><span class="p">(</span><span class="n">Physics</span><span class="p">):</span>
+<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchPhysics</span><span class="p">(</span><span class="n">Physics</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [physics] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Physics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -7619,7 +7597,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">519</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span>
 <span class="normal">520</span>
 <span class="normal">521</span>
 <span class="normal">522</span>
@@ -7671,14 +7656,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
-<span class="normal">571</span>
-<span class="normal">572</span>
-<span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Physics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">571</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Physics</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchPhysics section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_surftempsmofac</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -7799,21 +7777,21 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">983</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">976</span>
+<span class="normal">977</span>
+<span class="normal">978</span>
+<span class="normal">979</span>
+<span class="normal">980</span>
+<span class="normal">981</span>
+<span class="normal">982</span>
+<span class="normal">983</span>
 <span class="normal">984</span>
 <span class="normal">985</span>
 <span class="normal">986</span>
 <span class="normal">987</span>
 <span class="normal">988</span>
 <span class="normal">989</span>
-<span class="normal">990</span>
-<span class="normal">991</span>
-<span class="normal">992</span>
-<span class="normal">993</span>
-<span class="normal">994</span>
-<span class="normal">995</span>
-<span class="normal">996</span>
-<span class="normal">997</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchProcesses</span><span class="p">(</span><span class="n">Processes</span><span class="p">):</span>
+<span class="normal">990</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchProcesses</span><span class="p">(</span><span class="n">Processes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [processes] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Processes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -7871,12 +7849,12 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">986</span>
-<span class="normal">987</span>
-<span class="normal">988</span>
-<span class="normal">989</span>
-<span class="normal">990</span>
-<span class="normal">991</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Processes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">979</span>
+<span class="normal">980</span>
+<span class="normal">981</span>
+<span class="normal">982</span>
+<span class="normal">983</span>
+<span class="normal">984</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Processes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchProcesses section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_substancedensitycoupling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -7943,20 +7921,20 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">777</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">770</span>
+<span class="normal">771</span>
+<span class="normal">772</span>
+<span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
 <span class="normal">778</span>
 <span class="normal">779</span>
 <span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
-<span class="normal">789</span>
-<span class="normal">790</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchRestart</span><span class="p">(</span><span class="n">Restart</span><span class="p">):</span>
+<span class="normal">783</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchRestart</span><span class="p">(</span><span class="n">Restart</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [restart] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Restart</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -8013,13 +7991,13 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">780</span>
-<span class="normal">781</span>
-<span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Restart</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">773</span>
+<span class="normal">774</span>
+<span class="normal">775</span>
+<span class="normal">776</span>
+<span class="normal">777</span>
+<span class="normal">778</span>
+<span class="normal">779</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Restart</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchRestart section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_rstignorebl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -8087,7 +8065,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">615</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">608</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
 <span class="normal">616</span>
 <span class="normal">617</span>
 <span class="normal">618</span>
@@ -8107,14 +8092,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">632</span>
 <span class="normal">633</span>
 <span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchSediment</span><span class="p">(</span><span class="n">Sediment</span><span class="p">):</span>
+<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchSediment</span><span class="p">(</span><span class="n">Sediment</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [sediment] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Sediment</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -8185,7 +8163,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">618</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
@@ -8193,14 +8178,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Sediment</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">626</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Sediment</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchSediment section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_mxgrkrone</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -8277,7 +8255,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1000</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 993</span>
+<span class="normal"> 994</span>
+<span class="normal"> 995</span>
+<span class="normal"> 996</span>
+<span class="normal"> 997</span>
+<span class="normal"> 998</span>
+<span class="normal"> 999</span>
+<span class="normal">1000</span>
 <span class="normal">1001</span>
 <span class="normal">1002</span>
 <span class="normal">1003</span>
@@ -8318,14 +8303,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">1038</span>
 <span class="normal">1039</span>
 <span class="normal">1040</span>
-<span class="normal">1041</span>
-<span class="normal">1042</span>
-<span class="normal">1043</span>
-<span class="normal">1044</span>
-<span class="normal">1045</span>
-<span class="normal">1046</span>
-<span class="normal">1047</span>
-<span class="normal">1048</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchSedtrails</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">1041</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchSedtrails</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The `[Sedtrails]` section in an MDU file.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -8417,7 +8395,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1003</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 996</span>
+<span class="normal"> 997</span>
+<span class="normal"> 998</span>
+<span class="normal"> 999</span>
+<span class="normal">1000</span>
+<span class="normal">1001</span>
+<span class="normal">1002</span>
+<span class="normal">1003</span>
 <span class="normal">1004</span>
 <span class="normal">1005</span>
 <span class="normal">1006</span>
@@ -8427,14 +8412,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">1010</span>
 <span class="normal">1011</span>
 <span class="normal">1012</span>
-<span class="normal">1013</span>
-<span class="normal">1014</span>
-<span class="normal">1015</span>
-<span class="normal">1016</span>
-<span class="normal">1017</span>
-<span class="normal">1018</span>
-<span class="normal">1019</span>
-<span class="normal">1020</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">1013</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchSedtrails section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_sedtrailsgrid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -8513,7 +8491,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">751</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
 <span class="normal">752</span>
 <span class="normal">753</span>
 <span class="normal">754</span>
@@ -8529,14 +8514,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">764</span>
 <span class="normal">765</span>
 <span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span>
-<span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchTime</span><span class="p">(</span><span class="n">Time</span><span class="p">):</span>
+<span class="normal">767</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchTime</span><span class="p">(</span><span class="n">Time</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [time] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -8603,21 +8581,21 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">754</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span>
+<span class="normal">753</span>
+<span class="normal">754</span>
 <span class="normal">755</span>
 <span class="normal">756</span>
 <span class="normal">757</span>
 <span class="normal">758</span>
 <span class="normal">759</span>
 <span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span>
-<span class="normal">763</span>
-<span class="normal">764</span>
-<span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span>
-<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">761</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchTime section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_timestepanalysis</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -8693,7 +8671,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">793</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">786</span>
+<span class="normal">787</span>
+<span class="normal">788</span>
+<span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
 <span class="normal">794</span>
 <span class="normal">795</span>
 <span class="normal">796</span>
@@ -8716,14 +8701,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">813</span>
 <span class="normal">814</span>
 <span class="normal">815</span>
-<span class="normal">816</span>
-<span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span>
-<span class="normal">821</span>
-<span class="normal">822</span>
-<span class="normal">823</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchTrachytopes</span><span class="p">(</span><span class="n">Trachytopes</span><span class="p">):</span>
+<span class="normal">816</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchTrachytopes</span><span class="p">(</span><span class="n">Trachytopes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [trachytopes] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Trachytopes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -8797,20 +8775,20 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">796</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">789</span>
+<span class="normal">790</span>
+<span class="normal">791</span>
+<span class="normal">792</span>
+<span class="normal">793</span>
+<span class="normal">794</span>
+<span class="normal">795</span>
+<span class="normal">796</span>
 <span class="normal">797</span>
 <span class="normal">798</span>
 <span class="normal">799</span>
 <span class="normal">800</span>
 <span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span>
-<span class="normal">805</span>
-<span class="normal">806</span>
-<span class="normal">807</span>
-<span class="normal">808</span>
-<span class="normal">809</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Trachytopes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">802</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Trachytopes</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchTrachytopes section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_trtmth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -8869,13 +8847,13 @@ Hold "Ctrl" to enable pan &amp; zoom
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span>
-<span class="normal">821</span>
-<span class="normal">822</span>
-<span class="normal">823</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;research_trtcll&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">810</span>
+<span class="normal">811</span>
+<span class="normal">812</span>
+<span class="normal">813</span>
+<span class="normal">814</span>
+<span class="normal">815</span>
+<span class="normal">816</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;research_trtcll&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_trachytopes_file_model</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span>
@@ -8924,7 +8902,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">674</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
 <span class="normal">675</span>
 <span class="normal">676</span>
 <span class="normal">677</span>
@@ -8991,14 +8976,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">738</span>
 <span class="normal">739</span>
 <span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span>
-<span class="normal">747</span>
-<span class="normal">748</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchWaves</span><span class="p">(</span><span class="n">Waves</span><span class="p">):</span>
+<span class="normal">741</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchWaves</span><span class="p">(</span><span class="n">Waves</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [waves] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Waves</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -9116,7 +9094,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">677</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">670</span>
+<span class="normal">671</span>
+<span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
 <span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span>
@@ -9158,14 +9143,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">716</span>
 <span class="normal">717</span>
 <span class="normal">718</span>
-<span class="normal">719</span>
-<span class="normal">720</span>
-<span class="normal">721</span>
-<span class="normal">722</span>
-<span class="normal">723</span>
-<span class="normal">724</span>
-<span class="normal">725</span>
-<span class="normal">726</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Waves</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">719</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Waves</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchWaves section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_waveswartdelwaq</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -9276,7 +9254,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">638</span>
+<span class="normal">639</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span>
@@ -9295,14 +9280,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">661</span>
 <span class="normal">662</span>
 <span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchWind</span><span class="p">(</span><span class="n">Wind</span><span class="p">):</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ResearchWind</span><span class="p">(</span><span class="n">Wind</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An extended [wind] section that includes highly experimental research keywords.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Wind</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
@@ -9372,7 +9350,14 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/research/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
 <span class="normal">649</span>
 <span class="normal">650</span>
 <span class="normal">651</span>
@@ -9381,14 +9366,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="normal">654</span>
 <span class="normal">655</span>
 <span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span>
-<span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Wind</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">657</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">Wind</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ResearchWind section fields.&quot;&quot;&quot;</span>
 
     <span class="n">research_windhuorzwsbased</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
