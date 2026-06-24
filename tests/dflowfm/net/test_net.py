@@ -145,9 +145,9 @@ def test_create_1d_2d_1d2d():
     # may change depending on the version of meshkernel used. If this test fails,
     # please check whether a newer version of the meshkernel package has altered the
     # contact/link generation behaviour and update the expected values accordingly.
-    # The issues tackling this topic are below:
-    # "Hydrolib core - GitHub Issue https://github.com/Deltares/HYDROLIB-core/issues/635
-    # "MeshkernelPy - GitHub Issue https://github.com/Deltares/MeshKernelPy/issues/164",
+    # Issues tracking this topic:
+    # - HYDROLIB-core: https://github.com/Deltares/HYDROLIB-core/issues/635
+    # - MeshKernelPy: https://github.com/Deltares/MeshKernelPy/issues/164
 
     if is_macos():
         reference_size = 20
