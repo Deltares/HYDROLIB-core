@@ -677,7 +677,10 @@ class TimeSeries(VectorForcingBase):
         if not self.datablock:
             return self
 
-        expected_columns = len(self.quantityunitpair)
+        expected_columns = sum(
+            len(qup.quantityunitpair) if isinstance(qup, VectorQuantityUnitPairs) else 1
+            for qup in self.quantityunitpair
+        )
         actual_columns = len(self.datablock[0])
 
         if actual_columns != expected_columns:
