@@ -169,21 +169,62 @@ class TestTimeSeries:
 
         assert expected_error_mssg in str(error.value)
 
-    def test_initialize_timeseries_with_fewer_quantityunitpairs_than_columns_raises_error(
+    @pytest.mark.parametrize(
+        ("quantities", "msg"),
+        [
+            pytest.param(
+                [QuantityUnitPair(quantity="waterlevel", unit="m")],
+                "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)" ,
+                id="Fewer QuantityUnitPairs that columns were found",
+            ),
+            pytest.param(
+                [
+                    QuantityUnitPair(quantity="waterlevel", unit="m"),
+                    QuantityUnitPair(quantity="waterdepth", unit="m"),
+                    QuantityUnitPair(quantity="watertemp", unit="C")
+                 ],
+                "Number of columns in the datablock (2) does not match the number of quantity unit pairs (3)",
+                id="More QuantityUnitPairs that columns were found",
+            )
+        ],
+    )
+    def test_initialize_timeseries_quantityunitpairs_mismatch_columns_raises_error(
         self,
+        quantities: List,
+        msg: str
     ):
-        """Supplying fewer QuantityUnitPairs than there are datablock columns should raise a ValidationError."""
+        """Supplying fewer or more QuantityUnitPairs than there are datablock columns should raise a ValidationError."""
         with pytest.raises(ValidationError) as error:
             TimeSeries(
                 name="test_mismatch_quantity",
-                quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m")],
+                quantityunitpair=quantities,
                 timeinterpolation=TimeInterpolation.linear,
                 datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
             )
 
-        assert "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)" in str(
+        assert msg in str(
             error.value
         )
+
+    def test_initialize_timeseries_with_equal_columns_and_quantity_pairs(
+        self,
+    ):
+        """Supplying equal amount of QuantityUnitPairs and datablock columns should pass validation."""
+        time_series = (
+            TimeSeries(
+                name="test_columns_equal_quantityunitpairs",
+                quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m"),
+                                  QuantityUnitPair(quantity="waterdepth", unit="m")],
+                timeinterpolation=TimeInterpolation.linear,
+                datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
+        ))
+        assert isinstance(time_series, TimeSeries)
+        assert time_series.name == "test_columns_equal_quantityunitpairs"
+        assert len(time_series.quantityunitpair) == 2
+        assert time_series.quantityunitpair[0].quantity == "waterlevel"
+        assert time_series.quantityunitpair[1].quantity == "waterdepth"
+        assert len(time_series.datablock) == 5
+        assert time_series.datablock[0] == [0.0, 1.1]
 
 
 class TestVectorForcingBase:
