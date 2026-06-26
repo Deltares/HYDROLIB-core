@@ -665,15 +665,15 @@ class TimeSeries(VectorForcingBase):
         )
 
     @model_validator(mode="after")
-    def _validate_datablock_columns_match_quantityunitpairs(self) -> "ForcingBase":
-        """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
+def _validate_datablock_columns_match_quantityunitpairs(self) -> "TimeSeries":
+    """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
 
-        Raises:
-            ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
+    Raises:
+        ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
 
-        Returns:
-            ForcingBase: The validated model instance.
-        """
+    Returns:
+        TimeSeries: The validated model instance.
+    """
         if not self.datablock:
             return self
 
