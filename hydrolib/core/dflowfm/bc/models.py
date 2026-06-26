@@ -665,31 +665,32 @@ class TimeSeries(VectorForcingBase):
         )
 
     @model_validator(mode="after")
-def _validate_datablock_columns_match_quantityunitpairs(self) -> "TimeSeries":
-    """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
+    def _validate_datablock_columns_match_quantityunitpairs(self) -> "TimeSeries":
+        """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
 
-    Raises:
-        ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
+        Raises:
+            ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
 
-    Returns:
-        TimeSeries: The validated model instance.
-    """
-    if not self.datablock:
+        Returns:
+            TimeSeries: The validated model instance.
+        """
+        if not self.datablock:
+            return self
+
+        expected_columns = sum(
+            len(qup.quantityunitpair) if isinstance(qup, VectorQuantityUnitPairs) else 1
+            for qup in self.quantityunitpair
+        )
+        actual_columns = len(self.datablock[0])
+
+        if actual_columns != expected_columns:
+            raise ValueError(
+                f"Number of columns in the datablock ({actual_columns}) does not match "
+                f"the number of quantity unit pairs ({expected_columns})."
+            )
+
         return self
 
-    expected_columns = sum(
-        len(qup.quantityunitpair) if isinstance(qup, VectorQuantityUnitPairs) else 1
-        for qup in self.quantityunitpair
-    )
-    actual_columns = len(self.datablock[0])
-
-    if actual_columns != expected_columns:
-        raise ValueError(
-            f"Number of columns in the datablock ({actual_columns}) does not match "
-            f"the number of quantity unit pairs ({expected_columns})."
-        )
-
-    return self
 
 class Harmonic(ForcingBase):
     """Subclass for a .bc file [Forcing] block with harmonic components data."""
