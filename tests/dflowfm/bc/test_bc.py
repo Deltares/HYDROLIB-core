@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Dict, List, Literal
+from typing import Dict, List, Literal
 
 import pytest
 from pydantic import ValidationError
@@ -168,6 +168,22 @@ class TestTimeSeries:
         )
 
         assert expected_error_mssg in str(error.value)
+
+    def test_initialize_timeseries_with_fewer_quantityunitpairs_than_columns_raises_error(
+        self,
+    ):
+        """Supplying fewer QuantityUnitPairs than there are datablock columns should raise a ValidationError."""
+        with pytest.raises(ValidationError) as error:
+            TimeSeries(
+                name="test_mismatch_quantity",
+                quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m")],
+                timeinterpolation=TimeInterpolation.linear,
+                datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
+            )
+
+        assert "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)" in str(
+            error.value
+        )
 
 
 class TestVectorForcingBase:
