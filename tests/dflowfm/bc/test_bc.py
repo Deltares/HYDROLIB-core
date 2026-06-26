@@ -175,7 +175,7 @@ class TestTimeSeries:
             pytest.param(
                 [QuantityUnitPair(quantity="waterlevel", unit="m")],
                 "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)" ,
-                id="Fewer QuantityUnitPairs that columns were found",
+                id="Fewer QuantityUnitPairs than columns were found",
             ),
             pytest.param(
                 [
@@ -184,7 +184,7 @@ class TestTimeSeries:
                     QuantityUnitPair(quantity="watertemp", unit="C")
                  ],
                 "Number of columns in the datablock (2) does not match the number of quantity unit pairs (3)",
-                id="More QuantityUnitPairs that columns were found",
+                id="More QuantityUnitPairs than columns were found",
             )
         ],
     )
