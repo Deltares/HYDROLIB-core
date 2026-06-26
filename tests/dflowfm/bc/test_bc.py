@@ -174,7 +174,7 @@ class TestTimeSeries:
         [
             pytest.param(
                 [QuantityUnitPair(quantity="waterlevel", unit="m")],
-                "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)" ,
+                "Number of columns in the datablock (2) does not match the number of quantity unit pairs (1)",
                 id="Fewer QuantityUnitPairs than columns were found",
             ),
             pytest.param(
@@ -190,7 +190,7 @@ class TestTimeSeries:
     )
     def test_initialize_timeseries_quantityunitpairs_mismatch_columns_raises_error(
         self,
-        quantities: List,
+        quantities: List[QuantityUnitPair],
         msg: str
     ):
         """Supplying fewer or more QuantityUnitPairs than there are datablock columns should raise a ValidationError."""
