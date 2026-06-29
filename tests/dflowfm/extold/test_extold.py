@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
     INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
+    PARAMETER_QUANTITIES_VALID_PREFIXES,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
@@ -440,3 +441,147 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         operand="O",
     )
     assert isinstance(forcing.filename, TimModel)
+
+
+class TestWaterQualityQuantities:
+    """Tests for D-Water Quality (WAQ) quantity support in ExtOldModel."""
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqfunctionRadSurf",
+            "waqfunctionVWind",
+            "waqfunctionRadDaySurf",
+        ],
+    )
+    def test_waqfunction_prefix_is_valid(self, quantity):
+        """waqfunctionXXX quantities should be accepted as valid parameter quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.tim",
+            filetype=1,
+            method=1,
+            operand="O",
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqmassbalanceareaDomain",
+            "waqmassbalanceareaHongKong",
+            "waqmassbalanceareaNoProcessArea",
+        ],
+    )
+    def test_waqmassbalancearea_prefix_is_valid(self, quantity):
+        """waqmassbalanceareaXXX quantities should be accepted as valid parameter quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.pol",
+            filetype=10,
+            method=4,
+            operand="O",
+            value=1.0,
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqparameterProcessesInactive",
+            "waqparameterSomeParam",
+        ],
+    )
+    def test_waqparameter_prefix_is_valid(self, quantity):
+        """waqparameterXXX quantities should be accepted as valid parameter quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.pol",
+            filetype=10,
+            method=4,
+            operand="O",
+            value=1.0,
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "tracerbndAAP",
+            "tracerbndOXY",
+            "tracerbndNH4",
+        ],
+    )
+    def test_tracerbnd_prefix_is_valid_with_filetype9(self, quantity):
+        """tracerbndXXX quantities with FILETYPE=9 should be accepted."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.pli",
+            filetype=9,
+            method=3,
+            operand="O",
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "initialtracerAAP",
+            "initialtracerOXY",
+            "initialtracerNH4",
+        ],
+    )
+    def test_initialtracer_prefix_is_valid_with_filetype10(self, quantity):
+        """initialtracerXXX quantities with FILETYPE=10 should be accepted."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.pol",
+            filetype=10,
+            method=4,
+            operand="O",
+            value=0.0,
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "initialwaqbotAAPS1",
+            "initialwaqbotSOD",
+            "initialwaqbotDetCS1",
+        ],
+    )
+    def test_initialwaqbot_prefix_is_valid_with_filetype10(self, quantity):
+        """initialwaqbotXXX quantities with FILETYPE=10 should be accepted."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="somefile.pol",
+            filetype=10,
+            method=4,
+            operand="O",
+            value=0.0,
+        )
+        assert str(forcing.quantity) == quantity
+
+    @pytest.mark.parametrize(
+        "bare_prefix",
+        [
+            "waqmassbalancearea",
+            "waqparameter",
+        ],
+    )
+    def test_bare_waq_prefix_without_name_raises(self, bare_prefix):
+        """A bare WAQ prefix without a name suffix should raise a validation error."""
+        with pytest.raises(Exception, match="should be appended with a valid name"):
+            ExtOldForcing(
+                quantity=bare_prefix,
+                filename="somefile.pol",
+                filetype=10,
+                method=4,
+                operand="O",
+            )
+
+    def test_waq_parameter_prefixes_in_yaml(self):
+        """Verify that waqmassbalancearea and waqparameter are in PARAMETER_QUANTITIES_VALID_PREFIXES."""
+        assert "waqmassbalancearea" in PARAMETER_QUANTITIES_VALID_PREFIXES
+        assert "waqparameter" in PARAMETER_QUANTITIES_VALID_PREFIXES
