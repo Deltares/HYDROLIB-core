@@ -347,6 +347,33 @@ class ForcingBase(DataBlockINIBasedModel):
         representable = type(self).model_construct(**data)
         return str(representable)
 
+    @model_validator(mode="after")
+    def _validate_datablock_columns_match_quantityunitpairs(self) -> "ForcingBase":
+        """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
+
+        Raises:
+            ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
+
+        Returns:
+            ForcingBase: The validated model instance.
+        """
+        if not self.datablock:
+            return self
+
+        expected_columns = sum(
+            len(qup.quantityunitpair) if isinstance(qup, VectorQuantityUnitPairs) else 1
+            for qup in self.quantityunitpair
+        )
+        actual_columns = len(self.datablock[0])
+
+        if actual_columns != expected_columns:
+            raise ValueError(
+                f"Number of columns in the datablock ({actual_columns}) does not match "
+                f"the number of quantity unit pairs ({expected_columns})."
+            )
+
+        return self
+
 
 class VectorForcingBase(ForcingBase):
     """The base class of a single [Forcing] block that supports vectors in a .bc forcings file."""
@@ -663,33 +690,6 @@ class TimeSeries(VectorForcingBase):
                 "timeinterpolation": ["time_interpolation"],
             },
         )
-
-    @model_validator(mode="after")
-    def _validate_datablock_columns_match_quantityunitpairs(self) -> "TimeSeries":
-        """Validates that the number of columns in the datablock matches the total number of quantity unit pairs.
-
-        Raises:
-            ValueError: When the number of datablock columns does not match the number of quantity unit pairs.
-
-        Returns:
-            TimeSeries: The validated model instance.
-        """
-        if not self.datablock:
-            return self
-
-        expected_columns = sum(
-            len(qup.quantityunitpair) if isinstance(qup, VectorQuantityUnitPairs) else 1
-            for qup in self.quantityunitpair
-        )
-        actual_columns = len(self.datablock[0])
-
-        if actual_columns != expected_columns:
-            raise ValueError(
-                f"Number of columns in the datablock ({actual_columns}) does not match "
-                f"the number of quantity unit pairs ({expected_columns})."
-            )
-
-        return self
 
 
 class Harmonic(ForcingBase):

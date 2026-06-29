@@ -6,6 +6,7 @@ from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
+    ForcingBase,
     ForcingModel,
     QuantityUnitPair,
     TimeInterpolation,
@@ -169,6 +170,8 @@ class TestTimeSeries:
 
         assert expected_error_mssg in str(error.value)
 
+class TestForcingBase:
+
     @pytest.mark.parametrize(
         ("quantities", "msg"),
         [
@@ -188,17 +191,17 @@ class TestTimeSeries:
             )
         ],
     )
-    def test_initialize_timeseries_quantityunitpairs_mismatch_columns_raises_error(
+    def test_initialize_forcingbase_quantityunitpairs_mismatch_columns_raises_error(
         self,
         quantities: List[QuantityUnitPair],
         msg: str
     ):
         """Supplying fewer or more QuantityUnitPairs than there are datablock columns should raise a ValidationError."""
         with pytest.raises(ValidationError) as error:
-            TimeSeries(
+            ForcingBase(
                 name="test_mismatch_quantity",
+                function="timeseries",
                 quantityunitpair=quantities,
-                timeinterpolation=TimeInterpolation.linear,
                 datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
             )
 
@@ -206,25 +209,24 @@ class TestTimeSeries:
             error.value
         )
 
-    def test_initialize_timeseries_with_equal_columns_and_quantity_pairs(
+    def test_initialize_forcingbase_with_equal_columns_and_quantity_pairs(
         self,
     ):
         """Supplying equal amount of QuantityUnitPairs and datablock columns should pass validation."""
-        time_series = (
-            TimeSeries(
-                name="test_columns_equal_quantityunitpairs",
-                quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m"),
-                                  QuantityUnitPair(quantity="waterdepth", unit="m")],
-                timeinterpolation=TimeInterpolation.linear,
-                datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
-        ))
-        assert isinstance(time_series, TimeSeries)
-        assert time_series.name == "test_columns_equal_quantityunitpairs"
-        assert len(time_series.quantityunitpair) == 2
-        assert time_series.quantityunitpair[0].quantity == "waterlevel"
-        assert time_series.quantityunitpair[1].quantity == "waterdepth"
-        assert len(time_series.datablock) == 5
-        assert time_series.datablock[0] == [0.0, 1.1]
+        forcing = ForcingBase(
+            name="test_columns_equal_quantityunitpairs",
+            function="timeseries",
+            quantityunitpair=[QuantityUnitPair(quantity="waterlevel", unit="m"),
+                              QuantityUnitPair(quantity="waterdepth", unit="m")],
+            datablock=[[0, 1.1], [3600, 2.3], [7200, 3.5], [10800, 2.4], [86400, -0.123]],
+        )
+        assert isinstance(forcing, ForcingBase)
+        assert forcing.name == "test_columns_equal_quantityunitpairs"
+        assert len(forcing.quantityunitpair) == 2
+        assert forcing.quantityunitpair[0].quantity == "waterlevel"
+        assert forcing.quantityunitpair[1].quantity == "waterdepth"
+        assert len(forcing.datablock) == 5
+        assert forcing.datablock[0] == [0.0, 1.1]
 
 
 class TestVectorForcingBase:
