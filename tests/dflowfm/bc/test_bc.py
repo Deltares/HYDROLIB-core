@@ -347,7 +347,7 @@ class TestVectorForcingBase:
         assert_files_equal(output_file, reference_file, [0])
 
     def test_initialize_vectorforcing_with_vectorqups_followed_by_scalarqups(self):
-        values = _create_valid_vectorforcingtest_values()
+        values = _create_valid_vectorforcingtest_values_with_6_columns()
         del values["quantityunitpair"]
 
         values["quantity"] = ["time", "ux", "uy", "ux", "uy", "randomScalar"]
@@ -574,9 +574,9 @@ class TestT3D:
     ):
         del t3d_values["quantityunitpair"]
 
-        t3d_values["quantity"] = ["time", "randomQuantity1", "randomQuantity2"]
-        t3d_values["unit"] = ["randomUnit", "randomUnit", "randomUnit"]
-        t3d_values["vertpositionindex"] = [2, 3]
+        t3d_values["quantity"] = ["time", "randomQuantity1", "randomQuantity2", "randomQuantity3"]
+        t3d_values["unit"] = ["randomUnit", "randomUnit", "randomUnit", "randomUnit"]
+        t3d_values["vertpositionindex"] = [2, 3, 3]
 
         t3d = T3D(**t3d_values)
 
@@ -907,7 +907,6 @@ def _create_time_series_vectorvalues():
         ],
     )
 
-
 def _create_valid_vectorforcingtest_values():
     return dict(
         name="test",
@@ -917,12 +916,26 @@ def _create_valid_vectorforcingtest_values():
             _create_vectorqup(**_create_vectorvalues(2)),
         ],
         datablock=[
-            ["0", "1.23", "12.3"],
-            ["60", "2.34", "23.4"],
-            ["120", "3.45", "34.5"],
+            ["0", "1.23", "12.3", "6.78", "67.8"],
+            ["60", "2.34", "23.4", "7.89", "78.9"],
+            ["120", "3.45", "34.5", "8.90", "89.0"],
         ],
     )
 
+def _create_valid_vectorforcingtest_values_with_6_columns():
+    return dict(
+        name="test",
+        function="testfunction",
+        quantityunitpair=[
+            _create_quantityunitpair("time", TEST_TIME_UNIT),
+            _create_vectorqup(**_create_vectorvalues(2)),
+        ],
+        datablock=[
+            ["0", "1.23", "12.3", "6.78", "67.8", "1.02"],
+            ["60", "2.34", "23.4", "7.89", "78.9", "2.03"],
+            ["120", "3.45", "34.5", "8.90", "89.0", "3.04"],
+        ],
+    )
 
 def _create_valid_vectorforcingtest_values_that_still_have_to_be_parsed():
     return dict(
@@ -959,8 +972,8 @@ def _create_valid_vectorforcingtest_values_with_multiple_vectors_that_still_have
         ],
         unit=["m s-1", "m s-1", "m s-1", "m s-1", "ppt", "ppt", "m", "m"],
         datablock=[
-            ["0", "1.23", "12.3"],
-            ["60", "2.34", "23.4"],
-            ["120", "3.45", "34.5"],
+            ["0", "1.23", "12.3", "6.78", "67.8", "11.22", "22.33", "33.44"],
+            ["60", "2.34", "23.4", "7.89", "78.9", "55.55", "66.66", "77.77"],
+            ["120", "3.45", "34.5", "8.90", "89.0", "88.88", "99.99", "111.11"],
         ],
     )
