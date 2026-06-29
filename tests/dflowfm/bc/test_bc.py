@@ -183,8 +183,14 @@ class TestForcingBase:
             pytest.param(
                 [
                     QuantityUnitPair(quantity="waterlevel", unit="m"),
-                    QuantityUnitPair(quantity="waterdepth", unit="m"),
-                    QuantityUnitPair(quantity="watertemp", unit="C")
+                    VectorQuantityUnitPairs(
+                        vectorname="velocity",
+                        elementname=["ux", "uy"],
+                        quantityunitpair=[
+                            QuantityUnitPair(quantity="ux", unit="m s-1"),
+                            QuantityUnitPair(quantity="uy", unit="m s-1"),
+                        ],
+                    ),
                  ],
                 "Number of columns in the datablock (2) does not match the number of quantity unit pairs (3)",
                 id="More QuantityUnitPairs than columns were found",
