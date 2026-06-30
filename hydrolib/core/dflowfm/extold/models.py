@@ -20,7 +20,7 @@ from hydrolib.core.base.models import (
     SerializerConfig,
 )
 from hydrolib.core.base.utils import resolve_file_model
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import Operand, _OPERAND_LEGACY_MAP
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
 from hydrolib.core.dflowfm.ini.util import enum_value_parser
@@ -353,7 +353,7 @@ class ExtOldForcing(BaseModel):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
-        return enum_value_parser(value, Operand)
+        return enum_value_parser(value, Operand, _OPERAND_LEGACY_MAP)
 
     @model_validator(mode="after")
     def validate_varname(self):

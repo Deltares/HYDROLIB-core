@@ -1,5 +1,7 @@
 """util.py provides additional utility methods related to handling ini files."""
 
+import warnings
+
 from datetime import datetime
 from enum import Enum
 from operator import eq
@@ -94,6 +96,11 @@ def parse_enum(
                 and any(v_lower == alt.lower() for alt in alts)
             ):
                 result = entry
+                warnings.warn(
+                    f"Operand value {v!r} is deprecated; use {entry.value!r} instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
                 break
     if result is None:
         valid_values = [e.value for e in enum]

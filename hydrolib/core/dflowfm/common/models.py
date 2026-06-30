@@ -37,3 +37,13 @@ class Operand(StrEnum):
     minimum = "minimum"  # legacy: "m"
     """The minimum values of the existing values and provided values are used."""
 
+
+# Maps legacy single-character operand values to their canonical Operand members.
+_OPERAND_LEGACY_MAP: dict = {
+    Operand.override: "o",
+    Operand.override_if_missing: "a",
+    Operand.add: "+",
+    Operand.multiply: "*",
+    Operand.minimum: "m",
+    Operand.maximum: "x",
+}

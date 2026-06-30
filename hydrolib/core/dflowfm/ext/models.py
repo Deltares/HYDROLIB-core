@@ -25,7 +25,7 @@ from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     RealTime,
 )
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import Operand, _OPERAND_LEGACY_MAP
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
@@ -672,6 +672,11 @@ class Meteo(INIBasedModel):
     @classmethod
     def interpolationmethod_validator(cls, v):
         return enum_value_parser(v, MeteoInterpolationMethod)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
 
 
 class ExtGeneral(INIGeneral):
