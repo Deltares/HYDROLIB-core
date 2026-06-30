@@ -24,16 +24,16 @@ class Operand(StrEnum):
 
     Used in several subclasses of AbstractIniField and ExtOldForcing.
     """
-
-    override = "O"
+    override = "override"  # legacy: "O"
     """Existing values are overwritten with the provided values."""
-    append = "A"
+    override_if_missing = "overrideIfMissing"  # legacy: "A"  (was named 'append')
     """Provided values are used where existing values are missing."""
-    add = "+"
+    add = "add"  # legacy: "+" (was named add)
     """Existing values are summed with the provided values."""
-    mult = "*"
+    multiply = "multiply"  # legacy: "*" (was named mult)
     """Existing values are multiplied with the provided values."""
-    max = "X"
+    maximum = "maximum"  # legacy: "x"
     """The maximum values of the existing values and provided values are used."""
-    min = "N"
+    minimum = "minimum"  # legacy: "m"
     """The minimum values of the existing values and provided values are used."""
+
