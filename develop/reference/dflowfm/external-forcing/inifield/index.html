@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4412,7 +4412,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_operand</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Operand</span><span class="p">,</span> <span class="n">_OPERAND_LEGACY_MAP</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Operand</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;interpolationmethod&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
