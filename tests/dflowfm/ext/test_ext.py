@@ -223,7 +223,7 @@ class TestMeteo:
             targetmaskfile=None,
             targetmaskinvert=True,
             interpolationmethod=MeteoInterpolationMethod.nearestnb,
-            operand="O",
+            operand="override",
             extrapolationallowed=True,
             extrapolationsearchradius=10,
             averagingtype=1,

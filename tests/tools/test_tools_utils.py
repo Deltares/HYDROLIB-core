@@ -44,7 +44,7 @@ def test_convert_interpolation_data():
         filename="windtest.amu",
         filetype=4,
         method="6",
-        operand="O",
+        operand="override",
         averagingtype="1",
     )
     data = convert_interpolation_data(forcing, data)

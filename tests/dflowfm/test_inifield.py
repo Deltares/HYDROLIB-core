@@ -259,7 +259,7 @@ class TestInitialConditions:
             datafile=DiskOnlyFileModel(),
             datafiletype=DataFileType.arcinfo,
             interpolationmethod=InterpolationMethod.constant,
-            operand="O",
+            operand="override",
             averagingtype=AveragingType.mean,
             averagingnummin=2,
             averagingpercentile=95.0,

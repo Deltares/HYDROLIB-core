@@ -16,7 +16,7 @@ class TestConvertMeteo:
             filename="windtest.amu",
             filetype=4,
             method="2",
-            operand="O",
+            operand="override",
         )
 
         new_quantity_block = MeteoConverter().convert(forcing)
