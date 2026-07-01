@@ -91,10 +91,10 @@ class TestResearchFMModel:
         model = ResearchFMModel()
         model.sedtrails = ResearchSedtrails()
 
-        model.sedtrails.research_sedtrailsgrid = r"c:\random.txt"
-        model.sedtrails.research_sedtrailsanalysis = "all"
-        model.sedtrails.research_sedtrailsinterval = [1.0, 2.0, 3.0]
-        model.sedtrails.research_sedtrailsoutputfile = r"c:\random2.txt"
+        assert model.sedtrails.research_sedtrailsgrid == r"c:\random.txt"
+        assert model.sedtrails.research_sedtrailsanalysis == "all"
+        assert model.sedtrails.research_sedtrailsinterval == [1.0, 2.0, 3.0]
+        assert model.sedtrails.research_sedtrailsoutputfile == r"c:\random2.txt"
 
     def test_sedtrails_can_be_loaded_from_mdu(self):
         input_mdu = (
@@ -114,7 +114,7 @@ class TestResearchFMModel:
         model = ResearchFMModel()
         model.veg = ResearchVegetation()
 
-        model.veg.research_stemheightconvention = "upward_from_bed"
+        assert model.veg.research_stemheightconvention == "upward_from_bed"
 
     def test_vegetation_can_be_loaded_from_mdu(self):
         input_mdu = (
