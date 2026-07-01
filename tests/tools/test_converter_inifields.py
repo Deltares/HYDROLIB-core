@@ -32,7 +32,7 @@ class TestConvertInitialCondition:
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
             method="5",  # "Interpolate space",
-            operand="O",
+            operand="override",
         )
 
         new_quantity_block = InitialConditionConverter().convert(
@@ -49,7 +49,7 @@ class TestConvertInitialCondition:
             value=0.0,
             filetype=10,
             method="4",
-            operand="O",
+            operand="override",
         )
         new_quantity_block = InitialConditionConverter().convert(
             forcing, forcing.filename.filepath
@@ -73,7 +73,7 @@ class TestConvertInitialCondition:
             filename=DiskOnlyFileModel("fake-file.fake"),
             filetype=4,
             method="4",
-            operand="O",
+            operand="override",
             TRACERFALLVELOCITY=0.1,
         )
 
@@ -121,7 +121,7 @@ class TestConvertInitialCondition:
             filename="iniwaterlevel.xyz",
             filetype=7,
             method="5",
-            operand="O",
+            operand="override",
         )
 
         new_forcing_dict = create_initial_cond_and_parameter_input_dict(
@@ -142,7 +142,7 @@ class TestConvertParameters:
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
             method="5",  # "Interpolate space",
-            operand="O",
+            operand="override",
         )
 
         new_quantity_block = ParametersConverter().convert(
@@ -166,7 +166,7 @@ class TestConvertParameters:
             filename="subsupl.tim",
             filetype=7,
             method="1",
-            operand="O",
+            operand="override",
         )
 
         new_focing_dict = create_initial_cond_and_parameter_input_dict(
@@ -226,7 +226,7 @@ class TestConvertParameters:
             filename="iniwaterlevel.xyz",
             filetype=7,
             method="5",
-            operand="O",
+            operand="override",
         )
 
         new_forcing_dict = create_initial_cond_and_parameter_input_dict(
