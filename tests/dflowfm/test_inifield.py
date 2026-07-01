@@ -125,7 +125,7 @@ class TestIniField:
         assert m.parameter[1].datafiletype == DataFileType.polygon
         assert m.parameter[1].interpolationmethod == InterpolationMethod.constant
         assert m.parameter[1].value == pytest.approx(0.03)
-        assert m.parameter[1].operand == Operand.mult
+        assert m.parameter[1].operand == Operand.multiply
 
     def test_load_and_save(self, input_files_dir: Path):
         """Test whether a model loaded from file is serialized correctly.
