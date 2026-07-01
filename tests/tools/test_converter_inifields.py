@@ -251,7 +251,7 @@ class TestInifieldConverter:
             "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
             "datafiletype": DataFileType.sample,
             "interpolationmethod": InterpolationMethod.triangulation,
-            "operand": "O",
+            "operand": "override",
         }
         ini_field = InitialField(**data)
 
