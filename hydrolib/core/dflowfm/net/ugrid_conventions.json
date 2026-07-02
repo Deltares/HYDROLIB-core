@@ -111,6 +111,30 @@
                 "_edge_offset",
                 "_edge_branch_offset"
             ]
+        },
+        "mesh1d_edge_x": {
+            "suffices": [
+                "_edge_x"
+            ],
+            "is_optional": true
+        },
+        "mesh1d_edge_y": {
+            "suffices": [
+                "_edge_y"
+            ],
+            "is_optional": true
+        },
+        "mesh1d_node_x": {
+            "suffices": [
+                "_node_x"
+            ],
+            "is_optional": true
+        },
+        "mesh1d_node_y": {
+            "suffices": [
+                "_node_y"
+            ],
+            "is_optional": true
         }
     },
     "mesh2d": {
