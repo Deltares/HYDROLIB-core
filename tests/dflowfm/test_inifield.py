@@ -237,7 +237,7 @@ class TestInitialConditions:
         assert isinstance(initial_conditions.datafile, DiskOnlyFileModel)
         assert initial_conditions.datafiletype == DataFileType.arcinfo
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
@@ -249,7 +249,7 @@ class TestInitialConditions:
             datafiletype=DataFileType.arcinfo,
         )
         assert initial_conditions.interpolationmethod is None
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.extrapolationmethod is False
         assert initial_conditions.locationtype == "all"
 
@@ -265,7 +265,7 @@ class TestInitialConditions:
             averagingpercentile=95.0,
         )
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
@@ -322,7 +322,7 @@ class TestExcludeFromValidation:
             "datafiletype": DataFileType.polygon,
             "value": 0.0,
             "interpolationmethod": InterpolationMethod.constant,
-            "operand": "O",
+            "operand": "override",
             "tracerdecaytime": "8640000",
         }
 
