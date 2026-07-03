@@ -42,10 +42,10 @@ class TestIniField:
     ]
 
     _operand_cases = [
-        ("operand", "o", "O"),
-        ("operand", "a", "A"),
-        ("operand", "x", "X"),
-        ("operand", "N", "N"),
+        ("operand", "override", "OVERRIDE"),
+        ("operand", "add", "ADD"),
+        ("operand", "maximum", "MAXIMUM"),
+        ("operand", "minimum", "MINIMUM"),
     ]
 
     _averagingtype_cases = [
