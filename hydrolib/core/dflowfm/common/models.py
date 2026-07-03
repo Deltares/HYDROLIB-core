@@ -32,9 +32,9 @@ class Operand(StrEnum):
     """Existing values are summed with the provided values."""
     multiply = "multiply"  # legacy: "*" (was named mult)
     """Existing values are multiplied with the provided values."""
-    maximum = "maximum"  # legacy: "x"
+    maximum = "maximum"  # legacy: "X"
     """The maximum values of the existing values and provided values are used."""
-    minimum = "minimum"  # legacy: "m"
+    minimum = "minimum"  # legacy: "N"
     """The minimum values of the existing values and provided values are used."""
 
 
@@ -44,6 +44,6 @@ _OPERAND_LEGACY_MAP: dict = {
     Operand.override_if_missing: "a",
     Operand.add: "+",
     Operand.multiply: "*",
-    Operand.minimum: "m",
-    Operand.maximum: "x",
+    Operand.minimum: "N",
+    Operand.maximum: "X",
 }
