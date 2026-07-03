@@ -38,8 +38,8 @@ _LEGACY_OPERAND_CASES = [
     pytest.param("A", Operand.override_if_missing, id="A->overrideIfMissing"),
     pytest.param("+", Operand.add, id="+->add"),
     pytest.param("*", Operand.multiply, id="*->multiply"),
-    pytest.param("X", Operand.maximum, id="x->maximum"),
-    pytest.param("N", Operand.minimum, id="m->minimum"),
+    pytest.param("X", Operand.maximum, id="X->maximum"),
+    pytest.param("N", Operand.minimum, id="N->minimum"),
 ]
 
 class TestLegacyOperandConversion:
