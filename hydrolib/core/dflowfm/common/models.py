@@ -39,11 +39,11 @@ class Operand(StrEnum):
 
 
 # Maps legacy single-character operand values to their canonical Operand members.
-_OPERAND_LEGACY_MAP: dict = {
-    Operand.override: "o",
-    Operand.override_if_missing: "a",
-    Operand.add: "+",
-    Operand.multiply: "*",
-    Operand.minimum: "N",
-    Operand.maximum: "X",
+_OPERAND_LEGACY_MAP: dict[str, list[str]] = {
+    Operand.override.value: ["O"],
+    Operand.override_if_missing.value: ["A"],
+    Operand.add.value: ["+"],
+    Operand.multiply.value: ["*"],
+    Operand.maximum.value: ["X"],
+    Operand.minimum.value: ["N"],
 }
