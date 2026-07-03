@@ -97,7 +97,8 @@ def parse_enum(
             ):
                 result = entry
                 warnings.warn(
-                    f"Operand value {v!r} is deprecated; use {entry.value!r} instead.",
+                    f"{enum.__name__} value {v!r} is deprecated; "
+                    f"use {entry.value!r} instead.",
                     DeprecationWarning,
                     stacklevel=2,
                 )
