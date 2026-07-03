@@ -1,3 +1,7 @@
+import pytest
+
+from pathlib import Path
+
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ext.models import (
@@ -29,3 +33,37 @@ class TestConvertMeteo:
             new_quantity_block.interpolationmethod
             == MeteoInterpolationMethod.linearSpaceTime
         )
+
+
+_LEGACY_OPERAND_CASES = [
+    pytest.param("O", Operand.override, id="O->override"),
+    pytest.param("A", Operand.override_if_missing, id="A->overrideIfMissing"),
+    pytest.param("+", Operand.add, id="+->add"),
+    pytest.param("*", Operand.multiply, id="*->multiply"),
+    pytest.param("x", Operand.maximum, id="x->maximum"),
+    pytest.param("m", Operand.minimum, id="m->minimum"),
+]
+
+class TestLegacyOperandConversion:
+    """Tests that legacy single-character OPERAND values in old .ext files
+    are correctly converted to modern Operand enum values when loading."""
+
+    @pytest.mark.parametrize("legacy_operand, expected_operand",
+                             _LEGACY_OPERAND_CASES)
+    def test_legacy_operand_in_file_is_converted_correctly(
+            self,
+            legacy_operand: str,
+            expected_operand: Operand,
+    ):
+        """Loading an old ext file with a legacy OPERAND value yields the correct modern Operand."""
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="windtest.amu",
+            filetype=4,
+            method="2",
+            operand=legacy_operand,
+        )
+        new_quantity_block = MeteoConverter().convert(forcing)
+
+        assert new_quantity_block.operand == expected_operand
+
