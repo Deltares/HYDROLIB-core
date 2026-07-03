@@ -220,14 +220,14 @@ class TestExtOldModel:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.012500",
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
             "FILETYPE=4",
             "METHOD=3",
-            "OPERAND=O",
+            "OPERAND=override",
         ]
 
         comments = ["This is a comment", "This is a comment", ""]
@@ -272,7 +272,7 @@ class TestParser:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.0125",
             "",
             "* This is a comment",
@@ -282,7 +282,7 @@ class TestParser:
             "FILETYPE=9",
             "METHOD=3",
             "* This is a comment",
-            "OPERAND=O",
+            "OPERAND=override",
             "* This is a comment",
         ]
 
@@ -299,7 +299,7 @@ class TestParser:
                     "FILENAME": "surroundingDomain.pol",
                     "FILETYPE": "11",
                     "METHOD": "4",
-                    "OPERAND": "+",
+                    "OPERAND": "add",
                     "VALUE": "0.0125",
                 },
                 {
@@ -307,7 +307,7 @@ class TestParser:
                     "FILENAME": "OB_001_orgsize.pli",
                     "FILETYPE": "9",
                     "METHOD": "3",
-                    "OPERAND": "O",
+                    "OPERAND": "override",
                 },
             ],
         }
@@ -319,7 +319,7 @@ class TestParser:
             "FILENAME=surroundingDomain.pol",
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILETYPE=11",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.0125",
             "QUANTITY=internaltidesfrictioncoefficient",
         ]
@@ -346,14 +346,14 @@ class TestSerializer:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.012500",
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
             "FILETYPE=9",
             "METHOD=3",
-            "OPERAND=O",
+            "OPERAND=override",
         ]
 
         comments = ["This is a comment", "This is a comment", ""]
@@ -363,7 +363,7 @@ class TestSerializer:
             "filename": DiskOnlyFileModel(Path("surroundingDomain.pol")),
             "filetype": 11,
             "method": 4,
-            "operand": "+",
+            "operand": "add",
             "value": 0.0125,
         }
 
@@ -372,7 +372,7 @@ class TestSerializer:
             "filename": DiskOnlyFileModel(Path("OB_001_orgsize.pli")),
             "filetype": 9,
             "method": 3,
-            "operand": "O",
+            "operand": "override",
         }
 
         forcing_data = {"comment": comments, "forcing": [forcing_1, forcing_2]}
@@ -428,7 +428,7 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         filename="xs.xyz",
         filetype=7,
         method=5,
-        operand="O",
+        operand="override",
     )
     assert isinstance(forcing.filename, DiskOnlyFileModel)
 
@@ -437,6 +437,6 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         filename=tim_files_dir / "triple_data_for_timeseries.tim",
         filetype=1,
         method=5,
-        operand="O",
+        operand="override",
     )
     assert isinstance(forcing.filename, TimModel)
