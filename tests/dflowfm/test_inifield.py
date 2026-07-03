@@ -44,6 +44,7 @@ class TestIniField:
     _operand_cases = [
         ("operand", "OverRide", "override"),
         ("operand", "ADD", "add"),
+        ("operand", "mULTiPLy", "multiply"),
         ("operand", "Maximum", "maximum"),
         ("operand", "MiNiMuM", "minimum"),
     ]
