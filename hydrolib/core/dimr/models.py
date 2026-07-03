@@ -1,7 +1,7 @@
 """Dimr models."""
 
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Callable, Literal,  Type
 
@@ -155,7 +155,7 @@ class Documentation(BaseModel):
 
     fileVersion: str = "1.3"
     createdBy: str = f"hydrolib-core {__version__}"
-    creationDate: datetime = Field(default_factory=datetime.utcnow)
+    creationDate: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
 
 class GlobalSettings(BaseModel):
