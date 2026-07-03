@@ -1,7 +1,5 @@
 import pytest
 
-from pathlib import Path
-
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ext.models import (
