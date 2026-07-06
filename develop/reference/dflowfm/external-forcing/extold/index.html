@@ -4768,7 +4768,7 @@ The value sets the percentage of the total set that is to be included.</p>
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_operand</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Operand</span><span class="p">,</span> <span class="n">_OPERAND_LEGACY_MAP</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Operand</span><span class="p">)</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_varname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
