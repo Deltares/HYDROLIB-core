@@ -13,6 +13,7 @@ from .models import (
     ResearchSedtrails,
     ResearchTime,
     ResearchTrachytopes,
+    ResearchVegetation,
     ResearchWaves,
     ResearchWind,
 )
@@ -29,6 +30,7 @@ __all__ = [
     "ResearchSediment",
     "ResearchTime",
     "ResearchTrachytopes",
+    "ResearchVegetation",
     "ResearchWaves",
     "ResearchWind",
     "ResearchSedtrails",
