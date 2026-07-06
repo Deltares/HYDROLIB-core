@@ -71,7 +71,7 @@ class TestMDUParserGetKeyword:
         ]
 
         result = parser.get_keyword("PathsRelativeToParent")
-        assert result is ""
+        assert result == ""
 
     @pytest.mark.unit
     def test_get_keyword_with_comment(self):
