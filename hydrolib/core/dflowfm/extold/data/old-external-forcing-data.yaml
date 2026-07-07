@@ -48,6 +48,8 @@ Meteo:
         RainfallRate: rainfall_rate
         SolarRadiation: solarradiation
         NetSolarRadiation: netsolarradiation
+        NudgeRate: nudgerate
+        NudgeTime: nudgetime
         # missing the SolarRadiationFactor
         StressX: stressx
         StressXY: stressxy
