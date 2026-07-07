@@ -63,6 +63,7 @@ Meteo:
         WindStressCoefficient: windstresscoefficient
         WindSpeed: wind_speed
         WindFromDirection: wind_from_direction
+        NudgeSalinityTemperature: nudge_salinity_temperature
 
 
 Parameter:
@@ -81,7 +82,6 @@ Parameter:
         InterceptionLayerThickness: interceptionlayerthickness
         InternalTidesFrictionCoefficient: internaltidesfrictioncoefficient
         LinearFrictionCoefficient: linearfrictioncoefficient
-        NudgeSalinityTemperature: nudge_salinity_temperature
         NudgeRate: nudgerate
         NudgeTime: nudgetime
         SeaIceAreaFraction: sea_ice_area_fraction
