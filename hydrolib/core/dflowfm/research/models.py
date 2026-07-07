@@ -413,10 +413,6 @@ class ResearchNumerics(Numerics):
             DEPRECATED_VARIABLE,
             alias="jaembed1d",
         )
-        research_maxitverticalforester: Optional[str] = Field(
-            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
-            alias="maxitverticalforester",
-        )
 
         research_ilutype: Optional[str] = Field(
             "0: parms-default",
@@ -506,9 +502,6 @@ class ResearchNumerics(Numerics):
     research_jaorgsethu: Optional[str] = Field(None, alias="jaorgsethu")
     research_cflwavefrac: Optional[str] = Field(None, alias="cflwavefrac")
     research_jaembed1d: Optional[str] = Field(None, alias="jaembed1d")
-    research_maxitverticalforester: Optional[str] = Field(
-        None, alias="maxitverticalforester"
-    )
     research_ilutype: Optional[str] = Field(None, alias="ilutype")
     research_nlevel: Optional[str] = Field(None, alias="nlevel")
     research_dtol: Optional[str] = Field(None, alias="dtol")
