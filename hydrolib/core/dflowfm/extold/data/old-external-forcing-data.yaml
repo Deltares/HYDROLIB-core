@@ -44,6 +44,7 @@ Meteo:
         HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
         HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
         LongWaveRadiation: longwaveradiation
+        NudgeSalinityTemperature: nudgesalinitytemperature
         Rainfall: rainfall
         RainfallRate: rainfall_rate
         SolarRadiation: solarradiation
@@ -63,7 +64,6 @@ Meteo:
         WindStressCoefficient: windstresscoefficient
         WindSpeed: wind_speed
         WindFromDirection: wind_from_direction
-        NudgeSalinityTemperature: nudgesalinitytemperature
 
 
 Parameter:
