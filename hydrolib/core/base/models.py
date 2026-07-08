@@ -319,6 +319,8 @@ class FileModel(BaseModel, ABC):
     filepath: Optional[Path] = None
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
+    # Tracks whether this model was actually loaded from disk (as opposed to skipped due to recurse=False).
+    _loaded_from_disk: bool = PrivateAttr(default=False)
 
     def __new__(
         cls, filepath: Optional[PathOrStr] = None, *args, **kwargs
@@ -443,7 +445,7 @@ class FileModel(BaseModel, ABC):
         It is guaranteed to be called after the pydantic model is, with the FileLoadContext
         relative to this FileModel being loaded.
         """
-        pass
+        self._loaded_from_disk = True
 
     @property
     def _resolved_filepath(self) -> Optional[Path]:
@@ -793,9 +795,16 @@ class ParsableFileModel(FileModel):
         _save provides a hook for child models to overwrite the save behaviour as
         called during the tree traversal.
 
+        If the model was not loaded from disk (e.g. because recurse=False was used)
+        but the file already exists, saving is skipped to avoid overwriting the
+        original file with empty/default data.
+
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
+        resolved = self._resolved_filepath
+        if not self._loaded_from_disk and resolved is not None and resolved.is_file():
+            return
         self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:

@@ -154,7 +154,7 @@ class Boundary(INIBasedModel):
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
-    forcingfile: Union[ForcingModel, DiskOnlyFileModel] = Field(alias="forcingFile")
+    forcingfile: ForcingModel = Field(alias="forcingFile")
     bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
     returntime: Optional[float] = Field(None, alias="returnTime")
@@ -166,8 +166,8 @@ class Boundary(INIBasedModel):
     @classmethod
     def validate_forcingfile(cls, data: Any) -> Any:
         if isinstance(data, (str, Path)):
-            data = resolve_file_model(data, ForcingModel)
-        elif not isinstance(data, (ForcingModel, DiskOnlyFileModel)):
+            data = ForcingModel(filepath=data)
+        elif not isinstance(data, ForcingModel):
             raise TypeError(
                 "Forcing file must be a ForcingModel or a path to a forcing file."
             )
