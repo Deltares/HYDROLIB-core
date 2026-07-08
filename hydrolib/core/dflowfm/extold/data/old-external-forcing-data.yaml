@@ -63,7 +63,7 @@ Meteo:
         WindStressCoefficient: windstresscoefficient
         WindSpeed: wind_speed
         WindFromDirection: wind_from_direction
-        NudgeSalinityTemperature: nudge_salinity_temperature
+        NudgeSalinityTemperature: nudgesalinitytemperature
 
 
 Parameter:
