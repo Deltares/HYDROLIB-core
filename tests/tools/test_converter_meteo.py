@@ -45,5 +45,5 @@ class TestConvertMeteo:
 
         new_quantity_block = converter.convert(forcing)
         assert isinstance(new_quantity_block, Meteo)
-        assert new_quantity_block.quantity == "nudge_salinity_temperature"
+        assert new_quantity_block.quantity == "nudgesalinitytemperature"
         assert new_quantity_block.forcingfiletype == MeteoForcingFileType.netcdf
