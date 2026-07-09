@@ -558,7 +558,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["solarradiationfactor", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_conversion(
@@ -575,7 +575,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["solarradiation", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_no_debug_unsupported_quantities_conversion(
@@ -594,7 +594,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["solarradiation", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_save(
