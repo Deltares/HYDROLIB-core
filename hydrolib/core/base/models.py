@@ -803,7 +803,9 @@ class ParsableFileModel(FileModel):
             save_settings (ModelSaveSettings): The model save settings.
         """
         if self._was_skipped_due_to_recurse:
-            return
+            path = self._resolved_filepath
+            if path is not None and path.exists() and not self.model_dump(exclude_unset=True):
+                return
         self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
