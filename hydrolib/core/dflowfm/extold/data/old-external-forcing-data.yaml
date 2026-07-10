@@ -84,8 +84,8 @@ Parameter:
         NudgeSalinityTemperature: nudge_salinity_temperature
         NudgeRate: nudgerate
         NudgeTime: nudgetime
-        SeaIceAreaFraction: sea_ice_area_fraction
-        SeaIceThickness: sea_ice_thickness
+        SeaIceAreaFraction: seaiceareafraction
+        SeaIceThickness: seaicethickness
         SecchiDepth: secchidepth
         StemDensity: stemdensity
         StemDiameter: stemdiameter
