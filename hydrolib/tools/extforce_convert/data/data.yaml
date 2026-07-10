@@ -38,6 +38,9 @@ external_forcing:
         # do not convert for now
         - bedrock_surface_elevation
         # Lateral quantities are supported in the kernel, but not yet in the converter
+        - lateraldischarge
+        - lateraldischarge1d
+        - lateraldischarge2d
     unsupported_prefixes:
         # initial conditions
         - initialsediment
