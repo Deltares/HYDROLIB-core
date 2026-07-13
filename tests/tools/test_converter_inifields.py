@@ -213,6 +213,8 @@ class TestConvertParameters:
             pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
             pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
             pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "seaiceareafraction"),
+            pytest.param(ExtOldQuantity.SeaIceThickness, "seaicethickness"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
