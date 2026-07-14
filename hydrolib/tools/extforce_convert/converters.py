@@ -48,10 +48,6 @@ from hydrolib.tools.extforce_convert.utils import (
     oldfiletype_to_forcing_file_type,
 )
 
-# Prefixes for SourceSink quantities that are initial conditions only and must NOT
-# be matched to timeseries columns in the .tim file.
-SOURCE_SINKS_INITIAL_CONDITION_PREFIXES = ("initialtracer", "initialsedfrac")
-
 
 class BaseConverter(ABC):
     """Abstract base class for converting old external forcings blocks to new blocks.
@@ -611,11 +607,7 @@ class SourceSinkConverter(BaseConverter):
         return keys
 
     def parse_tim_model(
-        self,
-        tim_file: Path,
-        ext_file_quantity_list: List[str],
-        substance_quantities: Optional[List[str]] = None,
-        **mdu_quantities,
+        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
@@ -627,20 +619,13 @@ class SourceSinkConverter(BaseConverter):
         - sourcesink_discharge
         - sourcesink_salinitydelta (optional)
         - sourcesink_temperatureDelta (optional)
-        - WAQ substance quantities from the SubstanceFile (optional)
-        - any other timeseries quantities from the external forcings file.
-
-        Note: ``initialtracer*`` and ``initialsedfrac*`` quantities in the external
-        forcings file are **initial conditions**, not timeseries. They are excluded
-        when matching TIM file columns.
+        - tracer<anyname>delta (optional)
+        - any other quantities from the external forcings file.
 
         Args:
             tim_file (Path): The path to the TIM file.
             ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
-            substance_quantities (List[str], optional): Active WAQ substance names from the SubstanceFile
-                (e.g. parsed from a ``.sub`` file). These are appended to the quantity list to account for
-                the corresponding timeseries columns in the TIM file. Defaults to None.
-            **mdu_quantities: keyword arguments that will be provided if you want to provide the temperature and salinity
+            **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
                 details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
                 only bool. (i.e. {"temperature", False, "salinity": True})
 
@@ -650,19 +635,13 @@ class SourceSinkConverter(BaseConverter):
             the keys of the dictionary will be the quantity names, and the values will be the time series data.
 
         Raises:
-            ValueError: If the number of columns in the TIM file does not match the combined number of
-            quantities from the external forcings file (excluding ``initialtracer*`` and ``initialsedfrac*``),
-            the discharge, temperature, salinity, and the substance_quantities.
+            ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
+            forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
+            `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
 
         Notes:
-            - ``initialtracer*`` and ``initialsedfrac*`` quantities from the external forcing file are
-              excluded from the timeseries column matching because they are initial conditions, not
-              timeseries values. They do not have corresponding columns in the TIM file.
-            - WAQ substance quantities (e.g. from a ``.sub`` file) ARE timeseries values and occupy
-              columns in the TIM file. Pass them via ``substance_quantities`` so they are correctly
-              matched to the remaining columns.
             - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
-              quantities mentioned in the external forcing file, and will get the list of quantities that are in the tim file.
+                quantities mentioned in the external forcing file, and will get the list of quantities that are in the tim file.
             - The function will return a dictionary with the quantities as keys and the time series data as values.
 
         Examples:
@@ -674,20 +653,33 @@ class SourceSinkConverter(BaseConverter):
             3.0 1.0 2.0 3.0 4.0
             4.0 1.0 2.0 3.0 4.0
             ```
-        and the external file contains discharge, temperature, salinity, and a WAQ substance file defines
-        one active substance "NH4":
+        and the external file contains the following quantities:
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracerAnyname",
+            ... "anyother-quantities"]
+
+        - The function will filter the external forcing quantities that have one of the following prefixes
+        `initialtracer`,`tracerbnd`, `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
+        with the filtered quantities mentioned in the external forcing file.
+        - The merged list of quantities from both the ext and mdu files will then be compared with the number of
+        columns in the TIM file, if they don't match a `Value Error` will be raised.
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
+        tim file contains 4 columns (excluding the time column).
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
             >>> converter = SourceSinkConverter()
-            >>> tim_model = converter.parse_tim_model(
-            ...     tim_file,
-            ...     ["discharge", "temperature", "salinity"],
-            ...     substance_quantities=["NH4"],
-            ... )
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
             >>> print(tim_model.quantities_names)
-            ['sourcesink_discharge', 'sourcesink_salinitydelta', 'sourcesink_temperaturedelta', 'NH4']
+            ['sourcesink_discharge', 'sourcesink_salinitydelta', 'sourcesink_temperaturedelta', 'initialtracerAnyname']
+            >>> print(tim_model.as_dict()) # doctest: +SKIP
+            {
+                "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
+                "sourcesink_salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "sourcesink_temperatureDelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+            }
 
             ```
 
@@ -714,14 +706,11 @@ class SourceSinkConverter(BaseConverter):
         time_file = TimParser.parse(tim_file)
         tim_model = TimModel(**time_file)
         time_series = tim_model.as_dict()
-        # get the required timeseries quantities from the external file, excluding
-        # initial-condition-only prefixes (initialtracer*, initialsedfrac*) since
-        # those quantities are NOT stored as timeseries columns in the TIM file.
+        # get the required quantities from the external file
         required_quantities_from_ext = [
             key
             for key in ext_file_quantity_list
             if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-            and not key.startswith(SOURCE_SINKS_INITIAL_CONDITION_PREFIXES)
         ]
         # Remove duplicate quantities that might be present in the list due to quantities that share names,
         # therefore occurring multiple times in the external forcing file.
@@ -741,21 +730,6 @@ class SourceSinkConverter(BaseConverter):
             + final_temp_salinity
             + required_quantities_from_ext
         )
-
-        # If WAQ substance quantities are provided and there are remaining TIM columns
-        # beyond what the ext file accounts for, map them to the substance names.
-        substance_quantities = substance_quantities or []
-        if substance_quantities and len(time_series) > len(final_quantities_list):
-            extra = len(time_series) - len(final_quantities_list)
-            if extra == len(substance_quantities):
-                final_quantities_list += substance_quantities
-            else:
-                raise ValueError(
-                    f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match. "
-                    f"Expected {len(final_quantities_list)} base quantities + {len(substance_quantities)} "
-                    f"substance quantities = {len(final_quantities_list) + len(substance_quantities)}, "
-                    f"but the TIM file has {len(time_series)} columns."
-                )
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
@@ -887,12 +861,8 @@ class SourceSinkConverter(BaseConverter):
 
         self.legacy_files = tim_file
 
-        substance_quantities = temp_salinity_mdu.pop("substance_quantities", None)
         tim_model = self.parse_tim_model(
-            tim_file,
-            ext_file_quantity_list,
-            substance_quantities=substance_quantities,
-            **temp_salinity_mdu,
+            tim_file, ext_file_quantity_list, **temp_salinity_mdu
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
