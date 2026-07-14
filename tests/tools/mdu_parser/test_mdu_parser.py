@@ -255,6 +255,7 @@ class TestMduParser:
         assert "refdate" in data
         assert "temperature" in data
         assert "salinity" in data
+        assert "substance_quantities" in data
 
         # Check that the file_path is correct
         assert data["file_path"] == Path(self.file_path)
@@ -262,6 +263,9 @@ class TestMduParser:
         # Check that temperature and salinity are boolean values
         assert isinstance(data["temperature"], bool)
         assert isinstance(data["salinity"], (bool, int))
+
+        # substance_quantities is a list (empty when no SubstanceFile is configured)
+        assert isinstance(data["substance_quantities"], list)
 
     def test_update_extforce_file_new(self):
         """Test the update_extforce_file_new method."""
