@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pytest
 
+from pydantic import ValidationError
+
 from hydrolib.core.dflowfm.research.models import (
     ResearchFMModel,
     ResearchGeneral,
@@ -13,6 +15,7 @@ from hydrolib.core.dflowfm.research.models import (
     ResearchSedtrails,
     ResearchTime,
     ResearchTrachytopes,
+    ResearchVegetation,
     ResearchWind,
 )
 from tests.utils import test_input_dir
@@ -108,3 +111,24 @@ class TestResearchFMModel:
         assert model.sedtrails.research_sedtrailsanalysis == "all"
         assert model.sedtrails.research_sedtrailsinterval == [3600.0, 1.1, 2.2]
         assert str(model.sedtrails.research_sedtrailsoutputfile) == r"d:\test2.txt"
+
+    def test_vegetation_fromscratch(self):
+        model = ResearchFMModel()
+        model.veg = ResearchVegetation()
+
+        model.veg.research_stemheightconvention = "upward_from_bed"
+        model.veg.research_stemheightconvention = "downward_from_surface"
+
+        with pytest.raises(ValidationError):
+            model.veg.research_stemheightconvention = "wrong_input"
+
+    def test_vegetation_can_be_loaded_from_mdu(self):
+        input_mdu = (
+            test_input_dir
+            / "research"
+            / "mdu_with_research_keywords_from_dia_file_2024.03_release.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu)
+
+        assert model.veg.research_stemheightconvention == "downward_from_surface"
