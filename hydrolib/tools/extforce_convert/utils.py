@@ -90,12 +90,12 @@ def construct_filemodel_new_or_existing(
 
 
 def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> None:
-    """Replace ForcingModel instances already loaded in ext_model with _SkipSaveForcingModel.
+    """Replace ForcingModel instances already loaded in ext_model with SkipSaveForcingModel.
 
     When an existing .ext file is loaded (recurse=True), its referenced .bc files are
     parsed into ForcingModel objects. Without this, a recursive save would rewrite those
     .bc files even if no conversion was needed. This replaces each such ForcingModel with
-    a _SkipSaveForcingModel that no-ops _load() and _save(), leaving the files on disk untouched.
+    a SkipSaveForcingModel that no-ops _load() and _save(), leaving the files on disk untouched.
     """
     for boundary in ext_model.boundary:
         if isinstance(boundary.forcingfile, ForcingModel) and not isinstance(
