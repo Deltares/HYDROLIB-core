@@ -1193,11 +1193,11 @@ class SkipSaveForcingModel(ForcingModel):
     file, so the .bc file is left completely untouched on disk.
     """
 
-    def _load(self, filepath) -> dict:
+    def _load(self, filepath: Path) -> Dict[str, Any]:
         return {}  # Do not parse existing .bc files
 
-    def _save(self, save_settings) -> None:
-        pass  # Do not overwrite existing .bc files
+    def _save(self, save_settings: ModelSaveSettings) -> None:
+        return None  # Do not overwrite existing .bc files
 
 
 class RealTime(StrEnum):
