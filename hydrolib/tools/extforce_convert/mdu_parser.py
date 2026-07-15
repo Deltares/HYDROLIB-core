@@ -7,11 +7,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
+from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time, Processes
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     IgnoreUnknownKeyWordClass,
     backup_file,
+    parse_substance_file
 )
 
 STRUCTURE_FILE_LINE = "StructureFile"
@@ -879,11 +880,28 @@ class MDUParser:
         mdu_physics = IgnoreUnknownKeyWordClass(Physics, **physics_data)
 
         ref_time = get_ref_time(mdu_time.refdate)
+
+        substance_quantities = []
+        processes_data = self.loaded_fm_data.get("processes")
+        if processes_data:
+            mdu_processes = IgnoreUnknownKeyWordClass(Processes, **processes_data)
+            sub_file = (
+                mdu_processes.substancefile.filepath
+                if mdu_processes.substancefile
+                else None
+            )
+            if sub_file is not None:
+                if not sub_file.is_absolute():
+                    sub_file = self.mdu_path.parent / sub_file
+                if sub_file.exists():
+                    substance_quantities = parse_substance_file(sub_file)
+
         temperature_and_salinity_info = {
             "file_path": self.mdu_path,
             "refdate": ref_time,
             "temperature": False if mdu_physics.temperature == 0 else True,
             "salinity": mdu_physics.salinity,
+            "substance_quantities": substance_quantities
         }
         return temperature_and_salinity_info
 

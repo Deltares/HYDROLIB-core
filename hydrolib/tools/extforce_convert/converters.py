@@ -48,6 +48,8 @@ from hydrolib.tools.extforce_convert.utils import (
     oldfiletype_to_forcing_file_type,
 )
 
+SOURCE_SINKS_INITIAL_CONDITION_PREFIXES = ("initialtracer", "initialsedfrac")
+
 
 class BaseConverter(ABC):
     """Abstract base class for converting old external forcings blocks to new blocks.
@@ -607,7 +609,11 @@ class SourceSinkConverter(BaseConverter):
         return keys
 
     def parse_tim_model(
-        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
+        self,
+        tim_file: Path,
+        ext_file_quantity_list: List[str],
+        substance_quantities: Optional[List[str]] = None,
+        **mdu_quantities,
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
@@ -711,6 +717,7 @@ class SourceSinkConverter(BaseConverter):
             key
             for key in ext_file_quantity_list
             if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            and not key.startswith(SOURCE_SINKS_INITIAL_CONDITION_PREFIXES)
         ]
         # Remove duplicate quantities that might be present in the list due to quantities that share names,
         # therefore occurring multiple times in the external forcing file.
@@ -730,6 +737,19 @@ class SourceSinkConverter(BaseConverter):
             + final_temp_salinity
             + required_quantities_from_ext
         )
+
+        substance_quantities = substance_quantities or []
+        if substance_quantities and len(time_series) > len(final_quantities_list):
+            extra = len(time_series) - len(final_quantities_list)
+            if extra == len(substance_quantities):
+                final_quantities_list += substance_quantities
+            else:
+                raise ValueError(
+                    f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match. "
+                    f"Expected {len(final_quantities_list)} base quantities + {len(substance_quantities)} "
+                    f"substance quantities = {len(final_quantities_list) + len(substance_quantities)}, "
+                    f"but the TIM file has {len(time_series)} columns."
+                )
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
@@ -861,8 +881,12 @@ class SourceSinkConverter(BaseConverter):
 
         self.legacy_files = tim_file
 
+        substance_quantities = temp_salinity_mdu.pop("substance_quantities", None)
         tim_model = self.parse_tim_model(
-            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+            tim_file,
+            ext_file_quantity_list,
+            substance_quantities=substance_quantities,
+            **temp_salinity_mdu
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 

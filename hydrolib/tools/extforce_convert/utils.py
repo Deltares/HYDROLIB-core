@@ -40,6 +40,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
+    "parse_substance_file"
 ]
 
 
@@ -504,3 +505,39 @@ class UnSupportedQuantitiesError(Exception):
     """Exception raised when unsupported quantities are encountered."""
 
     pass
+
+
+def parse_substance_file(sub_file: Path) -> List[str]:
+    """Parse a WAQ substance file (.sub) and return the names of active substances.
+
+    Reads a WAQ substance file and extracts the names of all substances marked
+    as ``active`` in the order they appear.
+
+    Args:
+        sub_file (Path): Path to the WAQ substance file (.sub).
+
+    Returns:
+        List[str]: Names of active substances in order of appearance.
+
+    Examples:
+        ```
+        substance 'NH4' active
+           description        'Ammonium (NH4)'
+           concentration-unit '(gN/m3)'
+           waste-load-unit    '-'
+        end-substance
+        substance 'NO3' inactive
+           ...
+        end-substance
+        ```
+        For the above file, only ``['NH4']`` is returned.
+    """
+    substances = []
+    with open(sub_file, "r") as f:
+        for line in f:
+            stripped = line.strip()
+            if stripped.startswith("substance '") and "' active" in stripped:
+                # Format: substance 'NAME' active
+                name = stripped[len("substance '") : stripped.index("' active")]
+                substances.append(name)
+    return substances
