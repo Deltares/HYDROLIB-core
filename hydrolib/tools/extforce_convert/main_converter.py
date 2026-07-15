@@ -34,6 +34,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
+    mark_existing_forcing_models_as_skip_save_models,
     path_relative_to_parent,
 )
 
@@ -133,8 +134,9 @@ class ExternalForcingConverter:
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
         self._ext_model = construct_filemodel_new_or_existing(
-            ExtModel, path, recurse=False
+            ExtModel, path, recurse=True
         )
+        mark_existing_forcing_models_as_skip_save_models(self._ext_model)
 
         path = (
             rdir / "new-initial-conditions.ini"

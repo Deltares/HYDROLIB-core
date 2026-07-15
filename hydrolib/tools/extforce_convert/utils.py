@@ -11,7 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, SkipSaveForcingModel
 from hydrolib.core.dflowfm.ext.models import (
+    ExtModel,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
@@ -40,6 +42,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
+    "mark_existing_forcing_models_as_skip_save_models",
 ]
 
 
@@ -84,6 +87,38 @@ def construct_filemodel_new_or_existing(
         model.filepath = filepath
 
     return model
+
+
+def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> None:
+    """Replace ForcingModel instances already loaded in ext_model with _SkipSaveForcingModel.
+
+    When an existing .ext file is loaded (recurse=True), its referenced .bc files are
+    parsed into ForcingModel objects. Without this, a recursive save would rewrite those
+    .bc files even if no conversion was needed. This replaces each such ForcingModel with
+    a _SkipSaveForcingModel that no-ops _load() and _save(), leaving the files on disk untouched.
+    """
+    for boundary in ext_model.boundary:
+        if isinstance(boundary.forcingfile, ForcingModel) and not isinstance(
+            boundary.forcingfile, SkipSaveForcingModel
+        ):
+            boundary.forcingfile = SkipSaveForcingModel(boundary.forcingfile.filepath)
+
+    for sourcesink in ext_model.sourcesink:
+        for field_name in ("discharge", "salinitydelta", "temperaturedelta"):
+            value = getattr(sourcesink, field_name, None)
+            if isinstance(value, ForcingModel) and not isinstance(
+                value, SkipSaveForcingModel
+            ):
+                setattr(sourcesink, field_name, SkipSaveForcingModel(
+                    filepath=value.filepath))
+        # also cover dynamic tracer/sedFrac delta fields stored in model_extra
+        if hasattr(sourcesink, "model_extra") and sourcesink.model_extra:
+            for key, value in sourcesink.model_extra.items():
+                if isinstance(value, ForcingModel) and not isinstance(
+                    value, SkipSaveForcingModel
+                ):
+                    sourcesink.model_extra[key] = SkipSaveForcingModel(
+                        filepath=value.filepath)
 
 
 def backup_file(filepath: PathOrStr) -> None:
