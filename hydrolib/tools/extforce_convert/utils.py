@@ -101,7 +101,13 @@ def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> Non
         if isinstance(boundary.forcingfile, ForcingModel) and not isinstance(
             boundary.forcingfile, SkipSaveForcingModel
         ):
-            boundary.forcingfile = SkipSaveForcingModel(boundary.forcingfile.filepath)
+            boundary.forcingfile = SkipSaveForcingModel(filepath=boundary.forcingfile.filepath)
+
+    for lateral in ext_model.lateral:
+        if isinstance(lateral.discharge, ForcingModel) and not isinstance(
+            lateral.discharge, SkipSaveForcingModel
+        ):
+            lateral.discharge = SkipSaveForcingModel(filepath=lateral.discharge.filepath)
 
     for sourcesink in ext_model.sourcesink:
         for field_name in ("discharge", "salinitydelta", "temperaturedelta"):
@@ -109,17 +115,21 @@ def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> Non
             if isinstance(value, ForcingModel) and not isinstance(
                 value, SkipSaveForcingModel
             ):
-                setattr(sourcesink, field_name, SkipSaveForcingModel(
-                    filepath=value.filepath))
+                setattr(sourcesink, field_name, SkipSaveForcingModel(filepath=value.filepath))
+
         # also cover dynamic tracer/sedFrac delta fields stored in model_extra
-        if hasattr(sourcesink, "model_extra") and sourcesink.model_extra:
+        if sourcesink.model_extra:
             for key, value in sourcesink.model_extra.items():
                 if isinstance(value, ForcingModel) and not isinstance(
                     value, SkipSaveForcingModel
                 ):
-                    sourcesink.model_extra[key] = SkipSaveForcingModel(
-                        filepath=value.filepath)
+                    sourcesink.model_extra[key] = SkipSaveForcingModel(filepath=value.filepath)
 
+    for meteo in ext_model.meteo:
+        if isinstance(meteo.forcingfile, ForcingModel) and not isinstance(
+            meteo.forcingfile, SkipSaveForcingModel
+        ):
+            meteo.forcingfile = SkipSaveForcingModel(filepath=meteo.forcingfile.filepath)
 
 def backup_file(filepath: PathOrStr) -> None:
     """Create a backup of the given file by copying it to a new file with a '.bak' extension.
