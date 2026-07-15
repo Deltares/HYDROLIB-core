@@ -744,12 +744,7 @@ class SourceSinkConverter(BaseConverter):
             if extra == len(substance_quantities):
                 final_quantities_list += substance_quantities
             else:
-                raise ValueError(
-                    f"Number of columns in the TIM file '{tim_file}: {len(time_series)}' does not match. "
-                    f"Expected {len(final_quantities_list)} base quantities + {len(substance_quantities)} "
-                    f"substance quantities = {len(final_quantities_list) + len(substance_quantities)}, "
-                    f"but the TIM file has {len(time_series)} columns."
-                )
+                raise ValueError()
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
