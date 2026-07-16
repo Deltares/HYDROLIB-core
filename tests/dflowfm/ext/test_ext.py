@@ -524,7 +524,7 @@ forcing_base_list = [
         "function": "timeseries",
         "timeinterpolation": "linear",
         "quantity": ["time", "salinitydelta", "ux", "uy", "uz"],
-        "unit": ["minutes since 2015-01-01 00:00:00", "ppt", "m", "m", "m"],
+        "unit": ["minutes since 2015-01-01 00:00:00", "ppt", "m s-1", "m s-1", "m s-1"],
         "datablock": [[1, 2, 3, 4, 5], [3.0, 5.0, 12.0, 9.0, 23.0]],
     },
     {
