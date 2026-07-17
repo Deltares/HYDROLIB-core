@@ -207,12 +207,14 @@ class TestConvertParameters:
                 "internaltidesfrictioncoefficient",
             ),
             pytest.param(ExtOldQuantity.SecchiDepth, "secchidepth"),
-            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "sea_ice_area_fraction"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "seaiceareafraction"),
             pytest.param(ExtOldQuantity.StemHeight, "stemheight"),
             pytest.param(ExtOldQuantity.StemDensity, "stemdensity"),
             pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
             pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
             pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "seaiceareafraction"),
+            pytest.param(ExtOldQuantity.SeaIceThickness, "seaicethickness"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
