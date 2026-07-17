@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -2853,17 +2853,6 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.bc.models.SkipSaveForcingModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SkipSaveForcingModel
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#hydrolib.core.dflowfm.bc.models.T3D" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4821,17 +4810,6 @@ You're not viewing the latest release version.
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hydrolib.core.dflowfm.bc.models.SkipSaveForcingModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SkipSaveForcingModel
-      
-    </span>
-  </a>
   
 </li>
       
@@ -7768,16 +7746,16 @@ of the realtime keyword, prior to considering it a filename.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1230</span>
-<span class="normal">1231</span>
-<span class="normal">1232</span>
-<span class="normal">1233</span>
-<span class="normal">1234</span>
-<span class="normal">1235</span>
-<span class="normal">1236</span>
-<span class="normal">1237</span>
-<span class="normal">1238</span>
-<span class="normal">1239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RealTime</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1215</span>
+<span class="normal">1216</span>
+<span class="normal">1217</span>
+<span class="normal">1218</span>
+<span class="normal">1219</span>
+<span class="normal">1220</span>
+<span class="normal">1221</span>
+<span class="normal">1222</span>
+<span class="normal">1223</span>
+<span class="normal">1224</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RealTime</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid value for the &quot;realtime&quot; reserved keyword.</span>
 
 <span class="sd">    For real-time controlled forcing data, e.g., for hydraulic structures.</span>
@@ -7822,86 +7800,6 @@ of the realtime keyword, prior to considering it a filename.</p>
     </div>
 
 </div>
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h2 id="hydrolib.core.dflowfm.bc.models.SkipSaveForcingModel" class="doc doc-heading">
-            <code>SkipSaveForcingModel</code>
-
-
-<a href="#hydrolib.core.dflowfm.bc.models.SkipSaveForcingModel" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="ForcingModel (hydrolib.core.dflowfm.bc.models.ForcingModel)" href="#hydrolib.core.dflowfm.bc.models.ForcingModel">ForcingModel</a></code></p>
-
-
-
-        <p>A ForcingModel that skips reading from and writing to disk.</p>
-<p>Used to reference an existing .bc file without overwriting it during
-a recursive save of a parent model. Neither _load nor _save touch the
-file, so the .bc file is left completely untouched on disk.</p>
-
-
-
-
-
-
-
-
-              <details class="mkdocstrings-source">
-                <summary>Source code in <code>hydrolib/core/dflowfm/bc/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1215</span>
-<span class="normal">1216</span>
-<span class="normal">1217</span>
-<span class="normal">1218</span>
-<span class="normal">1219</span>
-<span class="normal">1220</span>
-<span class="normal">1221</span>
-<span class="normal">1222</span>
-<span class="normal">1223</span>
-<span class="normal">1224</span>
-<span class="normal">1225</span>
-<span class="normal">1226</span>
-<span class="normal">1227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SkipSaveForcingModel</span><span class="p">(</span><span class="n">ForcingModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A ForcingModel that skips reading from and writing to disk.</span>
-
-<span class="sd">    Used to reference an existing .bc file without overwriting it during</span>
-<span class="sd">    a recursive save of a parent model. Neither _load nor _save touch the</span>
-<span class="sd">    file, so the .bc file is left completely untouched on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">{}</span>  <span class="c1"># Do not parse existing .bc files</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Do not overwrite existing .bc files</span>
-</code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
 
 
 
