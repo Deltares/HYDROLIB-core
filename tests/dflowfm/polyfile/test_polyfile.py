@@ -130,6 +130,11 @@ class TestSerializer:
             == expected_str
         )
 
+    def test_serialize_point_with_zero_z_values(self):
+        point = Point(x=1.0, y=2.0, z=0.0, data=[])
+        result = Serializer.serialize_point(point=point, config=SerializerConfig())
+        assert result == "    1.0    2.0    0.0"
+
 
 class TestBlock:
     def test_finalise_valid_state_returns_corresponding_poly_object(self):
@@ -239,6 +244,65 @@ def test_determine_has_z_value(
 ):
     assert _determine_has_z_value(input_value) == expected_value
 
+@pytest.mark.parametrize(
+    "points,expected_z_values",
+    [
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, z=0.0, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, z=0.0, data=[]),
+            ],
+            [0.0, 5.0, 0.0],
+            id="zero_z_values",
+        ),
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, z=None, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, z=None, data=[]),
+            ],
+            [5.0],
+            id="none_z_values",
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+        ),
+        pytest.param(
+            [
+                Point(x=1.0, y=2.0, data=[]),
+                Point(x=3.0, y=4.0, z=5.0, data=[]),
+                Point(x=6.0, y=7.0, data=[]),
+            ],
+            [5.0],
+            id="missing_z_values",
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+        ),
+    ],
+)
+def test_write_polyfile_with_z_values(
+        points: List[Point],
+        expected_z_values: List[float | None]
+):
+    path = test_output_dir / "test_z_values.pliz"
+
+    objects = [
+        PolyObject(
+            description=None,
+            metadata=Metadata(name="test_z_values", n_rows=3, n_columns=3),
+            points=points,
+        )
+    ]
+
+    write_polyfile(path, objects, config=SerializerConfig())
+    read_result = read_polyfile(path, has_z_values=True)
+
+    assert read_result["objects"] == objects
+    assert read_result["has_z_values"] is True
+    # Explicitly verify the zero z-values are preserved, used approx because testing
+    # equality with floating point values is quite fragile
+    points = read_result["objects"][0].points
+    assert points[0].z == pytest.approx(expected_z_values[0])
+    assert points[1].z == pytest.approx(expected_z_values[1])
+    assert points[2].z == pytest.approx(expected_z_values[2])
 
 def test_write_read_write_should_have_the_same_data():
     path = test_output_dir / "tmp" / "test.pliz"
