@@ -60,3 +60,12 @@ external_forcing:
         - waqsegmentnumber
         - massbalancearea
         - waqmassbalancearea
+    # Quantities the kernel spells differently in the initial and parameter fields
+    # file than in the old external forcings file. Keys are the old `QUANTITY=`
+    # names (matched case-insensitively); values are emitted verbatim as the new
+    # `quantity` value, so their casing matters.
+    quantity_renames:
+        sea_ice_thickness: seaIceThickness
+        sea_ice_area_fraction: seaIceAreaFraction
+        # `bedrock_surface_elevation` remains in `unsupported_quantity_names`.
+        bedrock_surface_elevation: bedrockSurfaceElevation
