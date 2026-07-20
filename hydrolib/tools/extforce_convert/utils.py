@@ -277,6 +277,56 @@ def path_relative_to_parent(
     return forcing_path
 
 
+def create_spatial_input_dict(
+    forcing: ExtOldForcing,
+    new_forcing_path: Path,
+) -> Dict[str, str]:
+    """Create the input dictionary for a `Spatial` block from an initial/parameter forcing.
+
+    Converts an old external forcing block representing an initial condition or
+    spatial parameter into a dict suitable for constructing a `Spatial` object
+    in the new ExtForceFileNew format.
+
+    Args:
+        forcing: [ExtOldForcing]
+            External forcing block from the old external forcings file.
+        new_forcing_path: [Path]
+            The path to the forcing data file.
+
+    Returns:
+        Dict[str, str]:
+            the input dictionary for the `Spatial` constructor
+    """
+    quantity_name = (
+        forcing.quantity
+        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
+        else "bedrockSurfaceElevation"
+    )
+    block_data = {
+        "quantity": quantity_name,
+        "datafile": DiskOnlyFileModel(new_forcing_path),
+        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+    }
+    if block_data["datafiletype"] == "polygon":
+        block_data["value"] = forcing.value
+
+    if forcing.sourcemask != DiskOnlyFileModel(None):
+        raise ValueError(
+            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+            f"convert this input. Encountered for QUANTITY="
+            f"{forcing.quantity} and FILENAME={forcing.filename}."
+        )
+    block_data = convert_interpolation_data(forcing, block_data)
+    block_data["operand"] = forcing.operand
+
+    if hasattr(forcing, "extrapolation"):
+        block_data["extrapolationmethod"] = forcing.extrapolation == 1
+    for key, value in forcing.model_dump().items():
+        if key.lower().startswith("tracer") and value is not None:
+            block_data[key] = value
+    return block_data
+
+
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
     new_forcing_path: Path,

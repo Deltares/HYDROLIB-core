@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
     Lateral,
     Meteo,
+    Spatial,
     SourceSink,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -296,6 +297,7 @@ class ExternalForcingConverter:
             Lateral: (self.ext_model, "lateral"),
             SourceSink: (self.ext_model, "sourcesink"),
             Meteo: (self.ext_model, "meteo"),
+            Spatial: (self.ext_model, "spatial"),
             InitialField: (self.inifield_model, "initial"),
             ParameterField: (self.inifield_model, "parameter"),
             Structure: (self.structure_model, "structure"),
@@ -442,6 +444,7 @@ class ExternalForcingConverter:
 
         num_quantities_ext = (
             len(self.ext_model.meteo)
+            + len(self.ext_model.spatial)
             + len(self.ext_model.sourcesink)
             + len(self.ext_model.boundary)
             + len(self.ext_model.lateral)

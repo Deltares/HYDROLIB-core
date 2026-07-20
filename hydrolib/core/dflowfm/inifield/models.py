@@ -33,10 +33,11 @@ class DataFileType(StrEnum):
     """Enum class containing the valid values for the dataFileType attribute.
 
     Contains valid values for the dataFileType attribute in several subclasses
-    of AbstractIniField.
+    of AbstractSpatialField (inifield) and Spatial (ext). This is the merged enum
+    combining values that were previously split between IniFieldFile and ExtForceFileNew.
     """
 
-    arcinfo = "arcinfo"
+    arcinfo = "arcInfo"
     geotiff = "GeoTIFF"
     sample = "sample"
     onedfield = "1dField"
@@ -44,22 +45,33 @@ class DataFileType(StrEnum):
     uniform = "uniform"
     netcdf = "netcdf"
 
-    allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
+    bcascii = "bcAscii"
+    unimagdir = "uniMagDir"
+    spiderweb = "spiderweb"
+    curvigrid = "curviGrid"
+
+    allowedvaluestext = "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
 
 
 class InterpolationMethod(StrEnum):
     """Enum class containing the valid values for the interpolationMethod attribute.
 
     Contains valid values for the interpolationMethod attribute in several
-    subclasses of AbstractIniField.
+    subclasses of AbstractSpatialField (inifield) and Spatial (ext). This is the
+    merged enum combining values previously split between IniFieldFile and ExtForceFileNew.
     """
 
-    constant = "constant"  # only with dataFileType=polygon .
-    triangulation = "triangulation"  # Delaunay triangulation+linear interpolation.
-    averaging = "averaging"  # grid cell averaging.
-    linear_space_time = "linearSpaceTime"  # linear interpolation in space and time.
+    constant = "constant"
+    triangulation = "triangulation"
+    averaging = "averaging"
+    linear_space_time = "linearSpaceTime"
 
-    allowedvaluestext = "Possible values: constant, triangulation, averaging."
+    linearSpaceTime = "linearSpaceTime"
+    nearestnb = "nearestNb"
+    bilinear = "bilinear"
+
+
+    allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, nearestNb, bilinear."
 
 
 class AveragingType(StrEnum):
