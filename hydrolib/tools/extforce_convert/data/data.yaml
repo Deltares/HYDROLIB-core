@@ -1,4 +1,6 @@
-version: 1.0
+# Bump when the shape of this file changes, so a config and the code that reads it can
+# be told apart. 1.1 added `external_forcing.old_to_new_quantity_names`.
+version: 1.1
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
     deprecated_value: 0
