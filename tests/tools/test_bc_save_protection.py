@@ -1,21 +1,3 @@
-"""Regression tests: existing .bc files must survive ExternalForcingConverter.save(recursive=True).
-
-When an existing new-format .ext file is supplied as ``ext_file`` at construction time,
-``ExternalForcingConverter.__init__`` loads it with ``recurse=True``, which parses every
-referenced .bc file into a ``ForcingModel``.  ``mark_existing_forcing_models_as_skip_save_models``
-then replaces those objects with ``SkipSaveForcingModel`` instances whose ``_save`` is a no-op,
-so a subsequent ``converter.save(recursive=True)`` leaves the pre-existing .bc files on disk
-completely untouched.
-
-These tests lock in that behaviour for:
-* ``[Boundary]`` blocks (forcingFile field)
-* ``[Lateral]`` blocks (discharge field pointing to a .bc file)
-* ``[SourceSink]`` blocks (discharge field)
-* ``[SourceSink]`` blocks with dynamic ``tracer<name>Delta`` / ``sedFrac<name>Delta`` fields
-  stored in ``model_extra`` (the path that regressed silently).
-* ``[Meteo]`` blocks (forcingFile with forcingFileType = bcAscii)
-"""
-
 from pathlib import Path
 from typing import Dict
 
@@ -34,9 +16,6 @@ from hydrolib.tools.extforce_convert.utils import (
     mark_existing_forcing_models_as_skip_save_models,
 )
 
-# ---------------------------------------------------------------------------
-# Minimal valid .bc file content (constant forcing, no time column needed)
-# ---------------------------------------------------------------------------
 
 _BC_BOUNDARY = """\
 [General]
@@ -108,11 +87,6 @@ _BC_METEO = """\
 """
 
 
-# ---------------------------------------------------------------------------
-# Shared fixture
-# ---------------------------------------------------------------------------
-
-
 @pytest.fixture()
 def bc_dir(tmp_path: Path) -> Path:
     """Populate *tmp_path* with a self-consistent converter fixture.
@@ -127,7 +101,7 @@ def bc_dir(tmp_path: Path) -> Path:
     lateral.bc          – referenced by [Lateral].discharge
     meteo.bc            – referenced by [Meteo].forcingFile (forcingFileType = bcAscii)
     """
-    # Old-format ext – single windx meteo block; requires no mdu_parser during save.
+
     (tmp_path / "old_forcing.ext").write_text(
         "QUANTITY=windx\n"
         "FILENAME=wind.amu\n"
@@ -136,15 +110,12 @@ def bc_dir(tmp_path: Path) -> Path:
         "OPERAND=O\n"
     )
 
-    # Pre-existing .bc files that must NOT be rewritten.
     (tmp_path / "boundary.bc").write_text(_BC_BOUNDARY)
     (tmp_path / "sourcesink.bc").write_text(_BC_SOURCESINK)
     (tmp_path / "tracer_delta.bc").write_text(_BC_TRACER_DELTA)
     (tmp_path / "lateral.bc").write_text(_BC_LATERAL)
     (tmp_path / "meteo.bc").write_text(_BC_METEO)
 
-    # New-format ext that already exists and references the .bc files above.
-    # tracerMyDelta is a dynamic delta field that ends up in SourceSink.model_extra.
     (tmp_path / "existing_new.ext").write_text(
         "[General]\n"
         "fileType     = extForce\n"
@@ -177,11 +148,6 @@ def bc_dir(tmp_path: Path) -> Path:
     )
 
     return tmp_path
-
-
-# ---------------------------------------------------------------------------
-# Integration tests: full converter round-trip
-# ---------------------------------------------------------------------------
 
 
 class TestBcFilesNotOverwrittenOnRecursiveSave:
@@ -266,11 +232,6 @@ class TestBcFilesNotOverwrittenOnRecursiveSave:
             )
 
 
-# ---------------------------------------------------------------------------
-# Unit tests: mark_existing_forcing_models_as_skip_save_models
-# ---------------------------------------------------------------------------
-
-
 class TestMarkExistingForcingModelsAsSkipSave:
     """Unit tests for the helper that swaps ForcingModel → SkipSaveForcingModel.
 
@@ -299,7 +260,6 @@ class TestMarkExistingForcingModelsAsSkipSave:
         mark_existing_forcing_models_as_skip_save_models(ext_model)
 
         assert isinstance(ext_model.boundary[0].forcingfile, SkipSaveForcingModel)
-        # filepath is preserved so the .ext still references the correct .bc file
         assert ext_model.boundary[0].forcingfile.filepath == bc_path
 
     def test_sourcesink_discharge_replaced(self, tmp_path: Path):
@@ -381,7 +341,6 @@ class TestMarkExistingForcingModelsAsSkipSave:
         mark_existing_forcing_models_as_skip_save_models(ext_model)
         first_instance = ext_model.boundary[0].forcingfile
 
-        # Second call must be a no-op.
         mark_existing_forcing_models_as_skip_save_models(ext_model)
         second_instance = ext_model.boundary[0].forcingfile
 

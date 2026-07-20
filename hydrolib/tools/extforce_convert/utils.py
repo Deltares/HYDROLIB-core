@@ -89,6 +89,16 @@ def construct_filemodel_new_or_existing(
     return model
 
 
+def _needs_skip_save_replacement(value: Any) -> bool:
+    return isinstance(value, ForcingModel) and not isinstance(value, SkipSaveForcingModel)
+
+
+def _replace_attr_with_skip_save(obj: Any, attr: str) -> None:
+    value = getattr(obj, attr, None)
+    if _needs_skip_save_replacement(value):
+        setattr(obj, attr, SkipSaveForcingModel(filepath=value.filepath))
+
+
 def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> None:
     """Replace ForcingModel instances already loaded in ext_model with SkipSaveForcingModel.
 
@@ -98,38 +108,23 @@ def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> Non
     a SkipSaveForcingModel that no-ops _load() and _save(), leaving the files on disk untouched.
     """
     for boundary in ext_model.boundary:
-        if isinstance(boundary.forcingfile, ForcingModel) and not isinstance(
-            boundary.forcingfile, SkipSaveForcingModel
-        ):
-            boundary.forcingfile = SkipSaveForcingModel(filepath=boundary.forcingfile.filepath)
+        _replace_attr_with_skip_save(boundary, "forcingfile")
 
     for lateral in ext_model.lateral:
-        if isinstance(lateral.discharge, ForcingModel) and not isinstance(
-            lateral.discharge, SkipSaveForcingModel
-        ):
-            lateral.discharge = SkipSaveForcingModel(filepath=lateral.discharge.filepath)
+        _replace_attr_with_skip_save(lateral, "discharge")
 
     for sourcesink in ext_model.sourcesink:
         for field_name in ("discharge", "salinitydelta", "temperaturedelta"):
-            value = getattr(sourcesink, field_name, None)
-            if isinstance(value, ForcingModel) and not isinstance(
-                value, SkipSaveForcingModel
-            ):
-                setattr(sourcesink, field_name, SkipSaveForcingModel(filepath=value.filepath))
-
-        # also cover dynamic tracer/sedFrac delta fields stored in model_extra
-        if sourcesink.model_extra:
-            for key, value in sourcesink.model_extra.items():
-                if isinstance(value, ForcingModel) and not isinstance(
-                    value, SkipSaveForcingModel
-                ):
-                    sourcesink.model_extra[key] = SkipSaveForcingModel(filepath=value.filepath)
-
+            _replace_attr_with_skip_save(sourcesink, field_name)
+        if not sourcesink.model_extra:
+            return
+        for key, value in sourcesink.model_extra.items():
+            if _needs_skip_save_replacement(value):
+                sourcesink.model_extra[key] = SkipSaveForcingModel(
+                    filepath=value.filepath)
     for meteo in ext_model.meteo:
-        if isinstance(meteo.forcingfile, ForcingModel) and not isinstance(
-            meteo.forcingfile, SkipSaveForcingModel
-        ):
-            meteo.forcingfile = SkipSaveForcingModel(filepath=meteo.forcingfile.filepath)
+        _replace_attr_with_skip_save(meteo, "forcingfile")
+
 
 def backup_file(filepath: PathOrStr) -> None:
     """Create a backup of the given file by copying it to a new file with a '.bak' extension.
