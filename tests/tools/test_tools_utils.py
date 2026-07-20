@@ -272,6 +272,22 @@ class TestOldToNewQuantityNames:
         with pytest.raises(ValidationError):
             ExternalForcingConfigs(old_to_new_quantity_names=invalid)
 
+    def test_unknown_old_quantity_name_is_rejected(self):
+        """
+        Input: a key that is not a quantity of the old external forcings file.
+        Expect: a validation error at load time.
+
+        A mistyped key would otherwise pass validation and then silently never fire,
+        since `rename_quantity` falls back to returning its input unchanged. The
+        converter would emit the old name and the kernel would reject the model far
+        from the cause.
+        """
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(
+                old_to_new_quantity_names={"sea_ice_thicknes": "seaIceThickness"}
+            )
+        assert "not a known" in str(exc.value)
+
     def test_keys_colliding_once_lowercased_are_rejected(self):
         """
         Input: two old names that differ only in casing, mapped to different new names.

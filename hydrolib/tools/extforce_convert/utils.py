@@ -19,6 +19,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldModel,
+    ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -40,6 +41,11 @@ __all__ = [
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
 ]
+
+
+# Every `QUANTITY=` value the old external forcings file accepts, lowercased. Used to
+# reject `old_to_new_quantity_names` keys that match no quantity and so would never fire.
+KNOWN_OLD_QUANTITY_NAMES = frozenset(q.value.lower() for q in ExtOldQuantity)
 
 
 AVERAGING_TYPE_DICT = {
@@ -481,7 +487,8 @@ class ExternalForcingConfigs(BaseModel):
         Raises:
             ValueError:
                 If `v` is not a mapping, if any name is not a string, if any name is
-                empty, or if two old names collide once lowercased.
+                empty, if an old name is not a known `ExtOldQuantity`, or if two old
+                names collide once lowercased.
         """
         if v is None:
             v = {}
@@ -506,6 +513,13 @@ class ExternalForcingConfigs(BaseModel):
                 raise ValueError(
                     f"'old_to_new_quantity_names' entries must be non-empty, got "
                     f"{old_name!r}: {new_name!r}."
+                )
+
+            if key not in KNOWN_OLD_QUANTITY_NAMES:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' key {old_name!r} is not a known "
+                    f"quantity of the old external forcings file. A key that matches "
+                    f"no quantity would silently never be applied."
                 )
 
             if key in normalized:
