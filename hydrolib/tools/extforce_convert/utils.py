@@ -449,12 +449,102 @@ class MDUConfig(BaseModel):
 class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: List[str] = Field(default_factory=list)
     unsupported_prefixes: List[str] = Field(default_factory=list)
+    old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantity_names", "unsupported_prefixes", mode="before"
     )
     def ensure_unique(cls, v: List[str]) -> List[str]:
         return check_unique(v)
+
+    @field_validator("old_to_new_quantity_names", mode="before")
+    def normalize_old_to_new_quantity_names(
+        cls, v: dict[str, str] | None
+    ) -> dict[str, str]:
+        """Normalize the old quantity names, keeping the new names verbatim.
+
+        Old names are lowercased and trimmed so lookups match the case-insensitive
+        `QUANTITY=` values of the old external forcings file. New names are only
+        trimmed: they are written straight into the initial and parameter fields
+        file, where the kernel expects a specific casing (e.g. `seaIceThickness`),
+        so lowercasing them here would defeat the purpose of the table.
+
+        Args:
+            v (dict[str, str] | None):
+                A mapping of old quantity names to new quantity names. `None` is
+                treated as an empty mapping.
+
+        Returns:
+            dict[str, str]:
+                The mapping with its keys lowercased and trimmed.
+
+        Raises:
+            ValueError:
+                If `v` is not a mapping, if any name is not a string, if any name is
+                empty, or if two old names collide once lowercased.
+        """
+        if v is None:
+            v = {}
+
+        if not isinstance(v, dict):
+            raise ValueError(
+                f"'old_to_new_quantity_names' must be a mapping of old to new quantity names, "
+                f"got {type(v).__name__}."
+            )
+
+        normalized = {}
+        for old_name, new_name in v.items():
+            if not isinstance(old_name, str) or not isinstance(new_name, str):
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be strings, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            key = old_name.strip().lower()
+            value = new_name.strip()
+            if not key or not value:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be non-empty, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            if key in normalized:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' maps {key!r} more than once, to "
+                    f"{normalized[key]!r} and {value!r}."
+                )
+            normalized[key] = value
+
+        return normalized
+
+    def rename_quantity(self, quantity: str) -> str:
+        """Map an old quantity name onto the name used in the new format.
+
+        Args:
+            quantity (str):
+                The `QUANTITY` value of a block in the old external forcings file.
+
+        Returns:
+            str:
+                The corresponding new name if `quantity` is in `old_to_new_quantity_names`,
+                otherwise `quantity` unchanged.
+
+        Examples:
+            ```python
+            >>> from hydrolib.tools.extforce_convert.utils import ExternalForcingConfigs
+            >>> configs = ExternalForcingConfigs(
+            ...     old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+            ... )
+            >>> configs.rename_quantity("sea_ice_thickness")
+            'seaIceThickness'
+            >>> configs.rename_quantity("frictioncoefficient")
+            'frictioncoefficient'
+
+            ```
+        """
+        name = str(quantity)
+        renamed = self.old_to_new_quantity_names.get(name.lower(), name)
+        return renamed
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""

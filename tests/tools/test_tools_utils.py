@@ -140,6 +140,154 @@ class TestMissingQuantities:
         assert mq.unsupported_prefixes == ["pre"]
 
 
+class TestOldToNewQuantityNames:
+    """Tests for the `old_to_new_quantity_names` rename table on `ExternalForcingConfigs`."""
+
+    def test_keys_are_normalized_and_values_kept_verbatim(self):
+        """
+        Input: an entry padded with whitespace and spelled in mixed case.
+        Expect: the old name is trimmed and lowercased, while the new name is only
+            trimmed. The new name is written straight into the initial and parameter
+            fields file, so lowercasing it would defeat the table's purpose.
+        """
+        configs = ExternalForcingConfigs(
+            old_to_new_quantity_names={"  Sea_Ice_Thickness ": " seaIceThickness "}
+        )
+        assert configs.old_to_new_quantity_names == {
+            "sea_ice_thickness": "seaIceThickness"
+        }
+
+    def test_defaults_to_empty_when_omitted(self):
+        """
+        Input: no `old_to_new_quantity_names` at all.
+        Expect: an empty mapping, so a config without the section renames nothing.
+        """
+        assert ExternalForcingConfigs().old_to_new_quantity_names == {}
+
+    def test_none_becomes_empty_mapping(self):
+        """
+        Input: an explicit `None`, as an empty YAML key produces.
+        Expect: an empty mapping rather than a validation error.
+        """
+        assert (
+            ExternalForcingConfigs(
+                old_to_new_quantity_names=None
+            ).old_to_new_quantity_names
+            == {}
+        )
+
+    def test_from_yaml_file(self):
+        """
+        Input: the section as it is spelled in `data.yaml`.
+        Expect: it survives a `yaml.safe_load` round trip into the model.
+        """
+        yaml_text = """
+    external_forcing:
+      old_to_new_quantity_names:
+        sea_ice_thickness: seaIceThickness
+        BedRock_Surface_Elevation: bedrockSurfaceElevation
+    """
+        data = yaml.safe_load(yaml_text)
+        configs = ExternalForcingConfigs(**(data.get("external_forcing") or {}))
+        assert configs.old_to_new_quantity_names == {
+            "sea_ice_thickness": "seaIceThickness",
+            "bedrock_surface_elevation": "bedrockSurfaceElevation",
+        }
+
+    @pytest.mark.parametrize(
+        "quantity, expected",
+        [
+            pytest.param("sea_ice_thickness", "seaIceThickness", id="mapped"),
+            pytest.param("SEA_ICE_THICKNESS", "seaIceThickness", id="mapped-uppercase"),
+            pytest.param(
+                "frictioncoefficient", "frictioncoefficient", id="unmapped-passthrough"
+            ),
+        ],
+    )
+    def test_rename_quantity(self, quantity, expected):
+        """
+        Input: a quantity name, mapped or not, in assorted casings.
+        Expect: mapped names resolve case-insensitively; unmapped names pass through
+            unchanged so the converter can keep using the old name.
+
+        Note: the lookup lowercases but does not trim, matching `find_unsupported`.
+        """
+        configs = ExternalForcingConfigs(
+            old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+        )
+        assert configs.rename_quantity(quantity) == expected
+
+    def test_rename_quantity_accepts_an_ext_old_quantity_member(self):
+        """
+        Input: an `ExtOldQuantity` member rather than a plain string.
+        Expect: the member resolves to its value and the lookup hits.
+
+        `ExtOldQuantity` is built on the third-party `strenum.StrEnum`, whose `str()`
+        returns the member value. The converter passes `forcing.quantity` (a member)
+        straight in, so a base class whose `str()` returned `ExtOldQuantity.X` instead
+        would make every lookup silently miss.
+        """
+        configs = ExternalForcingConfigs(
+            old_to_new_quantity_names={
+                ExtOldQuantity.SeaIceThickness.value: "seaIceThickness"
+            }
+        )
+        assert (
+            configs.rename_quantity(ExtOldQuantity.SeaIceThickness) == "seaIceThickness"
+        )
+
+    def test_configured_renames_are_loaded_from_data_yaml(self):
+        """
+        Input: the `CONVERTER_DATA` singleton built from `data.yaml` at import time.
+        Expect: the sea ice entries documented in UM Sec.15.8.1 are present, and adding
+            the section left the unsupported lists untouched.
+        """
+        configs = CONVERTER_DATA.external_forcing
+        assert (
+            configs.old_to_new_quantity_names["sea_ice_thickness"] == "seaIceThickness"
+        )
+        assert (
+            configs.old_to_new_quantity_names["sea_ice_area_fraction"]
+            == "seaIceAreaFraction"
+        )
+        assert configs.unsupported_quantity_names
+        assert configs.unsupported_prefixes
+
+    @pytest.mark.parametrize(
+        "invalid",
+        [
+            pytest.param(["a", "b"], id="list-not-mapping"),
+            pytest.param("sea_ice_thickness", id="string-not-mapping"),
+            pytest.param({"sea_ice_thickness": 1}, id="non-string-value"),
+            pytest.param({1: "seaIceThickness"}, id="non-string-key"),
+            pytest.param({"sea_ice_thickness": "   "}, id="blank-value"),
+            pytest.param({"   ": "seaIceThickness"}, id="blank-key"),
+        ],
+    )
+    def test_invalid_entries_are_rejected(self, invalid):
+        """
+        Input: a table that is not a mapping, or holds a non-string or empty name.
+        Expect: a validation error at load time rather than a silently broken table.
+        """
+        with pytest.raises(ValidationError):
+            ExternalForcingConfigs(old_to_new_quantity_names=invalid)
+
+    def test_keys_colliding_once_lowercased_are_rejected(self):
+        """
+        Input: two old names that differ only in casing, mapped to different new names.
+        Expect: a validation error. Normalizing would collapse them and let the last
+            entry win silently, so the ambiguity is reported instead.
+        """
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(
+                old_to_new_quantity_names={
+                    "Sea_Ice_Thickness": "seaIceThickness",
+                    "sea_ice_thickness": "somethingElse",
+                }
+            )
+        assert "more than once" in str(exc.value)
+
+
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
