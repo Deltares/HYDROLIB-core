@@ -559,7 +559,7 @@ class ExternalForcingConfigs(BaseModel):
             ```
         """
         name = str(quantity)
-        renamed = self.old_to_new_quantity_names.get(name.lower(), name)
+        renamed = self.old_to_new_quantity_names.get(name.strip().lower(), name)
         return renamed
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:

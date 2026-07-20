@@ -199,6 +199,7 @@ class TestOldToNewQuantityNames:
         [
             pytest.param("sea_ice_thickness", "seaIceThickness", id="mapped"),
             pytest.param("SEA_ICE_THICKNESS", "seaIceThickness", id="mapped-uppercase"),
+            pytest.param(" sea_ice_thickness ", "seaIceThickness", id="mapped-padded"),
             pytest.param(
                 "frictioncoefficient", "frictioncoefficient", id="unmapped-passthrough"
             ),
@@ -206,11 +207,10 @@ class TestOldToNewQuantityNames:
     )
     def test_rename_quantity(self, quantity, expected):
         """
-        Input: a quantity name, mapped or not, in assorted casings.
-        Expect: mapped names resolve case-insensitively; unmapped names pass through
-            unchanged so the converter can keep using the old name.
-
-        Note: the lookup lowercases but does not trim, matching `find_unsupported`.
+        Input: a quantity name, mapped or not, in assorted casings and padding.
+        Expect: mapped names resolve case-insensitively and ignoring surrounding
+            whitespace, matching how the keys themselves are normalized; unmapped
+            names pass through unchanged so the converter keeps using the old name.
         """
         configs = ExternalForcingConfigs(
             old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
