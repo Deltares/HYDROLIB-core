@@ -35,8 +35,6 @@ external_forcing:
         - nudge_salinity_temperature
         - nudgerate
         - nudgetime
-        - sea_ice_area_fraction
-        - sea_ice_thickness
         - wavesignificantheight
         - waveperiod
         - wavedirection
