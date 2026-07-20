@@ -19,7 +19,6 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldModel,
-    ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -283,6 +282,11 @@ def create_initial_cond_and_parameter_input_dict(
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
+    The quantity is resolved through `old_to_new_quantity_names` in `data.yaml`, so
+    quantities the kernel spells differently in the initial and parameter fields file
+    are emitted under their new name (e.g. `sea_ice_thickness` becomes
+    `seaIceThickness`). Quantities absent from that table are passed through unchanged.
+
     Args:
         forcing: [ExtOldForcing]
             External forcing block from the old external forcings file.
@@ -293,11 +297,7 @@ def create_initial_cond_and_parameter_input_dict(
         Dict[str, str]:
             the input dictionary to the `InitialField` or `ParameterField` constructor
     """
-    quantity_name = (
-        forcing.quantity
-        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
-        else "bedrockSurfaceElevation"
-    )
+    quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
         "datafile": DiskOnlyFileModel(new_forcing_path),
