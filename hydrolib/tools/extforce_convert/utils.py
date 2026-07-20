@@ -453,14 +453,14 @@ class MDUConfig(BaseModel):
 
 
 class ExternalForcingConfigs(BaseModel):
-    unsupported_quantity_names: List[str] = Field(default_factory=list)
-    unsupported_prefixes: List[str] = Field(default_factory=list)
+    unsupported_quantity_names: list[str] = Field(default_factory=list)
+    unsupported_prefixes: list[str] = Field(default_factory=list)
     old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantity_names", "unsupported_prefixes", mode="before"
     )
-    def ensure_unique(cls, v: List[str]) -> List[str]:
+    def ensure_unique(cls, v: list[str]) -> list[str]:
         return check_unique(v)
 
     @field_validator("old_to_new_quantity_names", mode="before")
@@ -531,12 +531,14 @@ class ExternalForcingConfigs(BaseModel):
 
         return normalized
 
-    def rename_quantity(self, quantity: str) -> str:
+    def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
         """Map an old quantity name onto the name used in the new format.
 
         Args:
-            quantity (str):
+            quantity (ExtOldQuantity | str):
                 The `QUANTITY` value of a block in the old external forcings file.
+                `ExtOldForcing.quantity` is typed `ExtOldQuantity | str`, and the
+                enum member is accepted directly: `str()` on it yields its value.
 
         Returns:
             str:
