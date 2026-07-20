@@ -241,6 +241,81 @@ class TestConvertParameters:
         assert new_quantity_block.quantity == expected_quantity
 
 
+class TestConvertSeaIceQuantities:
+    """End-to-end conversion of the sea ice quantities from UM Sec. 15.8.1.
+
+    The kernel spells these differently either side of the migration: the old external
+    forcings file uses `QUANTITY=sea_ice_thickness`, while the initial and parameter
+    fields file uses `quantity = seaIceThickness`. These tests drive a real old ext
+    file through the converter and assert the new spelling comes out the far end.
+    """
+
+    # UM Sec. 15.8.1, verbatim, except FILETYPE: the manual's example uses FILETYPE=6
+    # (curvilinear grid), which `ParameterField.datafiletype` cannot represent, so a
+    # sample file is used instead.
+    EXT_OLD_TEMPLATE = (
+        "QUANTITY={quantity}\n"
+        "FILENAME=ice_forcing.xyz\n"
+        "FILETYPE=7\n"
+        "METHOD=5\n"
+        "OPERAND=O\n"
+    )
+
+    def _write_old_ext(self, tmp_path: Path, quantity: str) -> Path:
+        """Write a minimal old external forcings file for `quantity`."""
+        ext_path = tmp_path / "old.ext"
+        ext_path.write_text(self.EXT_OLD_TEMPLATE.format(quantity=quantity))
+        (tmp_path / "ice_forcing.xyz").write_text("0.0 0.0 1.0\n")
+        return ext_path
+
+    @pytest.mark.parametrize(
+        "old_quantity, new_quantity",
+        [
+            pytest.param("sea_ice_thickness", "seaIceThickness", id="thickness"),
+            pytest.param(
+                "sea_ice_area_fraction", "seaIceAreaFraction", id="area-fraction"
+            ),
+        ],
+    )
+    def test_old_ext_file_parses_and_converts_under_the_new_name(
+        self, tmp_path: Path, old_quantity: str, new_quantity: str
+    ):
+        """
+        Input: an old ext file spelled as the manual's migration example.
+        Expect: it parses under the old name, is not rejected as unsupported, and
+            converts into a `[Parameter]` block carrying the new name.
+        """
+        ext_path = self._write_old_ext(tmp_path, old_quantity)
+
+        converter = ExternalForcingConverter(ext_path)
+        # The old file must still accept the old spelling.
+        assert [f.quantity for f in converter.extold_model.forcing] == [old_quantity]
+        # And the quantity must no longer be refused by the converter.
+        converter.check_unsupported_quantities()
+
+        converter.update()
+        blocks = converter.inifield_model.parameter
+        assert len(blocks) == 1
+        assert isinstance(blocks[0], ParameterField)
+        assert blocks[0].quantity == new_quantity
+
+    def test_new_name_survives_serialization(self, tmp_path: Path):
+        """
+        Input: a converted sea ice model, written to disk.
+        Expect: the file on disk carries the camelCase name. Asserting on the model
+            alone would not catch a serializer that re-cases the quantity.
+        """
+        ext_path = self._write_old_ext(tmp_path, "sea_ice_thickness")
+
+        converter = ExternalForcingConverter(str(ext_path))
+        converter.update()
+        converter.save(backup=False)
+
+        written = converter.inifield_model.filepath.read_text()
+        assert "seaIceThickness" in written
+        assert "sea_ice_thickness" not in written
+
+
 class TestInifieldConverter:
     def test_save_inifield(self, tmp_path: Path):
         """
