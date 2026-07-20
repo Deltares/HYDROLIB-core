@@ -64,5 +64,9 @@ external_forcing:
     old_to_new_quantity_names:
         sea_ice_thickness: seaIceThickness
         sea_ice_area_fraction: seaIceAreaFraction
-        # `bedrock_surface_elevation` remains in `unsupported_quantity_names`.
+        # Parked, not live: `bedrock_surface_elevation` is also in
+        # `unsupported_quantity_names` above, so a run of the converter rejects it
+        # (or skips it under `debug=True`) before this rename can ever be applied.
+        # It takes effect only if the quantity leaves that list. Direct calls to
+        # `create_initial_cond_and_parameter_input_dict` do bypass that gate.
         bedrock_surface_elevation: bedrockSurfaceElevation
