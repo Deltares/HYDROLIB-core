@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3761,17 +3761,6 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#quantity-renames-legacy-new" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantity renames (legacy → new)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#filetype-mapping-legacy-new" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4227,17 +4216,6 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#quantity-renames-legacy-new" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantity renames (legacy → new)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#filetype-mapping-legacy-new" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4654,45 +4632,13 @@ Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</co
 <span class="na">VALUE</span><span class="o">=</span><span class="s">0.15</span>
 </code></pre></div>
 Mapped to <code>new-initial-conditions.ini</code>:
-- <code>QUANTITY</code> → <code>[initial].quantity</code> (renamed if the quantity is listed in <code>old_to_new_quantity_names</code>; see below)
+- <code>QUANTITY</code> → <code>[initial].quantity</code> (with special-case rename for bedrock to <code>bedrockSurfaceElevation</code>)
 - <code>FILENAME</code> → <code>datafile</code>
 - <code>FILETYPE=10</code> → <code>datafiletype = polygon</code>
 - <code>METHOD</code>/<code>AVERAGINGTYPE</code> → <code>interpolationmethod</code> and <code>averaging*</code> fields (see below)
 - <code>OPERAND</code> → <code>operand</code>
 - <code>VALUE</code> is preserved for polygon data
 - Any <code>tracer*</code> keys present are copied as-is</p>
-<h5 id="quantity-renames-legacy-new">Quantity renames (legacy → new)<a class="headerlink" href="#quantity-renames-legacy-new" title="Permanent link">&para;</a></h5>
-<p>A few quantities are spelled differently in the initial and parameter fields file than in the old external
-forcings file. The converter resolves them through the <code>old_to_new_quantity_names</code> table in
-<code>hydrolib/tools/extforce_convert/data/data.yaml</code>; any quantity not listed there is written out unchanged.</p>
-<table>
-<thead>
-<tr>
-<th>Old <code>QUANTITY</code></th>
-<th>New <code>quantity</code></th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>sea_ice_thickness</code></td>
-<td><code>seaIceThickness</code></td>
-<td>See D-Flow FM UM Sec. 15.8.1</td>
-</tr>
-<tr>
-<td><code>sea_ice_area_fraction</code></td>
-<td><code>seaIceAreaFraction</code></td>
-<td>See D-Flow FM UM Sec. 15.1</td>
-</tr>
-<tr>
-<td><code>bedrock_surface_elevation</code></td>
-<td><code>bedrockSurfaceElevation</code></td>
-<td>Parked — the quantity is still unsupported, so this rename is not reached by a converter run</td>
-</tr>
-</tbody>
-</table>
-<p>Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
-that exact casing.</p>
 <h5 id="filetype-mapping-legacy-new">FILETYPE mapping (legacy → new)<a class="headerlink" href="#filetype-mapping-legacy-new" title="Permanent link">&para;</a></h5>
 <ul>
 <li>1 → <code>uniform</code></li>
