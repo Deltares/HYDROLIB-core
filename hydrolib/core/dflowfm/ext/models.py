@@ -39,10 +39,8 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
 SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
-    "initialtracer",
     "tracerbnd",
     "sedfracbnd",
-    "initialsedfrac",
 )
 
 
@@ -325,13 +323,7 @@ class SourceSink(INIBasedModel):
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
-        unknown_keywords = [
-            key
-            for key in input_data.keys()
-            if key not in fields
-            and key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
-        return set(unknown_keywords)
+        return {key for key in input_data.keys() if key not in fields}
 
     model_config = ConfigDict(extra="allow")
 
