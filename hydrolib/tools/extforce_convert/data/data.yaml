@@ -1,4 +1,6 @@
-version: 1.0
+# Bump when the shape of this file changes, so a config and the code that reads it can
+# be told apart. 1.1 added `external_forcing.old_to_new_quantity_names`.
+version: 1.1
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
     deprecated_value: 0
@@ -35,8 +37,6 @@ external_forcing:
         - nudge_salinity_temperature
         - nudgerate
         - nudgetime
-        - sea_ice_area_fraction
-        - sea_ice_thickness
         - wavesignificantheight
         - waveperiod
         - wavedirection
@@ -60,3 +60,12 @@ external_forcing:
         - waqsegmentnumber
         - massbalancearea
         - waqmassbalancearea
+    # Quantities the kernel spells differently in the initial and parameter fields
+    # file than in the old external forcings file. Keys are matched
+    # case-insensitively; values are emitted verbatim, so their casing matters.
+    old_to_new_quantity_names:
+        sea_ice_thickness: seaIceThickness
+        sea_ice_area_fraction: seaIceAreaFraction
+        # `bedrock_surface_elevation` is also in `unsupported_quantity_names` above, so a run of the converter
+        # rejects it.
+        bedrock_surface_elevation: bedrockSurfaceElevation

@@ -302,13 +302,28 @@ OPERAND=O
 VALUE=0.15
 ```
 Mapped to `new-initial-conditions.ini`:
-- `QUANTITY` → `[initial].quantity` (with special-case rename for bedrock to `bedrockSurfaceElevation`)
+- `QUANTITY` → `[initial].quantity` (renamed if the quantity is listed in `old_to_new_quantity_names`; see below)
 - `FILENAME` → `datafile`
 - `FILETYPE=10` → `datafiletype = polygon`
 - `METHOD`/`AVERAGINGTYPE` → `interpolationmethod` and `averaging*` fields (see below)
 - `OPERAND` → `operand`
 - `VALUE` is preserved for polygon data
 - Any `tracer*` keys present are copied as-is
+
+##### Quantity renames (legacy → new)
+
+A few quantities are spelled differently in the initial and parameter fields file than in the old external
+forcings file. The converter resolves them through the `old_to_new_quantity_names` table in
+`hydrolib/tools/extforce_convert/data/data.yaml`; any quantity not listed there is written out unchanged.
+
+| Old `QUANTITY` | New `quantity` | Notes |
+|----------------|----------------|-------|
+| `sea_ice_thickness` | `seaIceThickness` | See D-Flow FM UM Sec. 15.8.1 |
+| `sea_ice_area_fraction` | `seaIceAreaFraction` | See D-Flow FM UM Sec. 15.1 |
+| `bedrock_surface_elevation` | `bedrockSurfaceElevation` | Parked — the quantity is still unsupported, so this rename is not reached by a converter run |
+
+Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
+that exact casing.
 
 ##### FILETYPE mapping (legacy → new)
 - 1 → `uniform`
