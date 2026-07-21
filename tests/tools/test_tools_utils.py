@@ -26,6 +26,7 @@ from hydrolib.tools.extforce_convert.utils import (
     construct_filemodel_new_or_existing,
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
+    parse_substance_file,
 )
 
 
@@ -321,3 +322,98 @@ class TestMDUConfigDeprecatedValue:
         """
         with pytest.raises(Exception):
             MDUConfig(deprecated_value={"a": 1})
+
+
+class TestParseSubstanceFile:
+    """Tests for parse_substance_file."""
+
+    def test_single_active_substance(self, tmp_path):
+        """One active substance: returns a list with that substance name."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'NH4' active\n"
+            "   description        'Ammonium (NH4)'\n"
+            "   concentration-unit '(gN/m3)'\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == ["NH4"]
+
+    def test_single_inactive_substance(self, tmp_path):
+        """One inactive substance: returns an empty list."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'NO3' inactive\n"
+            "   description        'Nitrate'\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == []
+
+    def test_multiple_active_substances(self, tmp_path):
+        """Multiple active substances: returns all names in order."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'NH4' active\n"
+            "end-substance\n"
+            "substance 'NO3' active\n"
+            "end-substance\n"
+            "substance 'PO4' active\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == ["NH4", "NO3", "PO4"]
+
+    def test_mixed_active_and_inactive_substances(self, tmp_path):
+        """Mix of active and inactive: only active names are returned, in order."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'NH4' active\n"
+            "end-substance\n"
+            "substance 'NO3' inactive\n"
+            "end-substance\n"
+            "substance 'PO4' active\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == ["NH4", "PO4"]
+
+    def test_empty_file(self, tmp_path):
+        """Empty file: returns an empty list."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text("")
+        assert parse_substance_file(sub_file) == []
+
+    def test_no_substance_lines(self, tmp_path):
+        """File with no substance declarations: returns an empty list."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "# some header comment\n"
+            "description 'WAQ substance file'\n"
+        )
+        assert parse_substance_file(sub_file) == []
+
+    def test_active_keyword_not_in_substance_line_is_ignored(self, tmp_path):
+        """'active' appearing inside the substance body does not cause a match."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'NH4' inactive\n"
+            "   description 'active tracer'\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == []
+
+    def test_order_is_preserved(self, tmp_path):
+        """Active substances are returned in file order."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text(
+            "substance 'C' active\n"
+            "end-substance\n"
+            "substance 'A' active\n"
+            "end-substance\n"
+            "substance 'B' active\n"
+            "end-substance\n"
+        )
+        assert parse_substance_file(sub_file) == ["C", "A", "B"]
+
+    def test_substance_name_with_spaces(self, tmp_path):
+        """Substance names containing spaces are parsed correctly."""
+        sub_file = tmp_path / "test.sub"
+        sub_file.write_text("substance 'total N' active\nend-substance\n")
+        assert parse_substance_file(sub_file) == ["total N"]

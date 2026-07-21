@@ -404,28 +404,29 @@ class SourceSink(INIBasedModel):
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        """Return all keys not in model_fields.
+
+        Because ``SourceSink`` is configured with ``extra="allow"``, any key
+        that Pydantic accepts as an extra field (e.g. legacy tracer/sedfrac
+        prefixes, dynamic ``tracer<name>Delta``/``sedFrac<name>Delta`` keys,
+        and arbitrary D-WAQ substance names such as ``NH4`` or ``POC1``) must
+        also be excluded from the INI-level unknown-keyword check so they are
+        not reported as errors.
+        """
         fields = cls.model_fields
-        unknown_keywords = [
-            key
-            for key in input_data.keys()
-            if key not in fields
-            and (
-                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-                or _is_dynamic_forcing_delta_key(key)
-            )
-        ]
-        return set(unknown_keywords)
+        return {key for key in input_data.keys() if key not in fields}
 
     model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
-        """Initialize SourceSink and set dynamic tracer attributes."""
+        """Initialize SourceSink and set dynamic tracer/substance attributes."""
         super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
+        # Expose every extra key as a regular attribute so that callers can
+        # access substance names (e.g. ``block.NH4``) in addition to the
+        # legacy tracer/sedfrac prefixed fields.
+        fields = self.model_fields
         for key, value in data.items():
-            if isinstance(key, str) and key.startswith(
-                SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
-            ):
+            if isinstance(key, str) and key not in fields:
                 setattr(self, key, value)
 
     @model_validator(mode="before")
