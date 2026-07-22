@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import ValidationIssue, backend
+from hydrolib.core.dflowfm.mdu.dflowfm_io import ValidationIssue, backend
 
 pytestmark = pytest.mark.skipif(
     not backend.is_available(),

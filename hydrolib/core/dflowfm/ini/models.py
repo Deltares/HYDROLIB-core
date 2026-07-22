@@ -251,16 +251,16 @@ class INIBasedModel(BaseModel, ABC):
     def _dflowfm_io_known_keys(cls, values) -> Set[str]:
         """Input keys the dflowfm_io backend recognizes for this section.
 
-        Only MDU section models opt in (``_dflowfm_io_managed``); every other INI model — including
-        same-named sections like friction's ``[General]`` — returns an empty set, so their
-        unknown-keyword check is unchanged. Imported lazily to avoid an import cycle (``mdu`` imports
-        ``ini``).
+        Only MDU section models opt in (`_dflowfm_io_managed`); every other INI model — including
+        same-named sections like friction's `[General]` — returns an empty set, so their
+        unknown-keyword check is unchanged. Imported lazily to avoid an import cycle (`mdu` imports
+        `ini`).
         """
         if not cls._dflowfm_io_managed or not isinstance(values, dict):
             return set()
 
         # Local import: the backend lives under the mdu package, which imports this module.
-        from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import backend
+        from hydrolib.core.dflowfm.mdu.dflowfm_io import backend
 
         if not backend.is_available():
             return set()

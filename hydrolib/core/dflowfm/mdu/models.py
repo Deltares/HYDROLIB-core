@@ -20,7 +20,7 @@ from hydrolib.core.base.models import (
     ModelSaveSettings,
     set_default_disk_only_file_model,
 )
-from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import backend as dflowfm_io_backend
+from hydrolib.core.dflowfm.mdu.dflowfm_io import backend as dflowfm_io_backend
 from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel

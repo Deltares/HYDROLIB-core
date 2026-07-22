@@ -1,6 +1,6 @@
 """End-to-end tests: FMModel reads a real MDU file and both validation paths run on it.
 
-No mocks. A real fixture is loaded through the real ``FMModel`` (its Pydantic validators plus the
+A real fixture is loaded through the real ``FMModel`` (its Pydantic validators plus the
 integrated dflowfm_io backend), and the dflowfm_io backend is also run directly on the same file. The
 fixture loads cleanly in hydrolib, but dflowfm_io validates it more strictly — an empty required
 `[geometry].netFile` and the `mdu.json` enum gap on `[numerics].vertAdvTypSal = 5`. Because those
@@ -14,7 +14,7 @@ from typing import List
 
 import pytest
 
-from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import ValidationIssue, backend
+from hydrolib.core.dflowfm.mdu.dflowfm_io import ValidationIssue, backend
 from hydrolib.core.dflowfm.mdu.models import FMModel
 
 MDU_FILE = Path("tests/data/input/obsfile_cases/single_ini/fm.mdu")
