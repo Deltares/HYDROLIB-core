@@ -30,6 +30,16 @@ def start_time():
     return "minutes since 2015-01-01 00:00:00"
 
 
+@pytest.fixture
+def mdu_parser_mock() -> MagicMock:
+    mock = MagicMock(spec=MDUParser)
+    mock.temperature_salinity_data = {"refdate": "minutes since 2015-01-01 00:00:00"}
+    mock.get_keyword.return_value = None
+    mock.is_relative_to_parent = False
+    mock.mdu_path = Path("tests/data/input/source-sink/mdu.mdu")
+    return mock
+
+
 @pytest.mark.parametrize(
     "tim_file, ext_file_quantity_list, expected_data",
     [
@@ -527,16 +537,9 @@ class TestConverter:
 
 class TestMainConverter:
     path = "tests/data/input/source-sink/source-sink.ext"
-    temperature_and_salinity_info = {
-        "refdate": "minutes since 2015-01-01 00:00:00",
-    }
     tim_file = Path("tests/data/input/source-sink/tim-3-columns.tim")
-    mdu_parser = MagicMock(spec=MDUParser)
-    mdu_parser.temperature_salinity_data = temperature_and_salinity_info
-    mdu_parser.is_relative_to_parent = False
-    mdu_parser.mdu_path = Path("tests/data/input/source-sink/mdu.mdu")
 
-    def test_sources_sinks_only(self, old_forcing_file_boundary: Dict[str, str]):
+    def test_sources_sinks_only(self, mdu_parser_mock: MagicMock):
         """
         The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
         `initialsalinity`, and `initialtemperature`.
@@ -546,7 +549,7 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
+        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
@@ -558,20 +561,18 @@ class TestMainConverter:
 
         self._compare(ext_model, inifield_model, structure_model)
 
-    def test_sources_sinks_with_fm(self, old_forcing_file_boundary: Dict[str, str]):
+    def test_sources_sinks_with_fm(self, mdu_parser_mock: MagicMock):
         """
         The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
-        `initialsalinity`, and `initialtemperature`.
+        `initialsalinity`, and `initialtemperature`, with salinity and temperature active in the FM model.
 
         - polyline 2*3 file `leftsor.pliz` is used to read the source and sink points.
         - tim file `tim-3-columns.tim` with 3 columns (plus the time column) the name should be the same as the
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        self.mdu_parser.temperature_salinity_data["salinity"] = True
-        self.mdu_parser.temperature_salinity_data["temperature"] = True
-
-        converter = ExternalForcingConverter(self.path, mdu_parser=self.mdu_parser)
+        mdu_parser_mock.temperature_salinity_data.update({"salinity": True, "temperature": True})
+        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
