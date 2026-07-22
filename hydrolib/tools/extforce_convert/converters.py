@@ -629,6 +629,9 @@ class SourceSinkConverter(BaseConverter):
         Args:
             tim_file (Path): The path to the TIM file.
             ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+            active_substance_names (List[str], default is None):
+                A list of active substance names to include in the conversion.
+                When provided, only the substances in this list will be processed.
             **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
                 details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
                 only bool. (i.e. {"temperature", False, "salinity": True})
@@ -729,6 +732,8 @@ class SourceSinkConverter(BaseConverter):
         final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
             mdu_quantities, temp_salinity_from_ext
         )
+        active_substance_names = active_substance_names or []
+
         final_quantities_list = (
             ["sourcesink_discharge"]
             + final_temp_salinity
@@ -819,6 +824,9 @@ class SourceSinkConverter(BaseConverter):
                 external forcings file.
             start_time (str, default is None):
                 The start date of the time series data.
+            active_substance_names (List[str], default is None):
+                A list of active substance names to include in the conversion.
+                When provided, only the substances in this list will be processed.
             **temp_salinity_mdu:
                 keyword arguments that will be provided if you want to provide the temperature and salinity details from
                 the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
