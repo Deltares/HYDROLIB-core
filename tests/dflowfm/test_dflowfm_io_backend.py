@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.dflowfm.mdu import _dflowfm_io_backend as backend
+from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import ValidationIssue, backend
 
 pytestmark = pytest.mark.skipif(
     not backend.is_available(),
@@ -30,7 +30,7 @@ class TestDflowfmIoBackend:
             issues
         ), "expected the backend to report at least some issues (defaults/warnings)"
         first = issues[0]
-        assert isinstance(first, backend.ValidationIssue)
+        assert isinstance(first, ValidationIssue)
         assert first.severity in {"INFO", "WARNING", "ERROR"}
         assert isinstance(first.line_number, int)
         assert isinstance(first.message, str)
@@ -51,41 +51,37 @@ class TestDflowfmIoBackend:
         assert backend.covers("geometry", []) is False
 
 
-def _issue(message: str, severity: str = "WARNING", line: int = -1):
-    return backend.ValidationIssue(line_number=line, severity=severity, message=message)
+def _issue(message: str, severity: str = "WARNING", line: int = -1) -> ValidationIssue:
+    return ValidationIssue(line_number=line, severity=severity, message=message)
 
 
-class TestBackendPolicyHelpers:
-    """Pure helpers — no native library required, so these always run."""
+class TestValidationIssue:
+    """The value object's own behaviour — no native library required, so these always run."""
 
-    def test_section_of_parses_bracketed_section(self):
-        assert (
-            backend.section_of(_issue("Property [geometry].netFile ...")) == "geometry"
-        )
+    def test_section_parses_bracketed_section(self):
+        assert _issue("Property [geometry].netFile ...").section == "geometry"
 
-    def test_section_of_returns_none_when_absent(self):
-        assert backend.section_of(_issue("no section here")) is None
+    def test_section_is_none_when_absent(self):
+        assert _issue("no section here").section is None
 
     def test_value_error_is_advisory_until_tier2(self):
         # Value/type ERRORs are not delegated yet (Tier-2 pending), so they must not block.
         msg = 'Property [restart].restartDateTime contains invalid value: "yyyymmddhhmmss".'
-        assert backend.is_blocking(_issue(msg, severity="ERROR")) is False
+        assert _issue(msg, severity="ERROR").is_blocking is False
 
-    def test_is_blocking_unsupported_warning(self):
+    def test_unsupported_property_warning_is_blocking(self):
         msg = "Property [geometry].Foo is not a supported property."
-        assert backend.is_blocking(_issue(msg, severity="WARNING")) is True
+        assert _issue(msg, severity="WARNING").is_blocking is True
 
-    def test_is_not_blocking_other_warning(self):
-        assert (
-            backend.is_blocking(_issue("just a heads up", severity="WARNING")) is False
-        )
+    def test_other_warning_is_not_blocking(self):
+        assert _issue("just a heads up", severity="WARNING").is_blocking is False
 
-    def test_is_not_blocking_info(self):
-        assert backend.is_blocking(_issue("default used", severity="INFO")) is False
+    def test_info_is_not_blocking(self):
+        assert _issue("default used", severity="INFO").is_blocking is False
 
 
 class TestFMModelDelegation:
-    """The active FMModel-level pass, exercised via a monkeypatched backend (no manifest needed)."""
+    """The active FMModel-level pass, exercised via a monkeypatched backend singleton."""
 
     @staticmethod
     def _wire(monkeypatch, *, covered_section, issues):

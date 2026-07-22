@@ -260,7 +260,7 @@ class INIBasedModel(BaseModel, ABC):
             return set()
 
         # Local import: the backend lives under the mdu package, which imports this module.
-        from hydrolib.core.dflowfm.mdu import _dflowfm_io_backend as backend
+        from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import backend
 
         if not backend.is_available():
             return set()

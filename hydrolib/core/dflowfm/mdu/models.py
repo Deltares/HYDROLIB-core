@@ -20,7 +20,7 @@ from hydrolib.core.base.models import (
     ModelSaveSettings,
     set_default_disk_only_file_model,
 )
-from hydrolib.core.dflowfm.mdu import _dflowfm_io_backend as dflowfm_io_backend
+from hydrolib.core.dflowfm.mdu._dflowfm_io_backend import backend as dflowfm_io_backend
 from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
@@ -2699,10 +2699,7 @@ class FMModel(INIModel):
 
         issues = dflowfm_io_backend.validate(self._to_mdu_text())
         blocking = [
-            issue
-            for issue in issues
-            if dflowfm_io_backend.section_of(issue) in covered
-            and dflowfm_io_backend.is_blocking(issue)
+            issue for issue in issues if issue.section in covered and issue.is_blocking
         ]
         if blocking:
             messages = "; ".join(f"[{i.severity}] {i.message}" for i in blocking)
