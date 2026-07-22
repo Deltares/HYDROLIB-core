@@ -211,3 +211,47 @@ class TestINIBasedModelEquality:
         a = StructureModel(structure=[Weir(id="w1", **base)])
         b = StructureModel(structure=[Weir(id="w2", **base)])
         assert a != b
+
+
+class TestINIBasedModelCommentsReset:
+    """Tests that comments are always reset to their default values on
+    initialization (via _skip_nones_and_set_header validator), regardless
+    of what comment values are passed in during construction."""
+
+    class ModelWithComments(INIBasedModel):
+        class Comments(INIBasedModel.Comments):
+            field_a: str | None = "Default comment for field_a."
+            field_b: str | None = "Default comment for field_b."
+
+        comments: Comments = Comments()
+        field_a: str = "value_a"
+        field_b: str = "value_b"
+
+    def test_comments_with_all_fields_overridden_are_reset_to_defaults(self):
+        custom_comments = self.ModelWithComments.Comments(
+            field_a="Overridden A", field_b="Overridden B"
+        )
+        model = self.ModelWithComments(comments=custom_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_all_fields_set_to_none_are_reset_to_defaults(self):
+        empty_comments = self.ModelWithComments.Comments(field_a=None, field_b=None)
+        model = self.ModelWithComments(comments=empty_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_partial_override_are_reset_to_defaults(self):
+        partial_comments = self.ModelWithComments.Comments(field_a="Only A changed")
+        model = self.ModelWithComments(comments=partial_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_extra_fields_are_reset_to_defaults(self):
+        # Comments allows extra fields (extra="allow"); they must still be discarded.
+        comments_with_extra = self.ModelWithComments.Comments(
+            field_a="Overridden A", unknown_extra="some extra comment"
+        )
+        model = self.ModelWithComments(comments=comments_with_extra)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_default_values_are_preserved_when_no_comments_provided(self):
+        model = self.ModelWithComments()
+        assert model.comments == self.ModelWithComments.Comments()

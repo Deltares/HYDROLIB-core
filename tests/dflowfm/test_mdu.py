@@ -201,7 +201,10 @@ class TestModels:
                 / "FlowFM.mdu"
             )
         )
-        assert model.geometry.comments.uniformwidth1d == "test"
+        default_model = FMModel()
+        assert model.geometry.comments.uniformwidth1d == getattr(
+            default_model.geometry.comments, "uniformwidth1d"
+        )
 
         output_dir = test_output_dir / self.test_mdu_model.__name__
         output_fn = output_dir / FMModel._generate_name()
