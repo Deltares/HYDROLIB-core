@@ -443,7 +443,7 @@ class Numerics(INIBasedModel):
     maxvelocity: float = Field(0.0, alias="maxVelocity")
     waterlevelwarn: float = Field(0.0, alias="waterLevelWarn")
     tspinupturblogprof: float = Field(0.0, alias="tSpinUpTurbLogProf")
-    fixedweirtopfrictcoef: Optional[float] = Field(-999, alias="fixedWeirTopFrictCoef")
+    fixedweirtopfrictcoef: Optional[float] = Field(None, alias="fixedWeirTopFrictCoef")
     fixedweir1d2d_dx: float = Field(50.0, alias="fixedWeir1D2D_dx")
     junction1d: int = Field(0, alias="junction1D")
     fixedweirtopwidth: float = Field(3.0, alias="fixedWeirTopWidth")
@@ -2214,9 +2214,9 @@ class Geometry(INIBasedModel):
     numtopsig: int = Field(0, alias="numTopSig")
     numtopsiguniform: bool = Field(True, alias="numTopSigUniform")
     sigmagrowthfactor: float = Field(1.0, alias="sigmaGrowthFactor")
-    dztop: Optional[float] = Field(-999, alias="dzTop")
-    floorlevtoplay: Optional[float] = Field(-999, alias="floorLevTopLay")
-    dztopuniabovez: Optional[float] = Field(-999, alias="dzTopUniAboveZ")
+    dztop: Optional[float] = Field(None, alias="dzTop")
+    floorlevtoplay: Optional[float] = Field(None, alias="floorLevTopLay")
+    dztopuniabovez: Optional[float] = Field(None, alias="dzTopUniAboveZ")
     keepzlayeringatbed: int = Field(2, alias="keepZLayeringAtBed")
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
@@ -2385,9 +2385,9 @@ class GroundWater(INIBasedModel):
     )
     conductivity: Optional[float] = Field(0.0, alias="Conductivity")
     h_aquiferuni: Optional[float] = Field(20.0, alias="h_aquiferuni")
-    bgrwuni: Optional[float] = Field(-999, alias="bgrwuni")
+    bgrwuni: Optional[float] = Field(None, alias="bgrwuni")
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
-    sgrwini: Optional[float] = Field(-999, alias="sgrwini")
+    sgrwini: Optional[float] = Field(None, alias="sgrwini")
 
 
 class ProcessFluxIntegration(IntEnum):
