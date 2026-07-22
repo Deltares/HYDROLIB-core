@@ -322,8 +322,9 @@ class TestSubstanceModel:
         Test scenario:
             Path pointing to a file that doesn't exist should raise.
         """
+        nonexistent = Path("nonexistent_dir/missing.sub")
         with pytest.raises(ValueError, match="not found"):
-            SubstanceModel(filepath=Path("nonexistent_dir/missing.sub"))
+            SubstanceModel(filepath=nonexistent)
 
     def test_model_ext(self):
         """Test that SubstanceModel._ext returns '.sub'."""
