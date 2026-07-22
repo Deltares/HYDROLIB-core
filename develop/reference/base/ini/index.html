@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -6482,16 +6482,16 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dflowfm_io_known_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Input keys the dflowfm_io backend recognizes for this section.</span>
 
-<span class="sd">        Only MDU section models opt in (``_dflowfm_io_managed``); every other INI model — including</span>
-<span class="sd">        same-named sections like friction&#39;s ``[General]`` — returns an empty set, so their</span>
-<span class="sd">        unknown-keyword check is unchanged. Imported lazily to avoid an import cycle (``mdu`` imports</span>
-<span class="sd">        ``ini``).</span>
+<span class="sd">        Only MDU section models opt in (`_dflowfm_io_managed`); every other INI model — including</span>
+<span class="sd">        same-named sections like friction&#39;s `[General]` — returns an empty set, so their</span>
+<span class="sd">        unknown-keyword check is unchanged. Imported lazily to avoid an import cycle (`mdu` imports</span>
+<span class="sd">        `ini`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_dflowfm_io_managed</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="c1"># Local import: the backend lives under the mdu package, which imports this module.</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.mdu._dflowfm_io_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">backend</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.mdu.dflowfm_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">backend</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">backend</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
             <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
