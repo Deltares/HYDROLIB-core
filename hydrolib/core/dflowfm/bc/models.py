@@ -1212,6 +1212,21 @@ class ForcingModel(INIModel):
         return parser.finalize().flatten(True, False)
 
 
+class SkipSaveForcingModel(ForcingModel):
+    """A ForcingModel that skips reading from and writing to disk.
+
+    Used to reference an existing .bc file without overwriting it during
+    a recursive save of a parent model. Neither _load nor _save touch the
+    file, so the .bc file is left completely untouched on disk.
+    """
+
+    def _load(self, filepath: Path) -> Dict[str, Any]:
+        return {}  # Do not parse existing .bc files
+
+    def _save(self, save_settings: ModelSaveSettings) -> None:
+        return None  # Do not overwrite existing .bc files
+
+
 class RealTime(StrEnum):
     """Enum class containing the valid value for the "realtime" reserved keyword.
 

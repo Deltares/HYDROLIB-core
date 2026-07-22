@@ -11,7 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, SkipSaveForcingModel
 from hydrolib.core.dflowfm.ext.models import (
+    ExtModel,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
 )
@@ -40,6 +42,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
+    "mark_existing_forcing_models_as_skip_save_models",
 ]
 
 
@@ -84,6 +87,43 @@ def construct_filemodel_new_or_existing(
         model.filepath = filepath
 
     return model
+
+
+def _is_fm_model_but_not_skip_save_fm(value: Any) -> bool:
+    return isinstance(value, ForcingModel) and not isinstance(value, SkipSaveForcingModel)
+
+
+def _replace_attr_with_skip_save_fm(obj: Any, attr: str) -> None:
+    value = getattr(obj, attr, None)
+    if _is_fm_model_but_not_skip_save_fm(value):
+        setattr(obj, attr, SkipSaveForcingModel(filepath=value.filepath))
+
+
+def mark_existing_forcing_models_as_skip_save_models(ext_model: ExtModel) -> None:
+    """Replace ForcingModel instances already loaded in ext_model with SkipSaveForcingModel.
+
+    When an existing .ext file is loaded (recurse=True), its referenced .bc files are
+    parsed into ForcingModel objects. Without this, a recursive save would rewrite those
+    .bc files even if no conversion was needed. This replaces each such ForcingModel with
+    a SkipSaveForcingModel that no-ops _load() and _save(), leaving the files on disk untouched.
+    """
+    for boundary in ext_model.boundary:
+        _replace_attr_with_skip_save_fm(boundary, "forcingfile")
+
+    for lateral in ext_model.lateral:
+        _replace_attr_with_skip_save_fm(lateral, "discharge")
+
+    for sourcesink in ext_model.sourcesink:
+        for field_name in ("discharge", "salinitydelta", "temperaturedelta"):
+            _replace_attr_with_skip_save_fm(sourcesink, field_name)
+        if not sourcesink.model_extra:
+            return
+        for key, value in sourcesink.model_extra.items():
+            if _is_fm_model_but_not_skip_save_fm(value):
+                sourcesink.model_extra[key] = SkipSaveForcingModel(
+                    filepath=value.filepath)
+    for meteo in ext_model.meteo:
+        _replace_attr_with_skip_save_fm(meteo, "forcingfile")
 
 
 def backup_file(filepath: PathOrStr) -> None:
