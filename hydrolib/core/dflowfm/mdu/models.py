@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Literal, Union, Optional, List, Dict
+from typing import Annotated, Any, Literal, Union, Optional, List, Dict, get_args
 
 from pydantic import (
     BeforeValidator,
@@ -1105,12 +1105,12 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="trtDef")
-    trtl: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="trtL")
+    trtdef: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="trtDef"
+    )
+    trtl: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="trtL"
+    )
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
@@ -1660,12 +1660,12 @@ class Output(INIBasedModel):
     wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
-    outputdir: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="outputDir")
-    waqoutputdir: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="waqOutputDir")
+    outputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="outputDir"
+    )
+    waqoutputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = (
+        Field("", alias="waqOutputDir")
+    )
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
@@ -2711,23 +2711,32 @@ class FMModel(INIModel):
         return self
 
     def _dflowfm_io_covered_sections(self) -> set:
-        """Return the set of section headers the backend fully covers for this model.
+        """Return the lower-cased headers of the sections the backend fully covers.
 
-        A section's header is its field name (which matches the lower-cased MDU section name);
-        its keys are the section model's field aliases.
+        Uses each section's ``_header`` (the real MDU section name) and its field aliases, matching
+        the per-section decision made in ``INIBasedModel._delegates_unknown_keywords_to_dflowfm_io``
+        so enforcement here and deferral there stay consistent. Lower-cased to match ``section_of``.
         """
         covered = set()
-        for header, value in self:
-            if value is None or header in self._exclude_fields():
+        for field_name, value in self:
+            if value is None or field_name in self._exclude_fields():
                 continue
-            if isinstance(value, list):  # sections are single models; skip any list fields
+            if isinstance(
+                value, list
+            ):  # sections are single models; skip any list fields
                 continue
+            header = getattr(value, "_header", None)
+            if not isinstance(header, str) or not header:
+                continue
+            # Only real MDU properties count; drop hydrolib-internal fields (comments, datablock, ...).
+            excluded = type(value)._exclude_fields()
             aliases = [
                 (field.alias or name)
                 for name, field in type(value).model_fields.items()
+                if name not in excluded
             ]
             if dflowfm_io_backend.covers(header, aliases):
-                covered.add(header)
+                covered.add(header.lower())
         return covered
 
     def _to_mdu_text(self) -> str:
@@ -2735,3 +2744,19 @@ class FMModel(INIModel):
         document = self._to_document(ModelSaveSettings())
         lines = Serializer(self.serializer_config).serialize(document)
         return "\n".join(lines)
+
+
+def _mark_dflowfm_io_managed_sections() -> None:
+    """Opt every FMModel section model into dflowfm_io-managed unknown-keyword validation.
+
+    Only these MDU section classes may defer their unknown-keyword check to the backend; all other
+    INI models (e.g. friction's same-named ``[General]``) keep hydrolib's own validation. See
+    ``INIBasedModel._delegates_unknown_keywords_to_dflowfm_io``.
+    """
+    for field in FMModel.model_fields.values():
+        for candidate in (field.annotation, *get_args(field.annotation)):
+            if isinstance(candidate, type) and issubclass(candidate, INIBasedModel):
+                candidate._dflowfm_io_managed = True
+
+
+_mark_dflowfm_io_managed_sections()
