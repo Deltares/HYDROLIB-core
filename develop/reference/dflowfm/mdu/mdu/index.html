@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -5800,7 +5800,9 @@ It is represented by the classes below.</p>
 <span class="normal">2740</span>
 <span class="normal">2741</span>
 <span class="normal">2742</span>
-<span class="normal">2743</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FMModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">2743</span>
+<span class="normal">2744</span>
+<span class="normal">2745</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FMModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall FM model that contains the contents of the toplevel MDU file.</span>
 
@@ -5890,11 +5892,11 @@ It is represented by the classes below.</p>
 
 <span class="sd">        Runs only for sections the backend fully covers (per its coverage manifest); everything</span>
 <span class="sd">        else keeps its Pydantic validation. While the manifest is unavailable/incomplete,</span>
-<span class="sd">        ``covers`` returns ``False`` for every section, so this is a no-op and — importantly — the</span>
+<span class="sd">        `covers` returns `False` for every section, so this is a no-op and — importantly — the</span>
 <span class="sd">        model is never serialized. When a section is covered, backend issues attributed to it are</span>
-<span class="sd">        applied under the severity policy (blocking issues raise, becoming a ``ValidationError``).</span>
+<span class="sd">        applied under the severity policy (blocking issues raise, becoming a `ValidationError`).</span>
 
-<span class="sd">        See ``planning/dflowfm_io-validation-integration-design.md`` (Sections 2-3).</span>
+<span class="sd">        See `planning/dflowfm_io-validation-integration-design.md` (Sections 2-3).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dflowfm_io_backend</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -5916,23 +5918,25 @@ It is represented by the classes below.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_dflowfm_io_covered_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the lower-cased headers of the sections the backend fully covers.</span>
 
-<span class="sd">        Uses each section&#39;s ``_header`` (the real MDU section name) and its field aliases, matching</span>
-<span class="sd">        the per-section decision made in ``INIBasedModel._delegates_unknown_keywords_to_dflowfm_io``</span>
-<span class="sd">        so enforcement here and deferral there stay consistent. Lower-cased to match ``section_of``.</span>
+<span class="sd">        Uses each section&#39;s `_header` (the real MDU section name) and its field aliases, matching</span>
+<span class="sd">        the per-section decision made in `INIBasedModel._delegates_unknown_keywords_to_dflowfm_io`</span>
+<span class="sd">        so enforcement here and deferral there stay consistent. Lower-cased to match `section_of`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">covered</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">():</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">value</span><span class="p">,</span> <span class="nb">list</span>
-            <span class="p">):</span>  <span class="c1"># sections are single models; skip any list fields</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># sections are single models; skip any list fields</span>
                 <span class="k">continue</span>
             <span class="n">header</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;_header&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">header</span><span class="p">:</span>
                 <span class="k">continue</span>
+
             <span class="c1"># Only real MDU properties count; drop hydrolib-internal fields (comments, datablock, ...).</span>
             <span class="n">excluded</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">()</span>
+
             <span class="n">aliases</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">alias</span> <span class="ow">or</span> <span class="n">name</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
