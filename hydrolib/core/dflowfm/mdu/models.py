@@ -2684,11 +2684,11 @@ class FMModel(INIModel):
 
         Runs only for sections the backend fully covers (per its coverage manifest); everything
         else keeps its Pydantic validation. While the manifest is unavailable/incomplete,
-        ``covers`` returns ``False`` for every section, so this is a no-op and — importantly — the
+        `covers` returns `False` for every section, so this is a no-op and — importantly — the
         model is never serialized. When a section is covered, backend issues attributed to it are
-        applied under the severity policy (blocking issues raise, becoming a ``ValidationError``).
+        applied under the severity policy (blocking issues raise, becoming a `ValidationError`).
 
-        See ``planning/dflowfm_io-validation-integration-design.md`` (Sections 2-3).
+        See `planning/dflowfm_io-validation-integration-design.md` (Sections 2-3).
         """
         if not dflowfm_io_backend.is_available():
             return self
@@ -2710,23 +2710,25 @@ class FMModel(INIModel):
     def _dflowfm_io_covered_sections(self) -> set:
         """Return the lower-cased headers of the sections the backend fully covers.
 
-        Uses each section's ``_header`` (the real MDU section name) and its field aliases, matching
-        the per-section decision made in ``INIBasedModel._delegates_unknown_keywords_to_dflowfm_io``
-        so enforcement here and deferral there stay consistent. Lower-cased to match ``section_of``.
+        Uses each section's `_header` (the real MDU section name) and its field aliases, matching
+        the per-section decision made in `INIBasedModel._delegates_unknown_keywords_to_dflowfm_io`
+        so enforcement here and deferral there stay consistent. Lower-cased to match `section_of`.
         """
         covered = set()
         for field_name, value in self:
             if value is None or field_name in self._exclude_fields():
                 continue
-            if isinstance(
-                value, list
-            ):  # sections are single models; skip any list fields
+            
+            if isinstance( value, list):  # sections are single models; skip any list fields
                 continue
             header = getattr(value, "_header", None)
+            
             if not isinstance(header, str) or not header:
                 continue
+
             # Only real MDU properties count; drop hydrolib-internal fields (comments, datablock, ...).
             excluded = type(value)._exclude_fields()
+
             aliases = [
                 (field.alias or name)
                 for name, field in type(value).model_fields.items()
@@ -2747,8 +2749,8 @@ def _mark_dflowfm_io_managed_sections() -> None:
     """Opt every FMModel section model into dflowfm_io-managed unknown-keyword validation.
 
     Only these MDU section classes may defer their unknown-keyword check to the backend; all other
-    INI models (e.g. friction's same-named ``[General]``) keep hydrolib's own validation. See
-    ``INIBasedModel._delegates_unknown_keywords_to_dflowfm_io``.
+    INI models (e.g. friction's same-named `[General]`) keep hydrolib's own validation. See
+    `INIBasedModel._delegates_unknown_keywords_to_dflowfm_io`.
     """
     for field in FMModel.model_fields.values():
         for candidate in (field.annotation, *get_args(field.annotation)):
