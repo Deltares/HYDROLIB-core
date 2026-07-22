@@ -39,10 +39,15 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
 
 SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
     "tracerbnd",
     "sedfracbnd",
+    "initialsedfrac"
 )
-
+SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac"
+)
 
 def _coordinate_length(v) -> int:
     """Return the number of coordinates in a raw string or list."""

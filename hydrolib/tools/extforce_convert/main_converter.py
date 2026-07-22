@@ -16,6 +16,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     SourceSink,
+    SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
@@ -392,6 +393,9 @@ class ExternalForcingConverter:
             start_time = self.temperature_salinity_data.get("refdate")
 
         quantities = self.extold_model.quantities
+        quantities = [quantity for quantity in quantities if not quantity.startswith(
+            SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES
+        )]
         new_quantity_block = converter_class.convert(
             forcing,
             quantities,
