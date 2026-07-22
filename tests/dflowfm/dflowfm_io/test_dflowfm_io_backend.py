@@ -1,6 +1,6 @@
 """Tests for the dflowfm_io backend adapter (whole-document ``validate`` path).
 
-These require the ``dflowfm_io`` package and its native library to be importable; they are
+These require the `dflowfm_io` package and its native library to be importable; they are
 skipped cleanly when the backend is unavailable so the suite still runs without it.
 """
 
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.skipif(
     reason=f"dflowfm_io backend unavailable: {backend.unavailable_reason()}",
 )
 
-MDU_FIXTURE = Path(__file__).parents[1] / "data/input/file_load_test/fm.mdu"
+MDU_FIXTURE = Path("tests/data/input/file_load_test/fm.mdu")
 
 
 class TestDflowfmIoBackend:
