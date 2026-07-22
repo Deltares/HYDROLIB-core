@@ -25,6 +25,8 @@ from hydrolib.core.dflowfm.ext.models import (
     InitialFieldError,
     Meteo,
     MeteoError,
+    Spatial,
+    SpatialError,
     SourceSink,
     SourceSinkError,
 )
@@ -44,6 +46,7 @@ from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
+    create_spatial_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
 )
@@ -109,15 +112,15 @@ class MeteoConverter(BaseConverter):
         """Meteo converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> Meteo:
+    def convert(self, forcing: ExtOldForcing) -> Spatial:
         """Meteo converter.
 
-        Convert an old external forcing block with meteo data to a Meteo
+        Convert an old external forcing block with meteo data to a Spatial
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Meteo object is suitable for use in new
+        into a Spatial object. The Spatial object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
 
@@ -128,22 +131,18 @@ class MeteoConverter(BaseConverter):
             required for the conversion process.
 
         Returns:
-            Meteo: A Meteo object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Meteo object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            Spatial: A Spatial object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
+            supported by the converter, a ValueError is raised.
         """
-        meteo_data = {
+        spatial_data = {
             "quantity": forcing.quantity,
-            "forcingfile": forcing.filename,
-            "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            "forcingVariableName": forcing.varname,
+            "datafile": forcing.filename,
+            "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+            "datavariablename": forcing.varname,
         }
         if forcing.sourcemask != DiskOnlyFileModel(None):
             raise ValueError(
@@ -151,18 +150,18 @@ class MeteoConverter(BaseConverter):
                 f"convert this input. Encountered for QUANTITY="
                 f"{forcing.quantity} and FILENAME={forcing.filename}."
             )
-        meteo_data = convert_interpolation_data(forcing, meteo_data)
-        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-        meteo_data["operand"] = forcing.operand
+        spatial_data = convert_interpolation_data(forcing, spatial_data)
+        spatial_data["extrapolationmethod"] = bool(forcing.extrapolation_method)
+        spatial_data["extrapolationsearchradius"] = forcing.maxsearchradius
+        spatial_data["operand"] = forcing.operand
         try:
-            meteo_block = Meteo(**meteo_data)
+            spatial_block = Spatial(**spatial_data)
         except Exception as e:
-            raise MeteoError(
-                f"Failed to create the Meteo object. for the following Errors: {e}"
+            raise SpatialError(
+                f"Failed to create the Spatial object for the following errors: {e}"
             )
 
-        return meteo_block
+        return spatial_block
 
 
 class BoundaryConditionConverter(BaseConverter):
@@ -470,45 +469,38 @@ class InitialConditionConverter(BaseConverter):
         """Initial condition converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> InitialField:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> Spatial:
         """Convert the Initial condition quantities.
 
-        Convert an old external forcing block with Initial condition data to a IinitialField
-        forcing block suitable for inclusion in a new inifieldfile file.
-
+        Convert an old external forcing block with Initial condition data to a
+        Spatial forcing block suitable for inclusion in a new ExtForceFileNew file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a InitialField object. The InitialField object is suitable for use in new
-        iniFieldFile, adhering to the updated format and specifications.
+        into a Spatial object. The Spatial object is suitable for use in the
+        new ExtForceFileNew, adhering to the updated format and specifications.
 
         Args:
             forcing (ExtOldForcing):
                 The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
+                in an old external forcings file.
             new_forcing_path (Path):
                 The updated path to the forcing data file.
 
         Returns:
-            Initial condition field definition, represents an `[Initial]` block in an inifield file.
+            Spatial: A Spatial object representing the converted initial condition,
+            ready to be included in a new ExtForceFileNew file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
-
-        References:
-            [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
+            supported by the converter.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
+        data = create_spatial_input_dict(forcing, new_forcing_path)
         try:
-            new_block = InitialField(**data)
+            new_block = Spatial(**data)
         except Exception as e:
-            raise InitialFieldError(
-                f"Failed to create the InitialField object. for the following Errors: {e}"
+            raise SpatialError(
+                f"Failed to create the Spatial object for initial condition. Errors: {e}"
             )
 
         return new_block
@@ -521,42 +513,33 @@ class ParametersConverter(BaseConverter):
         """Parameter converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> Spatial:
         """Parameter converter.
 
-        Convert an old external forcing block to a parameter forcing block
-        suitable for inclusion in an initial field and parameter file.
+        Convert an old external forcing block to a Spatial forcing block
+        suitable for inclusion in a new ExtForceFileNew file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a ParameterField object. The ParameterField object is suitable for use in
-        an IniFieldModel, representing an initial field and parameter file, adhering
-        to the updated format and specifications.
+        into a Spatial object representing a spatial parameter.
 
         Args:
             forcing (ExtOldForcing):
                 The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
+                in an old external forcings file.
             new_forcing_path (Path):
                 The updated path to the forcing data file.
 
         Returns:
-            ParameterField:
-                A ParameterField object that represents the converted forcing
-                block, ready to be included in an initial field and parameter file. The
-                ParameterField object conforms to the new format specifications, ensuring
-                compatibility with updated systems and models.
+            Spatial: A Spatial object representing the converted parameter,
+            ready to be included in a new ExtForceFileNew file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
+            supported by the converter.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
-        new_block = ParameterField(**data)
+        data = create_spatial_input_dict(forcing, new_forcing_path)
+        new_block = Spatial(**data)
 
         return new_block
 
