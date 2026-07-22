@@ -10,21 +10,24 @@ from pydantic import (
     ValidationInfo,
     WrapValidator,
     field_validator,
+    model_validator,
 )
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     FileModel,
+    ModelSaveSettings,
     set_default_disk_only_file_model,
 )
+from hydrolib.core.dflowfm.mdu import _dflowfm_io_backend as dflowfm_io_backend
 from hydrolib.core.base.utils import PathToDictionaryConverter
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig, Serializer
 from hydrolib.core.dflowfm.ini.util import (
     split_string_on_delimiter,
     validate_datetime_string,
@@ -2674,3 +2677,61 @@ class FMModel(INIModel):
             return ResolveRelativeMode.ToAnchor
         else:
             return ResolveRelativeMode.ToParent
+
+    @model_validator(mode="after")
+    def _validate_with_dflowfm_io(self) -> "FMModel":
+        """Delegate validation of covered sections to the dflowfm_io backend.
+
+        Runs only for sections the backend fully covers (per its coverage manifest); everything
+        else keeps its Pydantic validation. While the manifest is unavailable/incomplete,
+        ``covers`` returns ``False`` for every section, so this is a no-op and — importantly — the
+        model is never serialized. When a section is covered, backend issues attributed to it are
+        applied under the severity policy (blocking issues raise, becoming a ``ValidationError``).
+
+        See ``planning/dflowfm_io-validation-integration-design.md`` (Sections 2-3).
+        """
+        if not dflowfm_io_backend.is_available():
+            return self
+
+        covered = self._dflowfm_io_covered_sections()
+        if not covered:
+            return self
+
+        issues = dflowfm_io_backend.validate(self._to_mdu_text())
+        blocking = [
+            issue
+            for issue in issues
+            if dflowfm_io_backend.section_of(issue) in covered
+            and dflowfm_io_backend.is_blocking(issue)
+        ]
+        if blocking:
+            messages = "; ".join(f"[{i.severity}] {i.message}" for i in blocking)
+            raise ValueError(f"dflowfm_io validation failed: {messages}")
+
+        return self
+
+    def _dflowfm_io_covered_sections(self) -> set:
+        """Return the set of section headers the backend fully covers for this model.
+
+        A section's header is its field name (which matches the lower-cased MDU section name);
+        its keys are the section model's field aliases.
+        """
+        covered = set()
+        for header, value in self:
+            if value is None or header in self._exclude_fields():
+                continue
+            if isinstance(value, list):  # sections are single models; skip any list fields
+                continue
+            aliases = [
+                (field.alias or name)
+                for name, field in type(value).model_fields.items()
+            ]
+            if dflowfm_io_backend.covers(header, aliases):
+                covered.add(header)
+        return covered
+
+    def _to_mdu_text(self) -> str:
+        """Serialize this model to MDU text in memory (same output as saving to file)."""
+        document = self._to_document(ModelSaveSettings())
+        lines = Serializer(self.serializer_config).serialize(document)
+        return "\n".join(lines)
