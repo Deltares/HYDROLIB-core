@@ -9,6 +9,7 @@ from typing import (
     Annotated,
     Any,
     Callable,
+    ClassVar,
     List,
     Literal,
     Optional,
@@ -206,10 +207,20 @@ class INIBasedModel(BaseModel, ABC):
 
     comments: Optional[Comments] = Comments()
 
+    # Opt-in flag: only MDU section models (set True in mdu/models.py) may defer their
+    # unknown-keyword check to the dflowfm_io backend. Default False keeps every other INI model —
+    # including same-named sections like FrictGeneral's "[General]" — on hydrolib's own validation.
+    _dflowfm_io_managed: ClassVar[bool] = False
+
     @model_validator(mode="before")
     @classmethod
     def _validate_unknown_keywords(cls, values):
         """Validates fields and raises errors for unknown keywords.
+
+        For MDU section models, keys the dflowfm_io backend recognizes are treated as known even when
+        hydrolib does not model them yet — the shared IO library co-owns unknown-keyword validation
+        (see the mdu integration design, task B.3). Keys unknown to *both* hydrolib and dflowfm_io are
+        still rejected here, unchanged; non-MDU models are unaffected.
 
         Args:
             values (dict): Dictionary of field values to validate.
@@ -223,13 +234,48 @@ class INIBasedModel(BaseModel, ABC):
         unknown_keyword_error_manager = cls._get_unknown_keyword_error_manager()
         do_not_validate = cls._exclude_from_validation(values)
         if unknown_keyword_error_manager:
+            excluded = (
+                cls._exclude_fields()
+                | do_not_validate
+                | cls._dflowfm_io_known_keys(values)
+            )
             unknown_keyword_error_manager.raise_error_for_unknown_keywords(
                 values,
                 cls._header,
                 cls.model_fields,
-                cls._exclude_fields() | do_not_validate,
+                excluded,
             )
         return values
+
+    @classmethod
+    def _dflowfm_io_known_keys(cls, values) -> Set[str]:
+        """Input keys the dflowfm_io backend recognizes for this section.
+
+        Only MDU section models opt in (`_dflowfm_io_managed`); every other INI model — including
+        same-named sections like friction's `[General]` — returns an empty set, so their
+        unknown-keyword check is unchanged. Imported lazily to avoid an import cycle (`mdu` imports
+        `ini`).
+        """
+        if not cls._dflowfm_io_managed or not isinstance(values, dict):
+            return set()
+
+        # Local import: the backend lives under the mdu package, which imports this module.
+        from hydrolib.core.dflowfm.mdu.dflowfm_io import backend
+
+        if not backend.is_available():
+            return set()
+
+        # `_header` is a private attr; read its default (a string) from the class definition.
+        header_attr = cls.__private_attributes__.get("_header")
+        header = getattr(header_attr, "default", None) if header_attr else None
+        if not isinstance(header, str) or not header:
+            return set()
+
+        return {
+            key
+            for key in values
+            if isinstance(key, str) and backend.knows_property(header, key)
+        }
 
     @model_validator(mode="before")
     @classmethod
