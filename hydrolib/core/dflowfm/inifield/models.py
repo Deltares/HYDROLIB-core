@@ -17,7 +17,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import Operand, _OPERAND_LEGACY_MAP
 from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -256,7 +256,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
+        return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod

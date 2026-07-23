@@ -543,14 +543,14 @@ class TestExternalFocingConverter:
                     "filename": "file.xyz",
                     "filetype": 7,
                     "method": 1,
-                    "operand": "O",
+                    "operand": "override",
                 },
                 {
                     "quantity": "unsupported_quantity",
                     "filename": "file2.xyz",
                     "filetype": 7,
                     "method": 4,
-                    "operand": "O",
+                    "operand": "override",
                     "value": 0.0125,
                 },
             ]
