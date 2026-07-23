@@ -43,6 +43,11 @@ classDiagram
         +Optional implicitfallvelocity
         +Optional nr_of_sedfractions
     }
+    
+    class ResearchVegetation {
+        +Comments comments
+        +Optional stemheightconvention
+    }
 
     class ResearchWind {
         +Comments comments
@@ -113,6 +118,7 @@ classDiagram
         +ResearchOutput output
         +ResearchProcesses processes
         +ResearchSedtrails sedtrails
+        +ResearchVegetation veg
     }
 
     class LegacyGeneralAsModel {
@@ -137,6 +143,7 @@ classDiagram
     ResearchFMModel --> ResearchOutput
     ResearchFMModel --> ResearchProcesses
     ResearchFMModel --> ResearchSedtrails
+    ResearchFMModel --> ResearchVegetation
     LegacyFMModel --> ResearchFMModel
     LegacyGeneralAsModel --> ResearchGeneral
 ```
@@ -186,6 +193,11 @@ classDiagram
         +Optional implicitfallvelocity
         +Optional nr_of_sedfractions
     }
+    
+    class ResearchVegetation {
+        +Comments comments
+        +Optional stemheightconvention
+    }
 
     class ResearchWind {
         +Comments comments
@@ -256,6 +268,7 @@ classDiagram
         +ResearchOutput output
         +ResearchProcesses processes
         +ResearchSedtrails sedtrails
+        +ResearchVegetation veg
     }
 
     class LegacyGeneralAsModel {
@@ -309,6 +322,7 @@ classDiagram
     ResearchFMModel --> ResearchOutput
     ResearchFMModel --> ResearchProcesses
     ResearchFMModel --> ResearchSedtrails
+    ResearchFMModel --> ResearchVegetation
 
     LegacyFMModel --> LegacyGeneralAsModel
 

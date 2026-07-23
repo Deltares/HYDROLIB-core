@@ -220,6 +220,15 @@ class TestConvertParameters:
             pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
             pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
             pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
+            pytest.param(
+                ExtOldQuantity.WaveBreakerDissipation,
+                "wavebreakerdissipation"),
+            pytest.param(
+                ExtOldQuantity.WhiteCappingDissipation,
+                "whitecappingdissipation"),
+            pytest.param(
+                ExtOldQuantity.TotalWaveEnergyDissipation,
+                "totalwaveenergydissipation"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
