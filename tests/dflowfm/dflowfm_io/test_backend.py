@@ -44,8 +44,9 @@ class TestDflowfmIoBackend:
         assert backend.covers("geometry", ["kmx", "netFile"]) is True
 
     def test_covers_false_when_a_key_is_unknown(self):
-        # bathymetryFile is a hydrolib key the dflowfm_io schema does not (yet) have.
-        assert backend.covers("geometry", ["kmx", "bathymetryFile"]) is False
+        # A key that is not part of the dflowfm_io [geometry] schema (use a clearly-bogus name so the
+        # test does not depend on which real keys the schema happens to include).
+        assert backend.covers("geometry", ["kmx", "definitelyNotAnMduKeyXYZ"]) is False
 
     def test_covers_false_for_empty_aliases(self):
         assert backend.covers("geometry", []) is False
