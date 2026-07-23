@@ -158,7 +158,7 @@ class Boundary(INIBasedModel):
     bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
     returntime: Optional[float] = Field(None, alias="returnTime")
-    operand: Optional[str] = Field(None, alias="operand")
+    operand: Optional[Operand] = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -266,6 +266,11 @@ class Boundary(INIBasedModel):
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
         return data
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
 
 
 class Lateral(INIBasedModel):

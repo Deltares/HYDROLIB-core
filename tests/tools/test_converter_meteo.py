@@ -42,12 +42,11 @@ _LEGACY_OPERAND_CASES = [
     pytest.param("N", Operand.minimum, id="N->minimum"),
 ]
 
-class TestLegacyOperandConversion:
+class TestMeteoLegacyOperandConversion:
     """Tests that legacy single-character OPERAND values in old .ext files
     are correctly converted to modern Operand enum values when loading."""
 
-    @pytest.mark.parametrize("legacy_operand, expected_operand",
-                             _LEGACY_OPERAND_CASES)
+    @pytest.mark.parametrize("legacy_operand, expected_operand", _LEGACY_OPERAND_CASES)
     def test_legacy_operand_in_file_is_converted_correctly(
             self,
             legacy_operand: str,
