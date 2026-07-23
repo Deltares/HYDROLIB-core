@@ -158,6 +158,7 @@ class Boundary(INIBasedModel):
     bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
     bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
     returntime: Optional[float] = Field(None, alias="returnTime")
+    operand: Optional[str] = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
