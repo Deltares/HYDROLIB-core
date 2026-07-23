@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4875,7 +4875,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
-<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Boundary</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">267</span>
+<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Boundary</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Boundary]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].</span>
@@ -4894,6 +4895,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
     <span class="n">bndwidth1d</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;bndWidth1D&quot;</span><span class="p">)</span>
     <span class="n">bndbldepth</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;bndBlDepth&quot;</span><span class="p">)</span>
     <span class="n">returntime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;returnTime&quot;</span><span class="p">)</span>
+    <span class="n">operand</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;operand&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -5159,8 +5161,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
-<span class="normal">205</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
@@ -5181,7 +5182,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">226</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_nodeid_or_locationfile_present</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verifies that either nodeid or locationfile properties have been set.</span>
@@ -5284,8 +5286,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
-<span class="normal">190</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
 <span class="normal">193</span>
@@ -5297,7 +5298,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">rename_return_time_field</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Renames the deprecated return_time field to returnTime.</span>
@@ -5353,12 +5355,12 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BoundaryError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">755</span>
+<span class="normal">756</span>
+<span class="normal">757</span>
+<span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BoundaryError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BoundaryError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -5396,9 +5398,9 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">758</span>
+<span class="normal">759</span>
+<span class="normal">760</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5443,12 +5445,12 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The external forcing file&#39;s `[General]` section with file meta-data.&quot;&quot;&quot;</span>
 
     <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
@@ -5576,13 +5578,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">685</span>
-<span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">691</span>
 <span class="normal">692</span>
 <span class="normal">693</span>
 <span class="normal">694</span>
@@ -5613,7 +5609,13 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">719</span>
 <span class="normal">720</span>
 <span class="normal">721</span>
-<span class="normal">722</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">722</span>
+<span class="normal">723</span>
+<span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (new format).</span>
 
@@ -5703,12 +5705,12 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InitialFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">739</span>
+<span class="normal">740</span>
+<span class="normal">741</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InitialFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;InitialFieldError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -5746,9 +5748,9 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5796,8 +5798,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
-<span class="normal">271</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
 <span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
@@ -5862,7 +5863,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Lateral</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Lateral</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Lateral]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].</span>
@@ -6042,8 +6044,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">314</span>
-<span class="normal">315</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
 <span class="normal">316</span>
 <span class="normal">317</span>
 <span class="normal">318</span>
@@ -6064,7 +6065,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;locationtype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;locationtype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_location_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6109,12 +6111,12 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">304</span>
-<span class="normal">305</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
-<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">309</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
@@ -6165,8 +6167,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">527</span>
-<span class="normal">528</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
@@ -6312,7 +6313,13 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">671</span>
 <span class="normal">672</span>
 <span class="normal">673</span>
-<span class="normal">674</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Meteo</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Meteo</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Meteo]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].</span>
@@ -6460,6 +6467,11 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolationmethod_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MeteoInterpolationMethod</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_operand</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Operand</span><span class="p">,</span> <span class="n">_OPERAND_LEGACY_MAP</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6503,8 +6515,7 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">536</span>
-<span class="normal">537</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">537</span>
 <span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
@@ -6542,7 +6553,8 @@ The documentation below only concerns the 'new' format (<code>ExtForceFileNew</c
 <span class="normal">572</span>
 <span class="normal">573</span>
 <span class="normal">574</span>
-<span class="normal">575</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">575</span>
+<span class="normal">576</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Meteo block fields.&quot;&quot;&quot;</span>
 
     <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -6639,8 +6651,7 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
-<span class="normal">626</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
@@ -6675,7 +6686,8 @@ dictionary.</p>
 <span class="normal">658</span>
 <span class="normal">659</span>
 <span class="normal">660</span>
-<span class="normal">661</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">661</span>
+<span class="normal">662</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
@@ -6754,12 +6766,12 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">741</span>
-<span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span>
+<span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;MeteoError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -6797,9 +6809,9 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
-<span class="normal">745</span>
-<span class="normal">746</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">750</span>
+<span class="normal">751</span>
+<span class="normal">752</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6844,8 +6856,7 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
-<span class="normal">487</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
 <span class="normal">490</span>
@@ -6871,7 +6882,8 @@ dictionary.</p>
 <span class="normal">510</span>
 <span class="normal">511</span>
 <span class="normal">512</span>
-<span class="normal">513</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoForcingFileType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">513</span>
+<span class="normal">514</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoForcingFileType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the forcingFileType attribute in Meteo class.&quot;&quot;&quot;</span>
 
     <span class="n">bcascii</span> <span class="o">=</span> <span class="s2">&quot;bcAscii&quot;</span>
@@ -7135,15 +7147,15 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">516</span>
-<span class="normal">517</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">517</span>
 <span class="normal">518</span>
 <span class="normal">519</span>
 <span class="normal">520</span>
 <span class="normal">521</span>
 <span class="normal">522</span>
 <span class="normal">523</span>
-<span class="normal">524</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoInterpolationMethod</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="normal">524</span>
+<span class="normal">525</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MeteoInterpolationMethod</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the interpolationMethod attribute in Meteo class.&quot;&quot;&quot;</span>
 
     <span class="n">nearestnb</span> <span class="o">=</span> <span class="s2">&quot;nearestNb&quot;</span>
@@ -7250,12 +7262,12 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">757</span>
-<span class="normal">758</span>
-<span class="normal">759</span>
-<span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;ParameterFieldError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -7293,9 +7305,9 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
-<span class="normal">761</span>
-<span class="normal">762</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">766</span>
+<span class="normal">767</span>
+<span class="normal">768</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7343,8 +7355,7 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
@@ -7487,7 +7498,8 @@ dictionary.</p>
 <span class="normal">480</span>
 <span class="normal">481</span>
 <span class="normal">482</span>
-<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSink</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">483</span>
+<span class="normal">484</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSink</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[SourceSink]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].</span>
@@ -7664,15 +7676,15 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
-<span class="normal">422</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">422</span>
 <span class="normal">423</span>
 <span class="normal">424</span>
 <span class="normal">425</span>
 <span class="normal">426</span>
 <span class="normal">427</span>
 <span class="normal">428</span>
-<span class="normal">429</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+<span class="normal">429</span>
+<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize SourceSink and set dynamic tracer attributes.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
     <span class="c1"># Add dynamic attributes for fields starting with &#39;tracer&#39;</span>
@@ -7712,8 +7724,7 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">431</span>
-<span class="normal">432</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
 <span class="normal">435</span>
@@ -7751,7 +7762,8 @@ dictionary.</p>
 <span class="normal">467</span>
 <span class="normal">468</span>
 <span class="normal">469</span>
-<span class="normal">470</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">470</span>
+<span class="normal">471</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_location_specification</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensures that either `locationfile` or a valid set of coordinates is provided.</span>
@@ -7833,12 +7845,12 @@ dictionary.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">725</span>
-<span class="normal">726</span>
-<span class="normal">727</span>
-<span class="normal">728</span>
-<span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSinkError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSinkError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SourceSinkError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -7876,9 +7888,9 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">728</span>
-<span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
