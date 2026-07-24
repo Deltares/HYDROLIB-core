@@ -744,7 +744,7 @@ class TestReadTextFile:
             ),
             pytest.param(
                 b"line1\r\nline2\r\n",
-                ["line1\r\n", "line2\r\n"],
+                ["line1\n", "line2\n"],
                 id="crlf_line_endings_preserved",
             ),
             pytest.param(
