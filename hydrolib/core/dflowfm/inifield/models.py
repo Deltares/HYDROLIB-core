@@ -170,7 +170,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
     )
-    value: Optional[float] = Field(None, alias="value")
+    value: Optional[float| None] = Field(None, alias="value")
 
     model_config = ConfigDict(extra="allow")
 
@@ -218,12 +218,13 @@ class AbstractSpatialField(INIBasedModel, ABC):
             data_file = DiskOnlyFileModel(data_file)
             values["datafile"] = data_file
 
-        validate_required_fields(
-            values,
-            "value",
-            conditional_field_name="datafiletype",
-            conditional_value=DataFileType.polygon,
-        )
+        if values.get("interpolationmethod") == InterpolationMethod.constant:
+            validate_required_fields(
+                values,
+                "value",
+                conditional_field_name="datafiletype",
+                conditional_value=DataFileType.polygon,
+            )
 
         value_field_value = values.get("value")
         datafiletype_field_value = values.get("datafiletype")

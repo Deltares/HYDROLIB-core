@@ -303,7 +303,10 @@ def create_initial_cond_and_parameter_input_dict(
         "datafile": DiskOnlyFileModel(new_forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
-    if block_data["datafiletype"] == "polygon":
+    block_data = convert_interpolation_data(forcing, block_data)
+
+    if (block_data["datafiletype"] == "polygon" and
+            block_data["interpolationmethod"] == InterpolationMethod.constant):
         block_data["value"] = forcing.value
 
     if forcing.sourcemask != DiskOnlyFileModel(None):
@@ -312,7 +315,6 @@ def create_initial_cond_and_parameter_input_dict(
             f"convert this input. Encountered for QUANTITY="
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
-    block_data = convert_interpolation_data(forcing, block_data)
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):
