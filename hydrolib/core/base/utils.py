@@ -42,12 +42,13 @@ def read_text_file(path: Path) -> list[str]:
     Returns:
         List[str]: Lines of the file, with line endings preserved.
     """
-    raw = path.read_bytes()
     try:
-        text = raw.decode("utf-8")
+        with path.open("r", encoding="utf8") as file:
+            lines = file.readlines()
     except UnicodeDecodeError:
-        text = raw.decode("latin-1")
-    return text.splitlines(keepends=True)
+        with path.open("r", encoding="latin-1") as file:
+            lines = file.readlines()
+    return lines
 
 
 def to_key(string: str) -> str:

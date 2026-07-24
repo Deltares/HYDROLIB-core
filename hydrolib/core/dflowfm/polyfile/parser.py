@@ -600,7 +600,7 @@ def read_polyfile(
 
     parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
-    for line in read_text_file(filepath):
+    for line in read_text_file(path=filepath):
         parser.feed_line(line)
 
     objs = parser.finalize()
