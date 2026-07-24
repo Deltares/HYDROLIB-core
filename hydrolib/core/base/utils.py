@@ -49,6 +49,7 @@ def read_text_file(path: Path) -> list[str]:
         text = raw.decode("latin-1")
     return text.splitlines(keepends=True)
 
+
 def to_key(string: str) -> str:
     """Construct a key name from a given field name.
 
