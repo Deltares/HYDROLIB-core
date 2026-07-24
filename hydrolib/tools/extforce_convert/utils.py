@@ -307,7 +307,8 @@ def create_initial_cond_and_parameter_input_dict(
 
     if (block_data["datafiletype"] == "polygon" and
             block_data["interpolationmethod"] == InterpolationMethod.constant):
-        block_data["value"] = forcing.value
+        if forcing.value is not None:
+            block_data["value"] = forcing.value
 
     if forcing.sourcemask != DiskOnlyFileModel(None):
         raise ValueError(

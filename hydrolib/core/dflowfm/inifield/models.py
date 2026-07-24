@@ -218,7 +218,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
             data_file = DiskOnlyFileModel(data_file)
             values["datafile"] = data_file
 
-        if values.get("interpolationmethod") == InterpolationMethod.constant:
+        if values.get("interpolationmethod") != InterpolationMethod.constant:
             validate_required_fields(
                 values,
                 "value",
