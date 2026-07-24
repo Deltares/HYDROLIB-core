@@ -9271,7 +9271,7 @@ be reported as warnings.</p>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">has_z_value</span><span class="o">=</span><span class="n">has_z_values</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">read_text_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">read_text_file</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filepath</span><span class="p">):</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">feed_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
     <span class="n">objs</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
