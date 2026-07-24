@@ -6,7 +6,7 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
-from typing import Annotated, Any, Callable, Union, get_args, get_origin
+from typing import Annotated, Any, Callable, List, Union, get_args, get_origin
 
 from pydantic import ValidationInfo
 from pydantic.fields import FieldInfo
@@ -19,6 +19,14 @@ SCIENTIFIC_NOTATION_REGEX = re.compile(SCIENTIFIC_NOTATION_PATTERN)
 
 PYTHON_STYLES = r"\1e\3"
 
+valid_types = (
+    float,
+    list[float],
+    List[float],
+    float | None,
+    List[float] | None,
+    list[float] | None,
+)
 
 def read_text_file(path: Path) -> list[str]:
     """Read a text file as lines, falling back to Latin-1 if not valid UTF-8.
@@ -40,15 +48,6 @@ def read_text_file(path: Path) -> list[str]:
     except UnicodeDecodeError:
         text = raw.decode("latin-1")
     return text.splitlines(keepends=True)
-valid_types = (
-    float,
-    list[float],
-    list[float],
-    float | None,
-    list[float] | None,
-    list[float] | None,
-)
-
 
 def to_key(string: str) -> str:
     """Construct a key name from a given field name.
