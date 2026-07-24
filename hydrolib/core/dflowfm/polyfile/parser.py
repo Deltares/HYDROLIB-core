@@ -8,6 +8,7 @@ from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Un
 from pydantic import Field
 
 from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.utils import read_text_file
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,
@@ -599,9 +600,8 @@ def read_polyfile(
 
     parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
-    with filepath.open("r", encoding="utf8") as f:
-        for line in f:
-            parser.feed_line(line)
+    for line in read_text_file(filepath):
+        parser.feed_line(line)
 
     objs = parser.finalize()
 
