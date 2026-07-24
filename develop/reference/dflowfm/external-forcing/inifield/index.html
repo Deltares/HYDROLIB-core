@@ -4258,7 +4258,8 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSpatialField</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSpatialField</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for `[Initial]` and `[Parameter]` block data in inifield files.</span>
 
 <span class="sd">    Defines all common fields. Used via subclasses InitialField and ParameterField.</span>
@@ -4326,7 +4327,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
     <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LocationType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">LocationType</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;locationType&quot;</span>
     <span class="p">)</span>
-    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
 
@@ -4374,12 +4375,13 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
             <span class="n">data_file</span> <span class="o">=</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
             <span class="n">values</span><span class="p">[</span><span class="s2">&quot;datafile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_file</span>
 
-        <span class="n">validate_required_fields</span><span class="p">(</span>
-            <span class="n">values</span><span class="p">,</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">,</span>
-            <span class="n">conditional_value</span><span class="o">=</span><span class="n">DataFileType</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interpolationmethod&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">InterpolationMethod</span><span class="o">.</span><span class="n">constant</span><span class="p">:</span>
+            <span class="n">validate_required_fields</span><span class="p">(</span>
+                <span class="n">values</span><span class="p">,</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+                <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">,</span>
+                <span class="n">conditional_value</span><span class="o">=</span><span class="n">DataFileType</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="n">value_field_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
         <span class="n">datafiletype_field_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">)</span>
@@ -4595,13 +4597,13 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/inifield/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
-<span class="normal">267</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">267</span>
 <span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
-<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;datafile&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">272</span>
+<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;datafile&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_datafile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert string values to DiskOnlyFileModel instances.&quot;&quot;&quot;</span>
@@ -4665,7 +4667,8 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
-<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">239</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_value_is_present_for_polygons</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the value is provided when dealing with polygons.&quot;&quot;&quot;</span>
@@ -4678,12 +4681,13 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
         <span class="n">data_file</span> <span class="o">=</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
         <span class="n">values</span><span class="p">[</span><span class="s2">&quot;datafile&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_file</span>
 
-    <span class="n">validate_required_fields</span><span class="p">(</span>
-        <span class="n">values</span><span class="p">,</span>
-        <span class="s2">&quot;value&quot;</span><span class="p">,</span>
-        <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">,</span>
-        <span class="n">conditional_value</span><span class="o">=</span><span class="n">DataFileType</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;interpolationmethod&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">InterpolationMethod</span><span class="o">.</span><span class="n">constant</span><span class="p">:</span>
+        <span class="n">validate_required_fields</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">,</span>
+            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">,</span>
+            <span class="n">conditional_value</span><span class="o">=</span><span class="n">DataFileType</span><span class="o">.</span><span class="n">polygon</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">value_field_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
     <span class="n">datafiletype_field_value</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datafiletype&quot;</span><span class="p">)</span>
@@ -5119,8 +5123,7 @@ of AbstractIniField.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/inifield/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
-<span class="normal">299</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
 <span class="normal">302</span>
@@ -5145,7 +5148,8 @@ of AbstractIniField.</p>
 <span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span>
-<span class="normal">324</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IniFieldModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">324</span>
+<span class="normal">325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IniFieldModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall inifield model that contains the contents of one initial field and parameter file.</span>
 
@@ -5228,8 +5232,7 @@ of AbstractIniField.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/inifield/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
-<span class="normal">276</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span>
@@ -5238,7 +5241,8 @@ of AbstractIniField.</p>
 <span class="normal">282</span>
 <span class="normal">283</span>
 <span class="normal">284</span>
-<span class="normal">285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InitialField</span><span class="p">(</span><span class="n">AbstractSpatialField</span><span class="p">):</span>
+<span class="normal">285</span>
+<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">InitialField</span><span class="p">(</span><span class="n">AbstractSpatialField</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initial condition field definition, represents an `[Initial]` block in an inifield file.</span>
 
 <span class="sd">    Typically inside the definition list of a</span>
@@ -5382,14 +5386,14 @@ subclasses of AbstractIniField.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/inifield/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
-<span class="normal">289</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterField</span><span class="p">(</span><span class="n">AbstractSpatialField</span><span class="p">):</span>
+<span class="normal">295</span>
+<span class="normal">296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterField</span><span class="p">(</span><span class="n">AbstractSpatialField</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parameter field definition, represents a `[Parameter]` block in an inifield file.</span>
 
 <span class="sd">    Typically inside the definition list of a</span>
