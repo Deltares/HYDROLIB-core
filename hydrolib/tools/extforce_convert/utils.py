@@ -132,10 +132,7 @@ def oldfiletype_to_forcing_file_type(
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif oldfiletype == ExtOldFileType.Polyline:  # 9
-        # Boundary polyline files no longer need a filetype of their own (intentionally no error raised)
-        pass
-    elif oldfiletype == ExtOldFileType.InsidePolygon:  # 10
+    elif oldfiletype in [ExtOldFileType.Polyline,  ExtOldFileType.InsidePolygon]:  # 9 and # 10
         forcing_file_type = DataFileType.polygon
     elif oldfiletype == ExtOldFileType.NetCDFGridData:  # 11
         forcing_file_type = MeteoForcingFileType.netcdf

@@ -1110,8 +1110,8 @@ class MDUParser:
         elif isinstance(ini_field_file, Path):
             # from the LegacyFMModel
             inifield_file = ini_field_file.resolve()
-        elif isinstance(ini_field_file, str):
-            # from reading the geometry section
+        elif isinstance(ini_field_file, str) and ini_field_file:
+            # from reading the geometry section (only if non-empty)
             inifield_file = root_dir / ini_field_file
         else:
             print(
@@ -1125,16 +1125,17 @@ class MDUParser:
         usr_structure_file: Optional[PathOrStr],
     ) -> Path:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
+        root_dir = self.mdu_path.parent
 
         if usr_structure_file is not None:
             # user defined structure file
-            usr_structure_file = self.mdu_path / usr_structure_file
+            usr_structure_file = root_dir / usr_structure_file
         elif isinstance(structure_file, Path):
             # from the LegacyFMModel
             usr_structure_file = structure_file.resolve()
-        elif isinstance(structure_file, str):
-            # from reading the geometry section
-            usr_structure_file = self.mdu_path / structure_file
+        elif isinstance(structure_file, str) and structure_file:
+            # from reading the geometry section (only if non-empty)
+            usr_structure_file = root_dir / structure_file
         else:
             print(
                 "The structure file is not found in the mdu file, and not provide by the user. \n"
