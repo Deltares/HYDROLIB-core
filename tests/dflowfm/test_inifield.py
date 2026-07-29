@@ -68,6 +68,7 @@ class TestIniField:
             quantity="waterlevel",
             datafile="iniwlev.xyz",
             datafiletype="sample",
+            interpolationmethod="constant"
         )
 
         return inifield_values
