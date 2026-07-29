@@ -301,6 +301,9 @@ def create_initial_cond_and_parameter_input_dict(
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
 
+    if block_data["datafiletype"] == "polygon":
+        block_data["value"] = forcing.value
+
     if forcing.sourcemask != DiskOnlyFileModel(None):
         raise ValueError(
             f"Attribute 'SOURCEMASK' is no longer supported, cannot "
