@@ -170,7 +170,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
     )
-    value: Optional[float| None] = Field(None, alias="value")
+    value: Optional[float] = Field(None, alias="value")
 
     model_config = ConfigDict(extra="allow")
 
