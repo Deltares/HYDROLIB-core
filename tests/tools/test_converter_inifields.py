@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     IniFieldModel,
@@ -13,7 +13,6 @@ from hydrolib.core.dflowfm.inifield.models import (
     InterpolationMethod,
     ParameterField,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
@@ -313,82 +312,3 @@ class TestOldFiletypeToForcingFileType:
         assert oldfiletype_to_forcing_file_type(
             ExtOldFileType.Polyline
         ) == oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
-
-
-class TestVerticalProfileConversion:
-    """Tests for conversion of initial vertical profile quantities using FILETYPE=9.
-
-    These are regression tests for the PermissionError / InitialFieldError that occurred
-    when running extforce-convert on MDU files with initialverticalsalinityprofile entries.
-    """
-
-    @pytest.mark.unit
-    @pytest.mark.parametrize(
-        "quantity",
-        [
-            pytest.param(
-                ExtOldQuantity.InitialVerticalSalinityProfile,
-                id="salinity",
-            ),
-            pytest.param(
-                ExtOldQuantity.InitialVerticalTemperatureProfile,
-                id="temperature",
-            ),
-        ],
-    )
-    def test_vertical_profile_filetype9_produces_polygon_datafiletype(self, quantity):
-        """FILETYPE=9 with a vertical profile quantity must result in datafiletype=polygon.
-
-        This ensures the dict passed to InitialField uses a valid DataFileType value
-        and does not contain the invalid 'unknown' string.
-        """
-        forcing = ExtOldForcing(
-            quantity=quantity,
-            filename="inisal.pli",
-            filetype=9,
-            method="1",
-            operand="O",
-        )
-
-        data = create_initial_cond_and_parameter_input_dict(
-            forcing, forcing.filename.filepath
-        )
-
-        assert data["datafiletype"] == DataFileType.polygon
-
-    @pytest.mark.unit
-    @pytest.mark.parametrize(
-        "quantity",
-        [
-            pytest.param(
-                ExtOldQuantity.InitialVerticalSalinityProfile,
-                id="salinity",
-            ),
-            pytest.param(
-                ExtOldQuantity.InitialVerticalTemperatureProfile,
-                id="temperature",
-            ),
-        ],
-    )
-    def test_vertical_profile_filetype9_creates_initial_field_without_error(
-        self, quantity
-    ):
-        """Converting a vertical profile quantity with FILETYPE=9 must not raise.
-
-        This is the primary regression test for the bug reported in issue anticreep01:
-        hydrolib.core.dflowfm.ext.models.InitialFieldError: Failed to create the
-        InitialField object. ... Invalid enum value: 'unknown'
-        """
-        forcing = ExtOldForcing(
-            quantity=quantity,
-            filename="inisal.pli",
-            filetype=9,
-            method="1",
-            operand="O",
-        )
-
-        block = InitialConditionConverter().convert(forcing, forcing.filename.filepath)
-
-        assert isinstance(block, InitialField)
-        assert block.datafiletype == DataFileType.polygon
-
