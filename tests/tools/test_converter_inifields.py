@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     InterpolationMethod,
     ParameterField,
 )
+from hydrolib.core.dflowfm.extold.models import ExtOldFileType
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
@@ -21,6 +22,7 @@ from hydrolib.tools.extforce_convert.converters import (
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
+    oldfiletype_to_forcing_file_type,
 )
 from tests.utils import compare_two_files, ignore_version_lines
 
@@ -284,3 +286,109 @@ class TestInifieldConverter:
         )
         assert diff == []
         path.unlink()
+
+
+class TestOldFiletypeToForcingFileType:
+    """Tests for oldfiletype_to_forcing_file_type — especially the FILETYPE=9 change."""
+
+    @pytest.mark.unit
+    def test_filetype_9_polyline_maps_to_polygon(self):
+        """Regression test: FILETYPE=9 (Polyline) must now map to DataFileType.polygon.
+
+        Before the fix, FILETYPE=9 fell through without setting a value, returning the
+        default "unknown", which caused InitialField validation errors downstream.
+        """
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.Polyline)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_10_inside_polygon_maps_to_polygon(self):
+        """FILETYPE=10 (InsidePolygon) still maps to DataFileType.polygon (unchanged)."""
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_9_and_10_return_same_value(self):
+        """FILETYPE=9 and FILETYPE=10 must now return the same datafiletype."""
+        assert oldfiletype_to_forcing_file_type(
+            ExtOldFileType.Polyline
+        ) == oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+
+
+class TestVerticalProfileConversion:
+    """Tests for conversion of initial vertical profile quantities using FILETYPE=9.
+
+    These are regression tests for the PermissionError / InitialFieldError that occurred
+    when running extforce-convert on MDU files with initialverticalsalinityprofile entries.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            pytest.param(
+                ExtOldQuantity.InitialVerticalSalinityProfile,
+                id="salinity",
+            ),
+            pytest.param(
+                ExtOldQuantity.InitialVerticalTemperatureProfile,
+                id="temperature",
+            ),
+        ],
+    )
+    def test_vertical_profile_filetype9_produces_polygon_datafiletype(self, quantity):
+        """FILETYPE=9 with a vertical profile quantity must result in datafiletype=polygon.
+
+        This ensures the dict passed to InitialField uses a valid DataFileType value
+        and does not contain the invalid 'unknown' string.
+        """
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="inisal.pli",
+            filetype=9,
+            method="1",
+            operand="O",
+        )
+
+        data = create_initial_cond_and_parameter_input_dict(
+            forcing, forcing.filename.filepath
+        )
+
+        assert data["datafiletype"] == DataFileType.polygon
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            pytest.param(
+                ExtOldQuantity.InitialVerticalSalinityProfile,
+                id="salinity",
+            ),
+            pytest.param(
+                ExtOldQuantity.InitialVerticalTemperatureProfile,
+                id="temperature",
+            ),
+        ],
+    )
+    def test_vertical_profile_filetype9_creates_initial_field_without_error(
+        self, quantity
+    ):
+        """Converting a vertical profile quantity with FILETYPE=9 must not raise.
+
+        This is the primary regression test for the bug reported in issue anticreep01:
+        hydrolib.core.dflowfm.ext.models.InitialFieldError: Failed to create the
+        InitialField object. ... Invalid enum value: 'unknown'
+        """
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="inisal.pli",
+            filetype=9,
+            method="1",
+            operand="O",
+        )
+
+        block = InitialConditionConverter().convert(forcing, forcing.filename.filepath)
+
+        assert isinstance(block, InitialField)
+        assert block.datafiletype == DataFileType.polygon
+
