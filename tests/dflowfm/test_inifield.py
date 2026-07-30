@@ -359,7 +359,7 @@ class TestInitialVerticalProfilePolygonValidation:
             datafile=DiskOnlyFileModel(),
             datafiletype=DataFileType.polygon,
             interpolationmethod=InterpolationMethod.constant,
-            operand="O",
+            operand=Operand.override,
         )
 
         assert model.quantity == quantity
@@ -375,7 +375,7 @@ class TestInitialVerticalProfilePolygonValidation:
                 datafile=DiskOnlyFileModel(),
                 datafiletype=DataFileType.polygon,
                 interpolationmethod=InterpolationMethod.constant,
-                operand="O",
+                operand=Operand.override,
             )
 
         assert "value should be provided when datafiletype is polygon" in str(
@@ -391,7 +391,7 @@ class TestInitialVerticalProfilePolygonValidation:
             datafiletype=DataFileType.polygon,
             interpolationmethod=InterpolationMethod.constant,
             value=0.0,
-            operand="O",
+            operand=Operand.override,
         )
 
         assert np.isclose(model.value, 0.0)
