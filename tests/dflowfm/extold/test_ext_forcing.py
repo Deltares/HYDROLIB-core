@@ -242,6 +242,66 @@ class TestValidateOperand:
         )
 
 
+class TestValidateFileType:
+    @pytest.mark.parametrize("filetype", ExtOldFileType)
+    def test_with_valid_filetype_enum(self, filetype):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename="",
+            filetype=filetype,
+            method=1,
+            operand="O",
+        )
+        assert forcing.filetype == filetype
+
+    @pytest.mark.parametrize("filetype", ExtOldFileType)
+    def test_with_valid_filetype_int(self, filetype):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename="",
+            filetype=filetype.value,
+            method=1,
+            operand="O",
+        )
+        assert forcing.filetype == filetype
+
+    def test_with_invalid_filetype_int_raises_value_error(self):
+        invalid_filetype = 99
+
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid filetype. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
+    def test_with_non_integer_filetype_raises_value_error(self):
+        invalid_filetype = "not_a_number"
+
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid integer. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
+
 class TestValidateVarName:
     def test_validate_varname_with_valid_filetype_11(self):
         filetype = 11

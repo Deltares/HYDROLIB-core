@@ -352,6 +352,38 @@ class ExtOldForcing(BaseModel):
                 )
         return value
 
+    @field_validator("filetype", mode="before")
+    @classmethod
+    def validate_filetype(cls, value) -> ExtOldFileType:
+        """Validate that the filetype value is a valid ExtOldFileType member.
+
+        Args:
+            value: The raw filetype value to validate.
+
+        Returns:
+            ExtOldFileType: The validated filetype enum member.
+
+        Raises:
+            ValueError: If the value cannot be converted to an integer or is not a
+                valid ExtOldFileType value.
+        """
+        if isinstance(value, ExtOldFileType):
+            return value
+        try:
+            int_value = int(value)
+        except (ValueError, TypeError):
+            valid_values = [e.value for e in ExtOldFileType]
+            raise ValueError(
+                f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+            )
+        try:
+            return ExtOldFileType(int_value)
+        except ValueError:
+            valid_values = [e.value for e in ExtOldFileType]
+            raise ValueError(
+                f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
+            )
+
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
@@ -521,7 +553,13 @@ class ExtOldForcing(BaseModel):
             raw_path = values.get(filename_var_name)
 
             if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
+                try:
+                    int_file_type = int(file_type)
+                except (ValueError, TypeError):
+                    return values
+                model = FILETYPE_FILEMODEL_MAPPING.get(int_file_type)
+                if model is None:
+                    return values
                 values[filename_var_name] = resolve_file_model(raw_path, model)
 
         return values
