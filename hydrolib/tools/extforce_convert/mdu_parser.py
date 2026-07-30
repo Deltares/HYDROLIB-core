@@ -1101,7 +1101,7 @@ class MDUParser:
     def get_inifield_file(
         self,
         inifield_file: Optional[PathOrStr],
-    ) -> Path:
+    ) -> Path | None:
         ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
         if inifield_file is not None:
@@ -1123,7 +1123,7 @@ class MDUParser:
     def get_structure_file(
         self,
         usr_structure_file: Optional[PathOrStr],
-    ) -> Path:
+    ) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
 
