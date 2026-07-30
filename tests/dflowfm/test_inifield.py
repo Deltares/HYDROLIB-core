@@ -369,7 +369,7 @@ class TestInitialVerticalProfilePolygonValidation:
     @pytest.mark.unit
     def test_non_initialvertical_polygon_without_value_still_raises(self):
         """Non-initialvertical quantities still require a value when datafiletype=polygon and interpolation=constant."""
-        with pytest.raises(ValidationError) as exc_info:
+        with pytest.raises(ValidationError, match="value should be provided when datafiletype is polygon"):
             InitialField(
                 quantity="initialwaterlevel",
                 datafile=DiskOnlyFileModel(),
@@ -377,10 +377,6 @@ class TestInitialVerticalProfilePolygonValidation:
                 interpolationmethod=InterpolationMethod.constant,
                 operand=Operand.override,
             )
-
-        assert "value should be provided when datafiletype is polygon" in str(
-            exc_info.value
-        )
 
     @pytest.mark.unit
     def test_initialvertical_polygon_with_value_is_also_valid(self):
