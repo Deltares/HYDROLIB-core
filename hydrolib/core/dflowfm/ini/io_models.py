@@ -127,12 +127,12 @@ class Section(BaseModel):
             (to_key(v.key), v.value) for v in self.content if isinstance(v, Property)
         )
 
-        if with_comments:
-            values["comments"] = group_and_flatten(
-                (to_key(v.key), v.comment)
-                for v in self.content
-                if isinstance(v, Property)
-            )
+        # if with_comments:
+        #     values["comments"] = group_and_flatten(
+        #         (to_key(v.key), v.comment)
+        #         for v in self.content
+        #         if isinstance(v, Property)
+        #     )
 
         return values
 
