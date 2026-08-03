@@ -384,6 +384,10 @@ class SourceSink(INIBasedModel):
     def _resolve_dynamic_forcing_deltas(cls, values: Any) -> Any:
         """Apply `_resolve_forcing_data` to dynamic `tracer<...>Delta`/`sedFrac<...>Delta` keys.
 
+        Also renames legacy `salinitydelta`/`temperaturedelta` keys (produced by
+        the INI parser from old-format `salinityDelta`/`temperatureDelta`) to the
+        current field names `salinity`/`temperature` for backward compatibility.
+
         Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
         `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
         time-series file. The first-class `discharge`/`salinity`/
@@ -395,7 +399,12 @@ class SourceSink(INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
-            for key in values:
+            # Migrate legacy lowercased keys from old-format ext files.
+            if "salinitydelta" in values and "salinity" not in values:
+                values["salinity"] = values.pop("salinitydelta")
+            if "temperaturedelta" in values and "temperature" not in values:
+                values["temperature"] = values.pop("temperaturedelta")
+            for key in list(values.keys()):
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False

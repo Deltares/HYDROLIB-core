@@ -1,10 +1,11 @@
 from pathlib import Path
+import re
 from typing import Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.core.dflowfm.ext.models import SourceSink
+from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
@@ -14,16 +15,10 @@ tim_file = Path("tests/data/input/source-sink/leftsor.tim")
 
 
 @pytest.fixture
-def converter() -> SourceSinkConverter:
+def converter(source_sink_dir: Path) -> SourceSinkConverter:
     converter = SourceSinkConverter()
-    converter.root_dir = "tests/data/input/source-sink"
+    converter.root_dir = str(source_sink_dir)
     return converter
-
-
-@pytest.fixture
-def time_file_full() -> Path:
-    return tim_file
-
 
 @pytest.fixture
 def start_time():
@@ -260,7 +255,9 @@ def compare_data(new_quantity_block: SourceSink):
 
 class TestConverter:
 
-    def test_default(self, converter: SourceSinkConverter, start_time: str):
+    def test_default(
+        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+    ):
         """
         The test case is based on the following assumptions:
         - temperature, salinity, and initialtracer_anyname are other quantities in the ext file.
@@ -317,7 +314,7 @@ class TestConverter:
               45.200344 6.350155 -3.000
         ```
         """
-        location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
             filename=location_file,
@@ -348,10 +345,14 @@ class TestConverter:
         "area", [None, 2.1, 0.0], ids=["Unset", "Area = 2.1", "Area = 0.0"]
     )
     def test_sourcesink_area_is_set(
-        self, converter: SourceSinkConverter, start_time: str, area: Optional[float]
+        self,
+        converter: SourceSinkConverter,
+        start_time: str,
+        source_sink_dir: Path,
+        area: Optional[float],
     ):
         """Test if the area is set in the forcing, it is used in the converted model."""
-        location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
             filename=location_file,
@@ -383,7 +384,7 @@ class TestConverter:
         compare_data(new_quantity_block)
 
     def test_4_5_columns_polyline(
-        self, converter: SourceSinkConverter, start_time: str
+        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
     ):
         """
         The test case is based on the assumptions of the default test plus the following changes:
@@ -417,7 +418,7 @@ class TestConverter:
         ```
 
         """
-        location_file = Path("tests/data/input/source-sink/leftsor-5-columns.pliz")
+        location_file = source_sink_dir / "leftsor-5-columns.pliz"
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
             filename=location_file,
@@ -445,7 +446,7 @@ class TestConverter:
 
             return side_effect
 
-        tim_file = Path("tests/data/input/source-sink/leftsor.tim")
+        tim_file = source_sink_dir / "leftsor.tim"
         with patch("pathlib.Path.with_suffix", new=make_side_effect()):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
@@ -458,7 +459,7 @@ class TestConverter:
         compare_data(new_quantity_block)
 
     def test_no_temperature_no_salinity(
-        self, converter: SourceSinkConverter, start_time: str
+        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
     ):
         """
         The test case is based on the assumptions of the default test plus the following changes:
@@ -479,7 +480,7 @@ class TestConverter:
         """
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor.pliz",
+            filename=str(source_sink_dir / "leftsor.pliz"),
             filetype=9,
             method="1",
             operand="O",
@@ -490,7 +491,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
+        tim_file = source_sink_dir / "no_temperature_no_salinity.tim"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(
                 forcing, ext_file_other_quantities, start_time
@@ -523,6 +524,118 @@ class TestConverter:
         assert data[1].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
         assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]
+
+
+class TestNoDeltaSuffixInConverter:
+    """Regression tests ensuring 'Delta' is not appended to quantity names.
+
+    After the fix, both the .ext file field keys and the .bc file quantity
+    column names must use `salinity`/`temperature` without the 'Delta' suffix.
+    """
+
+    def test_bc_quantities_have_no_delta_suffix(
+        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+    ):
+        """The .bc file quantity names must not contain 'delta'.
+
+        Test scenario:
+            The converter must produce `sourcesink_salinity` and
+            `sourcesink_temperature` as the quantity column names in the
+            generated .bc file, not `sourcesink_salinitydelta` /
+            `sourcesink_temperaturedelta`.
+        """
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename=location_file,
+            filetype=9,
+            method="1",
+            operand="O",
+            area=1.0,
+        )
+        ext_file_other_quantities = ["salinity", "temperature", "initialtracer_anyname"]
+
+        new_quantity_block = converter.convert(
+            forcing, ext_file_other_quantities, start_time
+        )
+
+        forcing_model = new_quantity_block.discharge
+        bc_quantities = [
+            f.quantityunitpair[1].quantity for f in forcing_model.forcing
+        ]
+
+        assert "sourcesink_salinity" in bc_quantities
+        assert "sourcesink_temperature" in bc_quantities
+        assert not any("delta" in q.lower() for q in bc_quantities), (
+            f"No quantity name should contain 'delta', got: {bc_quantities}"
+        )
+
+    def test_ext_fields_have_no_delta_suffix(
+        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path, tmp_path: Path
+    ):
+        """Saved .ext file uses `salinity`/`temperature`, not `salinityDelta`/`temperatureDelta`.
+
+        Test scenario:
+            When the converted SourceSink block is serialised to disk via
+            ExtModel, the keys written in the [SourceSink] section must be
+            `salinity` and `temperature`, not the old Delta-suffixed forms.
+        """
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename=location_file,
+            filetype=9,
+            method="1",
+            operand="O",
+            area=1.0,
+        )
+        ext_file_other_quantities = ["salinity", "temperature", "initialtracer_anyname"]
+
+        new_quantity_block = converter.convert(
+            forcing, ext_file_other_quantities, start_time
+        )
+
+        ext = ExtModel(sourcesink=[new_quantity_block])
+        ext_path = tmp_path / "sources.ext"
+        ext.save(ext_path)
+
+        content = ext_path.read_text(encoding="utf-8")
+        assert "salinitydelta" not in content.lower(), (
+            "Serialized ext must not contain 'salinityDelta' or any delta variant"
+        )
+        assert "temperaturedelta" not in content.lower(), (
+            "Serialized ext must not contain 'temperatureDelta' or any delta variant"
+        )
+        assert re.search(r"\bsalinity\s*=", content), (
+            "Serialized ext should contain 'salinity' as a field key"
+        )
+        assert re.search(r"\btemperature\s*=", content), (
+            "Serialized ext should contain 'temperature' as a field key"
+        )
+
+    def test_tim_model_quantities_have_no_delta_suffix(
+        self, converter: SourceSinkConverter, source_sink_dir: Path
+    ):
+        """parse_tim_model returns quantity names without 'delta' suffix.
+
+        Test scenario:
+            When the tim model is parsed with salinity and temperature present,
+            the resulting quantity names must be `sourcesink_salinity` and
+            `sourcesink_temperature`, not the old delta-suffixed variants.
+        """
+        tim_file = source_sink_dir / "leftsor.tim"
+        ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer_anyname"]
+
+        tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+
+        assert "sourcesink_salinity" in tim_model.quantities_names
+        assert "sourcesink_temperature" in tim_model.quantities_names
+        assert not any(
+            "delta" in q.lower() for q in tim_model.quantities_names
+        ), (
+            f"No quantity name should contain 'delta', got: {tim_model.quantities_names}"
+        )
+
 
 
 class TestMainConverter:

@@ -336,6 +336,72 @@ class TestSourceSinkForcingData:
         )
 
 
+
+class TestNoDeltaSuffix:
+    """Verify that 'Delta' is not appended to salinity/temperature quantity names.
+
+    Regression tests for the fix that removed 'Delta' from the salinity and
+    temperature field names in both the generated .ext and .bc files.
+    """
+
+    @pytest.mark.parametrize(
+        "kwargs, expected_key",
+        [
+            ({"salinity": 3.5}, "salinity"),
+            ({"temperature": 20.0}, "temperature"),
+        ],
+    )
+    def test_sourcesink_serializes_without_delta(
+        self, tmp_path: Path, kwargs: dict, expected_key: str
+    ):
+        """Serialized [SourceSink] block uses `salinity`/`temperature`, not the Delta variants.
+
+        Test scenario:
+            When a SourceSink with a salinity or temperature forcing is saved to
+            an .ext file, the key written on the wire must not carry the `Delta`
+            suffix (e.g. `salinity`, not `salinityDelta`).
+        """
+        source_sink = SourceSink(**_make_sourcesink_kwargs(**kwargs))
+        ext = ExtModel(sourcesink=[source_sink])
+        ext_path = tmp_path / "out.ext"
+        ext.save(ext_path)
+
+        content = ext_path.read_text(encoding="utf-8")
+        assert expected_key in content.lower()
+        assert f"{expected_key}delta" not in content.lower()
+
+    @pytest.mark.parametrize(
+        "wire_key, python_attr",
+        [
+            ("salinity", "salinity"),
+            ("temperature", "temperature"),
+            ("salinityDelta", "salinity"),      # backward compat: old alias
+            ("temperatureDelta", "temperature"), # backward compat: old alias
+        ],
+    )
+    def test_sourcesink_reads_forcing_alias(
+        self, tmp_path: Path, wire_key: str, python_attr: str
+    ):
+        """Wire key `wire_key` in an ext file maps to the `python_attr` field.
+
+        Test scenario:
+            Both the current aliases (`salinity`, `temperature`) and the legacy
+            aliases from older HYDROLIB-core versions (`salinityDelta`,
+            `temperatureDelta`) must load into the correct model field as a
+            ForcingModel. The migration validator renames lowercased legacy keys
+            before field population.
+        """
+        ext_path = _write_ext_with_bc(
+            tmp_path, {"discharge": "1.0", wire_key: "sourcesink.bc"}
+        )
+        model = ExtModel(ext_path)
+        value = getattr(model.sourcesink[0], python_attr)
+        assert isinstance(value, ForcingModel), (
+            f"Wire key '{wire_key}' should load into '{python_attr}' as a "
+            f"ForcingModel, got {type(value).__name__}"
+        )
+
+
 class TestSourceSinkDynamicForcingDeltas:
     """Coverage for dynamic `tracer<...>Delta` / `sedFrac<...>Delta` Delta-suffix fields.
 
