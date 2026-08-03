@@ -237,9 +237,9 @@ class INIBasedModel(BaseModel, ABC):
         """Drop None fields for known fields.
 
         Filters out None values and sets the model header.
-        Also discards any comments parsed from a file so that the up-to-date
-        default comments defined in the ``Comments`` class are always used on
-        write.
+        Also discards any comments provided during initialization (including
+        those parsed from a file), so that the default comments defined in the
+        ``Comments`` class are used for serialization by default.
 
         Args:
             values (dict): Dictionary of field values.
