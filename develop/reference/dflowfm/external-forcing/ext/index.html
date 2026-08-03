@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -7512,8 +7512,8 @@ dictionary.</p>
     <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Area&quot;</span><span class="p">)</span>
 
     <span class="n">discharge</span><span class="p">:</span> <span class="n">ForcingData</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;discharge&quot;</span><span class="p">)</span>
-    <span class="n">salinitydelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;salinity&quot;</span><span class="p">)</span>
-    <span class="n">temperaturedelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
+    <span class="n">salinity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;salinity&quot;</span><span class="p">)</span>
+    <span class="n">temperature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -7524,7 +7524,7 @@ dictionary.</p>
         <span class="k">return</span> <span class="n">split_string_on_delimiter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span>
-        <span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="s2">&quot;salinitydelta&quot;</span><span class="p">,</span> <span class="s2">&quot;temperaturedelta&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span>
+        <span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="s2">&quot;salinity&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span>
     <span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_forcing_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
@@ -7537,8 +7537,8 @@ dictionary.</p>
 
 <span class="sd">        Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer&lt;name&gt;Delta` and</span>
 <span class="sd">        `sedFrac&lt;name&gt;Delta` accept a scalar Double or the name of a `.bc`</span>
-<span class="sd">        time-series file. The first-class `discharge`/`salinityDelta`/</span>
-<span class="sd">        `temperatureDelta` fields are already handled by `validate_forcing_data`;</span>
+<span class="sd">        time-series file. The first-class `discharge`/`salinity`/</span>
+<span class="sd">        `temperature` fields are already handled by `validate_forcing_data`;</span>
 <span class="sd">        this validator extends the same coercion to the dynamic Delta-suffix</span>
 <span class="sd">        fields that arrive via `extra=&quot;allow&quot;`.</span>
 
