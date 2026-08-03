@@ -8,8 +8,9 @@ from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocMod
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
+from hydrolib.core.dflowfm.mdu.models import FMModel, Geometry, Numerics, Physics, Time, Output
 from hydrolib.core.dflowfm.structure.models import StructureModel, Weir
-from tests.utils import error_occurs_only_once
+from tests.utils import error_occurs_only_once, test_input_dir
 
 
 class TestDataBlockINIBasedModel:
@@ -255,3 +256,48 @@ class TestINIBasedModelCommentsReset:
     def test_comments_default_values_are_preserved_when_no_comments_provided(self):
         model = self.ModelWithComments()
         assert model.comments == self.ModelWithComments.Comments()
+
+
+class TestCommentsResetE2E:
+    """End-to-end test verifying that custom/outdated comments in an MDU file
+    are reset to their default values after a load-save-load round trip."""
+
+    _mdu_with_custom_comments = (
+        test_input_dir / "comments_reset_tests" / "mdu_file_with_custom_comments.mdu"
+    )
+
+    def test_geometry_comments_are_reset_to_defaults_after_save(
+        self, tmp_path
+    ):
+        model = FMModel(self._mdu_with_custom_comments)
+
+        output_path = tmp_path / "output.mdu"
+        model.filepath = output_path
+        model.save()
+
+        reloaded = FMModel(output_path)
+
+        assert reloaded.geometry.comments == Geometry.Comments()
+        assert reloaded.geometry.usecaching == model.geometry.usecaching
+
+        assert reloaded.numerics.comments == Numerics.Comments()
+        assert reloaded.numerics.cflmax == pytest.approx(model.numerics.cflmax)
+        assert reloaded.numerics.advectype == model.numerics.advectype
+        assert reloaded.numerics.icgsolver == model.numerics.icgsolver
+
+        assert reloaded.physics.comments == Physics.Comments()
+        assert reloaded.physics.uniffrictcoef == pytest.approx(model.physics.uniffrictcoef)
+        assert reloaded.physics.rhomean == pytest.approx(model.physics.rhomean)
+        assert reloaded.physics.ag == pytest.approx(model.physics.ag)
+
+        assert reloaded.time.comments == Time.Comments()
+        assert reloaded.time.refdate == model.time.refdate
+        assert reloaded.time.tunit == model.time.tunit
+        assert reloaded.time.dtuser == pytest.approx(model.time.dtuser)
+        assert reloaded.time.tstart == pytest.approx(model.time.tstart)
+        assert reloaded.time.tstop == pytest.approx(model.time.tstop)
+
+        assert reloaded.output.comments == Output.Comments()
+        assert reloaded.output.hisinterval == model.output.hisinterval
+        assert reloaded.output.mapinterval == model.output.mapinterval
+

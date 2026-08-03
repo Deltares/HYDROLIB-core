@@ -1,0 +1,39 @@
+# written by HYDROLIB-core 1.0.0
+[General]
+fileVersion           = 1.09          # File version. Do not edit this.
+fileType              = modelDef      # File type. Do not edit this
+program               = D-Flow FM     # Program.
+version               = 1.2.94.66079M # Version number of computational kernel
+autoStart             = 0             # Autostart simulation after loading MDU or not (0=no, 1=autostart, 2=autostartstop).
+pathsRelativeToParent = 0             # Whether or not (1/0) to resolve file names (e.g. inside the *.ext file) relative to their direct parent, instead of to the toplevel MDU working dir
+
+[Geometry]
+netFile                        =         # OUTDATED COMMENT 1
+bathymetryFile                 =         # OUTDATED COMMENT 2
+iniFieldFile                   =         # OUTDATED COMMENT 3
+waterLevIniFile                =         # Initial water levels sample file <*.xyz>.
+useCaching                     = 1       # Use caching for geometrical/network-related items (0: no, 1: yes) (section C.19).
+
+[Numerics]
+CFLMax                         = 0.5    # OUTDATED: Max Courant
+advecType                      = 3      # OUTDATED: adv type description
+limTypHu                       = 0      # OUTDATED: limiter description
+icgSolver                      = 4      # OUTDATED: solver type description
+
+[Physics]
+unifFrictCoef                  = 0.023  # OUTDATED: friction coefficient description
+unifFrictType                  = 1      # OUTDATED: friction type description
+rhomean                        = 1000   # OUTDATED: water density description
+ag                             = 9.81   # OUTDATED: gravitational acceleration description
+
+[Time]
+refDate                        = 20200101  # OUTDATED: reference date description
+tUnit                          = S         # OUTDATED: time unit description
+dtUser                         = 300.0     # OUTDATED: user timestep description
+tStart                         = 0.0       # OUTDATED: start time description
+tStop                          = 86400.0   # OUTDATED: stop time description
+
+[Output]
+outputDir                      =        # OUTDATED: output directory description
+hisInterval                    = 60     # OUTDATED: history interval description
+mapInterval                    = 1200   # OUTDATED: map interval description
