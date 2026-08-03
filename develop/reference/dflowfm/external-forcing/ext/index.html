@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -7564,7 +7564,7 @@ dictionary.</p>
                 <span class="n">values</span><span class="p">[</span><span class="s2">&quot;salinity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;salinitydelta&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;temperaturedelta&quot;</span> <span class="ow">in</span> <span class="n">values</span> <span class="ow">and</span> <span class="s2">&quot;temperature&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
                 <span class="n">values</span><span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;temperaturedelta&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">_is_dynamic_forcing_delta_key</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
                     <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_resolve_forcing_data</span><span class="p">(</span>
                         <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">allow_realtime</span><span class="o">=</span><span class="kc">False</span>
