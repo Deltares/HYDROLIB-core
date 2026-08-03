@@ -404,7 +404,7 @@ class SourceSink(INIBasedModel):
                 values["salinity"] = values.pop("salinitydelta")
             if "temperaturedelta" in values and "temperature" not in values:
                 values["temperature"] = values.pop("temperaturedelta")
-            for key in list(values.keys()):
+            for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
