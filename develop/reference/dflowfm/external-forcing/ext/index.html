@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -7512,8 +7512,8 @@ dictionary.</p>
     <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;Area&quot;</span><span class="p">)</span>
 
     <span class="n">discharge</span><span class="p">:</span> <span class="n">ForcingData</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;discharge&quot;</span><span class="p">)</span>
-    <span class="n">salinitydelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;salinityDelta&quot;</span><span class="p">)</span>
-    <span class="n">temperaturedelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;temperatureDelta&quot;</span><span class="p">)</span>
+    <span class="n">salinitydelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;salinity&quot;</span><span class="p">)</span>
+    <span class="n">temperaturedelta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingData</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
