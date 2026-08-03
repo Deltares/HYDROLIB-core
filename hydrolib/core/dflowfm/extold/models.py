@@ -50,6 +50,7 @@ FILETYPE_FILEMODEL_MAPPING = {
     10: PolyFile,
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
+    14: DiskOnlyFileModel
 }
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
