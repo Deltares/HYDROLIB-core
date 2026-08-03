@@ -361,8 +361,8 @@ class SourceSink(INIBasedModel):
     area: Optional[float] = Field(None, alias="Area")
 
     discharge: ForcingData = Field(alias="discharge")
-    salinitydelta: Optional[ForcingData] = Field(None, alias="salinity")
-    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperature")
+    salinity: Optional[ForcingData] = Field(None, alias="salinity")
+    temperature: Optional[ForcingData] = Field(None, alias="temperature")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -373,7 +373,7 @@ class SourceSink(INIBasedModel):
         return split_string_on_delimiter(cls, v, info)
 
     @field_validator(
-        "discharge", "salinitydelta", "temperaturedelta", mode="before"
+        "discharge", "salinity", "temperature", mode="before"
     )
     @classmethod
     def validate_forcing_data(cls, v):
@@ -386,8 +386,8 @@ class SourceSink(INIBasedModel):
 
         Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
         `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
-        time-series file. The first-class `discharge`/`salinityDelta`/
-        `temperatureDelta` fields are already handled by `validate_forcing_data`;
+        time-series file. The first-class `discharge`/`salinity`/
+        `temperature` fields are already handled by `validate_forcing_data`;
         this validator extends the same coercion to the dynamic Delta-suffix
         fields that arrive via `extra="allow"`.
 

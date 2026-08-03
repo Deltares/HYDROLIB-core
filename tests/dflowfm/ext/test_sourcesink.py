@@ -158,7 +158,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
     Args:
         tmp_path: Pytest-supplied temporary directory.
         fields: Mapping of forcing-data field names (`discharge`,
-            `salinitydelta`, `temperaturedelta`) to the `.bc` filename
+            `salinity`, `temperature`) to the `.bc` filename
             string that should appear on the wire.
 
     Returns:
@@ -182,7 +182,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
 
 
 class TestSourceSinkForcingData:
-    """Validator coverage for `discharge`, `salinitydelta`, and `temperaturedelta`.
+    """Validator coverage for `discharge`, `salinity`, and `temperature`.
 
     These three fields share a single `mode="before"` field validator that
     delegates to `_resolve_forcing_data`, so each of float / RealTime /
@@ -263,12 +263,12 @@ class TestSourceSinkForcingData:
             f"Expected empty forcing list, got {source_sink.discharge.forcing}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
     def test_optional_delta_defaults_to_none(self, field: str):
-        """`salinitydelta` and `temperaturedelta` default to `None` when omitted.
+        """`salinity` and `temperature` default to `None` when omitted.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Ensures the new validator does not interfere with the optional
@@ -279,12 +279,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should default to None, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
     def test_optional_delta_accepts_float(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept a numeric value.
+        """`salinity` and `temperature` accept a numeric value.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Nominal use-case mirroring `discharge` numeric handling.
@@ -294,12 +294,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should be 4.0, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
     def test_optional_delta_accepts_realtime_keyword(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept the realtime keyword.
+        """`salinity` and `temperature` accept the realtime keyword.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Same union semantics as `discharge`, since all three share the
@@ -311,15 +311,15 @@ class TestSourceSinkForcingData:
             f" got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinityDelta", "temperatureDelta"])
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
     def test_optional_delta_loads_bc_file_via_extmodel(
         self, tmp_path: Path, field: str
     ):
-        """`salinityDelta` / `temperatureDelta` accept a `.bc` filename in the `.ext`.
+        """`salinity` / `temperature` accept a `.bc` filename in the `.ext`.
 
         Args:
             tmp_path: Pytest temporary directory fixture.
-            field: Wire alias (`salinityDelta` or `temperatureDelta`).
+            field: Wire alias (`salinity` or `temperature`).
 
         Test scenario:
             The fix extended `.bc`-file support to these two optional

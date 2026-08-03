@@ -230,8 +230,8 @@ def compare_data(new_quantity_block: SourceSink):
     # check the converted forcings
     quantity_list = [
         "discharge",
-        "salinitydelta",
-        "temperaturedelta",
+        "salinity",
+        "temperature",
         "initialtracer_anyname",
     ]
 

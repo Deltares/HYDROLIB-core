@@ -523,7 +523,7 @@ forcing_base_list = [
         "name": "user_defined_name_1",
         "function": "timeseries",
         "timeinterpolation": "linear",
-        "quantity": ["time", "salinitydelta", "ux", "uy", "uz"],
+        "quantity": ["time", "salinity", "ux", "uy", "uz"],
         "unit": ["minutes since 2015-01-01 00:00:00", "ppt", "m s-1", "m s-1", "m s-1"],
         "datablock": [[1, 2, 3, 4, 5], [3.0, 5.0, 12.0, 9.0, 23.0]],
     },
@@ -531,7 +531,7 @@ forcing_base_list = [
         "name": "user_defined_name_2",
         "function": "timeseries",
         "timeinterpolation": "linear",
-        "quantity": ["time", "temperaturedelta", "ux", "uy", "uz"],
+        "quantity": ["time", "temperature", "ux", "uy", "uz"],
         "unit": ["minutes since 2015-01-01 00:00:00", "C", "m", "m", "m"],
         "datablock": [[1, 2, 3, 4, 5], [2.0, 2.0, 5.0, 8.0, 10.0]],
     },
@@ -622,8 +622,8 @@ class TestSourceSink:
             "zsource": -3.0,
             "zsink": -4.2,
             "discharge": [1.0, 2.0, 3.0, 5.0, 8.0],
-            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
-            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
+            "temperature": [2.0, 2.0, 5.0, 8.0, 10.0],
+            "salinity": [3.0, 5.0, 12.0, 9.0, 23.0],
         }
         data = data | forcing
 
