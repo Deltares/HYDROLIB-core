@@ -370,16 +370,22 @@ class ExtOldForcing(BaseModel):
         """
         if isinstance(value, ExtOldFileType):
             return value
-        try:
-            int_value = int(value)
-        except (ValueError, TypeError):
-            valid_values = [e.value for e in ExtOldFileType]
+
+        valid_values = [e.value for e in ExtOldFileType]
+        if isinstance(value, bool):
             raise ValueError(
                 f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
             )
+
+        try:
+            int_value = int(value)
+        except (ValueError, TypeError):
+            raise ValueError(
+                f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+            )
+
         enum_value = ExtOldFileType._value2member_map_.get(int_value)
         if enum_value is None:
-            valid_values = [e.value for e in ExtOldFileType]
             raise ValueError(
                 f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
             )

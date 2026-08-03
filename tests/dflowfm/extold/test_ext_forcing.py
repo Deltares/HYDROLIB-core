@@ -301,6 +301,23 @@ class TestValidateFileType:
             in str(error.value)
         )
 
+    @pytest.mark.parametrize("invalid_filetype", [True, False])
+    def test_with_boolean_filetype_raises_value_error(self, invalid_filetype):
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid integer. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
 
 class TestValidateVarName:
     def test_validate_varname_with_valid_filetype_11(self):
