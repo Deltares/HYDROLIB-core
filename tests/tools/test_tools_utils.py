@@ -61,14 +61,14 @@ def test_convert_interpolation_data():
         (["discharge_salinity_temperature_sorsin"], {}),
         (
             ["temperature", "Salinity"],
-            {"sourcesink_temperaturedelta": 4, "sourcesink_salinitydelta": 3},
+            {"sourcesink_temperature": 4, "sourcesink_salinity": 3},
         ),
-        (["Temperature"], {"sourcesink_temperaturedelta": 3}),
-        (["Salinity"], {"sourcesink_salinitydelta": 3}),
+        (["Temperature"], {"sourcesink_temperature": 3}),
+        (["Salinity"], {"sourcesink_salinity": 3}),
         (["tracers"], {}),
         (
             ["TEMPERATURE", "salInity"],
-            {"sourcesink_temperaturedelta": 4, "sourcesink_salinitydelta": 3},
+            {"sourcesink_temperature": 4, "sourcesink_salinity": 3},
         ),
         ([], {}),
         (["No relevant data here.", "Nothing to match."], {}),

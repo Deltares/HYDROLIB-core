@@ -42,6 +42,8 @@ from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    SOURCESINK_SALINITY_IN_BC,
+    SOURCESINK_TEMP_IN_BC,
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
@@ -593,13 +595,13 @@ class SourceSinkConverter(BaseConverter):
             # Ensure 'temperature' comes before 'salinity'
             keys = list(final_temp_salinity.keys())
             if (
-                "sourcesink_temperaturedelta" in keys
-                and "sourcesink_salinitydelta" in keys
+                SOURCESINK_TEMP_IN_BC in keys
+                and SOURCESINK_SALINITY_IN_BC in keys
             ):
-                keys.remove("sourcesink_salinitydelta")
+                keys.remove(SOURCESINK_SALINITY_IN_BC)
                 keys.insert(
-                    keys.index("sourcesink_temperaturedelta"),
-                    "sourcesink_salinitydelta",
+                    keys.index(SOURCESINK_TEMP_IN_BC),
+                    SOURCESINK_SALINITY_IN_BC,
                 )
         else:
             keys = list(temp_salinity_from_ext.keys())
@@ -617,8 +619,8 @@ class SourceSinkConverter(BaseConverter):
         The order of the quantities in the tim file should be as follows:
         - time
         - sourcesink_discharge
-        - sourcesink_salinitydelta (optional)
-        - sourcesink_temperatureDelta (optional)
+        - sourcesink_salinity (optional)
+        - sourcesink_temperature (optional)
         - tracer<anyname>delta (optional)
         - any other quantities from the external forcings file.
 
@@ -672,12 +674,12 @@ class SourceSinkConverter(BaseConverter):
             >>> converter = SourceSinkConverter()
             >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
             >>> print(tim_model.quantities_names)
-            ['sourcesink_discharge', 'sourcesink_salinitydelta', 'sourcesink_temperaturedelta', 'initialtracerAnyname']
+            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'initialtracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
-                "sourcesink_salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
-                "sourcesink_temperatureDelta": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "sourcesink_salinity": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "sourcesink_temperature": [3.0, 3.0, 3.0, 3.0, 3.0],
                 "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 

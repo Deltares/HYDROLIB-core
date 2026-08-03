@@ -361,8 +361,8 @@ class SourceSink(INIBasedModel):
     area: Optional[float] = Field(None, alias="Area")
 
     discharge: ForcingData = Field(alias="discharge")
-    salinitydelta: Optional[ForcingData] = Field(None, alias="salinityDelta")
-    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperatureDelta")
+    salinitydelta: Optional[ForcingData] = Field(None, alias="salinity")
+    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperature")
 
     def is_intermediate_link(self) -> bool:
         return True

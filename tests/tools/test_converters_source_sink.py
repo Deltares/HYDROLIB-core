@@ -44,8 +44,8 @@ def start_time():
             ],
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="test_default_all_quantities_comes_from_ext",
@@ -63,7 +63,7 @@ def start_time():
             ["discharge", "salinity", "initialtracer_anyname"],
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [3.0] * 5,
+                "sourcesink_salinity": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="no_temperature",
@@ -74,7 +74,7 @@ def start_time():
             ["discharge", "temperature", "initialtracer_anyname"],
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="no_salinity",
@@ -133,8 +133,8 @@ def test_parse_tim_model(
             {"salinity": True, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="all_quantities_from_mdu",
@@ -145,8 +145,8 @@ def test_parse_tim_model(
             {"salinity": True, "temperature": False},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="temp_from_ext_salinity_from_mdu",
@@ -157,8 +157,8 @@ def test_parse_tim_model(
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="temp_from_mdu_salinity_from_ext",
@@ -169,8 +169,8 @@ def test_parse_tim_model(
             {"salinity": True, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="temp_salinity_from_mdu",
@@ -186,8 +186,8 @@ def test_parse_tim_model(
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="temp_from_mdu_temp_salinity_from_ext",
@@ -204,8 +204,8 @@ def test_parse_tim_model(
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "sourcesink_salinitydelta": [2.0] * 5,
-                "sourcesink_temperaturedelta": [3.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
             },
             id="duplicate_quantities_in_ext_list",
@@ -237,7 +237,7 @@ def compare_data(new_quantity_block: SourceSink):
 
     assert all(hasattr(new_quantity_block, quantity) for quantity in quantity_list)
     # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
-    # and this forcingModel is duplicated in the sourcesink_salinitydelta, sourcesink_temperatureDelta, and initialtracer_anyname
+    # and this forcingModel is duplicated in the sourcesink_salinity, sourcesink_temperature, and initialtracer_anyname
     # to be able to save them in the same .bc file.
     quantity = "discharge"
     forcing_model = getattr(new_quantity_block, quantity)
