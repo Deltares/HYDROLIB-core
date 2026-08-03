@@ -263,8 +263,8 @@ class INIBasedModel(BaseModel, ABC):
 
         if "_header" in values:
             values["_header"] = cls._header
-        # if "comments" in values:
-        #     values["comments"] = cls.Comments()
+        if "comments" in values:
+            values["comments"] = cls.Comments()
 
         return values
 
