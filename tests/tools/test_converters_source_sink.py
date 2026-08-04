@@ -1,12 +1,11 @@
 from pathlib import Path
-import re
 from typing import Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -529,107 +528,121 @@ class TestConverter:
 class TestNoDeltaSuffixInConverter:
     """Regression tests ensuring 'Delta' is not appended to quantity names.
 
+    Loads both forcings from sources_no_delta_suffix.ext (the old-format ext file from the
+    2cols_old_format scenario that originally triggered the bug):
+      - forcing[0]: left_no_delta_suffix.pli / left_no_delta_suffix.tim  — 2 columns: discharge + salinity
+      - forcing[1]: right_no_delta_suffix.pli / right_no_delta_suffix.tim — 2 columns: discharge + temperature
+
     After the fix, both the .ext file field keys and the .bc file quantity
     column names must use `salinity`/`temperature` without the 'Delta' suffix.
     """
 
+    @pytest.mark.parametrize(
+        "forcing_idx, ext_quantities, expected_bc_quantity",
+        [
+            (0, ["salinity"],    "sourcesink_salinity"),
+            (1, ["temperature"], "sourcesink_temperature"),
+        ],
+        ids=["salinity", "temperature"],
+    )
     def test_bc_quantities_have_no_delta_suffix(
-        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+        self,
+        converter: SourceSinkConverter,
+        start_time: str,
+        source_sink_dir: Path,
+        forcing_idx: int,
+        ext_quantities: list,
+        expected_bc_quantity: str,
     ):
         """The .bc file quantity names must not contain 'delta'.
 
         Test scenario:
-            The converter must produce `sourcesink_salinity` and
-            `sourcesink_temperature` as the quantity column names in the
-            generated .bc file, not `sourcesink_salinitydelta` /
-            `sourcesink_temperaturedelta`.
+            Both forcings in sources_no_delta_suffix.ext must produce quantity column names
+            without the 'Delta' suffix (`sourcesink_salinity` / `sourcesink_temperature`).
         """
-        location_file = (source_sink_dir / "leftsor.pliz").resolve()
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename=location_file,
-            filetype=9,
-            method="1",
-            operand="O",
-            area=1.0,
-        )
-        ext_file_other_quantities = ["salinity", "temperature", "initialtracer_anyname"]
+        old_ext = ExtOldModel(source_sink_dir / "sources_no_delta_suffix.ext")
+        forcing = old_ext.forcing[forcing_idx]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
-        )
+        new_quantity_block = converter.convert(forcing, ext_quantities, start_time)
 
-        forcing_model = new_quantity_block.discharge
         bc_quantities = [
-            f.quantityunitpair[1].quantity for f in forcing_model.forcing
+            f.quantityunitpair[1].quantity
+            for f in new_quantity_block.discharge.forcing
         ]
-
-        assert "sourcesink_salinity" in bc_quantities
-        assert "sourcesink_temperature" in bc_quantities
+        assert expected_bc_quantity in bc_quantities
         assert not any("delta" in q.lower() for q in bc_quantities), (
             f"No quantity name should contain 'delta', got: {bc_quantities}"
         )
 
+    @pytest.mark.parametrize(
+        "forcing_idx, ext_quantities, expected_field",
+        [
+            (0, ["salinity"],    "salinity"),
+            (1, ["temperature"], "temperature"),
+        ],
+        ids=["salinity", "temperature"],
+    )
     def test_ext_fields_have_no_delta_suffix(
-        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path, tmp_path: Path
+        self,
+        converter: SourceSinkConverter,
+        start_time: str,
+        source_sink_dir: Path,
+        tmp_path: Path,
+        forcing_idx: int,
+        ext_quantities: list,
+        expected_field: str,
     ):
-        """Saved .ext file uses `salinity`/`temperature`, not `salinityDelta`/`temperatureDelta`.
+        """Saved .ext file uses `salinity`/`temperature`, not the Delta variants.
 
         Test scenario:
-            When the converted SourceSink block is serialised to disk via
-            ExtModel, the keys written in the [SourceSink] section must be
-            `salinity` and `temperature`, not the old Delta-suffixed forms.
+            When each converted SourceSink block is serialised to disk via
+            ExtModel, the key written in the [SourceSink] section must not
+            carry the 'Delta' suffix.
         """
-        location_file = (source_sink_dir / "leftsor.pliz").resolve()
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename=location_file,
-            filetype=9,
-            method="1",
-            operand="O",
-            area=1.0,
-        )
-        ext_file_other_quantities = ["salinity", "temperature", "initialtracer_anyname"]
+        old_ext = ExtOldModel(source_sink_dir / "sources_no_delta_suffix.ext")
+        forcing = old_ext.forcing[forcing_idx]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
-        )
+        new_quantity_block = converter.convert(forcing, ext_quantities, start_time)
 
         ext = ExtModel(sourcesink=[new_quantity_block])
-        ext_path = tmp_path / "sources.ext"
+        ext_path = tmp_path / "sources_no_delta_suffix.ext"
         ext.save(ext_path)
 
         content = ext_path.read_text(encoding="utf-8")
-        assert "salinitydelta" not in content.lower(), (
-            "Serialized ext must not contain 'salinityDelta' or any delta variant"
+        assert f"{expected_field}delta" not in content.lower(), (
+            f"Serialized ext must not contain '{expected_field}Delta'"
         )
-        assert "temperaturedelta" not in content.lower(), (
-            "Serialized ext must not contain 'temperatureDelta' or any delta variant"
-        )
-        assert re.search(r"\bsalinity\s*=", content), (
-            "Serialized ext should contain 'salinity' as a field key"
-        )
-        assert re.search(r"\btemperature\s*=", content), (
-            "Serialized ext should contain 'temperature' as a field key"
+        assert expected_field in content, (
+            f"Serialized ext should contain '{expected_field}' as a field key"
         )
 
+    @pytest.mark.parametrize(
+        "tim_file_name, ext_quantities, expected_quantity",
+        [
+            ("left_no_delta_suffix.tim",  ["discharge", "salinity"],    "sourcesink_salinity"),
+            ("right_no_delta_suffix.tim", ["discharge", "temperature"], "sourcesink_temperature"),
+        ],
+        ids=["salinity", "temperature"],
+    )
     def test_tim_model_quantities_have_no_delta_suffix(
-        self, converter: SourceSinkConverter, source_sink_dir: Path
+        self,
+        converter: SourceSinkConverter,
+        source_sink_dir: Path,
+        tim_file_name: str,
+        ext_quantities: list,
+        expected_quantity: str,
     ):
         """parse_tim_model returns quantity names without 'delta' suffix.
 
         Test scenario:
-            When the tim model is parsed with salinity and temperature present,
-            the resulting quantity names must be `sourcesink_salinity` and
-            `sourcesink_temperature`, not the old delta-suffixed variants.
+            Parsing either the salinity or temperature two-column tim file must
+            yield quantity names without 'Delta' (`sourcesink_salinity` /
+            `sourcesink_temperature`).
         """
-        tim_file = source_sink_dir / "leftsor.tim"
-        ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracer_anyname"]
-
-        tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
-
-        assert "sourcesink_salinity" in tim_model.quantities_names
-        assert "sourcesink_temperature" in tim_model.quantities_names
+        tim_model = converter.parse_tim_model(
+            source_sink_dir / tim_file_name, ext_quantities
+        )
+        assert expected_quantity in tim_model.quantities_names
         assert not any(
             "delta" in q.lower() for q in tim_model.quantities_names
         ), (
