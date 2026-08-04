@@ -34,7 +34,6 @@ external_forcing:
         - erodablelayerthicknessgrainsize3
         - shiptxy
         # will be moved from the initial conditions file to the new forcing file
-        - nudge_salinity_temperature
         - nudgerate
         - nudgetime
         - wavesignificantheight
@@ -66,6 +65,9 @@ external_forcing:
     old_to_new_quantity_names:
         sea_ice_thickness: seaIceThickness
         sea_ice_area_fraction: seaIceAreaFraction
+        nudge_salinity_temperature: nudgeSalinityTemperature
         # `bedrock_surface_elevation` is also in `unsupported_quantity_names` above, so a run of the converter
         # rejects it.
         bedrock_surface_elevation: bedrockSurfaceElevation
+        friction_coefficient_time_dependent: frictionCoefficientTimeDependent
+
