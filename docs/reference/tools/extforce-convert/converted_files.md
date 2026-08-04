@@ -316,10 +316,10 @@ A few quantities are spelled differently in the initial and parameter fields fil
 forcings file. The converter resolves them through the `old_to_new_quantity_names` table in
 `hydrolib/tools/extforce_convert/data/data.yaml`; any quantity not listed there is written out unchanged.
 
-| Old `QUANTITY` | New `quantity` | Notes |
-|----------------|----------------|-------|
-| `sea_ice_thickness` | `seaIceThickness` | See D-Flow FM UM Sec. 15.8.1 |
-| `sea_ice_area_fraction` | `seaIceAreaFraction` | See D-Flow FM UM Sec. 15.1 |
+| Old `QUANTITY` | New `quantity` | Notes                                                                                        |
+|----------------|----------------|----------------------------------------------------------------------------------------------|
+| `sea_ice_thickness` | `seaIceThickness` | See D-Flow FM UM Sec. 16.1                                                                   |
+| `sea_ice_area_fraction` | `seaIceAreaFraction` | See D-Flow FM UM Sec. 16.1                                                                   |
 | `bedrock_surface_elevation` | `bedrockSurfaceElevation` | Parked — the quantity is still unsupported, so this rename is not reached by a converter run |
 
 Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
