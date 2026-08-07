@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.ext.models import Spatial
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
@@ -38,7 +39,7 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
 
@@ -85,7 +86,7 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
 
     @pytest.mark.e2e
@@ -131,7 +132,7 @@ class TestConvertInitialCondition:
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, InitialConditionConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
 
 
@@ -148,7 +149,7 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
 
@@ -177,7 +178,7 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
 
     @pytest.mark.e2e
@@ -245,7 +246,7 @@ class TestConvertParameters:
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, ParametersConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
 
 
