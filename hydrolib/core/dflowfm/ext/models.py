@@ -12,6 +12,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
@@ -56,6 +57,38 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "sedfracbnd",
     "initialsedfrac",
 )
+
+
+class TargetLayer(StrEnum):
+    """The target layer for a `[Spatial]` block with `initialwaqbot` quantities.
+
+    A `[Spatial]` block can target a specific layer, all layers, or the bottom layer.
+    This enum represents the allowed string values.  Positive integer layer numbers
+    (e.g. ``"1"``, ``"2"``) are also accepted via :meth:`_missing_`.
+    """
+
+    bottom = "bottom"
+    """Target the bottom layer (equivalent to LAYER=-1 in the old format)."""
+
+    all = "all"
+    """Target all layers (equivalent to LAYER=0 in the old format)."""
+
+    @classmethod
+    def _missing_(cls, value):
+        """Accept positive integer strings as layer numbers."""
+        if value is not None:
+            try:
+                int_val = int(str(value))
+                if int_val > 0:
+                    member = str.__new__(cls, str(int_val))
+                    member._value_ = str(int_val)
+                    return member
+            except (ValueError, TypeError):
+                raise ValueError(
+                    f"{value!r} is not a valid TargetLayer. "
+                    f"Expected 'bottom', 'all', or a positive integer."
+                )
+        return None
 
 
 def _coordinate_length(v) -> int:
@@ -644,6 +677,8 @@ class Meteo(INIBasedModel):
         return enum_value_parser(v, MeteoInterpolationMethod)
 
 
+
+
 class Spatial(INIBasedModel):
     """A `[Spatial]` block for use inside an external forcings file.
 
@@ -728,6 +763,10 @@ class Spatial(INIBasedModel):
             "Only for initialtracer<tracername>. Decay time of the tracer.",
             alias="tracerDecayTime",
         )
+        targetlayer: Optional[str] = Field(
+            "Only for initialwaqbot<name>. The target layer: 'bottom', 'all', or a positive integer.",
+            alias="targetLayer",
+        )
 
     comments: Comments = Comments()
 
@@ -764,6 +803,7 @@ class Spatial(INIBasedModel):
     frictiontype: Optional[str] = Field(None, alias="frictionType")
     tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
+    targetlayer: Optional[TargetLayer] = Field(None, alias="targetLayer")
 
     @model_validator(mode="before")
     @classmethod
@@ -812,6 +852,13 @@ class Spatial(INIBasedModel):
     @classmethod
     def locationtype_validator(cls, v):
         return enum_value_parser(v, LocationType)
+
+    @field_validator("targetlayer", mode="before")
+    @classmethod
+    def targetlayer_validator(cls, v):
+        if v is None:
+            return v
+        return TargetLayer(str(v))
 
 
 class ExtGeneral(INIGeneral):

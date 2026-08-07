@@ -221,6 +221,9 @@ class ExtOldForcing(BaseModel):
                 'N' The minimum values of the existing values and provided values are used.
         value (Optional[float]):
             Custom coefficients for transformation.
+        layer (Optional[int]):
+            Target layer for initialwaqbot quantities. Use -1 for bottom, 0 for all layers,
+            or a positive integer for a specific layer number.
         factor (Optional[float]):
             The conversion factor.
         ifrctyp (Optional[float]):
@@ -257,6 +260,7 @@ class ExtOldForcing(BaseModel):
     maxsearchradius: Optional[float] = Field(None, alias="MAXSEARCHRADIUS")
     operand: Operand = Field(alias="OPERAND")
     value: Optional[float] = Field(None, alias="VALUE")
+    layer: Optional[int] = Field(None, alias="LAYER")
     factor: Optional[float] = Field(None, alias="FACTOR")
     ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
     averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")

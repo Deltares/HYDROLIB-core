@@ -13,6 +13,7 @@ ORDERED_FORCING_FIELDS: List[str] = [
     "MAXSEARCHRADIUS",
     "OPERAND",
     "VALUE",
+    "LAYER",
     "FACTOR",
     "IFRCTYP",
     "AVERAGINGTYPE",
