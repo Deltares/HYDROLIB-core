@@ -1,7 +1,0 @@
-# written by HYDROLIB-core 1.0.1
-
-[Boundary]
-quantity     = waterlevelbnd
-locationFile = patm.pli
-forcingFile  = patm.bc
-
