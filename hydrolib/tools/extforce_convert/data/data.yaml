@@ -1,0 +1,62 @@
+version: 1.0
+mdu:
+    deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
+    deprecated_value: 0
+
+external_forcing:
+    unsupported_quantity_names:
+        # Meteo
+        - solarradiationfactor
+        - windspeedfactor
+        - windstresscoefficient
+        - wind_speed
+        - wind_from_direction
+        # Parameters
+        - floe_diameter
+        - waqmonitoringarea
+        - waqparameter
+        - ibotlevtype
+        - friction_coefficient_time_dependent
+        # structure
+        - damlevel
+        - gateloweredgelevel
+        - generalstructure
+        - pump
+        - pump1d
+        - checkvalve
+        - valve1D
+        # no type of forcing
+        - __bathymetry__
+        - erodablelayerthicknessgrainsize1
+        - erodablelayerthicknessgrainsize2
+        - erodablelayerthicknessgrainsize3
+        - shiptxy
+        # will be moved from the initial conditions file to the new forcing file
+        - nudge_salinity_temperature
+        - nudgerate
+        - nudgetime
+        - sea_ice_area_fraction
+        - sea_ice_thickness
+        - wavesignificantheight
+        - waveperiod
+        - wavedirection
+        - wavebreakerdissipation
+        - whitecappingdissipation
+        - xwaveforce
+        - ywaveforce
+        - totalwaveenergydissipation
+        # do not convert for now
+        - bedrock_surface_elevation
+        # Lateral quantities are supported in the kernel, but not yet in the converter
+        - lateraldischarge
+        - lateraldischarge1d
+        - lateraldischarge2d
+    unsupported_prefixes:
+        # initial conditions
+        - initialsediment
+        # Parameters
+        - waqfunction
+        - waqsegmentfunction
+        - waqsegmentnumber
+        - massbalancearea
+        - waqmassbalancearea

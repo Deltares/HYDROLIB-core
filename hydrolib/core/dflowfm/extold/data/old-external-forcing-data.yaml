@@ -1,0 +1,206 @@
+BoundaryCondition:
+    quantity_names:
+        OneD2Dbnd: 1d2dbnd
+        AbsgenBnd: absgenbnd
+        CriticalOutFlowBnd: criticaloutflowbnd
+        DischargeBnd: dischargebnd
+        NeumannBnd: neumannbnd
+        NormalVelocityBnd: normalvelocitybnd
+        OutflowBnd: outflowbnd
+        QhBnd: qhbnd
+        QhUBnd: qhubnd
+        RiemannBnd: riemannbnd
+        SalinityBnd: salinitybnd
+
+        SedimentBnd: sedimentbnd
+        TangentialVelocityBnd: tangentialvelocitybnd
+        TemperatureBnd: temperaturebnd
+
+        UXUYAdvectionVelocityBnd: uxuyadvectionvelocitybnd
+        VelocityBnd: velocitybnd
+        WaterLevelBnd: waterlevelbnd
+        WaveEnergyBnd: waveenergybnd
+        WeirOutFlowBnd: weiroutflowbnd
+
+    prefixes:
+        - sedfracbnd
+        - tracerbnd
+
+Meteo:
+    quantity_names:
+        AirDensity: airdensity
+        AirPressure: airpressure
+        AirpressureStressXStressY: airpressure_stressx_stressy
+        AirPressureWindXWindY: airpressure_windx_windy
+        AirPressureWindXWindYCharnock: airpressure_windx_windy_charnock
+        AirTemperature: airtemperature
+        AtmosphericPressure: atmosphericpressure
+        Charnock: charnock
+        Cloudiness: cloudiness
+        Dewpoint: dewpoint
+        DewPointAirTemperatureCloudiness: dewpoint_airtemperature_cloudiness
+        DewpointAirTemperatureCloudinessSolarradiation: dewpoint_airtemperature_cloudiness_solarradiation
+        Humidity: humidity
+        HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
+        HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
+        LongWaveRadiation: longwaveradiation
+        Rainfall: rainfall
+        RainfallRate: rainfall_rate
+        SolarRadiation: solarradiation
+        NetSolarRadiation: netsolarradiation
+        # missing the SolarRadiationFactor
+        StressX: stressx
+        StressXY: stressxy
+        StressY: stressy
+        # missing the WindSpeedFactor
+        # missing the windstresscoefficient
+        WindX: windx
+        WindY: windy
+        WindXY: windxy
+        # Missing in the converter
+        SolarRadiationFactor: solarradiationfactor
+        WindSpeedFactor: windspeedfactor
+        WindStressCoefficient: windstresscoefficient
+        WindSpeed: wind_speed
+        WindFromDirection: wind_from_direction
+
+
+Parameter:
+    quantity_names:
+        AdvectionType: advectiontype
+        # has a problem as it starts with a capital letter
+        #GroundLayerThickness: Groundlayerthickness
+        BedRockSurfaceElevation: bedrock_surface_elevation
+        FrictionCoefficientTimeDependent: friction_coefficient_time_dependent
+        FrictionCoefficient: frictioncoefficient
+        FrictionTrtFactor: frictiontrtfactor
+        HorizontalEddyDiffusivityCoefficient: horizontaleddydiffusivitycoefficient
+        HorizontalEddyViscosityCoefficient: horizontaleddyviscositycoefficient
+        IBedLevType: ibedlevtype
+        InfiltrationCapacity: infiltrationcapacity
+        InterceptionLayerThickness: interceptionlayerthickness
+        InternalTidesFrictionCoefficient: internaltidesfrictioncoefficient
+        LinearFrictionCoefficient: linearfrictioncoefficient
+        NudgeSalinityTemperature: nudge_salinity_temperature
+        NudgeRate: nudgerate
+        NudgeTime: nudgetime
+        SeaIceAreaFraction: sea_ice_area_fraction
+        SeaIceThickness: sea_ice_thickness
+        SecchiDepth: secchidepth
+        StemDensity: stemdensity
+        StemDiameter: stemdiameter
+        StemHeight: stemheight
+        WaveSignificantHeight: wavesignificantheight
+        WavePeriod: waveperiod
+        WaveDirection: wavedirection
+        WaveBreakerDissipation: wavebreakerdissipation
+        WhiteCappingDissipation: whitecappingdissipation
+        XWaveForce: xwaveforce
+        YWaveForce: ywaveforce
+        TotalWaveEnergyDissipation: totalwaveenergydissipation
+        IBotLevType: ibotlevtype
+        # Missing in the converter
+        FloeDiameter: floe_diameter
+        WaqParameter: waqparameter
+    prefixes:
+        # Missing in the converter
+        - waqfunction
+        - waqsegmentfunction
+        - waqsegmentnumber
+
+
+InitialConditions:
+    quantity_names:
+        InitialSalinity: initialsalinity
+        InitialSalinityBot: initialsalinitybot
+        InitialSalinityTop: initialsalinitytop
+
+        InitialTemperature: initialtemperature
+
+        InitialUnsaturatedZoneThickness: initialunsaturatedzonethickness
+        InitialVelocity: initialvelocity
+        InitialVelocityX: initialvelocityx
+        InitialVelocityY: initialvelocityy
+        InitialVerticalSalinityProfile: initialverticalsalinityprofile
+        InitialVerticalTemperatureProfile: initialverticaltemperatureprofile
+
+        InitialWaterLevel: initialwaterlevel
+        BedLevel: bedlevel
+        BedLevel1D: bedlevel1d
+        BedLevel2D: bedlevel2d
+        InitialWaterLevel1D: initialwaterlevel1d
+        InitialWaterLevel2D: initialwaterlevel2d
+
+    prefixes:
+        - initialsedfrac
+        - initialtracer
+        - initialverticalsedfracprofile
+        - initialverticalsigmasedfracprofile
+        - initialwaqbot
+        # Missing in the converter
+        - initialsediment
+
+SourceSink:
+    DischargeSalinityTemperatureSorSin: discharge_salinity_temperature_sorsin
+
+
+Structure:
+    DamLevel: damlevel
+    GateLowerEdgeLevel: gateloweredgelevel
+    GeneralStructure: generalstructure
+    Pump: pump
+    Pump1D: pump1d
+    valve1D: valve1d
+
+
+Lateral:
+    LateralDischarge: lateraldischarge
+    LateralDischarge1D: lateraldischarge1d
+    LateralDischarge2D: lateraldischarge2d
+
+
+Misellaneous:
+     ShiptXY: shiptxy
+     MovingStationXY: movingstationxy
+
+FileType:
+    TimeSeries: 1
+    TimeSeriesMagnitudeAndDirection: 2
+    SpatiallyVaryingWindPressure: 3
+    ArcInfo: 4
+    SpiderWebData: 5
+    CurvilinearData: 6
+    Samples: 7
+    TriangulationMagnitudeAndDirection: 8
+    Polyline: 9
+    # 9. Polyline (<*.pli>-file) with boundary signals on support points
+    InsidePolygon: 10
+    # 10. Polyfile (<*.pol>-file). Uniform value inside polygon for INITIAL fields
+    NetCDFGridData: 11
+    # 11. NetCDF grid data (e.g. meteo fields)
+    NetCDFWaveData: 14
+    # 14. NetCDF wave data
+
+OldMethods:
+    PassThrough: 1
+    # 1. Pass through (no interpolation)
+    InterpolateTimeAndSpace: 2
+    # 2. Interpolate time and space
+    InterpolateTimeAndSpaceSaveWeights: 3
+    # 3. Interpolate time and space, save weights
+    InterpolateSpace: 4
+    # 4. Interpolate space
+    InterpolateTime: 5
+    # 5. Interpolate time
+    AveragingSpace: 6
+    # 6. Averaging in space
+    InterpolateExtrapolateTime: 7
+    # 7. Interpolate/Extrapolate time
+    Obsolete: 11
+    # 11. METHOD=11 is obsolete; use METHOD=3 and EXTRAPOLATION_METHOD=1
+
+ExtrapolationMethod:
+    NoSpatialExtrapolation: 0
+    # 0. No spatial extrapolation.
+    SpatialExtrapolationOutsideOfSourceDataBoundingBox: 1
+    # 1. Do spatial extrapolation outside of source data bounding box.
