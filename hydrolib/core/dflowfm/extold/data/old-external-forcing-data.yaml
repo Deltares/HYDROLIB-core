@@ -103,10 +103,10 @@ Parameter:
         FloeDiameter: floe_diameter
         WaqParameter: waqparameter
     prefixes:
-        # Missing in the converter
         - waqfunction
         - waqsegmentfunction
         - waqsegmentnumber
+        - waqmassbalancearea
 
 
 InitialConditions:

@@ -12,9 +12,10 @@ from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
     Lateral,
     Meteo,
+    Spatial,
     SourceSink,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     IniFieldModel,
@@ -22,6 +23,11 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.tools.extforce_convert import main_converter
+from hydrolib.tools.extforce_convert.converters import (
+    ConverterFactory,
+    InitialConditionConverter,
+    ParametersConverter,
+)
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
@@ -558,7 +564,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["waveperiod", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_conversion(
@@ -575,7 +581,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["waveperiod", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_no_debug_unsupported_quantities_conversion(
@@ -594,7 +600,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["waveperiod", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_save(
@@ -611,6 +617,85 @@ class TestExternalFocingConverter:
             converter.save()
             mock_save.assert_called_once()
             assert converter.un_supported_quantities == {unsupported_quantity.lower()}
+
+
+class TestWaqSpatialConversion:
+    """Tests verifying that WAQ quantities are converted to [Spatial] blocks."""
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqparameter",
+            "waqfunctionTau",
+            "waqfunctionradsurfave",
+            "waqsegmentnumber1",
+            "waqsegmentfunctionVel",
+            "waqmassbalanceareasomething",
+        ],
+    )
+    def test_waq_parameter_quantities_use_parameters_converter(self, quantity):
+        """ConverterFactory must route WAQ parameter quantities to ParametersConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, ParametersConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "initialwaqbotSomething",
+            "initialwaqbot",
+        ],
+    )
+    def test_initialwaqbot_uses_initial_condition_converter(self, quantity):
+        """ConverterFactory must route initialwaqbot quantities to InitialConditionConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, InitialConditionConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqfunctionTau",
+            "waqsegmentnumber1",
+            "waqmassbalanceareasomething",
+        ],
+    )
+    def test_waq_prefix_quantities_produce_spatial_block(self, quantity):
+        """ParametersConverter must return a Spatial object for WAQ prefix-based quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename=DiskOnlyFileModel("fake-file.asc"),
+            filetype=4,
+            method=4,
+            operand="O",
+        )
+        result = ParametersConverter().convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == quantity
+
+    def test_waqparameter_exact_quantity_produces_spatial_block(self):
+        """ParametersConverter must return a Spatial object for the exact 'waqparameter' quantity."""
+        forcing = ExtOldForcing(
+            quantity="waqparameter",
+            filename=DiskOnlyFileModel("fake-file.asc"),
+            filetype=4,
+            method=4,
+            operand="O",
+        )
+        result = ParametersConverter().convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == "waqparameter"
+
+    def test_initialwaqbot_produces_spatial_block(self):
+        """InitialConditionConverter must return a Spatial object for initialwaqbot quantities."""
+        forcing = ExtOldForcing(
+            quantity="initialwaqbotSomething",
+            filename=DiskOnlyFileModel("fake-file.asc"),
+            filetype=4,
+            method=4,
+            operand="O",
+        )
+        result = InitialConditionConverter().convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == "initialwaqbotSomething"
 
 
 class TestUpdate:

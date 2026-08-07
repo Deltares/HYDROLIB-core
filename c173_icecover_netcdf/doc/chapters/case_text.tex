@@ -1,0 +1,52 @@
+\section{Title}
+\newrefsegment
+
+%---------------------------------------------------------------------------------
+\section*{Quality Assurance}
+{{\footnotesize
+\begin{tabular}{p{22mm-2pt}@{}p{27mm-2pt}@{}p{18mm}@{}p{27mm-2pt}@{}p{18mm}@{}p{27mm-2pt}@{}p{\textwidth-139mm-1pt}} \hline
+    \rowcolor{dgrey4}
+\textbf{Date} & \textbf{Author} & \textbf{Initials} & \textbf{Review} & \textbf{Initials} & \textbf{Approval} & \textbf{Initials}  \\ \hline
+25 Jul 2025 & Bert Jagers & & & & &   \\ \hline
+  \end{tabular}
+}}
+
+%---------------------------------------------------------------------------------
+\section*{Version information}
+\begin{tabular}{@{}p{23mm}@{}p{0mm}p{\textwidth-23mm-30pt}}
+\textbf{Date of study}& \textbf{:} & 25 Jul 2025 \\
+\textbf{Executable}   & \textbf{:} & N/A \\
+\textbf{Location}     & \textbf{:} & N/A \\ 
+\textbf{SVN revision} & \textbf{:} & N/A
+\end{tabular}
+
+%---------------------------------------------------------------------------------
+\section*{Purpose}
+
+Test ice cover forcing by means of netCDF files.
+
+%---------------------------------------------------------------------------------
+\section*{Linked claims}
+\phantom{text}\vspace*{-\baselineskip}
+\begin{enumerate}
+	\item Ice thickness and ice area fraction can be specified by means of netCDF files.
+	\item Ice cover is properly taken into account in the pressure term.
+	\item Ice cover map and history output is correct.
+\end{enumerate}
+
+%---------------------------------------------------------------------------------
+\section*{Approach}
+This test runs the same model as e02\_dflowfm / f020\_external\_forcing / c170\_icecover\_ascii\_cartesian and c172\_icecover\_ascii\_curvilinear with one difference: the data is provided by means of netCDF files.
+
+%---------------------------------------------------------------------------------
+\section*{Conclusion} 
+The ice cover forcing as well as the ice map and history output work as intended.
+The simulation results are consistent with the reference e02\_dflowfm / f020\_external\_forcing / c170\_icecover\_ascii\_cartesian.
+
+%---------------------------------------------------------------------------------
+\section*{Model description and analysis}
+
+See the referred model.
+
+%---------------------------------------------------------------------------------
+\printrefsegment

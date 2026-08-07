@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
     INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
+    PARAMETER_QUANTITIES_VALID_PREFIXES,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
@@ -416,6 +417,40 @@ def test_ext_old_source_sinks():
         quantity.value in ["discharge_salinity_temperature_sorsin"]
         for quantity in ExtOldSourcesSinks.__members__.values()
     )
+
+
+class TestOldParametersQuantity:
+
+    def test_the_missing_method_invalid(self):
+        """
+        Test the missing method in the ExtOldParametersQuantity enum raises ValueError for unknown quantities.
+        """
+        with pytest.raises(ValueError):
+            ExtOldParametersQuantity("not_a_valid_parameter")
+
+    @pytest.mark.parametrize(
+        "quantity_name",
+        [
+            "waqfunctionTau",
+            "waqfunctionradsurfave",
+            "waqsegmentnumber1",
+            "waqsegmentfunctionVel",
+            "waqmassbalanceareasomething",
+        ],
+    )
+    def test_the_missing_method_with_waq_prefixes(self, quantity_name):
+        """
+        Test that WAQ prefix-based quantities are accepted by ExtOldParametersQuantity.
+        """
+        quantity = ExtOldParametersQuantity(quantity_name)
+        assert quantity.value == quantity_name
+
+    def test_waqparameter_exact_match(self):
+        """
+        Test that the exact quantity 'waqparameter' is accepted by ExtOldParametersQuantity.
+        """
+        quantity = ExtOldParametersQuantity("waqparameter")
+        assert quantity.value == "waqparameter"
 
 
 def test_ext_old_choose_file_model_validator(tim_files_dir: Path):

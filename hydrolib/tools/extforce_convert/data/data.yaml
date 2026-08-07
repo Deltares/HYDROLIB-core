@@ -14,7 +14,6 @@ external_forcing:
         # Parameters
         - floe_diameter
         - waqmonitoringarea
-        - waqparameter
         - ibotlevtype
         - friction_coefficient_time_dependent
         # structure
@@ -55,8 +54,4 @@ external_forcing:
         # initial conditions
         - initialsediment
         # Parameters
-        - waqfunction
-        - waqsegmentfunction
-        - waqsegmentnumber
         - massbalancearea
-        - waqmassbalancearea
