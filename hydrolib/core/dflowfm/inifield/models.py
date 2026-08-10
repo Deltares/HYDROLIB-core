@@ -50,7 +50,7 @@ class DataFileType(StrEnum):
     spiderweb = "spiderweb"
     curvigrid = "curviGrid"
 
-    allowedvaluestext = "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
+    allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
 
 
 class InterpolationMethod(StrEnum):
