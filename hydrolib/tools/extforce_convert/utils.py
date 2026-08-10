@@ -156,7 +156,7 @@ def oldmethod_to_interpolation_method(
             or "unknown" for invalid input.
     """
     if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
+        interpolation_method = InterpolationMethod.linear_space_time
     elif oldmethod == 5:
         interpolation_method = InterpolationMethod.triangulation
     elif oldmethod == 4:
