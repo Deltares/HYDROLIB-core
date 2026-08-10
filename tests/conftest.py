@@ -43,7 +43,9 @@ def initial_condition_interpolation_methods() -> List[str]:
         "averaging",
         "triangulation",
         "linearSpaceTime",
-        "Possible values: constant, triangulation, averaging.",
+        "nearestNb",
+        "bilinear"", "
+        "Possible values: constant, triangulation, averaging, nearestNb, bilinear.",
     ]
 
 
@@ -57,7 +59,11 @@ def initial_condition_file_type() -> List[str]:
         "polygon",
         "uniform",
         "netcdf",
-        "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon.",
+        "bcacsii",
+        "unimagdir",
+        "spiderweb",
+        "curvigrid",
+        "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon,  uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid.",
     ]
 
 
@@ -107,6 +113,19 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
         "quantities": ["windx", "windy"],
         "file_type": ["arcInfo", "arcInfo"],
         "file_path": ["windtest.amu", "windtest.amv"],
+    }
+
+
+@pytest.fixture(scope="function")
+def old_forcing_file_parameters() -> Dict[str, Path]:
+    return {
+        "path": Path("tests/data/input/old-external-parameters-only.ext"),
+        "quantities": [
+            "frictioncoefficient",
+            "horizontaleddyviscositycoefficient",
+        ],
+        "file_type": ["sample", "sample"],
+        "file_path": ["friction.xyz", "viscosity.xyz"],
     }
 
 
