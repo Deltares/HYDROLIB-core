@@ -204,7 +204,7 @@ class TestIniField:
 def test_initial_conditions_interpolation_methods(
     initial_condition_interpolation_methods: List[str],
 ):
-    assert len(InterpolationMethod) == 5
+    assert len(InterpolationMethod) == 6
     assert all(
         quantity.value in initial_condition_interpolation_methods
         for quantity in InterpolationMethod.__members__.values()
