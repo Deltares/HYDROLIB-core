@@ -43,6 +43,11 @@ __all__ = [
 ]
 
 
+# Every `QUANTITY=` value the old external forcings file accepts, lowercased. Used to
+# reject `old_to_new_quantity_names` keys that match no quantity and so would never fire.
+KNOWN_OLD_QUANTITY_NAMES = frozenset(q.value.lower() for q in ExtOldQuantity)
+
+
 AVERAGING_TYPE_DICT = {
     1: AveragingType.mean,
     2: AveragingType.nearestnb,
@@ -283,6 +288,11 @@ def create_initial_cond_and_parameter_input_dict(
 ) -> Dict[str, str]:
     """Create the input dictionary for the `InitialField` or `ParameterField`.
 
+    The quantity is resolved through `old_to_new_quantity_names` in `data.yaml`, so
+    quantities the kernel spells differently in the initial and parameter fields file
+    are emitted under their new name (e.g. `sea_ice_thickness` becomes
+    `seaIceThickness`). Quantities absent from that table are passed through unchanged.
+
     Args:
         forcing: [ExtOldForcing]
             External forcing block from the old external forcings file.
@@ -293,11 +303,7 @@ def create_initial_cond_and_parameter_input_dict(
         Dict[str, str]:
             the input dictionary to the `InitialField` or `ParameterField` constructor
     """
-    quantity_name = (
-        forcing.quantity
-        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
-        else "bedrockSurfaceElevation"
-    )
+    quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
         "datafile": DiskOnlyFileModel(new_forcing_path),
@@ -447,14 +453,114 @@ class MDUConfig(BaseModel):
 
 
 class ExternalForcingConfigs(BaseModel):
-    unsupported_quantity_names: List[str] = Field(default_factory=list)
-    unsupported_prefixes: List[str] = Field(default_factory=list)
+    unsupported_quantity_names: list[str] = Field(default_factory=list)
+    unsupported_prefixes: list[str] = Field(default_factory=list)
+    old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantity_names", "unsupported_prefixes", mode="before"
     )
-    def ensure_unique(cls, v: List[str]) -> List[str]:
+    def ensure_unique(cls, v: list[str]) -> list[str]:
         return check_unique(v)
+
+    @field_validator("old_to_new_quantity_names", mode="before")
+    def normalize_old_to_new_quantity_names(
+        cls, v: dict[str, str] | None
+    ) -> dict[str, str]:
+        """Normalize the old quantity names, keeping the new names verbatim.
+
+        Old names are lowercased and trimmed so lookups match the case-insensitive
+        `QUANTITY=` values of the old external forcings file. New names are only
+        trimmed: they are written straight into the initial and parameter fields
+        file, where the kernel expects a specific casing (e.g. `seaIceThickness`),
+        so lowercasing them here would defeat the purpose of the table.
+
+        Args:
+            v (dict[str, str] | None):
+                A mapping of old quantity names to new quantity names. `None` is
+                treated as an empty mapping.
+
+        Returns:
+            dict[str, str]:
+                The mapping with its keys lowercased and trimmed.
+
+        Raises:
+            ValueError:
+                If `v` is not a mapping, if any name is not a string, if any name is
+                empty, if an old name is not a known `ExtOldQuantity`, or if two old
+                names collide once lowercased.
+        """
+        if v is None:
+            v = {}
+
+        if not isinstance(v, dict):
+            raise ValueError(
+                f"'old_to_new_quantity_names' must be a mapping of old to new quantity names, "
+                f"got {type(v).__name__}."
+            )
+
+        normalized = {}
+        for old_name, new_name in v.items():
+            if not isinstance(old_name, str) or not isinstance(new_name, str):
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be strings, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            key = old_name.strip().lower()
+            value = new_name.strip()
+            if not key or not value:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be non-empty, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            if key not in KNOWN_OLD_QUANTITY_NAMES:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' key {old_name!r} is not a known "
+                    f"quantity of the old external forcings file. A key that matches "
+                    f"no quantity would silently never be applied."
+                )
+
+            if key in normalized:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' maps {key!r} more than once, to "
+                    f"{normalized[key]!r} and {value!r}."
+                )
+            normalized[key] = value
+
+        return normalized
+
+    def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
+        """Map an old quantity name onto the name used in the new format.
+
+        Args:
+            quantity (ExtOldQuantity | str):
+                The `QUANTITY` value of a block in the old external forcings file.
+                `ExtOldForcing.quantity` is typed `ExtOldQuantity | str`, and the
+                enum member is accepted directly: `str()` on it yields its value.
+
+        Returns:
+            str:
+                The corresponding new name if `quantity` is in `old_to_new_quantity_names`,
+                otherwise `quantity` unchanged.
+
+        Examples:
+            ```python
+            >>> from hydrolib.tools.extforce_convert.utils import ExternalForcingConfigs
+            >>> configs = ExternalForcingConfigs(
+            ...     old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+            ... )
+            >>> configs.rename_quantity("sea_ice_thickness")
+            'seaIceThickness'
+            >>> configs.rename_quantity("frictioncoefficient")
+            'frictioncoefficient'
+
+            ```
+        """
+        name = str(quantity)
+        renamed = self.old_to_new_quantity_names.get(name.strip().lower(), name)
+        return renamed
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""
