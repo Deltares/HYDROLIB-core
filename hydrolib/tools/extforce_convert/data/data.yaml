@@ -1,5 +1,3 @@
-# Bump when the shape of this file changes, so a config and the code that reads it can
-# be told apart. 1.1 added `external_forcing.old_to_new_quantity_names`.
 version: 1.1
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
@@ -34,16 +32,6 @@ external_forcing:
         - erodablelayerthicknessgrainsize3
         - shiptxy
         # will be moved from the initial conditions file to the new forcing file
-        - nudgerate
-        - nudgetime
-        - wavesignificantheight
-        - waveperiod
-        - wavedirection
-        - wavebreakerdissipation
-        - whitecappingdissipation
-        - xwaveforce
-        - ywaveforce
-        - totalwaveenergydissipation
         # do not convert for now
         - bedrock_surface_elevation
         # Lateral quantities are supported in the kernel, but not yet in the converter

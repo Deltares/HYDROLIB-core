@@ -346,7 +346,9 @@ class ExtOldForcing(BaseModel):
             if not found:
                 supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
                 raise ValueError(
-                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
+                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}. \n"
+                    f"Please refer to the D-Flow FM User Manual for a more detailed list of supported quantities: "
+                    f"https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D#subsection.C.6.3"
                 )
         return value
 
