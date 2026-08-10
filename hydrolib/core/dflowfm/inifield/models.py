@@ -37,7 +37,7 @@ class DataFileType(StrEnum):
     combining values that were previously split between IniFieldFile and ExtForceFileNew.
     """
 
-    arcinfo = "arcInfo"
+    arcinfo = "arcinfo"
     geotiff = "GeoTIFF"
     sample = "sample"
     onedfield = "1dField"
