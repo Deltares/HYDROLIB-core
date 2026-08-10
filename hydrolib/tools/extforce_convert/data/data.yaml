@@ -33,18 +33,8 @@ external_forcing:
         - shiptxy
         # will be moved from the initial conditions file to the new forcing file
         - nudge_salinity_temperature
-        - nudgerate
-        - nudgetime
         - sea_ice_area_fraction
         - sea_ice_thickness
-        - wavesignificantheight
-        - waveperiod
-        - wavedirection
-        - wavebreakerdissipation
-        - whitecappingdissipation
-        - xwaveforce
-        - ywaveforce
-        - totalwaveenergydissipation
         # do not convert for now
         - bedrock_surface_elevation
         # Lateral quantities are supported in the kernel, but not yet in the converter
