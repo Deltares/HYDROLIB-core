@@ -76,7 +76,7 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
 
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
-) -> float | RealTime | ForcingModel | None:
+) -> float | RealTime | ForcingModel | None | DiskOnlyFileModel:
     """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
 
     A string is tried as a float, then as the `RealTime` enum (case-insensitive),
