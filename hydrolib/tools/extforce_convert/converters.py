@@ -100,11 +100,11 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
-class MeteoConverter(BaseConverter):
-    """Meteo quantities Converter."""
+class SpatialConverter(BaseConverter):
+    """Spatial quantities Converter."""
 
     def __init__(self):
-        """Meteo converter constructor."""
+        """Spatial converter constructor."""
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Spatial:
@@ -907,7 +907,7 @@ class ConverterFactory:
             ValueError: If no converter is available for the given quantity.
         """
         if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter()
+            return SpatialConverter()
         elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
             return InitialConditionConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):

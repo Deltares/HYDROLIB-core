@@ -5,12 +5,14 @@ from unittest.mock import patch
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm import Operand
 from hydrolib.core.dflowfm.ext.models import Spatial
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.inifield import DataFileType, InterpolationMethod
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
-    ParametersConverter,
+    ParametersConverter, SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
@@ -604,3 +606,42 @@ class TestMainConverterMixedSpatial:
         assert "frictioncoefficient" in quantities
         assert "horizontaleddyviscositycoefficient" in quantities
 
+
+class TestConvertSpatial:
+    def test_default(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="windtest.amu",
+            filetype=4,
+            method="2",
+            operand="O",
+        )
+
+        new_quantity_block = SpatialConverter().convert(forcing)
+        assert isinstance(new_quantity_block, Spatial)
+        assert new_quantity_block.quantity == "windx"
+        assert new_quantity_block.operand == Operand.override
+        assert new_quantity_block.datafile == DiskOnlyFileModel("windtest.amu")
+        assert new_quantity_block.datafiletype == DataFileType.arcinfo
+        assert (
+            new_quantity_block.interpolationmethod
+            == InterpolationMethod.linear_space_time
+        )
+
+    def test_nudge_salinity_temperature_uses_spatial_converter(self):
+        """Test that nudge_salinity_temperature is converted to a Meteo block in the ext file."""
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.NudgeSalinityTemperature,
+            filename="nudge_salinity_temperature.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        assert isinstance(converter, SpatialConverter)
+
+        new_quantity_block = converter.convert(forcing)
+        assert isinstance(new_quantity_block, Spatial)
+        assert new_quantity_block.quantity == "nudgeSalinityTemperature"
+        assert new_quantity_block.datafiletype == DataFileType.netcdf
