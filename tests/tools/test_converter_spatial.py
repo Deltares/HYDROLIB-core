@@ -77,7 +77,7 @@ class TestInitialConditionConverter:
         result = InitialConditionConverter().convert(forcing, forcing.filename.filepath)
 
         assert isinstance(result, Spatial)
-        assert result.datafiletype == "arcinfo"
+        assert result.datafiletype == "arcInfo"
         assert result.interpolationmethod == "triangulation"
 
     def test_quantity_is_preserved(self):
@@ -207,7 +207,7 @@ class TestParametersConverter:
         result = ParametersConverter().convert(forcing, forcing.filename.filepath)
 
         assert isinstance(result, Spatial)
-        assert result.datafiletype == "arcinfo"
+        assert result.datafiletype == "arcInfo"
         assert result.interpolationmethod == "constant"
 
     def test_bedrock_surface_elevation_quantity_name_is_camelcase(self):

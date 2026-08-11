@@ -28,7 +28,7 @@ from tests.utils import (
 
 class TestIniField:
     _datafiletype_cases = [
-        ("dataFileType", "ARCINFO", "arcinfo"),
+        ("dataFileType", "ARCINFO", "arcInfo"),
         ("dataFileType", "geotiff", "GeoTIFF"),
         ("dataFileType", "samPLE", "sample"),
         ("dataFileType", "1dfield", "1dField"),
