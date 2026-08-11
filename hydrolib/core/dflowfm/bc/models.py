@@ -38,6 +38,7 @@ from pydantic import (
 from pydantic_core import core_schema
 from strenum import StrEnum
 
+from hydrolib.core.base import DiskOnlyFileModel
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings
 from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
@@ -1224,7 +1225,7 @@ class RealTime(StrEnum):
     """str: Realtime data source, externally provided"""
 
 
-ForcingData = Union[float, RealTime, ForcingModel]
+ForcingData = Union[float, RealTime, ForcingModel, DiskOnlyFileModel]
 """Data type that selects from three different types of forcing data:
 *   a scalar float constant
 *   "realtime" keyword, indicating externally controlled.
