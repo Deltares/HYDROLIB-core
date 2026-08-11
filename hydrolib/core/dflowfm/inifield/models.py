@@ -65,11 +65,8 @@ class InterpolationMethod(StrEnum):
     triangulation = "triangulation"
     averaging = "averaging"
     linear_space_time = "linearSpaceTime"
-
-    linearSpaceTime = "linearSpaceTime"
     nearestnb = "nearestNb"
     bilinear = "bilinear"
-
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, nearestNb, bilinear."
 
