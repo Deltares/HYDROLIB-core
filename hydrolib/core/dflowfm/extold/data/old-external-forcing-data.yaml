@@ -44,6 +44,7 @@ Meteo:
         HumidityAirTemperatureCloudiness: humidity_airtemperature_cloudiness
         HumidityAirTemperatureCloudinessSolarRadiation: humidity_airtemperature_cloudiness_solarradiation
         LongWaveRadiation: longwaveradiation
+        NudgeSalinityTemperature: nudge_salinity_temperature
         Rainfall: rainfall
         RainfallRate: rainfall_rate
         SolarRadiation: solarradiation
