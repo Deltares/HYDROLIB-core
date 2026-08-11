@@ -901,7 +901,7 @@ class MDUParser:
                 starts with ``ExtForceFileNew``.
 
         Returns:
-            A list of line number where the keyword is found.
+            The 0-based line index where the keyword is found, or None if not found.
         """
         needle = keyword if case_sensitive else keyword.lower()
         line_number = None
