@@ -7,6 +7,7 @@ import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import FilePathStyleConverter, PathStyle
+from hydrolib.core.dflowfm.ext import Spatial
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
@@ -69,7 +70,7 @@ class TestExtOldToNewFromMDU:
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         ext_model, _, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
-        assert len(ext_model.meteo) == 1
+        assert len(ext_model.spatial) == 1
         # check the saved files
         converter.save()
 
@@ -314,6 +315,7 @@ class TestExternalFocingConverter:
             converter = ExternalForcingConverter(mock_ext_old_model)
         converter._ext_model = MagicMock(spec=ExtModel)
         converter._ext_model.meteo = [MagicMock(spec=Meteo)]
+        converter._ext_model.spatial = [MagicMock(spec=Spatial)]
         converter._ext_model.sourcesink = [MagicMock(spec=SourceSink)]
         converter._ext_model.lateral = [MagicMock(spec=Lateral)]
         converter._ext_model.boundary = [MagicMock(spec=Boundary)]
@@ -501,7 +503,7 @@ class TestExternalFocingConverter:
         )
         converter.update()
 
-        assert len(converter.inifield_model.initial) == 1
+        assert len(converter.ext_model.spatial) == 1
         assert (
             converter.extold_model.forcing[0].filename.filepath
             == setup_absolute_path_files["poly_file"]
@@ -530,9 +532,9 @@ class TestExternalFocingConverter:
         converter.update()
         converter.save()
 
-        assert len(converter.inifield_model.initial) == 1
-        initial_file = tmp_path / "new-initial-conditions.ini"
-        assert setup_absolute_path_files["raw_poly_file"] in initial_file.read_text()
+        assert len(converter.ext_model.spatial) == 1
+        ext_file = tmp_path / "new-external-forcing.ext"
+        assert setup_absolute_path_files["raw_poly_file"] in ext_file.read_text()
 
     @pytest.fixture
     def old_model(self) -> Dict[str, Any]:
@@ -620,20 +622,20 @@ class TestUpdate:
 
         ext_model, inifield_model, structure_model = converter.update()
 
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
+        # all the quantities in the old external file are meteo quantities
+        # check that all the quantities (2) were converted to Spatial blocks
         num_quantities = len(old_forcing_file_meteo["quantities"])
-        assert len(ext_model.meteo) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
+        assert len(ext_model.spatial) == num_quantities
+        # no parameters or any other structures, lateral, or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(inifield_model.initial) == 0
         assert len(structure_model.structure) == 0
         assert [
-            ext_model.meteo[i].forcingfiletype for i in range(num_quantities)
+            ext_model.spatial[i].datafiletype for i in range(num_quantities)
         ] == old_forcing_file_meteo["file_type"]
         assert [
-            str(ext_model.meteo[i].forcingfile.filepath) for i in range(num_quantities)
+            str(ext_model.spatial[i].datafile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_meteo["file_path"]
 
     def test_initial_conditions_only(
@@ -644,19 +646,19 @@ class TestUpdate:
         ext_model, inifield_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
+        # check that all the quantities (3) were converted to Spatial blocks
         num_quantities = len(old_forcing_file_initial_condition["quantities"])
-        assert len(inifield_model.initial) == num_quantities
+        assert len(ext_model.spatial) == num_quantities
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
         assert [
-            inifield_model.initial[i].datafiletype for i in range(num_quantities)
+            ext_model.spatial[i].datafiletype for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_type"]
         assert [
-            str(inifield_model.initial[i].datafile.filepath)
+            str(ext_model.spatial[i].datafile.filepath)
             for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
 

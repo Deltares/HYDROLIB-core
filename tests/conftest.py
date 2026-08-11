@@ -111,7 +111,7 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-meteo-only.ext"),
         "quantities": ["windx", "windy"],
-        "file_type": ["arcInfo", "arcInfo"],
+        "file_type": ["arcinfo", "arcinfo"],
         "file_path": ["windtest.amu", "windtest.amv"],
     }
 
