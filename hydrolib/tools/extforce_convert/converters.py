@@ -49,6 +49,7 @@ from hydrolib.tools.extforce_convert.utils import (
     create_spatial_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
+    CONVERTER_DATA
 )
 
 
