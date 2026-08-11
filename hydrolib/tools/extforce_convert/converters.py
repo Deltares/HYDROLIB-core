@@ -40,6 +40,7 @@ from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     convert_interpolation_data,
     create_spatial_input_dict,
     find_temperature_salinity_in_quantities,
@@ -134,7 +135,7 @@ class SpatialConverter(BaseConverter):
             supported by the converter, a ValueError is raised.
         """
         spatial_data = {
-            "quantity": forcing.quantity,
+            "quantity": CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity),
             "datafile": forcing.filename,
             "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
             "datavariablename": forcing.varname,

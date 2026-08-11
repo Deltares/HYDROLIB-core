@@ -321,7 +321,7 @@ class TestConvertSeaIceQuantities:
         converter.update()
         converter.save(backup=False)
 
-        written = converter.inifield_model.filepath.read_text()
+        written = converter.ext_model.filepath.read_text()
         assert "seaIceThickness" in written
         assert "sea_ice_thickness" not in written
 
