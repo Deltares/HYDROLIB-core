@@ -109,9 +109,9 @@ class SpatialConverter(BaseConverter):
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Spatial:
-        """Meteo converter.
+        """Spatial converter.
 
-        Convert an old external forcing block with meteo data to a Spatial
+        Convert an old external forcing block with spatial data to a Spatial
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
