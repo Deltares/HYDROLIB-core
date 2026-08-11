@@ -304,9 +304,9 @@ class TestConvertSeaIceQuantities:
         converter.check_unsupported_quantities()
 
         converter.update()
-        blocks = converter.inifield_model.parameter
+        blocks = converter.ext_model.spatial
         assert len(blocks) == 1
-        assert isinstance(blocks[0], ParameterField)
+        assert isinstance(blocks[0], Spatial)
         assert blocks[0].quantity == new_quantity
 
     def test_new_name_survives_serialization(self, tmp_path: Path):

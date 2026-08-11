@@ -302,11 +302,7 @@ def create_spatial_input_dict(
         Dict[str, str]:
             the input dictionary for the `Spatial` constructor
     """
-    quantity_name = (
-        forcing.quantity
-        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
-        else "bedrockSurfaceElevation"
-    )
+    quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
         "datafile": DiskOnlyFileModel(new_forcing_path),

@@ -22,9 +22,6 @@ from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    InitialFieldError,
-    Meteo,
-    MeteoError,
     Spatial,
     SpatialError,
     SourceSink,
@@ -38,18 +35,15 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
     convert_interpolation_data,
-    create_initial_cond_and_parameter_input_dict,
     create_spatial_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
-    CONVERTER_DATA
 )
 
 
