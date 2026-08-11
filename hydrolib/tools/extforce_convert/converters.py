@@ -22,9 +22,6 @@ from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    InitialFieldError,
-    Meteo,
-    MeteoError,
     Spatial,
     SpatialError,
     SourceSink,
@@ -38,14 +35,13 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     convert_interpolation_data,
-    create_initial_cond_and_parameter_input_dict,
     create_spatial_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
@@ -105,11 +101,11 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
-class MeteoConverter(BaseConverter):
-    """Meteo quantities Converter."""
+class SpatialConverter(BaseConverter):
+    """Spatial quantities Converter."""
 
     def __init__(self):
-        """Meteo converter constructor."""
+        """Spatial converter constructor."""
         super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Spatial:
@@ -139,7 +135,7 @@ class MeteoConverter(BaseConverter):
             supported by the converter, a ValueError is raised.
         """
         spatial_data = {
-            "quantity": forcing.quantity,
+            "quantity": CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity),
             "datafile": forcing.filename,
             "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
             "datavariablename": forcing.varname,
@@ -912,7 +908,7 @@ class ConverterFactory:
             ValueError: If no converter is available for the given quantity.
         """
         if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter()
+            return SpatialConverter()
         elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
             return InitialConditionConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):

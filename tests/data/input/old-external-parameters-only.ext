@@ -1,0 +1,12 @@
+QUANTITY=frictioncoefficient
+FILENAME=friction.xyz
+FILETYPE=7
+METHOD=5
+OPERAND=O
+
+QUANTITY=horizontaleddyviscositycoefficient
+FILENAME=viscosity.xyz
+FILETYPE=7
+METHOD=5
+OPERAND=O
+
