@@ -27,6 +27,7 @@ from typing import (
 )
 
 from pydantic import (
+    AfterValidator,
     BeforeValidator,
     ConfigDict,
     Field,
@@ -39,6 +40,7 @@ from pydantic_core import core_schema
 from strenum import StrEnum
 
 from hydrolib.core.base import DiskOnlyFileModel
+from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings
 from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
@@ -1225,9 +1227,50 @@ class RealTime(StrEnum):
     """str: Realtime data source, externally provided"""
 
 
-ForcingData = Union[float, RealTime, ForcingModel, DiskOnlyFileModel]
-"""Data type that selects from three different types of forcing data:
+def _reject_disk_only_on_recursive_load(v):
+    """Reject DiskOnlyFileModel when the load context has recurse=True.
+
+    This guard ensures that a ``DiskOnlyFileModel`` can only appear as a
+    ``ForcingData`` value when the model tree is loaded with ``recurse=False``.
+    Under a recursive load the .bc file should be fully parsed into a
+    ``ForcingModel``; if a ``DiskOnlyFileModel`` slips through it indicates a
+    bug in the resolution pipeline.
+    """
+    if isinstance(v, DiskOnlyFileModel):
+
+        with file_load_context() as context:
+            if (
+                hasattr(context, "_load_settings")
+                and context._load_settings is not None
+                and context._load_settings.recurse
+            ):
+                raise ValueError(
+                    "A DiskOnlyFileModel is not valid for ForcingData when loading "
+                    "with recurse=True. Expected a fully parsed ForcingModel, a "
+                    "scalar float, or the 'realtime' keyword."
+                )
+    return v
+
+
+ForcingData = Annotated[
+    Union[float, RealTime, ForcingModel, DiskOnlyFileModel],
+    AfterValidator(_reject_disk_only_on_recursive_load),
+]
+"""Data type that selects from four different types of forcing data:
 *   a scalar float constant
 *   "realtime" keyword, indicating externally controlled.
 *   A ForcingModel coming from a .bc file.
+*   A DiskOnlyFileModel placeholder when the file is loaded non-recursively
+    (i.e. ``recurse=False``). In that mode, `resolve_file_model` returns a
+    lightweight stub instead of fully parsing the .bc file.
+
+Note:
+    Raw values never reach Pydantic's Union resolution directly — a
+    ``@field_validator(mode="before")`` calling ``_resolve_forcing_data``
+    always resolves strings/paths into the correct type *before* Pydantic
+    performs Union matching. ``DiskOnlyFileModel`` is listed here solely so
+    Pydantic accepts the already-constructed instance returned by the
+    before-validator under non-recursive loads. The ``AfterValidator``
+    rejects ``DiskOnlyFileModel`` if the load context has ``recurse=True``,
+    catching pipeline bugs early.
 """
