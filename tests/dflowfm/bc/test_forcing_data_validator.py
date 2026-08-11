@@ -1,12 +1,12 @@
-"""Tests for the ``_reject_disk_only_on_recursive_load`` AfterValidator on ``ForcingData``.
+"""Tests for the `_reject_disk_only_on_recursive_load` AfterValidator on `ForcingData`.
 
-This module validates that the ``AfterValidator`` correctly guards the ``ForcingData``
-annotated Union so that ``DiskOnlyFileModel`` is only accepted when the file load
-context has ``recurse=False``. Under a recursive load (``recurse=True``), a
-``DiskOnlyFileModel`` value must be rejected with a clear ``ValueError``.
+This module validates that the `AfterValidator` correctly guards the `ForcingData`
+annotated Union so that `DiskOnlyFileModel` is only accepted when the file load
+context has `recurse=False`. Under a recursive load (`recurse=True`), a
+`DiskOnlyFileModel` value must be rejected with a clear `ValueError`.
 
 Module under test:
-    ``hydrolib.core.dflowfm.bc.models._reject_disk_only_on_recursive_load``
+    `hydrolib.core.dflowfm.bc.models._reject_disk_only_on_recursive_load`
 """
 
 import pytest
@@ -74,7 +74,7 @@ class TestRejectDiskOnlyOnRecursiveLoad:
 
         Test scenario:
             Simulate a recursive load by setting up a FileLoadContext with
-            ``recurse=True``. The validator must raise a ValueError explaining
+            `recurse=True`. The validator must raise a ValueError explaining
             that DiskOnlyFileModel is not valid in this context.
         """
         ctx = FileLoadContext()
@@ -94,7 +94,7 @@ class TestRejectDiskOnlyOnRecursiveLoad:
 
         Test scenario:
             Simulate a non-recursive load by setting up a FileLoadContext with
-            ``recurse=False``. The validator must allow DiskOnlyFileModel through
+            `recurse=False`. The validator must allow DiskOnlyFileModel through
             since this is the legitimate case.
         """
         ctx = FileLoadContext()
@@ -134,8 +134,8 @@ class TestRejectDiskOnlyOnRecursiveLoad:
         """DiskOnlyFileModel is accepted when load settings have not been initialized.
 
         Test scenario:
-            A FileLoadContext exists but ``initialize_load_settings`` was never called,
-            so ``_load_settings`` is None. The validator must not reject
+            A FileLoadContext exists but `initialize_load_settings` was never called,
+            so `_load_settings` is None. The validator must not reject
             DiskOnlyFileModel in this case.
         """
         ctx = FileLoadContext()
