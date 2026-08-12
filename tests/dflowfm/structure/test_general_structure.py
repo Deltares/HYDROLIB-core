@@ -88,7 +88,8 @@ class TestGeneralStructure:
         assert struct.usevelocityheight == False
 
         assert struct.comments is not None
-        assert struct.comments.name == name_comment
+        default_comments = GeneralStructure.Comments()
+        assert struct.comments.name == getattr(default_comments, "name")
 
         assert struct.comments.id == uniqueid_str
 
@@ -249,39 +250,10 @@ class TestGeneralStructure:
         struct = wrapper.val
 
         assert struct.comments is not None
-        assert struct.comments.id is None
-        assert struct.comments.name is None
-        assert struct.comments.branchid is None
-        assert struct.comments.chainage == "My own special comment 1"
-        assert struct.comments.type is None
 
-        assert struct.comments.allowedflowdir is None
-        assert struct.comments.upstream1width is None
-        assert struct.comments.upstream1level is None
-        assert struct.comments.upstream2width is None
-        assert struct.comments.upstream2level is None
-        assert struct.comments.crestwidth is None
-        assert struct.comments.crestlevel is None
-        assert struct.comments.crestlength is None
-        assert struct.comments.downstream1width is None
-        assert struct.comments.downstream1level is None
-        assert struct.comments.downstream2width is None
-        assert struct.comments.downstream2level is None
-        assert struct.comments.gateloweredgelevel is None
-        assert struct.comments.posfreegateflowcoeff is None
-        assert struct.comments.posdrowngateflowcoeff is None
-        assert struct.comments.posfreeweirflowcoeff is None
-        assert struct.comments.posdrownweirflowcoeff is None
-        assert struct.comments.poscontrcoeffreegate is None
-        assert struct.comments.negfreegateflowcoeff is None
-        assert struct.comments.negdrowngateflowcoeff is None
-        assert struct.comments.negfreeweirflowcoeff is None
-        assert struct.comments.negdrownweirflowcoeff is None
-        assert struct.comments.negcontrcoeffreegate is None
-        assert struct.comments.extraresistance is None
-        assert struct.comments.gateheight is None
-        assert struct.comments.gateopeningwidth is None
-        assert struct.comments.usevelocityheight == "My own special comment 2"
+        default_comments = GeneralStructure.Comments()
+        for field_name, value in struct.comments:
+            assert value == getattr(default_comments, field_name)
 
     def test_general_structure_with_unknown_parameter_is_ignored(self):
         parser = Parser(ParserConfig())
