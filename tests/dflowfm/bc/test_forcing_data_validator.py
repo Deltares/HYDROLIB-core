@@ -9,6 +9,8 @@ Module under test:
     `hydrolib.core.dflowfm.bc.models._reject_disk_only_on_recursive_load`
 """
 
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -26,6 +28,13 @@ from hydrolib.core.dflowfm.bc.models import (
 from hydrolib.core.dflowfm.ext.models import Lateral, SourceSink
 
 
+@pytest.fixture
+def forcing_data_ext_file() -> Path:
+    """Path to the minimal ext file for e2e tests."""
+    return Path("tests/data/input/forcing_data_disk_only/minimal.ext")
+
+
+@pytest.mark.unit
 class TestRejectDiskOnlyOnRecursiveLoad:
     """Tests for _reject_disk_only_on_recursive_load validator function."""
 
@@ -227,6 +236,7 @@ class TestRejectDiskOnlyOnRecursiveLoad:
             context_file_loading.reset(token)
 
 
+@pytest.mark.integration
 class TestForcingDataIntegration:
     """Integration tests verifying the AfterValidator works within Pydantic model validation."""
 
@@ -348,4 +358,22 @@ class TestForcingDataIntegration:
             context_file_loading.reset(token)
 
 
+@pytest.mark.e2e
+class TestForcingDataE2E:
+    """End-to-end tests loading a real ext file with recurse=True/False."""
 
+    def test_load_ext_file_non_recursive_produces_disk_only(self, forcing_data_ext_file):
+        """Loading an ext file with recurse=False yields DiskOnlyFileModel for .bc references."""
+        from hydrolib.core.dflowfm.ext.models import ExtModel
+
+        model = ExtModel(filepath=forcing_data_ext_file, recurse=False)
+        ss = model.sourcesink[0]
+        assert isinstance(ss.discharge, DiskOnlyFileModel)
+
+    def test_load_ext_file_recursive_produces_forcing_model(self, forcing_data_ext_file):
+        """Loading an ext file with recurse=True fully parses .bc into ForcingModel."""
+        from hydrolib.core.dflowfm.ext.models import ExtModel
+
+        model = ExtModel(filepath=forcing_data_ext_file, recurse=True)
+        ss = model.sourcesink[0]
+        assert isinstance(ss.discharge, ForcingModel)
