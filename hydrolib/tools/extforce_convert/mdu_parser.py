@@ -1100,25 +1100,24 @@ class MDUParser:
 
     def get_inifield_file(
         self,
-        inifield_file: Optional[PathOrStr],
+        user_inifield_file: PathOrStr | None,
     ) -> Path | None:
         ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
-        if inifield_file is not None:
-            # user defined initial field file
-            inifield_file = root_dir / inifield_file
-        elif isinstance(ini_field_file, Path):
-            # from the LegacyFMModel
-            inifield_file = ini_field_file.resolve()
-        elif isinstance(ini_field_file, str) and ini_field_file:
-            # from reading the geometry section (only if non-empty)
-            inifield_file = root_dir / ini_field_file
+
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = user_inifield_file if user_inifield_file is not None else ini_field_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
         else:
             print(
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
-                f"given: {inifield_file}."
+                f"given: {path}."
             )
-        return inifield_file
+            path = None
+
+        return path
 
     def get_structure_file(
         self,
@@ -1127,21 +1126,19 @@ class MDUParser:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
 
-        if usr_structure_file is not None:
-            # user defined structure file
-            usr_structure_file = root_dir / usr_structure_file
-        elif isinstance(structure_file, Path):
-            # from the LegacyFMModel
-            usr_structure_file = structure_file.resolve()
-        elif isinstance(structure_file, str) and structure_file:
-            # from reading the geometry section (only if non-empty)
-            usr_structure_file = root_dir / structure_file
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = usr_structure_file if usr_structure_file is not None else structure_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
         else:
             print(
-                "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {usr_structure_file}."
+                "The structure file is not found in the mdu file, and not provided by the user. \n"
+                f"given: {path}."
             )
-        return usr_structure_file
+            path = None
+
+        return path
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:
