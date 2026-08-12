@@ -851,7 +851,7 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         if remove_old_ext_file:
-            old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+            old_ext_force_line = self.find_keyword_lines("ExtForceFile", exact_match=True)
             if old_ext_force_line is not None:
                 self.content.pop(old_ext_force_line)
 
@@ -888,28 +888,32 @@ class MDUParser:
         return temperature_and_salinity_info
 
     def find_keyword_lines(
-        self, keyword: str, case_sensitive: bool = False
-    ) -> Union[int, None]:
+        self, keyword: str, case_sensitive: bool = False, exact_match: bool = False
+    ) -> int | None:
         """Find line numbers in the MDU file where the keyword appears.
 
         Args:
             keyword: The keyword to search for.
             case_sensitive: Whether the search should be case-sensitive.
+            exact_match: When True, only match lines where the keyword is
+                followed by a word boundary (whitespace, ``=`` or end of line),
+                so searching for ``ExtForceFile`` does not match a line that
+                starts with ``ExtForceFileNew``.
 
         Returns:
-            A list of line number where the keyword is found.
+            The 0-based line index where the keyword is found, or None if not found.
         """
-        if not case_sensitive:
-            keyword = keyword.lower()
+        needle = keyword if case_sensitive else keyword.lower()
         line_number = None
         for i, line in enumerate(self.content, start=0):
             haystack = line if case_sensitive else line.lower()
             stripped_line = haystack.lstrip()
-            if_exist = (
-                stripped_line.startswith(keyword)
-                if case_sensitive
-                else stripped_line.lower().startswith(keyword.lower())
-            )
+            if_exist = stripped_line.startswith(needle)
+            if if_exist and exact_match:
+                remainder = stripped_line[len(needle):]
+                if_exist = remainder == "" or not (
+                    remainder[0].isalnum() or remainder[0] == "_"
+                )
             if if_exist:
                 line_number = i
                 break
