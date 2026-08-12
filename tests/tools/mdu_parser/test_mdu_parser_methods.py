@@ -220,3 +220,127 @@ class TestMDUParserIsRelativeToParent:
 
         result = MDUParser.is_relative_to_parent.fget(parser)
         assert result is False
+
+
+class TestMDUParserGetIniFieldFile:
+    """Unit tests for MDUParser.get_inifield_file method.
+
+    Tests the path resolution logic for the IniFieldFile entry, including the fix
+    that prevents an empty string value from being joined with the root directory
+    (which would produce a directory path and cause a PermissionError on save).
+    """
+
+    def _make_parser(self, content: list) -> MagicMock:
+        parser = MagicMock(spec=MDUParser)
+        parser.get_inifield_file = MethodType(MDUParser.get_inifield_file, parser)
+        parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
+        parser.content = content
+        return parser
+
+    @pytest.mark.unit
+    def test_get_inifield_file_when_user_provides_path(self, tmp_path):
+        """When the caller supplies a path it is joined with mdu_path.parent."""
+        parser = self._make_parser(["[geometry]\n", "IniFieldFile = existing.ini\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_inifield_file(parser, "user.ini")
+
+        assert result == tmp_path / "run" / "user.ini"
+
+    @pytest.mark.unit
+    def test_get_inifield_file_when_mdu_has_non_empty_value(self, tmp_path):
+        """A non-empty IniFieldFile value in the MDU is resolved relative to mdu_path.parent."""
+        parser = self._make_parser(["[geometry]\n", "IniFieldFile = fields.ini\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_inifield_file(parser, None)
+
+        assert result == tmp_path / "run" / "fields.ini"
+
+    @pytest.mark.unit
+    def test_get_inifield_file_when_mdu_has_empty_value_returns_none(self, tmp_path):
+        """Regression test: IniFieldFile = (empty) must NOT produce a directory path.
+
+        Before the fix, an empty string was passed to root_dir / "", yielding the
+        directory itself. On save this caused PermissionError: [Errno 13] Permission
+        denied: '<directory>'.
+        """
+        parser = self._make_parser(["[geometry]\n", "IniFieldFile = \n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_inifield_file(parser, None)
+
+        # The method falls through to the else branch and returns None (no path built)
+        assert result is None
+
+    @pytest.mark.unit
+    def test_get_inifield_file_when_mdu_has_no_entry_returns_none(self, tmp_path):
+        """When IniFieldFile is absent entirely the result is None."""
+        parser = self._make_parser(["[geometry]\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_inifield_file(parser, None)
+
+        assert result is None
+
+
+class TestMDUParserGetStructureFile:
+    """Unit tests for MDUParser.get_structure_file method.
+
+    Tests path resolution for the StructureFile entry including:
+    - The fix that prevents empty strings from being joined with the root directory.
+    - The fix that uses mdu_path.parent (not mdu_path) when building the path.
+    """
+
+    def _make_parser(self, content: list) -> MagicMock:
+        parser = MagicMock(spec=MDUParser)
+        parser.get_structure_file = MethodType(MDUParser.get_structure_file, parser)
+        parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
+        parser.content = content
+        return parser
+
+    @pytest.mark.unit
+    def test_get_structure_file_when_user_provides_path(self, tmp_path):
+        """When the caller supplies a path it is joined with mdu_path.parent (not mdu_path).
+
+        Before the fix, self.mdu_path / usr_structure_file was used, which appended the
+        filename to the .mdu file itself rather than its parent directory.
+        """
+        parser = self._make_parser(["[geometry]\n", "StructureFile = existing.ini\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_structure_file(parser, "user-structures.ini")
+
+        assert result == tmp_path / "run" / "user-structures.ini"
+
+    @pytest.mark.unit
+    def test_get_structure_file_when_mdu_has_non_empty_value(self, tmp_path):
+        """A non-empty StructureFile value in the MDU is resolved relative to mdu_path.parent."""
+        parser = self._make_parser(["[geometry]\n", "StructureFile = structures.ini\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_structure_file(parser, None)
+
+        assert result == tmp_path / "run" / "structures.ini"
+
+    @pytest.mark.unit
+    def test_get_structure_file_when_mdu_has_empty_value_returns_none(self, tmp_path):
+        """Regression test: StructureFile = (empty) must NOT produce a directory path."""
+        parser = self._make_parser(["[geometry]\n", "StructureFile = \n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_structure_file(parser, None)
+
+        assert result is None
+
+    @pytest.mark.unit
+    def test_get_structure_file_when_mdu_has_no_entry_returns_none(self, tmp_path):
+        """When StructureFile is absent entirely the result is None."""
+        parser = self._make_parser(["[geometry]\n"])
+        parser.mdu_path = tmp_path / "run" / "model.mdu"
+
+        result = MDUParser.get_structure_file(parser, None)
+
+        assert result is None
