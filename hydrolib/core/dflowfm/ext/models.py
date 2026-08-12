@@ -150,15 +150,15 @@ class Boundary(INIBasedModel):
 
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
-    nodeid: Optional[str] = Field(None, alias="nodeId")
+    nodeid: str | None = Field(None, alias="nodeId")
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
     forcingfile: ForcingModel = Field(alias="forcingFile")
-    bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
-    bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
-    returntime: Optional[float] = Field(None, alias="returnTime")
-    operand: Optional[Operand] = Field(None, alias="operand")
+    bndwidth1d: float | None = Field(None, alias="bndWidth1D")
+    bndbldepth: float | None = Field(None, alias="bndBlDepth")
+    returntime: float | None = Field(None, alias="returnTime")
+    operand: Operand | None = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
