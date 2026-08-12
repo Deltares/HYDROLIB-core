@@ -272,18 +272,20 @@ class TestInitialConditions:
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
 
     def test_invalid_datafiletype(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype="invalidType",
             )
 
     def test_invalid_interpolationmethod(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype=DataFileType.arcinfo,
                 interpolationmethod="invalidMethod",
             )
@@ -423,10 +425,11 @@ class TestInitialVerticalProfilePolygonValidation:
     @pytest.mark.unit
     def test_non_initialvertical_polygon_without_value_raises_for_constant(self):
         """Non-initialvertical + polygon + constant interpolation + no value must raise."""
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValidationError, match="value should be provided when datafiletype is polygon"):
             InitialField(
                 quantity="initialwaterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype=DataFileType.polygon,
                 interpolationmethod=InterpolationMethod.constant,
                 operand=Operand.override,
