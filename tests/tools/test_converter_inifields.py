@@ -32,7 +32,7 @@ class TestConvertInitialCondition:
             quantity=ExtOldQuantity.InitialWaterLevel,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
@@ -142,7 +142,7 @@ class TestConvertParameters:
             quantity=ExtOldQuantity.FrictionCoefficient,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
