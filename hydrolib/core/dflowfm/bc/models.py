@@ -1227,7 +1227,9 @@ class RealTime(StrEnum):
     """str: Realtime data source, externally provided"""
 
 
-def _reject_disk_only_on_recursive_load(v):
+def _reject_disk_only_on_recursive_load(
+    v: float| RealTime | ForcingModel | DiskOnlyFileModel,
+) -> float| RealTime | ForcingModel | DiskOnlyFileModel:
     """Reject DiskOnlyFileModel when the load context has recurse=True.
 
     This guard ensures that a ``DiskOnlyFileModel`` can only appear as a
