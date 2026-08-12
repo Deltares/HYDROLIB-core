@@ -25,7 +25,7 @@ from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     RealTime,
 )
-from hydrolib.core.dflowfm.common.models import Operand, _OPERAND_LEGACY_MAP
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
@@ -270,7 +270,7 @@ class Boundary(INIBasedModel):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v: Any):
-        return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Lateral(INIBasedModel):
@@ -682,7 +682,7 @@ class Meteo(INIBasedModel):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v: Any):
-        return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class ExtGeneral(INIGeneral):

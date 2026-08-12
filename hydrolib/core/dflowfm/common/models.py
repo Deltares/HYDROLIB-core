@@ -40,13 +40,24 @@ class Operand(StrEnum):
     maximum = "maximum"
     minimum = "minimum"
 
+    @classmethod
+    def legacy_alternatives(cls) -> dict[str, list[str]]:
+        """Return the Operand member corresponding to a legacy single-character value.
 
-# Maps legacy single-character operand values to their canonical Operand members.
-_OPERAND_LEGACY_MAP: dict[str, list[str]] = {
-    Operand.override.value: ["O"],
-    Operand.override_if_missing.value: ["A"],
-    Operand.add.value: ["+"],
-    Operand.multiply.value: ["*"],
-    Operand.maximum.value: ["X"],
-    Operand.minimum.value: ["N"],
-}
+        Args:
+            legacy_value: A legacy operand character (e.g. "O", "A", "+", "*", "X", "N").
+
+        Returns:
+            The matching Operand member.
+
+        Raises:
+            ValueError: If the legacy value is not recognised.
+        """
+        return {
+            cls.override.value: ["O"],
+            cls.override_if_missing.value: ["A"],
+            cls.add.value: ["+"],
+            cls.multiply.value: ["*"],
+            cls.maximum.value: ["X"],
+            cls.minimum.value: ["N"],
+        }
