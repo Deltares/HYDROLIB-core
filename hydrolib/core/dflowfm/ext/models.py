@@ -681,7 +681,7 @@ class Meteo(INIBasedModel):
 
     @field_validator("operand", mode="before")
     @classmethod
-    def validate_operand(cls, v: Any) -> Operand:
+    def validate_operand(cls, v: Any):
         return enum_value_parser(v, Operand, _OPERAND_LEGACY_MAP)
 
 
