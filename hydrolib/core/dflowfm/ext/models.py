@@ -77,13 +77,21 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
 ) -> float | RealTime | ForcingModel | None | DiskOnlyFileModel:
-    """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
+    """Coerce a raw value into a `ForcingData` member (float, RealTime, ForcingModel, or DiskOnlyFileModel).
 
     A string is tried as a float, then as the `RealTime` enum (case-insensitive),
     and finally resolved as a path to a `.bc` forcing file. A `Path` is always
     resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
     Any other value (including `None`) is passed through unchanged so that
     Optional fields and already-validated values still work.
+
+    When the active file-load context has ``recurse=False``, the path resolution
+    step returns a ``DiskOnlyFileModel`` instead of fully parsing the `.bc` file
+    into a ``ForcingModel``. This lightweight placeholder avoids expensive I/O
+    during non-recursive loads while still satisfying the ``ForcingData`` type
+    annotation. An ``AfterValidator`` on ``ForcingData`` ensures that a
+    ``DiskOnlyFileModel`` can never slip through under a recursive load
+    (``recurse=True``), where the `.bc` file is expected to be fully parsed.
 
     Args:
         v: The raw value to coerce.
@@ -93,6 +101,11 @@ def _resolve_forcing_data(
             `realtime` is "not (yet) available for sediment fractions and
             tracers", so callers handling `tracer<...>Delta` /
             `sedFrac<...>Delta` keys should pass `allow_realtime=False`.
+
+    Returns:
+        float | RealTime | ForcingModel | DiskOnlyFileModel | None:
+            The resolved forcing data value. ``DiskOnlyFileModel`` is returned
+            only when ``recurse=False`` in the active file-load context.
 
     Raises:
         ValueError: When `v` is the `realtime` keyword (any case) and
