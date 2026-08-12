@@ -1,7 +1,7 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 from pathlib import Path
-from typing import Annotated, Any, Dict, Literal, Set
+from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
@@ -150,15 +150,15 @@ class Boundary(INIBasedModel):
 
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
-    nodeid: str | None = Field(None, alias="nodeId")
+    nodeid: Optional[str] = Field(None, alias="nodeId")
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
     forcingfile: ForcingModel = Field(alias="forcingFile")
-    bndwidth1d: float | None = Field(None, alias="bndWidth1D")
-    bndbldepth: float | None = Field(None, alias="bndBlDepth")
-    returntime: float | None = Field(None, alias="returnTime")
-    operand: Operand | None = Field(None, alias="operand")
+    bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
+    bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
+    returntime: Optional[float] = Field(None, alias="returnTime")
+    operand: Optional[Operand] = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -176,14 +176,14 @@ class Boundary(INIBasedModel):
 
     @classmethod
     def _is_valid_locationfile_data(
-        cls, elem: None | str | Path | DiskOnlyFileModel
+        cls, elem: Union[None, str, Path, DiskOnlyFileModel]
     ) -> bool:
         return isinstance(elem, Path) or (
             isinstance(elem, DiskOnlyFileModel) and elem.filepath is not None
         )
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: dict | None = None) -> Set:
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         unknown_keywords = ["return_time"]
         return set(unknown_keywords)
 
@@ -226,7 +226,7 @@ class Boundary(INIBasedModel):
             )
         return values
 
-    def _get_identifier(self, data: dict) -> str | None:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         """
         Retrieves the identifier for a boundary, which is the nodeid.
 
@@ -239,7 +239,7 @@ class Boundary(INIBasedModel):
         return data.get("nodeid")
 
     @property
-    def forcing(self) -> ForcingBase | None:
+    def forcing(self) -> Union[ForcingBase, None]:
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
@@ -285,13 +285,13 @@ class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationtype: str | None = Field(None, alias="locationType")
-    nodeid: str | None = Field(None, alias="nodeId")
-    branchid: str | None = Field(None, alias="branchId")
-    chainage: float | None = Field(None, alias="chainage")
-    numcoordinates: int | None = Field(None, alias="numCoordinates")
-    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
-    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    locationtype: Optional[str] = Field(None, alias="locationType")
+    nodeid: Optional[str] = Field(None, alias="nodeId")
+    branchid: Optional[str] = Field(None, alias="branchId")
+    chainage: Optional[float] = Field(None, alias="chainage")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -299,7 +299,7 @@ class Lateral(INIBasedModel):
 
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> list[float]:
+    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
     @field_validator("discharge", mode="before")
@@ -314,7 +314,7 @@ class Lateral(INIBasedModel):
             values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
         )
 
-    def _get_identifier(self, data: dict) -> str | None:
+    def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
     @field_validator("locationtype", mode="before")
@@ -354,28 +354,28 @@ class SourceSink(INIBasedModel):
     _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationfile: DiskOnlyFileModel | None = Field(
+    locationfile: Optional[DiskOnlyFileModel] = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
     )
 
-    numcoordinates: int | None = Field(None, alias="numCoordinates")
-    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
-    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
+    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
+    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
 
-    zsource: float | list[float] | None = Field(None, alias="zSource")
-    zsink: float | list[float] | None = Field(None, alias="zSink")
-    area: float | None = Field(None, alias="Area")
+    zsource: Optional[Union[float, List[float]]] = Field(None, alias="zSource")
+    zsink: Optional[Union[float, List[float]]] = Field(None, alias="zSink")
+    area: Optional[float] = Field(None, alias="Area")
 
     discharge: ForcingData = Field(alias="discharge")
-    salinitydelta: ForcingData | None = Field(None, alias="salinityDelta")
-    temperaturedelta: ForcingData | None = Field(None, alias="temperatureDelta")
+    salinitydelta: Optional[ForcingData] = Field(None, alias="salinityDelta")
+    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperatureDelta")
 
     def is_intermediate_link(self) -> bool:
         return True
 
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> list[float]:
+    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
     @field_validator(
@@ -409,7 +409,7 @@ class SourceSink(INIBasedModel):
         return values
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: dict | None = None) -> Set:
+    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
         unknown_keywords = [
             key
@@ -542,40 +542,40 @@ class Meteo(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the Meteo block fields."""
 
-        quantity: str | None = Field(
+        quantity: Optional[str] = Field(
             "Name of the quantity. See UM Section C.5.3", alias="quantity"
         )
-        forcingfile: str | None = Field(
+        forcingfile: Optional[str] = Field(
             "Name of file containing the forcing for this meteo quantity.",
             alias="forcingFile",
         )
-        forcingfiletype: str | None = Field(
+        forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
-        forcingvariablename: str | None = Field(
+        forcingvariablename: Optional[str] = Field(
             "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
             alias="forcingVariableName",
         )
-        targetmaskfile: str | None = Field(
+        targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
             alias="targetMaskFile",
         )
-        targetmaskinvert: str | None = Field(
+        targetmaskinvert: Optional[str] = Field(
             "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
             alias="targetMaskInvert",
         )
-        interpolationmethod: str | None = Field(
+        interpolationmethod: Optional[str] = Field(
             "Type of (spatial) interpolation.", alias="interpolationMethod"
         )
-        operand: str | None = Field(
+        operand: Optional[str] = Field(
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationallowed: str | None = Field(
+        extrapolationallowed: Optional[str] = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed",
         )
-        extrapolationsearchradius: str | None = Field(
+        extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
             alias="extrapolationSearchRadius",
         )
@@ -583,30 +583,30 @@ class Meteo(INIBasedModel):
     comments: Comments = Comments()
 
     @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> UnknownKeywordErrorManager | None:
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """The Meteo does not currently support raising an error on unknown keywords."""
         return None
 
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
-    forcingfile: TimModel | ForcingModel | DiskOnlyFileModel | PolyFile = Field(
+    forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingvariablename: str | None = Field(None, alias="forcingVariableName")
+    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
-    targetmaskfile: PolyFile | None = Field(None, alias="targetMaskFile")
-    targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
-    interpolationmethod: MeteoInterpolationMethod | None = Field(
+    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
+    targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
+    interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
         None, alias="interpolationMethod"
     )
-    operand: Operand | None = Field(Operand.override.value, alias="operand")
-    extrapolationallowed: bool | None = Field(None, alias="extrapolationAllowed")
-    extrapolationsearchradius: float | None = Field(
+    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
+    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingtype: int | None = Field(None, alias="averagingType")
-    averagingnummin: float | None = Field(None, alias="averagingNumMin")
-    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
+    averagingtype: Optional[int] = Field(None, alias="averagingType")
+    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
+    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
 
     # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
     forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
@@ -708,16 +708,16 @@ class ExtModel(INIModel):
     """
 
     general: ExtGeneral = ExtGeneral()
-    boundary: Annotated[list[Boundary], BeforeValidator(make_list)] = Field(
+    boundary: Annotated[List[Boundary], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
-    lateral: Annotated[list[Lateral], BeforeValidator(make_list)] = Field(
+    lateral: Annotated[List[Lateral], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
-    sourcesink: Annotated[list[SourceSink], BeforeValidator(make_list)] = Field(
+    sourcesink: Annotated[List[SourceSink], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
-    meteo: Annotated[list[Meteo], BeforeValidator(make_list)] = Field(
+    meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
     serializer_config: INISerializerConfig = INISerializerConfig(
