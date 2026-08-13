@@ -43,9 +43,8 @@ def initial_condition_interpolation_methods() -> List[str]:
         "triangulation",
         "averaging",
         "linearSpaceTime",
-        "nearestNb",
         "bilinear",
-        "Possible values: constant, triangulation, averaging, linearSpaceTime, nearestNb, bilinear.",
+        "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear.",
     ]
 
 

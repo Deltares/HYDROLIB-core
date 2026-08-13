@@ -87,14 +87,22 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
 
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
-) -> float | RealTime | ForcingModel | None:
-    """Coerce a raw value into a `ForcingData` member (float, RealTime, or ForcingModel).
+) -> float | RealTime | ForcingModel | None | DiskOnlyFileModel:
+    """Coerce a raw value into a `ForcingData` member (float, RealTime, ForcingModel, or DiskOnlyFileModel).
 
     A string is tried as a float, then as the `RealTime` enum (case-insensitive),
     and finally resolved as a path to a `.bc` forcing file. A `Path` is always
     resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
     Any other value (including `None`) is passed through unchanged so that
     Optional fields and already-validated values still work.
+
+    When the active file-load context has ``recurse=False``, the path resolution
+    step returns a ``DiskOnlyFileModel`` instead of fully parsing the `.bc` file
+    into a ``ForcingModel``. This lightweight placeholder avoids expensive I/O
+    during non-recursive loads while still satisfying the ``ForcingData`` type
+    annotation. An ``AfterValidator`` on ``ForcingData`` ensures that a
+    ``DiskOnlyFileModel`` can never slip through under a recursive load
+    (``recurse=True``), where the `.bc` file is expected to be fully parsed.
 
     Args:
         v: The raw value to coerce.
@@ -104,6 +112,11 @@ def _resolve_forcing_data(
             `realtime` is "not (yet) available for sediment fractions and
             tracers", so callers handling `tracer<...>Delta` /
             `sedFrac<...>Delta` keys should pass `allow_realtime=False`.
+
+    Returns:
+        float | RealTime | ForcingModel | DiskOnlyFileModel | None:
+            The resolved forcing data value. ``DiskOnlyFileModel`` is returned
+            only when ``recurse=False`` in the active file-load context.
 
     Raises:
         ValueError: When `v` is the `realtime` keyword (any case) and
@@ -689,8 +702,9 @@ class Spatial(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationmethod: Optional[str] = Field(
-            "Option for (spatial) extrapolation (no/yes).", alias="extrapolationMethod"
+        extrapolationallowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed"
         )
         extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbour extrapolation in space.",
@@ -749,7 +763,7 @@ class Spatial(INIBasedModel):
         None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
+    extrapolationallowed: Optional[bool] = Field(False, alias="extrapolationAllowed")
     extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )

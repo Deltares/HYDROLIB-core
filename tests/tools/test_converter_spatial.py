@@ -629,7 +629,7 @@ class TestConvertSpatial:
         )
 
     def test_nudge_salinity_temperature_uses_spatial_converter(self):
-        """Test that nudge_salinity_temperature is converted to a Meteo block in the ext file."""
+        """Test that nudge_salinity_temperature is converted to a Spatial block in the ext file."""
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.NudgeSalinityTemperature,
             filename="nudge_salinity_temperature.nc",
