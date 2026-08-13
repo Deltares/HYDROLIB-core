@@ -358,6 +358,8 @@ class SourceSink(INIBasedModel):
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
 
+    model_config = ConfigDict(extra="allow")
+
     _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
@@ -412,11 +414,12 @@ class SourceSink(INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
-            # Migrate legacy lowercased keys from old-format ext files.
-            if "salinitydelta" in values and "salinity" not in values:
-                values["salinity"] = values.pop("salinitydelta")
-            if "temperaturedelta" in values and "temperature" not in values:
-                values["temperature"] = values.pop("temperaturedelta")
+            # Migrate legacy salinityDelta/temperatureDelta keys (any casing) from old-format ext files.
+            lowercase_map = {k.lower(): k for k in values}
+            if "salinitydelta" in lowercase_map and "salinity" not in values:
+                values["salinity"] = values.pop(lowercase_map["salinitydelta"])
+            if "temperaturedelta" in lowercase_map and "temperature" not in values:
+                values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
             for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
@@ -438,7 +441,6 @@ class SourceSink(INIBasedModel):
         ]
         return set(unknown_keywords)
 
-    model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
         """Initialize SourceSink and set dynamic tracer attributes."""
