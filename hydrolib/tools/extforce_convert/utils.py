@@ -315,6 +315,14 @@ def create_spatial_input_dict(
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
     block_data = convert_interpolation_data(forcing, block_data)
+
+    # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
+    # interpolationMethod = constant.  The old METHOD value (typically 3 →
+    # linearSpaceTime) is meaningless for vertical profiles; the kernel always
+    # applies constant (horizontal) + linear (vertical) interpolation internally.
+    if quantity_name.startswith("initialvertical"):
+        block_data["interpolationmethod"] = InterpolationMethod.constant
+
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):

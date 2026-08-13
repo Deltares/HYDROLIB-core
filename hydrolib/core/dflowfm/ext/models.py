@@ -40,6 +40,7 @@ from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
     DataFileType,
     InterpolationMethod,
+    AbstractSpatialField,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -657,7 +658,7 @@ class Meteo(INIBasedModel):
         return enum_value_parser(v, MeteoInterpolationMethod)
 
 
-class Spatial(INIBasedModel):
+class Spatial(AbstractSpatialField):
     """A `[Spatial]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
