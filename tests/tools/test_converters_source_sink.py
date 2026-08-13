@@ -650,7 +650,6 @@ class TestNoDeltaSuffixInConverter:
         )
 
 
-
 class TestMainConverter:
     path = "tests/data/input/source-sink/source-sink.ext"
     temperature_and_salinity_info = {
