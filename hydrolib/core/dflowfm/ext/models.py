@@ -163,14 +163,15 @@ class Boundary(INIBasedModel):
 
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
-    nodeid: Optional[str] = Field(None, alias="nodeId")
+    nodeid: str | None = Field(None, alias="nodeId")
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
     forcingfile: ForcingModel = Field(alias="forcingFile")
-    bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
-    bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
-    returntime: Optional[float] = Field(None, alias="returnTime")
+    bndwidth1d: float | None = Field(None, alias="bndWidth1D")
+    bndbldepth: float | None = Field(None, alias="bndBlDepth")
+    returntime: float | None = Field(None, alias="returnTime")
+    operand: Operand | None = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -278,6 +279,11 @@ class Boundary(INIBasedModel):
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
         return data
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v: Any):
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Lateral(INIBasedModel):
@@ -685,6 +691,11 @@ class Meteo(INIBasedModel):
     @classmethod
     def interpolationmethod_validator(cls, v):
         return enum_value_parser(v, MeteoInterpolationMethod)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v: Any):
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class ExtGeneral(INIGeneral):
