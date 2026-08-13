@@ -137,10 +137,7 @@ def oldfiletype_to_forcing_file_type(
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif oldfiletype == ExtOldFileType.Polyline:  # 9
-        # Boundary polyline files no longer need a filetype of their own (intentionally no error raised)
-        pass
-    elif oldfiletype == ExtOldFileType.InsidePolygon:  # 10
+    elif oldfiletype in [ExtOldFileType.Polyline,  ExtOldFileType.InsidePolygon]:  # 9 and # 10
         forcing_file_type = DataFileType.polygon
     elif oldfiletype == ExtOldFileType.NetCDFGridData:  # 11
         forcing_file_type = MeteoForcingFileType.netcdf
@@ -370,6 +367,7 @@ def create_initial_cond_and_parameter_input_dict(
         "datafile": DiskOnlyFileModel(new_forcing_path),
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
+
     if block_data["datafiletype"] == "polygon":
         block_data["value"] = forcing.value
 
@@ -380,6 +378,14 @@ def create_initial_cond_and_parameter_input_dict(
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
     block_data = convert_interpolation_data(forcing, block_data)
+
+    # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
+    # interpolationMethod = constant.  The old METHOD value (typically 3 →
+    # linearSpaceTime) is meaningless for vertical profiles; the kernel always
+    # applies constant (horizontal) + linear (vertical) interpolation internally.
+    if quantity_name.startswith("initialvertical"):
+        block_data["interpolationmethod"] = InterpolationMethod.constant
+
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):

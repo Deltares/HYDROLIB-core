@@ -222,7 +222,7 @@ class TestMeteo:
             forcingfiletype=MeteoForcingFileType.uniform,
             targetmaskfile=None,
             targetmaskinvert=True,
-            interpolationmethod=MeteoInterpolationMethod.nearestnb,
+            interpolationmethod=MeteoInterpolationMethod.averaging,
             operand="O",
             extrapolationallowed=True,
             extrapolationsearchradius=10,
@@ -232,7 +232,7 @@ class TestMeteo:
         )
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is True
-        assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
+        assert meteo.interpolationmethod == MeteoInterpolationMethod.averaging
         assert meteo.operand == "O"
         assert meteo.extrapolationallowed is True
         assert meteo.extrapolationsearchradius == 10
