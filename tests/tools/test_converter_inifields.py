@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     IniFieldModel,
@@ -21,6 +21,7 @@ from hydrolib.tools.extforce_convert.converters import (
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
+    oldfiletype_to_forcing_file_type,
 )
 from tests.utils import compare_two_files, ignore_version_lines
 
@@ -31,7 +32,7 @@ class TestConvertInitialCondition:
             quantity=ExtOldQuantity.InitialWaterLevel,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
@@ -141,7 +142,7 @@ class TestConvertParameters:
             quantity=ExtOldQuantity.FrictionCoefficient,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
@@ -207,12 +208,22 @@ class TestConvertParameters:
                 "internaltidesfrictioncoefficient",
             ),
             pytest.param(ExtOldQuantity.SecchiDepth, "secchidepth"),
-            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "sea_ice_area_fraction"),
+            pytest.param(ExtOldQuantity.SeaIceAreaFraction, "seaIceAreaFraction"),
+            pytest.param(ExtOldQuantity.SeaIceThickness, "seaIceThickness"),
             pytest.param(ExtOldQuantity.StemHeight, "stemheight"),
             pytest.param(ExtOldQuantity.StemDensity, "stemdensity"),
             pytest.param(ExtOldQuantity.StemDiameter, "stemdiameter"),
             pytest.param(ExtOldQuantity.NudgeRate, "nudgerate"),
             pytest.param(ExtOldQuantity.NudgeTime, "nudgetime"),
+            pytest.param(
+                ExtOldQuantity.WaveBreakerDissipation,
+                "wavebreakerdissipation"),
+            pytest.param(
+                ExtOldQuantity.WhiteCappingDissipation,
+                "whitecappingdissipation"),
+            pytest.param(
+                ExtOldQuantity.TotalWaveEnergyDissipation,
+                "totalwaveenergydissipation"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
@@ -238,6 +249,81 @@ class TestConvertParameters:
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == expected_quantity
+
+
+class TestConvertSeaIceQuantities:
+    """End-to-end conversion of the sea ice quantities from UM Sec. 15.8.1.
+
+    The kernel spells these differently either side of the migration: the old external
+    forcings file uses `QUANTITY=sea_ice_thickness`, while the initial and parameter
+    fields file uses `quantity = seaIceThickness`. These tests drive a real old ext
+    file through the converter and assert the new spelling comes out the far end.
+    """
+
+    # UM Sec. 15.8.1, verbatim, except FILETYPE: the manual's example uses FILETYPE=6
+    # (curvilinear grid), which `ParameterField.datafiletype` cannot represent, so a
+    # sample file is used instead.
+    EXT_OLD_TEMPLATE = (
+        "QUANTITY={quantity}\n"
+        "FILENAME=ice_forcing.xyz\n"
+        "FILETYPE=7\n"
+        "METHOD=5\n"
+        "OPERAND=O\n"
+    )
+
+    def _write_old_ext(self, tmp_path: Path, quantity: str) -> Path:
+        """Write a minimal old external forcings file for `quantity`."""
+        ext_path = tmp_path / "old.ext"
+        ext_path.write_text(self.EXT_OLD_TEMPLATE.format(quantity=quantity))
+        (tmp_path / "ice_forcing.xyz").write_text("0.0 0.0 1.0\n")
+        return ext_path
+
+    @pytest.mark.parametrize(
+        "old_quantity, new_quantity",
+        [
+            pytest.param("sea_ice_thickness", "seaIceThickness", id="thickness"),
+            pytest.param(
+                "sea_ice_area_fraction", "seaIceAreaFraction", id="area-fraction"
+            ),
+        ],
+    )
+    def test_old_ext_file_parses_and_converts_under_the_new_name(
+        self, tmp_path: Path, old_quantity: str, new_quantity: str
+    ):
+        """
+        Input: an old ext file spelled as the manual's migration example.
+        Expect: it parses under the old name, is not rejected as unsupported, and
+            converts into a `[Parameter]` block carrying the new name.
+        """
+        ext_path = self._write_old_ext(tmp_path, old_quantity)
+
+        converter = ExternalForcingConverter(ext_path)
+        # The old file must still accept the old spelling.
+        assert [f.quantity for f in converter.extold_model.forcing] == [old_quantity]
+        # And the quantity must no longer be refused by the converter.
+        converter.check_unsupported_quantities()
+
+        converter.update()
+        blocks = converter.inifield_model.parameter
+        assert len(blocks) == 1
+        assert isinstance(blocks[0], ParameterField)
+        assert blocks[0].quantity == new_quantity
+
+    def test_new_name_survives_serialization(self, tmp_path: Path):
+        """
+        Input: a converted sea ice model, written to disk.
+        Expect: the file on disk carries the camelCase name. Asserting on the model
+            alone would not catch a serializer that re-cases the quantity.
+        """
+        ext_path = self._write_old_ext(tmp_path, "sea_ice_thickness")
+
+        converter = ExternalForcingConverter(str(ext_path))
+        converter.update()
+        converter.save(backup=False)
+
+        written = converter.inifield_model.filepath.read_text()
+        assert "seaIceThickness" in written
+        assert "sea_ice_thickness" not in written
 
 
 class TestInifieldConverter:
@@ -275,3 +361,85 @@ class TestInifieldConverter:
         )
         assert diff == []
         path.unlink()
+
+
+class TestOldFiletypeToForcingFileType:
+    """Tests for oldfiletype_to_forcing_file_type — especially the FILETYPE=9 change."""
+
+    @pytest.mark.unit
+    def test_filetype_9_polyline_maps_to_polygon(self):
+        """Regression test: FILETYPE=9 (Polyline) must now map to DataFileType.polygon.
+
+        Before the fix, FILETYPE=9 fell through without setting a value, returning the
+        default "unknown", which caused InitialField validation errors downstream.
+        """
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.Polyline)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_10_inside_polygon_maps_to_polygon(self):
+        """FILETYPE=10 (InsidePolygon) still maps to DataFileType.polygon (unchanged)."""
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_9_and_10_return_same_value(self):
+        """FILETYPE=9 and FILETYPE=10 must now return the same datafiletype."""
+        assert oldfiletype_to_forcing_file_type(
+            ExtOldFileType.Polyline
+        ) == oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+
+
+class TestInitialVerticalInterpolationMethodOverride:
+    """Tests for UNST-9218 / GitHub #1104: initialvertical* must use constant interpolation.
+
+    The old external forcings file typically uses METHOD=3 (linearSpaceTime) for
+    initialvertical* quantities. The converter must override this to 'constant',
+    because the kernel always uses constant (horizontal) interpolation for vertical
+    profiles — linearSpaceTime is invalid for these quantities.
+    """
+
+    _vertical_quantities = [
+        "initialverticalsalinityprofile",
+        "initialverticaltemperatureprofile",
+        "initialverticalsedfracprofileSand",
+    ]
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize("method", [1, 2, 3, 4, 5])
+    def test_initialvertical_forces_constant_interpolation(self, quantity, method, tmp_path):
+        """Any old METHOD value must be overridden to 'constant' for initialvertical* quantities."""
+        forcing_file = tmp_path / "profile.pli"
+        forcing_file.write_text("dummy")
+
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename=DiskOnlyFileModel(filepath=forcing_file),
+            filetype=ExtOldFileType.Polyline,
+            method=method,
+            operand="O",
+        )
+
+        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+
+        assert result["interpolationmethod"] == InterpolationMethod.constant
+
+    @pytest.mark.unit
+    def test_non_vertical_quantity_preserves_original_method(self, tmp_path):
+        """Non-initialvertical quantities must keep the converted interpolation method."""
+        forcing_file = tmp_path / "data.xyz"
+        forcing_file.write_text("dummy")
+
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity("initialwaterlevel"),
+            filename=DiskOnlyFileModel(filepath=forcing_file),
+            filetype=ExtOldFileType.Samples,
+            method=5,
+            operand="O",
+        )
+
+        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+
+        assert result["interpolationmethod"] == InterpolationMethod.triangulation
+
