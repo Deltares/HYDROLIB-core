@@ -16,7 +16,7 @@ tim_file = Path("tests/data/input/source-sink/leftsor.tim")
 @pytest.fixture
 def converter(source_sink_dir: Path) -> SourceSinkConverter:
     converter = SourceSinkConverter()
-    converter.root_dir = str(source_sink_dir)
+    converter.root_dir = source_sink_dir
     return converter
 
 @pytest.fixture
