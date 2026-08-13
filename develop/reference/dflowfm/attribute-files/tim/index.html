@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -6397,10 +6397,10 @@ No other comments are supported.</p>
 <span class="sd">            ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">            ValueError: If the data of the timeseries is empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-        <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+            <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 
@@ -6620,10 +6620,10 @@ No other comments are supported.</p>
 <span class="sd">        ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">        ValueError: If the data of the timeseries is empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-    <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-    <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
