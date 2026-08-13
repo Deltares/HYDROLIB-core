@@ -24,7 +24,7 @@ class TestInitialConditionConverter:
             "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
             "filetype": 7,
             "method": 5,
-            "operand": "O",
+            "operand": "override",
         }
         forcing = ExtOldForcing(**forcing_data)
         with patch(
@@ -87,7 +87,7 @@ class TestSourceSinks:
 
         assert len(ext_model.boundary) == 1
         boundary = ext_model.boundary[0]
-        assert boundary.forcingfile[0].filepath == boundary_paths["bc_relative_path"]
+        assert boundary.forcingfile.filepath == boundary_paths["bc_relative_path"]
 
         converter.save()
 

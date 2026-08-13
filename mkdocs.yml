@@ -160,4 +160,5 @@ nav:
           - Extforce-convert:
               - reference/tools/extforce-convert/extforce_convert.md
               - reference/tools/extforce-convert/converted_files.md
+  - Migration & Deprecations: "migration.md"
   - Release notes: "changelog.md"

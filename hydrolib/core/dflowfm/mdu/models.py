@@ -2,9 +2,15 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Optional, Union
+from typing import Annotated, Any, Literal, Union, Optional, List, Dict
 
-from pydantic import BeforeValidator, Field, ValidationInfo, field_validator
+from pydantic import (
+    BeforeValidator,
+    Field,
+    ValidationInfo,
+    WrapValidator,
+    field_validator,
+)
 
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
@@ -36,6 +42,13 @@ from hydrolib.core.dflowfm.xyz.models import XYZModel
 DEPRECATED_VARIABLE = "Deprecated variable."
 
 
+def _preserve_empty_string(value, handler):
+    # Empty string bypasses Path coercion, which would otherwise become Path(".").
+    if value == "":
+        return ""
+    return handler(value)
+
+
 def load_crs(value):
     """Load an observation cross section model from a file path."""
     file_suffix_model_map = {
@@ -59,6 +72,14 @@ def load_dry(value):
     file_suffix_model_map = {
         ".xyz": XYZModel,
         ".pli": PolyFile,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_particles(value):
+    """Load a particles model from a file path."""
+    file_suffix_model_map = {
+        ".xyz": XYZModel,
     }
     return load_model(value, file_suffix_model_map)
 
@@ -209,12 +230,16 @@ class Numerics(INIBasedModel):
             alias="cstBnd",
         )
         maxitverticalforestersal: Optional[str] = Field(
-            "Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).",
+            DEPRECATED_VARIABLE,
             alias="maxitVerticalForesterSal",
         )
         maxitverticalforestertem: Optional[str] = Field(
-            "Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).",
+            DEPRECATED_VARIABLE,
             alias="maxitVerticalForesterTem",
+        )
+        maxitverticalforester: Optional[str] = Field(
+            "Forester iterations for all constituents (0: no vertical filter, > 0: max nr of iterations)",
+            alias="maxitverticalforester",
         )
         turbulencemodel: Optional[str] = Field(
             "0=no, 1 = constant, 2 = algebraic, 3 = k-epsilon, 4 = k-tau.",
@@ -388,8 +413,9 @@ class Numerics(INIBasedModel):
     teta0: float = Field(0.55, alias="teta0")
     qhrelax: float = Field(0.01, alias="qhRelax")
     cstbnd: bool = Field(False, alias="cstBnd")
-    maxitverticalforestersal: int = Field(0, alias="maxitVerticalForesterSal")
-    maxitverticalforestertem: int = Field(0, alias="maxitVerticalForesterTem")
+    maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
+    maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
+    maxitverticalforester: int = Field(0, alias="maxitverticalforester")
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
@@ -1076,17 +1102,30 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Optional[Path] = Field("", alias="trtDef")
-    trtl: Optional[Path] = Field("", alias="trtL")
+    trtdef: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="trtDef")
+    trtl: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="trtL")
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
 
-ObsFile = Annotated[Union[XYNModel, ObservationPointModel], BeforeValidator(load_point)]
-ObsCrsFile = Annotated[
-    Union[PolyFile, ObservationCrossSectionModel], BeforeValidator(load_crs)
+ObsFile = Annotated[
+    Union[XYNModel, ObservationPointModel, DiskOnlyFileModel],
+    BeforeValidator(load_point),
 ]
-DryPointsFile = Annotated[Union[XYZModel, PolyFile], BeforeValidator(load_dry)]
+ObsCrsFile = Annotated[
+    Union[PolyFile, ObservationCrossSectionModel, DiskOnlyFileModel],
+    BeforeValidator(load_crs),
+]
+DryPointsFile = Annotated[
+    Union[XYZModel, PolyFile, DiskOnlyFileModel], BeforeValidator(load_dry)
+]
+ParticlesFile = Annotated[
+    Union[XYZModel, DiskOnlyFileModel], BeforeValidator(load_particles)
+]
 
 
 class Output(INIBasedModel):
@@ -1618,8 +1657,12 @@ class Output(INIBasedModel):
     wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
-    outputdir: Optional[Path] = Field("", alias="outputDir")
-    waqoutputdir: Optional[Path] = Field("", alias="waqOutputDir")
+    outputdir: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="outputDir")
+    waqoutputdir: Annotated[
+        Optional[Path], WrapValidator(_preserve_empty_string)
+    ] = Field("", alias="waqOutputDir")
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
@@ -2178,7 +2221,9 @@ class Geometry(INIBasedModel):
     dxdoubleat1dendnodes: bool = Field(True, alias="dxDoubleAt1DEndNodes")
     changevelocityatstructures: bool = Field(False, alias="changeVelocityAtStructures")
     changestructuredimensions: bool = Field(True, alias="changeStructureDimensions")
-    gridenclosurefile: Optional[PolyFile] = Field(None, alias="gridEnclosureFile")
+    gridenclosurefile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="gridEnclosureFile"
+    )
     allowbndatbifurcation: bool = Field(False, alias="allowBndAtBifurcation")
     slotw1d: float = Field(0.001, alias="slotw1D")
     slotw2d: float = Field(0.001, alias="slotw2D")
@@ -2476,7 +2521,7 @@ class Particles(INIBasedModel):
 
     _header: Literal["Particles"] = "Particles"
 
-    particlesfile: Optional[XYZModel] = Field(None, alias="ParticlesFile")
+    particlesfile: Optional[ParticlesFile] = Field(None, alias="ParticlesFile")
     particlesreleasefile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(

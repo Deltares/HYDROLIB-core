@@ -13,6 +13,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
+from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
@@ -59,6 +60,89 @@ def _coordinate_length(v) -> int:
     return result
 
 
+def _is_dynamic_forcing_delta_key(key: Any) -> bool:
+    """Return True if `key` names a dynamic `tracer<...>Delta`/`sedFrac<...>Delta` field.
+
+    Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `[SourceSink]` blocks
+    accept any number of `tracer<tracername>Delta` and `sedFrac<fractionname>Delta`
+    keys, each carrying a scalar Double or the name of a `.bc` file. They are
+    case-insensitive on the wire. Comparison here is also case-insensitive so
+    that both the camelCase Python kwarg form and the lowercased INI-parser
+    form are recognised.
+    """
+    result = False
+    if isinstance(key, str):
+        lowered = key.lower()
+        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
+    return result
+
+
+def _resolve_forcing_data(
+    v: Any, *, allow_realtime: bool = True
+) -> float | RealTime | ForcingModel | None | DiskOnlyFileModel:
+    """Coerce a raw value into a `ForcingData` member (float, RealTime, ForcingModel, or DiskOnlyFileModel).
+
+    A string is tried as a float, then as the `RealTime` enum (case-insensitive),
+    and finally resolved as a path to a `.bc` forcing file. A `Path` is always
+    resolved as a forcing file. A `dict` is instantiated as a `ForcingModel`.
+    Any other value (including `None`) is passed through unchanged so that
+    Optional fields and already-validated values still work.
+
+    When the active file-load context has ``recurse=False``, the path resolution
+    step returns a ``DiskOnlyFileModel`` instead of fully parsing the `.bc` file
+    into a ``ForcingModel``. This lightweight placeholder avoids expensive I/O
+    during non-recursive loads while still satisfying the ``ForcingData`` type
+    annotation. An ``AfterValidator`` on ``ForcingData`` ensures that a
+    ``DiskOnlyFileModel`` can never slip through under a recursive load
+    (``recurse=True``), where the `.bc` file is expected to be fully parsed.
+
+    Args:
+        v: The raw value to coerce.
+        allow_realtime: When `False`, the `realtime` keyword is rejected with a
+            `ValueError` instead of mapped to `RealTime.realtime`. The
+            D-Flow FM User Manual Table C.8 (§C.6.2.4) states that
+            `realtime` is "not (yet) available for sediment fractions and
+            tracers", so callers handling `tracer<...>Delta` /
+            `sedFrac<...>Delta` keys should pass `allow_realtime=False`.
+
+    Returns:
+        float | RealTime | ForcingModel | DiskOnlyFileModel | None:
+            The resolved forcing data value. ``DiskOnlyFileModel`` is returned
+            only when ``recurse=False`` in the active file-load context.
+
+    Raises:
+        ValueError: When `v` is the `realtime` keyword (any case) and
+            `allow_realtime=False`.
+
+    Note: this helper returns `RealTime.realtime` for the realtime keyword, but
+    Pydantic's `Union[float, RealTime, ForcingModel]` resolution stores it as
+    the underlying string `"realtime"` on the model field. Compare with `==`
+    (StrEnum equality), not `is`.
+    """
+    result = v
+    if isinstance(v, str):
+        try:
+            result = float(v)
+        except ValueError:
+            try:
+                realtime_match = RealTime(v.lower())
+            except ValueError:
+                result = resolve_file_model(v, ForcingModel)
+            else:
+                if not allow_realtime:
+                    raise ValueError(
+                        "The 'realtime' keyword is not supported for this field. "
+                        "Per D-Flow FM User Manual Table C.8 (§C.6.2.4), realtime "
+                        "is not (yet) available for sediment fractions and tracers."
+                    )
+                result = realtime_match
+    elif isinstance(v, Path):
+        result = resolve_file_model(v, ForcingModel)
+    elif isinstance(v, dict):
+        result = ForcingModel(**v)
+    return result
+
+
 FILETYPE_FILEMODEL_MAPPING = {
     "bcascii": ForcingModel,
     "uniform": TimModel,
@@ -82,14 +166,15 @@ class Boundary(INIBasedModel):
 
     _header: Literal["Boundary"] = "Boundary"
     quantity: str = Field(alias="quantity")
-    nodeid: Optional[str] = Field(None, alias="nodeId")
+    nodeid: str | None = Field(None, alias="nodeId")
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
-    forcingfile: List[ForcingModel] = Field(alias="forcingFile")
-    bndwidth1d: Optional[float] = Field(None, alias="bndWidth1D")
-    bndbldepth: Optional[float] = Field(None, alias="bndBlDepth")
-    returntime: Optional[float] = Field(None, alias="returnTime")
+    forcingfile: ForcingModel = Field(alias="forcingFile")
+    bndwidth1d: float | None = Field(None, alias="bndWidth1D")
+    bndbldepth: float | None = Field(None, alias="bndBlDepth")
+    returntime: float | None = Field(None, alias="returnTime")
+    operand: Operand | None = Field(None, alias="operand")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -97,15 +182,12 @@ class Boundary(INIBasedModel):
     @field_validator("forcingfile", mode="before")
     @classmethod
     def validate_forcingfile(cls, data: Any) -> Any:
-        if not isinstance(data, list):
-            data = [data]
-        for i, forcing in enumerate(data):
-            if isinstance(forcing, (str, Path)):
-                data[i] = ForcingModel(filepath=forcing)
-            elif not isinstance(forcing, ForcingModel):
-                raise TypeError(
-                    "Forcing file must be a ForcingModel or a path to a forcing file."
-                )
+        if isinstance(data, (str, Path)):
+            data = ForcingModel(filepath=data)
+        elif not isinstance(data, ForcingModel):
+            raise TypeError(
+                "Forcing file must be a ForcingModel or a path to a forcing file."
+            )
         return data
 
     @classmethod
@@ -177,18 +259,16 @@ class Boundary(INIBasedModel):
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
-            ForcingBase: The corresponding forcing data. None when this boundary does not have a forcing file or when the data cannot be found.
+            ForcingBase: The corresponding forcing data, or None when no matching forcing block is found.
         """
         result = None
-        if self.forcingfile is not None:
-            for forcing in self.forcingfile[0].forcing:
-
-                if self.nodeid == forcing.name and any(
-                    quantity.quantity.startswith(self.quantity)
-                    for quantity in forcing.quantityunitpair
-                ):
-                    result = forcing
-                    break
+        for forcing in self.forcingfile.forcing:
+            if self.nodeid == forcing.name and any(
+                quantity.quantity.startswith(self.quantity)
+                for quantity in forcing.quantityunitpair
+            ):
+                result = forcing
+                break
 
         return result
 
@@ -202,6 +282,11 @@ class Boundary(INIBasedModel):
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
         return data
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v: Any):
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Lateral(INIBasedModel):
@@ -236,23 +321,7 @@ class Lateral(INIBasedModel):
     @field_validator("discharge", mode="before")
     @classmethod
     def validate_discharge(cls, v):
-        result = v
-        if isinstance(v, str):
-            # Try float
-            try:
-                result = float(v)
-            except ValueError:
-                # Try RealTime enum (case-insensitive)
-                try:
-                    result = RealTime(v.lower())
-                except ValueError:
-                    result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, Path):
-            result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, dict):
-            # Try to instantiate ForcingModel from dict
-            result = ForcingModel(**v)
-        return result
+        return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
@@ -325,10 +394,49 @@ class SourceSink(INIBasedModel):
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
+    @field_validator(
+        "discharge", "salinitydelta", "temperaturedelta", mode="before"
+    )
+    @classmethod
+    def validate_forcing_data(cls, v):
+        return _resolve_forcing_data(v)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _resolve_dynamic_forcing_deltas(cls, values: Any) -> Any:
+        """Apply `_resolve_forcing_data` to dynamic `tracer<...>Delta`/`sedFrac<...>Delta` keys.
+
+        Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
+        `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
+        time-series file. The first-class `discharge`/`salinityDelta`/
+        `temperatureDelta` fields are already handled by `validate_forcing_data`;
+        this validator extends the same coercion to the dynamic Delta-suffix
+        fields that arrive via `extra="allow"`.
+
+        Legacy dynamic fields (`initialtracer_*`, `tracerbnd*`, `sedfracbnd_*`,
+        `initialsedfrac_*`) do not end with `delta` and are left untouched.
+        """
+        if isinstance(values, dict):
+            for key in values:
+                if _is_dynamic_forcing_delta_key(key):
+                    values[key] = _resolve_forcing_data(
+                        values[key], allow_realtime=False
+                    )
+        return values
+
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
         fields = cls.model_fields
-        return {key for key in input_data.keys() if key not in fields}
+        unknown_keywords = [
+            key
+            for key in input_data.keys()
+            if key not in fields
+            and (
+                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+                or _is_dynamic_forcing_delta_key(key)
+            )
+        ]
+        return set(unknown_keywords)
 
     model_config = ConfigDict(extra="allow")
 
@@ -460,7 +568,7 @@ class Meteo(INIBasedModel):
         forcingfiletype: Optional[str] = Field(
             "Type of forcingFile.", alias="forcingFileType"
         )
-        forcingVariableName: Optional[str] = Field(
+        forcingvariablename: Optional[str] = Field(
             "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
             alias="forcingVariableName",
         )
@@ -479,11 +587,11 @@ class Meteo(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationAllowed: Optional[str] = Field(
+        extrapolationallowed: Optional[str] = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed",
         )
-        extrapolationSearchRadius: Optional[str] = Field(
+        extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
             alias="extrapolationSearchRadius",
         )
@@ -500,7 +608,7 @@ class Meteo(INIBasedModel):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingVariableName: Optional[str] = Field(None, alias="forcingVariableName")
+    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
     targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
@@ -508,13 +616,33 @@ class Meteo(INIBasedModel):
         None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationAllowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
-    extrapolationSearchRadius: Optional[float] = Field(
+    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingType: Optional[int] = Field(None, alias="averagingType")
-    averagingNumMin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingPercentile: Optional[float] = Field(None, alias="averagingPercentile")
+    averagingtype: Optional[int] = Field(None, alias="averagingType")
+    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
+    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
+
+    # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
+    forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "forcingvariablename", removed_in="2.0.0", since="1.1.0"
+    )
+    extrapolationAllowed = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationallowed", removed_in="2.0.0", since="1.1.0"
+    )
+    extrapolationSearchRadius = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "extrapolationsearchradius", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingType = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingtype", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingNumMin = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingnummin", removed_in="2.0.0", since="1.1.0"
+    )
+    averagingPercentile = DeprecatedAttributeAlias(  # NOSONAR S1845
+        "averagingpercentile", removed_in="2.0.0", since="1.1.0"
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -566,6 +694,11 @@ class Meteo(INIBasedModel):
     @classmethod
     def interpolationmethod_validator(cls, v):
         return enum_value_parser(v, MeteoInterpolationMethod)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v: Any):
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class ExtGeneral(INIGeneral):

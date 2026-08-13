@@ -218,12 +218,14 @@ class AbstractSpatialField(INIBasedModel, ABC):
             data_file = DiskOnlyFileModel(data_file)
             values["datafile"] = data_file
 
-        validate_required_fields(
-            values,
-            "value",
-            conditional_field_name="datafiletype",
-            conditional_value=DataFileType.polygon,
-        )
+        if (values.get("interpolationmethod") == InterpolationMethod.constant and
+                not values["quantity"].startswith("initialvertical")):
+            validate_required_fields(
+                values,
+                "value",
+                conditional_field_name="datafiletype",
+                conditional_value=DataFileType.polygon,
+            )
 
         value_field_value = values.get("value")
         datafiletype_field_value = values.get("datafiletype")
@@ -256,7 +258,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod

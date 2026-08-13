@@ -55,13 +55,18 @@ class TestExtOldToNewFromMDU:
         # rename back the backup file
         mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
-    def test_extrapolate_slr(self, capsys, input_files_dir: Path):
+    def test_extrapolate_slr(
+            self,
+            capsys,
+            monkeypatch,
+            input_files_dir: Path
+    ):
         """
         - This test used mdu file with `Unknown keywords` so the reading of the mdu file using the `LegacyFMModel`
         fails.
         - Since the `LegacyFMModel` class is not created, the converter will read only the [physics] and [time] section
         """
-        main_converter._verbose = True
+        monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
         mdu_filename = (
             input_files_dir
             / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
@@ -82,8 +87,13 @@ class TestExtOldToNewFromMDU:
         # rename back the backup file
         mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
-    def test_recursive(self, capsys, input_files_dir: Path):
-        main_converter._verbose = True
+    def test_recursive(
+            self,
+            capsys,
+            monkeypatch,
+            input_files_dir: Path
+    ):
+        monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
         path = input_files_dir / "e02/f006_external_forcing"
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter.save",
@@ -543,14 +553,14 @@ class TestExternalFocingConverter:
                     "filename": "file.xyz",
                     "filetype": 7,
                     "method": 1,
-                    "operand": "O",
+                    "operand": "override",
                 },
                 {
                     "quantity": "unsupported_quantity",
                     "filename": "file2.xyz",
                     "filetype": 7,
                     "method": 4,
-                    "operand": "O",
+                    "operand": "override",
                     "value": 0.0125,
                 },
             ]
@@ -558,7 +568,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_conversion(
@@ -575,7 +585,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_no_debug_unsupported_quantities_conversion(
@@ -594,7 +604,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["waveperiod", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_save(

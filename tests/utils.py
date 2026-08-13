@@ -326,7 +326,7 @@ def ignore_version_lines(line: str, pattern=VERSION_LINE_PATTERN) -> bool:
             The line to check.
         pattern (str, optional):
             The regex pattern to match version lines.
-            Defaults to r'^\s*#?\s*written by hydrolib-core\s+\d+\.\d+(?:\.\d+)?(?:-[\w\.]+)?\s*$'.
+            Defaults to r'^\\s*#?\\s*written by hydrolib-core\\s+\\d+\\.\\d+(?:\\.\\d+)?(?:-[\\w\\.]+)?\\s*$'.
 
     Notes:
         This is used to match version definition lines such as:
