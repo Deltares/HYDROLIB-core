@@ -68,6 +68,7 @@ class TestIniField:
             quantity="waterlevel",
             datafile="iniwlev.xyz",
             datafiletype="sample",
+            interpolationmethod="constant"
         )
 
         return inifield_values
@@ -271,18 +272,20 @@ class TestInitialConditions:
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
 
     def test_invalid_datafiletype(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype="invalidType",
             )
 
     def test_invalid_interpolationmethod(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype=DataFileType.arcinfo,
                 interpolationmethod="invalidMethod",
             )
@@ -328,3 +331,130 @@ class TestExcludeFromValidation:
 
         model = InitialField(**data)
         assert model.tracerdecaytime == 8640000
+
+
+class TestInitialVerticalProfilePolygonValidation:
+    """Tests for the relaxed polygon/value validation for initialvertical* quantities.
+
+    The validate_that_value_is_present_for_polygons validator skips the 'value required'
+    check for quantities whose name starts with 'initialvertical', because these quantities
+    use polygon datafiletype without a uniform fill value.
+
+    The validation only ever fires when interpolationmethod == constant; for all other
+    methods (triangulation, averaging, linearSpaceTime, None) the check is bypassed
+    regardless of quantity name.
+    """
+
+    _vertical_quantities = [
+        pytest.param("initialverticalsalinityprofile", id="salinity"),
+        pytest.param("initialverticaltemperatureprofile", id="temperature"),
+        pytest.param("initialverticalsedfracprofile", id="sedfrac"),
+    ]
+
+    _non_constant_methods = [
+        pytest.param(InterpolationMethod.triangulation, id="triangulation"),
+        pytest.param(InterpolationMethod.averaging, id="averaging"),
+        pytest.param(InterpolationMethod.linear_space_time, id="linearSpaceTime"),
+        pytest.param(None, id="none"),
+    ]
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    def test_initialvertical_polygon_without_value_is_valid_for_constant_interpolation(
+            self, quantity
+    ):
+        """initialvertical* + polygon + constant interpolation + no value must be valid.
+
+        This is the key model-level fix: without it, the constant interpolation + polygon
+        validation raises 'value should be provided when datafiletype is polygon'.
+        """
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=InterpolationMethod.constant,
+            operand=Operand.override,
+        )
+
+        assert model.quantity == quantity
+        assert model.datafiletype == DataFileType.polygon
+        assert model.value is None
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize("interpolationmethod", _non_constant_methods)
+    def test_initialvertical_polygon_without_value_is_valid_for_non_constant_interpolation_methods(
+        self, quantity, interpolationmethod
+    ):
+        """initialvertical* + polygon + non-constant interpolation + no value must be valid.
+
+        The 'value required' check is only guarded by interpolationmethod == constant,
+        so all other methods must allow polygon without a value for any quantity name.
+        """
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            operand=Operand.override,
+        )
+
+        assert model.quantity == quantity
+        assert model.value is None
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("interpolationmethod", _non_constant_methods)
+    def test_non_initialvertical_polygon_without_value_is_valid_for_non_constant_methods(
+        self, interpolationmethod
+    ):
+        """Non-initialvertical + polygon + non-constant interpolation + no value must be valid.
+
+        The validation only fires for constant interpolation, so other methods never
+        require a value even for regular quantities.
+        """
+        model = InitialField(
+            quantity="initialwaterlevel",
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            operand=Operand.override,
+        )
+
+        assert model.value is None
+
+    @pytest.mark.unit
+    def test_non_initialvertical_polygon_without_value_raises_for_constant(self):
+        """Non-initialvertical + polygon + constant interpolation + no value must raise."""
+        datafile = DiskOnlyFileModel()
+        with pytest.raises(ValidationError, match="value should be provided when datafiletype is polygon"):
+            InitialField(
+                quantity="initialwaterlevel",
+                datafile=datafile,
+                datafiletype=DataFileType.polygon,
+                interpolationmethod=InterpolationMethod.constant,
+                operand=Operand.override,
+            )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize(
+        "interpolationmethod",
+        [
+            pytest.param(InterpolationMethod.constant, id="constant"),
+            *_non_constant_methods,
+        ],
+    )
+    def test_initialvertical_polygon_with_value_is_valid_for_all_methods(
+        self, quantity, interpolationmethod
+    ):
+        """Providing a value for any initialvertical* polygon quantity is always allowed."""
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            value=12.34,
+            operand=Operand.override,
+        )
+
+        assert np.isclose(model.value, 12.34)

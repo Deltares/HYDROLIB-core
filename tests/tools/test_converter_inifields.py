@@ -6,7 +6,13 @@ import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import Spatial
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldFileType,
+    ExtOldForcing,
+    ExtOldQuantity
+)
+
+
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     IniFieldModel,
@@ -22,6 +28,7 @@ from hydrolib.tools.extforce_convert.converters import (
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
+    oldfiletype_to_forcing_file_type,
 )
 from tests.utils import compare_two_files, ignore_version_lines
 
@@ -32,7 +39,7 @@ class TestConvertInitialCondition:
             quantity=ExtOldQuantity.InitialWaterLevel,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
@@ -142,7 +149,7 @@ class TestConvertParameters:
             quantity=ExtOldQuantity.FrictionCoefficient,
             filename="iniwaterlevel.xyz",
             filetype=7,  # "Polyline"
-            method="5",  # "Interpolate space",
+            method="5",  # "Interpolate space"
             operand="O",
         )
 
@@ -361,3 +368,85 @@ class TestInifieldConverter:
         )
         assert diff == []
         path.unlink()
+
+
+class TestOldFiletypeToForcingFileType:
+    """Tests for oldfiletype_to_forcing_file_type — especially the FILETYPE=9 change."""
+
+    @pytest.mark.unit
+    def test_filetype_9_polyline_maps_to_polygon(self):
+        """Regression test: FILETYPE=9 (Polyline) must now map to DataFileType.polygon.
+
+        Before the fix, FILETYPE=9 fell through without setting a value, returning the
+        default "unknown", which caused InitialField validation errors downstream.
+        """
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.Polyline)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_10_inside_polygon_maps_to_polygon(self):
+        """FILETYPE=10 (InsidePolygon) still maps to DataFileType.polygon (unchanged)."""
+        result = oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+        assert result == DataFileType.polygon
+
+    @pytest.mark.unit
+    def test_filetype_9_and_10_return_same_value(self):
+        """FILETYPE=9 and FILETYPE=10 must now return the same datafiletype."""
+        assert oldfiletype_to_forcing_file_type(
+            ExtOldFileType.Polyline
+        ) == oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+
+
+class TestInitialVerticalInterpolationMethodOverride:
+    """Tests for UNST-9218 / GitHub #1104: initialvertical* must use constant interpolation.
+
+    The old external forcings file typically uses METHOD=3 (linearSpaceTime) for
+    initialvertical* quantities. The converter must override this to 'constant',
+    because the kernel always uses constant (horizontal) interpolation for vertical
+    profiles — linearSpaceTime is invalid for these quantities.
+    """
+
+    _vertical_quantities = [
+        "initialverticalsalinityprofile",
+        "initialverticaltemperatureprofile",
+        "initialverticalsedfracprofileSand",
+    ]
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize("method", [1, 2, 3, 4, 5])
+    def test_initialvertical_forces_constant_interpolation(self, quantity, method, tmp_path):
+        """Any old METHOD value must be overridden to 'constant' for initialvertical* quantities."""
+        forcing_file = tmp_path / "profile.pli"
+        forcing_file.write_text("dummy")
+
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename=DiskOnlyFileModel(filepath=forcing_file),
+            filetype=ExtOldFileType.Polyline,
+            method=method,
+            operand="O",
+        )
+
+        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+
+        assert result["interpolationmethod"] == InterpolationMethod.constant
+
+    @pytest.mark.unit
+    def test_non_vertical_quantity_preserves_original_method(self, tmp_path):
+        """Non-initialvertical quantities must keep the converted interpolation method."""
+        forcing_file = tmp_path / "data.xyz"
+        forcing_file.write_text("dummy")
+
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity("initialwaterlevel"),
+            filename=DiskOnlyFileModel(filepath=forcing_file),
+            filetype=ExtOldFileType.Samples,
+            method=5,
+            operand="O",
+        )
+
+        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+
+        assert result["interpolationmethod"] == InterpolationMethod.triangulation
+
