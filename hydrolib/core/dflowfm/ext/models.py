@@ -689,8 +689,9 @@ class Spatial(INIBasedModel):
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationmethod: Optional[str] = Field(
-            "Option for (spatial) extrapolation (no/yes).", alias="extrapolationMethod"
+        extrapolationallowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed"
         )
         extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbour extrapolation in space.",
@@ -749,7 +750,7 @@ class Spatial(INIBasedModel):
         None, alias="interpolationMethod"
     )
     operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationmethod: Optional[bool] = Field(False, alias="extrapolationMethod")
+    extrapolationallowed: Optional[bool] = Field(False, alias="extrapolationAllowed")
     extrapolationsearchradius: Optional[float] = Field(
         None, alias="extrapolationSearchRadius"
     )
