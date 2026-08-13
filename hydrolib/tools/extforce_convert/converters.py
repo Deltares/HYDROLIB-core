@@ -48,6 +48,7 @@ from hydrolib.tools.extforce_convert.utils import (
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
+    CONVERTER_DATA
 )
 
 
@@ -141,8 +142,9 @@ class MeteoConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
+        quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
         meteo_data = {
-            "quantity": forcing.quantity,
+            "quantity": quantity_name,
             "forcingfile": forcing.filename,
             "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
             "forcingVariableName": forcing.varname,
