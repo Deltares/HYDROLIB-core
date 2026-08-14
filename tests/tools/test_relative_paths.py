@@ -24,7 +24,7 @@ class TestInitialConditionConverter:
             "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
             "filetype": 7,
             "method": 5,
-            "operand": "O",
+            "operand": "override",
         }
         forcing = ExtOldForcing(**forcing_data)
         with patch(

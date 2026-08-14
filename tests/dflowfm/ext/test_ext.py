@@ -208,7 +208,7 @@ class TestMeteo:
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is None
         assert meteo.interpolationmethod is None
-        assert meteo.operand == "O"
+        assert meteo.operand == "override"
         assert meteo.extrapolationallowed is None
         assert meteo.extrapolationsearchradius is None
         assert meteo.averagingtype is None
@@ -223,7 +223,7 @@ class TestMeteo:
             targetmaskfile=None,
             targetmaskinvert=True,
             interpolationmethod=MeteoInterpolationMethod.nearestnb,
-            operand="O",
+            operand="override",
             extrapolationallowed=True,
             extrapolationsearchradius=10,
             averagingtype=1,
@@ -233,7 +233,7 @@ class TestMeteo:
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is True
         assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
-        assert meteo.operand == "O"
+        assert meteo.operand == "override"
         assert meteo.extrapolationallowed is True
         assert meteo.extrapolationsearchradius == 10
         assert meteo.averagingtype == 1

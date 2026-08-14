@@ -355,7 +355,7 @@ class ExtOldForcing(BaseModel):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
-        return enum_value_parser(value, Operand)
+        return enum_value_parser(value, Operand, Operand.legacy_alternatives())
 
     @model_validator(mode="after")
     def validate_varname(self):

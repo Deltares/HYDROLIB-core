@@ -319,7 +319,7 @@ class TestConverter:
             filename=location_file,
             filetype=9,
             method="1",
-            operand="O",
+            operand="override",
             area=1.0,
         )
 
@@ -357,7 +357,7 @@ class TestConverter:
             filename=location_file,
             filetype=9,
             method="1",
-            operand="O",
+            operand="override",
             area=area,
         )
 
@@ -423,7 +423,7 @@ class TestConverter:
             filename=location_file,
             filetype=9,
             method="1",
-            operand="O",
+            operand="override",
             area=1.0,
         )
 
@@ -482,7 +482,7 @@ class TestConverter:
             filename=str(source_sink_dir / "leftsor.pliz"),
             filetype=9,
             method="1",
-            operand="O",
+            operand="override",
             area=1.0,
         )
 
