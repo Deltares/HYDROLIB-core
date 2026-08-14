@@ -30,7 +30,7 @@ jobs:
         uses: Deltares-research/github-actions/actions/python-setup/poetry@main
         with:
           python-version: ${{ matrix.python-version }}
-          poetry-version: 2.3.3
+          version: 2.3.3
 
       - name: Test with pytest
         run: |
