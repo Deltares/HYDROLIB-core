@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           python-version: ${{ matrix.python-version }}
           version: 2.3.3

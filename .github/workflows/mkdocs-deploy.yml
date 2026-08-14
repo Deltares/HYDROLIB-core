@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           trigger: pr
           package-manager: poetry
@@ -42,7 +42,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           trigger: main
           package-manager: poetry
@@ -88,7 +88,7 @@ jobs:
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "prerelease=${IS_PRERELEASE}" >> "$GITHUB_OUTPUT"
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@main
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           trigger: release
           package-manager: poetry
