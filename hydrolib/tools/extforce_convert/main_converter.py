@@ -16,7 +16,11 @@ from hydrolib.core.dflowfm.ext.models import (
     Spatial,
     SourceSink,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldInitialConditionQuantity,
+    ExtOldModel,
+    ExtOldParametersQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
@@ -26,9 +30,8 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
-    InitialConditionConverter,
-    ParametersConverter,
     SourceSinkConverter,
+    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -403,15 +406,20 @@ class ExternalForcingConverter:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
         elif isinstance(
-            converter_class, (InitialConditionConverter, ParametersConverter)
+            converter_class, SpatialConverter
         ):
-            forcing_path = path_relative_to_parent(
-                forcing,
-                self.inifield_model.filepath,
-                self.extold_model.filepath,
-                self.mdu_parser,
-            )
-            new_quantity_block = converter_class.convert(forcing, forcing_path)
+            if ConverterFactory.contains(
+                ExtOldInitialConditionQuantity, forcing.quantity
+            ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
+                forcing_path = path_relative_to_parent(
+                    forcing,
+                    self.inifield_model.filepath,
+                    self.extold_model.filepath,
+                    self.mdu_parser,
+                )
+                new_quantity_block = converter_class.convert(forcing, forcing_path)
+            else:
+                new_quantity_block = converter_class.convert(forcing)
         else:
             new_quantity_block = converter_class.convert(forcing)
 
