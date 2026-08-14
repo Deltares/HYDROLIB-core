@@ -366,6 +366,7 @@ class SourceSink(INIBasedModel):
     All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
+    model_config = ConfigDict(extra="allow")
 
     _header: Literal["SourceSink"] = "SourceSink"
     id: str = Field(alias="id")
@@ -437,8 +438,6 @@ class SourceSink(INIBasedModel):
             )
         ]
         return set(unknown_keywords)
-
-    model_config = ConfigDict(extra="allow")
 
     def __init__(self, **data):
         """Initialize SourceSink and set dynamic tracer attributes."""
