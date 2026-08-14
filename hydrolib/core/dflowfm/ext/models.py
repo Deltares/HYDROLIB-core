@@ -27,6 +27,7 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.common.models import LocationType, Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -35,6 +36,7 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list,
     split_string_on_delimiter,
     validate_location_specification,
+    validate_required_fields
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -658,7 +660,7 @@ class Meteo(INIBasedModel):
         return enum_value_parser(v, MeteoInterpolationMethod)
 
 
-class Spatial(AbstractSpatialField):
+class Spatial(INIBasedModel):
     """A `[Spatial]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -671,7 +673,7 @@ class Spatial(AbstractSpatialField):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
-    class Comments(INIBasedModel.Comments):
+    class Comments(AbstractSpatialField.Comments):
         """Comments for the Spatial block fields."""
 
         quantity: Optional[str] = Field(
@@ -805,29 +807,96 @@ class Spatial(AbstractSpatialField):
 
         return values
 
+    @classmethod
+    def _process_section_values(cls, values):
+        """Process Section objects and extract/convert values as needed.
+
+        Args:
+            values: The values to process, which may be a Section object or a dictionary.
+
+        Returns:
+            A dictionary containing the processed values.
+        """
+        # If values is a Section object, we need to handle it specially
+        if isinstance(values, Section):
+            # Extract the datafile value if present
+            data_file = super()._extract_file_model_from_section(
+                values, "datafile", DiskOnlyFileModel
+            )
+
+            # Convert Section to dictionary
+            values_dict = super()._convert_section_to_dict(values)
+
+            # If we found a datafile, add it to the dictionary
+            if data_file is not None:
+                values_dict["datafile"] = data_file
+
+            return values_dict
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
+        """Validates that the value is provided when dealing with polygons."""
+        # Process Section objects if needed
+        values = cls._process_section_values(values)
+
+        # Process dictionary-like objects
+        data_file = values.get("datafile")
+        if isinstance(data_file, (str, Path)):
+            data_file = DiskOnlyFileModel(data_file)
+            values["datafile"] = data_file
+
+        if (values.get("interpolationmethod") == InterpolationMethod.constant and
+                not values["quantity"].startswith("initialvertical")):
+            validate_required_fields(
+                values,
+                "value",
+                conditional_field_name="datafiletype",
+                conditional_value=DataFileType.polygon,
+            )
+
+        value_field_value = values.get("value")
+        datafiletype_field_value = values.get("datafiletype")
+        if (
+                value_field_value is not None
+                and datafiletype_field_value is not None
+                and datafiletype_field_value.lower() != DataFileType.polygon
+        ):
+            raise ValueError(
+                f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
+            )
+
+        return values
+
     def is_intermediate_link(self) -> bool:
         return True
 
     @field_validator("datafiletype", mode="before")
     @classmethod
-    def datafiletype_validator(cls, v):
+    def validate_data_file_type(cls, v):
         return enum_value_parser(v, DataFileType)
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod
-    def interpolationmethod_validator(cls, v):
+    def validate_interpolation_method(cls, v):
         return enum_value_parser(v, InterpolationMethod)
 
     @field_validator("averagingtype", mode="before")
     @classmethod
-    def averagingtype_validator(cls, v):
+    def validate_average_type(cls, v):
         return enum_value_parser(v, AveragingType)
 
     @field_validator("locationtype", mode="before")
     @classmethod
-    def locationtype_validator(cls, v):
+    def validate_location_type(cls, v):
         return enum_value_parser(v, LocationType)
 
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(v, Operand)
 
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
