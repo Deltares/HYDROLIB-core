@@ -264,7 +264,7 @@ class TestSourceSinkForcingData:
         )
 
     @pytest.mark.parametrize("field", ["salinity", "temperature"])
-    def test_optional_delta_defaults_to_none(self, field: str):
+    def test_quantities_default_to_none_when_omitted(self, field: str):
         """`salinity` and `temperature` default to `None` when omitted.
 
         Args:
@@ -280,7 +280,7 @@ class TestSourceSinkForcingData:
         )
 
     @pytest.mark.parametrize("field", ["salinity", "temperature"])
-    def test_optional_delta_accepts_float(self, field: str):
+    def test_quantities_accept_float(self, field: str):
         """`salinity` and `temperature` accept a numeric value.
 
         Args:
@@ -295,7 +295,7 @@ class TestSourceSinkForcingData:
         )
 
     @pytest.mark.parametrize("field", ["salinity", "temperature"])
-    def test_optional_delta_accepts_realtime_keyword(self, field: str):
+    def test_quantities_accept_realtime_keyword(self, field: str):
         """`salinity` and `temperature` accept the realtime keyword.
 
         Args:
@@ -312,7 +312,7 @@ class TestSourceSinkForcingData:
         )
 
     @pytest.mark.parametrize("field", ["salinity", "temperature"])
-    def test_optional_delta_loads_bc_file_via_extmodel(
+    def test_quantities_load_bc_file_via_extmodel(
         self, tmp_path: Path, field: str
     ):
         """`salinity` / `temperature` accept a `.bc` filename in the `.ext`.
