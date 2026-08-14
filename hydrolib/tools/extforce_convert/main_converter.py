@@ -371,7 +371,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
+    def _convert_forcing(self, forcing) -> Boundary | Lateral | Meteo | SourceSink:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
@@ -379,9 +379,8 @@ class ExternalForcingConverter:
             - The BoundaryCondition converter needs the start time from the FM model.
         """
         converter_class = ConverterFactory.create_converter(
-            forcing.quantity, mdu_parser=self.mdu_parser
+            forcing.quantity, root_dir=self.root_dir, mdu_parser=self.mdu_parser
         )
-        converter_class.root_dir = self.root_dir
 
         # only the SourceSink converter needs the quantities' list
         if isinstance(converter_class, SourceSinkConverter):

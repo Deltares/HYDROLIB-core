@@ -66,9 +66,16 @@ class BaseConverter(ABC):
     converter, depending on the quantity of the forcing block.
     """
 
-    def __init__(self):
-        """Initializes the BaseConverter object."""
-        self._root_dir = None
+    def __init__(self, root_dir: PathOrStr = None):
+        """Initialize the BaseConverter object.
+
+        Args:
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Only the
+                converters that read forcing files from disk (boundary conditions and
+                source/sinks) need it. Defaults to None.
+        """
+        self._root_dir = Path(root_dir) if isinstance(root_dir, str) else root_dir
         self._legacy_files = []
 
     @property
@@ -111,10 +118,6 @@ class BaseConverter(ABC):
 
 class MeteoConverter(BaseConverter):
     """Meteo quantities Converter."""
-
-    def __init__(self):
-        """Meteo converter constructor."""
-        super().__init__()
 
     def convert(self, forcing: ExtOldForcing) -> Meteo:
         """Meteo converter.
@@ -177,10 +180,6 @@ class MeteoConverter(BaseConverter):
 
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
-
-    def __init__(self):
-        """Boundary condition converter constructor."""
-        super().__init__()
 
     @staticmethod
     def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
@@ -476,10 +475,6 @@ class BoundaryConditionConverter(BaseConverter):
 class InitialConditionConverter(BaseConverter):
     """Initial condition converter."""
 
-    def __init__(self):
-        """Initial condition converter constructor."""
-        super().__init__()
-
     def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> InitialField:
         """Convert the Initial condition quantities.
 
@@ -527,10 +522,6 @@ class InitialConditionConverter(BaseConverter):
 class ParametersConverter(BaseConverter):
     """Parameter converter."""
 
-    def __init__(self):
-        """Parameter converter constructor."""
-        super().__init__()
-
     def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
         """Parameter converter.
 
@@ -574,7 +565,7 @@ class ParametersConverter(BaseConverter):
 class SourceSinkConverter(BaseConverter):
     """Source and sink converter."""
 
-    def __init__(self, mdu_parser: "MDUParser" = None):
+    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
         """Source and sink converter constructor.
 
         Args:
@@ -582,8 +573,10 @@ class SourceSinkConverter(BaseConverter):
                 Parser for the FM model. Required at `convert` time: the source and
                 sink conversion needs the substance file and the temperature/salinity
                 settings the parser exposes. Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
         """
-        super().__init__()
+        super().__init__(root_dir=root_dir)
         self._mdu_parser = mdu_parser
 
     def _active_substance_names(self) -> Optional[List[str]]:
@@ -999,12 +992,17 @@ class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
     @staticmethod
-    def create_converter(quantity, mdu_parser: MDUParser = None) -> BaseConverter:
+    def create_converter(
+        quantity, root_dir: PathOrStr = None, mdu_parser: MDUParser = None
+    ) -> BaseConverter:
         """
         Create converter based on the given quantity.
 
         Args:
             quantity: The quantity for which the converter needs to be created.
+            root_dir (PathOrStr, optional): Root directory used to resolve the forcing
+                file paths, forwarded to every converter. Only the boundary condition
+                and source/sink converters read it. Defaults to None.
             mdu_parser (MDUParser, optional): Parser for the FM model, forwarded to
                 the converters that need it. Only the `SourceSinkConverter` uses it
                 at present. Defaults to None.
@@ -1017,15 +1015,15 @@ class ConverterFactory:
             ValueError: If no converter is available for the given quantity.
         """
         if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter()
+            return MeteoConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
-            return InitialConditionConverter()
+            return InitialConditionConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter()
+            return BoundaryConditionConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
-            return ParametersConverter()
+            return ParametersConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter(mdu_parser=mdu_parser)
+            return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 
