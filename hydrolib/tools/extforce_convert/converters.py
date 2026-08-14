@@ -1,10 +1,11 @@
 """External forcing converter."""
 
+from __future__ import annotations
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -19,6 +20,7 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
+    SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES,
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
@@ -38,16 +40,20 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.substance.models import SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
-    CONVERTER_DATA
 )
+
+if TYPE_CHECKING:
+    from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class BaseConverter(ABC):
@@ -140,7 +146,9 @@ class MeteoConverter(BaseConverter):
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
         """
-        quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
+        quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
+            forcing.quantity
+        )
         meteo_data = {
             "quantity": quantity_name,
             "forcingfile": forcing.filename,
@@ -566,9 +574,66 @@ class ParametersConverter(BaseConverter):
 class SourceSinkConverter(BaseConverter):
     """Source and sink converter."""
 
-    def __init__(self):
-        """Source and sink converter Constructor."""
+    def __init__(self, mdu_parser: "MDUParser" = None):
+        """Source and sink converter constructor.
+
+        Args:
+            mdu_parser (MDUParser, optional):
+                Parser for the FM model. Required at `convert` time: the source and
+                sink conversion needs the substance file and the temperature/salinity
+                settings the parser exposes. Defaults to None.
+        """
         super().__init__()
+        self._mdu_parser = mdu_parser
+
+    def _active_substance_names(self) -> Optional[List[str]]:
+        """Read the active substance names from the MDU's `SubstanceFile`.
+
+        Returns:
+            Optional[List[str]]:
+                The names of the active substances, or None when the MDU file does
+                not reference a substance file.
+
+        Raises:
+            FileNotFoundError:
+                If the MDU references a substance file that does not exist.
+        """
+        names = None
+        substance_file = self._mdu_parser.get_keyword("SubstanceFile")
+        if substance_file:
+            substance_path = (
+                self._mdu_parser.mdu_path.parent / substance_file
+            ).resolve()
+            if not substance_path.exists():
+                raise FileNotFoundError(
+                    f"Substance file {substance_path} not found, required to convert "
+                    f"SourceSink quantities."
+                )
+            substance_model = SubstanceModel(substance_path)
+            names = [s.name for s in substance_model.get_active_substances()]
+        return names
+
+    @staticmethod
+    def filter_source_sink_quantities(quantities: List[str]) -> List[str]:
+        """Keep only the quantities relevant to the source and sink conversion.
+
+        Quantities starting with a source/sink ignore prefix (e.g. `initialtracer`,
+        `initialsedfrac`) are converted as initial conditions by other converters, so
+        they must not be counted as source/sink columns.
+
+        Args:
+            quantities (List[str]):
+                All quantities present in the old external forcings file.
+
+        Returns:
+            List[str]:
+                The quantities that are not carrying a source/sink ignore prefix.
+        """
+        return [
+            quantity
+            for quantity in quantities
+            if not quantity.startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
+        ]
 
     @staticmethod
     def merge_mdu_and_ext_file_quantities(
@@ -809,9 +874,6 @@ class SourceSinkConverter(BaseConverter):
         self,
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
-        start_time: str = None,
-        active_substance_names: List[str] = None,
-        **temp_salinity_mdu,
     ) -> SourceSink:
         """Source and sink converter.
 
@@ -823,18 +885,12 @@ class SourceSinkConverter(BaseConverter):
                 object contains all the necessary information, such as quantity, values, and timestamps, required for the
                 conversion process.
             ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
-                external forcings file.
-            start_time (str, default is None):
-                The start date of the time series data.
-            active_substance_names (List[str], default is None):
-                A list of active substance names to include in the conversion.
-                When provided, only the substances in this list will be processed.
-            **temp_salinity_mdu:
-                keyword arguments that will be provided if you want to provide the temperature and salinity details from
-                the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
-                ```python
-                {'salinity': True, 'temperature': True}
-                ```
+                external forcings file. The caller is expected to pass the quantities relevant to the source/sink
+                conversion; this method does not filter the list itself.
+
+        Note:
+            The start time, the active substance names, and the temperature/salinity settings are derived from the
+            `MDUParser` injected at construction (see `__init__`), so `convert` needs no separate arguments for them.
 
         Returns:
             SourceSink: A SourceSink object that represents the converted forcing
@@ -861,6 +917,16 @@ class SourceSinkConverter(BaseConverter):
             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
 
         """
+        if (
+            self._mdu_parser is None
+            or self._mdu_parser.temperature_salinity_data is None
+        ):
+            raise ValueError("MDU model is required to convert SourceSink quantities.")
+
+        temp_salinity_mdu = self._mdu_parser.temperature_salinity_data
+        start_time = temp_salinity_mdu.get("refdate")
+        active_substance_names = self._active_substance_names()
+
         location_file = forcing.filename.filepath
         polyline = forcing.filename
         location_name = location_file.stem
@@ -878,7 +944,10 @@ class SourceSinkConverter(BaseConverter):
         self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
-            tim_file, ext_file_quantity_list, active_substance_names, **temp_salinity_mdu
+            tim_file,
+            ext_file_quantity_list,
+            active_substance_names,
+            **temp_salinity_mdu,
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
@@ -930,12 +999,15 @@ class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
     @staticmethod
-    def create_converter(quantity) -> BaseConverter:
+    def create_converter(quantity, mdu_parser: MDUParser = None) -> BaseConverter:
         """
         Create converter based on the given quantity.
 
         Args:
             quantity: The quantity for which the converter needs to be created.
+            mdu_parser (MDUParser, optional): Parser for the FM model, forwarded to
+                the converters that need it. Only the `SourceSinkConverter` uses it
+                at present. Defaults to None.
 
         Returns:
             BaseConverter: An instance of a specific BaseConverter subclass
@@ -953,7 +1025,7 @@ class ConverterFactory:
         elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
             return ParametersConverter()
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter()
+            return SourceSinkConverter(mdu_parser=mdu_parser)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 

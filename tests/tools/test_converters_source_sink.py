@@ -14,8 +14,8 @@ tim_file = Path("tests/data/input/source-sink/leftsor.tim")
 
 
 @pytest.fixture
-def converter() -> SourceSinkConverter:
-    converter = SourceSinkConverter()
+def converter(mdu_parser_mock: MagicMock) -> SourceSinkConverter:
+    converter = SourceSinkConverter(mdu_parser=mdu_parser_mock)
     converter.root_dir = "tests/data/input/source-sink"
     return converter
 
@@ -23,11 +23,6 @@ def converter() -> SourceSinkConverter:
 @pytest.fixture
 def time_file_full() -> Path:
     return tim_file
-
-
-@pytest.fixture
-def start_time():
-    return "minutes since 2015-01-01 00:00:00"
 
 
 @pytest.fixture
@@ -132,6 +127,22 @@ def test_parse_tim_model(
         time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
         data = time_series_data.as_dataframe().to_dict(orient="list")
         assert data == expected_data
+
+
+def test_filter_source_sink_quantities():
+    """Ignore-prefixed quantities are dropped; all others keep their order."""
+    quantities = [
+        "sourcesink_discharge",
+        "initialtracer_anyname",
+        "salinity",
+        "initialsedfrac_mud",
+        "temperature",
+    ]
+    assert SourceSinkConverter.filter_source_sink_quantities(quantities) == [
+        "sourcesink_discharge",
+        "salinity",
+        "temperature",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -270,7 +281,7 @@ def compare_data(new_quantity_block: SourceSink):
 
 class TestConverter:
 
-    def test_default(self, converter: SourceSinkConverter, start_time: str):
+    def test_default(self, converter: SourceSinkConverter):
         """
         The test case is based on the following assumptions:
         - temperature, salinity, and initialtracer_anyname are other quantities in the ext file.
@@ -343,9 +354,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
-        )
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -358,7 +367,7 @@ class TestConverter:
         "area", [None, 2.1, 0.0], ids=["Unset", "Area = 2.1", "Area = 0.0"]
     )
     def test_sourcesink_area_is_set(
-        self, converter: SourceSinkConverter, start_time: str, area: Optional[float]
+        self, converter: SourceSinkConverter, area: Optional[float]
     ):
         """Test if the area is set in the forcing, it is used in the converted model."""
         location_file = Path("tests/data/input/source-sink/leftsor.pliz").resolve()
@@ -377,9 +386,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
-        )
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -392,9 +399,7 @@ class TestConverter:
         # check the converted bc_forcing
         compare_data(new_quantity_block)
 
-    def test_4_5_columns_polyline(
-        self, converter: SourceSinkConverter, start_time: str
-    ):
+    def test_4_5_columns_polyline(self, converter: SourceSinkConverter):
         """
         The test case is based on the assumptions of the default test plus the following changes:
 
@@ -457,9 +462,7 @@ class TestConverter:
 
         tim_file = Path("tests/data/input/source-sink/leftsor.tim")
         with patch("pathlib.Path.with_suffix", new=make_side_effect()):
-            new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities, start_time
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
@@ -467,9 +470,7 @@ class TestConverter:
         # check the converted bc_forcing
         compare_data(new_quantity_block)
 
-    def test_no_temperature_no_salinity(
-        self, converter: SourceSinkConverter, start_time: str
-    ):
+    def test_no_temperature_no_salinity(self, converter: SourceSinkConverter):
         """
         The test case is based on the assumptions of the default test plus the following changes:
 
@@ -502,9 +503,7 @@ class TestConverter:
 
         tim_file = Path("tests/data/input/source-sink/no_temperature_no_salinity.tim")
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities, start_time
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -571,7 +570,9 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        mdu_parser_mock.temperature_salinity_data.update({"salinity": True, "temperature": True})
+        mdu_parser_mock.temperature_salinity_data.update(
+            {"salinity": True, "temperature": True}
+        )
         converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
 
         with (
