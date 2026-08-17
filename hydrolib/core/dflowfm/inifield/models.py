@@ -1,6 +1,7 @@
 """Initial field model definitions for D-Flow FM inifield files."""
 
 import logging
+import warnings
 from abc import ABC
 from pathlib import Path
 from typing import Annotated, Dict, List, Literal, Optional
@@ -290,9 +291,29 @@ class InitialField(AbstractSpatialField):
 
     All lowercased attributes match with the initial field input as described in
     [UM Sec.D.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.2).
+
+    .. deprecated:: 1.1.0
+        `InitialField` and `[Initial]` blocks are deprecated. Use `Spatial` blocks
+        in the external forcings file (``.ext``) instead.
     """
 
     _header: Literal["Initial"] = "Initial"
+
+    @model_validator(mode="after")
+    def _warn_initial_field_deprecated(self) -> "InitialField":
+        """Emit a DeprecationWarning whenever an [Initial] block is instantiated.
+
+        `[Initial]` blocks in inifield files are superseded by `[Spatial]` blocks
+        in the external forcings file (``.ext``) as of version 1.1.0.
+        """
+        warnings.warn(
+            "`InitialField` (and `[Initial]` blocks in inifield files) is deprecated "
+            "since 1.1.0 and will be removed in 2.0.0; use `Spatial` (and `[Spatial]` "
+            "blocks in the external forcings file) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
 
 class ParameterField(AbstractSpatialField):
@@ -300,9 +321,29 @@ class ParameterField(AbstractSpatialField):
 
     Typically inside the definition list of a
     [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
+
+    .. deprecated:: 1.1.0
+        `ParameterField` and `[Parameter]` blocks are deprecated. Use `Spatial` blocks
+        in the external forcings file (``.ext``) instead.
     """
 
     _header: Literal["Parameter"] = "Parameter"
+
+    @model_validator(mode="after")
+    def _warn_parameter_field_deprecated(self) -> "ParameterField":
+        """Emit a DeprecationWarning whenever a [Parameter] block is instantiated.
+
+        `[Parameter]` blocks in inifield files are superseded by `[Spatial]` blocks
+        in the external forcings file (``.ext``) as of version 1.1.0.
+        """
+        warnings.warn(
+            "`ParameterField` (and `[Parameter]` blocks in inifield files) is deprecated "
+            "since 1.1.0 and will be removed in 2.0.0; use `Spatial` (and `[Spatial]` "
+            "blocks in the external forcings file) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
 
 class IniFieldModel(INIModel):
