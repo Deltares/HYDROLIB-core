@@ -1,6 +1,7 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 import warnings
+from operator import ne
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -776,8 +777,11 @@ class Spatial(INIBasedModel):
         locationtype: Optional[str] = Field(
             "Target location of interpolation.", alias="locationType"
         )
-        value: Optional[str] = Field(
-            "Only for dataFileType=polygon. The constant value to be set inside all model points inside the polygon."
+        datavalue: Optional[str] = Field(
+            "Constant value to be set inside all model points inside the polygon, "
+            "used when no dataFile/dataFileType is specified. "
+            "Requires targetMaskFile=*.pol and interpolationMethod=constant.",
+            alias="dataValue",
         )
         frictiontype: Optional[str] = Field(
             "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType"
@@ -804,12 +808,12 @@ class Spatial(INIBasedModel):
 
     _header: Literal["Spatial"] = "Spatial"
     quantity: str = Field(alias="quantity")
-    datafile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
-        alias="dataFile"
+    datafile: Optional[Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile]] = Field(
+        None, alias="dataFile"
     )
-    datafiletype: DataFileType = Field(alias="dataFileType")
+    datafiletype: Optional[DataFileType] = Field(None, alias="dataFileType")
     datavariablename: Optional[str] = Field(None, alias="dataVariableName")
-    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
+    targetmaskfile: Optional[Union[DiskOnlyFileModel, PolyFile]] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
     interpolationmethod: Optional[InterpolationMethod] = Field(
         None, alias="interpolationMethod"
@@ -826,7 +830,7 @@ class Spatial(INIBasedModel):
     locationtype: Optional[LocationType] = Field(
         LocationType.all.value, alias="locationType"
     )
-    value: Optional[float] = Field(None, alias="value")
+    datavalue: Optional[float] = Field(None, alias="dataValue")
     frictiontype: Optional[str] = Field(None, alias="frictionType")
     tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
@@ -887,36 +891,70 @@ class Spatial(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_that_value_is_present_for_polygons(cls, values: Dict) -> Dict:
-        """Validates that the value is provided when dealing with polygons."""
-        # Process Section objects if needed
+    def validate_datavalue_or_datafile(cls, values: Dict) -> Dict:
+        """Validates the two mutually exclusive usage paths of a Spatial block.
+
+        When ``dataValue`` is provided the block describes a constant value applied
+        inside a polygon mask.  In this mode:
+        - ``dataFile`` and ``dataFileType`` must **not** be specified.
+        - ``targetMaskFile`` (a ``.pol`` file) is required.
+        - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).
+
+        When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both
+        required.
+        """
         values = cls._process_section_values(values)
 
-        # Process dictionary-like objects
-        data_file = values.get("datafile")
+        data_file = values.get("datafile") or values.get("dataFile")
         if isinstance(data_file, (str, Path)):
             data_file = DiskOnlyFileModel(data_file)
+            values.pop("dataFile", None)
             values["datafile"] = data_file
 
-        if (values.get("interpolationmethod") == InterpolationMethod.constant and
-                not values["quantity"].startswith("initialvertical")):
-            validate_required_fields(
-                values,
-                "value",
-                conditional_field_name="datafiletype",
-                conditional_value=DataFileType.polygon,
-            )
+        if "dataValue" in values and "datavalue" not in values:
+            values["datavalue"] = values.pop("dataValue")
+        if "targetMaskFile" in values and "targetmaskfile" not in values:
+            values["targetmaskfile"] = values.pop("targetMaskFile")
 
-        value_field_value = values.get("value")
-        datafiletype_field_value = values.get("datafiletype")
-        if (
-                value_field_value is not None
-                and datafiletype_field_value is not None
-                and datafiletype_field_value.lower() != DataFileType.polygon
-        ):
-            raise ValueError(
-                f"When value={value_field_value} is given, dataFileType={DataFileType.polygon} is required."
-            )
+        datavalue = values.get("datavalue")
+        has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
+        has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
+
+        # When dataValue is provided, targetMaskFile is required.
+        # validate_required_fields short-circuits when datavalue is None (not provided),
+        # and runs the check when datavalue != None (comparison_func=ne).
+        validate_required_fields(
+            values,
+            "targetmaskfile",
+            conditional_field_name="datavalue",
+            conditional_value=None,
+            comparison_func=ne,
+        )
+
+        if datavalue is not None:
+            if has_datafile or has_datafiletype:
+                raise ValueError(
+                    "When 'dataValue' is provided, 'dataFile' and 'dataFileType' must not be specified."
+                )
+
+            interp = values.get("interpolationmethod") or values.get("interpolationMethod")
+            if interp is None:
+                # Default to constant when omitted
+                values["interpolationmethod"] = InterpolationMethod.constant
+            elif str(interp).lower() != str(InterpolationMethod.constant).lower():
+                raise ValueError(
+                    f"When 'dataValue' is provided, 'interpolationMethod' must be "
+                    f"'{InterpolationMethod.constant}', got '{interp}'."
+                )
+        else:
+            if not has_datafile:
+                raise ValueError(
+                    "'dataFile' is required when 'dataValue' is not specified."
+                )
+            if not has_datafiletype:
+                raise ValueError(
+                    "'dataFileType' is required when 'dataValue' is not specified."
+                )
 
         return values
 
@@ -926,6 +964,8 @@ class Spatial(INIBasedModel):
     @field_validator("datafiletype", mode="before")
     @classmethod
     def validate_data_file_type(cls, v):
+        if v is None:
+            return v
         return enum_value_parser(v, DataFileType)
 
     @field_validator("interpolationmethod", mode="before")

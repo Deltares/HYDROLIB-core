@@ -300,13 +300,7 @@ def create_spatial_input_dict(
             the input dictionary for the `Spatial` constructor
     """
     quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
-    block_data = {
-        "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
-        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-    }
-    if block_data["datafiletype"] == "polygon":
-        block_data["value"] = forcing.value
+    file_type = oldfiletype_to_forcing_file_type(forcing.filetype)
 
     if forcing.sourcemask != DiskOnlyFileModel(None):
         raise ValueError(
@@ -314,22 +308,36 @@ def create_spatial_input_dict(
             f"convert this input. Encountered for QUANTITY="
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
-    block_data = convert_interpolation_data(forcing, block_data)
 
-    # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
-    # interpolationMethod = constant.  The old METHOD value (typically 3 →
-    # linearSpaceTime) is meaningless for vertical profiles; the kernel always
-    # applies constant (horizontal) + linear (vertical) interpolation internally.
-    if quantity_name.startswith("initialvertical"):
-        block_data["interpolationmethod"] = InterpolationMethod.constant
+    if file_type == DataFileType.polygon:
+        block_data = {
+            "quantity": quantity_name,
+            "targetmaskfile": DiskOnlyFileModel(new_forcing_path),
+            "datavalue": forcing.value,
+            "operand": forcing.operand,
+        }
+    else:
+        block_data = {
+            "quantity": quantity_name,
+            "datafile": DiskOnlyFileModel(new_forcing_path),
+            "datafiletype": file_type,
+        }
+        block_data = convert_interpolation_data(forcing, block_data)
 
-    block_data["operand"] = forcing.operand
+        # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
+        # interpolationMethod = constant.  The old METHOD value (typically 3 →
+        # linearSpaceTime) is meaningless for vertical profiles; the kernel always
+        # applies constant (horizontal) + linear (vertical) interpolation internally.
+        if quantity_name.startswith("initialvertical"):
+            block_data["interpolationmethod"] = InterpolationMethod.constant
 
-    if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = forcing.extrapolation == 1
-    for key, value in forcing.model_dump().items():
-        if key.lower().startswith("tracer") and value is not None:
-            block_data[key] = value
+        block_data["operand"] = forcing.operand
+
+        if hasattr(forcing, "extrapolation"):
+            block_data["extrapolationmethod"] = forcing.extrapolation == 1
+        for key, value in forcing.model_dump().items():
+            if key.lower().startswith("tracer") and value is not None:
+                block_data[key] = value
 
     if forcing.layer is not None:
         layer = forcing.layer
