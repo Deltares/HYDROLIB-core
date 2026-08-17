@@ -979,7 +979,7 @@ class SourceSinkConverter(BaseConverter):
             data = data | z_source_sink_data
 
         try:
-            new_block = SourceSink(**data)
+            new_block = SourceSink(dynamic_fields=active_substance_names, **data)
         except Exception as e:  # pragma: no cover
             raise SourceSinkError(
                 f"Failed to create the SourceSink object. for the following Errors: {e}"
