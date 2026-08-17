@@ -176,7 +176,7 @@ class SpatialConverter(BaseConverter):
         """Spatial converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> Spatial:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
         """Spatial converter.
 
         Convert an old external forcing block with spatial data to a Spatial

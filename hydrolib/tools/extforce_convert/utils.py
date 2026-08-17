@@ -281,7 +281,7 @@ def path_relative_to_parent(
 
 def create_spatial_input_dict(
     forcing: ExtOldForcing,
-    new_forcing_path: Path,
+    new_forcing_path: Path | None,
 ) -> Dict[str, str]:
     """Create the input dictionary for a `Spatial` block from an initial/parameter forcing.
 
@@ -357,7 +357,7 @@ def create_initial_cond_and_parameter_input_dict(
     quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
+        "datafile": DiskOnlyFileModel(new_forcing_path) if new_forcing_path else forcing.filename,
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
 
