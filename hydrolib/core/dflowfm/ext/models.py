@@ -775,7 +775,7 @@ class Spatial(INIBasedModel):
     )
     datafiletype: Optional[DataFileType] = Field(None, alias="dataFileType")
     datavariablename: Optional[str] = Field(None, alias="dataVariableName")
-    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
+    targetmaskfile: Optional[Union[DiskOnlyFileModel, PolyFile]] = Field(None, alias="targetMaskFile")
     targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
     interpolationmethod: Optional[InterpolationMethod] = Field(
         None, alias="interpolationMethod"
