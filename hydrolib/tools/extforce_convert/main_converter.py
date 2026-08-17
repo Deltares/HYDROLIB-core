@@ -371,6 +371,25 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
+    def _resolve_forcing_path(self, forcing) -> Path:
+        """Resolve the datafile path for an initial field or parameter block.
+
+        Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
+        relative to the new initial field file when required.
+
+        Args:
+            forcing: The old forcing block whose filename must be resolved.
+
+        Returns:
+            Path: The path to store in the `datafile` field of the new block.
+        """
+        return path_relative_to_parent(
+            forcing,
+            self.inifield_model.filepath,
+            self.extold_model.filepath,
+            self.mdu_parser,
+        )
+
     def _convert_forcing(self, forcing) -> Boundary | Lateral | Meteo | SourceSink:
         """Convert a single forcing block to the appropriate new format.
 
@@ -399,13 +418,9 @@ class ExternalForcingConverter:
         elif isinstance(
             converter_class, (InitialConditionConverter, ParametersConverter)
         ):
-            forcing_path = path_relative_to_parent(
-                forcing,
-                self.inifield_model.filepath,
-                self.extold_model.filepath,
-                self.mdu_parser,
+            new_quantity_block = converter_class.convert(
+                forcing, self._resolve_forcing_path(forcing)
             )
-            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 
