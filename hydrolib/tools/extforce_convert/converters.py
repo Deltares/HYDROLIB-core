@@ -46,10 +46,9 @@ from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     convert_interpolation_data,
-    create_spatial_input_dict,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
-    oldfiletype_to_forcing_file_type,
+    oldfiletype_to_forcing_file_type, create_spatial_input_dict,
 )
 
 
@@ -177,7 +176,7 @@ class SpatialConverter(BaseConverter):
         """Spatial converter constructor."""
         super().__init__()
 
-    def convert(self, forcing: ExtOldForcing) -> Spatial:
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> Spatial:
         """Spatial converter.
 
         Convert an old external forcing block with spatial data to a Spatial
@@ -190,10 +189,13 @@ class SpatialConverter(BaseConverter):
         specifications.
 
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
             Spatial: A Spatial object that represents the converted forcing
@@ -203,28 +205,8 @@ class SpatialConverter(BaseConverter):
             ValueError: If the forcing block contains a quantity that is not
             supported by the converter, a ValueError is raised.
         """
-        spatial_data = {
-            "quantity": CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity),
-            "datafile": forcing.filename,
-            "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            "datavariablename": forcing.varname,
-        }
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        spatial_data = convert_interpolation_data(forcing, spatial_data)
-        spatial_data["extrapolationmethod"] = bool(forcing.extrapolation_method)
-        spatial_data["extrapolationsearchradius"] = forcing.maxsearchradius
-        spatial_data["operand"] = forcing.operand
-        try:
-            spatial_block = Spatial(**spatial_data)
-        except Exception as e:
-            raise SpatialError(
-                f"Failed to create the Spatial object for the following errors: {e}"
-            )
+        data = create_spatial_input_dict(forcing, new_forcing_path)
+        spatial_block = Spatial(**data)
 
         return spatial_block
 
