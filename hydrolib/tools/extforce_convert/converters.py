@@ -48,7 +48,8 @@ from hydrolib.tools.extforce_convert.utils import (
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
-    oldfiletype_to_forcing_file_type, create_spatial_input_dict,
+    oldfiletype_to_forcing_file_type,
+    create_spatial_input_dict,
 )
 
 
@@ -206,8 +207,13 @@ class SpatialConverter(BaseConverter):
             supported by the converter, a ValueError is raised.
         """
         data = create_spatial_input_dict(forcing, new_forcing_path)
-        spatial_block = Spatial(**data)
 
+        try:
+            spatial_block = Spatial(**data)
+        except Exception as e:
+            raise SpatialError(
+                f"Failed to create the Spatial object. for the following Errors: {e}"
+            )
         return spatial_block
 
 
