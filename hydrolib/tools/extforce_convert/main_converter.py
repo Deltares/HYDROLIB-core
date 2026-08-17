@@ -413,15 +413,18 @@ class ExternalForcingConverter:
             if ConverterFactory.contains(
                 ExtOldInitialConditionQuantity, forcing.quantity
             ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
-                forcing_path = path_relative_to_parent(
-                    forcing,
-                    self.inifield_model.filepath,
-                    self.extold_model.filepath,
-                    self.mdu_parser,
-                )
-                new_quantity_block = converter_class.convert(forcing, forcing_path)
+                # Initial conditions and parameters are written to the inifield model file
+                ref_path = self.inifield_model.filepath
             else:
-                new_quantity_block = converter_class.convert(forcing)
+                # Meteo quantities are written to the ext model file
+                ref_path = self.ext_model.filepath
+            forcing_path = path_relative_to_parent(
+                forcing,
+                ref_path,
+                self.extold_model.filepath,
+                self.mdu_parser,
+            )
+            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 
