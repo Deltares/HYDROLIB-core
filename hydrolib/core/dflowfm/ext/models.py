@@ -920,9 +920,6 @@ class Spatial(INIBasedModel):
         has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
         has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
 
-        # When dataValue is provided, targetMaskFile is required.
-        # validate_required_fields short-circuits when datavalue is None (not provided),
-        # and runs the check when datavalue != None (comparison_func=ne).
         validate_required_fields(
             values,
             "targetmaskfile",
