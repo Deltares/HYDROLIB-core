@@ -24,6 +24,7 @@ from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
     ParametersConverter,
+    SpatialConverter
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
@@ -46,9 +47,10 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, Spatial)
+        assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
+        assert new_quantity_block.operand == "override"
 
     def test_polygon_data_file(self, polylines_dir: Path):
         forcing = ExtOldForcing(
@@ -64,6 +66,7 @@ class TestConvertInitialCondition:
         )
         assert new_quantity_block.datafiletype == "polygon"
         assert new_quantity_block.interpolationmethod == "constant"
+        assert new_quantity_block.operand == "override"
         assert np.isclose(new_quantity_block.value, 0.0)
 
     @pytest.mark.unit
@@ -93,8 +96,10 @@ class TestConvertInitialCondition:
         new_quantity_block = InitialConditionConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, Spatial)
+        assert isinstance(new_quantity_block, InitialField)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
+        assert new_quantity_block.operand == "override"
+
 
     @pytest.mark.e2e
     @pytest.mark.parametrize(
@@ -137,10 +142,11 @@ class TestConvertInitialCondition:
         )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, InitialConditionConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
+        assert new_quantity_block.operand == "override"
 
 
 class TestConvertParameters:
@@ -156,9 +162,10 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, Spatial)
+        assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
+        assert new_quantity_block.operand == "override"
 
     def test_bed_rock_surface_elevation(self):
         """Test conversion of bedrock surface elevation forcing.
@@ -185,8 +192,9 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, Spatial)
+        assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
+        assert new_quantity_block.operand == "override"
 
     @pytest.mark.e2e
     @pytest.mark.parametrize(
@@ -252,10 +260,11 @@ class TestConvertParameters:
         )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, ParametersConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
+        assert new_quantity_block.operand == "override"
 
 
 class TestConvertSeaIceQuantities:
@@ -344,7 +353,7 @@ class TestInifieldConverter:
             "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
             "datafiletype": DataFileType.sample,
             "interpolationmethod": InterpolationMethod.triangulation,
-            "operand": "O",
+            "operand": "override",
         }
         ini_field = InitialField(**data)
 
