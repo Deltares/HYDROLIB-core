@@ -266,7 +266,7 @@ class AbstractSpatialField(INIBasedModel, ABC):
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
     @field_validator("interpolationmethod", mode="before")
     @classmethod

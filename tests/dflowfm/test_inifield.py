@@ -42,10 +42,11 @@ class TestIniField:
     ]
 
     _operand_cases = [
-        ("operand", "o", "O"),
-        ("operand", "a", "A"),
-        ("operand", "x", "X"),
-        ("operand", "N", "N"),
+        ("operand", "OverRide", "override"),
+        ("operand", "ADD", "add"),
+        ("operand", "mULTiPLy", "multiply"),
+        ("operand", "Maximum", "maximum"),
+        ("operand", "MiNiMuM", "minimum"),
     ]
 
     _averagingtype_cases = [
@@ -126,7 +127,7 @@ class TestIniField:
         assert m.parameter[1].datafiletype == DataFileType.polygon
         assert m.parameter[1].interpolationmethod == InterpolationMethod.constant
         assert m.parameter[1].value == pytest.approx(0.03)
-        assert m.parameter[1].operand == Operand.mult
+        assert m.parameter[1].operand == Operand.multiply
 
     def test_load_and_save(self, input_files_dir: Path):
         """Test whether a model loaded from file is serialized correctly.
@@ -238,7 +239,7 @@ class TestInitialConditions:
         assert isinstance(initial_conditions.datafile, DiskOnlyFileModel)
         assert initial_conditions.datafiletype == DataFileType.arcinfo
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
@@ -250,7 +251,7 @@ class TestInitialConditions:
             datafiletype=DataFileType.arcinfo,
         )
         assert initial_conditions.interpolationmethod is None
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.extrapolationmethod is False
         assert initial_conditions.locationtype == "all"
 
@@ -260,13 +261,13 @@ class TestInitialConditions:
             datafile=DiskOnlyFileModel(),
             datafiletype=DataFileType.arcinfo,
             interpolationmethod=InterpolationMethod.constant,
-            operand="O",
+            operand="override",
             averagingtype=AveragingType.mean,
             averagingnummin=2,
             averagingpercentile=95.0,
         )
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
@@ -325,7 +326,7 @@ class TestExcludeFromValidation:
             "datafiletype": DataFileType.polygon,
             "value": 0.0,
             "interpolationmethod": InterpolationMethod.constant,
-            "operand": "O",
+            "operand": "override",
             "tracerdecaytime": "8640000",
         }
 
