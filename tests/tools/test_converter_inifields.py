@@ -156,7 +156,7 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
 
@@ -185,7 +185,7 @@ class TestConvertParameters:
         new_quantity_block = ParametersConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
 
     @pytest.mark.e2e
@@ -254,7 +254,7 @@ class TestConvertParameters:
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, ParametersConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, ParameterField)
         assert new_quantity_block.quantity == expected_quantity
 
 
@@ -328,7 +328,7 @@ class TestConvertSeaIceQuantities:
         converter.update()
         converter.save(backup=False)
 
-        written = converter.ext_model.filepath.read_text()
+        written = converter.inifield_model.filepath.read_text()
         assert "seaIceThickness" in written
         assert "sea_ice_thickness" not in written
 
