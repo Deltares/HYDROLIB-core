@@ -117,7 +117,7 @@ class TestSpatialE2E:
     * pt_old.ext    – old-format external forcing file with 24 initial-condition
                       quantities (initialtracerXXX / initialwaqbotXXX)
 
-    The converter is expected to convert all 24 old-format quantities to
+    The converter is expected to convert all 25 old-format quantities to
     ``Spatial`` blocks that are appended to the new ext model.
     """
 
