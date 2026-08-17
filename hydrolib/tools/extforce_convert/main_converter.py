@@ -30,6 +30,8 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
+    InitialConditionConverter,
+    ParametersConverter,
     SourceSinkConverter,
     SpatialConverter,
 )
@@ -374,7 +376,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Spatial, SourceSink]:
+    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, Spatial, SourceSink]:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
