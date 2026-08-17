@@ -467,10 +467,13 @@ class SourceSink(INIBasedModel):
         # `_exclude_from_validation` can whitelist them as known keywords.
         if dynamic_fields is not None:
             data[_DYNAMIC_FIELDS_KEY] = list(dynamic_fields)
+
         super().__init__(**data)
+
         # Drop the reserved key so it does not linger as an instance attribute.
         if self.__pydantic_extra__ is not None:
             self.__pydantic_extra__.pop(_DYNAMIC_FIELDS_KEY, None)
+
         if dynamic_fields is None:
             # Legacy behaviour: attach every prefix-matching key found in `data`.
             for key, value in data.items():
@@ -478,9 +481,6 @@ class SourceSink(INIBasedModel):
                     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
                 ):
                     setattr(self, key, value)
-        # When `dynamic_fields` is provided, the values are already stored on the
-        # instance (via `extra="allow"`) once they are whitelisted in
-        # `_exclude_from_validation`, so no explicit re-assignment is needed.
 
     @model_validator(mode="before")
     def validate_location_specification(cls, values):
