@@ -431,6 +431,7 @@ class SourceSink(INIBasedModel):
 
     @classmethod
     def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+        input_data = input_data or {}
         fields = cls.model_fields
         dynamic_fields = input_data.get(_DYNAMIC_FIELDS_KEY) or []
         unknown_keywords = [
