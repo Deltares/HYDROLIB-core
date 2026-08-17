@@ -93,7 +93,7 @@ def old_forcing_file() -> Path:
     return Path("tests/data/input/old-external-forcing.ext")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_initial_condition() -> Dict[str, Path]:
     return {
         "path": Path(
@@ -105,7 +105,7 @@ def old_forcing_file_initial_condition() -> Dict[str, Path]:
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_meteo() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-meteo-only.ext"),
@@ -115,7 +115,7 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_parameters() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-parameters-only.ext"),
@@ -128,7 +128,7 @@ def old_forcing_file_parameters() -> Dict[str, Path]:
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_boundary() -> Dict[str, Path]:
     return {
         "path": Path(

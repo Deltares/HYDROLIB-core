@@ -281,7 +281,7 @@ def path_relative_to_parent(
 
 def create_spatial_input_dict(
     forcing: ExtOldForcing,
-    new_forcing_path: Path,
+    new_forcing_path: Path | None,
 ) -> Dict[str, str]:
     """Create the input dictionary for a `Spatial` block from an initial/parameter forcing.
 
@@ -315,6 +315,14 @@ def create_spatial_input_dict(
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
     block_data = convert_interpolation_data(forcing, block_data)
+
+    # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
+    # interpolationMethod = constant.  The old METHOD value (typically 3 →
+    # linearSpaceTime) is meaningless for vertical profiles; the kernel always
+    # applies constant (horizontal) + linear (vertical) interpolation internally.
+    if quantity_name.startswith("initialvertical"):
+        block_data["interpolationmethod"] = InterpolationMethod.constant
+
     block_data["operand"] = forcing.operand
 
     if hasattr(forcing, "extrapolation"):
@@ -364,7 +372,7 @@ def create_initial_cond_and_parameter_input_dict(
     quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
+        "datafile": DiskOnlyFileModel(new_forcing_path) if new_forcing_path else forcing.filename,
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
 

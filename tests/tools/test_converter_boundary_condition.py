@@ -61,7 +61,7 @@ def forcing(input_files_dir: Path) -> ExtOldForcing:
         filename=input_files_dir / "boundary-conditions/tfl_01.pli",
         filetype=9,
         method="3",
-        operand="O",
+        operand="override",
     )
 
 
