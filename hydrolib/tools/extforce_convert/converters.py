@@ -117,6 +117,7 @@ class MeteoConverter(BaseConverter):
         """Meteo converter.
 
         Convert an old external forcing block with meteo data to a Meteo
+        forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
@@ -145,9 +146,9 @@ class MeteoConverter(BaseConverter):
         quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
         meteo_data = {
             "quantity": quantity_name,
-            "datafile": forcing.filename,
-            "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            "datavariablename": forcing.varname,
+            "forcingfile": forcing.filename,
+            "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
+            "forcingVariableName": forcing.varname,
         }
         if forcing.sourcemask != DiskOnlyFileModel(None):
             raise ValueError(
@@ -163,7 +164,7 @@ class MeteoConverter(BaseConverter):
             meteo_block = Meteo(**meteo_data)
         except Exception as e:
             raise MeteoError(
-                f"Failed to create the Meteo object for the following errors: {e}"
+                f"Failed to create the Meteo. object for the following Errors: {e}"
             )
 
         return meteo_block
@@ -558,14 +559,19 @@ class InitialConditionConverter(BaseConverter):
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter.
+            supported by the converter, a ValueError is raised. This ensures
+            that only compatible forcing blocks are processed, maintaining
+            data integrity and preventing errors in the conversion process.
+
+        References:
+            [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
         """
         data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
         try:
             new_block = InitialField(**data)
         except Exception as e:
-            raise SpatialError(
-                f"Failed to create the Spatial object for initial condition. Errors: {e}"
+            raise InitialFieldError(
+                f"Failed to create the InitialField object. for the following Errors: {e}"
             )
 
         return new_block
