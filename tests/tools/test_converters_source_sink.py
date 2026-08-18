@@ -629,3 +629,140 @@ class TestConvertSourceSinkWithSubstanceFile:
         )
         assert sub_1_forcing.quantityunitpair[1].unit == "(gC/m3)"
         assert sub_2_forcing.quantityunitpair[1].unit == "(gN/m3)"
+
+
+class TestSourceSinkConverterEdgeCases:
+    """Tests for SourceSinkConverter edge cases and error handling."""
+
+    def test_convert_raises_when_mdu_parser_is_none(self):
+        """Test that convert() raises ValueError when mdu_parser is None.
+
+        Test scenario:
+            Constructing a SourceSinkConverter without an mdu_parser and then calling
+            convert() should raise a clear ValueError.
+        """
+        converter = SourceSinkConverter(mdu_parser=None)
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename="tests/data/input/source-sink/leftsor.pliz",
+            filetype=9,
+            method="1",
+            operand="override",
+        )
+        with pytest.raises(ValueError, match="MDU model is required"):
+            converter.convert(forcing, [])
+
+    def test_convert_raises_when_temperature_salinity_data_is_none(self):
+        """Test that convert() raises ValueError when temperature_salinity_data is None.
+
+        Test scenario:
+            An mdu_parser that returns None for temperature_salinity_data should
+            trigger a clear ValueError at convert time.
+        """
+        mock_parser = MagicMock(spec=MDUParser)
+        mock_parser.temperature_salinity_data = None
+        converter = SourceSinkConverter(mdu_parser=mock_parser)
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename="tests/data/input/source-sink/leftsor.pliz",
+            filetype=9,
+            method="1",
+            operand="override",
+        )
+        with pytest.raises(ValueError, match="MDU model is required"):
+            converter.convert(forcing, [])
+
+    def test_active_substances_raises_for_missing_file(self):
+        """Test that _active_substances raises FileNotFoundError for missing .sub file.
+
+        Test scenario:
+            When the MDU parser returns a SubstanceFile path that does not exist on
+            disk, _active_substances should raise FileNotFoundError with a descriptive
+            message.
+        """
+        mock_parser = MagicMock(spec=MDUParser)
+        mock_parser.get_keyword.return_value = "nonexistent.sub"
+        mock_parser.mdu_path = Path("tests/data/input/source-sink/mdu.mdu")
+
+        converter = SourceSinkConverter(mdu_parser=mock_parser)
+        with pytest.raises(FileNotFoundError, match="not found"):
+            converter._active_substances()
+
+    def test_active_substances_returns_none_when_no_substance_file(self):
+        """Test that _active_substances returns None when no SubstanceFile is set.
+
+        Test scenario:
+            When the MDU parser returns None for SubstanceFile, _active_substances
+            should return None (no substance file configured).
+        """
+        mock_parser = MagicMock(spec=MDUParser)
+        mock_parser.get_keyword.return_value = None
+        converter = SourceSinkConverter(mdu_parser=mock_parser)
+        result = converter._active_substances()
+        assert result is None, f"Expected None, got {result}"
+
+
+class TestCorrectSubstanceUnits:
+    """Tests for SourceSinkConverter._correct_substance_units."""
+
+    def test_replaces_placeholder_units_with_substance_units(self):
+        """Test that placeholder units are replaced with substance concentration units.
+
+        Test scenario:
+            Given quantity names with 'sourcesink_' prefix and a substance_units map,
+            the method should replace the placeholder '-' with the actual unit.
+        """
+        units = ["m3/s", "-", "-"]
+        quantities_names = ["sourcesink_discharge", "sourcesink_sub_1", "sourcesink_sub_2"]
+        substance_units = {"sub_1": "(gC/m3)", "sub_2": "(gN/m3)"}
+
+        result = SourceSinkConverter._correct_substance_units(
+            units, quantities_names, substance_units
+        )
+        assert result == ["m3/s", "(gC/m3)", "(gN/m3)"], f"Got {result}"
+
+    def test_returns_units_unchanged_when_substance_units_is_none(self):
+        """Test that units are returned unchanged when substance_units is None.
+
+        Test scenario:
+            When no substance_units mapping is provided, the original units list
+            should be returned as-is.
+        """
+        units = ["m3/s", "-", "-"]
+        quantities_names = ["sourcesink_discharge", "sourcesink_sub_1", "sourcesink_sub_2"]
+
+        result = SourceSinkConverter._correct_substance_units(
+            units, quantities_names, None
+        )
+        assert result == units, f"Expected unchanged units, got {result}"
+
+    def test_returns_units_unchanged_when_substance_units_is_empty(self):
+        """Test that units are returned unchanged when substance_units is empty dict.
+
+        Test scenario:
+            An empty substance_units dict is falsy, so units should pass through.
+        """
+        units = ["m3/s", "1e-3", "degC"]
+        quantities_names = ["sourcesink_discharge", "sourcesink_salinitydelta", "sourcesink_temperaturedelta"]
+
+        result = SourceSinkConverter._correct_substance_units(
+            units, quantities_names, {}
+        )
+        assert result == units, f"Expected unchanged units, got {result}"
+
+    def test_keeps_original_unit_when_name_not_in_substance_units(self):
+        """Test that non-substance quantities keep their original unit.
+
+        Test scenario:
+            Quantities that are not in the substance_units map (e.g. discharge,
+            salinity) should keep their original unit values.
+        """
+        units = ["m3/s", "1e-3", "-"]
+        quantities_names = ["sourcesink_discharge", "sourcesink_salinitydelta", "sourcesink_sub_1"]
+        substance_units = {"sub_1": "(gC/m3)"}
+
+        result = SourceSinkConverter._correct_substance_units(
+            units, quantities_names, substance_units
+        )
+        assert result == ["m3/s", "1e-3", "(gC/m3)"], f"Got {result}"
+
