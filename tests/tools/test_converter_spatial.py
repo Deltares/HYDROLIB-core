@@ -271,3 +271,59 @@ class TestSpatialE2E:
         assert len(inifield_model.parameter) == 0
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
+
+
+class TestWaqSpatialConversion:
+    """Tests verifying that WAQ quantities are converted to [Spatial] blocks."""
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqparameter",
+            "waqfunctionTau",
+            "waqfunctionradsurfave",
+            "waqsegmentnumber1",
+            "waqsegmentfunctionVel",
+            "waqmassbalanceareasomething",
+        ],
+    )
+    def test_waq_parameter_quantities_use_spatial_converter(self, quantity):
+        """ConverterFactory must route WAQ parameter quantities to SpatialConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, SpatialConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "initialwaqbotSomething",
+            "initialwaqbot",
+        ],
+    )
+    def test_initialwaqbot_uses_spatial_converter(self, quantity):
+        """ConverterFactory must route initialwaqbot quantities to SpatialConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, SpatialConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqfunctionTau",
+            "waqsegmentnumber1",
+            "waqmassbalanceareasomething",
+            "waqparameter",
+            "initialwaqbotSomething"
+        ],
+    )
+    def test_waq_prefix_quantities_produce_spatial_block(self, quantity):
+        """Converter must return a Spatial object for WAQ prefix-based quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename=DiskOnlyFileModel("fake-file.asc"),
+            filetype=4,
+            method=4,
+            operand="O",
+        )
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        result = converter.convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == quantity
