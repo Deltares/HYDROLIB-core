@@ -1,5 +1,6 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
+import warnings
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -11,7 +12,6 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
@@ -25,8 +25,9 @@ from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     RealTime,
 )
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import LocationType, Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -36,8 +37,20 @@ from hydrolib.core.dflowfm.ini.util import (
     split_string_on_delimiter,
     validate_location_specification,
 )
+from hydrolib.core.dflowfm.inifield.models import (
+    AveragingType,
+    DataFileType,
+    InterpolationMethod,
+    AbstractSpatialField,
+)
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
+
+# Deprecated aliases — MeteoForcingFileType and MeteoInterpolationMethod are merged
+# into DataFileType and InterpolationMethod respectively. These aliases remain for
+# backward compatibility and will be removed in a future release.
+MeteoForcingFileType = DataFileType
+MeteoInterpolationMethod = InterpolationMethod
 
 SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
@@ -513,47 +526,6 @@ class SourceSink(INIBasedModel):
         return data
 
 
-class MeteoForcingFileType(StrEnum):
-    """Enum class containing the valid values for the forcingFileType attribute in Meteo class."""
-
-    bcascii = "bcAscii"
-    """str: Space-uniform time series in <*.bc> file."""
-
-    uniform = "uniform"
-    """str: Space-uniform time series in <*.tim> file."""
-
-    unimagdir = "uniMagDir"
-    """str: Space-uniform wind magnitude+direction in <*.tim> file."""
-
-    arcinfo = "arcInfo"
-    """str: Space- and time-varying wind and pressure on an equidistant grid in <*.amu/v/p> files."""
-
-    spiderweb = "spiderweb"
-    """str: Space- and time-varying cyclone wind and pressure in <*.spw> files."""
-
-    curvigrid = "curviGrid"
-    """str: Space- and time-varying wind and pressure on a curvilinear grid in <*.grd+*.amu/v/p> files."""
-
-    netcdf = "netcdf"
-    """str: NetCDF, either with gridded data, or multiple station time series."""
-
-    polygon = "polygon"
-    """str: Polygon-based time series in <*.pol> file."""
-
-    allowedvaluestext = "Possible values: bcAscii, uniform, uniMagDir, arcInfo, spiderweb, curviGrid, netcdf, polygon."
-
-
-class MeteoInterpolationMethod(StrEnum):
-    """Enum class containing the valid values for the interpolationMethod attribute in Meteo class."""
-
-    nearestnb = "nearestNb"
-    """str: Nearest-neighbour interpolation, only with station-data in forcingFileType=netcdf"""
-    linearSpaceTime = "linearSpaceTime"
-    """str: Linear interpolation in space and time."""
-    constant = "constant"
-    allowedvaluestext = "Possible values: nearestNb, linearSpaceTime, constant."
-
-
 class Meteo(INIBasedModel):
     """A `[Meteo]` block for use inside an external forcings file.
 
@@ -709,6 +681,315 @@ class Meteo(INIBasedModel):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
+class Spatial(INIBasedModel):
+    """A `[Spatial]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+
+    This block replaces both the legacy `[Meteo]` block (for meteorological
+    forcings) and the `[Initial]` / `[Parameter]` blocks in inifield files
+    (for initial conditions and spatial parameters).
+
+    All lowercased attributes match with the spatial input as described in
+    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
+    """
+
+    class Comments(INIBasedModel.Comments):
+        """Comments for the Spatial block fields."""
+
+        quantity: str | None = Field(
+            "Name of the quantity. See UM Section C.5.3", alias="quantity"
+        )
+        datafile: str | None = Field(
+            "Name of file containing the data for this spatial quantity.",
+            alias="dataFile",
+        )
+        datafiletype: str | None = Field(
+            "Type of dataFile.", alias="dataFileType"
+        )
+        datavariablename: str | None = Field(
+            "Variable name used in dataFile associated with this quantity.",
+            alias="dataVariableName",
+        )
+        targetmaskfile: str | None = Field(
+            "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.",
+            alias="targetMaskFile",
+        )
+        targetmaskinvert: str | None = Field(
+            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
+            alias="targetMaskInvert",
+        )
+        interpolationmethod: str | None = Field(
+            "Type of (spatial) interpolation.", alias="interpolationMethod"
+        )
+        operand: str | None = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
+        extrapolationallowed: str | None = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed"
+        )
+        extrapolationsearchradius: str | None = Field(
+            "Maximum search radius for nearest neighbour extrapolation in space.",
+            alias="extrapolationSearchRadius",
+        )
+        averagingtype: str | None = Field(
+            "Type of averaging, if interpolationMethod=averaging.",
+            alias="averagingType",
+        )
+        averagingrelsize: str | None = Field(
+            "Relative search cell size for averaging.", alias="averagingRelSize"
+        )
+        averagingnummin: str | None = Field(
+            "Minimum number of points in averaging. Must be ≥ 1.",
+            alias="averagingNumMin",
+        )
+        averagingpercentile: str | None = Field(
+            "Percentile value for which data values to include in averaging. 0.0 means off.",
+            alias="averagingPercentile",
+        )
+        locationtype: str | None = Field(
+            "Target location of interpolation.", alias="locationType"
+        )
+        datavalue: str | None = Field(
+            "Constant value to be set inside all model points inside the polygon, "
+            "used when no dataFile/dataFileType is specified. "
+            "Requires targetMaskFile=*.pol and interpolationMethod=constant.",
+            alias="dataValue",
+        )
+        frictiontype: str | None = Field(
+            "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType"
+        )
+        tracerfallvelocity: str | None = Field(
+            "Only for initialtracer<tracername>. Fall velocity of the tracer.",
+            alias="tracerFallVelocity",
+        )
+        tracerdecaytime: str | None = Field(
+            "Only for initialtracer<tracername>. Decay time of the tracer.",
+            alias="tracerDecayTime",
+        )
+
+    comments: Comments = Comments()
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """The Spatial block does not currently raise an error on unknown keywords."""
+        return None
+
+    _header: Literal["Spatial"] = "Spatial"
+    quantity: str = Field(alias="quantity")
+    datafile: TimModel | ForcingModel | DiskOnlyFileModel | PolyFile | None = Field(
+        None, alias="dataFile"
+    )
+    datafiletype: DataFileType | None = Field(None, alias="dataFileType")
+    datavariablename: str | None = Field(None, alias="dataVariableName")
+    targetmaskfile: PolyFile | DiskOnlyFileModel | None = Field(None, alias="targetMaskFile")
+    targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
+    interpolationmethod: InterpolationMethod | None = Field(
+        None, alias="interpolationMethod"
+    )
+    operand: Operand | None = Field(Operand.override.value, alias="operand")
+    extrapolationallowed: bool | None = Field(False, alias="extrapolationAllowed")
+    extrapolationsearchradius: float | None = Field(
+        None, alias="extrapolationSearchRadius"
+    )
+    averagingtype: AveragingType | None = Field(None, alias="averagingType")
+    averagingrelsize: float | None = Field(None, alias="averagingRelSize")
+    averagingnummin: float | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
+    locationtype: LocationType | None = Field(
+        LocationType.all.value, alias="locationType"
+    )
+    datavalue: float | None = Field(None, alias="dataValue")
+    frictiontype: str | None = Field(None, alias="frictionType")
+    tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
+
+    @model_validator(mode="before")
+    @classmethod
+    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
+        """Select the right class for the dataFile parameter based on dataFileType.
+
+        Uses FILETYPE_FILEMODEL_MAPPING to determine the correct file model.
+        Types not in the mapping (e.g., GeoTIFF, sample, 1dField) default to
+        DiskOnlyFileModel.
+        """
+        if any(par in values for par in ["datafiletype", "dataFileType"]) and any(
+            par in values for par in ["datafile", "dataFile"]
+        ):
+            file_type_var_name = (
+                "datafiletype" if "datafiletype" in values else "dataFileType"
+            )
+            filename_var_name = "datafile" if "datafile" in values else "dataFile"
+            file_type = values.get(file_type_var_name)
+            file_type = str(file_type).lower() if file_type is not None else None
+            raw_path = values.get(filename_var_name)
+            if isinstance(raw_path, (Path, str)):
+                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
+                values[filename_var_name] = resolve_file_model(raw_path, model)
+
+        return values
+
+    @classmethod
+    def _normalize_spatial_keys(cls, values: Dict) -> Dict:
+        """Normalize camelCase aliases and coerce datafile to DiskOnlyFileModel."""
+        data_file = values.get("datafile") or values.get("dataFile")
+        if isinstance(data_file, (str, Path)):
+            data_file = DiskOnlyFileModel(data_file)
+            values.pop("dataFile", None)
+            values["datafile"] = data_file
+
+        if "dataValue" in values and "datavalue" not in values:
+            values["datavalue"] = values.pop("dataValue")
+        if "targetMaskFile" in values and "targetmaskfile" not in values:
+            values["targetmaskfile"] = values.pop("targetMaskFile")
+        return values
+
+    @classmethod
+    def _validate_datavalue_path(
+        cls, values: Dict, has_datafile: bool, has_datafiletype: bool
+    ) -> None:
+        """Validate the ``dataValue`` usage path (constant value inside polygon)."""
+        if has_datafile or has_datafiletype:
+            raise ValueError(
+                "When 'dataValue' is provided, 'dataFile' and 'dataFileType' must not be specified."
+            )
+        interp = values.get("interpolationmethod") or values.get("interpolationMethod")
+        if interp is None:
+            values["interpolationmethod"] = InterpolationMethod.constant
+        elif str(interp).lower() != str(InterpolationMethod.constant).lower():
+            raise ValueError(
+                f"When 'dataValue' is provided, 'interpolationMethod' must be "
+                f"'{InterpolationMethod.constant}', got '{interp}'."
+            )
+
+    @classmethod
+    def _validate_datafile_path(
+        cls, values: Dict, has_datafile: bool, has_datafiletype: bool
+    ) -> None:
+        """Validate the ``dataFile`` usage path and emit deprecation warning when needed."""
+        if not has_datafile:
+            raise ValueError("'dataFile' is required when 'dataValue' is not specified.")
+        if not has_datafiletype:
+            raise ValueError("'dataFileType' is required when 'dataValue' is not specified.")
+
+        raw_filetype = values.get("datafiletype") or values.get("dataFileType")
+        quantity = values.get("quantity") or ""
+        if (
+            raw_filetype is not None
+            and str(raw_filetype).lower() == DataFileType.polygon
+            and not str(quantity).startswith("initialvertical")
+        ):
+            warnings.warn(
+                "Using dataFileType=polygon for 'inside polygon' data is deprecated. "
+                "Use dataValue + targetMaskFile=<*.pol> + interpolationMethod=constant instead. "
+                "The polygon dataFileType remains supported only for initialvertical* quantities "
+                "(e.g. initialverticalsalinityprofile).",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+    @classmethod
+    def _process_section_values(cls, values):
+        """Process Section objects and extract/convert values as needed.
+
+        Args:
+            values: The values to process, which may be a Section object or a dictionary.
+
+        Returns:
+            A dictionary containing the processed values.
+        """
+        # If values is a Section object, we need to handle it specially
+        if isinstance(values, Section):
+            # Extract the datafile value if present
+            data_file = super()._extract_file_model_from_section(
+                values, "datafile", DiskOnlyFileModel
+            )
+
+            # Convert Section to dictionary
+            values_dict = super()._convert_section_to_dict(values)
+
+            # If we found a datafile, add it to the dictionary
+            if data_file is not None:
+                values_dict["datafile"] = data_file
+
+            return values_dict
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_datavalue_or_datafile(cls, values: Dict) -> Dict:
+        """Validates the two mutually exclusive usage paths of a Spatial block.
+
+        When ``dataValue`` is provided the block describes a constant value applied
+        inside a polygon mask.  In this mode:
+        - ``dataFile`` and ``dataFileType`` must **not** be specified.
+        - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.
+        - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).
+
+        When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both
+        required.
+
+        Note: using ``dataFileType=polygon`` for "inside polygon" initial-condition
+        data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +
+        ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType
+        remains supported for quantities such as ``initialvertical*`` (e.g.
+        ``initialverticalsalinityprofile``) that use polygon files for a different
+        purpose and have no new alternative yet.
+        """
+        values = cls._process_section_values(values)
+        values = cls._normalize_spatial_keys(values)
+
+        datavalue = values.get("datavalue")
+        has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
+        has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
+
+        if datavalue is not None:
+            cls._validate_datavalue_path(values, has_datafile, has_datafiletype)
+        else:
+            cls._validate_datafile_path(values, has_datafile, has_datafiletype)
+
+        return values
+
+    def is_intermediate_link(self) -> bool:
+        return True
+
+    @field_validator("targetmaskfile", mode="before")
+    @classmethod
+    def validate_targetmaskfile(cls, v: Any) -> Any:
+        if isinstance(v, (str, Path)):
+            return resolve_file_model(v, PolyFile)
+        return v
+
+    @field_validator("datafiletype", mode="before")
+    @classmethod
+    def validate_data_file_type(cls, v):
+        if v is None:
+            return v
+        return enum_value_parser(v, DataFileType)
+
+    @field_validator("interpolationmethod", mode="before")
+    @classmethod
+    def validate_interpolation_method(cls, v):
+        return enum_value_parser(v, InterpolationMethod)
+
+    @field_validator("averagingtype", mode="before")
+    @classmethod
+    def validate_average_type(cls, v):
+        return enum_value_parser(v, AveragingType)
+
+    @field_validator("locationtype", mode="before")
+    @classmethod
+    def validate_location_type(cls, v):
+        return enum_value_parser(v, LocationType)
+
+    @field_validator("operand", mode="before")
+    @classmethod
+    def validate_operand(cls, v):
+        return enum_value_parser(v, Operand)
+
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
 
@@ -728,7 +1009,10 @@ class ExtModel(INIModel):
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
         sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
-        meteo (List[Meteo]): List of `[Meteo]` blocks for all meteorological forcings.
+        meteo (List[Meteo]): List of `[Meteo]` blocks for legacy meteorological forcings.
+            Deprecated: use `spatial` instead.
+        spatial (List[Spatial]): List of `[Spatial]` blocks for spatial forcings (meteo,
+            initial conditions, and spatial parameters).
     """
 
     general: ExtGeneral = ExtGeneral()
@@ -744,9 +1028,28 @@ class ExtModel(INIModel):
     meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
+    spatial: Annotated[List[Spatial], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
     serializer_config: INISerializerConfig = INISerializerConfig(
         section_indent=0, property_indent=0
     )
+
+    @model_validator(mode="after")
+    def _warn_on_meteo(self) -> "ExtModel":
+        """Emit a DeprecationWarning when [Meteo] blocks are present.
+
+        The `[Meteo]` block is superseded by the `[Spatial]` block. New models
+        should use `ExtModel.spatial` instead of `ExtModel.meteo`.
+        """
+        if self.meteo:
+            warnings.warn(
+                "`ExtModel.meteo` is deprecated; use `ExtModel.spatial` instead. "
+                "`[Meteo]` blocks should be replaced by `[Spatial]` blocks.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        return self
 
     @classmethod
     def _ext(cls) -> str:
@@ -775,6 +1078,14 @@ class InitialFieldError(Exception):
 
 class MeteoError(Exception):
     """MeteoError."""
+
+    def __init__(self, error_message: str):
+        """Initialize with an error message."""
+        super().__init__(error_message)
+
+
+class SpatialError(Exception):
+    """SpatialError."""
 
     def __init__(self, error_message: str):
         """Initialize with an error message."""

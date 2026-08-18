@@ -25,9 +25,12 @@ from hydrolib.core.dflowfm.ext.models import (
     InitialFieldError,
     Meteo,
     MeteoError,
+    Spatial,
+    SpatialError,
     SourceSink,
     SourceSinkError,
 )
+from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
@@ -36,19 +39,19 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
     SOURCESINK_SALINITY_IN_BC,
     SOURCESINK_TEMP_IN_BC,
     convert_interpolation_data,
     create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
     oldfiletype_to_forcing_file_type,
-    CONVERTER_DATA
+    create_spatial_input_dict,
 )
 
 
@@ -163,10 +166,57 @@ class MeteoConverter(BaseConverter):
             meteo_block = Meteo(**meteo_data)
         except Exception as e:
             raise MeteoError(
-                f"Failed to create the Meteo object. for the following Errors: {e}"
+                f"Failed to create the Meteo object for the following Errors: {e}"
             )
 
         return meteo_block
+
+
+class SpatialConverter(BaseConverter):
+    """Spatial quantities Converter."""
+
+    def __init__(self):
+        """Spatial converter constructor."""
+        super().__init__()
+
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
+        """Spatial converter.
+
+        Convert an old external forcing block with spatial data to a Spatial
+        forcing block suitable for inclusion in a new external forcings file.
+
+        This function takes a forcing block from an old external forcings
+        file, represented by an instance of ExtOldForcing, and converts it
+        into a Spatial object. The Spatial object is suitable for use in new
+        external forcings files, adhering to the updated format and
+        specifications.
+
+        Args:
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
+
+        Returns:
+            Spatial: A Spatial object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
+
+        Raises:
+            ValueError: If the forcing block contains a quantity that is not
+            supported by the converter, a ValueError is raised.
+        """
+        data = create_spatial_input_dict(forcing, new_forcing_path)
+
+        try:
+            spatial_block = Spatial(**data)
+        except Exception as e:
+            raise SpatialError(
+                f"Failed to create the Spatial object. for the following Errors: {e}"
+            )
+        return spatial_block
 
 
 class BoundaryConditionConverter(BaseConverter):
@@ -479,7 +529,6 @@ class InitialConditionConverter(BaseConverter):
 
         Convert an old external forcing block with Initial condition data to a IinitialField
         forcing block suitable for inclusion in a new inifieldfile file.
-
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
@@ -932,14 +981,14 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter()
-        elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
-            return InitialConditionConverter()
+        if (
+            ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
+            or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
+            or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
+        ):
+            return SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
             return BoundaryConditionConverter()
-        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
-            return ParametersConverter()
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
             return SourceSinkConverter()
         else:

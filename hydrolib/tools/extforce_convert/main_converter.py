@@ -13,9 +13,14 @@ from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
     Lateral,
     Meteo,
+    Spatial,
     SourceSink,
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldInitialConditionQuantity,
+    ExtOldModel,
+    ExtOldParametersQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
@@ -28,6 +33,7 @@ from hydrolib.tools.extforce_convert.converters import (
     InitialConditionConverter,
     ParametersConverter,
     SourceSinkConverter,
+    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -296,6 +302,7 @@ class ExternalForcingConverter:
             Lateral: (self.ext_model, "lateral"),
             SourceSink: (self.ext_model, "sourcesink"),
             Meteo: (self.ext_model, "meteo"),
+            Spatial: (self.ext_model, "spatial"),
             InitialField: (self.inifield_model, "initial"),
             ParameterField: (self.inifield_model, "parameter"),
             Structure: (self.structure_model, "structure"),
@@ -369,7 +376,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
+    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, Spatial, SourceSink]:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
@@ -401,11 +408,19 @@ class ExternalForcingConverter:
                 start_time = self.temperature_salinity_data.get("refdate")
                 new_quantity_block = converter_class.convert(forcing, start_time)
         elif isinstance(
-            converter_class, (InitialConditionConverter, ParametersConverter)
+            converter_class, SpatialConverter
         ):
+            if ConverterFactory.contains(
+                ExtOldInitialConditionQuantity, forcing.quantity
+            ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
+                # Initial conditions and parameters are written to the inifield model file
+                ref_path = self.inifield_model.filepath
+            else:
+                # Meteo quantities are written to the ext model file
+                ref_path = self.ext_model.filepath
             forcing_path = path_relative_to_parent(
                 forcing,
-                self.inifield_model.filepath,
+                ref_path,
                 self.extold_model.filepath,
                 self.mdu_parser,
             )
@@ -442,6 +457,7 @@ class ExternalForcingConverter:
 
         num_quantities_ext = (
             len(self.ext_model.meteo)
+            + len(self.ext_model.spatial)
             + len(self.ext_model.sourcesink)
             + len(self.ext_model.boundary)
             + len(self.ext_model.lateral)

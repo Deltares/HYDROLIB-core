@@ -1,0 +1,179 @@
+QUANTITY     =rainfall
+FILENAME     =Sobek_Precip.bc
+FILETYPE     =4
+METHOD       =2
+OPERAND      =O
+
+QUANTITY     =initialtracerContinuity
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =1.0
+
+QUANTITY     =initialtracerOXY
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =7.0
+
+QUANTITY     =initialtracerAAP
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.02
+
+QUANTITY     =initialtracerPOC1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =2.0
+
+QUANTITY     =initialtracerPON1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.5
+
+QUANTITY     =initialtracerPOP1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.02
+
+QUANTITY     =initialtracerOpal
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =1.0
+
+QUANTITY     =initialtracerNH4
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.02
+
+QUANTITY     =initialtracerNO3
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.5
+
+QUANTITY     =initialtracerPO4
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.01
+
+QUANTITY     =initialtracerSi
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =1.0
+
+QUANTITY     =initialtracerFDIATOMS_E
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerFDIATOMS_P
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerGREENS_E
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerGREENS_N
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerGREENS_P
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerBLUEGRN_E
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerBLUEGRN_N
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialtracerBLUEGRN_P
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialwaqbotAAPS1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialwaqbotDetCS1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialwaqbotDetNS1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialwaqbotDetPS1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialwaqbotDetSiS1
+FILENAME     =pt_initals.pol
+FILETYPE     =10
+METHOD       =4
+OPERAND      =O
+VALUE        =0.0
+
+QUANTITY     =initialverticalsalinityprofile
+FILENAME     =anticreep01-inisal.pli
+FILETYPE     =9
+METHOD       =1
+OPERAND      =O

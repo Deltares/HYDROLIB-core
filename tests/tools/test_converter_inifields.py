@@ -5,7 +5,14 @@ import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.ext.models import Spatial
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldFileType,
+    ExtOldForcing,
+    ExtOldQuantity
+)
+
+
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
     IniFieldModel,
@@ -17,6 +24,7 @@ from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
     InitialConditionConverter,
     ParametersConverter,
+    SpatialConverter
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
@@ -134,9 +142,9 @@ class TestConvertInitialCondition:
         )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, InitialConditionConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
         assert new_quantity_block.operand == "override"
 
@@ -252,9 +260,9 @@ class TestConvertParameters:
         )
         assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, ParametersConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
         assert new_quantity_block.operand == "override"
 
@@ -312,9 +320,9 @@ class TestConvertSeaIceQuantities:
         converter.check_unsupported_quantities()
 
         converter.update()
-        blocks = converter.inifield_model.parameter
+        blocks = converter.ext_model.spatial
         assert len(blocks) == 1
-        assert isinstance(blocks[0], ParameterField)
+        assert isinstance(blocks[0], Spatial)
         assert blocks[0].quantity == new_quantity
 
     def test_new_name_survives_serialization(self, tmp_path: Path):
@@ -329,7 +337,7 @@ class TestConvertSeaIceQuantities:
         converter.update()
         converter.save(backup=False)
 
-        written = converter.inifield_model.filepath.read_text()
+        written = converter.ext_model.filepath.read_text()
         assert "seaIceThickness" in written
         assert "sea_ice_thickness" not in written
 

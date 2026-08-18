@@ -158,7 +158,7 @@ def oldmethod_to_interpolation_method(
             or "unknown" for invalid input.
     """
     if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
+        interpolation_method = InterpolationMethod.linear_space_time
     elif oldmethod == 5:
         interpolation_method = InterpolationMethod.triangulation
     elif oldmethod == 4:
@@ -279,6 +279,79 @@ def path_relative_to_parent(
     return forcing_path
 
 
+def create_spatial_input_dict(
+    forcing: ExtOldForcing,
+    new_forcing_path: Path | None,
+) -> Dict[str, str]:
+    """Create the input dictionary for a `Spatial` block from an initial/parameter forcing.
+
+    Converts an old external forcing block representing an initial condition or
+    spatial parameter into a dict suitable for constructing a `Spatial` object
+    in the new ExtForceFileNew format.
+
+    Args:
+        forcing: [ExtOldForcing]
+            External forcing block from the old external forcings file.
+        new_forcing_path: [Path]
+            The path to the forcing data file.
+
+    Returns:
+        Dict[str, str]:
+            the input dictionary for the `Spatial` constructor
+    """
+    quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
+    file_type = oldfiletype_to_forcing_file_type(forcing.filetype)
+
+    if forcing.sourcemask != DiskOnlyFileModel(None):
+        raise ValueError(
+            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+            f"convert this input. Encountered for QUANTITY="
+            f"{forcing.quantity} and FILENAME={forcing.filename}."
+        )
+
+    if file_type == DataFileType.polygon and not quantity_name.startswith("initialvertical"):
+        block_data = {
+            "quantity": quantity_name,
+            "targetmaskfile": DiskOnlyFileModel(new_forcing_path),
+            "datavalue": forcing.value,
+            "operand": forcing.operand,
+            "interpolationmethod": InterpolationMethod.constant
+        }
+
+    elif file_type == DataFileType.polygon:
+        block_data = {
+            "quantity": quantity_name,
+            "datafile": DiskOnlyFileModel(new_forcing_path),
+            "datafiletype": file_type,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": forcing.operand
+        }
+    else:
+        block_data = {
+            "quantity": quantity_name,
+            "datafile": DiskOnlyFileModel(new_forcing_path),
+            "datafiletype": file_type,
+        }
+        block_data = convert_interpolation_data(forcing, block_data)
+
+        # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
+        # interpolationMethod = constant.  The old METHOD value (typically 3 →
+        # linearSpaceTime) is meaningless for vertical profiles; the kernel always
+        # applies constant (horizontal) + linear (vertical) interpolation internally.
+        if quantity_name.startswith("initialvertical"):
+            block_data["interpolationmethod"] = InterpolationMethod.constant
+
+        block_data["operand"] = forcing.operand
+
+        if hasattr(forcing, "extrapolation"):
+            block_data["extrapolationmethod"] = forcing.extrapolation == 1
+        for key, value in forcing.model_dump().items():
+            if key.lower().startswith("tracer") and value is not None:
+                block_data[key] = value
+
+    return block_data
+
+
 def create_initial_cond_and_parameter_input_dict(
     forcing: ExtOldForcing,
     new_forcing_path: Path,
@@ -303,7 +376,7 @@ def create_initial_cond_and_parameter_input_dict(
     quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
     block_data = {
         "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
+        "datafile": DiskOnlyFileModel(new_forcing_path) if new_forcing_path else forcing.filename,
         "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
     }
 

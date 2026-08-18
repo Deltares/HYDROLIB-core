@@ -710,15 +710,17 @@ class TestMainConverter:
 
     @staticmethod
     def _compare(ext_model, inifield_model, structure_model):
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
+        # The old external file has 1 source-sink and 2 initial conditions (initialsalinity, initialtemperature).
+        # Initial conditions are converted to Spatial blocks in the ext model (new format).
         num_quantities = 1
         assert len(ext_model.sourcesink) == num_quantities
+        # initialsalinity and initialtemperature are converted to Spatial blocks in the ext model
+        assert len(ext_model.spatial) == 2
         # no parameters or any other structures, lateral or meteo data
         assert len(inifield_model.parameter) == 0
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
+        assert len(inifield_model.initial) == 0
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
