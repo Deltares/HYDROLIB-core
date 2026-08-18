@@ -616,3 +616,16 @@ class TestConvertSourceSinkWithSubstanceFile:
         assert all([hasattr(source_sink, sub_name) for sub_name in ["sub_1", "sub_2"]])
         forcings = source_sink.sub_1
         assert len(forcings.forcing) == 5
+
+        # Verify that the substance concentration units from the .sub file are
+        # correctly propagated to the .bc quantity-unit pairs.
+        sub_1_forcing = next(
+            f for f in source_sink.sub_1.forcing
+            if f.quantityunitpair[1].quantity == "sub_1"
+        )
+        sub_2_forcing = next(
+            f for f in source_sink.sub_2.forcing
+            if f.quantityunitpair[1].quantity == "sub_2"
+        )
+        assert sub_1_forcing.quantityunitpair[1].unit == "(gC/m3)"
+        assert sub_2_forcing.quantityunitpair[1].unit == "(gN/m3)"
