@@ -72,6 +72,11 @@ def polylines_dir() -> Path:
 
 
 @pytest.fixture
+def source_sink_dir() -> Path:
+    return Path("tests/data/input/source-sink")
+
+
+@pytest.fixture
 def tim_files_dir() -> Path:
     return Path("tests/data/input/tim")
 

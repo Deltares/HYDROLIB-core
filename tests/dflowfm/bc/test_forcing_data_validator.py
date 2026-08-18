@@ -331,8 +331,8 @@ class TestForcingDataIntegration:
         """A SourceSink model accepts DiskOnlyFileModel under non-recursive load.
 
         Test scenario:
-            SourceSink has multiple ForcingData fields (discharge, salinitydelta,
-            temperaturedelta). Verify the AfterValidator allows DiskOnlyFileModel
+            SourceSink has multiple ForcingData fields (discharge, salinity,
+            temperature). Verify the AfterValidator allows DiskOnlyFileModel
             for the main discharge field when recurse=False.
         """
 
