@@ -41,8 +41,8 @@ class TestSourceSink:
                     "zSource": 0.0,
                     "area": 1.0,
                     "discharge": 1.23,
-                    "salinitydelta": 4.0,
-                    "temperatureDelta": 5.0,
+                    "salinity": 4.0,
+                    "temperature": 5.0,
                 }
             ]
         }
@@ -158,7 +158,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
     Args:
         tmp_path: Pytest-supplied temporary directory.
         fields: Mapping of forcing-data field names (`discharge`,
-            `salinitydelta`, `temperaturedelta`) to the `.bc` filename
+            `salinity`, `temperature`) to the `.bc` filename
             string that should appear on the wire.
 
     Returns:
@@ -182,7 +182,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
 
 
 class TestSourceSinkForcingData:
-    """Validator coverage for `discharge`, `salinitydelta`, and `temperaturedelta`.
+    """Validator coverage for `discharge`, `salinity`, and `temperature`.
 
     These three fields share a single `mode="before"` field validator that
     delegates to `_resolve_forcing_data`, so each of float / RealTime /
@@ -263,12 +263,12 @@ class TestSourceSinkForcingData:
             f"Expected empty forcing list, got {source_sink.discharge.forcing}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_defaults_to_none(self, field: str):
-        """`salinitydelta` and `temperaturedelta` default to `None` when omitted.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_default_to_none_when_omitted(self, field: str):
+        """`salinity` and `temperature` default to `None` when omitted.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Ensures the new validator does not interfere with the optional
@@ -279,12 +279,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should default to None, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_accepts_float(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept a numeric value.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_accept_float(self, field: str):
+        """`salinity` and `temperature` accept a numeric value.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Nominal use-case mirroring `discharge` numeric handling.
@@ -294,12 +294,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should be 4.0, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_accepts_realtime_keyword(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept the realtime keyword.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_accept_realtime_keyword(self, field: str):
+        """`salinity` and `temperature` accept the realtime keyword.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Same union semantics as `discharge`, since all three share the
@@ -311,15 +311,15 @@ class TestSourceSinkForcingData:
             f" got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinityDelta", "temperatureDelta"])
-    def test_optional_delta_loads_bc_file_via_extmodel(
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_load_bc_file_via_extmodel(
         self, tmp_path: Path, field: str
     ):
-        """`salinityDelta` / `temperatureDelta` accept a `.bc` filename in the `.ext`.
+        """`salinity` / `temperature` accept a `.bc` filename in the `.ext`.
 
         Args:
             tmp_path: Pytest temporary directory fixture.
-            field: Wire alias (`salinityDelta` or `temperatureDelta`).
+            field: Wire alias (`salinity` or `temperature`).
 
         Test scenario:
             The fix extended `.bc`-file support to these two optional
@@ -333,6 +333,72 @@ class TestSourceSinkForcingData:
         value = getattr(model.sourcesink[0], field.lower())
         assert isinstance(value, ForcingModel), (
             f"Expected ForcingModel on {field.lower()}, got {type(value).__name__}"
+        )
+
+
+
+class TestNoDeltaSuffix:
+    """Verify that 'Delta' is not appended to salinity/temperature quantity names.
+
+    Regression tests for the fix that removed 'Delta' from the salinity and
+    temperature field names in both the generated .ext and .bc files.
+    """
+
+    @pytest.mark.parametrize(
+        "kwargs, expected_key",
+        [
+            ({"salinity": 3.5}, "salinity"),
+            ({"temperature": 20.0}, "temperature"),
+        ],
+    )
+    def test_sourcesink_serializes_without_delta(
+        self, tmp_path: Path, kwargs: dict, expected_key: str
+    ):
+        """Serialized [SourceSink] block uses `salinity`/`temperature`, not the Delta variants.
+
+        Test scenario:
+            When a SourceSink with a salinity or temperature forcing is saved to
+            an .ext file, the key written on the wire must not carry the `Delta`
+            suffix (e.g. `salinity`, not `salinityDelta`).
+        """
+        source_sink = SourceSink(**_make_sourcesink_kwargs(**kwargs))
+        ext = ExtModel(sourcesink=[source_sink])
+        ext_path = tmp_path / "out.ext"
+        ext.save(ext_path)
+
+        content = ext_path.read_text(encoding="utf-8")
+        assert expected_key in content.lower()
+        assert f"{expected_key}delta" not in content.lower()
+
+    @pytest.mark.parametrize(
+        "wire_key, python_attr",
+        [
+            ("salinity", "salinity"),
+            ("temperature", "temperature"),
+            ("salinityDelta", "salinity"),      # backward compat: old alias
+            ("temperatureDelta", "temperature"), # backward compat: old alias
+        ],
+    )
+    def test_sourcesink_reads_forcing_alias(
+        self, tmp_path: Path, wire_key: str, python_attr: str
+    ):
+        """Wire key `wire_key` in an ext file maps to the `python_attr` field.
+
+        Test scenario:
+            Both the current aliases (`salinity`, `temperature`) and the legacy
+            aliases from older HYDROLIB-core versions (`salinityDelta`,
+            `temperatureDelta`) must load into the correct model field as a
+            ForcingModel. The migration validator renames lowercased legacy keys
+            before field population.
+        """
+        ext_path = _write_ext_with_bc(
+            tmp_path, {"discharge": "1.0", wire_key: "sourcesink.bc"}
+        )
+        model = ExtModel(ext_path)
+        value = getattr(model.sourcesink[0], python_attr)
+        assert isinstance(value, ForcingModel), (
+            f"Wire key '{wire_key}' should load into '{python_attr}' as a "
+            f"ForcingModel, got {type(value).__name__}"
         )
 
 
