@@ -24,7 +24,7 @@ def open_file_with_fallback_encoding(filepath: Path) -> str:
         The file content as a string.
 
     Raises:
-        UnicodeDecodeError: If the file cannot be decoded with any of the
+        RuntimeError: If the file cannot be decoded with any of the
             attempted encodings (should not happen because Latin-1 accepts
             every byte).
     """
@@ -36,7 +36,7 @@ def open_file_with_fallback_encoding(filepath: Path) -> str:
                 f"Failed to decode {filepath} with {encoding}, trying next encoding.",
             )
 
-    raise AssertionError("All fallback encodings failed.")  # pragma: no cover
+    raise RuntimeError("All fallback encodings failed.")  # pragma: no cover
 
 
 class BaseParser:
