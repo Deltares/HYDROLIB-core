@@ -388,8 +388,8 @@ class SourceSink(INIBasedModel):
     area: Optional[float] = Field(None, alias="Area")
 
     discharge: ForcingData = Field(alias="discharge")
-    salinitydelta: Optional[ForcingData] = Field(None, alias="salinityDelta")
-    temperaturedelta: Optional[ForcingData] = Field(None, alias="temperatureDelta")
+    salinity: Optional[ForcingData] = Field(None, alias="salinity")
+    temperature: Optional[ForcingData] = Field(None, alias="temperature")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -400,7 +400,7 @@ class SourceSink(INIBasedModel):
         return split_string_on_delimiter(cls, v, info)
 
     @field_validator(
-        "discharge", "salinitydelta", "temperaturedelta", mode="before"
+        "discharge", "salinity", "temperature", mode="before"
     )
     @classmethod
     def validate_forcing_data(cls, v):
@@ -411,10 +411,14 @@ class SourceSink(INIBasedModel):
     def _resolve_dynamic_forcing_deltas(cls, values: Any) -> Any:
         """Apply `_resolve_forcing_data` to dynamic `tracer<...>Delta`/`sedFrac<...>Delta` keys.
 
+        Also renames legacy `salinitydelta`/`temperaturedelta` keys (produced by
+        the INI parser from old-format `salinityDelta`/`temperatureDelta`) to the
+        current field names `salinity`/`temperature` for backward compatibility.
+
         Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `tracer<name>Delta` and
         `sedFrac<name>Delta` accept a scalar Double or the name of a `.bc`
-        time-series file. The first-class `discharge`/`salinityDelta`/
-        `temperatureDelta` fields are already handled by `validate_forcing_data`;
+        time-series file. The first-class `discharge`/`salinity`/
+        `temperature` fields are already handled by `validate_forcing_data`;
         this validator extends the same coercion to the dynamic Delta-suffix
         fields that arrive via `extra="allow"`.
 
@@ -422,6 +426,12 @@ class SourceSink(INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
+            # Migrate legacy salinityDelta/temperatureDelta keys (any casing) from old-format ext files.
+            lowercase_map = {k.lower(): k for k in values}
+            if "salinitydelta" in lowercase_map and "salinity" not in values:
+                values["salinity"] = values.pop(lowercase_map["salinitydelta"])
+            if "temperaturedelta" in lowercase_map and "temperature" not in values:
+                values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
             for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
@@ -455,7 +465,6 @@ class SourceSink(INIBasedModel):
         behaviour applies: every key in `data` that starts with one of
         `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` is attached. In both cases the values
         are stored as-is on the instance (in `model_extra`); no coercion is applied yet.
-
         Args:
             dynamic_fields: Names of extra fields (whose values are passed in `data`)
                 to attach onto this instance. If `None`, the prefix-based detection is

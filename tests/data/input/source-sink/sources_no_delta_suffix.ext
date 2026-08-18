@@ -1,0 +1,13 @@
+QUANTITY=discharge_salinity_temperature_sorsin
+FILENAME=left_no_delta_suffix.pli
+FILETYPE=9
+METHOD=3
+OPERAND=O
+AREA=0.0
+
+QUANTITY=discharge_salinity_temperature_sorsin
+FILENAME=right_no_delta_suffix.pli
+FILETYPE=9
+METHOD=3
+OPERAND=O
+AREA=0.0
