@@ -13,16 +13,14 @@ Most relevant classes are:
 """
 
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 from pydantic import Field, field_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
     BaseModel,
-    ModelSaveSettings,
     ParsableFileModel,
-    SerializerConfig,
 )
 from hydrolib.core.base.utils import FortranUtils
 from hydrolib.core.dflowfm.substance.parser import SubstanceParser
@@ -126,7 +124,7 @@ class Substance(BaseModel):
     description: str = Field(...)
     type: SubstanceType = Field(default=SubstanceType.Active)
     concentration_unit: str
-    waste_load_unit: Optional[str] = Field(default="-")
+    waste_load_unit: str | None = Field(default="-")
 
     def is_active(self) -> bool:
         """Return whether this substance is actively computed.
@@ -309,7 +307,7 @@ class ActiveProcesses(BaseModel):
         SubstanceModel: Top-level model containing this block.
     """
 
-    processes: List[ActiveProcess] = Field(default_factory=list)
+    processes: list[ActiveProcess] = Field(default_factory=list)
 
 
 class SubstanceModel(ParsableFileModel):
@@ -324,11 +322,11 @@ class SubstanceModel(ParsableFileModel):
     Attributes:
         serializer_config (SubstanceSerializerConfig):
             Configuration for serialization of the .sub file.
-        substances (List[Substance]):
+        substances (list[Substance]):
             Substance definitions (active and/or inactive).
-        parameters (List[Parameter]):
+        parameters (list[Parameter]):
             Model parameter definitions with numeric values.
-        outputs (List[Output]):
+        outputs (list[Output]):
             Output variable definitions.
         active_processes (ActiveProcesses):
             Collection of active water-quality processes.
@@ -390,14 +388,14 @@ class SubstanceModel(ParsableFileModel):
         return SubstanceSerializer.serialize
 
     @classmethod
-    def _get_parser(cls) -> Callable[[Path], Dict]:
+    def _get_parser(cls) -> Callable[[Path], dict]:
         return SubstanceParser.parse
 
-    def get_active_substances(self) -> List[Substance]:
+    def get_active_substances(self) -> list[Substance]:
         """Return all substances with type ``SubstanceType.Active``.
 
         Returns:
-            List[Substance]: Active substance definitions.
+            list[Substance]: Active substance definitions.
         """
         return [s for s in self.substances if s.is_active()]
 
@@ -405,8 +403,8 @@ class SubstanceModel(ParsableFileModel):
     @classmethod
     def _replace_fortran_notation_in_parameters(
         cls,
-        v: List[Any],
-    ) -> List[Any]:
+        v: list[Any],
+    ) -> list[Any]:
         """Convert Fortran scientific notation in parameter values.
 
         Iterates over the raw parameter dicts and replaces Fortran-style
@@ -415,10 +413,10 @@ class SubstanceModel(ParsableFileModel):
         string to a float.
 
         Args:
-            v (List[Any]): Raw parameter list from the parser.
+            v (list[Any]): Raw parameter list from the parser.
 
         Returns:
-            List[Any]: Parameter list with Fortran notation replaced.
+            list[Any]: Parameter list with Fortran notation replaced.
         """
         for param in v:
             if isinstance(param, dict) and "value" in param:
