@@ -370,9 +370,9 @@ class SubstanceModel(ParsableFileModel):
     """
 
     serializer_config: SubstanceSerializerConfig = SubstanceSerializerConfig()
-    substances: List[Substance] = Field(default_factory=list)
-    parameters: List[Parameter] = Field(default_factory=list)
-    outputs: List[Output] = Field(default_factory=list)
+    substances: list[Substance] = Field(default_factory=list)
+    parameters: list[Parameter] = Field(default_factory=list)
+    outputs: list[Output] = Field(default_factory=list)
     active_processes: ActiveProcesses = Field(default_factory=ActiveProcesses)
 
     @classmethod
