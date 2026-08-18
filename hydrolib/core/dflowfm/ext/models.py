@@ -430,7 +430,7 @@ class SourceSink(INIBasedModel):
         return values
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+    def _exclude_from_validation(cls, input_data: dict | None = None) -> Set:
         input_data = input_data or {}
         fields = cls.model_fields
         dynamic_fields = input_data.get(_DYNAMIC_FIELDS_KEY) or []
