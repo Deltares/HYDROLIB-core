@@ -309,12 +309,22 @@ def create_spatial_input_dict(
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
 
-    if file_type == DataFileType.polygon:
+    if file_type == DataFileType.polygon and not quantity_name.startswith("initialvertical"):
         block_data = {
             "quantity": quantity_name,
             "targetmaskfile": DiskOnlyFileModel(new_forcing_path),
             "datavalue": forcing.value,
             "operand": forcing.operand,
+            "interpolationmethod": InterpolationMethod.constant
+        }
+
+    elif file_type == DataFileType.polygon:
+        block_data = {
+            "quantity": quantity_name,
+            "datafile": DiskOnlyFileModel(new_forcing_path),
+            "datafiletype": file_type,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": forcing.operand
         }
     else:
         block_data = {

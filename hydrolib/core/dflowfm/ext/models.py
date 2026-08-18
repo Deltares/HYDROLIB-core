@@ -1,7 +1,6 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 import warnings
-from operator import ne
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -37,7 +36,6 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list,
     split_string_on_delimiter,
     validate_location_specification,
-    validate_required_fields
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -688,75 +686,75 @@ class Spatial(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the Spatial block fields."""
 
-        quantity: Optional[str] = Field(
+        quantity: str | None = Field(
             "Name of the quantity. See UM Section C.5.3", alias="quantity"
         )
-        datafile: Optional[str] = Field(
+        datafile: str | None = Field(
             "Name of file containing the data for this spatial quantity.",
             alias="dataFile",
         )
-        datafiletype: Optional[str] = Field(
+        datafiletype: str | None = Field(
             "Type of dataFile.", alias="dataFileType"
         )
-        datavariablename: Optional[str] = Field(
+        datavariablename: str | None = Field(
             "Variable name used in dataFile associated with this quantity.",
             alias="dataVariableName",
         )
-        targetmaskfile: Optional[str] = Field(
+        targetmaskfile: str | None = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.",
             alias="targetMaskFile",
         )
-        targetmaskinvert: Optional[str] = Field(
+        targetmaskinvert: str | None = Field(
             "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
             alias="targetMaskInvert",
         )
-        interpolationmethod: Optional[str] = Field(
+        interpolationmethod: str | None = Field(
             "Type of (spatial) interpolation.", alias="interpolationMethod"
         )
-        operand: Optional[str] = Field(
+        operand: str | None = Field(
             "How this data is combined with previous data for the same quantity (if any).",
             alias="operand",
         )
-        extrapolationallowed: Optional[str] = Field(
+        extrapolationallowed: str | None = Field(
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed"
         )
-        extrapolationsearchradius: Optional[str] = Field(
+        extrapolationsearchradius: str | None = Field(
             "Maximum search radius for nearest neighbour extrapolation in space.",
             alias="extrapolationSearchRadius",
         )
-        averagingtype: Optional[str] = Field(
+        averagingtype: str | None = Field(
             "Type of averaging, if interpolationMethod=averaging.",
             alias="averagingType",
         )
-        averagingrelsize: Optional[str] = Field(
+        averagingrelsize: str | None = Field(
             "Relative search cell size for averaging.", alias="averagingRelSize"
         )
-        averagingnummin: Optional[str] = Field(
+        averagingnummin: str | None = Field(
             "Minimum number of points in averaging. Must be ≥ 1.",
             alias="averagingNumMin",
         )
-        averagingpercentile: Optional[str] = Field(
+        averagingpercentile: str | None = Field(
             "Percentile value for which data values to include in averaging. 0.0 means off.",
             alias="averagingPercentile",
         )
-        locationtype: Optional[str] = Field(
+        locationtype: str | None = Field(
             "Target location of interpolation.", alias="locationType"
         )
-        datavalue: Optional[str] = Field(
+        datavalue: str | None = Field(
             "Constant value to be set inside all model points inside the polygon, "
             "used when no dataFile/dataFileType is specified. "
             "Requires targetMaskFile=*.pol and interpolationMethod=constant.",
             alias="dataValue",
         )
-        frictiontype: Optional[str] = Field(
+        frictiontype: str | None = Field(
             "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType"
         )
-        tracerfallvelocity: Optional[str] = Field(
+        tracerfallvelocity: str | None = Field(
             "Only for initialtracer<tracername>. Fall velocity of the tracer.",
             alias="tracerFallVelocity",
         )
-        tracerdecaytime: Optional[str] = Field(
+        tracerdecaytime: str | None = Field(
             "Only for initialtracer<tracername>. Decay time of the tracer.",
             alias="tracerDecayTime",
         )
@@ -770,32 +768,32 @@ class Spatial(INIBasedModel):
 
     _header: Literal["Spatial"] = "Spatial"
     quantity: str = Field(alias="quantity")
-    datafile: Optional[Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile]] = Field(
+    datafile: TimModel | ForcingModel | DiskOnlyFileModel | PolyFile | None = Field(
         None, alias="dataFile"
     )
-    datafiletype: Optional[DataFileType] = Field(None, alias="dataFileType")
-    datavariablename: Optional[str] = Field(None, alias="dataVariableName")
-    targetmaskfile: Optional[Union[DiskOnlyFileModel, PolyFile]] = Field(None, alias="targetMaskFile")
-    targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
-    interpolationmethod: Optional[InterpolationMethod] = Field(
+    datafiletype: DataFileType | None = Field(None, alias="dataFileType")
+    datavariablename: str | None = Field(None, alias="dataVariableName")
+    targetmaskfile: PolyFile | DiskOnlyFileModel | None = Field(None, alias="targetMaskFile")
+    targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
+    interpolationmethod: InterpolationMethod | None = Field(
         None, alias="interpolationMethod"
     )
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationallowed: Optional[bool] = Field(False, alias="extrapolationAllowed")
-    extrapolationsearchradius: Optional[float] = Field(
+    operand: Operand | None = Field(Operand.override.value, alias="operand")
+    extrapolationallowed: bool | None = Field(False, alias="extrapolationAllowed")
+    extrapolationsearchradius: float | None = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingtype: Optional[AveragingType] = Field(None, alias="averagingType")
-    averagingrelsize: Optional[float] = Field(None, alias="averagingRelSize")
-    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
-    locationtype: Optional[LocationType] = Field(
+    averagingtype: AveragingType | None = Field(None, alias="averagingType")
+    averagingrelsize: float | None = Field(None, alias="averagingRelSize")
+    averagingnummin: float | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
+    locationtype: LocationType | None = Field(
         LocationType.all.value, alias="locationType"
     )
-    datavalue: Optional[float] = Field(None, alias="dataValue")
-    frictiontype: Optional[str] = Field(None, alias="frictionType")
-    tracerfallvelocity: Optional[float] = Field(None, alias="tracerFallVelocity")
-    tracerdecaytime: Optional[float] = Field(None, alias="tracerDecayTime")
+    datavalue: float | None = Field(None, alias="dataValue")
+    frictiontype: str | None = Field(None, alias="frictionType")
+    tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
+    tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
 
     @model_validator(mode="before")
     @classmethod
@@ -821,6 +819,65 @@ class Spatial(INIBasedModel):
                 values[filename_var_name] = resolve_file_model(raw_path, model)
 
         return values
+
+    @classmethod
+    def _normalize_spatial_keys(cls, values: Dict) -> Dict:
+        """Normalize camelCase aliases and coerce datafile to DiskOnlyFileModel."""
+        data_file = values.get("datafile") or values.get("dataFile")
+        if isinstance(data_file, (str, Path)):
+            data_file = DiskOnlyFileModel(data_file)
+            values.pop("dataFile", None)
+            values["datafile"] = data_file
+
+        if "dataValue" in values and "datavalue" not in values:
+            values["datavalue"] = values.pop("dataValue")
+        if "targetMaskFile" in values and "targetmaskfile" not in values:
+            values["targetmaskfile"] = values.pop("targetMaskFile")
+        return values
+
+    @classmethod
+    def _validate_datavalue_path(
+        cls, values: Dict, has_datafile: bool, has_datafiletype: bool
+    ) -> None:
+        """Validate the ``dataValue`` usage path (constant value inside polygon)."""
+        if has_datafile or has_datafiletype:
+            raise ValueError(
+                "When 'dataValue' is provided, 'dataFile' and 'dataFileType' must not be specified."
+            )
+        interp = values.get("interpolationmethod") or values.get("interpolationMethod")
+        if interp is None:
+            values["interpolationmethod"] = InterpolationMethod.constant
+        elif str(interp).lower() != str(InterpolationMethod.constant).lower():
+            raise ValueError(
+                f"When 'dataValue' is provided, 'interpolationMethod' must be "
+                f"'{InterpolationMethod.constant}', got '{interp}'."
+            )
+
+    @classmethod
+    def _validate_datafile_path(
+        cls, values: Dict, has_datafile: bool, has_datafiletype: bool
+    ) -> None:
+        """Validate the ``dataFile`` usage path and emit deprecation warning when needed."""
+        if not has_datafile:
+            raise ValueError("'dataFile' is required when 'dataValue' is not specified.")
+        if not has_datafiletype:
+            raise ValueError("'dataFileType' is required when 'dataValue' is not specified.")
+
+        raw_filetype = values.get("datafiletype") or values.get("dataFileType")
+        quantity = values.get("quantity") or ""
+        if (
+            raw_filetype is not None
+            and str(raw_filetype).lower() == DataFileType.polygon
+            and not str(quantity).startswith("initialvertical")
+        ):
+            warnings.warn(
+                "Using dataFileType=polygon for 'inside polygon' data is deprecated. "
+                "Use dataValue + targetMaskFile=<*.pol> + interpolationMethod=constant instead. "
+                "The polygon dataFileType remains supported only for initialvertical* quantities "
+                "(e.g. initialverticalsalinityprofile).",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
     @classmethod
     def _process_section_values(cls, values):
@@ -858,69 +915,42 @@ class Spatial(INIBasedModel):
         When ``dataValue`` is provided the block describes a constant value applied
         inside a polygon mask.  In this mode:
         - ``dataFile`` and ``dataFileType`` must **not** be specified.
-        - ``targetMaskFile`` (a ``.pol`` file) is required.
+        - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.
         - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).
 
         When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both
         required.
+
+        Note: using ``dataFileType=polygon`` for "inside polygon" initial-condition
+        data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +
+        ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType
+        remains supported for quantities such as ``initialvertical*`` (e.g.
+        ``initialverticalsalinityprofile``) that use polygon files for a different
+        purpose and have no new alternative yet.
         """
         values = cls._process_section_values(values)
-
-        data_file = values.get("datafile") or values.get("dataFile")
-        if isinstance(data_file, (str, Path)):
-            data_file = DiskOnlyFileModel(data_file)
-            values.pop("dataFile", None)
-            values["datafile"] = data_file
-
-        if "dataValue" in values and "datavalue" not in values:
-            values["datavalue"] = values.pop("dataValue")
-        if "targetMaskFile" in values and "targetmaskfile" not in values:
-            values["targetmaskfile"] = values.pop("targetMaskFile")
+        values = cls._normalize_spatial_keys(values)
 
         datavalue = values.get("datavalue")
         has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
         has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
 
-        # When dataValue is provided, targetMaskFile is required.
-        # validate_required_fields short-circuits when datavalue is None (not provided),
-        # and runs the check when datavalue != None (comparison_func=ne).
-        validate_required_fields(
-            values,
-            "targetmaskfile",
-            conditional_field_name="datavalue",
-            conditional_value=None,
-            comparison_func=ne,
-        )
-
         if datavalue is not None:
-            if has_datafile or has_datafiletype:
-                raise ValueError(
-                    "When 'dataValue' is provided, 'dataFile' and 'dataFileType' must not be specified."
-                )
-
-            interp = values.get("interpolationmethod") or values.get("interpolationMethod")
-            if interp is None:
-                # Default to constant when omitted
-                values["interpolationmethod"] = InterpolationMethod.constant
-            elif str(interp).lower() != str(InterpolationMethod.constant).lower():
-                raise ValueError(
-                    f"When 'dataValue' is provided, 'interpolationMethod' must be "
-                    f"'{InterpolationMethod.constant}', got '{interp}'."
-                )
+            cls._validate_datavalue_path(values, has_datafile, has_datafiletype)
         else:
-            if not has_datafile:
-                raise ValueError(
-                    "'dataFile' is required when 'dataValue' is not specified."
-                )
-            if not has_datafiletype:
-                raise ValueError(
-                    "'dataFileType' is required when 'dataValue' is not specified."
-                )
+            cls._validate_datafile_path(values, has_datafile, has_datafiletype)
 
         return values
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @field_validator("targetmaskfile", mode="before")
+    @classmethod
+    def validate_targetmaskfile(cls, v: Any) -> Any:
+        if isinstance(v, (str, Path)):
+            return resolve_file_model(v, PolyFile)
+        return v
 
     @field_validator("datafiletype", mode="before")
     @classmethod
