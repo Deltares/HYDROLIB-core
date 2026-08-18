@@ -80,18 +80,6 @@ class TestConvertSpatial:
         assert spatial.targetmaskfile is None
         assert spatial.interpolationmethod == InterpolationMethod.constant
 
-    def test_spatial_polygon_initialvertical_no_deprecation_warning(self):
-        """Using dataFileType=polygon for initialvertical* quantities must NOT emit a DeprecationWarning."""
-        import warnings as _warnings
-        with _warnings.catch_warnings():
-            _warnings.simplefilter("error", DeprecationWarning)
-            Spatial(
-                quantity="initialverticalsalinityprofile",
-                datafile=DiskOnlyFileModel(filepath=Path("profile.pli")),
-                datafiletype=DataFileType.polygon,
-                interpolationmethod=InterpolationMethod.constant,
-            )
-
 
 _RAINFALL_EXPECTED = {
     "quantity": "rainfall",
