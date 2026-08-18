@@ -39,14 +39,14 @@ jobs:
       contents: write
     steps:
       - name: Check out the code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.release_branch }}
 
       - name: Create release with version bump
         id: release
-        uses: Deltares-research/github-actions/actions/release/github@main
+        uses: Deltares-research/github-actions/actions/release/github@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           release-branch: ${{ github.event.inputs.release_branch }}
           increment: ${{ github.event.inputs.increment }}
