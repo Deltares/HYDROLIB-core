@@ -383,11 +383,9 @@ _BOUNDARY_BLOCKS_COUNT = 6
 
 @pytest.mark.e2e
 class TestWaqQuantitiesConversion:
-    """End-to-end tests for converting the c100_spatial_parameters_2D model.
+    """End-to-end tests for converting the waq_quantities test model.
 
     The MDU file (westernscheldt.mdu) references:
-    * westernscheldt_new.ext  – existing new-format file with 6 boundary blocks
-    * westernscheldt.ext      – old-format file with WAQ spatial quantities:
         - initialtracerOXY, initialtracerCBOD5  (polygon / InsidePolygon)
         - waqparameterSalinity                  (samples, METHOD=6 / averaging)
         - waqparameterTemp                       (arcInfo, METHOD=5 / triangulation)
