@@ -62,10 +62,9 @@ METHOD=4
 OPERAND=O
 VALUE=4.5
 
-* Not yet supported
-*QUANTITY=waqmassbalanceareaSOD
-*FILENAME=HarbourAntwerp.pol
-*FILETYPE=10
-*METHOD=4
-*OPERAND=O
-*VALUE=6.0
+QUANTITY=waqmassbalanceareaSOD
+FILENAME=HarbourAntwerp.pol
+FILETYPE=10
+METHOD=4
+OPERAND=O
+VALUE=6.0

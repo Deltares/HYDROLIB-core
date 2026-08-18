@@ -375,6 +375,8 @@ _SPATIAL_BLOCKS: list[_SpatialExpected] = [
                      InterpolationMethod.constant, None),
     _SpatialExpected("waqfunctionSOD", True, "HarbourVlissingen.pol", 4.5, None,
                      InterpolationMethod.constant, None),
+    _SpatialExpected("waqmassbalanceareaSOD", True, "HarbourAntwerp.pol", 6.0, None,
+                     InterpolationMethod.constant, None),
 ]
 
 # Number of boundary blocks
@@ -393,7 +395,7 @@ class TestWaqQuantitiesConversion:
         - waqsegmentfunctionSOD                  (polygon)
         - waqsegmentnumberSOD                    (polygon)
         - waqfunctionSOD                         (polygon)
-        # waqmassbalanceareaSOD is commented out and must NOT appear.
+        - waqmassbalanceareaSOD                  (polygon)
 
     """
 
