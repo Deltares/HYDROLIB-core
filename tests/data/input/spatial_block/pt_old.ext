@@ -171,3 +171,9 @@ FILETYPE     =10
 METHOD       =4
 OPERAND      =O
 VALUE        =0.0
+
+QUANTITY     =initialverticalsalinityprofile
+FILENAME     =anticreep01-inisal.pli
+FILETYPE     =9
+METHOD       =1
+OPERAND      =O

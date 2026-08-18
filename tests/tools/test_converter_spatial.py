@@ -70,6 +70,28 @@ class TestConvertSpatial:
         result = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(result, Spatial)
 
+    def test_spatial_datavalue_without_targetmaskfile(self):
+        """dataValue without targetMaskFile must be accepted (targetMaskFile is optional)."""
+        spatial = Spatial(
+            quantity="waterlevel",
+            datavalue=0.0,
+        )
+        assert spatial.datavalue == pytest.approx(0.0)
+        assert spatial.targetmaskfile is None
+        assert spatial.interpolationmethod == InterpolationMethod.constant
+
+    def test_spatial_polygon_initialvertical_no_deprecation_warning(self):
+        """Using dataFileType=polygon for initialvertical* quantities must NOT emit a DeprecationWarning."""
+        import warnings as _warnings
+        with _warnings.catch_warnings():
+            _warnings.simplefilter("error", DeprecationWarning)
+            Spatial(
+                quantity="initialverticalsalinityprofile",
+                datafile=DiskOnlyFileModel(filepath=Path("profile.pli")),
+                datafiletype=DataFileType.polygon,
+                interpolationmethod=InterpolationMethod.constant,
+            )
+
 
 _RAINFALL_EXPECTED = {
     "quantity": "rainfall",
@@ -107,6 +129,12 @@ _PT_OLD_EXT_QUANTITY_VALUES: dict[str, float] = {
     "initialwaqbotDetSiS1":     0.0,
 }
 
+# initialvertical* quantities from pt_old.ext (FILETYPE=9, Polyline).
+# These keep the old dataFile + dataFileType=polygon approach; no dataValue.
+_PT_OLD_EXT_INITIALVERTICAL: dict[str, str] = {
+    "initialverticalsalinityprofile": "anticreep01-inisal.pli",
+}
+
 
 @pytest.mark.e2e
 class TestSpatialE2E:
@@ -136,8 +164,7 @@ class TestSpatialE2E:
         return dst
 
     def test_pt_old_ext_quantities_converted_to_spatial(self, model_copy: Path):
-        """All 25 quantities in pt_old.ext (1 rainfall + 24 initial-condition) are
-        converted to Spatial blocks.
+        """All 26 quantities in pt_old.ext are converted to Spatial blocks.
 
         The converter is run via ``from_mdu`` so that both ``pt.ext`` (new-format
         file referenced by ExtForceFileNew) and ``pt_old.ext`` (old-format file
@@ -145,20 +172,27 @@ class TestSpatialE2E:
 
         Assertions
         ----------
-        * Total Spatial block count = 25 (1 rainfall + 24 initial conditions).
+        * Total Spatial block count = 26 (1 rainfall + 24 initial conditions +
+          1 initialvertical*).
         * Quantity names match pt_old.ext order, preserving casing.
         * Rainfall block: dataFileType=arcInfo, dataFile=Sobek_Precip.bc,
           interpolationMethod=linearSpaceTime, operand=override.
-        * Initial-condition blocks: use targetMaskFile + dataValue (no dataFile /
-          dataFileType); correct VALUE= per quantity; operand=override.
+        * InsidePolygon blocks (initialtracerXXX / initialwaqbotXXX): use
+          targetMaskFile + dataValue (no dataFile / dataFileType); correct VALUE=
+          per quantity; operand=override.
+        * initialvertical* blocks (Polyline/FILETYPE=9): use dataFile +
+          dataFileType=polygon + interpolationMethod=constant; no dataValue /
+          targetMaskFile.
         * No IniField / structure blocks are produced.
         """
         mdu_file = model_copy / "pt.mdu"
         converter = ExternalForcingConverter.from_mdu(mdu_file)
         ext_model, inifield_model, structure_model = converter.update()
 
-        expected_quantities = [_RAINFALL_EXPECTED["quantity"]] + list(
-            _PT_OLD_EXT_QUANTITY_VALUES.keys()
+        expected_quantities = (
+            [_RAINFALL_EXPECTED["quantity"]]
+            + list(_PT_OLD_EXT_QUANTITY_VALUES.keys())
+            + list(_PT_OLD_EXT_INITIALVERTICAL.keys())
         )
 
         assert len(ext_model.spatial) == len(expected_quantities), (
@@ -193,8 +227,9 @@ class TestSpatialE2E:
         assert rainfall_block.datavalue is None
         assert rainfall_block.targetmaskfile is None
 
+        n_polygon = len(_PT_OLD_EXT_QUANTITY_VALUES)
         for spatial, (quantity, expected_value) in zip(
-            ext_model.spatial[1:], _PT_OLD_EXT_QUANTITY_VALUES.items()
+            ext_model.spatial[1:1 + n_polygon], _PT_OLD_EXT_QUANTITY_VALUES.items()
         ):
             assert spatial.datafiletype is None, (
                 f"Quantity '{spatial.quantity}': expected no datafiletype for polygon "
@@ -215,6 +250,34 @@ class TestSpatialE2E:
                 f"Quantity '{spatial.quantity}': expected targetmaskfile 'pt_initals.pol', "
                 f"got '{spatial.targetmaskfile.filepath}'."
             )
+
+        for spatial, (quantity, expected_filename) in zip(
+            ext_model.spatial[1 + n_polygon:], _PT_OLD_EXT_INITIALVERTICAL.items()
+        ):
+            assert spatial.quantity == quantity, (
+                f"Expected quantity '{quantity}', got '{spatial.quantity}'."
+            )
+            assert spatial.datavalue is None, (
+                f"Quantity '{quantity}': expected no dataValue (initialvertical* keeps "
+                f"dataFile+dataFileType), got datavalue={spatial.datavalue}."
+            )
+            assert spatial.targetmaskfile is None, (
+                f"Quantity '{quantity}': expected no targetMaskFile, "
+                f"got '{spatial.targetmaskfile}'."
+            )
+            assert spatial.datafiletype == DataFileType.polygon, (
+                f"Quantity '{quantity}': expected dataFileType=polygon, "
+                f"got '{spatial.datafiletype}'."
+            )
+            assert spatial.datafile.filepath.name == expected_filename, (
+                f"Quantity '{quantity}': expected dataFile='{expected_filename}', "
+                f"got '{spatial.datafile.filepath.name}'."
+            )
+            assert spatial.interpolationmethod == InterpolationMethod.constant, (
+                f"Quantity '{quantity}': expected interpolationMethod=constant, "
+                f"got '{spatial.interpolationmethod}'."
+            )
+            assert spatial.operand == Operand.override
 
         assert len(inifield_model.initial) == 0
         assert len(inifield_model.parameter) == 0

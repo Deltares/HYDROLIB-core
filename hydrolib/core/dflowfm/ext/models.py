@@ -1,7 +1,6 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 import warnings
-from operator import ne
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -37,7 +36,6 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list,
     split_string_on_delimiter,
     validate_location_specification,
-    validate_required_fields
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -775,7 +773,7 @@ class Spatial(INIBasedModel):
     )
     datafiletype: DataFileType | None = Field(None, alias="dataFileType")
     datavariablename: str | None = Field(None, alias="dataVariableName")
-    targetmaskfile: PolyFile | None = Field(None, alias="targetMaskFile")
+    targetmaskfile: PolyFile | DiskOnlyFileModel | None = Field(None, alias="targetMaskFile")
     targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
     interpolationmethod: InterpolationMethod | None = Field(
         None, alias="interpolationMethod"
@@ -858,11 +856,18 @@ class Spatial(INIBasedModel):
         When ``dataValue`` is provided the block describes a constant value applied
         inside a polygon mask.  In this mode:
         - ``dataFile`` and ``dataFileType`` must **not** be specified.
-        - ``targetMaskFile`` (a ``.pol`` file) is required.
+        - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.
         - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).
 
         When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both
         required.
+
+        Note: using ``dataFileType=polygon`` for "inside polygon" initial-condition
+        data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +
+        ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType
+        remains supported for quantities such as ``initialvertical*`` (e.g.
+        ``initialverticalsalinityprofile``) that use polygon files for a different
+        purpose and have no new alternative yet.
         """
         values = cls._process_section_values(values)
 
@@ -880,17 +885,6 @@ class Spatial(INIBasedModel):
         datavalue = values.get("datavalue")
         has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
         has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
-
-        # When dataValue is provided, targetMaskFile is required.
-        # validate_required_fields short-circuits when datavalue is None (not provided),
-        # and runs the check when datavalue != None (comparison_func=ne).
-        validate_required_fields(
-            values,
-            "targetmaskfile",
-            conditional_field_name="datavalue",
-            conditional_value=None,
-            comparison_func=ne,
-        )
 
         if datavalue is not None:
             if has_datafile or has_datafiletype:
@@ -917,10 +911,38 @@ class Spatial(INIBasedModel):
                     "'dataFileType' is required when 'dataValue' is not specified."
                 )
 
+            # Emit a deprecation warning when polygon is used for "inside polygon"
+            # initial-condition data.  This pattern is superseded by the
+            # dataValue + targetMaskFile + interpolationMethod=constant approach.
+            # Exception: initialvertical* quantities (e.g. initialverticalsalinityprofile)
+            # still use the polygon dataFileType and have no new alternative yet.
+            raw_filetype = values.get("datafiletype") or values.get("dataFileType")
+            quantity = values.get("quantity") or ""
+            if (
+                raw_filetype is not None
+                and str(raw_filetype).lower() == DataFileType.polygon
+                and not str(quantity).startswith("initialvertical")
+            ):
+                warnings.warn(
+                    "Using dataFileType=polygon for 'inside polygon' data is deprecated. "
+                    "Use dataValue + targetMaskFile=<*.pol> + interpolationMethod=constant instead. "
+                    "The polygon dataFileType remains supported only for initialvertical* quantities "
+                    "(e.g. initialverticalsalinityprofile).",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+
         return values
 
     def is_intermediate_link(self) -> bool:
         return True
+
+    @field_validator("targetmaskfile", mode="before")
+    @classmethod
+    def validate_targetmaskfile(cls, v: Any) -> Any:
+        if isinstance(v, (str, Path)):
+            return resolve_file_model(v, PolyFile)
+        return v
 
     @field_validator("datafiletype", mode="before")
     @classmethod
