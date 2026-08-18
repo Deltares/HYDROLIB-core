@@ -399,7 +399,7 @@ class TestWaqQuantitiesConversion:
 
     """
 
-    @pytest.fixture()
+    @pytest.fixture
     def converted(self, tmp_path: Path, input_files_dir: Path):
         """Copy the waq_quantities model to a temp dir and run the converter."""
         src = input_files_dir / "waq_quantities"
