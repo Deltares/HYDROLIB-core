@@ -392,7 +392,7 @@ class TestConverter:
         assert new_quantity_block.zsource == [-3]
         assert converter.legacy_files == [location_file.with_suffix(".tim")]
         if area is None:
-            assert not hasattr(new_quantity_block, "area")
+            assert new_quantity_block.area is None
         else:
             assert new_quantity_block.area == area
 

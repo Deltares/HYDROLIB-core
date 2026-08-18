@@ -474,14 +474,6 @@ class SourceSink(INIBasedModel):
         if self.__pydantic_extra__ is not None:
             self.__pydantic_extra__.pop(_DYNAMIC_FIELDS_KEY, None)
 
-        if dynamic_fields is None:
-            # Legacy behaviour: attach every prefix-matching key found in `data`.
-            for key, value in data.items():
-                if isinstance(key, str) and key.startswith(
-                    SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
-                ):
-                    setattr(self, key, value)
-
     @model_validator(mode="before")
     def validate_location_specification(cls, values):
         """
