@@ -26,10 +26,6 @@ def time_file_full() -> Path:
 
 
 @pytest.fixture
-def start_time():
-    return "minutes since 2015-01-01 00:00:00"
-
-@pytest.fixture
 def mdu_parser_mock() -> MagicMock:
     mock = MagicMock(spec=MDUParser)
     mock.temperature_salinity_data = {"refdate": "minutes since 2015-01-01 00:00:00"}
@@ -286,7 +282,7 @@ def compare_data(new_quantity_block: SourceSink):
 class TestConverter:
 
     def test_default(
-        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+        self, converter: SourceSinkConverter, source_sink_dir: Path
     ):
         """
         The test case is based on the following assumptions:
@@ -361,7 +357,7 @@ class TestConverter:
         ]
 
         new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
+            forcing, ext_file_other_quantities
         )
 
         assert new_quantity_block.zsink == [-4.2]
@@ -377,7 +373,6 @@ class TestConverter:
     def test_sourcesink_area_is_set(
         self,
         converter: SourceSinkConverter,
-        start_time: str,
         source_sink_dir: Path,
         area: Optional[float],
     ):
@@ -399,7 +394,7 @@ class TestConverter:
         ]
 
         new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities, start_time
+            forcing, ext_file_other_quantities
         )
 
         assert new_quantity_block.zsink == [-4.2]
@@ -414,7 +409,7 @@ class TestConverter:
         compare_data(new_quantity_block)
 
     def test_4_5_columns_polyline(
-        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+        self, converter: SourceSinkConverter, source_sink_dir: Path
     ):
         """
         The test case is based on the assumptions of the default test plus the following changes:
@@ -479,7 +474,7 @@ class TestConverter:
         tim_file = source_sink_dir / "leftsor.tim"
         with patch("pathlib.Path.with_suffix", new=make_side_effect()):
             new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities, start_time
+                forcing, ext_file_other_quantities
             )
 
         assert new_quantity_block.zsink == [-4.2, -5.35]
@@ -489,7 +484,7 @@ class TestConverter:
         compare_data(new_quantity_block)
 
     def test_no_temperature_no_salinity(
-        self, converter: SourceSinkConverter, start_time: str, source_sink_dir: Path
+        self, converter: SourceSinkConverter, source_sink_dir: Path
     ):
         """
         The test case is based on the assumptions of the default test plus the following changes:
@@ -524,7 +519,7 @@ class TestConverter:
         tim_file = source_sink_dir / "no_temperature_no_salinity.tim"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
             new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities, start_time
+                forcing, ext_file_other_quantities
             )
 
         assert new_quantity_block.zsink == [-4.2]
@@ -579,7 +574,6 @@ class TestNoDeltaSuffixInConverter:
     def test_bc_quantities_have_no_delta_suffix(
         self,
         converter: SourceSinkConverter,
-        start_time: str,
         source_sink_dir: Path,
         forcing_idx: int,
         ext_quantities: list,
@@ -594,7 +588,7 @@ class TestNoDeltaSuffixInConverter:
         old_ext = ExtOldModel(source_sink_dir / "sources_no_delta_suffix.ext")
         forcing = old_ext.forcing[forcing_idx]
 
-        new_quantity_block = converter.convert(forcing, ext_quantities, start_time)
+        new_quantity_block = converter.convert(forcing, ext_quantities)
 
         bc_quantities = [
             f.quantityunitpair[1].quantity
@@ -616,7 +610,6 @@ class TestNoDeltaSuffixInConverter:
     def test_ext_fields_have_no_delta_suffix(
         self,
         converter: SourceSinkConverter,
-        start_time: str,
         source_sink_dir: Path,
         tmp_path: Path,
         forcing_idx: int,
@@ -633,7 +626,7 @@ class TestNoDeltaSuffixInConverter:
         old_ext = ExtOldModel(source_sink_dir / "sources_no_delta_suffix.ext")
         forcing = old_ext.forcing[forcing_idx]
 
-        new_quantity_block = converter.convert(forcing, ext_quantities, start_time)
+        new_quantity_block = converter.convert(forcing, ext_quantities)
 
         ext = ExtModel(sourcesink=[new_quantity_block])
         ext_path = tmp_path / "sources_no_delta_suffix.ext"

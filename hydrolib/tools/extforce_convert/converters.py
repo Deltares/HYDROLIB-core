@@ -956,7 +956,6 @@ class SourceSinkConverter(BaseConverter):
         self,
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
-        start_time: str = None,
     ) -> SourceSink:
         """Source and sink converter.
 
