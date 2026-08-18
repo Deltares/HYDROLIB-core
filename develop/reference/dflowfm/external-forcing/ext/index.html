@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -7761,75 +7761,75 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the Spatial block fields.&quot;&quot;&quot;</span>
 
-        <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Name of the quantity. See UM Section C.5.3&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span>
         <span class="p">)</span>
-        <span class="n">datafile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">datafile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Name of file containing the data for this spatial quantity.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFile&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">datafiletype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">datafiletype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Type of dataFile.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFileType&quot;</span>
         <span class="p">)</span>
-        <span class="n">datavariablename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">datavariablename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Variable name used in dataFile associated with this quantity.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataVariableName&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">targetmaskfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">targetmaskfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Name of &lt;*.pol&gt; file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskFile&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskInvert&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">interpolationmethod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">interpolationmethod</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Type of (spatial) interpolation.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolationMethod&quot;</span>
         <span class="p">)</span>
-        <span class="n">operand</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">operand</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;How this data is combined with previous data for the same quantity (if any).&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationAllowed&quot;</span>
         <span class="p">)</span>
-        <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Maximum search radius for nearest neighbour extrapolation in space.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationSearchRadius&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">averagingtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Type of averaging, if interpolationMethod=averaging.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">averagingrelsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">averagingrelsize</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Relative search cell size for averaging.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingRelSize&quot;</span>
         <span class="p">)</span>
-        <span class="n">averagingnummin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">averagingnummin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Minimum number of points in averaging. Must be ≥ 1.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingNumMin&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">averagingpercentile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">averagingpercentile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Percentile value for which data values to include in averaging. 0.0 means off.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingPercentile&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">locationtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Target location of interpolation.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;locationType&quot;</span>
         <span class="p">)</span>
-        <span class="n">datavalue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">datavalue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Constant value to be set inside all model points inside the polygon, &quot;</span>
             <span class="s2">&quot;used when no dataFile/dataFileType is specified. &quot;</span>
             <span class="s2">&quot;Requires targetMaskFile=*.pol and interpolationMethod=constant.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataValue&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">frictiontype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Only for quantity=frictionCoefficient. The friction type.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span>
         <span class="p">)</span>
-        <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Only for initialtracer&lt;tracername&gt;. Fall velocity of the tracer.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerFallVelocity&quot;</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
             <span class="s2">&quot;Only for initialtracer&lt;tracername&gt;. Decay time of the tracer.&quot;</span><span class="p">,</span>
             <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerDecayTime&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -7843,32 +7843,32 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
 
     <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Spatial&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Spatial&quot;</span>
     <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
-    <span class="n">datafile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">TimModel</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">,</span> <span class="n">PolyFile</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datafile</span><span class="p">:</span> <span class="n">TimModel</span> <span class="o">|</span> <span class="n">ForcingModel</span> <span class="o">|</span> <span class="n">DiskOnlyFileModel</span> <span class="o">|</span> <span class="n">PolyFile</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFile&quot;</span>
     <span class="p">)</span>
-    <span class="n">datafiletype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataFileType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFileType&quot;</span><span class="p">)</span>
-    <span class="n">datavariablename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataVariableName&quot;</span><span class="p">)</span>
-    <span class="n">targetmaskfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PolyFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskFile&quot;</span><span class="p">)</span>
-    <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskInvert&quot;</span><span class="p">)</span>
-    <span class="n">interpolationmethod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">InterpolationMethod</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datafiletype</span><span class="p">:</span> <span class="n">DataFileType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFileType&quot;</span><span class="p">)</span>
+    <span class="n">datavariablename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataVariableName&quot;</span><span class="p">)</span>
+    <span class="n">targetmaskfile</span><span class="p">:</span> <span class="n">PolyFile</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskFile&quot;</span><span class="p">)</span>
+    <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskInvert&quot;</span><span class="p">)</span>
+    <span class="n">interpolationmethod</span><span class="p">:</span> <span class="n">InterpolationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolationMethod&quot;</span>
     <span class="p">)</span>
-    <span class="n">operand</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Operand</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Operand</span><span class="o">.</span><span class="n">override</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;operand&quot;</span><span class="p">)</span>
-    <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationAllowed&quot;</span><span class="p">)</span>
-    <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">operand</span><span class="p">:</span> <span class="n">Operand</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">Operand</span><span class="o">.</span><span class="n">override</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;operand&quot;</span><span class="p">)</span>
+    <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationAllowed&quot;</span><span class="p">)</span>
+    <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationSearchRadius&quot;</span>
     <span class="p">)</span>
-    <span class="n">averagingtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AveragingType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingType&quot;</span><span class="p">)</span>
-    <span class="n">averagingrelsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingRelSize&quot;</span><span class="p">)</span>
-    <span class="n">averagingnummin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingNumMin&quot;</span><span class="p">)</span>
-    <span class="n">averagingpercentile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingPercentile&quot;</span><span class="p">)</span>
-    <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LocationType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">averagingtype</span><span class="p">:</span> <span class="n">AveragingType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingType&quot;</span><span class="p">)</span>
+    <span class="n">averagingrelsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingRelSize&quot;</span><span class="p">)</span>
+    <span class="n">averagingnummin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingNumMin&quot;</span><span class="p">)</span>
+    <span class="n">averagingpercentile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingPercentile&quot;</span><span class="p">)</span>
+    <span class="n">locationtype</span><span class="p">:</span> <span class="n">LocationType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">LocationType</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;locationType&quot;</span>
     <span class="p">)</span>
-    <span class="n">datavalue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataValue&quot;</span><span class="p">)</span>
-    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">)</span>
-    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerFallVelocity&quot;</span><span class="p">)</span>
-    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerDecayTime&quot;</span><span class="p">)</span>
+    <span class="n">datavalue</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataValue&quot;</span><span class="p">)</span>
+    <span class="n">frictiontype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">)</span>
+    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerFallVelocity&quot;</span><span class="p">)</span>
+    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerDecayTime&quot;</span><span class="p">)</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
@@ -8141,75 +8141,75 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
 <span class="normal">762</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Spatial block fields.&quot;&quot;&quot;</span>
 
-    <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Name of the quantity. See UM Section C.5.3&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span>
     <span class="p">)</span>
-    <span class="n">datafile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datafile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Name of file containing the data for this spatial quantity.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFile&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">datafiletype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datafiletype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Type of dataFile.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataFileType&quot;</span>
     <span class="p">)</span>
-    <span class="n">datavariablename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datavariablename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Variable name used in dataFile associated with this quantity.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataVariableName&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">targetmaskfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">targetmaskfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Name of &lt;*.pol&gt; file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskFile&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">targetmaskinvert</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetMaskInvert&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">interpolationmethod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">interpolationmethod</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Type of (spatial) interpolation.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolationMethod&quot;</span>
     <span class="p">)</span>
-    <span class="n">operand</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">operand</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;How this data is combined with previous data for the same quantity (if any).&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">extrapolationallowed</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationAllowed&quot;</span>
     <span class="p">)</span>
-    <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">extrapolationsearchradius</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Maximum search radius for nearest neighbour extrapolation in space.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;extrapolationSearchRadius&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">averagingtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Type of averaging, if interpolationMethod=averaging.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">averagingrelsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">averagingrelsize</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Relative search cell size for averaging.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingRelSize&quot;</span>
     <span class="p">)</span>
-    <span class="n">averagingnummin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">averagingnummin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Minimum number of points in averaging. Must be ≥ 1.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingNumMin&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">averagingpercentile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">averagingpercentile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Percentile value for which data values to include in averaging. 0.0 means off.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;averagingPercentile&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">locationtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Target location of interpolation.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;locationType&quot;</span>
     <span class="p">)</span>
-    <span class="n">datavalue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">datavalue</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Constant value to be set inside all model points inside the polygon, &quot;</span>
         <span class="s2">&quot;used when no dataFile/dataFileType is specified. &quot;</span>
         <span class="s2">&quot;Requires targetMaskFile=*.pol and interpolationMethod=constant.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;dataValue&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">frictiontype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Only for quantity=frictionCoefficient. The friction type.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span>
     <span class="p">)</span>
-    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Only for initialtracer&lt;tracername&gt;. Fall velocity of the tracer.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerFallVelocity&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;Only for initialtracer&lt;tracername&gt;. Decay time of the tracer.&quot;</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;tracerDecayTime&quot;</span><span class="p">,</span>
     <span class="p">)</span>
