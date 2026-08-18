@@ -1,5 +1,5 @@
 import os
-from pathlib import Path, PurePosixPath, PureWindowsPath
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from unittest.mock import MagicMock, PropertyMock, patch
 
@@ -7,12 +7,12 @@ import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import FilePathStyleConverter, PathStyle
-from hydrolib.core.dflowfm.ext import Spatial
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtModel,
     Lateral,
     Meteo,
+    Spatial,
     SourceSink,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -23,6 +23,7 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.tools.extforce_convert import main_converter
+
 from hydrolib.tools.extforce_convert.main_converter import (
     ExternalForcingConverter,
     recursive_converter,
@@ -570,7 +571,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_conversion(
@@ -587,7 +588,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_no_debug_unsupported_quantities_conversion(
@@ -606,7 +607,7 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["bedrock_surface_elevation", "waqfunctionTau", "waqfunctionradsurfave"],
+        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
         ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
     )
     def test_debug_unsupported_quantities_save(
