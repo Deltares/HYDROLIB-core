@@ -5,7 +5,7 @@ import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -40,7 +40,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
-from hydrolib.core.dflowfm.substance.models import SubstanceModel
+from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
@@ -579,19 +579,23 @@ class SourceSinkConverter(BaseConverter):
         super().__init__(root_dir=root_dir)
         self._mdu_parser = mdu_parser
 
-    def _active_substance_names(self) -> Optional[List[str]]:
-        """Read the active substance names from the MDU's `SubstanceFile`.
+    def _active_substances(self) -> Optional[List[Substance]]:
+        """Read the active substances from the MDU's `SubstanceFile`.
+
+        Each returned `Substance` carries both its `name` and its
+        `concentration_unit`, so callers can derive the substance names as well as
+        the units to apply to the source/sink `.bc` quantities.
 
         Returns:
-            Optional[List[str]]:
-                The names of the active substances, or None when the MDU file does
+            Optional[List[Substance]]:
+                The active substance definitions, or None when the MDU file does
                 not reference a substance file.
 
         Raises:
             FileNotFoundError:
                 If the MDU references a substance file that does not exist.
         """
-        names = None
+        substances = None
         substance_file = self._mdu_parser.get_keyword("SubstanceFile")
         if substance_file:
             substance_path = (
@@ -603,8 +607,28 @@ class SourceSinkConverter(BaseConverter):
                     f"SourceSink quantities."
                 )
             substance_model = SubstanceModel(substance_path)
-            names = [s.name for s in substance_model.get_active_substances()]
-        return names
+            substances = substance_model.get_active_substances()
+        return substances
+
+    def _resolve_active_substances(
+        self,
+    ) -> Tuple[Optional[List[str]], Dict[str, str]]:
+        """Read the active substances and derive the names and concentration-unit map.
+
+        Returns:
+            Tuple[Optional[List[str]], Dict[str, str]]:
+                The active substance names (or None when the MDU references no substance
+                file), and a mapping of substance name to concentration unit (empty when
+                there are none).
+        """
+        active_substances = self._active_substances()
+        names = [s.name for s in active_substances] if active_substances else None
+        units = (
+            {s.name: s.concentration_unit for s in active_substances}
+            if active_substances
+            else {}
+        )
+        return names, units
 
     @staticmethod
     def filter_source_sink_quantities(quantities: List[str]) -> List[str]:
@@ -815,6 +839,7 @@ class SourceSinkConverter(BaseConverter):
         tim_model: TimModel,
         time_unit: str,
         user_defined_names: List[str] = None,
+        substance_units: Dict[str, str] = None,
     ) -> ForcingModel:
         """Convert a TimModel into a ForcingModel.
 
@@ -828,6 +853,10 @@ class SourceSinkConverter(BaseConverter):
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
+            substance_units (Dict[str, str], optional):
+                Mapping of substance name to its concentration unit. When provided, the
+                placeholder unit (``"-"``) that `TimModel.get_units` assigns to substance
+                columns is replaced with the substance's concentration unit.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -837,11 +866,44 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
         units = tim_model.get_units()
+        units = SourceSinkConverter._correct_substance_units(
+            units, tim_model.quantities_names, substance_units
+        )
         time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
+
+    @staticmethod
+    def _correct_substance_units(
+        units: List[str],
+        quantities_names: List[str],
+        substance_units: Dict[str, str] = None,
+    ) -> List[str]:
+        """Replace the placeholder unit of substance columns with their concentration unit.
+
+        `TimModel.get_units` maps any column that is not discharge/waterlevel/salinity/
+        temperature to the placeholder ``"-"``. Substance columns fall into that bucket,
+        so this method overrides those placeholders with the concentration unit declared
+        in the substance file. Units are aligned with `quantities_names` positionally.
+
+        Args:
+            units (List[str]): The units extracted from the TIM model, one per quantity.
+            quantities_names (List[str]): The quantity names, aligned with `units`.
+            substance_units (Dict[str, str], optional): Mapping of substance name to
+                concentration unit. When falsy, `units` is returned unchanged.
+
+        Returns:
+            List[str]: The units with substance placeholders corrected.
+        """
+        result = units
+        if substance_units:
+            result = [
+                substance_units.get(name.removeprefix("sourcesink_"), unit)
+                for name, unit in zip(quantities_names, units)
+            ]
+        return result
 
     @staticmethod
     def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
@@ -860,6 +922,33 @@ class SourceSinkConverter(BaseConverter):
             forcings[name.removeprefix("sourcesink_")] = model
 
         return forcings
+
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Path:
+        """Resolve the TIM file that accompanies the source/sink polyline.
+
+        The TIM file is expected to sit next to the polyline, sharing its stem with a
+        `.tim` suffix, resolved relative to the converter's `root_dir`.
+
+        Args:
+            polyline (PolyFile): The source/sink polyline whose filepath locates the
+                accompanying TIM file.
+            quantity (str): The old external forcing quantity, used only for the error
+                message when the TIM file is missing.
+
+        Returns:
+            Path: The resolved path to the existing TIM file.
+
+        Raises:
+            ValueError: If the resolved TIM file does not exist.
+        """
+        tim_file = resolve_relative_to_root(
+            polyline.filepath, self.root_dir
+        ).with_suffix(".tim")
+        if not tim_file.exists():
+            raise ValueError(
+                f"TIM file '{tim_file}' not found for QUANTITY={quantity}"
+            )
+        return tim_file
 
     def convert(
         self,
@@ -916,22 +1005,14 @@ class SourceSinkConverter(BaseConverter):
 
         temp_salinity_mdu = self._mdu_parser.temperature_salinity_data
         start_time = temp_salinity_mdu.get("refdate")
-        active_substance_names = self._active_substance_names()
+        active_substance_names, substance_units = self._resolve_active_substances()
 
         location_file = forcing.filename.filepath
         polyline = forcing.filename
         location_name = location_file.stem
         z_source, z_sink = polyline.get_z_sources_sinks()
 
-        # check the tim file
-        tim_file = resolve_relative_to_root(
-            polyline.filepath, self.root_dir
-        ).with_suffix(".tim")
-        if not tim_file.exists():
-            raise ValueError(
-                f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
-            )
-
+        tim_file = self._resolve_tim_file(polyline, forcing.quantity)
         self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
@@ -943,7 +1024,10 @@ class SourceSinkConverter(BaseConverter):
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
-            tim_model, start_time, user_defined_names=labels
+            tim_model,
+            start_time,
+            user_defined_names=labels,
+            substance_units=substance_units,
         )
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = Path(
