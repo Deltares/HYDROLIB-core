@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hydrolib.core.dflowfm.ext.models import SourceSink
+from hydrolib.core.dflowfm.ext.models import SourceSink, ForcingModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
@@ -599,3 +599,20 @@ class TestMainConverter:
         assert len(inifield_model.initial) == 2
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
+
+class TestConvertSourceSinkWithSubstanceFile:
+
+    def test_simple_model(self):
+        mdu_file = Path("tests/data/input/source-sink/substance-file/with_substance.mdu")
+        file_names = "with_substances"
+        converter = ExternalForcingConverter.from_mdu(mdu_file, debug=True)
+        ext_model, _, _ = converter.update()
+        source_sink = ext_model.sourcesink[0]
+        assert isinstance(source_sink, SourceSink)
+        assert all([isinstance(model, ForcingModel) for model in [source_sink.discharge, source_sink.salinitydelta,
+                                                                  source_sink.temperaturedelta]])
+        assert source_sink.discharge.filepath == Path(file_names).with_suffix(".bc")
+        # sub_1 and sub_2 are assigned dynamically
+        assert all([hasattr(source_sink, sub_name) for sub_name in ["sub_1", "sub_2"]])
+        forcings = source_sink.sub_1
+        assert len(forcings.forcing) == 5
