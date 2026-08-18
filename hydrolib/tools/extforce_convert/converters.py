@@ -851,12 +851,10 @@ class SourceSinkConverter(BaseConverter):
         """
         forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
 
-        forcing_model_list = []
         forcings = {}
         for forcing in forcing_list:
             model = deepcopy(forcing_model)
             model.forcing = [forcing]
-            forcing_model_list.append(model)
             name = forcing.quantityunitpair[1].quantity
             # remove the prefix 'sourcesink_' from the name as the extforce file will not have this prefix.
             forcings[name.removeprefix("sourcesink_")] = model
