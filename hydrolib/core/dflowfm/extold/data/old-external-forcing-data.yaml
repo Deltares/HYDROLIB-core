@@ -102,12 +102,12 @@ Parameter:
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
-        WaqParameter: waqparameter
     prefixes:
         - waqfunction
         - waqsegmentfunction
         - waqsegmentnumber
         - waqmassbalancearea
+        - waqparameter
 
 
 InitialConditions:
