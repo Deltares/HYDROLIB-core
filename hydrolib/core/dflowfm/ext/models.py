@@ -1,6 +1,7 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 import warnings
+from abc import ABC
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -526,7 +527,66 @@ class SourceSink(INIBasedModel):
         return data
 
 
-class Meteo(INIBasedModel):
+class SpatialForcingBase(INIBasedModel, ABC):
+    """Shared behaviour for the `[Meteo]` and `[Spatial]` external-forcing blocks.
+
+    `Meteo` (legacy) and `Spatial` (its successor) share the same data-file model
+    resolution logic and interpolation-method parsing. This abstract base holds
+    that common behaviour so a single fix applies to both.
+
+    Field declarations remain on the concrete subclasses: their keyword names
+    differ (`forcing*` versus `data*`) and their serialization order must be
+    preserved, so only behaviour (not fields) is hoisted here.
+    """
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """Neither block currently raises an error on unknown keywords."""
+        return None
+
+    @staticmethod
+    def _resolve_file_models(
+        values: Dict[str, Any], file_keys: tuple, type_keys: tuple
+    ) -> Dict[str, Any]:
+        """Select the concrete file model for the data/forcing file from its type.
+
+        Mirrors the historical per-class ``choose_file_model`` bodies: when both a
+        file keyword and its type keyword are present and the file is still a raw
+        path, the path is resolved into the model class from
+        ``FILETYPE_FILEMODEL_MAPPING`` (types not in the mapping fall back to
+        ``DiskOnlyFileModel``).
+
+        Args:
+            values: Raw, unvalidated input values for the block.
+            file_keys: The lowercase and camelCase names of the file keyword,
+                e.g. ``("datafile", "dataFile")``.
+            type_keys: The lowercase and camelCase names of the file-type keyword,
+                e.g. ``("datafiletype", "dataFileType")``.
+
+        Returns:
+            Dict[str, Any]: The (possibly updated) values dictionary.
+        """
+        if any(key in values for key in type_keys) and any(
+            key in values for key in file_keys
+        ):
+            type_key = type_keys[0] if type_keys[0] in values else type_keys[1]
+            file_key = file_keys[0] if file_keys[0] in values else file_keys[1]
+            file_type = values.get(type_key)
+            file_type = str(file_type).lower() if file_type is not None else None
+            raw_path = values.get(file_key)
+            if isinstance(raw_path, (Path, str)):
+                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
+                values[file_key] = resolve_file_model(raw_path, model)
+
+        return values
+
+    @field_validator("interpolationmethod", mode="before", check_fields=False)
+    @classmethod
+    def _validate_interpolationmethod(cls, v):
+        return enum_value_parser(v, InterpolationMethod)
+
+
+class Meteo(SpatialForcingBase):
     """A `[Meteo]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -578,11 +638,6 @@ class Meteo(INIBasedModel):
 
     comments: Comments = Comments()
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """The Meteo does not currently support raising an error on unknown keywords."""
-        return None
-
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
@@ -627,40 +682,16 @@ class Meteo(INIBasedModel):
     @model_validator(mode="before")
     @classmethod
     def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Root-level validator to the right class for the filename parameter based on the filetype.
+        """Select the right class for the forcingFile parameter based on forcingFileType.
 
-        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
-        dictionary.
-
-        FILETYPE_FILEMODEL_MAPPING = {
-            "bcascii": ForcingModel,
-            "uniform": TimModel,
-            "unimagdir": TimModel,
-            "arcinfo": DiskOnlyFileModel,
-            "spiderweb": DiskOnlyFileModel,
-            "curvigrid": DiskOnlyFileModel,
-            "netcdf": DiskOnlyFileModel,
-            "polygon": PolyFile,
-        }
+        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against
+        this block's ``forcingFile``/``forcingFileType`` keywords.
         """
-        # if the filetype and the filename are present in the values
-        if any(par in values for par in ["forcingfiletype", "forcingFileType"]) and any(
-            par in values for par in ["forcingfile", "forcingFile"]
-        ):
-            file_type_var_name = (
-                "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
-            )
-            filename_var_name = (
-                "forcingfile" if "forcingfile" in values else "forcingFile"
-            )
-            file_type = values.get(file_type_var_name)
-            file_type = str(file_type).lower() if file_type is not None else None
-            raw_path = values.get(filename_var_name)
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-                values[filename_var_name] = resolve_file_model(raw_path, model)
-
-        return values
+        return cls._resolve_file_models(
+            values,
+            ("forcingfile", "forcingFile"),
+            ("forcingfiletype", "forcingFileType"),
+        )
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -670,18 +701,13 @@ class Meteo(INIBasedModel):
     def forcingfiletype_validator(cls, v):
         return enum_value_parser(v, MeteoForcingFileType)
 
-    @field_validator("interpolationmethod", mode="before")
-    @classmethod
-    def interpolationmethod_validator(cls, v):
-        return enum_value_parser(v, MeteoInterpolationMethod)
-
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, v: Any):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
-class Spatial(INIBasedModel):
+class Spatial(SpatialForcingBase):
     """A `[Spatial]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -772,11 +798,6 @@ class Spatial(INIBasedModel):
 
     comments: Comments = Comments()
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """The Spatial block does not currently raise an error on unknown keywords."""
-        return None
-
     _header: Literal["Spatial"] = "Spatial"
     quantity: str = Field(alias="quantity")
     datafile: TimModel | ForcingModel | DiskOnlyFileModel | PolyFile | None = Field(
@@ -811,25 +832,16 @@ class Spatial(INIBasedModel):
     def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Select the right class for the dataFile parameter based on dataFileType.
 
-        Uses FILETYPE_FILEMODEL_MAPPING to determine the correct file model.
-        Types not in the mapping (e.g., GeoTIFF, sample, 1dField) default to
-        DiskOnlyFileModel.
+        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against
+        this block's ``dataFile``/``dataFileType`` keywords. Types not in
+        ``FILETYPE_FILEMODEL_MAPPING`` (e.g., GeoTIFF, sample, 1dField) default to
+        ``DiskOnlyFileModel``.
         """
-        if any(par in values for par in ["datafiletype", "dataFileType"]) and any(
-            par in values for par in ["datafile", "dataFile"]
-        ):
-            file_type_var_name = (
-                "datafiletype" if "datafiletype" in values else "dataFileType"
-            )
-            filename_var_name = "datafile" if "datafile" in values else "dataFile"
-            file_type = values.get(file_type_var_name)
-            file_type = str(file_type).lower() if file_type is not None else None
-            raw_path = values.get(filename_var_name)
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-                values[filename_var_name] = resolve_file_model(raw_path, model)
-
-        return values
+        return cls._resolve_file_models(
+            values,
+            ("datafile", "dataFile"),
+            ("datafiletype", "dataFileType"),
+        )
 
     @classmethod
     def _normalize_spatial_keys(cls, values: Dict) -> Dict:
@@ -969,11 +981,6 @@ class Spatial(INIBasedModel):
         if v is None:
             return v
         return enum_value_parser(v, DataFileType)
-
-    @field_validator("interpolationmethod", mode="before")
-    @classmethod
-    def validate_interpolation_method(cls, v):
-        return enum_value_parser(v, InterpolationMethod)
 
     @field_validator("averagingtype", mode="before")
     @classmethod
