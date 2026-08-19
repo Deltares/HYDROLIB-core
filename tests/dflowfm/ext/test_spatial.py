@@ -1,7 +1,7 @@
 """Characterization tests for the `Spatial` block and its divergences from `Meteo`.
 
 These tests lock the *current* behaviour of `Spatial` (and the shared behaviour of
-`Meteo`) before the `_SpatialForcingBase` extraction. Tests that assert *correct*
+`Meteo`) before the shared-base extraction. Tests that assert *correct*
 behaviour are expected to pass and act as a regression net. Tests marked
 `xfail(strict=True)` pin the known bugs documented in `spatial-meteo-findings.md`;
 they will flip to XPASS (and fail the suite, prompting marker removal) once the

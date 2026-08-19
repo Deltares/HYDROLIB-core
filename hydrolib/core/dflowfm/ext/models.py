@@ -30,7 +30,6 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.common.models import LocationType, Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -42,9 +41,10 @@ from hydrolib.core.dflowfm.ini.util import (
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
+    OperandInterpolationValidators,
     DataFileType,
     InterpolationMethod,
-    AbstractSpatialField,
+    LocationTypeDataFileTypeValidators,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -54,6 +54,13 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 # backward compatibility and will be removed in a future release.
 MeteoForcingFileType = DataFileType
 MeteoInterpolationMethod = InterpolationMethod
+
+SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
+    "initialtracer",
+    "tracerbnd",
+    "sedfracbnd",
+    "initialsedfrac",
+)
 
 
 class TargetLayer(StrEnum):
@@ -66,13 +73,6 @@ class TargetLayer(StrEnum):
 
     bottom = "bottom"
     all = "all"
-
-SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
-    "initialtracer",
-    "tracerbnd",
-    "sedfracbnd",
-    "initialsedfrac",
-)
 
 
 def _coordinate_length(v) -> int:
@@ -541,12 +541,18 @@ class SourceSink(INIBasedModel):
         return data
 
 
-class SpatialForcingBase(INIBasedModel, ABC):
+class SpatialForcingBase(OperandInterpolationValidators, INIBasedModel, ABC):
     """Shared behaviour for the `[Meteo]` and `[Spatial]` external-forcing blocks.
 
     `Meteo` (legacy) and `Spatial` (its successor) share the same data-file model
-    resolution logic and interpolation-method parsing. This abstract base holds
-    that common behaviour so a single fix applies to both.
+    resolution logic and unknown-keyword handling. This abstract base holds that
+    common behaviour so a single fix applies to both.
+
+    The `operand` / `interpolationMethod` validators are inherited from
+    `OperandInterpolationValidators` (common to all four spatial-field blocks). `Spatial`
+    additionally inherits `LocationTypeDataFileTypeValidators` for the `locationType` /
+    `dataFileType` validators it shares with the inifield blocks; `Meteo` does not,
+    as it has neither field.
 
     Field declarations remain on the concrete subclasses: their keyword names
     differ (`forcing*` versus `data*`) and their serialization order must be
@@ -612,8 +618,10 @@ class SpatialForcingBase(INIBasedModel, ABC):
         ):
             type_key = type_keys[0] if type_keys[0] in values else type_keys[1]
             file_key = file_keys[0] if file_keys[0] in values else file_keys[1]
+
             file_type = values.get(type_key)
             file_type = str(file_type).lower() if file_type is not None else None
+
             raw_path = values.get(file_key)
             if isinstance(raw_path, (Path, str)):
                 model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
@@ -623,16 +631,6 @@ class SpatialForcingBase(INIBasedModel, ABC):
                     values[file_key] = resolve_file_model(raw_path, model)
 
         return values
-
-    @field_validator("interpolationmethod", mode="before", check_fields=False)
-    @classmethod
-    def _validate_interpolationmethod(cls, v):
-        return enum_value_parser(v, InterpolationMethod)
-
-    @field_validator("operand", mode="before", check_fields=False)
-    @classmethod
-    def _validate_operand(cls, v):
-        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Meteo(SpatialForcingBase):
@@ -738,7 +736,7 @@ class Meteo(SpatialForcingBase):
         return enum_value_parser(v, MeteoForcingFileType)
 
 
-class Spatial(SpatialForcingBase):
+class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     """A `[Spatial]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -993,22 +991,10 @@ class Spatial(SpatialForcingBase):
             return resolve_file_model(v, PolyFile)
         return v
 
-    @field_validator("datafiletype", mode="before")
-    @classmethod
-    def validate_data_file_type(cls, v):
-        if v is None:
-            return v
-        return enum_value_parser(v, DataFileType)
-
     @field_validator("averagingtype", mode="before")
     @classmethod
     def validate_average_type(cls, v):
         return enum_value_parser(v, AveragingType)
-
-    @field_validator("locationtype", mode="before")
-    @classmethod
-    def validate_location_type(cls, v):
-        return enum_value_parser(v, LocationType)
 
     @field_validator("targetlayer", mode="before")
     @classmethod
