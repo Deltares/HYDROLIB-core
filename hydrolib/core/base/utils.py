@@ -6,7 +6,7 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
-from typing import Annotated, Any, Callable, List, Optional, Union, get_args, get_origin
+from typing import Annotated, Any, Callable, List, Union, get_args, get_origin
 
 from pydantic import ValidationInfo
 from pydantic.fields import FieldInfo
@@ -23,10 +23,32 @@ valid_types = (
     float,
     list[float],
     List[float],
-    Optional[float],
-    Optional[List[float]],
-    Optional[list[float]],
+    float | None,
+    List[float] | None,
+    list[float] | None,
 )
+
+def read_text_file(path: Path) -> list[str]:
+    """Read a text file as lines, falling back to Latin-1 if not valid UTF-8.
+
+    Many legacy D-Flow FM input files use Latin-1 encoded characters (e.g. the
+    degree symbol °, byte 0xb0) in comments.  Reading as raw bytes and decoding
+    avoids the context-manager re-yield problem that arises when the decode error
+    occurs during iteration rather than on open.
+
+    Args:
+        path (Path): Path to the file to read.
+
+    Returns:
+        List[str]: Lines of the file, with line endings preserved.
+    """
+    try:
+        with path.open("r", encoding="utf8") as file:
+            lines = file.readlines()
+    except UnicodeDecodeError:
+        with path.open("r", encoding="latin-1") as file:
+            lines = file.readlines()
+    return lines
 
 
 def to_key(string: str) -> str:
@@ -63,7 +85,7 @@ def to_key(string: str) -> str:
     return string.lower().replace(" ", "_").replace("-", "")
 
 
-def to_list(item: Any) -> List[Any]:
+def to_list(item: Any) -> list[Any]:
     """Puts the specified item in a list if it is an instance of `dict`.
 
     Attributes:
@@ -90,7 +112,7 @@ def str_is_empty_or_none(str_field: str) -> bool:
     return str_field is None or not str_field or str_field.isspace()
 
 
-def get_str_len(str_field: Optional[str]) -> int:
+def get_str_len(str_field: str | None) -> int:
     """
     Get string length or 0 if input is None.
 
@@ -103,7 +125,7 @@ def get_str_len(str_field: Optional[str]) -> int:
     return len(str_field) if str_field else 0
 
 
-def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
+def get_substring_between(source: str, start: str, end: str) -> str | None:
     """Finds the substring between two other strings.
 
     Args:
@@ -481,14 +503,14 @@ class FileChecksumCalculator:
     """FileChecksumCalculator calculator used to calculate the checksum of a file."""
 
     @staticmethod
-    def calculate_checksum(filepath: Path) -> Optional[str]:
+    def calculate_checksum(filepath: Path) -> str | None:
         """Calculate the checksum of the file from the given filepath.
 
         Args:
             filepath (Path): The filepath to the file for which the checksum will be calculated.
 
         Returns:
-            [Optional[str]]:
+            [str | None]:
                 The checksum of the file.
                 When the filepath doesn't exist or the filepath isn't a file, None.
         """
@@ -540,7 +562,7 @@ class FortranScientificNotationConverter:
     """Converter for transforming FORTRAN-style scientific notation to Python-compatible format."""
 
     @classmethod
-    def convert(cls, value: Union[str, List[str]]) -> Union[str, List[str]]:
+    def convert(cls, value: Union[str, list[str]]) -> Union[str, list[str]]:
         """Replace FORTRAN-style scientific notation in a value.
 
         Args:

@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Dict, List
 
+from hydrolib.core.base.utils import read_text_file
 from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
 
 
@@ -29,8 +30,7 @@ class Parser:
             "QUANTITY", "FILENAME", "VARNAME", "SOURCEMASK", "FILETYPE", "METHOD", "OPERAND", "VALUE", "FACTOR", "IFRCTYP",
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
-        with filepath.open(encoding="utf8") as file:
-            lines = file.readlines()
+        lines = read_text_file(filepath)
 
         comments, start_data_index = Parser._parse_header(lines)
         forcings = Parser._parse_data(lines, start_data_index)

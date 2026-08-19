@@ -20,6 +20,7 @@ from hydrolib.core.base.utils import (
     get_str_len,
     get_substring_between,
     operator_str,
+    read_text_file,
     str_is_empty_or_none,
     to_key,
     to_list,
@@ -713,3 +714,56 @@ class TestPathToDictionaryConverter:
 
         assert isinstance(result, DiskOnlyFileModel)
         assert result.filepath == Path("test/path/to/file")
+
+
+class TestReadTextFile:
+    """Test cases for the read_text_file utility function."""
+
+    @pytest.mark.parametrize(
+        "raw_bytes, expected_lines",
+        [
+            pytest.param(
+                b"hello\nworld\n",
+                ["hello\n", "world\n"],
+                id="plain_ascii",
+            ),
+            pytest.param(
+                "café\nnaïve\n".encode("utf-8"),
+                ["café\n", "naïve\n"],
+                id="valid_utf8_multibyte",
+            ),
+            pytest.param(
+                b"* temperature in \xb0C\n",
+                ["* temperature in °C\n"],
+                id="latin1_fallback_degree_symbol",
+            ),
+            pytest.param(
+                b"line1\nvalue = 1.5 \xb0C\nline3\n",
+                ["line1\n", "value = 1.5 °C\n", "line3\n"],
+                id="latin1_fallback_multiple_lines",
+            ),
+            pytest.param(
+                b"line1\r\nline2\r\n",
+                ["line1\n", "line2\n"],
+                id="crlf_line_endings_normalized",
+            ),
+            pytest.param(
+                b"",
+                [],
+                id="empty_file",
+            ),
+            pytest.param(
+                b"line1\nline2",
+                ["line1\n", "line2"],
+                id="no_trailing_newline",
+            ),
+        ],
+    )
+    def test_read_text_file(self, tmp_path, raw_bytes, expected_lines):
+        f = tmp_path / "test.txt"
+        f.write_bytes(raw_bytes)
+        lines = read_text_file(f)
+        assert isinstance(lines, list)
+        assert all(isinstance(line, str) for line in lines)
+        assert lines == expected_lines
+
