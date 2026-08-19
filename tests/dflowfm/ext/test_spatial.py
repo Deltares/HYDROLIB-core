@@ -29,9 +29,7 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 
 BC_FIXTURE = Path("tests/data/input/spatial_block/Sobek_Precip.bc")
 TIM_FIXTURE = Path("tests/data/input/e02/f006_external_forcing/c063_rain_tim/rainschematic.tim")
-
-BUG_A = "Bug A: Spatial.validate_operand omits legacy_alternatives; fixed in _SpatialForcingBase refactor."
-BUG_B = "Bug B: Spatial before-validator ordering strands datafile as DiskOnlyFileModel; fixed in refactor."
+POL_FIXTURE = Path("tests/data/input/spatial_block/pt_initals.pol")
 
 
 def _write_ext(directory: Path, spatial_body: str) -> Path:
@@ -74,7 +72,6 @@ class TestSpatialFileRoundTrip:
         assert block.interpolationmethod == InterpolationMethod.constant
         assert block.operand == Operand.override
 
-    @pytest.mark.xfail(reason=BUG_B, strict=True)
     def test_bcascii_datafile_parsed_from_file(self, tmp_path: Path):
         shutil.copy(BC_FIXTURE, tmp_path / BC_FIXTURE.name)
         body = (
@@ -89,7 +86,6 @@ class TestSpatialFileRoundTrip:
 
         assert isinstance(block.datafile, ForcingModel)
 
-    @pytest.mark.xfail(reason=BUG_B, strict=True)
     def test_uniform_datafile_parsed_from_file(self, tmp_path: Path):
         shutil.copy(TIM_FIXTURE, tmp_path / TIM_FIXTURE.name)
         body = (
@@ -119,7 +115,6 @@ class TestMeteoSpatialParity:
         )
         assert isinstance(block.forcingfile, ForcingModel)
 
-    @pytest.mark.xfail(reason=BUG_B, strict=True)
     def test_spatial_bcascii_resolves_to_forcingmodel(self):
         block = Spatial(
             quantity="rainfall",
@@ -137,7 +132,6 @@ class TestMeteoSpatialParity:
         )
         assert block.operand == Operand.override
 
-    @pytest.mark.xfail(reason=BUG_A, strict=True)
     def test_spatial_accepts_legacy_operand(self):
         block = Spatial(
             quantity="rainfall",
@@ -219,14 +213,14 @@ class TestSpatialDataValueValidation:
         with pytest.warns(DeprecationWarning):
             Spatial(
                 quantity="waterlevel",
-                dataFile="area.pol",
+                dataFile=str(POL_FIXTURE),
                 dataFileType="polygon",
             )
 
     def test_polygon_datafiletype_allowed_for_initialvertical(self, recwarn):
         Spatial(
             quantity="initialverticalsalinityprofile",
-            dataFile="profile.pol",
+            dataFile=str(POL_FIXTURE),
             dataFileType="polygon",
         )
         assert not any(

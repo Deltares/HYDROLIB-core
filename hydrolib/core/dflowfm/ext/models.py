@@ -576,7 +576,10 @@ class SpatialForcingBase(INIBasedModel, ABC):
             raw_path = values.get(file_key)
             if isinstance(raw_path, (Path, str)):
                 model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-                values[file_key] = resolve_file_model(raw_path, model)
+                if model is None:
+                    values[file_key] = DiskOnlyFileModel(raw_path)
+                else:
+                    values[file_key] = resolve_file_model(raw_path, model)
 
         return values
 
@@ -584,6 +587,11 @@ class SpatialForcingBase(INIBasedModel, ABC):
     @classmethod
     def _validate_interpolationmethod(cls, v):
         return enum_value_parser(v, InterpolationMethod)
+
+    @field_validator("operand", mode="before", check_fields=False)
+    @classmethod
+    def _validate_operand(cls, v):
+        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Meteo(SpatialForcingBase):
@@ -700,11 +708,6 @@ class Meteo(SpatialForcingBase):
     @classmethod
     def forcingfiletype_validator(cls, v):
         return enum_value_parser(v, MeteoForcingFileType)
-
-    @field_validator("operand", mode="before")
-    @classmethod
-    def validate_operand(cls, v: Any):
-        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
 class Spatial(SpatialForcingBase):
@@ -827,25 +830,15 @@ class Spatial(SpatialForcingBase):
     tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
 
-    @model_validator(mode="before")
-    @classmethod
-    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Select the right class for the dataFile parameter based on dataFileType.
-
-        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against
-        this block's ``dataFile``/``dataFileType`` keywords. Types not in
-        ``FILETYPE_FILEMODEL_MAPPING`` (e.g., GeoTIFF, sample, 1dField) default to
-        ``DiskOnlyFileModel``.
-        """
-        return cls._resolve_file_models(
-            values,
-            ("datafile", "dataFile"),
-            ("datafiletype", "dataFileType"),
-        )
-
     @classmethod
     def _normalize_spatial_keys(cls, values: Dict) -> Dict:
-        """Normalize camelCase aliases and coerce datafile to DiskOnlyFileModel."""
+        """Normalize camelCase aliases and coerce any unresolved datafile to DiskOnlyFileModel.
+
+        ``dataFile`` is normally resolved to its concrete file model earlier in the
+        validation flow (see ``_resolve_file_models``). This fallback only wraps a
+        path that is still raw (e.g. no ``dataFileType`` was supplied) so that the
+        field always holds a file model rather than a bare string.
+        """
         data_file = values.get("datafile") or values.get("dataFile")
         if isinstance(data_file, (str, Path)):
             data_file = DiskOnlyFileModel(data_file)
@@ -904,7 +897,11 @@ class Spatial(SpatialForcingBase):
 
     @classmethod
     def _process_section_values(cls, values):
-        """Process Section objects and extract/convert values as needed.
+        """Flatten a Section object into a dictionary of raw values.
+
+        The raw ``dataFile`` value is left as a path/string so that the subsequent
+        ``_resolve_file_models`` step can select the concrete file model from
+        ``dataFileType`` (rather than being forced to ``DiskOnlyFileModel`` here).
 
         Args:
             values: The values to process, which may be a Section object or a dictionary.
@@ -912,23 +909,7 @@ class Spatial(SpatialForcingBase):
         Returns:
             A dictionary containing the processed values.
         """
-        # If values is a Section object, we need to handle it specially
-        if isinstance(values, Section):
-            # Extract the datafile value if present
-            data_file = super()._extract_file_model_from_section(
-                values, "datafile", DiskOnlyFileModel
-            )
-
-            # Convert Section to dictionary
-            values_dict = super()._convert_section_to_dict(values)
-
-            # If we found a datafile, add it to the dictionary
-            if data_file is not None:
-                values_dict["datafile"] = data_file
-
-            return values_dict
-
-        return values
+        return cls._convert_section_to_dict(values)
 
     @model_validator(mode="before")
     @classmethod
@@ -952,6 +933,11 @@ class Spatial(SpatialForcingBase):
         purpose and have no new alternative yet.
         """
         values = cls._process_section_values(values)
+        values = cls._resolve_file_models(
+            values,
+            ("datafile", "dataFile"),
+            ("datafiletype", "dataFileType"),
+        )
         values = cls._normalize_spatial_keys(values)
 
         datavalue = values.get("datavalue")
@@ -992,10 +978,6 @@ class Spatial(SpatialForcingBase):
     def validate_location_type(cls, v):
         return enum_value_parser(v, LocationType)
 
-    @field_validator("operand", mode="before")
-    @classmethod
-    def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
 
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
