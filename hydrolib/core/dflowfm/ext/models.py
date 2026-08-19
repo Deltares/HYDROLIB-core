@@ -553,6 +553,33 @@ class SpatialForcingBase(INIBasedModel, ABC):
     preserved, so only behaviour (not fields) is hoisted here.
     """
 
+    class Comments(INIBasedModel.Comments):
+        """Comments shared by the `[Meteo]` and `[Spatial]` block fields.
+
+        Only the descriptions that are identical in both blocks live here. The
+        file-specific ones (`forcingFile`/`dataFile`, `extrapolationSearchRadius`)
+        stay on the subclasses because their wording differs.
+        """
+
+        quantity: Optional[str] = Field(
+            "Name of the quantity. See UM Section C.5.3", alias="quantity"
+        )
+        targetmaskinvert: Optional[str] = Field(
+            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
+            alias="targetMaskInvert",
+        )
+        interpolationmethod: Optional[str] = Field(
+            "Type of (spatial) interpolation.", alias="interpolationMethod"
+        )
+        operand: Optional[str] = Field(
+            "How this data is combined with previous data for the same quantity (if any).",
+            alias="operand",
+        )
+        extrapolationallowed: Optional[str] = Field(
+            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
+            alias="extrapolationAllowed",
+        )
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """Neither block currently raises an error on unknown keywords."""
@@ -617,12 +644,14 @@ class Meteo(SpatialForcingBase):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
-    class Comments(INIBasedModel.Comments):
-        """Comments for the Meteo block fields."""
+    class Comments(SpatialForcingBase.Comments):
+        """Comments for the Meteo block fields.
 
-        quantity: Optional[str] = Field(
-            "Name of the quantity. See UM Section C.5.3", alias="quantity"
-        )
+        Inherits the shared descriptions from `SpatialForcingBase.Comments`; only
+        the `forcing*` file keywords and the `extrapolationSearchRadius` wording are
+        specific to this block.
+        """
+
         forcingfile: Optional[str] = Field(
             "Name of file containing the forcing for this meteo quantity.",
             alias="forcingFile",
@@ -637,21 +666,6 @@ class Meteo(SpatialForcingBase):
         targetmaskfile: Optional[str] = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
             alias="targetMaskFile",
-        )
-        targetmaskinvert: Optional[str] = Field(
-            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
-            alias="targetMaskInvert",
-        )
-        interpolationmethod: Optional[str] = Field(
-            "Type of (spatial) interpolation.", alias="interpolationMethod"
-        )
-        operand: Optional[str] = Field(
-            "How this data is combined with previous data for the same quantity (if any).",
-            alias="operand",
-        )
-        extrapolationallowed: Optional[str] = Field(
-            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
-            alias="extrapolationAllowed",
         )
         extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
@@ -737,12 +751,14 @@ class Spatial(SpatialForcingBase):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
-    class Comments(INIBasedModel.Comments):
-        """Comments for the Spatial block fields."""
+    class Comments(SpatialForcingBase.Comments):
+        """Comments for the Spatial block fields.
 
-        quantity: str | None = Field(
-            "Name of the quantity. See UM Section C.5.3", alias="quantity"
-        )
+        Inherits the shared descriptions from `SpatialForcingBase.Comments`; only
+        the `data*` file keywords, the `extrapolationSearchRadius` wording, and the
+        fields unique to the Spatial block are declared here.
+        """
+
         datafile: str | None = Field(
             "Name of file containing the data for this spatial quantity.",
             alias="dataFile",
@@ -757,21 +773,6 @@ class Spatial(SpatialForcingBase):
         targetmaskfile: str | None = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.",
             alias="targetMaskFile",
-        )
-        targetmaskinvert: str | None = Field(
-            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
-            alias="targetMaskInvert",
-        )
-        interpolationmethod: str | None = Field(
-            "Type of (spatial) interpolation.", alias="interpolationMethod"
-        )
-        operand: str | None = Field(
-            "How this data is combined with previous data for the same quantity (if any).",
-            alias="operand",
-        )
-        extrapolationallowed: str | None = Field(
-            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
-            alias="extrapolationAllowed"
         )
         extrapolationsearchradius: str | None = Field(
             "Maximum search radius for nearest neighbour extrapolation in space.",
