@@ -13,6 +13,8 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic.types import NonNegativeFloat, PositiveInt
+from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
@@ -52,6 +54,18 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 # backward compatibility and will be removed in a future release.
 MeteoForcingFileType = DataFileType
 MeteoInterpolationMethod = InterpolationMethod
+
+
+class TargetLayer(StrEnum):
+    """Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.
+
+    Corresponds to the ``LAYER`` value in the old external forcings file: ``bottom``
+    (old ``-1``) and ``all`` (old ``0``). A positive integer layer number is also
+    accepted; see ``Spatial.targetlayer``.
+    """
+
+    bottom = "bottom"
+    all = "all"
 
 SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
@@ -798,6 +812,10 @@ class Spatial(SpatialForcingBase):
             "Only for initialtracer<tracername>. Decay time of the tracer.",
             alias="tracerDecayTime",
         )
+        targetlayer: str | None = Field(
+            "Target layer for the data: bottom, all, or a positive layer number.",
+            alias="targetLayer",
+        )
 
     comments: Comments = Comments()
 
@@ -819,9 +837,9 @@ class Spatial(SpatialForcingBase):
         None, alias="extrapolationSearchRadius"
     )
     averagingtype: AveragingType | None = Field(None, alias="averagingType")
-    averagingrelsize: float | None = Field(None, alias="averagingRelSize")
-    averagingnummin: float | None = Field(None, alias="averagingNumMin")
-    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
+    averagingrelsize: NonNegativeFloat | None = Field(None, alias="averagingRelSize")
+    averagingnummin: PositiveInt | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: NonNegativeFloat | None = Field(None, alias="averagingPercentile")
     locationtype: LocationType | None = Field(
         LocationType.all.value, alias="locationType"
     )
@@ -829,6 +847,7 @@ class Spatial(SpatialForcingBase):
     frictiontype: str | None = Field(None, alias="frictionType")
     tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
+    targetlayer: TargetLayer | int | None = Field(None, alias="targetLayer")
 
     @classmethod
     def _normalize_spatial_keys(cls, values: Dict) -> Dict:
@@ -989,6 +1008,29 @@ class Spatial(SpatialForcingBase):
     @classmethod
     def validate_location_type(cls, v):
         return enum_value_parser(v, LocationType)
+
+    @field_validator("targetlayer", mode="before")
+    @classmethod
+    def validate_targetlayer(cls, v):
+        """Coerce targetLayer to a TargetLayer member or a positive integer layer number.
+
+        Accepts ``bottom`` and ``all`` (case-insensitive) or a positive integer. The
+        old external-forcings ``LAYER`` values ``-1`` and ``0`` are represented by
+        ``bottom`` and ``all`` respectively and are not accepted as integers here.
+        """
+        result = v
+        if v is not None and not isinstance(v, TargetLayer):
+            text = str(v).strip()
+            if text.lower() in (TargetLayer.bottom.value, TargetLayer.all.value):
+                result = TargetLayer(text.lower())
+            elif text.lstrip("+").isdigit() and int(text) > 0:
+                result = int(text)
+            else:
+                raise ValueError(
+                    "targetLayer must be 'bottom', 'all', or a positive integer, "
+                    f"got '{v}'."
+                )
+        return result
 
 
 class ExtGeneral(INIGeneral):

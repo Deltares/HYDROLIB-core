@@ -23,7 +23,7 @@ from pydantic import ValidationError
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Operand
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import ExtModel, Meteo, Spatial
+from hydrolib.core.dflowfm.ext.models import ExtModel, Meteo, Spatial, TargetLayer
 from hydrolib.core.dflowfm.inifield import AveragingType, InterpolationMethod
 from hydrolib.core.dflowfm.tim.models import TimModel
 
@@ -256,3 +256,67 @@ class TestSpatialDataValueValidation:
             and "polygon" in str(w.message).lower()
             for w in recwarn
         )
+
+
+class TestSpatialAveragingConstraints:
+    """Spatial must enforce the same numeric constraints the inifield InitialField /
+    ParameterField blocks did: averagingNumMin is a positive integer and
+    averagingRelSize / averagingPercentile are non-negative. UNST-9273 lists these
+    fields by name only and UNST-9773 requires the same results as before, so the
+    constraints must not be loosened on the replacement Spatial block."""
+
+    @pytest.mark.parametrize(
+        "field, value",
+        [
+            ("averagingNumMin", 0),
+            ("averagingNumMin", -3),
+            ("averagingRelSize", -1.0),
+            ("averagingPercentile", -5.0),
+        ],
+    )
+    def test_invalid_averaging_value_is_rejected(self, field, value):
+        with pytest.raises(ValidationError):
+            Spatial(
+                quantity="waterlevel",
+                dataFile="x.nc",
+                dataFileType="netcdf",
+                interpolationMethod="averaging",
+                **{field: value},
+            )
+
+    def test_valid_averaging_values_are_accepted(self):
+        block = Spatial(
+            quantity="waterlevel",
+            dataFile="x.nc",
+            dataFileType="netcdf",
+            interpolationMethod="averaging",
+            averagingNumMin=3,
+            averagingRelSize=1.5,
+            averagingPercentile=0.0,
+        )
+        assert block.averagingnummin == 3
+        assert block.averagingrelsize == 1.5
+        assert block.averagingpercentile == 0.0
+
+
+class TestSpatialTargetLayer:
+    """targetLayer accepts 'bottom', 'all', or a positive integer layer number
+    (UNST-9273 targetLayer, GitHub #1167); zero, negatives and other strings are
+    rejected because the old LAYER values -1 and 0 map to 'bottom' and 'all'."""
+
+    def test_targetlayer_all(self):
+        block = Spatial(quantity="initialwaqbot", dataValue=2000.0, targetLayer="all")
+        assert block.targetlayer == TargetLayer.all
+
+    def test_targetlayer_bottom(self):
+        block = Spatial(quantity="initialwaqbot", dataValue=2000.0, targetLayer="bottom")
+        assert block.targetlayer == TargetLayer.bottom
+
+    def test_targetlayer_positive_integer(self):
+        block = Spatial(quantity="initialwaqbot", dataValue=2000.0, targetLayer=3)
+        assert block.targetlayer == 3
+
+    @pytest.mark.parametrize("value", [0, -1, "surface"])
+    def test_targetlayer_invalid_is_rejected(self, value):
+        with pytest.raises(ValidationError):
+            Spatial(quantity="initialwaqbot", dataValue=2000.0, targetLayer=value)
