@@ -931,13 +931,25 @@ class Spatial(SpatialForcingBase):
         remains supported for quantities such as ``initialvertical*`` (e.g.
         ``initialverticalsalinityprofile``) that use polygon files for a different
         purpose and have no new alternative yet.
+
+        The data file is resolved to its concrete file model only on the ``dataFile``
+        path (``dataValue`` absent). This prevents an invalid combination
+        (``dataValue`` together with ``dataFile``) from parsing a file before the
+        mutual-exclusion check rejects it, so callers get the exclusion error rather
+        than a file-parse error.
         """
         values = cls._process_section_values(values)
-        values = cls._resolve_file_models(
-            values,
-            ("datafile", "dataFile"),
-            ("datafiletype", "dataFileType"),
+
+        on_datavalue_path = (
+            values.get("datavalue") is not None or values.get("dataValue") is not None
         )
+        if not on_datavalue_path:
+            values = cls._resolve_file_models(
+                values,
+                ("datafile", "dataFile"),
+                ("datafiletype", "dataFileType"),
+            )
+
         values = cls._normalize_spatial_keys(values)
 
         datavalue = values.get("datavalue")

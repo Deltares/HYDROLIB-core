@@ -47,9 +47,6 @@ def _write_ext(directory: Path, spatial_body: str) -> Path:
     return path
 
 
-# --------------------------------------------------------------------------- #
-# Group 1 — [Spatial] file round-trip (parse-from-disk path)
-# --------------------------------------------------------------------------- #
 class TestSpatialFileRoundTrip:
     """Exercises `_process_section_values` + `choose_file_model`: parsing a
     `[Spatial]` block from an actual `.ext` file (no test does this today)."""
@@ -100,10 +97,22 @@ class TestSpatialFileRoundTrip:
 
         assert isinstance(block.datafile, TimModel)
 
+    def test_recurse_false_keeps_datafile_disk_only(self, tmp_path: Path):
+        """Under a non-recursive load the data file is not parsed into its model."""
+        shutil.copy(BC_FIXTURE, tmp_path / BC_FIXTURE.name)
+        body = (
+            "quantity     = rainfall\n"
+            f"dataFile     = {BC_FIXTURE.name}\n"
+            "dataFileType = bcAscii\n"
+            "operand      = override\n"
+        )
+        ext_path = _write_ext(tmp_path, body)
 
-# --------------------------------------------------------------------------- #
-# Group 2 — mirror Meteo vs Spatial (the divergences the shared base must reconcile)
-# --------------------------------------------------------------------------- #
+        block = ExtModel(ext_path, recurse=False).spatial[0]
+
+        assert isinstance(block.datafile, DiskOnlyFileModel)
+
+
 class TestMeteoSpatialParity:
     """Same concept, both classes — locks where they agree and pins where they diverge."""
 
@@ -141,6 +150,16 @@ class TestMeteoSpatialParity:
         )
         assert block.operand == Operand.override
 
+    def test_spatial_unmapped_datafiletype_falls_back_to_disk_only(self):
+        """A dataFileType with no entry in FILETYPE_FILEMODEL_MAPPING (e.g. GeoTIFF)
+        resolves to DiskOnlyFileModel rather than raising on a None model class."""
+        block = Spatial(
+            quantity="bedlevel",
+            dataFile="bathymetry.tif",
+            dataFileType="GeoTIFF",
+        )
+        assert isinstance(block.datafile, DiskOnlyFileModel)
+
     def test_meteo_averagingtype_is_raw_int(self):
         """Characterizes Bug C: Meteo stores averagingType as a raw int."""
         block = Meteo(
@@ -174,9 +193,6 @@ class TestMeteoSpatialParity:
         assert spatial.extrapolationallowed is False
 
 
-# --------------------------------------------------------------------------- #
-# Group 3 — Spatial dataValue / dataFile mutually-exclusive validation
-# --------------------------------------------------------------------------- #
 class TestSpatialDataValueValidation:
     """Locks the two mutually-exclusive usage paths and the polygon deprecation."""
 
@@ -187,6 +203,18 @@ class TestSpatialDataValueValidation:
                 dataValue=5.0,
                 dataFile="rainfall.nc",
                 dataFileType="netcdf",
+            )
+
+    def test_datavalue_with_datafile_reports_exclusion_not_parse_error(self):
+        """The invalid dataValue+dataFile combo is rejected on the mutual-exclusion
+        rule without first parsing the (here nonexistent) data file; a bcAscii file
+        would otherwise raise a file-not-found parse error during resolution."""
+        with pytest.raises(ValidationError, match="must not be specified"):
+            Spatial(
+                quantity="waterlevel",
+                dataValue=5.0,
+                dataFile="nonexistent.bc",
+                dataFileType="bcAscii",
             )
 
     def test_datavalue_forces_constant_interpolation(self):
