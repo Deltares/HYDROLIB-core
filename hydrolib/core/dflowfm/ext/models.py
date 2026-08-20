@@ -677,21 +677,21 @@ class Meteo(SpatialForcingBase):
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
+    forcingvariablename: str | None = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
-    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
-    targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
-    interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
+    targetmaskfile: PolyFile | None = Field(None, alias="targetMaskFile")
+    targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
+    interpolationmethod: MeteoInterpolationMethod | None = Field(
         None, alias="interpolationMethod"
     )
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
-    extrapolationsearchradius: Optional[float] = Field(
+    operand: Operand | None = Field(Operand.override.value, alias="operand")
+    extrapolationallowed: bool | None = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: float | None = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingtype: Optional[int] = Field(None, alias="averagingType")
-    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
+    averagingtype: int | None = Field(None, alias="averagingType")
+    averagingnummin: float | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
 
     # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
     forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
