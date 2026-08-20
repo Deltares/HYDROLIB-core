@@ -14,6 +14,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
+    TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
@@ -279,6 +280,20 @@ def path_relative_to_parent(
     return forcing_path
 
 
+def old_layer_to_target_layer(layer: int):
+    """Map an old external-forcing LAYER value to the new Spatial targetLayer.
+
+    `-1` becomes `bottom`, `0` becomes `all`, and a positive layer number is
+    kept unchanged (UNST-9273, GitHub #1166 / #1167).
+    """
+    result = layer
+    if layer == -1:
+        result = TargetLayer.bottom
+    elif layer == 0:
+        result = TargetLayer.all
+    return result
+
+
 def create_spatial_input_dict(
     forcing: ExtOldForcing,
     new_forcing_path: Path | None,
@@ -347,6 +362,9 @@ def create_spatial_input_dict(
         for key, value in forcing.model_dump().items():
             if key.lower().startswith("tracer") and value is not None:
                 block_data[key] = value
+
+    if forcing.layer is not None:
+        block_data["targetlayer"] = old_layer_to_target_layer(forcing.layer)
 
     return block_data
 
