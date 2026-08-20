@@ -74,6 +74,22 @@ class TargetLayer(StrEnum):
     all = "all"
 
 
+def _ensure_targetlayer_enum(v):
+    """Re-wrap a plain string back into a TargetLayer after Pydantic applies use_enum_values.
+
+    Because BaseModel is configured with ``use_enum_values=True``, Pydantic stores the
+    raw ``.value`` string instead of the enum instance.  This AfterValidator restores
+    the TargetLayer type so that callers can rely on ``isinstance(v, TargetLayer)``.
+    Integers and None are passed through unchanged.
+    """
+    if isinstance(v, str) and not isinstance(v, TargetLayer):
+        try:
+            return TargetLayer(v)
+        except ValueError:
+            pass
+    return v
+
+
 def _coordinate_length(v) -> int:
     """Return the number of coordinates in a raw string or list."""
     result = 0
