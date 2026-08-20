@@ -30,8 +30,6 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
-    InitialConditionConverter,
-    ParametersConverter,
     SourceSinkConverter,
     SpatialConverter,
 )

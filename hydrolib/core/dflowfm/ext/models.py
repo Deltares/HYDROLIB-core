@@ -1098,22 +1098,6 @@ class SourceSinkError(Exception):
         super().__init__(error_message)
 
 
-class InitialFieldError(Exception):
-    """InitialFieldError."""
-
-    def __init__(self, error_message: str):
-        """Initialize with an error message."""
-        super().__init__(error_message)
-
-
-class MeteoError(Exception):
-    """MeteoError."""
-
-    def __init__(self, error_message: str):
-        """Initialize with an error message."""
-        super().__init__(error_message)
-
-
 class SpatialError(Exception):
     """SpatialError."""
 
