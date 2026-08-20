@@ -21,11 +21,11 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
+    SpatialBlockBuilder,
     SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
-    create_spatial_input_dict,
     oldfiletype_to_forcing_file_type,
 )
 from tests.utils import compare_two_files, ignore_version_lines
@@ -73,11 +73,9 @@ class TestConvertInitialCondition:
     @pytest.mark.unit
     def test_tracer_fall_velocity(self):
         """Test conversion of tracerfallvelocity forcing.
-        The test check that the tracerfallvelocity is converted correctly
 
-        - The test uses a file type = 4 in order not to add a real file.
-        - The test checks the returned value from the `create_spatial_input_dict` function,
-        and checks the returned value from the `SpatialConverter.convert` method.
+        The test checks that the tracerfallvelocity is carried onto the converted
+        Spatial block. A file type = 4 is used in order not to add a real file.
         """
         # just choose any file type that is associated with DiskOnlyFileModel (3-8) in order not to add a real file
         forcing = ExtOldForcing(
@@ -88,11 +86,6 @@ class TestConvertInitialCondition:
             operand="O",
             TRACERFALLVELOCITY=0.1,
         )
-
-        new_focing_dict = create_spatial_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert "tracerfallvelocity" in new_focing_dict.keys()
 
         new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
@@ -138,10 +131,6 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_forcing_dict = create_spatial_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
@@ -184,11 +173,6 @@ class TestConvertParameters:
             method="1",
             operand="O",
         )
-
-        new_focing_dict = create_spatial_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert new_focing_dict["quantity"] == "bedrockSurfaceElevation"
 
         new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
@@ -256,10 +240,6 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_forcing_dict = create_spatial_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
@@ -438,7 +418,7 @@ class TestInitialVerticalInterpolationMethodOverride:
             operand="O",
         )
 
-        result = create_spatial_input_dict(forcing, forcing_file)
+        result = SpatialBlockBuilder(forcing, forcing_file).build()
 
         assert result["interpolationmethod"] == InterpolationMethod.constant
 
@@ -456,7 +436,7 @@ class TestInitialVerticalInterpolationMethodOverride:
             operand="O",
         )
 
-        result = create_spatial_input_dict(forcing, forcing_file)
+        result = SpatialBlockBuilder(forcing, forcing_file).build()
 
         assert result["interpolationmethod"] == InterpolationMethod.triangulation
 

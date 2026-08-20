@@ -35,6 +35,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
+from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -43,9 +44,10 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     SOURCESINK_SALINITY_IN_BC,
     SOURCESINK_TEMP_IN_BC,
+    convert_interpolation_data,
     find_temperature_salinity_in_quantities,
+    old_layer_to_target_layer,
     oldfiletype_to_forcing_file_type,
-    create_spatial_input_dict,
 )
 
 
@@ -102,6 +104,121 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
+class SpatialBlockBuilder:
+    """Assemble the constructor dict for a single `Spatial` block.
+
+    A method object for the old-to-new spatial conversion: the source forcing and
+    its resolved data-file path are held as state so the build steps cooperate
+    through `self` (reading `self.forcing`, mutating `self.block`) instead of
+    threading them as parameters. `SpatialConverter.convert` drives it via
+    `SpatialBlockBuilder(forcing, path).build()`.
+    """
+
+    def __init__(self, forcing: ExtOldForcing, new_forcing_path: Path | None):
+        """Capture the source forcing and derive the quantity name and file type.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block being converted.
+            new_forcing_path (Path | None):
+                The path to the forcing data file in the new model.
+        """
+        self.forcing = forcing
+        self.new_forcing_path = new_forcing_path
+        self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
+            forcing.quantity
+        )
+        self.file_type = oldfiletype_to_forcing_file_type(forcing.filetype)
+        self.block: Dict[str, Any] = {}
+
+    def build(self) -> Dict[str, Any]:
+        """Assemble and return the `Spatial` constructor dict.
+
+        Returns:
+            Dict[str, Any]: the keyword arguments for the `Spatial` constructor.
+        """
+        self._require_no_sourcemask()
+        self._set_representation()
+        self._set_common_fields()
+        return self.block
+
+    def _require_no_sourcemask(self):
+        """Reject the removed `SOURCEMASK` attribute, which has no new equivalent."""
+        if self.forcing.sourcemask != DiskOnlyFileModel(None):
+            raise ValueError(
+                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+                f"convert this input. Encountered for QUANTITY="
+                f"{self.forcing.quantity} and FILENAME={self.forcing.filename}."
+            )
+
+    def _set_representation(self):
+        """Populate `self.block` with the spatial representation for this forcing.
+
+        There are three mutually exclusive representations:
+
+        - A polygon quantity (except `initialvertical*`) becomes a constant value
+          masked by the polygon: `targetMaskFile=*.pol` + `dataValue` +
+          `interpolationMethod=constant` (the idiom documented on `Spatial.dataValue`).
+        - An `initialvertical*` polygon keeps the polygon as its `dataFile`.
+        - Any other quantity is a gridded data file, carrying the interpolation /
+          averaging settings, operand, extrapolation toggle and tracer fields.
+
+        UNST-9218 / GitHub #1104: `initialvertical*` quantities must always use
+        `interpolationMethod=constant`; the old `METHOD` value (typically 3 →
+        linearSpaceTime) is meaningless for vertical profiles, since the kernel
+        always applies constant (horizontal) + linear (vertical) interpolation.
+        """
+        is_polygon = self.file_type == DataFileType.polygon
+        is_initial_vertical = self.quantity_name.startswith("initialvertical")
+        if is_polygon and not is_initial_vertical:
+            self.block = {
+                "quantity": self.quantity_name,
+                "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
+                "datavalue": self.forcing.value,
+                "operand": self.forcing.operand,
+                "interpolationmethod": InterpolationMethod.constant,
+            }
+        elif is_polygon:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+                "interpolationmethod": InterpolationMethod.constant,
+                "operand": self.forcing.operand,
+            }
+        else:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+            }
+            self.block = convert_interpolation_data(self.forcing, self.block)
+            if is_initial_vertical:
+                self.block["interpolationmethod"] = InterpolationMethod.constant
+            self.block["operand"] = self.forcing.operand
+            self.block["extrapolationallowed"] = bool(
+                self.forcing.extrapolation_method
+            )
+            self._add_tracers()
+
+    def _add_tracers(self):
+        """Copy any `tracer*` fields set on the forcing into the block unchanged."""
+        for key, value in self.forcing.model_dump().items():
+            if key.lower().startswith("tracer") and value is not None:
+                self.block[key] = value
+
+    def _set_common_fields(self):
+        """Add the fields shared by every representation: variable name and layer.
+
+        `VARNAME` maps to `dataVariableName`; the old `LAYER` maps to the new
+        `targetLayer` (`-1` → bottom, `0` → all, positive kept).
+        """
+        if self.forcing.varname is not None:
+            self.block["datavariablename"] = self.forcing.varname
+        if self.forcing.layer is not None:
+            self.block["targetlayer"] = old_layer_to_target_layer(self.forcing.layer)
+
+
 class SpatialConverter(BaseConverter):
     """Spatial quantities Converter."""
 
@@ -138,7 +255,7 @@ class SpatialConverter(BaseConverter):
             ValueError: If the forcing block contains a quantity that is not
             supported by the converter, a ValueError is raised.
         """
-        data = create_spatial_input_dict(forcing, new_forcing_path)
+        data = SpatialBlockBuilder(forcing, new_forcing_path).build()
 
         try:
             spatial_block = Spatial(**data)
