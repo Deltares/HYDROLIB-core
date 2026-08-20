@@ -17,7 +17,7 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
 
@@ -27,15 +27,15 @@ jobs:
           brew install libomp
 
       - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@main
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
         with:
           python-version: ${{ matrix.python-version }}
-          poetry-version: 2.3.3
+          version: 2.3.3
 
       - name: Test with pytest
         run: |
           poetry run pytest --cov . --cov-report xml:coverage-reports/coverage-hydrolib-core.xml --junitxml=xunit-reports/xunit-result-hydrolib-core.xml
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac
         env:
           CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}

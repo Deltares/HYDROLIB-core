@@ -27,8 +27,8 @@ from hydrolib.core.dflowfm.inifield.models import (
     InterpolationMethod,
 )
 
-SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
-SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
+SOURCESINK_SALINITY_IN_BC = "sourcesink_salinity"
+SOURCESINK_TEMP_IN_BC = "sourcesink_temperature"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 
@@ -309,12 +309,22 @@ def create_spatial_input_dict(
             f"{forcing.quantity} and FILENAME={forcing.filename}."
         )
 
-    if file_type == DataFileType.polygon:
+    if file_type == DataFileType.polygon and not quantity_name.startswith("initialvertical"):
         block_data = {
             "quantity": quantity_name,
             "targetmaskfile": DiskOnlyFileModel(new_forcing_path),
             "datavalue": forcing.value,
             "operand": forcing.operand,
+            "interpolationmethod": InterpolationMethod.constant
+        }
+
+    elif file_type == DataFileType.polygon:
+        block_data = {
+            "quantity": quantity_name,
+            "datafile": DiskOnlyFileModel(new_forcing_path),
+            "datafiletype": file_type,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": forcing.operand
         }
     else:
         block_data = {
@@ -432,17 +442,17 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         ```python
         >>> from hydrolib.tools.extforce_convert.utils import find_temperature_salinity_in_quantities
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3, 'sourcesink_temperaturedelta': 4})
+        OrderedDict({'sourcesink_salinity': 3, 'sourcesink_temperature': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({'sourcesink_temperaturedelta': 3})
+        OrderedDict({'sourcesink_temperature': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3})
+        OrderedDict({'sourcesink_salinity': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3})
+        OrderedDict({'sourcesink_salinity': 3})
 
         ```
 
