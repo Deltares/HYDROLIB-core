@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3998,7 +3998,7 @@ You're not viewing the latest release version.
 <li><code>hydrolib.core.dflowfm.inifield.models.IniFieldModel</code> (output): Destination model for initial/parameter fields.</li>
 <li><code>hydrolib.core.dflowfm.structure.models.StructureModel</code> (output): Destination model for structures.</li>
 <li><code>hydrolib.tools.extforce_convert.converters.ConverterFactory</code> (strategy selection): Creates the correct converter class for a given quantity.</li>
-<li><code>BoundaryConditionConverter</code>, <code>SourceSinkConverter</code>, <code>InitialConditionConverter</code>, <code>ParametersConverter</code> are concrete converters used depending on the quantity.</li>
+<li><code>BoundaryConditionConverter</code>, <code>SourceSinkConverter</code>, <code>SpatialConverter</code> are concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are all routed to <code>SpatialConverter</code> (producing <code>[Spatial]</code> blocks).</li>
 <li><code>hydrolib.tools.extforce_convert.mdu_parser.MDUParser</code> (optional): Reads MDU metadata (e.g., <code>refdate</code>, temperature/salinity flags) and updates references to new files.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.CONVERTER_DATA</code> (capabilities): Reports unsupported quantities.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing</code> (model builder): Ensures destination models exist (new or from existing files) with minimal recursion.</li>
