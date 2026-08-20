@@ -4216,7 +4216,7 @@ The value sets the percentage of the total set that is to be included.</p>
           <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dflowfm.extold.models.ExtOldForcing.layer">layer</span></code></td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<a class="autorefs autorefs-internal" title="Layer (hydrolib.core.dflowfm.extold.models.Layer)" href="#hydrolib.core.dflowfm.extold.models.Layer">Layer</a>, <span title="pydantic.PositiveInt">PositiveInt</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4617,9 +4617,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="normal">555</span>
 <span class="normal">556</span>
 <span class="normal">557</span>
-<span class="normal">558</span>
-<span class="normal">559</span>
-<span class="normal">560</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">558</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class holding the external forcing values.</span>
 
 <span class="sd">    This class is used to represent the external forcing values in the D-Flow FM model.</span>
@@ -4693,7 +4691,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="sd">            The area for sources and sinks.</span>
 <span class="sd">        nummin (Optional[int]):</span>
 <span class="sd">            The minimum required number of source data points in each target cell.</span>
-<span class="sd">        layer (Optional[int]):</span>
+<span class="sd">        layer (Optional[Union[Layer, PositiveInt]]):</span>
 <span class="sd">            The target layer for the data: -1 (bottom), 0 (all), or a positive layer</span>
 <span class="sd">            number. Converts to the new Spatial `targetLayer` field.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4702,7 +4700,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
     <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PolyFile</span><span class="p">,</span> <span class="n">TimModel</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span>
     <span class="p">)</span>
-    <span class="n">varname</span><span class="p">:</span> <span class="nb">str</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VARNAME&quot;</span><span class="p">)</span>
+    <span class="n">varname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VARNAME&quot;</span><span class="p">)</span>
     <span class="n">sourcemask</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;SOURCEMASK&quot;</span>
     <span class="p">)</span>
@@ -4712,24 +4710,22 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;EXTRAPOLATION_METHOD&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">maxsearchradius</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;MAXSEARCHRADIUS&quot;</span><span class="p">)</span>
+    <span class="n">maxsearchradius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;MAXSEARCHRADIUS&quot;</span><span class="p">)</span>
     <span class="n">operand</span><span class="p">:</span> <span class="n">Operand</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;OPERAND&quot;</span><span class="p">)</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VALUE&quot;</span><span class="p">)</span>
-    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FACTOR&quot;</span><span class="p">)</span>
-    <span class="n">ifrctyp</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;IFRCTYP&quot;</span><span class="p">)</span>
-    <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AVERAGINGTYPE&quot;</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VALUE&quot;</span><span class="p">)</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FACTOR&quot;</span><span class="p">)</span>
+    <span class="n">ifrctyp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;IFRCTYP&quot;</span><span class="p">)</span>
+    <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AVERAGINGTYPE&quot;</span><span class="p">)</span>
 
-    <span class="n">relativesearchcellsize</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;RELATIVESEARCHCELLSIZE&quot;</span>
-    <span class="p">)</span>
-    <span class="n">extrapoltol</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;EXTRAPOLTOL&quot;</span><span class="p">)</span>
-    <span class="n">percentileminmax</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;PERCENTILEMINMAX&quot;</span><span class="p">)</span>
-    <span class="n">area</span><span class="p">:</span> <span class="nb">float</span><span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AREA&quot;</span><span class="p">)</span>
+    <span class="n">relativesearchcellsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;RELATIVESEARCHCELLSIZE&quot;</span><span class="p">)</span>
+    <span class="n">extrapoltol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;EXTRAPOLTOL&quot;</span><span class="p">)</span>
+    <span class="n">percentileminmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;PERCENTILEMINMAX&quot;</span><span class="p">)</span>
+    <span class="n">area</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AREA&quot;</span><span class="p">)</span>
     <span class="n">nummin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;NUMMIN&quot;</span><span class="p">)</span>
     <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span> <span class="o">|</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;LAYER&quot;</span><span class="p">)</span>
 
-    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERFALLVELOCITY&quot;</span><span class="p">)</span>
-    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERDECAYTIME&quot;</span><span class="p">)</span>
+    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERFALLVELOCITY&quot;</span><span class="p">)</span>
+    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERDECAYTIME&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -5054,7 +5050,9 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">506</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
@@ -5088,9 +5086,7 @@ dictionary.</p>
 <span class="normal">537</span>
 <span class="normal">538</span>
 <span class="normal">539</span>
-<span class="normal">540</span>
-<span class="normal">541</span>
-<span class="normal">542</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">540</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
@@ -5153,7 +5149,9 @@ dictionary.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
@@ -5169,9 +5167,7 @@ dictionary.</p>
 <span class="normal">306</span>
 <span class="normal">307</span>
 <span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
@@ -5288,7 +5284,9 @@ Returns the full quantity string if valid, otherwise None.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">313</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
 <span class="normal">316</span>
@@ -5313,9 +5311,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity_prefix</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">lower_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -5422,7 +5418,9 @@ Returns the full quantity string if valid, otherwise None.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/extold/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">563</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">561</span>
+<span class="normal">562</span>
+<span class="normal">563</span>
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
@@ -5457,9 +5455,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="normal">595</span>
 <span class="normal">596</span>
 <span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">598</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (old format).</span>
 
