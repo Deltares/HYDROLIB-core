@@ -337,3 +337,35 @@ class TestSpatialTargetLayerConversion:
         block = SpatialConverter().convert(forcing, forcing.filename.filepath)
 
         assert block.targetlayer is None
+
+
+class TestSpatialVariableNameConversion:
+    """The old VARNAME maps to the new Spatial dataVariableName
+    (VARNAME -> forcingVariableName -> dataVariableName, UNST-9273 + manual)."""
+
+    def test_varname_maps_to_datavariablename(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            varname="wind_u",
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.datavariablename == "wind_u"
+
+    def test_no_varname_leaves_datavariablename_unset(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.datavariablename is None

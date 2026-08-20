@@ -363,6 +363,9 @@ def create_spatial_input_dict(
             if key.lower().startswith("tracer") and value is not None:
                 block_data[key] = value
 
+    if forcing.varname is not None:
+        block_data["datavariablename"] = forcing.varname
+
     if forcing.layer is not None:
         block_data["targetlayer"] = old_layer_to_target_layer(forcing.layer)
 
