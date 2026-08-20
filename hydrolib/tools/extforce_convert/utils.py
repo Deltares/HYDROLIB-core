@@ -349,6 +349,20 @@ def create_spatial_input_dict(
             if key.lower().startswith("tracer") and value is not None:
                 block_data[key] = value
 
+    if forcing.layer is not None:
+        layer = forcing.layer
+        if layer == -1:
+            block_data["targetlayer"] = "bottom"
+        elif layer == 0:
+            block_data["targetlayer"] = "all"
+        elif layer > 0:
+            block_data["targetlayer"] = str(layer)
+        else:
+            raise ValueError(
+                f"Invalid LAYER value {layer!r} for QUANTITY={forcing.quantity}. "
+                f"Must be -1 (bottom), 0 (all), or a positive integer."
+            )
+
     return block_data
 
 

@@ -11,7 +11,9 @@ from pydantic import (
     ValidationInfo,
     field_validator,
     model_validator,
+    PositiveInt,
 )
+from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
 from hydrolib.core.base.models import (
@@ -41,7 +43,6 @@ from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
     DataFileType,
     InterpolationMethod,
-    AbstractSpatialField,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -58,6 +59,35 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "sedfracbnd",
     "initialsedfrac",
 )
+
+
+class TargetLayer(StrEnum):
+    """The target layer for a `[Spatial]` block with `initialwaqbot` quantities.
+
+    A `[Spatial]` block can target a specific layer, all layers, or the bottom layer.
+    This enum represents the allowed string values.  Positive integer layer numbers
+    (e.g. ``"1"``, ``"2"``) are also accepted via :meth:`_missing_`.
+
+
+    """
+    bottom = "bottom"
+    all = "all"
+
+
+def _ensure_targetlayer_enum(v):
+    """Re-wrap a plain string back into a TargetLayer after Pydantic applies use_enum_values.
+
+    Because BaseModel is configured with ``use_enum_values=True``, Pydantic stores the
+    raw ``.value`` string instead of the enum instance.  This AfterValidator restores
+    the TargetLayer type so that callers can rely on ``isinstance(v, TargetLayer)``.
+    Integers and None are passed through unchanged.
+    """
+    if isinstance(v, str) and not isinstance(v, TargetLayer):
+        try:
+            return TargetLayer(v)
+        except ValueError:
+            pass
+    return v
 
 
 def _coordinate_length(v) -> int:
@@ -769,6 +799,10 @@ class Spatial(INIBasedModel):
             "Only for initialtracer<tracername>. Decay time of the tracer.",
             alias="tracerDecayTime",
         )
+        targetlayer: str | None = Field(
+            "Only for initialwaqbot<name>. The target layer: 'bottom', 'all', or a positive integer.",
+            alias="targetLayer",
+        )
 
     comments: Comments = Comments()
 
@@ -805,6 +839,7 @@ class Spatial(INIBasedModel):
     frictiontype: str | None = Field(None, alias="frictionType")
     tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
+    targetlayer: TargetLayer | PositiveInt | None = Field(None, alias="targetLayer")
 
     @model_validator(mode="before")
     @classmethod
@@ -989,6 +1024,44 @@ class Spatial(INIBasedModel):
     @classmethod
     def validate_operand(cls, v):
         return enum_value_parser(v, Operand)
+
+    @field_validator("targetlayer", mode="before")
+    @classmethod
+    def validate_targetlayer(cls, v):
+        """Coerce a raw ``targetLayer`` value to a :class:`TargetLayer` enum member or a positive :class:`int`.
+
+        Accepts the following inputs (all string comparisons are case-insensitive):
+
+        * ``"bottom"`` → :attr:`TargetLayer.bottom`
+        * ``"all"``    → :attr:`TargetLayer.all`
+        * A string representation of a positive integer (e.g. ``"1"``, ``"2"``) → ``int``
+        * An already-resolved :class:`TargetLayer` instance → returned unchanged
+        * ``None`` → returned unchanged (field is optional)
+
+        Args:
+            v: The raw field value supplied by the user or parsed from an INI file.
+
+        Returns:
+            TargetLayer | int | None: The validated and coerced value.
+
+        Raises:
+            ValueError: When ``v`` is not ``None``, not a :class:`TargetLayer`, and
+                cannot be interpreted as ``"bottom"``, ``"all"``, or a positive integer.
+        """
+        processed_v = v
+        if v is not None and not isinstance(v, TargetLayer):
+            str_input = str(v)
+            if str_input.lower() in (TargetLayer.bottom.value, TargetLayer.all.value):
+                processed_v = TargetLayer(str_input.lower())
+            elif str_input.isdigit() and int(str_input) > 0:
+                processed_v = int(str_input)
+            else:
+                raise ValueError(
+                    "TargetLayer must be eit'bottom', 'all' or a positive integer but "
+                    f"got '{v}'."
+                )
+        return processed_v
+
 
 class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
