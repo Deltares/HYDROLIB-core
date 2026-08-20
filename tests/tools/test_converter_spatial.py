@@ -5,7 +5,7 @@ from pathlib import Path
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Operand
-from hydrolib.core.dflowfm.ext.models import Spatial
+from hydrolib.core.dflowfm.ext.models import Spatial, TargetLayer
 
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -300,3 +300,40 @@ class TestSpatialExtrapolationConversion:
         block = SpatialConverter().convert(forcing, forcing.filename.filepath)
 
         assert block.extrapolationallowed is expected
+
+
+class TestSpatialTargetLayerConversion:
+    """The old external-forcing LAYER value maps to the new Spatial targetLayer:
+    -1 -> bottom, 0 -> all, a positive integer stays unchanged
+    (UNST-9273, GitHub #1166 / #1167)."""
+
+    @pytest.mark.parametrize(
+        "layer, expected",
+        [(-1, TargetLayer.bottom), (0, TargetLayer.all), (5, 5)],
+    )
+    def test_layer_maps_to_targetlayer(self, layer, expected):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            layer=layer,
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.targetlayer == expected
+
+    def test_no_layer_leaves_targetlayer_unset(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.targetlayer is None
