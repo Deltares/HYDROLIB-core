@@ -249,7 +249,7 @@ class ExtOldForcing(BaseModel):
             The area for sources and sinks.
         nummin (Optional[int]):
             The minimum required number of source data points in each target cell.
-        layer (Optional[int]):
+        layer (Optional[Union[Layer, PositiveInt]]):
             The target layer for the data: -1 (bottom), 0 (all), or a positive layer
             number. Converts to the new Spatial `targetLayer` field.
     """
@@ -258,7 +258,7 @@ class ExtOldForcing(BaseModel):
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
     )
-    varname: str| None = Field(None, alias="VARNAME")
+    varname: str | None = Field(None, alias="VARNAME")
     sourcemask: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK"
     )
@@ -268,24 +268,22 @@ class ExtOldForcing(BaseModel):
         None, alias="EXTRAPOLATION_METHOD"
     )
 
-    maxsearchradius: float| None = Field(None, alias="MAXSEARCHRADIUS")
+    maxsearchradius: float | None = Field(None, alias="MAXSEARCHRADIUS")
     operand: Operand = Field(alias="OPERAND")
-    value: float| None = Field(None, alias="VALUE")
-    factor: float| None = Field(None, alias="FACTOR")
-    ifrctyp: float| None = Field(None, alias="IFRCTYP")
-    averagingtype: float| None = Field(None, alias="AVERAGINGTYPE")
+    value: float | None = Field(None, alias="VALUE")
+    factor: float | None = Field(None, alias="FACTOR")
+    ifrctyp: float | None = Field(None, alias="IFRCTYP")
+    averagingtype: float | None = Field(None, alias="AVERAGINGTYPE")
 
-    relativesearchcellsize: float| None = Field(
-        None, alias="RELATIVESEARCHCELLSIZE"
-    )
-    extrapoltol: float| None = Field(None, alias="EXTRAPOLTOL")
-    percentileminmax: float| None = Field(None, alias="PERCENTILEMINMAX")
-    area: float| None = Field(None, alias="AREA")
+    relativesearchcellsize: float | None = Field(None, alias="RELATIVESEARCHCELLSIZE")
+    extrapoltol: float | None = Field(None, alias="EXTRAPOLTOL")
+    percentileminmax: float | None = Field(None, alias="PERCENTILEMINMAX")
+    area: float | None = Field(None, alias="AREA")
     nummin: int | None = Field(None, alias="NUMMIN")
     layer: Layer | PositiveInt | None = Field(None, alias="LAYER")
 
-    tracerfallvelocity: Optional[float] = Field(None, alias="TRACERFALLVELOCITY")
-    tracerdecaytime: Optional[float] = Field(None, alias="TRACERDECAYTIME")
+    tracerfallvelocity: float | None = Field(None, alias="TRACERFALLVELOCITY")
+    tracerdecaytime: float | None = Field(None, alias="TRACERDECAYTIME")
 
     def is_intermediate_link(self) -> bool:
         return True

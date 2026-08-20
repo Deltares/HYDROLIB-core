@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
     ExtOldModel,
     ExtOldQuantity,
+    Layer,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -280,7 +281,7 @@ def path_relative_to_parent(
     return forcing_path
 
 
-def old_layer_to_target_layer(layer: int):
+def old_layer_to_target_layer(layer: Layer | int) -> TargetLayer | int:
     """Map an old external-forcing LAYER value to the new Spatial targetLayer.
 
     `-1` becomes `bottom`, `0` becomes `all`, and a positive layer number is
