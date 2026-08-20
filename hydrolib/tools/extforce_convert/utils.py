@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
+from hydrolib.core.base.models import FileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
