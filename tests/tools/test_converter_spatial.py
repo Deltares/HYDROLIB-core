@@ -271,3 +271,32 @@ class TestSpatialE2E:
         assert len(inifield_model.parameter) == 0
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
+
+
+class TestSpatialExtrapolationConversion:
+    """The old external-forcing EXTRAPOLATION_METHOD (0/1) must be carried into the
+    new Spatial block as extrapolationAllowed (bool). Regression test: the converter
+    previously read a non-existent `forcing.extrapolation` attribute and wrote the
+    wrong key, so the setting was silently dropped."""
+
+    @pytest.mark.parametrize(
+        "extrapolation_method, expected",
+        [(1, True), (0, False), (None, False)],
+    )
+    def test_extrapolation_method_maps_to_extrapolationallowed(
+        self, extrapolation_method, expected
+    ):
+        kwargs = dict(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+        if extrapolation_method is not None:
+            kwargs["extrapolation_method"] = extrapolation_method
+        forcing = ExtOldForcing(**kwargs)
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.extrapolationallowed is expected

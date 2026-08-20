@@ -343,8 +343,7 @@ def create_spatial_input_dict(
 
         block_data["operand"] = forcing.operand
 
-        if hasattr(forcing, "extrapolation"):
-            block_data["extrapolationmethod"] = forcing.extrapolation == 1
+        block_data["extrapolationallowed"] = bool(forcing.extrapolation_method)
         for key, value in forcing.model_dump().items():
             if key.lower().startswith("tracer") and value is not None:
                 block_data[key] = value
