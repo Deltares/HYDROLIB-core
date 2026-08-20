@@ -11,6 +11,7 @@ from pydantic import (
     ValidationInfo,
     field_validator,
     model_validator,
+    PositiveInt,
 )
 from strenum import StrEnum
 
@@ -66,30 +67,11 @@ class TargetLayer(StrEnum):
     A `[Spatial]` block can target a specific layer, all layers, or the bottom layer.
     This enum represents the allowed string values.  Positive integer layer numbers
     (e.g. ``"1"``, ``"2"``) are also accepted via :meth:`_missing_`.
+
+
     """
-
     bottom = "bottom"
-    """Target the bottom layer (equivalent to LAYER=-1 in the old format)."""
-
     all = "all"
-    """Target all layers (equivalent to LAYER=0 in the old format)."""
-
-    @classmethod
-    def _missing_(cls, value):
-        """Accept positive integer strings as layer numbers."""
-        if value is not None:
-            try:
-                int_val = int(str(value))
-                if int_val > 0:
-                    member = str.__new__(cls, str(int_val))
-                    member._value_ = str(int_val)
-                    return member
-            except (ValueError, TypeError):
-                raise ValueError(
-                    f"{value!r} is not a valid TargetLayer. "
-                    f"Expected 'bottom', 'all', or a positive integer."
-                )
-        return None
 
 
 def _coordinate_length(v) -> int:
@@ -801,7 +783,7 @@ class Spatial(INIBasedModel):
             "Only for initialtracer<tracername>. Decay time of the tracer.",
             alias="tracerDecayTime",
         )
-        targetlayer: Optional[str] = Field(
+        targetlayer: str | None = Field(
             "Only for initialwaqbot<name>. The target layer: 'bottom', 'all', or a positive integer.",
             alias="targetLayer",
         )
@@ -841,7 +823,7 @@ class Spatial(INIBasedModel):
     frictiontype: str | None = Field(None, alias="frictionType")
     tracerfallvelocity: float | None = Field(None, alias="tracerFallVelocity")
     tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
-    targetlayer: TargetLayer | None = Field(None, alias="targetLayer")
+    targetlayer: TargetLayer | PositiveInt | None = Field(None, alias="targetLayer")
 
     @model_validator(mode="before")
     @classmethod
@@ -1029,10 +1011,40 @@ class Spatial(INIBasedModel):
 
     @field_validator("targetlayer", mode="before")
     @classmethod
-    def targetlayer_validator(cls, v):
-        if v is None:
-            return v
-        return TargetLayer(str(v))
+    def validate_targetlayer(cls, v):
+        """Coerce a raw ``targetLayer`` value to a :class:`TargetLayer` enum member or a positive :class:`int`.
+
+        Accepts the following inputs (all string comparisons are case-insensitive):
+
+        * ``"bottom"`` → :attr:`TargetLayer.bottom`
+        * ``"all"``    → :attr:`TargetLayer.all`
+        * A string representation of a positive integer (e.g. ``"1"``, ``"2"``) → ``int``
+        * An already-resolved :class:`TargetLayer` instance → returned unchanged
+        * ``None`` → returned unchanged (field is optional)
+
+        Args:
+            v: The raw field value supplied by the user or parsed from an INI file.
+
+        Returns:
+            TargetLayer | int | None: The validated and coerced value.
+
+        Raises:
+            ValueError: When ``v`` is not ``None``, not a :class:`TargetLayer`, and
+                cannot be interpreted as ``"bottom"``, ``"all"``, or a positive integer.
+        """
+        processed_v = v
+        if v is not None and not isinstance(v, TargetLayer):
+            str_input = str(v)
+            if str_input.lower() in (TargetLayer.bottom.value, TargetLayer.all.value):
+                processed_v = TargetLayer(str_input.lower())
+            elif str_input.isdigit() and int(str_input) > 0:
+                processed_v = int(str_input)
+            else:
+                raise ValueError(
+                    "TargetLayer must be eit'bottom', 'all' or a positive integer but "
+                    f"got '{v}'."
+                )
+        return processed_v
 
 
 class ExtGeneral(INIGeneral):
