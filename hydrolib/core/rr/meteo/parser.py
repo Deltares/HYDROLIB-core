@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, Iterator, List, Tuple
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
+
 
 class BuiEventParser:
     """A parser for the precipitation event section within a .bui file.
@@ -175,7 +177,7 @@ class BuiParser:
 
         bui_lines = [
             line
-            for line in filepath.read_text(encoding="utf8").splitlines()
+            for line in open_file_with_fallback_encoding(filepath).splitlines()
             if not line.startswith("*")
         ]
         number_of_stations = int(bui_lines[1])

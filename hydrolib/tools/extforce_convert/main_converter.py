@@ -1,5 +1,7 @@
 """Converter for old external forcing files to the new format."""
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
@@ -369,47 +371,52 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink]:
+    def _resolve_forcing_path(self, forcing) -> Path:
+        """Resolve the datafile path for an initial field or parameter block.
+
+        Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
+        relative to the new initial field file when required.
+
+        Args:
+            forcing: The old forcing block whose filename must be resolved.
+
+        Returns:
+            Path: The path to store in the `datafile` field of the new block.
+        """
+        return path_relative_to_parent(
+            forcing,
+            self.inifield_model.filepath,
+            self.extold_model.filepath,
+            self.mdu_parser,
+        )
+
+    def _convert_forcing(self, forcing) -> Boundary | Lateral | Meteo | SourceSink:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
             - The SourceSink converter needs the salinity and temperature from the FM model.
             - The BoundaryCondition converter needs the start time from the FM model.
         """
-        converter_class = ConverterFactory.create_converter(forcing.quantity)
-        converter_class.root_dir = self.root_dir
+        converter_class = ConverterFactory.create_converter(
+            forcing.quantity, root_dir=self.root_dir, mdu_parser=self.mdu_parser
+        )
 
         # only the SourceSink converter needs the quantities' list
         if isinstance(converter_class, SourceSinkConverter):
-
-            if self.temperature_salinity_data is None:
-                raise ValueError(
-                    "FM model is required to convert SourcesSink quantities."
-                )
-            else:
-                temp_salinity_mdu = self.temperature_salinity_data
-                start_time = self.temperature_salinity_data.get("refdate")
-
-            quantities = self.extold_model.quantities
+            source_sink_quantities = converter_class.filter_source_sink_quantities(
+                self.extold_model.quantities
+            )
             new_quantity_block = converter_class.convert(
-                forcing, quantities, start_time=start_time, **temp_salinity_mdu
+                forcing, source_sink_quantities
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
-            if self.temperature_salinity_data is None:
-                raise ValueError("FM model is required to convert Boundary conditions.")
-            else:
-                start_time = self.temperature_salinity_data.get("refdate")
-                new_quantity_block = converter_class.convert(forcing, start_time)
+            new_quantity_block = converter_class.convert(forcing)
         elif isinstance(
             converter_class, (InitialConditionConverter, ParametersConverter)
         ):
-            forcing_path = path_relative_to_parent(
-                forcing,
-                self.inifield_model.filepath,
-                self.extold_model.filepath,
-                self.mdu_parser,
+            new_quantity_block = converter_class.convert(
+                forcing, self._resolve_forcing_path(forcing)
             )
-            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 
