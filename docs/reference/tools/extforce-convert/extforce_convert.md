@@ -30,7 +30,7 @@ Key collaborators and how they’re used:
 - `hydrolib.core.dflowfm.inifield.models.IniFieldModel` (output): Destination model for initial/parameter fields.
 - `hydrolib.core.dflowfm.structure.models.StructureModel` (output): Destination model for structures.
 - `hydrolib.tools.extforce_convert.converters.ConverterFactory` (strategy selection): Creates the correct converter class for a given quantity.
-  - `BoundaryConditionConverter`, `SourceSinkConverter`, `InitialConditionConverter`, `ParametersConverter` are concrete converters used depending on the quantity.
+  - `BoundaryConditionConverter`, `SourceSinkConverter`, `SpatialConverter` are concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are all routed to `SpatialConverter` (producing `[Spatial]` blocks).
 - `hydrolib.tools.extforce_convert.mdu_parser.MDUParser` (optional): Reads MDU metadata (e.g., `refdate`, temperature/salinity flags) and updates references to new files.
 - `hydrolib.tools.extforce_convert.utils.CONVERTER_DATA` (capabilities): Reports unsupported quantities.
 - `hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing` (model builder): Ensures destination models exist (new or from existing files) with minimal recursion.

@@ -16,8 +16,13 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     SourceSink,
+    Spatial
 )
-from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldInitialConditionQuantity,
+    ExtOldModel,
+    ExtOldParametersQuantity,
+)
 from hydrolib.core.dflowfm.inifield.models import (
     IniFieldModel,
     InitialField,
@@ -27,9 +32,8 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
-    InitialConditionConverter,
-    ParametersConverter,
     SourceSinkConverter,
+    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -298,6 +302,7 @@ class ExternalForcingConverter:
             Lateral: (self.ext_model, "lateral"),
             SourceSink: (self.ext_model, "sourcesink"),
             Meteo: (self.ext_model, "meteo"),
+            Spatial: (self.ext_model, "spatial"),
             InitialField: (self.inifield_model, "initial"),
             ParameterField: (self.inifield_model, "parameter"),
             Structure: (self.structure_model, "structure"),
@@ -371,7 +376,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _resolve_forcing_path(self, forcing) -> Path:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
 
         Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
@@ -385,7 +390,7 @@ class ExternalForcingConverter:
         """
         return path_relative_to_parent(
             forcing,
-            self.inifield_model.filepath,
+            ref_path,
             self.extold_model.filepath,
             self.mdu_parser,
         )
@@ -412,11 +417,19 @@ class ExternalForcingConverter:
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)
         elif isinstance(
-            converter_class, (InitialConditionConverter, ParametersConverter)
+            converter_class, SpatialConverter
         ):
-            new_quantity_block = converter_class.convert(
-                forcing, self._resolve_forcing_path(forcing)
-            )
+            if ConverterFactory.contains(
+                    ExtOldInitialConditionQuantity, forcing.quantity
+            ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
+                # Initial conditions and parameters are written to the inifield model file
+                ref_path = self.inifield_model.filepath
+            else:
+                # Meteo quantities are written to the ext model file
+                ref_path = self.ext_model.filepath
+
+            forcing_path = self._resolve_forcing_path(forcing, ref_path)
+            new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
 
