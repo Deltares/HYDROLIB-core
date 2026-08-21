@@ -33,8 +33,17 @@ from hydrolib.core.dflowfm.substance.serializer import (
 class SubstanceType(StrEnum):
     """Enum class containing the valid substance types in a .sub file.
 
-    A substance is either actively computed by the water-quality engine
-    (``active``) or carried along without reacting (``inactive``).
+    A substance is either transported by the flow of water (``active``) or
+    not transported by it, e.g. part of the sediment (``inactive``). Both
+    active and inactive substances can be affected by water-quality processes.
+
+    Attributes:
+        Active (str):
+            Substance that can be transported by the flow of water, i.e.
+            dissolved and particulate material in the water column.
+        Inactive (str):
+            Substance that cannot be transported by the flow of water, e.g.
+            substances that are part of the sediment.
 
     Examples:
         - Access enum member values:
@@ -56,10 +65,7 @@ class SubstanceType(StrEnum):
     """
 
     Active = "active"
-    """str: Substance is actively computed by the water-quality engine."""
-
     Inactive = "inactive"
-    """str: Substance is carried along without reacting."""
 
 
 class Substance(BaseModel):
@@ -120,11 +126,29 @@ class Substance(BaseModel):
         SubstanceModel: Top-level model that holds a list of substances.
     """
 
-    name: str = Field(...)
-    description: str = Field(...)
-    type: SubstanceType = Field(default=SubstanceType.Active)
-    concentration_unit: str
-    waste_load_unit: str | None = Field(default="-")
+    name: str = Field(
+        ...,
+        description="Substance identifier as it appears in the .sub file (a D-Water Quality state variable).",
+    )
+    description: str = Field(
+        ...,
+        description="Human-readable description of the substance.",
+    )
+    type: SubstanceType = Field(
+        default=SubstanceType.Active,
+        description=(
+            "Whether the substance is active (transported by the flow of water) "
+            "or inactive (not transported, e.g. part of the sediment)."
+        ),
+    )
+    concentration_unit: str = Field(
+        ...,
+        description="Unit string for the substance concentration, e.g. '(g/m3)'.",
+    )
+    waste_load_unit: str | None = Field(
+        default="-",
+        description="Unit string for waste loads. Defaults to '-' (dimensionless).",
+    )
 
     def is_active(self) -> bool:
         """Return whether this substance is actively computed.
@@ -241,11 +265,14 @@ class Output(BaseModel):
         SubstanceModel: Top-level model that holds a list of outputs.
     """
 
-    name: str = Field(...)
-    """str: Output variable identifier."""
-
-    description: str = Field(...)
-    """str: Human-readable description."""
+    name: str = Field(
+        ...,
+        description="Output variable identifier.",
+    )
+    description: str = Field(
+        ...,
+        description="Human-readable description of the output variable.",
+    )
 
 
 class ActiveProcess(BaseModel):
@@ -273,11 +300,14 @@ class ActiveProcess(BaseModel):
         ActiveProcesses: Container that holds a list of ActiveProcess entries.
     """
 
-    name: str = Field(...)
-    """str: Process identifier."""
-
-    description: str = Field(...)
-    """str: Human-readable description."""
+    name: str = Field(
+        ...,
+        description="Process identifier (e.g. 'RearOXY'), a reserved character-string ID from the process library.",
+    )
+    description: str = Field(
+        ...,
+        description="Human-readable description of the process (e.g. 'Reaeration of oxygen').",
+    )
 
 
 class ActiveProcesses(BaseModel):
@@ -321,7 +351,13 @@ class ActiveProcesses(BaseModel):
         SubstanceModel: Top-level model containing this block.
     """
 
-    processes: list[ActiveProcess] = Field(default_factory=list)
+    processes: list[ActiveProcess] = Field(
+        default_factory=list,
+        description=(
+            "List of active water-quality process entries. Empty when no "
+            "processes are defined, in which case the block is omitted on serialization."
+        ),
+    )
 
 
 class SubstanceModel(ParsableFileModel):
@@ -381,11 +417,26 @@ class SubstanceModel(ParsableFileModel):
         - `D-Flow FM User Manual <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf>`_
     """
 
-    serializer_config: SubstanceSerializerConfig = SubstanceSerializerConfig()
-    substances: list[Substance] = Field(default_factory=list)
-    parameters: list[Parameter] = Field(default_factory=list)
-    outputs: list[Output] = Field(default_factory=list)
-    active_processes: ActiveProcesses = Field(default_factory=ActiveProcesses)
+    serializer_config: SubstanceSerializerConfig = Field(
+        default=SubstanceSerializerConfig(),
+        description="Configuration controlling float formatting when writing the .sub file.",
+    )
+    substances: list[Substance] = Field(
+        default_factory=list,
+        description="Substance definitions (active and/or inactive).",
+    )
+    parameters: list[Parameter] = Field(
+        default_factory=list,
+        description="Process parameter definitions with numeric values.",
+    )
+    outputs: list[Output] = Field(
+        default_factory=list,
+        description="Output variable definitions.",
+    )
+    active_processes: ActiveProcesses = Field(
+        default_factory=ActiveProcesses,
+        description="Collection of active water-quality processes.",
+    )
 
     @classmethod
     def _ext(cls) -> str:
