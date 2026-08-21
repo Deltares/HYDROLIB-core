@@ -16,6 +16,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     SourceSink,
+    Spatial
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldInitialConditionQuantity,
