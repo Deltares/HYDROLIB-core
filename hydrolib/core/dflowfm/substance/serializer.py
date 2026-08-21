@@ -6,7 +6,7 @@ dictionary representation produced by
 back into the block-based .sub text format.
 
 Configuration is handled via :class:`SubstanceSerializerConfig`, which
-controls float formatting (default: Fortran-style ``".4E"`` scientific
+controls float formatting (default: Fortran-style `".4E"` scientific
 notation).
 
 See Also:
@@ -27,10 +27,10 @@ class SubstanceSerializerConfig(SerializerConfig):
 
     Attributes:
         float_format (str):
-            Python format specifier for float values. Defaults to ``".4E"``
+            Python format specifier for float values. Defaults to `".4E"`
             which produces Fortran-compatible scientific notation with four
-            decimal places (e.g. ``1.5000E+01``). Set to an empty string
-            to use plain ``str()`` conversion instead.
+            decimal places (e.g. `1.5000E+01`). Set to an empty string
+            to use plain `str()` conversion instead.
 
     Examples:
         - Default configuration uses scientific notation:
@@ -57,13 +57,13 @@ class SubstanceSerializerConfig(SerializerConfig):
     """
 
     float_format: str = ".4E"
-    """str: Python format specifier for float values. Defaults to ``'.4E'``."""
+    """str: Python format specifier for float values. Defaults to `'.4E'`."""
 
 
 class SubstanceSerializer:
     """Serializer for D-WAQ substance (.sub) files.
 
-    Converts the dictionary produced by ``SubstanceModel.model_dump()`` into
+    Converts the dictionary produced by `SubstanceModel.model_dump()` into
     the block-based .sub text format and writes it to disk. Parent directories
     are created automatically.
 
@@ -121,9 +121,9 @@ class SubstanceSerializer:
 
         Args:
             path (Path): Output file path.
-            data (Dict[str, Any]): Dictionary from ``SubstanceModel.model_dump()``.
-                Expected keys: ``"substances"``, ``"parameters"``,
-                ``"outputs"``, ``"active_processes"``.
+            data (Dict[str, Any]): Dictionary from `SubstanceModel.model_dump()`.
+                Expected keys: `"substances"`, `"parameters"`,
+                `"outputs"`, `"active_processes"`.
             config (SubstanceSerializerConfig): Serializer configuration
                 controlling float formatting.
             save_settings (ModelSaveSettings): General model save settings.
@@ -164,9 +164,9 @@ class SubstanceSerializer:
             end-substance
 
         Args:
-            substance (Dict[str, Any]): Substance dict with keys ``name``,
-                ``type``, ``description``, ``concentration_unit``,
-                ``waste_load_unit``.
+            substance (Dict[str, Any]): Substance dict with keys `name`,
+                `type`, `description`, `concentration_unit`,
+                `waste_load_unit`.
 
         Returns:
             List[str]: Lines for the substance block (without trailing newlines).
@@ -199,11 +199,11 @@ class SubstanceSerializer:
                value          1.5000E+01
             end-parameter
 
-        The value is formatted according to ``config.float_format``.
+        The value is formatted according to `config.float_format`.
 
         Args:
-            parameter (Dict[str, Any]): Parameter dict with keys ``name``,
-                ``description``, ``unit``, ``value``.
+            parameter (Dict[str, Any]): Parameter dict with keys `name`,
+                `description`, `unit`, `value`.
             config (SubstanceSerializerConfig): Serializer configuration.
 
         Returns:
@@ -238,8 +238,8 @@ class SubstanceSerializer:
             end-output
 
         Args:
-            output (Dict[str, Any]): Output dict with keys ``name``,
-                ``description``.
+            output (Dict[str, Any]): Output dict with keys `name`,
+                `description`.
 
         Returns:
             List[str]: Lines for the output block.
@@ -267,7 +267,7 @@ class SubstanceSerializer:
 
         Args:
             processes (List[Dict[str, Any]]): List of process dicts,
-                each with keys ``name`` and ``description``.
+                each with keys `name` and `description`.
 
         Returns:
             List[str]: Lines for the active-processes block.
