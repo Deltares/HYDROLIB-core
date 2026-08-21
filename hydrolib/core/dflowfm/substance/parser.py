@@ -6,13 +6,13 @@ file and returns a dictionary representation suitable for constructing a
 
 The .sub format has four block types:
 
-*   ``substance 'Name' active … end-substance``
-*   ``parameter 'Name' … end-parameter``
-*   ``output 'Name' … end-output``
-*   ``active-processes … end-active-processes``
+*   `substance 'Name' active … end-substance`
+*   `parameter 'Name' … end-parameter`
+*   `output 'Name' … end-output`
+*   `active-processes … end-active-processes`
 
 String values are enclosed in single quotes; numeric values use Fortran
-scientific notation (e.g. ``0.1500E+02``).
+scientific notation (e.g. `0.1500E+02`).
 """
 
 import re
@@ -30,7 +30,7 @@ class SubstanceParser:
 
     The parser reads the file line by line, identifies block-start keywords,
     and delegates to block-specific helpers that consume lines until the
-    corresponding ``end-*`` keyword is found.
+    corresponding `end-*` keyword is found.
 
     All methods are static; no instance state is required.
 
@@ -74,15 +74,15 @@ class SubstanceParser:
         Returns:
             Dict[str, Any]: Dictionary with four keys:
 
-                - ``"substances"`` — list of substance dicts, each with keys
-                  ``name``, ``type``, ``description``, ``concentration_unit``,
-                  ``waste_load_unit``.
-                - ``"parameters"`` — list of parameter dicts, each with keys
-                  ``name``, ``description``, ``unit``, ``value`` (as raw string).
-                - ``"outputs"`` — list of output dicts, each with keys
-                  ``name``, ``description``.
-                - ``"active_processes"`` — dict with a single key ``"processes"``
-                  containing a list of dicts with ``name`` and ``description``.
+                - `"substances"` — list of substance dicts, each with keys
+                  `name`, `type`, `description`, `concentration_unit`,
+                  `waste_load_unit`.
+                - `"parameters"` — list of parameter dicts, each with keys
+                  `name`, `description`, `unit`, `value` (as raw string).
+                - `"outputs"` — list of output dicts, each with keys
+                  `name`, `description`.
+                - `"active_processes"` — dict with a single key `"processes"`
+                  containing a list of dicts with `name` and `description`.
 
         Examples:
             - Parse and count blocks:
@@ -153,7 +153,7 @@ class SubstanceParser:
         """Extract all single-quoted values from a line of text.
 
         Args:
-            text (str): Input text potentially containing ``'quoted'`` values.
+            text (str): Input text potentially containing `'quoted'` values.
 
         Returns:
             List[str]: Ordered list of extracted values (without quotes).
@@ -188,25 +188,25 @@ class SubstanceParser:
     def _parse_substance_block(
         lines: List[str], start: int
     ) -> Tuple[Dict[str, str], int]:
-        """Parse a ``substance … end-substance`` block.
+        """Parse a `substance … end-substance` block.
 
         The opening line has the form::
 
             substance 'Name' active
 
-        Subsequent indented lines carry field values (``description``,
-        ``concentration-unit``, ``waste-load-unit``) until ``end-substance``
+        Subsequent indented lines carry field values (`description`,
+        `concentration-unit`, `waste-load-unit`) until `end-substance`
         is encountered.
 
         Args:
             lines (List[str]): All lines in the file.
-            start (int): Index of the ``substance`` opening line.
+            start (int): Index of the `substance` opening line.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
-                - Parsed substance dict with keys ``name``, ``type``,
-                  ``description``, ``concentration_unit``, ``waste_load_unit``.
+                - Parsed substance dict with keys `name`, `type`,
+                  `description`, `concentration_unit`, `waste_load_unit`.
                 - Index of the next line after the block.
         """
         header = lines[start].strip()
@@ -249,20 +249,20 @@ class SubstanceParser:
     def _parse_parameter_block(
         lines: List[str], start: int
     ) -> Tuple[Dict[str, str], int]:
-        """Parse a ``parameter … end-parameter`` block.
+        """Parse a `parameter … end-parameter` block.
 
-        The opening line has the form ``parameter 'Name'``. Indented lines
-        carry ``description``, ``unit``, and ``value`` fields.
+        The opening line has the form `parameter 'Name'`. Indented lines
+        carry `description`, `unit`, and `value` fields.
 
         Args:
             lines (List[str]): All lines in the file.
-            start (int): Index of the ``parameter`` opening line.
+            start (int): Index of the `parameter` opening line.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
-                - Parsed parameter dict with keys ``name``, ``description``,
-                  ``unit``, ``value`` (value kept as raw string).
+                - Parsed parameter dict with keys `name`, `description`,
+                  `unit`, `value` (value kept as raw string).
                 - Index of the next line after the block.
         """
         header = lines[start].strip()
@@ -298,19 +298,19 @@ class SubstanceParser:
 
     @staticmethod
     def _parse_output_block(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
-        """Parse an ``output … end-output`` block.
+        """Parse an `output … end-output` block.
 
-        The opening line has the form ``output 'Name'``. The block
-        contains a ``description`` field.
+        The opening line has the form `output 'Name'`. The block
+        contains a `description` field.
 
         Args:
             lines (List[str]): All lines in the file.
-            start (int): Index of the ``output`` opening line.
+            start (int): Index of the `output` opening line.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
-                - Parsed output dict with keys ``name``, ``description``.
+                - Parsed output dict with keys `name`, `description`.
                 - Index of the next line after the block.
         """
         header = lines[start].strip()
@@ -342,21 +342,21 @@ class SubstanceParser:
     def _parse_active_processes_block(
         lines: List[str], start: int
     ) -> Tuple[Dict[str, List[Dict[str, str]]], int]:
-        """Parse an ``active-processes … end-active-processes`` block.
+        """Parse an `active-processes … end-active-processes` block.
 
-        Each ``name`` line inside the block has two quoted values: the process
+        Each `name` line inside the block has two quoted values: the process
         identifier and its description. Lines with fewer than two quoted values
         are skipped.
 
         Args:
             lines (List[str]): All lines in the file.
-            start (int): Index of the ``active-processes`` opening line.
+            start (int): Index of the `active-processes` opening line.
 
         Returns:
             Tuple[Dict[str, List[Dict[str, str]]], int]: A tuple of:
 
-                - Dict with key ``"processes"`` containing a list of dicts,
-                  each with ``name`` and ``description``.
+                - Dict with key `"processes"` containing a list of dicts,
+                  each with `name` and `description`.
                 - Index of the next line after the block.
         """
         processes: List[Dict[str, str]] = []
@@ -380,23 +380,23 @@ class SubstanceParser:
 
     @staticmethod
     def _parse_field_line(line: str) -> Tuple[str, str]:
-        """Parse an indented field line into a ``(key, value)`` pair.
+        """Parse an indented field line into a `(key, value)` pair.
 
         Handles two value forms:
 
-        *   **Quoted**: ``description  'some text'`` returns
-            ``("description", "some text")``.
-        *   **Unquoted**: ``value  0.1500E+02`` returns
-            ``("value", "0.1500E+02")``.
+        *   **Quoted**: `description  'some text'` returns
+            `("description", "some text")`.
+        *   **Unquoted**: `value  0.1500E+02` returns
+            `("value", "0.1500E+02")`.
 
         Keys are always lowercased. Hyphens in keys are preserved
-        (e.g. ``concentration-unit``).
+        (e.g. `concentration-unit`).
 
         Args:
             line (str): A single indented line from inside a block.
 
         Returns:
-            Tuple[str, str]: ``(key, value)`` pair. If the line has no value
+            Tuple[str, str]: `(key, value)` pair. If the line has no value
                 part, value is an empty string.
 
         Examples:
