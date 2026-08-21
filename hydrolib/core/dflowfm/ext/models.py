@@ -795,3 +795,12 @@ class ParameterFieldError(Exception):
     def __init__(self, error_message: str):
         """Initialize with an error message."""
         super().__init__(error_message)
+
+
+class LateralError(Exception):
+    """LateralError."""
+
+    def __init__(self, error_message: str):
+        """Initialize with an error message."""
+        super().__init__(error_message)
+

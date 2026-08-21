@@ -23,6 +23,8 @@ from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     BoundaryError,
     InitialFieldError,
+    Lateral,
+    LateralError,
     Meteo,
     MeteoError,
     SourceSink,
@@ -32,6 +34,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
+    ExtOldLateralQuantity,
     ExtOldMeteoQuantity,
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
@@ -914,6 +917,192 @@ class SourceSinkConverter(BaseConverter):
         return new_block
 
 
+class LateralConverter(BaseConverter):
+    """Lateral discharge converter."""
+
+    _QUANTITY_TO_LOCATION_TYPE = {
+        "lateraldischarge": None,
+        "lateraldischarge1d": "1d",
+        "lateraldischarge2d": "2d",
+    }
+
+    def __init__(self):
+        """Lateral converter constructor."""
+        super().__init__()
+
+    def convert(
+        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
+    ) -> Lateral:
+        """Lateral discharge converter.
+
+        Convert an old external forcing block with lateral discharge data to a
+        Lateral forcing block suitable for inclusion in a new external forcings file.
+
+        This function takes a forcing block from an old external forcings
+        file, represented by an instance of ExtOldForcing, and converts it
+        into a Lateral object. The Lateral object is suitable for use in new
+        external forcings files, adhering to the updated format and
+        specifications.
+
+        Args:
+            forcing (ExtOldForcing): The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            time_unit (Optional[str]):
+                Formatted string containing the units of time, including absolute
+                datetime reference information (according to UDunits). For example,
+                "minutes since 1992-10-8 15:15:42.5 -6:00". Required when the
+                discharge is given as a time series.
+
+        Returns:
+            Lateral: A Lateral object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
+
+        Raises:
+            ValueError: If the forcing block contains a quantity that is not
+                supported by the converter.
+            LateralError: If the Lateral object could not be created.
+        """
+        quantity = str(forcing.quantity).lower()
+        location_type = self._QUANTITY_TO_LOCATION_TYPE.get(quantity)
+
+        # Determine discharge and location data
+        discharge = self._get_discharge(forcing, time_unit)
+        location_data = self._get_location_data(forcing)
+
+        data: Dict[str, Any] = {"id": location_data.pop("id")}
+        if location_type is not None:
+            data["locationtype"] = location_type
+        data.update(location_data)
+        data["discharge"] = discharge
+
+        try:
+            new_block = Lateral(**data)
+        except Exception as e:
+            raise LateralError(
+                f"Failed to create the Lateral object for the following errors: {e}"
+            )
+
+        return new_block
+
+    def _get_discharge(
+        self, forcing: ExtOldForcing, time_unit: Optional[str]
+    ) -> Any:
+        """Derive the discharge value from the old forcing block.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block.
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            Any: A constant float, a ForcingModel, or a file path representing the discharge.
+        """
+        # Constant discharge specified via VALUE field
+        if forcing.value is not None and not isinstance(forcing.filename, (PolyFile,)):
+            return forcing.value
+
+        # Time series in a TIM file (filetype 1 or 2)
+        if isinstance(forcing.filename, TimModel):
+            tim_file = forcing.filename.filepath
+            if time_unit is None:
+                raise ValueError(
+                    "The 'time_unit' argument must be provided when converting a "
+                    "lateral discharge from a TIM file."
+                )
+            location_name = tim_file.stem
+            tim_model = TimModel(tim_file, quantities_names=["discharge"])
+            units = tim_model.get_units()
+            user_defined_names = [location_name]
+            time_series_list = TimToForcingConverter.convert(
+                tim_model, time_unit, units=units, user_defined_names=user_defined_names
+            )
+            forcing_model = ForcingModel(forcing=time_series_list)
+            forcing_model.filepath = tim_file.with_suffix(".bc")
+            self.legacy_files = tim_file
+            return forcing_model
+
+        # PolyFile-based location: look for a corresponding TIM file
+        if isinstance(forcing.filename, PolyFile):
+            location_file = forcing.filename.filepath
+            if self.root_dir is not None:
+                tim_file = resolve_relative_to_root(
+                    location_file, self.root_dir
+                ).with_suffix(".tim")
+            else:
+                tim_file = location_file.with_suffix(".tim")
+
+            if tim_file.exists():
+                if time_unit is None:
+                    raise ValueError(
+                        "The 'time_unit' argument must be provided when converting a "
+                        "lateral discharge from a TIM file."
+                    )
+                location_name = location_file.stem
+                tim_model = TimModel(tim_file, quantities_names=["discharge"])
+                units = tim_model.get_units()
+                user_defined_names = [location_name]
+                time_series_list = TimToForcingConverter.convert(
+                    tim_model,
+                    time_unit,
+                    units=units,
+                    user_defined_names=user_defined_names,
+                )
+                forcing_model = ForcingModel(forcing=time_series_list)
+                forcing_model.filepath = location_file.with_suffix(".bc")
+                self.legacy_files = tim_file
+                return forcing_model
+
+            # Fall back to constant value if available
+            if forcing.value is not None:
+                return forcing.value
+
+        # Fallback: return the raw file path as discharge reference
+        if hasattr(forcing.filename, "filepath") and forcing.filename.filepath is not None:
+            return forcing.filename.filepath
+
+        return forcing.value
+
+    def _get_location_data(self, forcing: ExtOldForcing) -> Dict[str, Any]:
+        """Extract location data from the old forcing block.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block.
+
+        Returns:
+            Dict[str, Any]: A dict with 'id' and optionally location fields
+                such as 'numcoordinates', 'xcoordinates', 'ycoordinates'.
+        """
+        if isinstance(forcing.filename, PolyFile):
+            poly_file = forcing.filename
+            location_name = poly_file.filepath.stem
+            result: Dict[str, Any] = {"id": location_name}
+            if poly_file.objects:
+                first_obj = poly_file.objects[0]
+                # Override id with the PolyFile object name if available
+                if first_obj.metadata and first_obj.metadata.name:
+                    result["id"] = first_obj.metadata.name
+                points = first_obj.points
+                if points:
+                    result["numcoordinates"] = len(points)
+                    result["xcoordinates"] = [p.x for p in points]
+                    result["ycoordinates"] = [p.y for p in points]
+            return result
+
+        if isinstance(forcing.filename, TimModel):
+            location_name = forcing.filename.filepath.stem
+            return {"id": location_name}
+
+        # DiskOnlyFileModel or other
+        if (
+            hasattr(forcing.filename, "filepath")
+            and forcing.filename.filepath is not None
+        ):
+            return {"id": forcing.filename.filepath.stem}
+
+        return {"id": str(forcing.quantity)}
+
+
 class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
@@ -942,6 +1131,8 @@ class ConverterFactory:
             return ParametersConverter()
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
             return SourceSinkConverter()
+        elif ConverterFactory.contains(ExtOldLateralQuantity, quantity):
+            return LateralConverter()
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 
