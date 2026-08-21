@@ -145,13 +145,17 @@ class Parameter(BaseModel):
 
     Attributes:
         name (str):
-            Parameter identifier.
+            Parameter identifier. Must be non-empty (a reserved
+            character-string ID in D-Water Quality).
         description (str):
             Human-readable description.
         unit (str):
             Unit string, e.g. ``"(oC)"`` or ``"(-)"``.
         value (float):
-            Numeric value of the parameter.
+            Numeric value of the parameter. Required: a well-formed .sub file
+            always specifies a value (D-Water Quality uses ``-999`` as its
+            missing-value sentinel, never ``0``), so a parameter block that
+            omits the value line fails validation rather than defaulting.
 
     Examples:
         - Create a parameter and access its value:
@@ -187,11 +191,27 @@ class Parameter(BaseModel):
         SubstanceModel: Top-level model that holds a list of parameters.
     """
 
-    name: str = Field(...)
-    description: str = Field(...)
-    unit: str = Field(...)
-    value: float = Field(...)
-
+    name: str = Field(
+        ...,
+        min_length=1,
+        description="Process parameter identifier (a reserved character-string ID).",
+    )
+    description: str = Field(
+        ...,
+        description="Human-readable description of the process parameter.",
+    )
+    unit: str = Field(
+        ...,
+        description="Unit of the process parameter, e.g. '(oC)' or '(-)'.",
+    )
+    value: float = Field(
+        ...,
+        description=(
+            "Numeric value of the process parameter. Required: D-Water Quality "
+            "uses -999 as its missing-value sentinel (never 0), so a parameter "
+            "block that omits the value line is rejected rather than defaulted."
+        ),
+    )
 
 
 class Output(BaseModel):

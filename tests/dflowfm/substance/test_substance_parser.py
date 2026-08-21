@@ -206,6 +206,24 @@ class TestSubstanceParserParameterBlock:
         ), f"Got description: {param['description']}"
         assert param["unit"] == "(oC)", f"Got unit: {param['unit']}"
 
+    def test_parameter_block_without_value_omits_key(self, tmp_path: Path):
+        """Test that a parameter block lacking a value line omits the 'value' key.
+
+        Test scenario:
+            The parser must not seed an arbitrary default (e.g. 0) for a missing
+            value; the key is simply absent so downstream model construction can
+            reject the malformed block instead of silently coercing a value.
+        """
+        content = "parameter 'NoValue'\n   description 'missing value'\n   unit '(-)'\nend-parameter\n"
+        filepath = tmp_path / "no_value.sub"
+        filepath.write_text(content, encoding="utf-8")
+
+        data = SubstanceParser.parse(filepath)
+        param = data["parameters"][0]
+        assert (
+            "value" not in param
+        ), f"Expected no 'value' key for a valueless block, got {param}"
+
 
 class TestSubstanceParserOutputBlock:
     """Tests for SubstanceParser._parse_output_block."""

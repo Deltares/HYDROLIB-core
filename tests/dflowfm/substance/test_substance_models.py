@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.substance import (
     ActiveProcess,
@@ -134,6 +135,16 @@ class TestParameter:
         parameter = Parameter(**parameter_data)
         assert parameter.name == "parameter1"
         assert parameter.value == 99.0
+
+    def test_empty_name_raises(self):
+        """Test that an empty parameter name is rejected.
+
+        Test scenario:
+            A parameter name is a reserved character-string ID in D-Water
+            Quality, so an empty name is malformed and must fail validation.
+        """
+        with pytest.raises(ValidationError):
+            Parameter(name="", description="d", unit="(-)", value="1")
 
 
 class TestOutput:
@@ -315,6 +326,22 @@ class TestSubstanceModel:
             assert orig.value == pytest.approx(
                 rt.value
             ), f"Parameter {orig.name}: {orig.value} != {rt.value}"
+
+    def test_load_parameter_without_value_raises(self, tmp_path: Path):
+        """Test that a parameter block without a value line fails loudly.
+
+        Test scenario:
+            A well-formed .sub file always specifies a value (D-Water Quality
+            uses -999, never 0, as its missing-value sentinel). A block that
+            omits the value line must raise rather than silently default to 0,
+            because Parameter.value is a required field.
+        """
+        content = "parameter 'NoValue'\n   description 'missing value'\n   unit '(-)'\nend-parameter\n"
+        filepath = tmp_path / "no_value.sub"
+        filepath.write_text(content, encoding="utf-8")
+
+        with pytest.raises(ValidationError):
+            SubstanceModel(filepath=filepath)
 
     def test_load_nonexistent_file_raises(self):
         """Test that loading a non-existent file raises ValueError.

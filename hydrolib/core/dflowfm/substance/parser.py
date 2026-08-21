@@ -78,7 +78,10 @@ class SubstanceParser:
                   `name`, `type`, `description`, `concentration_unit`,
                   `waste_load_unit`.
                 - `"parameters"` — list of parameter dicts, each with keys
-                  `name`, `description`, `unit`, `value` (as raw string).
+                  `name`, `description`, `unit`, and `value` (as raw string).
+                  `value` is present only when the block contains a `value`
+                  line; a block that omits it produces a dict without the key,
+                  which makes model construction fail rather than default to 0.
                 - `"outputs"` — list of output dicts, each with keys
                   `name`, `description`.
                 - `"active_processes"` — dict with a single key `"processes"`
@@ -262,18 +265,20 @@ class SubstanceParser:
             Tuple[Dict[str, str], int]: A tuple of:
 
                 - Parsed parameter dict with keys `name`, `description`,
-                  `unit`, `value` (value kept as raw string).
+                  `unit`, and `value` (kept as raw string). `value` is only
+                  included when the block contains a `value` line.
                 - Index of the next line after the block.
         """
         header = lines[start].strip()
         quoted = SubstanceParser._extract_quoted_values(header)
         name = quoted[0] if quoted else ""
 
+        # A well-formed .sub file produced by the PLCT always writes a `value` line for every
+        # parameter, and D-Water Quality's own missing-value sentinel is -999.
         result: Dict[str, str] = {
             "name": name,
             "description": "",
             "unit": "",
-            "value": "0",
         }
 
         i = start + 1
