@@ -188,16 +188,10 @@ class Parameter(BaseModel):
     """
 
     name: str = Field(...)
-    """str: Parameter identifier."""
-
     description: str = Field(...)
-    """str: Human-readable description."""
-
     unit: str = Field(...)
-    """str: Unit string, e.g. ``'(oC)'``."""
-
     value: float = Field(...)
-    """float: Numeric value of the parameter."""
+
 
 
 class Output(BaseModel):
