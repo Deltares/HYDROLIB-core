@@ -319,6 +319,8 @@ class FileModel(BaseModel, ABC):
     filepath: Optional[Path] = None
     # Absolute anchor is used to resolve the save location when the filepath is relative.
     _absolute_anchor_path: Path = PrivateAttr(default_factory=Path.cwd)
+    # Tracks whether this model was skipped due to recurse=False during loading.
+    _was_skipped_due_to_recurse: bool = PrivateAttr(default=False)
 
     def __new__(
         cls, filepath: Optional[PathOrStr] = None, *args, **kwargs
@@ -389,6 +391,7 @@ class FileModel(BaseModel, ABC):
             if not FileModel._should_load_model(context):
                 super().__init__(*args, **kwargs)
                 self.filepath = filepath
+                self._was_skipped_due_to_recurse = True
                 return
 
             self._absolute_anchor_path = context.get_current_parent()
@@ -793,9 +796,16 @@ class ParsableFileModel(FileModel):
         _save provides a hook for child models to overwrite the save behaviour as
         called during the tree traversal.
 
+        If the model was skipped during loading due to recurse=False, saving is skipped
+        to avoid overwriting the original file with empty/default data.
+
         Args:
             save_settings (ModelSaveSettings): The model save settings.
         """
+        if self._was_skipped_due_to_recurse:
+            path = self._resolved_filepath
+            if path is not None and path.exists() and not self.model_dump(exclude_unset=True):
+                return
         self._serialize(self.model_dump(), save_settings)
 
     def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
