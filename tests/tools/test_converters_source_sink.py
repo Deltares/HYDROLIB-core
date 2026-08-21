@@ -841,6 +841,45 @@ class TestSourceSinkConverterEdgeCases:
         result = converter._active_substances()
         assert result is None, f"Expected None, got {result}"
 
+    def test_resolve_active_substances_returns_names_and_units(self):
+        """Test that _resolve_active_substances derives the names and unit map.
+
+        Test scenario:
+            When the MDU references a substance file with two active substances,
+            the method returns their names as a list and a name -> concentration-unit
+            mapping.
+        """
+        mock_parser = MagicMock(spec=MDUParser)
+        mock_parser.get_keyword.return_value = "sub-file.sub"
+        mock_parser.mdu_path = Path(
+            "tests/data/input/source-sink/substance-file/with_substance.mdu"
+        )
+        converter = SourceSinkConverter(mdu_parser=mock_parser)
+
+        names, units = converter._resolve_active_substances()
+
+        assert names == ["sub_1", "sub_2"], f"Got names: {names}"
+        assert units == {
+            "sub_1": "(gC/m3)",
+            "sub_2": "(gN/m3)",
+        }, f"Got units: {units}"
+
+    def test_resolve_active_substances_without_substance_file(self):
+        """Test that _resolve_active_substances returns (None, {}) with no substance file.
+
+        Test scenario:
+            When the MDU parser returns None for SubstanceFile, the method returns
+            None for the names and an empty units mapping, in lockstep.
+        """
+        mock_parser = MagicMock(spec=MDUParser)
+        mock_parser.get_keyword.return_value = None
+        converter = SourceSinkConverter(mdu_parser=mock_parser)
+
+        names, units = converter._resolve_active_substances()
+
+        assert names is None, f"Expected None names, got {names}"
+        assert units == {}, f"Expected empty units, got {units}"
+
 
 class TestCorrectSubstanceUnits:
     """Tests for SourceSinkConverter._correct_substance_units."""
