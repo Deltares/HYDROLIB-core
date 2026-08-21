@@ -20,6 +20,7 @@ from pydantic import (
     ValidationInfo,
     field_validator,
 )
+from pydantic_core import PydanticCustomError
 
 from hydrolib.core.base.file_manager import (
     FileLoadContext,
@@ -83,9 +84,11 @@ class BaseModel(PydanticBaseModel):
             for error in e.errors():
                 loc = error.get("loc", [])
                 if loc and isinstance(data.get(to_key(loc[0])), list):
-                    error[
-                        "msg"
-                    ] += f". The key {loc[0]} might be duplicated in the input file."
+                    raise PydanticCustomError(
+                        'duplicate_key_error',
+                        "The key '{key}' might be duplicated in the input file.",
+                        {'key': loc[0]}
+                    )
 
             # Update error with specific model location name
             identifier = self._get_identifier(data)
