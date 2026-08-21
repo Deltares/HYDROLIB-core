@@ -14,15 +14,24 @@ from tests.utils import compare_two_files, ignore_version_lines, is_linux, is_ma
 
 
 @pytest.fixture
-def converter(input_files_dir: Path) -> BoundaryConditionConverter:
-    converter = BoundaryConditionConverter()
-    converter.root_dir = input_files_dir / "boundary-conditions"
-    return converter
+def start_date() -> str:
+    return "minutes since 2015-01-01 00:00:00"
 
 
 @pytest.fixture
-def start_date() -> str:
-    return "minutes since 2015-01-01 00:00:00"
+def mdu_parser_mock(start_date: str) -> MagicMock:
+    mock = MagicMock(spec=MDUParser)
+    mock.temperature_salinity_data = {"refdate": start_date}
+    return mock
+
+
+@pytest.fixture
+def converter(
+    input_files_dir: Path, mdu_parser_mock: MagicMock
+) -> BoundaryConditionConverter:
+    converter = BoundaryConditionConverter(mdu_parser=mdu_parser_mock)
+    converter.root_dir = input_files_dir / "boundary-conditions"
+    return converter
 
 
 @pytest.fixture
@@ -151,7 +160,6 @@ class TestBoundaryConverter:
         contents,
         converter: BoundaryConditionConverter,
         forcing: ExtOldForcing,
-        start_date: str,
     ):
         """
         Tests the conversion of boundary conditions for all combinations of tim, t3d, and cmp files.
@@ -168,8 +176,6 @@ class TestBoundaryConverter:
                 The converter instance.
             forcing (ExtOldForcing):
                 The old forcing block.
-            start_date (str):
-                The reference start date.
         """
         resolved_files = [
             (
@@ -181,7 +187,7 @@ class TestBoundaryConverter:
         ]
 
         with patch.object(Path, "glob", side_effect=resolved_files):
-            new_quantity_block = converter.convert(forcing, start_date)
+            new_quantity_block = converter.convert(forcing)
 
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
@@ -197,7 +203,6 @@ class TestBoundaryConverter:
         input_files_dir: Path,
         forcing: ExtOldForcing,
         tim_files: List[Path],
-        start_date: str,
     ):
         """
         Tests conversion of a boundary condition when only tim files are present.
@@ -208,12 +213,11 @@ class TestBoundaryConverter:
             input_files_dir (Path): Directory containing input files.
             forcing (ExtOldForcing): The old forcing block.
             tim_files (List[Path]): List of tim file paths.
-            start_date (str): The reference start date.
         """
         t3d_files = []
         cmp_files = []
         with patch.object(Path, "glob", side_effect=[tim_files, t3d_files, cmp_files]):
-            new_quantity_block = converter.convert(forcing, start_date)
+            new_quantity_block = converter.convert(forcing)
 
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
@@ -234,7 +238,6 @@ class TestBoundaryConverter:
         converter: BoundaryConditionConverter,
         forcing: ExtOldForcing,
         cmp_files: List[Path],
-        start_date: str,
     ):
         """
         Tests conversion of a boundary condition when only cmp files are present.
@@ -247,13 +250,11 @@ class TestBoundaryConverter:
                 The old forcing block.
             cmp_files (List[Path]):
                 List of cmp file paths.
-            start_date (str):
-                The reference start date.
         """
         t3d_files = []
         tim_files = []
         with patch.object(Path, "glob", side_effect=[tim_files, t3d_files, cmp_files]):
-            new_quantity_block = converter.convert(forcing, start_date)
+            new_quantity_block = converter.convert(forcing)
 
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
@@ -282,7 +283,6 @@ class TestBoundaryConverter:
         input_files_dir: Path,
         forcing: ExtOldForcing,
         t3d_files: List[Path],
-        start_date: str,
     ):
         """
         Tests conversion of a boundary condition when only t3d files are present.
@@ -297,13 +297,11 @@ class TestBoundaryConverter:
                 The old forcing block.
             t3d_files (List[Path]):
                 List of t3d file paths.
-            start_date (str):
-                The reference start date.
         """
         tim_files = []
         cmp_files = []
         with patch.object(Path, "glob", side_effect=[tim_files, t3d_files, cmp_files]):
-            new_quantity_block = converter.convert(forcing, start_date)
+            new_quantity_block = converter.convert(forcing)
 
         verify_boundary_conditions(
             new_quantity_block, "waterlevelbnd", "tfl_01.bc", forcing
@@ -340,6 +338,16 @@ class TestBoundaryConverter:
             [9999999.0, 42.0, 37.45455, 37.0, 35.0, 32.0],
         ]
 
+    def test_convert_raises_when_mdu_parser_is_none(self, forcing: ExtOldForcing):
+        """convert() raises a clear error when no MDU parser was injected.
+
+        The reference time is read from the MDU parser, so converting a boundary
+        condition without one cannot proceed.
+        """
+        converter = BoundaryConditionConverter(mdu_parser=None)
+        with pytest.raises(ValueError, match="MDU model is required"):
+            converter.convert(forcing)
+
 
 class TestMainConverter:
 
@@ -353,8 +361,6 @@ class TestMainConverter:
         Args:
             old_forcing_file_boundary (Dict[str, str]):
                 Dictionary with test file paths and expected data.
-            start_date (str):
-                The reference start date.
         """
         mock_mdu_parser = MagicMock(spec=MDUParser)
         mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}

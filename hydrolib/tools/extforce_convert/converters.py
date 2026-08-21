@@ -1,10 +1,11 @@
 """External forcing converter."""
 
+from __future__ import annotations
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -19,6 +20,7 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
+    SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES,
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
@@ -37,6 +39,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.tim.parser import TimParser
@@ -50,6 +53,9 @@ from hydrolib.tools.extforce_convert.utils import (
     oldfiletype_to_forcing_file_type,
 )
 
+if TYPE_CHECKING:
+    from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
 
 class BaseConverter(ABC):
     """Abstract base class for converting old external forcings blocks to new blocks.
@@ -61,9 +67,16 @@ class BaseConverter(ABC):
     converter, depending on the quantity of the forcing block.
     """
 
-    def __init__(self):
-        """Initializes the BaseConverter object."""
-        self._root_dir = None
+    def __init__(self, root_dir: PathOrStr = None):
+        """Initialize the BaseConverter object.
+
+        Args:
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Only the
+                converters that read forcing files from disk (boundary conditions and
+                source/sinks) need it. Defaults to None.
+        """
+        self._root_dir = Path(root_dir) if isinstance(root_dir, str) else root_dir
         self._legacy_files = []
 
     @property
@@ -269,9 +282,19 @@ class SpatialConverter(BaseConverter):
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
 
-    def __init__(self):
-        """Boundary condition converter constructor."""
-        super().__init__()
+    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+        """Boundary condition converter constructor.
+
+        Args:
+            mdu_parser (MDUParser, optional):
+                Parser for the FM model. Required at `convert` time: the boundary
+                condition conversion needs the reference time the parser exposes.
+                Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
+        """
+        super().__init__(root_dir=root_dir)
+        self._mdu_parser = mdu_parser
 
     @staticmethod
     def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
@@ -378,9 +401,7 @@ class BoundaryConditionConverter(BaseConverter):
         cmp_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.cmp"))
         return tim_files, t3d_files, cmp_files
 
-    def convert(
-        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
-    ) -> Boundary:
+    def convert(self, forcing: ExtOldForcing) -> Boundary:
         """Boundary condition converter.
 
         Convert an old external forcing block to a boundary forcing block
@@ -397,8 +418,10 @@ class BoundaryConditionConverter(BaseConverter):
                 in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps,
                 required for the conversion process.
-            time_unit:
-                The start date of the time series data.
+
+        Note:
+            The reference time is derived from the `MDUParser` injected at construction
+            (see `__init__`), so `convert` needs no separate `time_unit` argument.
 
         Returns:
             Boundary: A Boundary object that represents the converted forcing
@@ -414,12 +437,18 @@ class BoundaryConditionConverter(BaseConverter):
 
         Notes:
             - The `root_dir` property must be set before calling this method.
-            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
-            boundary Condition can be only converted by reading the mdu file and the external forcing file is not
-            enough.
+            - Since the reference time is read from the mdu file, boundary conditions can only be converted when an
+            `MDUParser` was injected at construction; the external forcing file alone is not enough.
             - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
             end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
+        if (
+            self._mdu_parser is None
+            or self._mdu_parser.temperature_salinity_data is None
+        ):
+            raise ValueError("MDU model is required to convert Boundary conditions.")
+        time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
+
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
@@ -567,9 +596,92 @@ class BoundaryConditionConverter(BaseConverter):
 class SourceSinkConverter(BaseConverter):
     """Source and sink converter."""
 
-    def __init__(self):
-        """Source and sink converter Constructor."""
-        super().__init__()
+    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+        """Source and sink converter constructor.
+
+        Args:
+            mdu_parser (MDUParser, optional):
+                Parser for the FM model. Required at `convert` time: the source and
+                sink conversion needs the substance file and the temperature/salinity
+                settings the parser exposes. Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
+        """
+        super().__init__(root_dir=root_dir)
+        self._mdu_parser = mdu_parser
+
+    def _active_substances(self) -> Optional[List[Substance]]:
+        """Read the active substances from the MDU's `SubstanceFile`.
+
+        Each returned `Substance` carries both its `name` and its
+        `concentration_unit`, so callers can derive the substance names as well as
+        the units to apply to the source/sink `.bc` quantities.
+
+        Returns:
+            Optional[List[Substance]]:
+                The active substance definitions, or None when the MDU file does
+                not reference a substance file.
+
+        Raises:
+            FileNotFoundError:
+                If the MDU references a substance file that does not exist.
+        """
+        substances = None
+        substance_file = self._mdu_parser.get_keyword("SubstanceFile")
+        if substance_file:
+            substance_path = (
+                self._mdu_parser.mdu_path.parent / substance_file
+            ).resolve()
+            if not substance_path.exists():
+                raise FileNotFoundError(
+                    f"Substance file {substance_path} not found, required to convert "
+                    f"SourceSink quantities."
+                )
+            substance_model = SubstanceModel(substance_path)
+            substances = substance_model.get_active_substances()
+        return substances
+
+    def _resolve_active_substances(
+        self,
+    ) -> Tuple[Optional[List[str]], Dict[str, str]]:
+        """Read the active substances and derive the names and concentration-unit map.
+
+        Returns:
+            Tuple[Optional[List[str]], Dict[str, str]]:
+                The active substance names (or None when the MDU references no substance
+                file), and a mapping of substance name to concentration unit (empty when
+                there are none).
+        """
+        active_substances = self._active_substances()
+        names = [s.name for s in active_substances] if active_substances else None
+        units = (
+            {s.name: s.concentration_unit for s in active_substances}
+            if active_substances
+            else {}
+        )
+        return names, units
+
+    @staticmethod
+    def filter_source_sink_quantities(quantities: List[str]) -> List[str]:
+        """Keep only the quantities relevant to the source and sink conversion.
+
+        Quantities starting with a source/sink ignore prefix (e.g. `initialtracer`,
+        `initialsedfrac`) are converted as initial conditions by other converters, so
+        they must not be counted as source/sink columns.
+
+        Args:
+            quantities (List[str]):
+                All quantities present in the old external forcings file.
+
+        Returns:
+            List[str]:
+                The quantities that are not carrying a source/sink ignore prefix.
+        """
+        return [
+            quantity
+            for quantity in quantities
+            if not quantity.lower().startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
+        ]
 
     @staticmethod
     def merge_mdu_and_ext_file_quantities(
@@ -595,10 +707,7 @@ class SourceSinkConverter(BaseConverter):
             # the kwargs will be provided only from the source and sink converter
             # Ensure 'temperature' comes before 'salinity'
             keys = list(final_temp_salinity.keys())
-            if (
-                SOURCESINK_TEMP_IN_BC in keys
-                and SOURCESINK_SALINITY_IN_BC in keys
-            ):
+            if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
                 keys.remove(SOURCESINK_SALINITY_IN_BC)
                 keys.insert(
                     keys.index(SOURCESINK_TEMP_IN_BC),
@@ -610,7 +719,11 @@ class SourceSinkConverter(BaseConverter):
         return keys
 
     def parse_tim_model(
-        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
+        self,
+        tim_file: Path,
+        ext_file_quantity_list: List[str],
+        active_substance_names: List[str] = None,
+        **mdu_quantities,
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
@@ -628,6 +741,9 @@ class SourceSinkConverter(BaseConverter):
         Args:
             tim_file (Path): The path to the TIM file.
             ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+            active_substance_names (List[str], default is None):
+                A list of active substance names to include in the conversion.
+                When provided, only the substances in this list will be processed.
             **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
                 details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
                 only bool. (i.e. {"temperature", False, "salinity": True})
@@ -713,7 +829,7 @@ class SourceSinkConverter(BaseConverter):
         required_quantities_from_ext = [
             key
             for key in ext_file_quantity_list
-            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
         # Remove duplicate quantities that might be present in the list due to quantities that share names,
         # therefore occurring multiple times in the external forcing file.
@@ -728,10 +844,13 @@ class SourceSinkConverter(BaseConverter):
         final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
             mdu_quantities, temp_salinity_from_ext
         )
+        active_substance_names = active_substance_names or []
+
         final_quantities_list = (
             ["sourcesink_discharge"]
             + final_temp_salinity
             + required_quantities_from_ext
+            + active_substance_names
         )
 
         if len(time_series) != len(final_quantities_list):
@@ -748,6 +867,7 @@ class SourceSinkConverter(BaseConverter):
         tim_model: TimModel,
         time_unit: str,
         user_defined_names: List[str] = None,
+        substance_units: Dict[str, str] = None,
     ) -> ForcingModel:
         """Convert a TimModel into a ForcingModel.
 
@@ -761,6 +881,10 @@ class SourceSinkConverter(BaseConverter):
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
+            substance_units (Dict[str, str], optional):
+                Mapping of substance name to its concentration unit. When provided, the
+                placeholder unit (``"-"``) that `TimModel.get_units` assigns to substance
+                columns is replaced with the substance's concentration unit.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -770,11 +894,44 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
         units = tim_model.get_units()
+        units = SourceSinkConverter._correct_substance_units(
+            units, tim_model.quantities_names, substance_units
+        )
         time_series_list = TimToForcingConverter.convert(
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
+
+    @staticmethod
+    def _correct_substance_units(
+        units: List[str],
+        quantities_names: List[str],
+        substance_units: Dict[str, str] = None,
+    ) -> List[str]:
+        """Replace the placeholder unit of substance columns with their concentration unit.
+
+        `TimModel.get_units` maps any column that is not discharge/waterlevel/salinity/
+        temperature to the placeholder ``"-"``. Substance columns fall into that bucket,
+        so this method overrides those placeholders with the concentration unit declared
+        in the substance file. Units are aligned with `quantities_names` positionally.
+
+        Args:
+            units (List[str]): The units extracted from the TIM model, one per quantity.
+            quantities_names (List[str]): The quantity names, aligned with `units`.
+            substance_units (Dict[str, str], optional): Mapping of substance name to
+                concentration unit. When falsy, `units` is returned unchanged.
+
+        Returns:
+            List[str]: The units with substance placeholders corrected.
+        """
+        result = units
+        if substance_units:
+            result = [
+                substance_units.get(name.removeprefix("sourcesink_"), unit)
+                for name, unit in zip(quantities_names, units)
+            ]
+        return result
 
     @staticmethod
     def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
@@ -784,24 +941,45 @@ class SourceSinkConverter(BaseConverter):
         """
         forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
 
-        forcing_model_list = []
         forcings = {}
         for forcing in forcing_list:
             model = deepcopy(forcing_model)
             model.forcing = [forcing]
-            forcing_model_list.append(model)
             name = forcing.quantityunitpair[1].quantity
             # remove the prefix 'sourcesink_' from the name as the extforce file will not have this prefix.
             forcings[name.removeprefix("sourcesink_")] = model
 
         return forcings
 
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Path:
+        """Resolve the TIM file that accompanies the source/sink polyline.
+
+        The TIM file is expected to sit next to the polyline, sharing its stem with a
+        `.tim` suffix, resolved relative to the converter's `root_dir`.
+
+        Args:
+            polyline (PolyFile): The source/sink polyline whose filepath locates the
+                accompanying TIM file.
+            quantity (str): The old external forcing quantity, used only for the error
+                message when the TIM file is missing.
+
+        Returns:
+            Path: The resolved path to the existing TIM file.
+
+        Raises:
+            ValueError: If the resolved TIM file does not exist.
+        """
+        tim_file = resolve_relative_to_root(
+            polyline.filepath, self.root_dir
+        ).with_suffix(".tim")
+        if not tim_file.exists():
+            raise ValueError(f"TIM file '{tim_file}' not found for QUANTITY={quantity}")
+        return tim_file
+
     def convert(
         self,
         forcing: ExtOldForcing,
         ext_file_quantity_list: List[str] = None,
-        start_time: str = None,
-        **temp_salinity_mdu,
     ) -> SourceSink:
         """Source and sink converter.
 
@@ -813,15 +991,12 @@ class SourceSinkConverter(BaseConverter):
                 object contains all the necessary information, such as quantity, values, and timestamps, required for the
                 conversion process.
             ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
-                external forcings file.
-            start_time (str, default is None):
-                The start date of the time series data.
-            **temp_salinity_mdu:
-                keyword arguments that will be provided if you want to provide the temperature and salinity details from
-                the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
-                ```python
-                {'salinity': True, 'temperature': True}
-                ```
+                external forcings file. The caller is expected to pass the quantities relevant to the source/sink
+                conversion; this method does not filter the list itself.
+
+        Note:
+            The start time, the active substance names, and the temperature/salinity settings are derived from the
+            `MDUParser` injected at construction (see `__init__`), so `convert` needs no separate arguments for them.
 
         Returns:
             SourceSink: A SourceSink object that represents the converted forcing
@@ -848,29 +1023,37 @@ class SourceSinkConverter(BaseConverter):
             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
 
         """
+        if (
+            self._mdu_parser is None
+            or self._mdu_parser.temperature_salinity_data is None
+        ):
+            raise ValueError("MDU model is required to convert SourceSink quantities.")
+
+        temp_salinity_mdu = self._mdu_parser.temperature_salinity_data
+        start_time = temp_salinity_mdu.get("refdate")
+        active_substance_names, substance_units = self._resolve_active_substances()
+
         location_file = forcing.filename.filepath
         polyline = forcing.filename
         location_name = location_file.stem
         z_source, z_sink = polyline.get_z_sources_sinks()
 
-        # check the tim file
-        tim_file = resolve_relative_to_root(
-            polyline.filepath, self.root_dir
-        ).with_suffix(".tim")
-        if not tim_file.exists():
-            raise ValueError(
-                f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
-            )
-
+        tim_file = self._resolve_tim_file(polyline, forcing.quantity)
         self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
-            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+            tim_file,
+            ext_file_quantity_list,
+            active_substance_names,
+            **temp_salinity_mdu,
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
-            tim_model, start_time, user_defined_names=labels
+            tim_model,
+            start_time,
+            user_defined_names=labels,
+            substance_units=substance_units,
         )
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = Path(
@@ -904,7 +1087,7 @@ class SourceSinkConverter(BaseConverter):
             data = data | z_source_sink_data
 
         try:
-            new_block = SourceSink(**data)
+            new_block = SourceSink(dynamic_fields=active_substance_names, **data)
         except Exception as e:  # pragma: no cover
             raise SourceSinkError(
                 f"Failed to create the SourceSink object. for the following Errors: {e}"
@@ -917,12 +1100,20 @@ class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
     @staticmethod
-    def create_converter(quantity) -> BaseConverter:
+    def create_converter(
+        quantity, root_dir: PathOrStr = None, mdu_parser: MDUParser = None
+    ) -> BaseConverter:
         """
         Create converter based on the given quantity.
 
         Args:
             quantity: The quantity for which the converter needs to be created.
+            root_dir (PathOrStr, optional): Root directory used to resolve the forcing
+                file paths, forwarded to every converter. Only the boundary condition
+                and source/sink converters read it. Defaults to None.
+            mdu_parser (MDUParser, optional): Parser for the FM model, forwarded to
+                the converters that need it. Only the `SourceSinkConverter` uses it
+                at present. Defaults to None.
 
         Returns:
             BaseConverter: An instance of a specific BaseConverter subclass
@@ -938,9 +1129,11 @@ class ConverterFactory:
         ):
             return SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter()
+            return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
+            return ParametersConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter()
+            return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 

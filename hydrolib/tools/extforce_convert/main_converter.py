@@ -1,5 +1,7 @@
 """Converter for old external forcing files to the new format."""
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
@@ -13,7 +15,6 @@ from hydrolib.core.dflowfm.ext.models import (
     ExtModel,
     Lateral,
     Meteo,
-    Spatial,
     SourceSink,
 )
 from hydrolib.core.dflowfm.extold.models import (
@@ -374,54 +375,59 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.inifield_model, self.structure_model
 
-    def _convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, Spatial, SourceSink]:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
+        """Resolve the datafile path for an initial field or parameter block.
+
+        Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
+        relative to the new initial field file when required.
+
+        Args:
+            forcing: The old forcing block whose filename must be resolved.
+
+        Returns:
+            Path: The path to store in the `datafile` field of the new block.
+        """
+        return path_relative_to_parent(
+            forcing,
+            ref_path,
+            self.extold_model.filepath,
+            self.mdu_parser,
+        )
+
+    def _convert_forcing(self, forcing) -> Boundary | Lateral | Meteo | SourceSink:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
             - The SourceSink converter needs the salinity and temperature from the FM model.
             - The BoundaryCondition converter needs the start time from the FM model.
         """
-        converter_class = ConverterFactory.create_converter(forcing.quantity)
-        converter_class.root_dir = self.root_dir
+        converter_class = ConverterFactory.create_converter(
+            forcing.quantity, root_dir=self.root_dir, mdu_parser=self.mdu_parser
+        )
 
         # only the SourceSink converter needs the quantities' list
         if isinstance(converter_class, SourceSinkConverter):
-
-            if self.temperature_salinity_data is None:
-                raise ValueError(
-                    "FM model is required to convert SourcesSink quantities."
-                )
-            else:
-                temp_salinity_mdu = self.temperature_salinity_data
-                start_time = self.temperature_salinity_data.get("refdate")
-
-            quantities = self.extold_model.quantities
+            source_sink_quantities = converter_class.filter_source_sink_quantities(
+                self.extold_model.quantities
+            )
             new_quantity_block = converter_class.convert(
-                forcing, quantities, start_time=start_time, **temp_salinity_mdu
+                forcing, source_sink_quantities
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
-            if self.temperature_salinity_data is None:
-                raise ValueError("FM model is required to convert Boundary conditions.")
-            else:
-                start_time = self.temperature_salinity_data.get("refdate")
-                new_quantity_block = converter_class.convert(forcing, start_time)
+            new_quantity_block = converter_class.convert(forcing)
         elif isinstance(
             converter_class, SpatialConverter
         ):
             if ConverterFactory.contains(
-                ExtOldInitialConditionQuantity, forcing.quantity
+                    ExtOldInitialConditionQuantity, forcing.quantity
             ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
                 # Initial conditions and parameters are written to the inifield model file
                 ref_path = self.inifield_model.filepath
             else:
                 # Meteo quantities are written to the ext model file
                 ref_path = self.ext_model.filepath
-            forcing_path = path_relative_to_parent(
-                forcing,
-                ref_path,
-                self.extold_model.filepath,
-                self.mdu_parser,
-            )
+
+            forcing_path = self._resolve_forcing_path(forcing, ref_path)
             new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
             new_quantity_block = converter_class.convert(forcing)
@@ -455,7 +461,6 @@ class ExternalForcingConverter:
 
         num_quantities_ext = (
             len(self.ext_model.meteo)
-            + len(self.ext_model.spatial)
             + len(self.ext_model.sourcesink)
             + len(self.ext_model.boundary)
             + len(self.ext_model.lateral)

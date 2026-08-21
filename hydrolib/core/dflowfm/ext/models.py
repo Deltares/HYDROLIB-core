@@ -59,9 +59,16 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "tracerbnd",
     "sedfracbnd",
-    "initialsedfrac",
+    "initialsedfrac"
 )
-
+# Reserved key used to thread the caller-provided `dynamic_fields` list through
+# Pydantic validation (via `SourceSink.__init__`) so `_exclude_from_validation`
+# can whitelist those names. It is stripped from the instance after init.
+_DYNAMIC_FIELDS_KEY = "__dynamic_fields__"
+SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac"
+)
 
 class TargetLayer(StrEnum):
     """Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.
@@ -391,7 +398,6 @@ class SourceSink(INIBasedModel):
     All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
-
     model_config = ConfigDict(extra="allow")
 
     _header: Literal["SourceSink"] = "SourceSink"
@@ -462,8 +468,10 @@ class SourceSink(INIBasedModel):
         return values
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+    def _exclude_from_validation(cls, input_data: dict | None = None) -> Set:
+        input_data = input_data or {}
         fields = cls.model_fields
+        dynamic_fields = input_data.get(_DYNAMIC_FIELDS_KEY) or []
         unknown_keywords = [
             key
             for key in input_data.keys()
@@ -471,20 +479,37 @@ class SourceSink(INIBasedModel):
             and (
                 key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
                 or _is_dynamic_forcing_delta_key(key)
+                or key in dynamic_fields
+                or key == _DYNAMIC_FIELDS_KEY
             )
         ]
         return set(unknown_keywords)
 
+    def __init__(self, dynamic_fields: Optional[List[str]] = None, **data):
+        """Initialize SourceSink and set dynamic fields as instance attributes.
 
-    def __init__(self, **data):
-        """Initialize SourceSink and set dynamic tracer attributes."""
+        When `dynamic_fields` is provided, exactly those names (whose values are passed
+        in `data`) are attached onto this instance. When it is omitted, the legacy
+        behaviour applies: every key in `data` that starts with one of
+        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` is attached. In both cases the values
+        are stored as-is on the instance (in `model_extra`); no coercion is applied yet.
+        Args:
+            dynamic_fields: Names of extra fields (whose values are passed in `data`)
+                to attach onto this instance. If `None`, the prefix-based detection is
+                used instead.
+            **data: The regular SourceSink field values, plus the values for any dynamic
+                fields.
+        """
+        # Thread the dynamic field names through validation so that
+        # `_exclude_from_validation` can whitelist them as known keywords.
+        if dynamic_fields is not None:
+            data[_DYNAMIC_FIELDS_KEY] = list(dynamic_fields)
+
         super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.startswith(
-                SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
-            ):
-                setattr(self, key, value)
+
+        # Drop the reserved key so it does not linger as an instance attribute.
+        if self.__pydantic_extra__ is not None:
+            self.__pydantic_extra__.pop(_DYNAMIC_FIELDS_KEY, None)
 
     @model_validator(mode="before")
     def validate_location_specification(cls, values):

@@ -49,6 +49,7 @@ from hydrolib.core.dflowfm.ini.models import (
     INIGeneral,
     INIModel,
 )
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
@@ -1208,9 +1209,9 @@ class ForcingModel(INIModel):
         # This method now only supports per model settings, not per section.
         parser = Parser(ParserConfig(parse_datablocks=True, parse_comments=False))
 
-        with filepath.open(encoding="utf8") as f:
-            for line in f:
-                parser.feed_line(line)
+        content = open_file_with_fallback_encoding(filepath)
+        for line in content.splitlines(keepends=True):
+            parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
 
