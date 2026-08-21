@@ -5,7 +5,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink, ForcingModel
-from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel, ExtOldQuantity
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldForcing,
+    ExtOldModel,
+    ExtOldQuantity,
+)
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -36,7 +40,7 @@ def mdu_parser_mock() -> MagicMock:
 
 
 @pytest.mark.parametrize(
-    "tim_file, ext_file_quantity_list, expected_data",
+    "tim_file, ext_file_quantity_list, active_substance_names, expected_data",
     [
         # The tim file has 4 columns (plus the time column), and the list of ext quantities has 4 quantities.
         pytest.param(
@@ -47,6 +51,7 @@ def mdu_parser_mock() -> MagicMock:
                 "salinity",
                 "initialtracer_anyname",
             ],
+            None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
@@ -60,12 +65,14 @@ def mdu_parser_mock() -> MagicMock:
             tim_file,
             ["discharge", "temperature", "salinity"],
             None,
+            None,
             id="test_list_of_ext_quantities_tim_column_mismatch",
         ),
         # The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
             ["discharge", "salinity", "initialtracer_anyname"],
+            None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [3.0] * 5,
@@ -77,6 +84,7 @@ def mdu_parser_mock() -> MagicMock:
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
             ["discharge", "temperature", "initialtracer_anyname"],
+            None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
@@ -88,6 +96,7 @@ def mdu_parser_mock() -> MagicMock:
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
             ["discharge", "initialtracer_anyname"],
+            None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -97,6 +106,7 @@ def mdu_parser_mock() -> MagicMock:
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
             ["sourcesink_discharge", "initialtracer_anyname", "initialtracer_anyname"],
+            None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "initialtracer_anyname": [4.0] * 5,
@@ -112,18 +122,75 @@ def mdu_parser_mock() -> MagicMock:
                 "initialtracer_anyname",
             ],
             None,
+            None,
             id="3_unique_quantities_in_ext_file_list_missing_column_in_tim",
+        ),
+        # An empty substance list behaves like None: no extra columns are expected.
+        pytest.param(
+            Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
+            ["discharge", "initialtracer_anyname"],
+            [],
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "initialtracer_anyname": [4.0] * 5,
+            },
+            id="empty_active_substances",
+        ),
+        # One active substance appends one column after discharge/salinity/temperature.
+        # leftsor.tim has 4 columns: discharge, salinity, temperature, substance_a.
+        pytest.param(
+            tim_file,
+            ["discharge", "salinity", "temperature"],
+            ["substance_a"],
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
+                "substance_a": [4.0] * 5,
+            },
+            id="one_active_substance",
+        ),
+        # Two active substances append two columns, in the order given.
+        # leftsor.tim has 4 columns: discharge, salinity, substance_a, substance_b.
+        pytest.param(
+            tim_file,
+            ["discharge", "salinity"],
+            ["substance_a", "substance_b"],
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "substance_a": [3.0] * 5,
+                "substance_b": [4.0] * 5,
+            },
+            id="two_active_substances",
+        ),
+        # Substances that push the quantity count past the tim columns raise a ValueError.
+        # leftsor.tim already fills its 4 columns without the extra substance.
+        pytest.param(
+            tim_file,
+            ["discharge", "salinity", "temperature", "initialtracer_anyname"],
+            ["substance_a"],
+            None,
+            id="active_substance_exceeds_tim_columns",
         ),
     ],
 )
 def test_parse_tim_model(
-    converter: SourceSinkConverter, tim_file, ext_file_quantity_list, expected_data
+    converter: SourceSinkConverter,
+    tim_file,
+    ext_file_quantity_list,
+    active_substance_names,
+    expected_data,
 ):
     if expected_data is None:
         with pytest.raises(ValueError):
-            converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            converter.parse_tim_model(
+                tim_file, ext_file_quantity_list, active_substance_names
+            )
     else:
-        time_series_data = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+        time_series_data = converter.parse_tim_model(
+            tim_file, ext_file_quantity_list, active_substance_names
+        )
         data = time_series_data.as_dataframe().to_dict(orient="list")
         assert data == expected_data
 
@@ -280,9 +347,7 @@ def compare_data(new_quantity_block: SourceSink):
 
 class TestConverter:
 
-    def test_default(
-        self, converter: SourceSinkConverter, source_sink_dir: Path
-    ):
+    def test_default(self, converter: SourceSinkConverter, source_sink_dir: Path):
         """
         The test case is based on the following assumptions:
         - temperature, salinity, and initialtracer_anyname are other quantities in the ext file.
@@ -355,9 +420,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities
-        )
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -392,9 +455,7 @@ class TestConverter:
             "initialtracer_anyname",
         ]
 
-        new_quantity_block = converter.convert(
-            forcing, ext_file_other_quantities
-        )
+        new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -472,9 +533,7 @@ class TestConverter:
 
         tim_file = source_sink_dir / "leftsor.tim"
         with patch("pathlib.Path.with_suffix", new=make_side_effect()):
-            new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2, -5.35]
         assert new_quantity_block.zsource == [-3, -2.90]
@@ -517,9 +576,7 @@ class TestConverter:
 
         tim_file = source_sink_dir / "no_temperature_no_salinity.tim"
         with patch("pathlib.Path.with_suffix", return_value=tim_file):
-            new_quantity_block = converter.convert(
-                forcing, ext_file_other_quantities
-            )
+            new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
 
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
@@ -565,7 +622,7 @@ class TestNoDeltaSuffixInConverter:
     @pytest.mark.parametrize(
         "forcing_idx, ext_quantities, expected_bc_quantity",
         [
-            (0, ["salinity"],    "sourcesink_salinity"),
+            (0, ["salinity"], "sourcesink_salinity"),
             (1, ["temperature"], "sourcesink_temperature"),
         ],
         ids=["salinity", "temperature"],
@@ -590,18 +647,17 @@ class TestNoDeltaSuffixInConverter:
         new_quantity_block = converter.convert(forcing, ext_quantities)
 
         bc_quantities = [
-            f.quantityunitpair[1].quantity
-            for f in new_quantity_block.discharge.forcing
+            f.quantityunitpair[1].quantity for f in new_quantity_block.discharge.forcing
         ]
         assert expected_bc_quantity in bc_quantities
-        assert not any("delta" in q.lower() for q in bc_quantities), (
-            f"No quantity name should contain 'delta', got: {bc_quantities}"
-        )
+        assert not any(
+            "delta" in q.lower() for q in bc_quantities
+        ), f"No quantity name should contain 'delta', got: {bc_quantities}"
 
     @pytest.mark.parametrize(
         "forcing_idx, ext_quantities, expected_field",
         [
-            (0, ["salinity"],    "salinity"),
+            (0, ["salinity"], "salinity"),
             (1, ["temperature"], "temperature"),
         ],
         ids=["salinity", "temperature"],
@@ -632,18 +688,26 @@ class TestNoDeltaSuffixInConverter:
         ext.save(ext_path)
 
         content = ext_path.read_text(encoding="utf-8")
-        assert f"{expected_field}delta" not in content.lower(), (
-            f"Serialized ext must not contain '{expected_field}Delta'"
-        )
-        assert expected_field in content, (
-            f"Serialized ext should contain '{expected_field}' as a field key"
-        )
+        assert (
+            f"{expected_field}delta" not in content.lower()
+        ), f"Serialized ext must not contain '{expected_field}Delta'"
+        assert (
+            expected_field in content
+        ), f"Serialized ext should contain '{expected_field}' as a field key"
 
     @pytest.mark.parametrize(
         "tim_file_name, ext_quantities, expected_quantity",
         [
-            ("left_no_delta_suffix.tim",  ["discharge", "salinity"],    "sourcesink_salinity"),
-            ("right_no_delta_suffix.tim", ["discharge", "temperature"], "sourcesink_temperature"),
+            (
+                "left_no_delta_suffix.tim",
+                ["discharge", "salinity"],
+                "sourcesink_salinity",
+            ),
+            (
+                "right_no_delta_suffix.tim",
+                ["discharge", "temperature"],
+                "sourcesink_temperature",
+            ),
         ],
         ids=["salinity", "temperature"],
     )
@@ -668,16 +732,16 @@ class TestNoDeltaSuffixInConverter:
         assert expected_quantity in tim_model.quantities_names
         assert not any(
             "delta" in q.lower() for q in tim_model.quantities_names
-        ), (
-            f"No quantity name should contain 'delta', got: {tim_model.quantities_names}"
-        )
+        ), f"No quantity name should contain 'delta', got: {tim_model.quantities_names}"
 
 
 class TestMainConverter:
     path = "tests/data/input/source-sink/source-sink.ext"
     tim_file = Path("tests/data/input/source-sink/tim-3-columns.tim")
 
-    def test_sources_sinks_only(self, mdu_parser_mock: MagicMock, old_forcing_file_boundary: dict[str, str]):
+    def test_sources_sinks_only(
+        self, mdu_parser_mock: MagicMock, old_forcing_file_boundary: dict[str, str]
+    ):
         """
         The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
         `initialsalinity`, and `initialtemperature`.
@@ -699,7 +763,9 @@ class TestMainConverter:
 
         self._compare(ext_model, inifield_model, structure_model)
 
-    def test_sources_sinks_with_fm(self, mdu_parser_mock: MagicMock, old_forcing_file_boundary: Dict[str, str]):
+    def test_sources_sinks_with_fm(
+        self, mdu_parser_mock: MagicMock, old_forcing_file_boundary: Dict[str, str]
+    ):
         """
         The old external forcing file contains only 3 quantities `discharge_salinity_temperature_sorsin`,
         `initialsalinity`, and `initialtemperature`, with salinity and temperature active in the FM model.
@@ -739,17 +805,28 @@ class TestMainConverter:
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
 
+
 class TestConvertSourceSinkWithSubstanceFile:
 
     def test_simple_model(self):
-        mdu_file = Path("tests/data/input/source-sink/substance-file/with_substance.mdu")
+        mdu_file = Path(
+            "tests/data/input/source-sink/substance-file/with_substance.mdu"
+        )
         file_names = "with_substances"
         converter = ExternalForcingConverter.from_mdu(mdu_file, debug=True)
         ext_model, _, _ = converter.update()
         source_sink = ext_model.sourcesink[0]
         assert isinstance(source_sink, SourceSink)
-        assert all([isinstance(model, ForcingModel) for model in [source_sink.discharge, source_sink.salinity,
-                                                                  source_sink.temperature]])
+        assert all(
+            [
+                isinstance(model, ForcingModel)
+                for model in [
+                    source_sink.discharge,
+                    source_sink.salinity,
+                    source_sink.temperature,
+                ]
+            ]
+        )
         assert source_sink.discharge.filepath == Path(file_names).with_suffix(".bc")
         # sub_1 and sub_2 are assigned dynamically
         assert all([hasattr(source_sink, sub_name) for sub_name in ["sub_1", "sub_2"]])
@@ -759,11 +836,13 @@ class TestConvertSourceSinkWithSubstanceFile:
         # Verify that the substance concentration units from the .sub file are
         # correctly propagated to the .bc quantity-unit pairs.
         sub_1_forcing = next(
-            f for f in source_sink.sub_1.forcing
+            f
+            for f in source_sink.sub_1.forcing
             if f.quantityunitpair[1].quantity == "sub_1"
         )
         sub_2_forcing = next(
-            f for f in source_sink.sub_2.forcing
+            f
+            for f in source_sink.sub_2.forcing
             if f.quantityunitpair[1].quantity == "sub_2"
         )
         assert sub_1_forcing.quantityunitpair[1].unit == "(gC/m3)"
@@ -891,7 +970,11 @@ class TestCorrectSubstanceUnits:
             the method should replace the placeholder '-' with the actual unit.
         """
         units = ["m3/s", "-", "-"]
-        quantities_names = ["sourcesink_discharge", "sourcesink_sub_1", "sourcesink_sub_2"]
+        quantities_names = [
+            "sourcesink_discharge",
+            "sourcesink_sub_1",
+            "sourcesink_sub_2",
+        ]
         substance_units = {"sub_1": "(gC/m3)", "sub_2": "(gN/m3)"}
 
         result = SourceSinkConverter._correct_substance_units(
@@ -907,7 +990,11 @@ class TestCorrectSubstanceUnits:
             should be returned as-is.
         """
         units = ["m3/s", "-", "-"]
-        quantities_names = ["sourcesink_discharge", "sourcesink_sub_1", "sourcesink_sub_2"]
+        quantities_names = [
+            "sourcesink_discharge",
+            "sourcesink_sub_1",
+            "sourcesink_sub_2",
+        ]
 
         result = SourceSinkConverter._correct_substance_units(
             units, quantities_names, None
@@ -921,7 +1008,11 @@ class TestCorrectSubstanceUnits:
             An empty substance_units dict is falsy, so units should pass through.
         """
         units = ["m3/s", "1e-3", "degC"]
-        quantities_names = ["sourcesink_discharge", "sourcesink_salinitydelta", "sourcesink_temperaturedelta"]
+        quantities_names = [
+            "sourcesink_discharge",
+            "sourcesink_salinitydelta",
+            "sourcesink_temperaturedelta",
+        ]
 
         result = SourceSinkConverter._correct_substance_units(
             units, quantities_names, {}
@@ -936,11 +1027,14 @@ class TestCorrectSubstanceUnits:
             salinity) should keep their original unit values.
         """
         units = ["m3/s", "1e-3", "-"]
-        quantities_names = ["sourcesink_discharge", "sourcesink_salinitydelta", "sourcesink_sub_1"]
+        quantities_names = [
+            "sourcesink_discharge",
+            "sourcesink_salinitydelta",
+            "sourcesink_sub_1",
+        ]
         substance_units = {"sub_1": "(gC/m3)"}
 
         result = SourceSinkConverter._correct_substance_units(
             units, quantities_names, substance_units
         )
         assert result == ["m3/s", "1e-3", "(gC/m3)"], f"Got {result}"
-
