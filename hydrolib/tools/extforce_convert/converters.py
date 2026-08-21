@@ -671,7 +671,7 @@ class SourceSinkConverter(BaseConverter):
         return [
             quantity
             for quantity in quantities
-            if not quantity.startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
+            if not quantity.lower().startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
         ]
 
     @staticmethod
