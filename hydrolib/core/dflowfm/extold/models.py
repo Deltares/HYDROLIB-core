@@ -50,6 +50,7 @@ FILETYPE_FILEMODEL_MAPPING = {
     10: PolyFile,
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
+    14: DiskOnlyFileModel,
 }
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
@@ -352,6 +353,44 @@ class ExtOldForcing(BaseModel):
                 )
         return value
 
+    @field_validator("filetype", mode="before")
+    @classmethod
+    def validate_filetype(cls, value) -> ExtOldFileType:
+        """Validate that the filetype value is a valid ExtOldFileType member.
+
+        Args:
+            value: The raw filetype value to validate.
+
+        Returns:
+            ExtOldFileType: The validated filetype enum member.
+
+        Raises:
+            ValueError: If the value cannot be converted to an integer or is not a
+                valid ExtOldFileType value.
+        """
+        if isinstance(value, ExtOldFileType):
+            return value
+
+        valid_values = [e.value for e in ExtOldFileType]
+        if isinstance(value, bool):
+            raise ValueError(
+                f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+            )
+
+        try:
+            int_value = int(value)
+        except (ValueError, TypeError):
+            raise ValueError(
+                f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+            )
+
+        enum_value = ExtOldFileType._value2member_map_.get(int_value)
+        if enum_value is None:
+            raise ValueError(
+                f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
+            )
+        return enum_value
+
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
@@ -521,7 +560,13 @@ class ExtOldForcing(BaseModel):
             raw_path = values.get(filename_var_name)
 
             if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
+                try:
+                    int_file_type = int(file_type)
+                except (ValueError, TypeError):
+                    return values
+                model = FILETYPE_FILEMODEL_MAPPING.get(int_file_type)
+                if model is None:
+                    return values
                 values[filename_var_name] = resolve_file_model(raw_path, model)
 
         return values
