@@ -410,11 +410,7 @@ class ExternalForcingConverter:
                 forcing, source_sink_quantities
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
-            if self.temperature_salinity_data is None:
-                raise ValueError("FM model is required to convert Boundary conditions.")
-            else:
-                start_time = self.temperature_salinity_data.get("refdate")
-                new_quantity_block = converter_class.convert(forcing, start_time)
+            new_quantity_block = converter_class.convert(forcing)
         elif isinstance(
             converter_class, (InitialConditionConverter, ParametersConverter)
         ):

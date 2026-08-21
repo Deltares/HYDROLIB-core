@@ -183,6 +183,20 @@ class MeteoConverter(BaseConverter):
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
 
+    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+        """Boundary condition converter constructor.
+
+        Args:
+            mdu_parser (MDUParser, optional):
+                Parser for the FM model. Required at `convert` time: the boundary
+                condition conversion needs the reference time the parser exposes.
+                Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
+        """
+        super().__init__(root_dir=root_dir)
+        self._mdu_parser = mdu_parser
+
     @staticmethod
     def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
         """Parse the boundary condition related time series from the tim files.
@@ -288,9 +302,7 @@ class BoundaryConditionConverter(BaseConverter):
         cmp_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.cmp"))
         return tim_files, t3d_files, cmp_files
 
-    def convert(
-        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
-    ) -> Boundary:
+    def convert(self, forcing: ExtOldForcing) -> Boundary:
         """Boundary condition converter.
 
         Convert an old external forcing block to a boundary forcing block
@@ -307,8 +319,10 @@ class BoundaryConditionConverter(BaseConverter):
                 in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps,
                 required for the conversion process.
-            time_unit:
-                The start date of the time series data.
+
+        Note:
+            The reference time is derived from the `MDUParser` injected at construction
+            (see `__init__`), so `convert` needs no separate `time_unit` argument.
 
         Returns:
             Boundary: A Boundary object that represents the converted forcing
@@ -324,12 +338,18 @@ class BoundaryConditionConverter(BaseConverter):
 
         Notes:
             - The `root_dir` property must be set before calling this method.
-            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
-            boundary Condition can be only converted by reading the mdu file and the external forcing file is not
-            enough.
+            - Since the reference time is read from the mdu file, boundary conditions can only be converted when an
+            `MDUParser` was injected at construction; the external forcing file alone is not enough.
             - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
             end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
+        if (
+            self._mdu_parser is None
+            or self._mdu_parser.temperature_salinity_data is None
+        ):
+            raise ValueError("MDU model is required to convert Boundary conditions.")
+        time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
+
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
@@ -678,10 +698,7 @@ class SourceSinkConverter(BaseConverter):
             # the kwargs will be provided only from the source and sink converter
             # Ensure 'temperature' comes before 'salinity'
             keys = list(final_temp_salinity.keys())
-            if (
-                SOURCESINK_TEMP_IN_BC in keys
-                and SOURCESINK_SALINITY_IN_BC in keys
-            ):
+            if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
                 keys.remove(SOURCESINK_SALINITY_IN_BC)
                 keys.insert(
                     keys.index(SOURCESINK_TEMP_IN_BC),
@@ -947,9 +964,7 @@ class SourceSinkConverter(BaseConverter):
             polyline.filepath, self.root_dir
         ).with_suffix(".tim")
         if not tim_file.exists():
-            raise ValueError(
-                f"TIM file '{tim_file}' not found for QUANTITY={quantity}"
-            )
+            raise ValueError(f"TIM file '{tim_file}' not found for QUANTITY={quantity}")
         return tim_file
 
     def convert(
@@ -1103,7 +1118,7 @@ class ConverterFactory:
         elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
             return InitialConditionConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter(root_dir=root_dir)
+            return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
             return ParametersConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):

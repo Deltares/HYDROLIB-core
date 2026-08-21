@@ -119,7 +119,6 @@ def mdu_parser_mock() -> MagicMock:
 def test_parse_tim_model(
     converter: SourceSinkConverter, tim_file, ext_file_quantity_list, expected_data
 ):
-
     if expected_data is None:
         with pytest.raises(ValueError):
             converter.parse_tim_model(tim_file, ext_file_quantity_list)
