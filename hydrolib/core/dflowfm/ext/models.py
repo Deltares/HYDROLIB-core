@@ -293,6 +293,27 @@ class Boundary(INIBasedModel):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
+def _is_non_null_location_file(raw: Any) -> bool:
+    """Return True when *raw* represents a non-null locationFile value.
+
+    Accepts a ``Path``, a non-empty ``str``, or a ``DiskOnlyFileModel``-style
+    dict whose ``filepath`` key is not *None*.  Returns False for *None*, an
+    empty string, or a dict with ``filepath=None``.
+    """
+    if raw is None:
+        return False
+    if isinstance(raw, str):
+        return raw.strip() != ""
+    if isinstance(raw, Path):
+        return True
+    if isinstance(raw, dict):
+        return raw.get("filepath") is not None
+    # DiskOnlyFileModel instance
+    if hasattr(raw, "filepath"):
+        return raw.filepath is not None
+    return False
+
+
 class Lateral(INIBasedModel):
     """A `[Lateral]` block for use inside an external forcings file.
 
@@ -312,6 +333,9 @@ class Lateral(INIBasedModel):
     numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    locationfile: Optional[
+        Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
+    ] = Field(None, alias="locationFile")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -329,7 +353,18 @@ class Lateral(INIBasedModel):
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
-        """Validates that the correct location specification is given."""
+        """Validates that the correct location specification is given.
+
+        A ``locationFile`` referencing a polygon file is accepted as a complete
+        location specification on its own (no coordinates or nodeId/branchId needed).
+        All other combinations are validated by the generic
+        :func:`validate_location_specification` helper.
+        """
+        # A non-null locationFile is a self-contained location specification.
+        raw_loc_file = values.get("locationfile") or values.get("locationFile")
+        if _is_non_null_location_file(raw_loc_file):
+            return values
+
         return validate_location_specification(
             values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
         )

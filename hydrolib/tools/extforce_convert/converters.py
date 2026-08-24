@@ -1165,6 +1165,7 @@ class LateralConverter(BaseConverter):
         location_data = self._get_location_data(forcing)
 
         data: Dict[str, Any] = {"id": location_data.pop("id")}
+        data["name"] = forcing.quantity
         if location_type is not None:
             data["locationtype"] = location_type
         data.update(location_data)
@@ -1250,7 +1251,7 @@ class LateralConverter(BaseConverter):
                     user_defined_names=user_defined_names,
                 )
                 forcing_model = ForcingModel(forcing=time_series_list)
-                forcing_model.filepath = resolved_location_file.with_suffix(".bc")
+                forcing_model.filepath = location_file.with_suffix(".bc")
                 self.legacy_files = tim_file
                 return forcing_model
 
@@ -1275,8 +1276,8 @@ class LateralConverter(BaseConverter):
             forcing (ExtOldForcing): The old forcing block.
 
         Returns:
-            Dict[str, Any]: A dict with 'id' and optionally location fields
-                such as 'numcoordinates', 'xcoordinates', 'ycoordinates'.
+            Dict[str, Any]: A dict with 'id' and either a 'locationfile' key (when
+                the source is a PolyFile) or inline coordinate fields.
         """
         if isinstance(forcing.filename, PolyFile):
             poly_file = forcing.filename
@@ -1287,11 +1288,8 @@ class LateralConverter(BaseConverter):
                 # Override id with the PolyFile object name if available
                 if first_obj.metadata and first_obj.metadata.name:
                     result["id"] = first_obj.metadata.name
-                points = first_obj.points
-                if points:
-                    result["numcoordinates"] = len(points)
-                    result["xcoordinates"] = [p.x for p in points]
-                    result["ycoordinates"] = [p.y for p in points]
+            # Reference the polygon file directly instead of inlining coordinates.
+            result["locationfile"] = poly_file.filepath
             return result
 
         if isinstance(forcing.filename, TimModel):
