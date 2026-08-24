@@ -267,7 +267,6 @@ class ExternalForcingConverter:
             Boundary: (self.ext_model, "boundary"),
             Lateral: (self.ext_model, "lateral"),
             SourceSink: (self.ext_model, "sourcesink"),
-            Meteo: (self.ext_model, "meteo"),
             Spatial: (self.ext_model, "spatial"),
             Structure: (self.structure_model, "structure"),
         }

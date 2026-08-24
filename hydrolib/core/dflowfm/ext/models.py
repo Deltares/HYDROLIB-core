@@ -715,7 +715,7 @@ class Meteo(SpatialForcingBase):
         None, alias="extrapolationSearchRadius"
     )
     averagingtype: int | None = Field(None, alias="averagingType")
-    averagingnummin: float | None = Field(None, alias="averagingNumMin")
+    averagingnummin: PositiveInt | None = Field(None, alias="averagingNumMin")
     averagingpercentile: float | None = Field(None, alias="averagingPercentile")
 
     # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
