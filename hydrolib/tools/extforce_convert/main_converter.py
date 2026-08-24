@@ -18,16 +18,7 @@ from hydrolib.core.dflowfm.ext.models import (
     SourceSink,
     Spatial
 )
-from hydrolib.core.dflowfm.extold.models import (
-    ExtOldInitialConditionQuantity,
-    ExtOldModel,
-    ExtOldParametersQuantity,
-)
-from hydrolib.core.dflowfm.inifield.models import (
-    IniFieldModel,
-    InitialField,
-    ParameterField,
-)
+from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
@@ -142,15 +133,6 @@ class ExternalForcingConverter:
             ExtModel, path, recurse=False
         )
 
-        path = (
-            rdir / "new-initial-conditions.ini"
-            if inifield_file is None
-            else inifield_file
-        )
-        self._inifield_model = construct_filemodel_new_or_existing(
-            IniFieldModel, path, recurse=False
-        )
-
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
         self._structure_model = construct_filemodel_new_or_existing(
             StructureModel, path, recurse=False
@@ -240,19 +222,6 @@ class ExternalForcingConverter:
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
 
     @property
-    def inifield_model(self) -> IniFieldModel:
-        """IniFieldModel: object with all initial fields blocks."""
-        if not hasattr(self, "_inifield_model"):
-            raise ValueError(
-                "inifield_model not set, please use the `inifield_model` setter. to set it."
-            )
-        return self._inifield_model
-
-    @inifield_model.setter
-    def inifield_model(self, path: PathOrStr):
-        self._inifield_model = construct_filemodel_new_or_existing(IniFieldModel, path)
-
-    @property
     def structure_model(self) -> StructureModel:
         """StructureModel: object with all structure blocks."""
         if not hasattr(self, "_structure_model"):
@@ -303,26 +272,23 @@ class ExternalForcingConverter:
             SourceSink: (self.ext_model, "sourcesink"),
             Meteo: (self.ext_model, "meteo"),
             Spatial: (self.ext_model, "spatial"),
-            InitialField: (self.inifield_model, "initial"),
-            ParameterField: (self.inifield_model, "parameter"),
             Structure: (self.structure_model, "structure"),
         }
 
     def update(
         self,
-    ) -> Union[Tuple[ExtModel, IniFieldModel, StructureModel], None]:
+    ) -> Union[Tuple[ExtModel, StructureModel], None]:
         """Convert the old external forcing file to a new format files.
 
         Notes:
             - When the output files exist, output will be appended to them.
             - If there is a new external forcing file, the converted quantities will be appended to it, otherwise a new
             external forcing file will be created.
-            - If there is an initial field file, the converted quantities will be appended to it, otherwise a new initial
-            field file will be created in the same directory as the mdu file, and the `IniFieldFile` field will be
-            added/updated in the geometry section in the mdu file.
+            - Meteo, initial-condition and parameter quantities all convert to `[Spatial]` blocks in the external
+            forcing model; the converter no longer produces an initial field file.
 
         Returns:
-            Tuple[ExtOldModel, ExtModel, IniFieldModel, StructureModel]:
+            Tuple[ExtModel, StructureModel]:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
@@ -374,7 +340,7 @@ class ExternalForcingConverter:
             ]
             self.extold_model.forcing = forcing
 
-        return self.ext_model, self.inifield_model, self.structure_model
+        return self.ext_model, self.structure_model
 
     def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
@@ -416,18 +382,11 @@ class ExternalForcingConverter:
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)
-        elif isinstance(
-            converter_class, SpatialConverter
-        ):
-            if ConverterFactory.contains(
-                ExtOldInitialConditionQuantity, forcing.quantity
-            ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
-                # Initial conditions and parameters are written to the inifield model file
-                ref_path = self.inifield_model.filepath
-            else:
-                # Meteo quantities are written to the ext model file
-                ref_path = self.ext_model.filepath
-
+        elif isinstance(converter_class, SpatialConverter):
+            # Meteo, initial-condition and parameter quantities all convert to
+            # Spatial blocks written to the ext model file, so their data-file
+            # paths are resolved relative to the ext model file.
+            ref_path = self.ext_model.filepath
             forcing_path = self._resolve_forcing_path(forcing, ref_path)
             new_quantity_block = converter_class.convert(forcing, forcing_path)
         else:
@@ -447,12 +406,6 @@ class ExternalForcingConverter:
             recursive (bool, optional): Defaults to True.
                 Save the models recursively.
         """
-        num_quantities_inifield = len(self.inifield_model.parameter) + len(
-            self.inifield_model.initial
-        )
-        if num_quantities_inifield > 0:
-            self._save_inifield_model(backup, recursive)
-
         if len(self.structure_model.structure) > 0:
             self._save_structure_model(backup, recursive)
 
@@ -470,18 +423,6 @@ class ExternalForcingConverter:
         if self.mdu_parser is not None:
             self.mdu_parser.clean()
             self.mdu_parser.save(backup=backup)
-
-    def _save_inifield_model(self, backup: bool, recursive: bool):
-        """Save the IniFieldModel.
-
-        The exclude_unset parameter is set to False, to save the general section with the fileversion section as
-        required by the Fortran kernel.
-        """
-        if backup and self.inifield_model.filepath.exists():
-            backup_file(self.inifield_model.filepath)
-        self.inifield_model.save(
-            recurse=recursive, exclude_unset=False, path_style=self.path_style
-        )
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
@@ -577,13 +518,6 @@ class ExternalForcingConverter:
             remove_old_ext_file=remove_old_ext_file,
         )
 
-        num_quantities_inifield = len(self.inifield_model.parameter) + len(
-            self.inifield_model.initial
-        )
-
-        if num_quantities_inifield > 0:
-            self.mdu_parser.update_inifield_file(self.inifield_model.filepath.name)
-
         if len(self.structure_model.structure) > 0:
             self.mdu_parser.update_structure_file(self.structure_model.filepath.name)
 
@@ -596,7 +530,6 @@ class ExternalForcingConverter:
             print(f"* {self.extold_model.filepath}")
             print("Output:")
             print(f"* {self.ext_model.filepath}")
-            print(f"* {self.inifield_model.filepath}")
             print(f"* {self.structure_model.filepath}")
 
 
@@ -630,7 +563,7 @@ def recursive_converter(
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
                 converter = ExternalForcingConverter.from_mdu(path, debug=debug)
-                _, _, _ = converter.update()
+                _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:
                     converter.clean()

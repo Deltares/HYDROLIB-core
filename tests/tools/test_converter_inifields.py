@@ -1,5 +1,4 @@
 from pathlib import Path
-from types import MethodType
 
 import numpy as np
 import pytest
@@ -15,8 +14,6 @@ from hydrolib.core.dflowfm.extold.models import (
 
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
-    IniFieldModel,
-    InitialField,
     InterpolationMethod,
 )
 from hydrolib.tools.extforce_convert.converters import (
@@ -28,7 +25,6 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 from hydrolib.tools.extforce_convert.utils import (
     oldfiletype_to_forcing_file_type,
 )
-from tests.utils import compare_two_files, ignore_version_lines
 
 
 class TestConvertInitialCondition:
@@ -321,43 +317,6 @@ class TestConvertSeaIceQuantities:
         written = converter.ext_model.filepath.read_text()
         assert "seaIceThickness" in written
         assert "sea_ice_thickness" not in written
-
-
-class TestInifieldConverter:
-    def test_save_inifield(self, tmp_path: Path):
-        """
-        the test mocks the converter and only instantiates the InifieldModel.
-        """
-        path = tmp_path / "delete-me.ini"
-        data = {
-            "quantity": "initialwaterlevel",
-            "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
-            "datafiletype": DataFileType.sample,
-            "interpolationmethod": InterpolationMethod.triangulation,
-            "operand": "override",
-        }
-        ini_field = InitialField(**data)
-
-        converter = object.__new__(ExternalForcingConverter)
-        converter._path_style = None
-        converter._save_inifield_model = MethodType(
-            ExternalForcingConverter._save_inifield_model, converter
-        )
-
-        inifield_model = IniFieldModel(initial=[ini_field])
-        inifield_model.filepath = path
-
-        converter._inifield_model = inifield_model
-
-        converter._save_inifield_model(backup=True, recursive=True)
-        reference = "tests/data/reference/ini/inifield-with-one-initial.ini"
-        diff = compare_two_files(
-            reference,
-            path,
-            ignore_line=ignore_version_lines,
-        )
-        assert diff == []
-        path.unlink()
 
 
 class TestOldFiletypeToForcingFileType:

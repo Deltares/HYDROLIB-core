@@ -175,7 +175,7 @@ class TestSpatialE2E:
         """
         mdu_file = model_copy / "pt.mdu"
         converter = ExternalForcingConverter.from_mdu(mdu_file)
-        ext_model, inifield_model, structure_model = converter.update()
+        ext_model, structure_model = converter.update()
 
         expected_quantities = (
             [_RAINFALL_EXPECTED["quantity"]]
@@ -267,8 +267,6 @@ class TestSpatialE2E:
             )
             assert spatial.operand == Operand.override
 
-        assert len(inifield_model.initial) == 0
-        assert len(inifield_model.parameter) == 0
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
 

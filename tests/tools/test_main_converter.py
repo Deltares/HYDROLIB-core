@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import FilePathStyleConverter, PathStyle
 from hydrolib.core.dflowfm.ext import Spatial
 from hydrolib.core.dflowfm.ext.models import (
@@ -17,11 +16,6 @@ from hydrolib.core.dflowfm.ext.models import (
     SourceSink,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
-from hydrolib.core.dflowfm.inifield.models import (
-    DataFileType,
-    IniFieldModel,
-    InitialField,
-)
 from hydrolib.core.dflowfm.structure.models import FlowDirection, StructureModel, Weir
 from hydrolib.tools.extforce_convert import main_converter
 from hydrolib.tools.extforce_convert.main_converter import (
@@ -49,7 +43,7 @@ class TestExtOldToNewFromMDU:
 
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
         assert len(converter.extold_model.forcing) == 5
 
         converter.save()
@@ -79,7 +73,7 @@ class TestExtOldToNewFromMDU:
         mdu_filename = model_dir / "slrextrapol.mdu"
 
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.spatial) == 1
 
@@ -106,7 +100,7 @@ class TestExtOldToNewFromMDU:
         mdu_filename = model_dir / "slrextrapol.mdu"
 
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
         # The conversion is spatial-only: nothing lands in the other block lists.
         assert len(ext_model.spatial) == 1
         assert ext_model.n_forcing_blocks == 1
@@ -277,7 +271,6 @@ class TestExtOldToNewFromMDU:
         mdu_file.unlink()
 
         assert converter.ext_model.filepath.name == expected[0]
-        assert converter.inifield_model.filepath.name == expected[1]
         assert converter.structure_model.filepath.name == expected[2]
 
     def test_from_mdu_not_exist(self):
@@ -306,8 +299,6 @@ class TestExternalFocingConverter:
 
         assert isinstance(converter.ext_model, ExtModel)
         assert converter.ext_model.filepath == rdir / "new-external-forcing.ext"
-        assert isinstance(converter.inifield_model, IniFieldModel)
-        assert converter.inifield_model.filepath == rdir / "new-initial-conditions.ini"
         assert isinstance(converter.structure_model, StructureModel)
         assert converter.structure_model.filepath == rdir / "new-structure.ini"
 
@@ -335,7 +326,6 @@ class TestExternalFocingConverter:
         )
 
         assert converter.ext_model.filepath == new_ext_file
-        assert converter.inifield_model.filepath == new_initial_file
         assert converter.structure_model.filepath == new_structure_file
 
     def test_save_mock(self, old_forcing_file_initial_condition: Dict[str, str]):
@@ -461,20 +451,8 @@ class TestExternalFocingConverter:
             converter = ExternalForcingConverter(mock_ext_old_model)
 
         mock_mdu_parser = MagicMock()
-        mock_mdu_parser.has_inifield_file.return_value = False
         mock_mdu_parser.has_structure_file.return_value = False
         converter._mdu_parser = mock_mdu_parser
-
-        datafile = DiskOnlyFileModel(
-            filepath=Path("tests/data/input/mock_datafile.xyz")
-        )
-
-        # Create an InitialField instance
-        initial_field = InitialField(
-            quantity="waterlevel", datafile=datafile, datafiletype=DataFileType.arcinfo
-        )
-
-        converter.inifield_model.initial = [initial_field]
 
         # Add some structures to the structure model
         structure = Weir(
@@ -496,22 +474,9 @@ class TestExternalFocingConverter:
         # Verify that the external forcing file was updated
         mock_mdu_parser.update_extforce_file_new.assert_called_once()
 
-        # Verify that the inifield file was added
-        mock_mdu_parser.update_inifield_file.assert_called_once_with(
-            converter.inifield_model.filepath.name
-        )
-
         # Verify that the structure file was added
         mock_mdu_parser.update_structure_file.assert_called_once_with(
             converter.structure_model.filepath.name
-        )
-
-        # Test case: inifield file already exists
-        mock_mdu_parser.reset_mock()
-        mock_mdu_parser.has_inifield_file.return_value = True
-        converter._update_mdu_file()
-        mock_mdu_parser.update_inifield_file.assert_called_once_with(
-            converter.inifield_model.filepath.name
         )
 
         # Test case: structure file already exists
@@ -521,14 +486,6 @@ class TestExternalFocingConverter:
         mock_mdu_parser.update_structure_file.assert_called_once_with(
             converter.structure_model.filepath.name
         )
-
-        # Test case: no initial fields or parameters
-        mock_mdu_parser.reset_mock()
-        mock_mdu_parser.has_inifield_file.return_value = False
-        converter.inifield_model.initial = []
-        converter.inifield_model.parameter = []
-        converter._update_mdu_file()
-        mock_mdu_parser.update_inifield_file.assert_not_called()
 
         # Test case: no structures
         mock_mdu_parser.reset_mock()
@@ -709,16 +666,14 @@ class TestUpdate:
     def test_meteo_only(self, old_forcing_file_meteo: Dict[str, str]):
         converter = ExternalForcingConverter(old_forcing_file_meteo["path"])
 
-        ext_model, inifield_model, structure_model = converter.update()
+        ext_model, structure_model = converter.update()
 
         # all the quantities in the old external file are meteo quantities
         # check that all the quantities (2) were converted to Spatial blocks
         num_quantities = len(old_forcing_file_meteo["quantities"])
         assert len(ext_model.spatial) == num_quantities
-        # no parameters or any other structures, lateral, or meteo data
-        assert len(inifield_model.parameter) == 0
+        # no other structures, lateral, or meteo data
         assert len(ext_model.lateral) == 0
-        assert len(inifield_model.initial) == 0
         assert len(structure_model.structure) == 0
         assert [
             ext_model.spatial[i].datafiletype for i in range(num_quantities)
@@ -732,14 +687,13 @@ class TestUpdate:
     ):
         converter = ExternalForcingConverter(old_forcing_file_initial_condition["path"])
 
-        ext_model, inifield_model, structure_model = converter.update()
+        ext_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to Spatial blocks
         num_quantities = len(old_forcing_file_initial_condition["quantities"])
         assert len(ext_model.spatial) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
+        # no other structures, lateral or meteo data
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0

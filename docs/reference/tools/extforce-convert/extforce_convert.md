@@ -145,7 +145,7 @@ Public methods
     - For supported quantities: calls `_convert_forcing`, maps the resulting block type to the correct destination model (`_type_field_map`) and appends it.
     - If `mdu_parser` exists, updates the MDU file.
     - If any unsupported quantities exist, prunes `extold_model.forcing` to contain only those remaining unsupported forcings.
-  - Returns: `(ext_model, inifield_model, structure_model)` for inspection by callers.
+  - Returns: `(ext_model, structure_model)` for inspection by callers.
   - Side effects: Updates in-memory models; prints progress/logs; modifies `extold_model.forcing` contents if unsupported quantities exist.
   - Exceptions:
     - `NotImplementedError` if a converted block’s type is unknown to `_type_field_map`.
@@ -173,10 +173,9 @@ Static/Protected helpers (summarized for completeness; not typically called by c
 - `_read_old_file(ext_old_file: PathOrStr, path_style: Optional[PathStyle]) -> ExtOldModel`
 - `_type_field_map(self) -> dict[type, tuple[Any, str]]` (maps block types to destination models/attributes).
 - `_convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink, InitialField, ParameterField, Structure]`
-  - Note: The annotation in code lists only `Boundary|Lateral|Meteo|SourceSink`, but actual behavior includes `InitialField`, `ParameterField`, and `Structure` via the specific converters.
+  - Note: The annotation in code lists only `Boundary|Lateral|Meteo|SourceSink`, but actual behavior also includes `Spatial` (for meteo, initial-condition and parameter quantities) and `Structure` via the specific converters.
   - Exceptions: `ValueError` if MDU info missing for `SourceSink` or boundary conversions.
 - `_update_mdu_file(self) -> None`
-- `_save_inifield_model(self, backup: bool, recursive: bool) -> None`
 - `_save_structure_model(self, backup: bool, recursive: bool) -> None`
 - `_log_conversion_details(self) -> None`
 
