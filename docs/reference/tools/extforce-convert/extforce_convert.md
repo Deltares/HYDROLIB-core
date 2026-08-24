@@ -49,7 +49,6 @@ Constructor
 - `__init__(
     extold_model: Union[PathOrStr, ExtOldModel],
     ext_file: Optional[PathOrStr] = None,
-    inifield_file: Optional[PathOrStr] = None,
     structure_file: Optional[PathOrStr] = None,
     mdu_parser: MDUParser = None,
     verbose: bool = False,
@@ -59,7 +58,6 @@ Constructor
   - Parameters:
     - `extold_model`: Path to legacy `.ext` or an `ExtOldModel` instance. If a path or str, the file is loaded via `_read_old_file()`.
     - `ext_file`: Destination path for new external forcings (`ExtModel`). Defaults to `new-external-forcing.ext` in the same directory as the legacy file.
-    - `inifield_file`: Destination path for `IniFieldModel`. Defaults to `new-initial-conditions.ini`.
     - `structure_file`: Destination path for `StructureModel`. Defaults to `new-structure.ini`.
     - `mdu_parser`: Optional `MDUParser` to provide FM metadata (e.g., `refdate`, temperature/salinity) and to update the MDU file.
     - `verbose`: If `True`, prints conversion details to stdout.
@@ -78,7 +76,6 @@ Classmethod
 - `from_mdu(
     mdu_file: PathOrStr,
     ext_file_user: Optional[PathOrStr] = None,
-    inifield_file_user: Optional[PathOrStr] = None,
     structure_file_user: Optional[PathOrStr] = None,
     path_style: Optional[PathStyle] = None,
     debug: bool = False,
@@ -293,9 +290,9 @@ graph LR
 ```mermaid
 classDiagram
     class ExternalForcingConverter {
-        + __init__(extold_model, ext_file, inifield_file, structure_file, mdu_parser, verbose, path_style, debug)
-        + from_mdu(mdu_file, ext_file_user, inifield_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
-        + update() tuple~ExtModel, IniFieldModel, StructureModel~
+        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug)
+        + from_mdu(mdu_file, ext_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
+        + update() tuple~ExtModel, StructureModel~
         + save(backup, recursive) void
         + clean() void
         + check_unsupported_quantities() list~str~
@@ -483,7 +480,6 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 converter = ExternalForcingConverter(
     extold_model=".../old.ext",
     ext_file=".../new/forcings.ext",
-    inifield_file=".../new/inifields.ini",
     structure_file=".../new/structures.ini",
 )
 converter.update()

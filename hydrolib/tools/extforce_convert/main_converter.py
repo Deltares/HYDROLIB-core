@@ -42,7 +42,6 @@ class ExternalForcingConverter:
         self,
         extold_model: Union[PathOrStr, ExtOldModel],
         ext_file: Optional[PathOrStr] = None,
-        inifield_file: Optional[PathOrStr] = None,
         structure_file: Optional[PathOrStr] = None,
         mdu_parser: MDUParser = None,
         verbose: bool = False,
@@ -51,7 +50,7 @@ class ExternalForcingConverter:
     ):
         r"""Initialize the converter.
 
-        The converter will create new external forcing, initial field and structure files in the same directory as the
+        The converter will create new external forcing and structure files in the same directory as the
         old external forcing file, if no paths were given by the user for the new models.
 
         Args:
@@ -60,8 +59,6 @@ class ExternalForcingConverter:
                 `ExtOldModel` will be assumed to be in the, current working directory.
             ext_file (PathOrStr, optional):
                 Path to the new external forcing file.
-            inifield_file (PathOrStr, optional):
-                Path to the initial field file.
             structure_file (PathOrStr, optional):
                 Path to the structure file.
             mdu_parser (Optional[MDUParser], optional):
@@ -446,7 +443,6 @@ class ExternalForcingConverter:
         cls,
         mdu_file: PathOrStr,
         ext_file_user: Optional[PathOrStr] = None,
-        inifield_file_user: Optional[PathOrStr] = None,
         structure_file_user: Optional[PathOrStr] = None,
         path_style: Optional[PathStyle] = None,
         debug: bool = False,
@@ -461,9 +457,6 @@ class ExternalForcingConverter:
             ext_file_user (PathOrStr, optional): Path to the output external forcings
                 file. Defaults to the given ExtForceFileNew in the MDU file, if
                 present, or forcings.ext otherwise.
-            inifield_file_user (PathOrStr, optional): Path to the output initial field
-                file. Defaults to the given IniFieldFile in the MDU file, if
-                present, or inifields.ini otherwise.
             structure_file_user (PathOrStr, optional): Path to the output structures.ini
                 file. Defaults to the given StructureFile in the MDU file, if
                 present, or structures.ini otherwise.
@@ -489,13 +482,11 @@ class ExternalForcingConverter:
         )
 
         ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
-        inifield_file_user = mdu_parser.get_inifield_file(inifield_file_user)
         structure_file_user = mdu_parser.get_structure_file(structure_file_user)
 
         return cls(
             extoldfile,
             ext_file_user,
-            inifield_file_user,
             structure_file_user,
             mdu_parser,
             path_style=path_style,

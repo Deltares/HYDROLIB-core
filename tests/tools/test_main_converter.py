@@ -240,7 +240,8 @@ class TestExtOldToNewFromMDU:
         tmp_path: Path,
         content: List[str],
     ):
-        # ext_file, inifield_file, structure_file
+        # input_files = (ext_file, inifield_file, structure_file); the inifield entry
+        # is ignored now that the converter no longer produces an initial field file.
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
         mdu_file = tmp_path / "test.mdu"
         mdu_file.touch()
@@ -266,7 +267,7 @@ class TestExtOldToNewFromMDU:
             mock_content.return_value = content
 
             converter = ExternalForcingConverter.from_mdu(
-                mdu_file, input_files[0], input_files[1], input_files[2]
+                mdu_file, input_files[0], structure_file_user=input_files[2]
             )
         mdu_file.unlink()
 
@@ -318,11 +319,10 @@ class TestExternalFocingConverter:
         """
         path = old_forcing_file_initial_condition["path"]
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
-        new_initial_file = Path("tests/data/input/new-initial-conditions.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
         converter = ExternalForcingConverter(
-            path, new_ext_file, new_initial_file, new_structure_file
+            path, new_ext_file, new_structure_file
         )
 
         assert converter.ext_model.filepath == new_ext_file
