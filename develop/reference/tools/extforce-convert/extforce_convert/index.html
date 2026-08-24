@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3998,7 +3998,7 @@ You're not viewing the latest release version.
 <li><code>hydrolib.core.dflowfm.inifield.models.IniFieldModel</code> (output): Destination model for initial/parameter fields.</li>
 <li><code>hydrolib.core.dflowfm.structure.models.StructureModel</code> (output): Destination model for structures.</li>
 <li><code>hydrolib.tools.extforce_convert.converters.ConverterFactory</code> (strategy selection): Creates the correct converter class for a given quantity.</li>
-<li><code>BoundaryConditionConverter</code>, <code>SourceSinkConverter</code>, <code>SpatialConverter</code> are concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are all routed to <code>SpatialConverter</code> (producing <code>[Spatial]</code> blocks).</li>
+<li><code>BoundaryConditionConverter</code>, <code>SourceSinkConverter</code>, <code>InitialConditionConverter</code>, <code>ParametersConverter</code> are concrete converters used depending on the quantity.</li>
 <li><code>hydrolib.tools.extforce_convert.mdu_parser.MDUParser</code> (optional): Reads MDU metadata (e.g., <code>refdate</code>, temperature/salinity flags) and updates references to new files.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.CONVERTER_DATA</code> (capabilities): Reports unsupported quantities.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing</code> (model builder): Ensures destination models exist (new or from existing files) with minimal recursion.</li>
@@ -4016,6 +4016,7 @@ You're not viewing the latest release version.
 <li><code>__init__(
     extold_model: Union[PathOrStr, ExtOldModel],
     ext_file: Optional[PathOrStr] = None,
+    inifield_file: Optional[PathOrStr] = None,
     structure_file: Optional[PathOrStr] = None,
     mdu_parser: MDUParser = None,
     verbose: bool = False,
@@ -4025,6 +4026,7 @@ You're not viewing the latest release version.
 <li>Parameters:<ul>
 <li><code>extold_model</code>: Path to legacy <code>.ext</code> or an <code>ExtOldModel</code> instance. If a path or str, the file is loaded via <code>_read_old_file()</code>.</li>
 <li><code>ext_file</code>: Destination path for new external forcings (<code>ExtModel</code>). Defaults to <code>new-external-forcing.ext</code> in the same directory as the legacy file.</li>
+<li><code>inifield_file</code>: Destination path for <code>IniFieldModel</code>. Defaults to <code>new-initial-conditions.ini</code>.</li>
 <li><code>structure_file</code>: Destination path for <code>StructureModel</code>. Defaults to <code>new-structure.ini</code>.</li>
 <li><code>mdu_parser</code>: Optional <code>MDUParser</code> to provide FM metadata (e.g., <code>refdate</code>, temperature/salinity) and to update the MDU file.</li>
 <li><code>verbose</code>: If <code>True</code>, prints conversion details to stdout.</li>
@@ -4049,6 +4051,7 @@ You're not viewing the latest release version.
 <li><code>from_mdu(
     mdu_file: PathOrStr,
     ext_file_user: Optional[PathOrStr] = None,
+    inifield_file_user: Optional[PathOrStr] = None,
     structure_file_user: Optional[PathOrStr] = None,
     path_style: Optional[PathStyle] = None,
     debug: bool = False,
@@ -4152,7 +4155,7 @@ You're not viewing the latest release version.
 <li>If any unsupported quantities exist, prunes <code>extold_model.forcing</code> to contain only those remaining unsupported forcings.</li>
 </ul>
 </li>
-<li>Returns: <code>(ext_model, structure_model)</code> for inspection by callers.</li>
+<li>Returns: <code>(ext_model, inifield_model, structure_model)</code> for inspection by callers.</li>
 <li>Side effects: Updates in-memory models; prints progress/logs; modifies <code>extold_model.forcing</code> contents if unsupported quantities exist.</li>
 <li>
 <p>Exceptions:</p>
@@ -4192,9 +4195,10 @@ You're not viewing the latest release version.
 <li><code>_read_old_file(ext_old_file: PathOrStr, path_style: Optional[PathStyle]) -&gt; ExtOldModel</code></li>
 <li><code>_type_field_map(self) -&gt; dict[type, tuple[Any, str]]</code> (maps block types to destination models/attributes).</li>
 <li><code>_convert_forcing(self, forcing) -&gt; Union[Boundary, Lateral, Meteo, SourceSink, InitialField, ParameterField, Structure]</code></li>
-<li>Note: The annotation in code lists only <code>Boundary|Lateral|Meteo|SourceSink</code>, but actual behavior also includes <code>Spatial</code> (for meteo, initial-condition and parameter quantities) and <code>Structure</code> via the specific converters.</li>
+<li>Note: The annotation in code lists only <code>Boundary|Lateral|Meteo|SourceSink</code>, but actual behavior includes <code>InitialField</code>, <code>ParameterField</code>, and <code>Structure</code> via the specific converters.</li>
 <li>Exceptions: <code>ValueError</code> if MDU info missing for <code>SourceSink</code> or boundary conversions.</li>
 <li><code>_update_mdu_file(self) -&gt; None</code></li>
+<li><code>_save_inifield_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
 <li><code>_save_structure_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
 <li><code>_log_conversion_details(self) -&gt; None</code></li>
 </ul>
@@ -4351,9 +4355,9 @@ Hold "Ctrl" to enable pan &amp; zoom
     </nav>
     <pre class="mermaid"><code>classDiagram
     class ExternalForcingConverter {
-        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug)
-        + from_mdu(mdu_file, ext_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
-        + update() tuple~ExtModel, StructureModel~
+        + __init__(extold_model, ext_file, inifield_file, structure_file, mdu_parser, verbose, path_style, debug)
+        + from_mdu(mdu_file, ext_file_user, inifield_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
+        + update() tuple~ExtModel, IniFieldModel, StructureModel~
         + save(backup, recursive) void
         + clean() void
         + check_unsupported_quantities() list~str~
@@ -4571,6 +4575,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
     <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;.../old.ext&quot;</span><span class="p">,</span>
     <span class="n">ext_file</span><span class="o">=</span><span class="s2">&quot;.../new/forcings.ext&quot;</span><span class="p">,</span>
+    <span class="n">inifield_file</span><span class="o">=</span><span class="s2">&quot;.../new/inifields.ini&quot;</span><span class="p">,</span>
     <span class="n">structure_file</span><span class="o">=</span><span class="s2">&quot;.../new/structures.ini&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
