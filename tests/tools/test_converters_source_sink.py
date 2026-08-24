@@ -759,9 +759,9 @@ class TestMainConverter:
                 "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
             ),
         ):
-            ext_model, inifield_model, structure_model = converter.update()
+            ext_model, structure_model = converter.update()
 
-        self._compare(ext_model, inifield_model, structure_model)
+        self._compare(ext_model, structure_model)
 
     def test_sources_sinks_with_fm(
         self, mdu_parser_mock: MagicMock, old_forcing_file_boundary: Dict[str, str]
@@ -786,22 +786,22 @@ class TestMainConverter:
                 "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
             ),
         ):
-            ext_model, inifield_model, structure_model = converter.update()
+            ext_model, structure_model = converter.update()
 
-        self._compare(ext_model, inifield_model, structure_model)
+        self._compare(ext_model, structure_model)
 
     @staticmethod
-    def _compare(ext_model, inifield_model, structure_model):
-        # all the quantities in the old external file are initial conditions
-        # check that all the quantities (3) were converted to initial conditions
+    def _compare(ext_model, structure_model):
+        # The old external file has 1 source-sink and 2 initial conditions (initialsalinity, initialtemperature).
+        # Initial conditions are converted to Spatial blocks in the ext model (new format).
         num_quantities = 1
         assert len(ext_model.sourcesink) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
+        # initialsalinity and initialtemperature are converted to Spatial blocks in the ext model
+        assert len(ext_model.spatial) == 2
+        # no other structures, lateral or meteo data
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0
-        assert len(inifield_model.initial) == 2
         quantities = ext_model.sourcesink
         quantities[0].name = "discharge_salinity_temperature_sorsin"
 
@@ -814,7 +814,7 @@ class TestConvertSourceSinkWithSubstanceFile:
         )
         file_names = "with_substances"
         converter = ExternalForcingConverter.from_mdu(mdu_file, debug=True)
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
         source_sink = ext_model.sourcesink[0]
         assert isinstance(source_sink, SourceSink)
         assert all(

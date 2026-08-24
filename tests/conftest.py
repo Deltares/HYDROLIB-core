@@ -40,24 +40,29 @@ def invalid_data_dir() -> Path:
 def initial_condition_interpolation_methods() -> List[str]:
     return [
         "constant",
-        "averaging",
         "triangulation",
+        "averaging",
         "linearSpaceTime",
-        "Possible values: constant, triangulation, averaging.",
+        "bilinear",
+        "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear.",
     ]
 
 
 @pytest.fixture
 def initial_condition_file_type() -> List[str]:
     return [
-        "arcinfo",
+        "arcInfo",
         "GeoTIFF",
         "sample",
         "1dField",
         "polygon",
         "uniform",
         "netcdf",
-        "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon.",
+        "bcAscii",
+        "uniMagDir",
+        "spiderweb",
+        "curviGrid",
+        "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid.",
     ]
 
 
@@ -93,19 +98,19 @@ def old_forcing_file() -> Path:
     return Path("tests/data/input/old-external-forcing.ext")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_initial_condition() -> Dict[str, Path]:
     return {
         "path": Path(
             "tests/data/input/old-external-forcing-initial-contitions-only.ext"
         ),
         "quantities": ["initialwaterlevel", "initialwaterlevel", "initialsalinity"],
-        "file_type": ["arcinfo", "arcinfo", "arcinfo"],
+        "file_type": ["arcInfo", "arcInfo", "arcInfo"],
         "file_path": ["iniwaterlevel1.pol", "iniwaterlevel.xyz", "inisalinity.xyz"],
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def old_forcing_file_meteo() -> Dict[str, Path]:
     return {
         "path": Path("tests/data/input/old-external-meteo-only.ext"),
@@ -115,7 +120,20 @@ def old_forcing_file_meteo() -> Dict[str, Path]:
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
+def old_forcing_file_parameters() -> Dict[str, Path]:
+    return {
+        "path": Path("tests/data/input/old-external-parameters-only.ext"),
+        "quantities": [
+            "frictioncoefficient",
+            "horizontaleddyviscositycoefficient",
+        ],
+        "file_type": ["sample", "sample"],
+        "file_path": ["friction.xyz", "viscosity.xyz"],
+    }
+
+
+@pytest.fixture
 def old_forcing_file_boundary() -> Dict[str, Path]:
     return {
         "path": Path(

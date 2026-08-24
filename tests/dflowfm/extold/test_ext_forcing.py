@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -13,6 +14,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldMethod,
     ExtOldModel,
     ExtOldQuantity,
+    Layer,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -697,3 +699,35 @@ class TestValidateNumMin:
 
         exp_msg = "NUMMIN only allowed when METHOD is 6"
         assert exp_msg in str(error.value)
+
+
+class TestExtOldForcingLayer:
+    """The old LAYER field accepts -1 (bottom), 0 (all) or a positive layer number,
+    and rejects other (non-positive) integers."""
+
+    @pytest.mark.parametrize(
+        "layer, expected",
+        [(-1, Layer.bottom), (0, Layer.all), (5, 5)],
+    )
+    def test_valid_layer_is_accepted(self, layer, expected):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            layer=layer,
+        )
+        assert forcing.layer == expected
+
+    @pytest.mark.parametrize("layer", [-5, -2])
+    def test_invalid_negative_layer_is_rejected(self, layer):
+        with pytest.raises(ValidationError):
+            ExtOldForcing(
+                quantity=ExtOldQuantity.WindX,
+                filename="wind.nc",
+                filetype=11,
+                method="3",
+                operand="O",
+                layer=layer,
+            )

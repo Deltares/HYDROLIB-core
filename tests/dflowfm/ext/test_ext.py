@@ -2,7 +2,6 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List
 
-import numpy as np
 import pytest
 from pydantic import ValidationError
 
@@ -222,22 +221,22 @@ class TestMeteo:
             forcingfiletype=MeteoForcingFileType.uniform,
             targetmaskfile=None,
             targetmaskinvert=True,
-            interpolationmethod=MeteoInterpolationMethod.nearestnb,
+            interpolationmethod=MeteoInterpolationMethod.averaging,
             operand="override",
             extrapolationallowed=True,
             extrapolationsearchradius=10,
             averagingtype=1,
-            averagingnummin=0.5,
+            averagingnummin=2,
             averagingpercentile=90,
         )
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is True
-        assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
+        assert meteo.interpolationmethod == MeteoInterpolationMethod.averaging
         assert meteo.operand == "override"
         assert meteo.extrapolationallowed is True
         assert meteo.extrapolationsearchradius == 10
         assert meteo.averagingtype == 1
-        assert np.isclose(meteo.averagingnummin, 0.5)
+        assert meteo.averagingnummin == 2
         assert meteo.averagingpercentile == 90
 
     def test_invalid_forcingfiletype(self):
@@ -333,7 +332,7 @@ class TestMeteoDeprecatedAliases:
         ("extrapolationAllowed", "extrapolationallowed", True),
         ("extrapolationSearchRadius", "extrapolationsearchradius", 10.0),
         ("averagingType", "averagingtype", 1),
-        ("averagingNumMin", "averagingnummin", 0.5),
+        ("averagingNumMin", "averagingnummin", 2),
         ("averagingPercentile", "averagingpercentile", 90.0),
     ]
 
@@ -400,7 +399,7 @@ class TestMeteoModelDump:
             extrapolationallowed=True,
             extrapolationsearchradius=10.0,
             averagingtype=1,
-            averagingnummin=0.5,
+            averagingnummin=2,
             averagingpercentile=90.0,
             forcingvariablename="mer",
         )

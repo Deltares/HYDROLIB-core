@@ -1,29 +1,30 @@
 from pathlib import Path
-from types import MethodType
 
 import numpy as np
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
-from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldQuantity
+from hydrolib.core.dflowfm.ext.models import Spatial
+from hydrolib.core.dflowfm.extold.models import (
+    ExtOldFileType,
+    ExtOldForcing,
+    ExtOldQuantity
+)
+
+
 from hydrolib.core.dflowfm.inifield.models import (
     DataFileType,
-    IniFieldModel,
-    InitialField,
     InterpolationMethod,
-    ParameterField,
 )
 from hydrolib.tools.extforce_convert.converters import (
     ConverterFactory,
-    InitialConditionConverter,
-    ParametersConverter,
+    SpatialBlockBuilder,
+    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.utils import (
-    create_initial_cond_and_parameter_input_dict,
     oldfiletype_to_forcing_file_type,
 )
-from tests.utils import compare_two_files, ignore_version_lines
 
 
 class TestConvertInitialCondition:
@@ -36,15 +37,18 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_quantity_block = InitialConditionConverter().convert(
+        new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
         assert new_quantity_block.operand == "override"
 
     def test_polygon_data_file(self, polylines_dir: Path):
+        """A polygon block with a constant value converts to the dataValue path
+        (dataValue + targetMaskFile + interpolationMethod=constant), not
+        dataFileType=polygon (UNST-9273 redesign)."""
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.InitialWaterLevel,
             filename=polylines_dir / "boundary-polyline-no-z-no-label.pli",
@@ -53,22 +57,21 @@ class TestConvertInitialCondition:
             method="4",
             operand="O",
         )
-        new_quantity_block = InitialConditionConverter().convert(
+        new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert new_quantity_block.datafiletype == "polygon"
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.interpolationmethod == "constant"
         assert new_quantity_block.operand == "override"
-        assert np.isclose(new_quantity_block.value, 0.0)
+        assert np.isclose(new_quantity_block.datavalue, 0.0)
+        assert new_quantity_block.targetmaskfile is not None
 
     @pytest.mark.unit
     def test_tracer_fall_velocity(self):
         """Test conversion of tracerfallvelocity forcing.
-        The test check that the tracerfallvelocity is converted correctly
 
-        - The test uses a file type = 4 in order not to add a real file.
-        - The test checks the returned value from the `create_initial_cond_and_parameter_input_dict` function,
-        and checks the returned value from the `InitialConditionConverter.convert` method.
+        The test checks that the tracerfallvelocity is carried onto the converted
+        Spatial block. A file type = 4 is used in order not to add a real file.
         """
         # just choose any file type that is associated with DiskOnlyFileModel (3-8) in order not to add a real file
         forcing = ExtOldForcing(
@@ -80,15 +83,10 @@ class TestConvertInitialCondition:
             TRACERFALLVELOCITY=0.1,
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(
+        new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert "tracerfallvelocity" in new_focing_dict.keys()
-
-        new_quantity_block = InitialConditionConverter().convert(
-            forcing, forcing.filename.filepath
-        )
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.tracerfallvelocity == pytest.approx(0.1)
         assert new_quantity_block.operand == "override"
 
@@ -129,14 +127,10 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_forcing_dict = create_initial_cond_and_parameter_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, InitialConditionConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, InitialField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
         assert new_quantity_block.operand == "override"
 
@@ -151,10 +145,10 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = ParametersConverter().convert(
+        new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.datafiletype == "sample"
         assert new_quantity_block.interpolationmethod == "triangulation"
         assert new_quantity_block.operand == "override"
@@ -176,15 +170,10 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_focing_dict = create_initial_cond_and_parameter_input_dict(
+        new_quantity_block = SpatialConverter().convert(
             forcing, forcing.filename.filepath
         )
-        assert new_focing_dict["quantity"] == "bedrockSurfaceElevation"
-
-        new_quantity_block = ParametersConverter().convert(
-            forcing, forcing.filename.filepath
-        )
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == "bedrockSurfaceElevation"
         assert new_quantity_block.operand == "override"
 
@@ -247,14 +236,10 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_forcing_dict = create_initial_cond_and_parameter_input_dict(
-            forcing, forcing.filename.filepath
-        )
-        assert new_forcing_dict["quantity"] == expected_quantity
         converter = ConverterFactory.create_converter(forcing.quantity)
-        assert isinstance(converter, ParametersConverter)
+        assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
-        assert isinstance(new_quantity_block, ParameterField)
+        assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == expected_quantity
         assert new_quantity_block.operand == "override"
 
@@ -269,7 +254,7 @@ class TestConvertSeaIceQuantities:
     """
 
     # UM Sec. 15.8.1, verbatim, except FILETYPE: the manual's example uses FILETYPE=6
-    # (curvilinear grid), which `ParameterField.datafiletype` cannot represent, so a
+    # (curvilinear grid), which `Spatial.datafiletype` cannot represent, so a
     # sample file is used instead.
     EXT_OLD_TEMPLATE = (
         "QUANTITY={quantity}\n"
@@ -312,9 +297,9 @@ class TestConvertSeaIceQuantities:
         converter.check_unsupported_quantities()
 
         converter.update()
-        blocks = converter.inifield_model.parameter
+        blocks = converter.ext_model.spatial
         assert len(blocks) == 1
-        assert isinstance(blocks[0], ParameterField)
+        assert isinstance(blocks[0], Spatial)
         assert blocks[0].quantity == new_quantity
 
     def test_new_name_survives_serialization(self, tmp_path: Path):
@@ -329,46 +314,9 @@ class TestConvertSeaIceQuantities:
         converter.update()
         converter.save(backup=False)
 
-        written = converter.inifield_model.filepath.read_text()
+        written = converter.ext_model.filepath.read_text()
         assert "seaIceThickness" in written
         assert "sea_ice_thickness" not in written
-
-
-class TestInifieldConverter:
-    def test_save_inifield(self, tmp_path: Path):
-        """
-        the test mocks the converter and only instantiates the InifieldModel.
-        """
-        path = tmp_path / "delete-me.ini"
-        data = {
-            "quantity": "initialwaterlevel",
-            "datafile": DiskOnlyFileModel(filepath="iniwaterlevel.xyz"),
-            "datafiletype": DataFileType.sample,
-            "interpolationmethod": InterpolationMethod.triangulation,
-            "operand": "override",
-        }
-        ini_field = InitialField(**data)
-
-        converter = object.__new__(ExternalForcingConverter)
-        converter._path_style = None
-        converter._save_inifield_model = MethodType(
-            ExternalForcingConverter._save_inifield_model, converter
-        )
-
-        inifield_model = IniFieldModel(initial=[ini_field])
-        inifield_model.filepath = path
-
-        converter._inifield_model = inifield_model
-
-        converter._save_inifield_model(backup=True, recursive=True)
-        reference = "tests/data/reference/ini/inifield-with-one-initial.ini"
-        diff = compare_two_files(
-            reference,
-            path,
-            ignore_line=ignore_version_lines,
-        )
-        assert diff == []
-        path.unlink()
 
 
 class TestOldFiletypeToForcingFileType:
@@ -429,7 +377,7 @@ class TestInitialVerticalInterpolationMethodOverride:
             operand="O",
         )
 
-        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+        result = SpatialBlockBuilder(forcing, forcing_file).build()
 
         assert result["interpolationmethod"] == InterpolationMethod.constant
 
@@ -447,7 +395,7 @@ class TestInitialVerticalInterpolationMethodOverride:
             operand="O",
         )
 
-        result = create_initial_cond_and_parameter_input_dict(forcing, forcing_file)
+        result = SpatialBlockBuilder(forcing, forcing_file).build()
 
         assert result["interpolationmethod"] == InterpolationMethod.triangulation
 
