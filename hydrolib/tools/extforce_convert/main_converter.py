@@ -420,7 +420,7 @@ class ExternalForcingConverter:
             converter_class, SpatialConverter
         ):
             if ConverterFactory.contains(
-                    ExtOldInitialConditionQuantity, forcing.quantity
+                ExtOldInitialConditionQuantity, forcing.quantity
             ) or ConverterFactory.contains(ExtOldParametersQuantity, forcing.quantity):
                 # Initial conditions and parameters are written to the inifield model file
                 ref_path = self.inifield_model.filepath
