@@ -1,5 +1,6 @@
 import os
-from pathlib import Path, PurePosixPath, PureWindowsPath
+import shutil
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from unittest.mock import MagicMock, PropertyMock, patch
 
@@ -32,61 +33,90 @@ from hydrolib.tools.extforce_convert.utils import UnSupportedQuantitiesError
 
 
 class TestExtOldToNewFromMDU:
-    def test_wind_combi_uniform_curvi(self, capsys, input_files_dir: Path):
+    def test_wind_combi_uniform_curvi(
+        self, capsys, tmp_path: Path, input_files_dir: Path
+    ):
         """
         The mdu file in this test is read correctly with the `LegacyFMModel` class.
+
+        The model directory is copied into a temporary path so the conversion runs
+        against a private copy and never mutates the checked-in fixtures.
         """
-        mdu_filename = (
-            input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu"
-        )
+        src = input_files_dir / "e02/f011_wind/c081_combi_uniform_curvi"
+        model_dir = tmp_path / src.name
+        shutil.copytree(src, model_dir)
+        mdu_filename = model_dir / "windcase.mdu"
+
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         converter.verbose = True
         ext_model, _, _ = converter.update()
         assert len(converter.extold_model.forcing) == 5
 
-        # check the saved files
         converter.save()
 
         assert ext_model.filepath.exists()
-        ext_model.filepath.unlink()
-        # delete the mdu file (this is the updated one with the new external forcing file)
-        mdu_filename.unlink()
-        # check the mdu backup file
         assert mdu_filename.with_suffix(".mdu.bak").exists()
-        # rename back the backup file
-        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
 
     def test_extrapolate_slr(
             self,
             capsys,
             monkeypatch,
+            tmp_path: Path,
             input_files_dir: Path
     ):
         """
         - This test used mdu file with `Unknown keywords` so the reading of the mdu file using the `LegacyFMModel`
         fails.
         - Since the `LegacyFMModel` class is not created, the converter will read only the [physics] and [time] section
+
+        The model directory is copied into a temporary path so the conversion runs
+        against a private copy and never mutates the checked-in fixtures.
         """
         monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
-        mdu_filename = (
-            input_files_dir
-            / "e02/f006_external_forcing/c011_extrapolate_slr/slrextrapol.mdu"
-        )
+        src = input_files_dir / "e02/f006_external_forcing/c011_extrapolate_slr"
+        model_dir = tmp_path / src.name
+        shutil.copytree(src, model_dir)
+        mdu_filename = model_dir / "slrextrapol.mdu"
+
         converter = ExternalForcingConverter.from_mdu(mdu_filename)
         ext_model, _, _ = converter.update()
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.spatial) == 1
-        # check the saved files
+
         converter.save()
 
         assert ext_model.filepath.exists()
-        ext_model.filepath.unlink()
-        # delete the mdu file (this is the updated one with the new external forcing file)
-        mdu_filename.unlink()
-        # check the mdu backup file
         assert mdu_filename.with_suffix(".mdu.bak").exists()
-        # rename back the backup file
-        mdu_filename.with_suffix(".mdu.bak").rename(mdu_filename)
+
+    def test_spatial_only_model_keeps_extforcefilenew_in_mdu(
+        self, monkeypatch, tmp_path: Path, input_files_dir: Path
+    ):
+        """Regression: for a spatial-only model, save() must point the MDU's
+        ExtForceFileNew at the new ext file.
+
+        The MDU update counted meteo/sourcesink/boundary/lateral but omitted
+        spatial, so a spatial-only conversion produced a count of 0 and
+        update_extforce_file_new stripped the ExtForceFileNew keyword instead of
+        setting it. The slrextrapol model converts to a single Spatial block.
+        """
+        monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
+        src = input_files_dir / "e02/f006_external_forcing/c011_extrapolate_slr"
+        model_dir = tmp_path / src.name
+        shutil.copytree(src, model_dir)
+        mdu_filename = model_dir / "slrextrapol.mdu"
+
+        converter = ExternalForcingConverter.from_mdu(mdu_filename)
+        ext_model, _, _ = converter.update()
+        # The conversion is spatial-only: nothing lands in the other block lists.
+        assert len(ext_model.spatial) == 1
+        assert ext_model.n_forcing_blocks == 1
+        new_ext_name = ext_model.filepath.name
+
+        converter.save()
+
+        mdu_text = mdu_filename.read_text()
+        assert "ExtForceFileNew" in mdu_text
+        assert new_ext_name in mdu_text
 
     def test_recursive(
             self,
