@@ -279,53 +279,6 @@ class SpatialConverter(BaseConverter):
         return spatial_block
 
 
-class SpatialConverter(BaseConverter):
-    """Spatial quantities Converter."""
-
-    def __init__(self):
-        """Spatial converter constructor."""
-        super().__init__()
-
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
-        """Spatial converter.
-
-        Convert an old external forcing block with spatial data to a Spatial
-        forcing block suitable for inclusion in a new external forcings file.
-
-        This function takes a forcing block from an old external forcings
-        file, represented by an instance of ExtOldForcing, and converts it
-        into a Spatial object. The Spatial object is suitable for use in new
-        external forcings files, adhering to the updated format and
-        specifications.
-
-        Args:
-            forcing (ExtOldForcing):
-                The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
-            new_forcing_path (Path):
-                The updated path to the forcing data file.
-
-        Returns:
-            Spatial: A Spatial object that represents the converted forcing
-            block, ready to be included in a new external forcings file.
-
-        Raises:
-            ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised.
-        """
-        data = create_spatial_input_dict(forcing, new_forcing_path)
-
-        try:
-            spatial_block = Spatial(**data)
-        except Exception as e:
-            raise SpatialError(
-                f"Failed to create the Spatial object. for the following Errors: {e}"
-            )
-        return spatial_block
-
-
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
 
