@@ -1099,9 +1099,29 @@ class LateralConverter(BaseConverter):
         "lateraldischarge2d": "2d",
     }
 
-    def __init__(self):
-        """Lateral converter constructor."""
-        super().__init__()
+    def __init__(self, root_dir: PathOrStr = None, mdu_parser=None):
+        """Lateral converter constructor.
+
+        Args:
+            root_dir (PathOrStr, optional): Root directory used to resolve file paths.
+            mdu_parser (MDUParser, optional): MDU parser used to obtain the reference
+                date (time_unit) required when converting time-series discharge from
+                a TIM file. When *None*, the ``time_unit`` argument of :meth:`convert`
+                must be supplied manually.
+        """
+        super().__init__(root_dir=root_dir)
+        self._mdu_parser = mdu_parser
+
+    def _get_time_unit(self, time_unit: Optional[str]) -> Optional[str]:
+        """Return *time_unit*, falling back to the MDU reference date when available."""
+        if time_unit is not None:
+            return time_unit
+        if (
+            self._mdu_parser is not None
+            and self._mdu_parser.temperature_salinity_data is not None
+        ):
+            return self._mdu_parser.temperature_salinity_data.get("refdate")
+        return None
 
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
@@ -1141,7 +1161,7 @@ class LateralConverter(BaseConverter):
         location_type = self._QUANTITY_TO_LOCATION_TYPE.get(quantity)
 
         # Determine discharge and location data
-        discharge = self._get_discharge(forcing, time_unit)
+        discharge = self._get_discharge(forcing, self._get_time_unit(time_unit))
         location_data = self._get_location_data(forcing)
 
         data: Dict[str, Any] = {"id": location_data.pop("id")}
@@ -1199,11 +1219,19 @@ class LateralConverter(BaseConverter):
         if isinstance(forcing.filename, PolyFile):
             location_file = forcing.filename.filepath
             if self.root_dir is not None:
-                tim_file = resolve_relative_to_root(
+                resolved_location_file = resolve_relative_to_root(
                     location_file, self.root_dir
-                ).with_suffix(".tim")
+                )
             else:
-                tim_file = location_file.with_suffix(".tim")
+                resolved_location_file = location_file
+
+            tim_file = resolved_location_file.with_suffix(".tim")
+            if not tim_file.exists():
+                numbered_tim_file = resolved_location_file.parent / (
+                    resolved_location_file.stem + "_0001.tim"
+                )
+                if numbered_tim_file.exists():
+                    tim_file = numbered_tim_file
 
             if tim_file.exists():
                 if time_unit is None:
@@ -1222,7 +1250,7 @@ class LateralConverter(BaseConverter):
                     user_defined_names=user_defined_names,
                 )
                 forcing_model = ForcingModel(forcing=time_series_list)
-                forcing_model.filepath = location_file.with_suffix(".bc")
+                forcing_model.filepath = resolved_location_file.with_suffix(".bc")
                 self.legacy_files = tim_file
                 return forcing_model
 
@@ -1230,9 +1258,13 @@ class LateralConverter(BaseConverter):
             if forcing.value is not None:
                 return forcing.value
 
-        # Fallback: return the raw file path as discharge reference
-        if hasattr(forcing.filename, "filepath") and forcing.filename.filepath is not None:
-            return forcing.filename.filepath
+            raise ValueError(
+                f"Could not determine the discharge for lateral '{location_file.stem}': "
+                f"no constant VALUE, no '{location_file.stem}.tim', and no "
+                f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
+                "Ensure a time-series (.tim) file or a VALUE field is present in the "
+                "old external forcings block."
+            )
 
         return forcing.value
 
@@ -1313,7 +1345,7 @@ class ConverterFactory:
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
             return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldLateralQuantity, quantity):
-            return LateralConverter()
+            return LateralConverter(root_dir=root_dir, mdu_parser=mdu_parser)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
 
