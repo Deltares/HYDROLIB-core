@@ -24,7 +24,6 @@ from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
     SourceSinkConverter,
-    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
@@ -378,15 +377,13 @@ class ExternalForcingConverter:
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)
-        elif isinstance(converter_class, SpatialConverter):
-            # Meteo, initial-condition and parameter quantities all convert to
-            # Spatial blocks written to the ext model file, so their data-file
-            # paths are resolved relative to the ext model file.
+        else:
+            # SpatialConverter: meteo, initial-condition and parameter quantities all
+            # convert to Spatial blocks written to the ext model file, so their
+            # data-file paths are resolved relative to the ext model file.
             ref_path = self.ext_model.filepath
             forcing_path = self._resolve_forcing_path(forcing, ref_path)
             new_quantity_block = converter_class.convert(forcing, forcing_path)
-        else:
-            new_quantity_block = converter_class.convert(forcing)
 
         if hasattr(converter_class, "legacy_files"):
             self.legacy_files = converter_class.legacy_files
