@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4155,7 +4155,7 @@ You're not viewing the latest release version.
 <li>If any unsupported quantities exist, prunes <code>extold_model.forcing</code> to contain only those remaining unsupported forcings.</li>
 </ul>
 </li>
-<li>Returns: <code>(ext_model, inifield_model, structure_model)</code> for inspection by callers.</li>
+<li>Returns: <code>(ext_model, structure_model)</code> for inspection by callers.</li>
 <li>Side effects: Updates in-memory models; prints progress/logs; modifies <code>extold_model.forcing</code> contents if unsupported quantities exist.</li>
 <li>
 <p>Exceptions:</p>
@@ -4195,10 +4195,9 @@ You're not viewing the latest release version.
 <li><code>_read_old_file(ext_old_file: PathOrStr, path_style: Optional[PathStyle]) -&gt; ExtOldModel</code></li>
 <li><code>_type_field_map(self) -&gt; dict[type, tuple[Any, str]]</code> (maps block types to destination models/attributes).</li>
 <li><code>_convert_forcing(self, forcing) -&gt; Union[Boundary, Lateral, Meteo, SourceSink, InitialField, ParameterField, Structure]</code></li>
-<li>Note: The annotation in code lists only <code>Boundary|Lateral|Meteo|SourceSink</code>, but actual behavior includes <code>InitialField</code>, <code>ParameterField</code>, and <code>Structure</code> via the specific converters.</li>
+<li>Note: The annotation in code lists only <code>Boundary|Lateral|Meteo|SourceSink</code>, but actual behavior also includes <code>Spatial</code> (for meteo, initial-condition and parameter quantities) and <code>Structure</code> via the specific converters.</li>
 <li>Exceptions: <code>ValueError</code> if MDU info missing for <code>SourceSink</code> or boundary conversions.</li>
 <li><code>_update_mdu_file(self) -&gt; None</code></li>
-<li><code>_save_inifield_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
 <li><code>_save_structure_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
 <li><code>_log_conversion_details(self) -&gt; None</code></li>
 </ul>
