@@ -565,7 +565,7 @@ class TestWaqQuantitiesConversion:
 
     def test_structural_properties(self, converted):
         """Count, ordering, preserved boundaries, no inifield/structure blocks."""
-        ext_model, inifield_model, structure_model = converted
+        ext_model, structure_model = converted
 
         expected_quantities = [e.quantity for e in _SPATIAL_BLOCKS]
         actual_quantities = [s.quantity for s in ext_model.spatial]
@@ -582,7 +582,6 @@ class TestWaqQuantitiesConversion:
         assert len(ext_model.boundary) == _BOUNDARY_BLOCKS_COUNT, (
             f"Expected {_BOUNDARY_BLOCKS_COUNT} boundary blocks, got {len(ext_model.boundary)}"
         )
-        assert len(inifield_model.initial) == 0
-        assert len(inifield_model.parameter) == 0
+
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
