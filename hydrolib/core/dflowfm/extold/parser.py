@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Dict, List
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.extold.common_io import ORDERED_FORCING_FIELDS
 
 
@@ -29,8 +30,8 @@ class Parser:
             "QUANTITY", "FILENAME", "VARNAME", "SOURCEMASK", "FILETYPE", "METHOD", "OPERAND", "VALUE", "FACTOR", "IFRCTYP",
             "AVERAGINGTYPE", "RELATIVESEARCHCELLSIZE", "EXTRAPOLTOL", "PERCENTILEMINMAX", "AREA", "NUMMIN"
         """
-        with filepath.open(encoding="utf8") as file:
-            lines = file.readlines()
+        content = open_file_with_fallback_encoding(filepath)
+        lines = content.splitlines(keepends=True)
 
         comments, start_data_index = Parser._parse_header(lines)
         forcings = Parser._parse_data(lines, start_data_index)
