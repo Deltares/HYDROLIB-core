@@ -4016,7 +4016,6 @@ You're not viewing the latest release version.
 <li><code>__init__(
     extold_model: Union[PathOrStr, ExtOldModel],
     ext_file: Optional[PathOrStr] = None,
-    inifield_file: Optional[PathOrStr] = None,
     structure_file: Optional[PathOrStr] = None,
     mdu_parser: MDUParser = None,
     verbose: bool = False,
@@ -4026,7 +4025,6 @@ You're not viewing the latest release version.
 <li>Parameters:<ul>
 <li><code>extold_model</code>: Path to legacy <code>.ext</code> or an <code>ExtOldModel</code> instance. If a path or str, the file is loaded via <code>_read_old_file()</code>.</li>
 <li><code>ext_file</code>: Destination path for new external forcings (<code>ExtModel</code>). Defaults to <code>new-external-forcing.ext</code> in the same directory as the legacy file.</li>
-<li><code>inifield_file</code>: Destination path for <code>IniFieldModel</code>. Defaults to <code>new-initial-conditions.ini</code>.</li>
 <li><code>structure_file</code>: Destination path for <code>StructureModel</code>. Defaults to <code>new-structure.ini</code>.</li>
 <li><code>mdu_parser</code>: Optional <code>MDUParser</code> to provide FM metadata (e.g., <code>refdate</code>, temperature/salinity) and to update the MDU file.</li>
 <li><code>verbose</code>: If <code>True</code>, prints conversion details to stdout.</li>
@@ -4051,7 +4049,6 @@ You're not viewing the latest release version.
 <li><code>from_mdu(
     mdu_file: PathOrStr,
     ext_file_user: Optional[PathOrStr] = None,
-    inifield_file_user: Optional[PathOrStr] = None,
     structure_file_user: Optional[PathOrStr] = None,
     path_style: Optional[PathStyle] = None,
     debug: bool = False,
@@ -4354,9 +4351,9 @@ Hold "Ctrl" to enable pan &amp; zoom
     </nav>
     <pre class="mermaid"><code>classDiagram
     class ExternalForcingConverter {
-        + __init__(extold_model, ext_file, inifield_file, structure_file, mdu_parser, verbose, path_style, debug)
-        + from_mdu(mdu_file, ext_file_user, inifield_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
-        + update() tuple~ExtModel, IniFieldModel, StructureModel~
+        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug)
+        + from_mdu(mdu_file, ext_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
+        + update() tuple~ExtModel, StructureModel~
         + save(backup, recursive) void
         + clean() void
         + check_unsupported_quantities() list~str~
@@ -4574,7 +4571,6 @@ Hold "Ctrl" to enable pan &amp; zoom
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
     <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;.../old.ext&quot;</span><span class="p">,</span>
     <span class="n">ext_file</span><span class="o">=</span><span class="s2">&quot;.../new/forcings.ext&quot;</span><span class="p">,</span>
-    <span class="n">inifield_file</span><span class="o">=</span><span class="s2">&quot;.../new/inifields.ini&quot;</span><span class="p">,</span>
     <span class="n">structure_file</span><span class="o">=</span><span class="s2">&quot;.../new/structures.ini&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
