@@ -6,7 +6,7 @@ from pathlib import Path
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Operand
-from hydrolib.core.dflowfm.ext.models import Spatial
+from hydrolib.core.dflowfm.ext.models import Spatial, TargetLayer
 
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -90,6 +90,8 @@ _RAINFALL_EXPECTED = {
     "interpolationmethod": InterpolationMethod.linear_space_time,
 }
 
+# Mapping of quantity name → expected initial value (VALUE= field) for all 24
+# polygon-based initial-condition quantities defined in pt_old.ext.
 _PT_OLD_EXT_QUANTITY_VALUES: dict[str, float] = {
     "initialtracerContinuity":  1.0,
     "initialtracerOXY":         7.0,
@@ -137,7 +139,7 @@ class TestSpatialE2E:
     ``Spatial`` blocks that are appended to the new ext model.
     """
 
-    @pytest.fixture()
+    @pytest.fixture
     def model_copy(self, tmp_path: Path, input_files_dir: Path) -> Path:
         """Return the path to a temporary copy of the hyd07 model directory.
 
@@ -175,7 +177,7 @@ class TestSpatialE2E:
         """
         mdu_file = model_copy / "pt.mdu"
         converter = ExternalForcingConverter.from_mdu(mdu_file)
-        ext_model, inifield_model, structure_model = converter.update()
+        ext_model, structure_model = converter.update()
 
         expected_quantities = (
             [_RAINFALL_EXPECTED["quantity"]]
@@ -267,10 +269,111 @@ class TestSpatialE2E:
             )
             assert spatial.operand == Operand.override
 
-        assert len(inifield_model.initial) == 0
-        assert len(inifield_model.parameter) == 0
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
+
+
+class TestSpatialExtrapolationConversion:
+    """The old external-forcing EXTRAPOLATION_METHOD (0/1) must be carried into the
+    new Spatial block as extrapolationAllowed (bool). Regression test: the converter
+    previously read a non-existent `forcing.extrapolation` attribute and wrote the
+    wrong key, so the setting was silently dropped."""
+
+    @pytest.mark.parametrize(
+        "extrapolation_method, expected",
+        [(1, True), (0, False), (None, False)],
+    )
+    def test_extrapolation_method_maps_to_extrapolationallowed(
+        self, extrapolation_method, expected
+    ):
+        kwargs = dict(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+        if extrapolation_method is not None:
+            kwargs["extrapolation_method"] = extrapolation_method
+        forcing = ExtOldForcing(**kwargs)
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.extrapolationallowed is expected
+
+
+class TestSpatialTargetLayerConversion:
+    """The old external-forcing LAYER value maps to the new Spatial targetLayer:
+    -1 -> bottom, 0 -> all, a positive integer stays unchanged
+    (UNST-9273, GitHub #1166 / #1167)."""
+
+    @pytest.mark.parametrize(
+        "layer, expected",
+        [(-1, TargetLayer.bottom), (0, TargetLayer.all), (5, 5)],
+    )
+    def test_layer_maps_to_targetlayer(self, layer, expected):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            layer=layer,
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.targetlayer == expected
+
+    def test_no_layer_leaves_targetlayer_unset(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.targetlayer is None
+
+
+class TestSpatialVariableNameConversion:
+    """The old VARNAME maps to the new Spatial dataVariableName
+    (VARNAME -> forcingVariableName -> dataVariableName, UNST-9273 + manual)."""
+
+    def test_varname_maps_to_datavariablename(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            varname="wind_u",
+        )
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.datavariablename == "wind_u"
+
+    def test_no_varname_leaves_datavariablename_unset(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+        )
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        result = converter.convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == quantity
+
+
+        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+        assert block.datavariablename is None
 
 
 class TestWaqSpatialConversion:

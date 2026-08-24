@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -714,8 +715,8 @@ class MDUParser:
         Returns:
             List of strings, one for each line in the file
         """
-        with open(self.mdu_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        content = open_file_with_fallback_encoding(Path(self.mdu_path))
+        lines = content.splitlines(keepends=True)
         return lines
 
     def save(self, backup: bool = False) -> None:
