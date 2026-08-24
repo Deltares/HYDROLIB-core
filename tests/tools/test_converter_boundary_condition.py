@@ -372,14 +372,13 @@ class TestMainConverter:
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExternalForcingConverter._update_mdu_file"
         ):
-            ext_model, inifield_model, structure_model = converter.update()
+            ext_model, structure_model = converter.update()
 
         # all the quantities in the old external file are initial conditions
         # check that all the quantities (3) were converted to initial conditions
         num_quantities = len(old_forcing_file_boundary["quantities"])
         assert len(ext_model.boundary) == num_quantities
-        # no parameters or any other structures, lateral or meteo data
-        assert len(inifield_model.parameter) == 0
+        # no other structures, lateral or meteo data
         assert len(ext_model.lateral) == 0
         assert len(ext_model.meteo) == 0
         assert len(structure_model.structure) == 0

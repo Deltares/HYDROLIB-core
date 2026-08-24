@@ -24,9 +24,8 @@ from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    InitialFieldError,
-    Meteo,
-    MeteoError,
+    Spatial,
+    SpatialError,
     SourceSink,
     SourceSinkError,
 )
@@ -38,7 +37,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
@@ -49,8 +48,8 @@ from hydrolib.tools.extforce_convert.utils import (
     SOURCESINK_SALINITY_IN_BC,
     SOURCESINK_TEMP_IN_BC,
     convert_interpolation_data,
-    create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
+    old_layer_to_target_layer,
     oldfiletype_to_forcing_file_type,
 )
 
@@ -118,66 +117,166 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
-class MeteoConverter(BaseConverter):
-    """Meteo quantities Converter."""
+class SpatialBlockBuilder:
+    """Assemble the constructor dict for a single `Spatial` block.
 
-    def convert(self, forcing: ExtOldForcing) -> Meteo:
-        """Meteo converter.
+    A method object for the old-to-new spatial conversion: the source forcing and
+    its resolved data-file path are held as state so the build steps cooperate
+    through `self` (reading `self.forcing`, mutating `self.block`) instead of
+    threading them as parameters. `SpatialConverter.convert` drives it via
+    `SpatialBlockBuilder(forcing, path).build()`.
+    """
 
-        Convert an old external forcing block with meteo data to a Meteo
+    def __init__(self, forcing: ExtOldForcing, new_forcing_path: Path | None):
+        """Capture the source forcing and derive the quantity name and file type.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block being converted.
+            new_forcing_path (Path | None):
+                The path to the forcing data file in the new model.
+        """
+        self.forcing = forcing
+        self.new_forcing_path = new_forcing_path
+        self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
+            forcing.quantity
+        )
+        self.file_type = oldfiletype_to_forcing_file_type(forcing.filetype)
+        self.block: Dict[str, Any] = {}
+
+    def build(self) -> Dict[str, Any]:
+        """Assemble and return the `Spatial` constructor dict.
+
+        Returns:
+            Dict[str, Any]: the keyword arguments for the `Spatial` constructor.
+        """
+        self._require_no_sourcemask()
+        self._set_representation()
+        self._set_common_fields()
+        return self.block
+
+    def _require_no_sourcemask(self):
+        """Reject the removed `SOURCEMASK` attribute, which has no new equivalent."""
+        if self.forcing.sourcemask != DiskOnlyFileModel(None):
+            raise ValueError(
+                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+                f"convert this input. Encountered for QUANTITY="
+                f"{self.forcing.quantity} and FILENAME={self.forcing.filename}."
+            )
+
+    def _set_representation(self):
+        """Populate `self.block` with the spatial representation for this forcing.
+
+        There are three mutually exclusive representations:
+
+        - A polygon quantity (except `initialvertical*`) becomes a constant value
+          masked by the polygon: `targetMaskFile=*.pol` + `dataValue` +
+          `interpolationMethod=constant` (the idiom documented on `Spatial.dataValue`).
+        - An `initialvertical*` polygon keeps the polygon as its `dataFile`.
+        - Any other quantity is a gridded data file, carrying the interpolation /
+          averaging settings, operand, extrapolation toggle and tracer fields.
+
+        UNST-9218 / GitHub #1104: `initialvertical*` quantities must always use
+        `interpolationMethod=constant`; the old `METHOD` value (typically 3 →
+        linearSpaceTime) is meaningless for vertical profiles, since the kernel
+        always applies constant (horizontal) + linear (vertical) interpolation.
+        """
+        is_polygon = self.file_type == DataFileType.polygon
+        is_initial_vertical = self.quantity_name.startswith("initialvertical")
+        if is_polygon and not is_initial_vertical:
+            self.block = {
+                "quantity": self.quantity_name,
+                "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
+                "datavalue": self.forcing.value,
+                "operand": self.forcing.operand,
+                "interpolationmethod": InterpolationMethod.constant,
+            }
+        elif is_polygon:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+                "interpolationmethod": InterpolationMethod.constant,
+                "operand": self.forcing.operand,
+            }
+        else:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+            }
+            self.block = convert_interpolation_data(self.forcing, self.block)
+            if is_initial_vertical:
+                self.block["interpolationmethod"] = InterpolationMethod.constant
+            self.block["operand"] = self.forcing.operand
+            self.block["extrapolationallowed"] = bool(
+                self.forcing.extrapolation_method
+            )
+            self._add_tracers()
+
+    def _add_tracers(self):
+        """Copy any `tracer*` fields set on the forcing into the block unchanged."""
+        for key, value in self.forcing.model_dump().items():
+            if key.lower().startswith("tracer") and value is not None:
+                self.block[key] = value
+
+    def _set_common_fields(self):
+        """Add the fields shared by every representation: variable name and layer.
+
+        `VARNAME` maps to `dataVariableName`; the old `LAYER` maps to the new
+        `targetLayer` (`-1` → bottom, `0` → all, positive kept).
+        """
+        if self.forcing.varname is not None:
+            self.block["datavariablename"] = self.forcing.varname
+        if self.forcing.layer is not None:
+            self.block["targetlayer"] = old_layer_to_target_layer(self.forcing.layer)
+
+
+class SpatialConverter(BaseConverter):
+    """Spatial quantities Converter."""
+
+    def __init__(self):
+        """Spatial converter constructor."""
+        super().__init__()
+
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
+        """Spatial converter.
+
+        Convert an old external forcing block with spatial data to a Spatial
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Meteo object is suitable for use in new
+        into a Spatial object. The Spatial object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
 
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
-            Meteo: A Meteo object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Meteo object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            Spatial: A Spatial object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
+            supported by the converter, a ValueError is raised.
         """
-        quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
-            forcing.quantity
-        )
-        meteo_data = {
-            "quantity": quantity_name,
-            "forcingfile": forcing.filename,
-            "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            "forcingVariableName": forcing.varname,
-        }
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        meteo_data = convert_interpolation_data(forcing, meteo_data)
-        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-        meteo_data["operand"] = forcing.operand
-        try:
-            meteo_block = Meteo(**meteo_data)
-        except Exception as e:
-            raise MeteoError(
-                f"Failed to create the Meteo object. for the following Errors: {e}"
-            )
+        data = SpatialBlockBuilder(forcing, new_forcing_path).build()
 
-        return meteo_block
+        try:
+            spatial_block = Spatial(**data)
+        except Exception as e:
+            raise SpatialError(
+                f"Failed to create the Spatial object. for the following Errors: {e}"
+            )
+        return spatial_block
 
 
 class BoundaryConditionConverter(BaseConverter):
@@ -492,96 +591,6 @@ class BoundaryConditionConverter(BaseConverter):
             )
         user_defined_names = [f"{label}_{str(i).zfill(4)}" for i in file_int_id]
         return user_defined_names
-
-
-class InitialConditionConverter(BaseConverter):
-    """Initial condition converter."""
-
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> InitialField:
-        """Convert the Initial condition quantities.
-
-        Convert an old external forcing block with Initial condition data to a IinitialField
-        forcing block suitable for inclusion in a new inifieldfile file.
-
-
-        This function takes a forcing block from an old external forcings
-        file, represented by an instance of ExtOldForcing, and converts it
-        into a InitialField object. The InitialField object is suitable for use in new
-        iniFieldFile, adhering to the updated format and specifications.
-
-        Args:
-            forcing (ExtOldForcing):
-                The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
-            new_forcing_path (Path):
-                The updated path to the forcing data file.
-
-        Returns:
-            Initial condition field definition, represents an `[Initial]` block in an inifield file.
-
-        Raises:
-            ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
-
-        References:
-            [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
-        """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
-        try:
-            new_block = InitialField(**data)
-        except Exception as e:
-            raise InitialFieldError(
-                f"Failed to create the InitialField object. for the following Errors: {e}"
-            )
-
-        return new_block
-
-
-class ParametersConverter(BaseConverter):
-    """Parameter converter."""
-
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
-        """Parameter converter.
-
-        Convert an old external forcing block to a parameter forcing block
-        suitable for inclusion in an initial field and parameter file.
-
-        This function takes a forcing block from an old external forcings
-        file, represented by an instance of ExtOldForcing, and converts it
-        into a ParameterField object. The ParameterField object is suitable for use in
-        an IniFieldModel, representing an initial field and parameter file, adhering
-        to the updated format and specifications.
-
-        Args:
-            forcing (ExtOldForcing):
-                The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
-            new_forcing_path (Path):
-                The updated path to the forcing data file.
-
-        Returns:
-            ParameterField:
-                A ParameterField object that represents the converted forcing
-                block, ready to be included in an initial field and parameter file. The
-                ParameterField object conforms to the new format specifications, ensuring
-                compatibility with updated systems and models.
-
-        Raises:
-            ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
-        """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
-        new_block = ParameterField(**data)
-
-        return new_block
 
 
 class SourceSinkConverter(BaseConverter):
@@ -1113,14 +1122,14 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter(root_dir=root_dir)
-        elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
-            return InitialConditionConverter(root_dir=root_dir)
+        if (
+            ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
+            or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
+            or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
+        ):
+            return SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
             return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
-        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
-            return ParametersConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
             return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:

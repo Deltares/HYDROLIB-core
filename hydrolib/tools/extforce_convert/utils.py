@@ -10,16 +10,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
+from hydrolib.core.base.models import FileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
+    TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldModel,
     ExtOldQuantity,
+    Layer,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -158,7 +160,7 @@ def oldmethod_to_interpolation_method(
             or "unknown" for invalid input.
     """
     if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
+        interpolation_method = InterpolationMethod.linear_space_time
     elif oldmethod == 5:
         interpolation_method = InterpolationMethod.triangulation
     elif oldmethod == 4:
@@ -279,62 +281,18 @@ def path_relative_to_parent(
     return forcing_path
 
 
-def create_initial_cond_and_parameter_input_dict(
-    forcing: ExtOldForcing,
-    new_forcing_path: Path,
-) -> Dict[str, str]:
-    """Create the input dictionary for the `InitialField` or `ParameterField`.
+def old_layer_to_target_layer(layer: Layer | int) -> TargetLayer | int:
+    """Map an old external-forcing LAYER value to the new Spatial targetLayer.
 
-    The quantity is resolved through `old_to_new_quantity_names` in `data.yaml`, so
-    quantities the kernel spells differently in the initial and parameter fields file
-    are emitted under their new name (e.g. `sea_ice_thickness` becomes
-    `seaIceThickness`). Quantities absent from that table are passed through unchanged.
-
-    Args:
-        forcing: [ExtOldForcing]
-            External forcing block from the old external forcings file.
-        new_forcing_path: [Path]
-            The path to the new forcing file.
-
-    Returns:
-        Dict[str, str]:
-            the input dictionary to the `InitialField` or `ParameterField` constructor
+    `-1` becomes `bottom`, `0` becomes `all`, and a positive layer number is
+    kept unchanged (UNST-9273, GitHub #1166 / #1167).
     """
-    quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(forcing.quantity)
-    block_data = {
-        "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
-        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-    }
-
-    if block_data["datafiletype"] == "polygon":
-        block_data["value"] = forcing.value
-
-    if forcing.sourcemask != DiskOnlyFileModel(None):
-        raise ValueError(
-            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-            f"convert this input. Encountered for QUANTITY="
-            f"{forcing.quantity} and FILENAME={forcing.filename}."
-        )
-    block_data = convert_interpolation_data(forcing, block_data)
-
-    # UNST-9218 / GitHub #1104: initialvertical* quantities must always use
-    # interpolationMethod = constant.  The old METHOD value (typically 3 →
-    # linearSpaceTime) is meaningless for vertical profiles; the kernel always
-    # applies constant (horizontal) + linear (vertical) interpolation internally.
-    if quantity_name.startswith("initialvertical"):
-        block_data["interpolationmethod"] = InterpolationMethod.constant
-
-    block_data["operand"] = forcing.operand
-
-    if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = (
-            "yes" if forcing.extrapolation == 1 else "no"
-        )
-    for key, value in forcing.model_dump().items():
-        if key.lower().startswith("tracer") and value is not None:
-            block_data[key] = value
-    return block_data
+    result = layer
+    if layer == -1:
+        result = TargetLayer.bottom
+    elif layer == 0:
+        result = TargetLayer.all
+    return result
 
 
 def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int]:
