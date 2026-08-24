@@ -1130,8 +1130,6 @@ class ConverterFactory:
             return SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
             return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
-        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
-            return ParametersConverter(root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
             return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:
