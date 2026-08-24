@@ -137,7 +137,7 @@ class TestSpatialE2E:
     ``Spatial`` blocks that are appended to the new ext model.
     """
 
-    @pytest.fixture()
+    @pytest.fixture
     def model_copy(self, tmp_path: Path, input_files_dir: Path) -> Path:
         """Return the path to a temporary copy of the hyd07 model directory.
 
