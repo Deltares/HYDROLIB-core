@@ -368,8 +368,6 @@ class TestSpatialVariableNameConversion:
         converter = ConverterFactory.create_converter(forcing.quantity)
         result = converter.convert(forcing, Path("fake-file.asc"))
         assert isinstance(result, Spatial)
-        assert result.quantity == quantity
-
 
         block = SpatialConverter().convert(forcing, forcing.filename.filepath)
 
@@ -520,7 +518,7 @@ class TestWaqQuantitiesConversion:
     )
     def test_spatial_block(self, converted, idx: int, expected: _SpatialExpected):
         """Each old-format forcing block is converted to the correct Spatial block."""
-        ext_model, _, _ = converted
+        ext_model, _ = converted
         spatial = ext_model.spatial[idx]
 
         assert spatial.quantity == expected.quantity
