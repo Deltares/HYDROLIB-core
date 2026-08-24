@@ -1106,6 +1106,24 @@ class ExtModel(INIModel):
             )
         return self
 
+    @property
+    def n_forcing_blocks(self) -> int:
+        """Total number of forcing blocks held across all block types.
+
+        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[Meteo]` and
+        `[Spatial]` block, whether produced by conversion or loaded from an existing
+        file. Use this to decide whether the model has any content worth writing;
+        counting the individual lists by hand is error-prone and has silently
+        dropped block types before.
+        """
+        return (
+            len(self.boundary)
+            + len(self.lateral)
+            + len(self.sourcesink)
+            + len(self.meteo)
+            + len(self.spatial)
+        )
+
     @classmethod
     def _ext(cls) -> str:
         return ".ext"

@@ -460,13 +460,7 @@ class ExternalForcingConverter:
             backup_file(self.extold_model.filepath)
             self.extold_model.save(recurse=recursive, exclude_unset=True)
 
-        num_quantities_ext = (
-            len(self.ext_model.meteo)
-            + len(self.ext_model.sourcesink)
-            + len(self.ext_model.boundary)
-            + len(self.ext_model.lateral)
-        )
-        if num_quantities_ext:
+        if self.ext_model.n_forcing_blocks:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
             self.ext_model.save(
@@ -575,18 +569,11 @@ class ExternalForcingConverter:
             - The InifieldFile and StructureFile blocks are updated only if they were not present in the file,
             if not, they will be created in the same directory as the mdu file.
         """
-        num_ext_model_quantities = (
-            len(self.ext_model.boundary)
-            + len(self.ext_model.lateral)
-            + len(self.ext_model.meteo)
-            + len(self.ext_model.sourcesink)
-        )
-
         remove_old_ext_file = False if self.un_supported_quantities else True
 
         self.mdu_parser.update_extforce_file_new(
             self.ext_model.filepath.name,
-            num_quantities=num_ext_model_quantities,
+            num_quantities=self.ext_model.n_forcing_blocks,
             remove_old_ext_file=remove_old_ext_file,
         )
 

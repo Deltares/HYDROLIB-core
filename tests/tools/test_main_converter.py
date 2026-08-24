@@ -338,6 +338,55 @@ class TestExternalFocingConverter:
         converter._ext_model.save.assert_called_once()
         converter._extold_model.save.assert_called_once()
 
+    def test_spatial_only_model_is_written_on_save(self, tmp_path: Path):
+        """Regression: a model whose only converted output is Spatial blocks must
+        still be written to disk on save().
+
+        The save() gate summed meteo/sourcesink/boundary/lateral but omitted
+        spatial, so a spatial-only conversion (here a single initial-condition
+        quantity) produced a count of 0 and silently skipped writing the new ext
+        file. Meteo/initial/parameter quantities all convert to Spatial now, so any
+        model without boundary/sourcesink quantities hit this.
+        """
+        ext_file = tmp_path / "test.ext"
+        poly_file = tmp_path / "domain.pol"
+        ext_file.write_text(
+            "QUANTITY     =initialtracerdTR1\n"
+            f"FILENAME     ={poly_file.as_posix()}\n"
+            "FILETYPE     =10\n"
+            "METHOD       =4\n"
+            "OPERAND      =O\n"
+            "VALUE        =0\n"
+        )
+        poly_file.write_text(
+            "L1\n"
+            "     4     2\n"
+            "    -244.151184    1790.310059\n"
+            "    -228.566650    -617.508057\n"
+            "   10065.006836    -251.270264\n"
+            "    9994.876953    1868.232910\n"
+        )
+
+        converter = ExternalForcingConverter(extold_model=ext_file)
+        converter.update()
+
+        # The conversion is spatial-only: nothing lands in the counted lists.
+        assert len(converter.ext_model.spatial) == 1
+        assert len(converter.ext_model.meteo) == 0
+        assert len(converter.ext_model.sourcesink) == 0
+        assert len(converter.ext_model.boundary) == 0
+        assert len(converter.ext_model.lateral) == 0
+
+        new_ext_path = converter.ext_model.filepath
+        assert not new_ext_path.exists()
+
+        converter.save(backup=False)
+
+        assert new_ext_path.exists(), (
+            f"spatial-only conversion did not write the new ext file to {new_ext_path}"
+        )
+        assert "[Spatial]" in new_ext_path.read_text()
+
     def test_read_old_file(
         self,
         capsys,
