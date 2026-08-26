@@ -1,0 +1,32 @@
+substance 'Any-substance-name-1' active
+   description        'Any description here'
+   concentration-unit 'Any Unit'
+   waste-load-unit    '-'
+end-substance
+substance 'Any-substance-name-2' active
+   description        'Any description here'
+   concentration-unit 'Any Unit'
+   waste-load-unit    '-'
+end-substance
+parameter 'Any-Parameter-name-1'
+   description   'Any description'
+   unit          'Any unit'
+   value         -0.9990E+03
+end-parameter
+parameter 'Any-Parameter-name-2'
+   description   'Any description'
+   unit          'Any unit'
+   value         -0.9990E+03
+end-parameter
+
+output 'Any-output-name-1'
+   description   'Any description'
+end-output
+output 'Any-output-name-2'
+   description   'Any description'
+end-output
+
+active-processes
+   name  'Any-name-1' 'any description 1'
+   name  'Any-name-2' 'any description 2'
+end-active-processes

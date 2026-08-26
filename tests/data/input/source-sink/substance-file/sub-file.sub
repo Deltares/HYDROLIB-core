@@ -1,0 +1,10 @@
+substance 'sub_1' active
+   description        'sub_1 (fast decomposing fraction)'
+   concentration-unit '(gC/m3)'
+   waste-load-unit    '-'
+end-substance
+substance 'sub_2' active
+   description        'sub_2 (fast decomposing fraction)'
+   concentration-unit '(gN/m3)'
+   waste-load-unit    '-'
+end-substance

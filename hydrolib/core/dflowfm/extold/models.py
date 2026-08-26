@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import yaml
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, PositiveInt, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -198,6 +198,17 @@ ExtOldExtrapolationMethod = IntEnum(
 )
 
 
+class Layer(IntEnum):
+    """Non-numeric values for the `LAYER` attribute of an old external forcing block.
+
+    Corresponds to the new Spatial `targetLayer`: `bottom` (-1) and `all` (0).
+    A positive layer number is also allowed; see `ExtOldForcing.layer`.
+    """
+
+    bottom = -1
+    all = 0
+
+
 class ExtOldForcing(BaseModel):
     """Class holding the external forcing values.
 
@@ -255,9 +266,6 @@ class ExtOldForcing(BaseModel):
                 'N' The minimum values of the existing values and provided values are used.
         value (Optional[float]):
             Custom coefficients for transformation.
-        layer (Optional[int]):
-            Target layer for initialwaqbot quantities. Use -1 for bottom, 0 for all layers,
-            or a positive integer for a specific layer number.
         factor (Optional[float]):
             The conversion factor.
         ifrctyp (Optional[float]):
@@ -275,40 +283,41 @@ class ExtOldForcing(BaseModel):
             The area for sources and sinks.
         nummin (Optional[int]):
             The minimum required number of source data points in each target cell.
+        layer (Optional[Union[Layer, PositiveInt]]):
+            The target layer for the data: -1 (bottom), 0 (all), or a positive layer
+            number. Converts to the new Spatial `targetLayer` field.
     """
 
     quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
     )
-    varname: Optional[str] = Field(None, alias="VARNAME")
+    varname: str | None = Field(None, alias="VARNAME")
     sourcemask: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK"
     )
     filetype: ExtOldFileType = Field(alias="FILETYPE")
     method: ExtOldMethod = Field(alias="METHOD")
-    extrapolation_method: Optional[ExtOldExtrapolationMethod] = Field(
+    extrapolation_method: ExtOldExtrapolationMethod | None = Field(
         None, alias="EXTRAPOLATION_METHOD"
     )
 
-    maxsearchradius: Optional[float] = Field(None, alias="MAXSEARCHRADIUS")
+    maxsearchradius: float | None = Field(None, alias="MAXSEARCHRADIUS")
     operand: Operand = Field(alias="OPERAND")
-    value: Optional[float] = Field(None, alias="VALUE")
-    layer: Optional[int] = Field(None, alias="LAYER")
-    factor: Optional[float] = Field(None, alias="FACTOR")
-    ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
-    averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
+    value: float | None = Field(None, alias="VALUE")
+    factor: float | None = Field(None, alias="FACTOR")
+    ifrctyp: float | None = Field(None, alias="IFRCTYP")
+    averagingtype: float | None = Field(None, alias="AVERAGINGTYPE")
 
-    relativesearchcellsize: Optional[float] = Field(
-        None, alias="RELATIVESEARCHCELLSIZE"
-    )
-    extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
-    percentileminmax: Optional[float] = Field(None, alias="PERCENTILEMINMAX")
-    area: Optional[float] = Field(None, alias="AREA")
-    nummin: Optional[int] = Field(None, alias="NUMMIN")
+    relativesearchcellsize: float | None = Field(None, alias="RELATIVESEARCHCELLSIZE")
+    extrapoltol: float | None = Field(None, alias="EXTRAPOLTOL")
+    percentileminmax: float | None = Field(None, alias="PERCENTILEMINMAX")
+    area: float | None = Field(None, alias="AREA")
+    nummin: int | None = Field(None, alias="NUMMIN")
+    layer: Layer | PositiveInt | None = Field(None, alias="LAYER")
 
-    tracerfallvelocity: Optional[float] = Field(None, alias="TRACERFALLVELOCITY")
-    tracerdecaytime: Optional[float] = Field(None, alias="TRACERDECAYTIME")
+    tracerfallvelocity: float | None = Field(None, alias="TRACERFALLVELOCITY")
+    tracerdecaytime: float | None = Field(None, alias="TRACERDECAYTIME")
 
     def is_intermediate_link(self) -> bool:
         return True

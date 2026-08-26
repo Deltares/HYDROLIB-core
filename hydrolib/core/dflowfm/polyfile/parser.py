@@ -8,6 +8,7 @@ from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Un
 from pydantic import Field
 
 from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.polyfile.models import (
     Description,
     Metadata,
@@ -599,9 +600,9 @@ def read_polyfile(
 
     parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
-    with filepath.open("r", encoding="utf8") as f:
-        for line in f:
-            parser.feed_line(line)
+    content = open_file_with_fallback_encoding(filepath)
+    for line in content.splitlines(keepends=True):
+        parser.feed_line(line)
 
     objs = parser.finalize()
 

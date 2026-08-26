@@ -1,6 +1,7 @@
 """Models for the external forcings file (new format) of D-Flow FM."""
 
 import warnings
+from abc import ABC
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Optional, Set, Union
 
@@ -13,6 +14,7 @@ from pydantic import (
     model_validator,
     PositiveInt,
 )
+from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
@@ -29,7 +31,6 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.common.models import LocationType, Operand
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -41,8 +42,10 @@ from hydrolib.core.dflowfm.ini.util import (
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
+    OperandInterpolationValidators,
     DataFileType,
     InterpolationMethod,
+    LocationTypeDataFileTypeValidators,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -57,8 +60,27 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "tracerbnd",
     "sedfracbnd",
-    "initialsedfrac",
+    "initialsedfrac"
 )
+# Reserved key used to thread the caller-provided `dynamic_fields` list through
+# Pydantic validation (via `SourceSink.__init__`) so `_exclude_from_validation`
+# can whitelist those names. It is stripped from the instance after init.
+_DYNAMIC_FIELDS_KEY = "__dynamic_fields__"
+SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac"
+)
+
+class TargetLayer(StrEnum):
+    """Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.
+
+    Corresponds to the ``LAYER`` value in the old external forcings file: ``bottom``
+    (old ``-1``) and ``all`` (old ``0``). A positive integer layer number is also
+    accepted; see ``Spatial.targetlayer``.
+    """
+
+    bottom = "bottom"
+    all = "all"
 
 
 class TargetLayer(StrEnum):
@@ -406,7 +428,6 @@ class SourceSink(INIBasedModel):
     All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
-
     model_config = ConfigDict(extra="allow")
 
     _header: Literal["SourceSink"] = "SourceSink"
@@ -477,8 +498,10 @@ class SourceSink(INIBasedModel):
         return values
 
     @classmethod
-    def _exclude_from_validation(cls, input_data: Optional[dict] = None) -> Set:
+    def _exclude_from_validation(cls, input_data: dict | None = None) -> Set:
+        input_data = input_data or {}
         fields = cls.model_fields
+        dynamic_fields = input_data.get(_DYNAMIC_FIELDS_KEY) or []
         unknown_keywords = [
             key
             for key in input_data.keys()
@@ -486,20 +509,37 @@ class SourceSink(INIBasedModel):
             and (
                 key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
                 or _is_dynamic_forcing_delta_key(key)
+                or key in dynamic_fields
+                or key == _DYNAMIC_FIELDS_KEY
             )
         ]
         return set(unknown_keywords)
 
+    def __init__(self, dynamic_fields: Optional[List[str]] = None, **data):
+        """Initialize SourceSink and set dynamic fields as instance attributes.
 
-    def __init__(self, **data):
-        """Initialize SourceSink and set dynamic tracer attributes."""
+        When `dynamic_fields` is provided, exactly those names (whose values are passed
+        in `data`) are attached onto this instance. When it is omitted, the legacy
+        behaviour applies: every key in `data` that starts with one of
+        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` is attached. In both cases the values
+        are stored as-is on the instance (in `model_extra`); no coercion is applied yet.
+        Args:
+            dynamic_fields: Names of extra fields (whose values are passed in `data`)
+                to attach onto this instance. If `None`, the prefix-based detection is
+                used instead.
+            **data: The regular SourceSink field values, plus the values for any dynamic
+                fields.
+        """
+        # Thread the dynamic field names through validation so that
+        # `_exclude_from_validation` can whitelist them as known keywords.
+        if dynamic_fields is not None:
+            data[_DYNAMIC_FIELDS_KEY] = list(dynamic_fields)
+
         super().__init__(**data)
-        # Add dynamic attributes for fields starting with 'tracer'
-        for key, value in data.items():
-            if isinstance(key, str) and key.startswith(
-                SOURCE_SINKS_QUANTITIES_VALID_PREFIXES
-            ):
-                setattr(self, key, value)
+
+        # Drop the reserved key so it does not linger as an instance attribute.
+        if self.__pydantic_extra__ is not None:
+            self.__pydantic_extra__.pop(_DYNAMIC_FIELDS_KEY, None)
 
     @model_validator(mode="before")
     def validate_location_specification(cls, values):
@@ -556,35 +596,34 @@ class SourceSink(INIBasedModel):
         return data
 
 
-class Meteo(INIBasedModel):
-    """A `[Meteo]` block for use inside an external forcings file.
+class SpatialForcingBase(OperandInterpolationValidators, INIBasedModel, ABC):
+    """Shared behaviour for the `[Meteo]` and `[Spatial]` external-forcing blocks.
 
-    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+    `Meteo` (legacy) and `Spatial` (its successor) share the same data-file model
+    resolution logic and unknown-keyword handling. This abstract base holds that
+    common behaviour so a single fix applies to both.
 
-    All lowercased attributes match with the meteo input as described in
-    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
+    The `operand` / `interpolationMethod` validators are inherited from
+    `OperandInterpolationValidators` (common to all four spatial-field blocks). `Spatial`
+    additionally inherits `LocationTypeDataFileTypeValidators` for the `locationType` /
+    `dataFileType` validators it shares with the inifield blocks; `Meteo` does not,
+    as it has neither field.
+
+    Field declarations remain on the concrete subclasses: their keyword names
+    differ (`forcing*` versus `data*`) and their serialization order must be
+    preserved, so only behaviour (not fields) is hoisted here.
     """
 
     class Comments(INIBasedModel.Comments):
-        """Comments for the Meteo block fields."""
+        """Comments shared by the `[Meteo]` and `[Spatial]` block fields.
+
+        Only the descriptions that are identical in both blocks live here. The
+        file-specific ones (`forcingFile`/`dataFile`, `extrapolationSearchRadius`)
+        stay on the subclasses because their wording differs.
+        """
 
         quantity: Optional[str] = Field(
             "Name of the quantity. See UM Section C.5.3", alias="quantity"
-        )
-        forcingfile: Optional[str] = Field(
-            "Name of file containing the forcing for this meteo quantity.",
-            alias="forcingFile",
-        )
-        forcingfiletype: Optional[str] = Field(
-            "Type of forcingFile.", alias="forcingFileType"
-        )
-        forcingvariablename: Optional[str] = Field(
-            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
-            alias="forcingVariableName",
-        )
-        targetmaskfile: Optional[str] = Field(
-            "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
-            alias="targetMaskFile",
         )
         targetmaskinvert: Optional[str] = Field(
             "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
@@ -601,6 +640,86 @@ class Meteo(INIBasedModel):
             "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
             alias="extrapolationAllowed",
         )
+
+    @classmethod
+    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
+        """Neither block currently raises an error on unknown keywords."""
+        return None
+
+    @staticmethod
+    def _resolve_file_models(
+        values: Dict[str, Any], file_keys: tuple, type_keys: tuple
+    ) -> Dict[str, Any]:
+        """Select the concrete file model for the data/forcing file from its type.
+
+        Mirrors the historical per-class ``choose_file_model`` bodies: when both a
+        file keyword and its type keyword are present and the file is still a raw
+        path, the path is resolved into the model class from
+        ``FILETYPE_FILEMODEL_MAPPING`` (types not in the mapping fall back to
+        ``DiskOnlyFileModel``).
+
+        Args:
+            values: Raw, unvalidated input values for the block.
+            file_keys: The lowercase and camelCase names of the file keyword,
+                e.g. ``("datafile", "dataFile")``.
+            type_keys: The lowercase and camelCase names of the file-type keyword,
+                e.g. ``("datafiletype", "dataFileType")``.
+
+        Returns:
+            Dict[str, Any]: The (possibly updated) values dictionary.
+        """
+        if any(key in values for key in type_keys) and any(
+            key in values for key in file_keys
+        ):
+            type_key = type_keys[0] if type_keys[0] in values else type_keys[1]
+            file_key = file_keys[0] if file_keys[0] in values else file_keys[1]
+
+            file_type = values.get(type_key)
+            file_type = str(file_type).lower() if file_type is not None else None
+
+            raw_path = values.get(file_key)
+            if isinstance(raw_path, (Path, str)):
+                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
+                if model is None:
+                    values[file_key] = DiskOnlyFileModel(raw_path)
+                else:
+                    values[file_key] = resolve_file_model(raw_path, model)
+
+        return values
+
+
+class Meteo(SpatialForcingBase):
+    """A `[Meteo]` block for use inside an external forcings file.
+
+    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
+
+    All lowercased attributes match with the meteo input as described in
+    [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
+    """
+
+    class Comments(SpatialForcingBase.Comments):
+        """Comments for the Meteo block fields.
+
+        Inherits the shared descriptions from `SpatialForcingBase.Comments`; only
+        the `forcing*` file keywords and the `extrapolationSearchRadius` wording are
+        specific to this block.
+        """
+
+        forcingfile: Optional[str] = Field(
+            "Name of file containing the forcing for this meteo quantity.",
+            alias="forcingFile",
+        )
+        forcingfiletype: Optional[str] = Field(
+            "Type of forcingFile.", alias="forcingFileType"
+        )
+        forcingvariablename: Optional[str] = Field(
+            "Variable name used in forcingfile associated with this forcing. See UM Section C.5.3",
+            alias="forcingVariableName",
+        )
+        targetmaskfile: Optional[str] = Field(
+            "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the meteo forcing.",
+            alias="targetMaskFile",
+        )
         extrapolationsearchradius: Optional[str] = Field(
             "Maximum search radius for nearest neighbor extrapolation in space.",
             alias="extrapolationSearchRadius",
@@ -608,31 +727,26 @@ class Meteo(INIBasedModel):
 
     comments: Comments = Comments()
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """The Meteo does not currently support raising an error on unknown keywords."""
-        return None
-
     _header: Literal["Meteo"] = "Meteo"
     quantity: str = Field(alias="quantity")
     forcingfile: Union[TimModel, ForcingModel, DiskOnlyFileModel, PolyFile] = Field(
         alias="forcingFile"
     )
-    forcingvariablename: Optional[str] = Field(None, alias="forcingVariableName")
+    forcingvariablename: str | None = Field(None, alias="forcingVariableName")
     forcingfiletype: MeteoForcingFileType = Field(alias="forcingFileType")
-    targetmaskfile: Optional[PolyFile] = Field(None, alias="targetMaskFile")
-    targetmaskinvert: Optional[bool] = Field(None, alias="targetMaskInvert")
-    interpolationmethod: Optional[MeteoInterpolationMethod] = Field(
+    targetmaskfile: PolyFile | None = Field(None, alias="targetMaskFile")
+    targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
+    interpolationmethod: MeteoInterpolationMethod | None = Field(
         None, alias="interpolationMethod"
     )
-    operand: Optional[Operand] = Field(Operand.override.value, alias="operand")
-    extrapolationallowed: Optional[bool] = Field(None, alias="extrapolationAllowed")
-    extrapolationsearchradius: Optional[float] = Field(
+    operand: Operand | None = Field(Operand.override.value, alias="operand")
+    extrapolationallowed: bool | None = Field(None, alias="extrapolationAllowed")
+    extrapolationsearchradius: float | None = Field(
         None, alias="extrapolationSearchRadius"
     )
-    averagingtype: Optional[int] = Field(None, alias="averagingType")
-    averagingnummin: Optional[float] = Field(None, alias="averagingNumMin")
-    averagingpercentile: Optional[float] = Field(None, alias="averagingPercentile")
+    averagingtype: int | None = Field(None, alias="averagingType")
+    averagingnummin: PositiveInt | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
 
     # Deprecated camelCase aliases — intentional case clash with the fields above; remove in 2.0.0 (docs/migration.md).
     forcingVariableName = DeprecatedAttributeAlias(  # NOSONAR S1845
@@ -657,40 +771,16 @@ class Meteo(INIBasedModel):
     @model_validator(mode="before")
     @classmethod
     def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Root-level validator to the right class for the filename parameter based on the filetype.
+        """Select the right class for the forcingFile parameter based on forcingFileType.
 
-        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping
-        dictionary.
-
-        FILETYPE_FILEMODEL_MAPPING = {
-            "bcascii": ForcingModel,
-            "uniform": TimModel,
-            "unimagdir": TimModel,
-            "arcinfo": DiskOnlyFileModel,
-            "spiderweb": DiskOnlyFileModel,
-            "curvigrid": DiskOnlyFileModel,
-            "netcdf": DiskOnlyFileModel,
-            "polygon": PolyFile,
-        }
+        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against
+        this block's ``forcingFile``/``forcingFileType`` keywords.
         """
-        # if the filetype and the filename are present in the values
-        if any(par in values for par in ["forcingfiletype", "forcingFileType"]) and any(
-            par in values for par in ["forcingfile", "forcingFile"]
-        ):
-            file_type_var_name = (
-                "forcingfiletype" if "forcingfiletype" in values else "forcingFileType"
-            )
-            filename_var_name = (
-                "forcingfile" if "forcingfile" in values else "forcingFile"
-            )
-            file_type = values.get(file_type_var_name)
-            file_type = str(file_type).lower() if file_type is not None else None
-            raw_path = values.get(filename_var_name)
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-                values[filename_var_name] = resolve_file_model(raw_path, model)
-
-        return values
+        return cls._resolve_file_models(
+            values,
+            ("forcingfile", "forcingFile"),
+            ("forcingfiletype", "forcingFileType"),
+        )
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -700,18 +790,8 @@ class Meteo(INIBasedModel):
     def forcingfiletype_validator(cls, v):
         return enum_value_parser(v, MeteoForcingFileType)
 
-    @field_validator("interpolationmethod", mode="before")
-    @classmethod
-    def interpolationmethod_validator(cls, v):
-        return enum_value_parser(v, MeteoInterpolationMethod)
 
-    @field_validator("operand", mode="before")
-    @classmethod
-    def validate_operand(cls, v: Any):
-        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
-
-
-class Spatial(INIBasedModel):
+class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     """A `[Spatial]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -724,12 +804,14 @@ class Spatial(INIBasedModel):
     [UM Sec.C.5.2.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.3).
     """
 
-    class Comments(INIBasedModel.Comments):
-        """Comments for the Spatial block fields."""
+    class Comments(SpatialForcingBase.Comments):
+        """Comments for the Spatial block fields.
 
-        quantity: str | None = Field(
-            "Name of the quantity. See UM Section C.5.3", alias="quantity"
-        )
+        Inherits the shared descriptions from `SpatialForcingBase.Comments`; only
+        the `data*` file keywords, the `extrapolationSearchRadius` wording, and the
+        fields unique to the Spatial block are declared here.
+        """
+
         datafile: str | None = Field(
             "Name of file containing the data for this spatial quantity.",
             alias="dataFile",
@@ -744,21 +826,6 @@ class Spatial(INIBasedModel):
         targetmaskfile: str | None = Field(
             "Name of <*.pol> file to be used as mask. Grid parts inside any polygon will receive the spatial forcing.",
             alias="targetMaskFile",
-        )
-        targetmaskinvert: str | None = Field(
-            "Flag indicating whether the target mask should be inverted, i.e., outside of all polygons: no or yes.",
-            alias="targetMaskInvert",
-        )
-        interpolationmethod: str | None = Field(
-            "Type of (spatial) interpolation.", alias="interpolationMethod"
-        )
-        operand: str | None = Field(
-            "How this data is combined with previous data for the same quantity (if any).",
-            alias="operand",
-        )
-        extrapolationallowed: str | None = Field(
-            "Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.",
-            alias="extrapolationAllowed"
         )
         extrapolationsearchradius: str | None = Field(
             "Maximum search radius for nearest neighbour extrapolation in space.",
@@ -806,11 +873,6 @@ class Spatial(INIBasedModel):
 
     comments: Comments = Comments()
 
-    @classmethod
-    def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
-        """The Spatial block does not currently raise an error on unknown keywords."""
-        return None
-
     _header: Literal["Spatial"] = "Spatial"
     quantity: str = Field(alias="quantity")
     datafile: TimModel | ForcingModel | DiskOnlyFileModel | PolyFile | None = Field(
@@ -829,9 +891,9 @@ class Spatial(INIBasedModel):
         None, alias="extrapolationSearchRadius"
     )
     averagingtype: AveragingType | None = Field(None, alias="averagingType")
-    averagingrelsize: float | None = Field(None, alias="averagingRelSize")
-    averagingnummin: float | None = Field(None, alias="averagingNumMin")
-    averagingpercentile: float | None = Field(None, alias="averagingPercentile")
+    averagingrelsize: NonNegativeFloat | None = Field(None, alias="averagingRelSize")
+    averagingnummin: PositiveInt | None = Field(None, alias="averagingNumMin")
+    averagingpercentile: NonNegativeFloat | None = Field(None, alias="averagingPercentile")
     locationtype: LocationType | None = Field(
         LocationType.all.value, alias="locationType"
     )
@@ -841,34 +903,15 @@ class Spatial(INIBasedModel):
     tracerdecaytime: float | None = Field(None, alias="tracerDecayTime")
     targetlayer: TargetLayer | PositiveInt | None = Field(None, alias="targetLayer")
 
-    @model_validator(mode="before")
-    @classmethod
-    def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        """Select the right class for the dataFile parameter based on dataFileType.
-
-        Uses FILETYPE_FILEMODEL_MAPPING to determine the correct file model.
-        Types not in the mapping (e.g., GeoTIFF, sample, 1dField) default to
-        DiskOnlyFileModel.
-        """
-        if any(par in values for par in ["datafiletype", "dataFileType"]) and any(
-            par in values for par in ["datafile", "dataFile"]
-        ):
-            file_type_var_name = (
-                "datafiletype" if "datafiletype" in values else "dataFileType"
-            )
-            filename_var_name = "datafile" if "datafile" in values else "dataFile"
-            file_type = values.get(file_type_var_name)
-            file_type = str(file_type).lower() if file_type is not None else None
-            raw_path = values.get(filename_var_name)
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(file_type)
-                values[filename_var_name] = resolve_file_model(raw_path, model)
-
-        return values
-
     @classmethod
     def _normalize_spatial_keys(cls, values: Dict) -> Dict:
-        """Normalize camelCase aliases and coerce datafile to DiskOnlyFileModel."""
+        """Normalize camelCase aliases and coerce any unresolved datafile to DiskOnlyFileModel.
+
+        ``dataFile`` is normally resolved to its concrete file model earlier in the
+        validation flow (see ``_resolve_file_models``). This fallback only wraps a
+        path that is still raw (e.g. no ``dataFileType`` was supplied) so that the
+        field always holds a file model rather than a bare string.
+        """
         data_file = values.get("datafile") or values.get("dataFile")
         if isinstance(data_file, (str, Path)):
             data_file = DiskOnlyFileModel(data_file)
@@ -927,7 +970,11 @@ class Spatial(INIBasedModel):
 
     @classmethod
     def _process_section_values(cls, values):
-        """Process Section objects and extract/convert values as needed.
+        """Flatten a Section object into a dictionary of raw values.
+
+        The raw ``dataFile`` value is left as a path/string so that the subsequent
+        ``_resolve_file_models`` step can select the concrete file model from
+        ``dataFileType`` (rather than being forced to ``DiskOnlyFileModel`` here).
 
         Args:
             values: The values to process, which may be a Section object or a dictionary.
@@ -935,23 +982,7 @@ class Spatial(INIBasedModel):
         Returns:
             A dictionary containing the processed values.
         """
-        # If values is a Section object, we need to handle it specially
-        if isinstance(values, Section):
-            # Extract the datafile value if present
-            data_file = super()._extract_file_model_from_section(
-                values, "datafile", DiskOnlyFileModel
-            )
-
-            # Convert Section to dictionary
-            values_dict = super()._convert_section_to_dict(values)
-
-            # If we found a datafile, add it to the dictionary
-            if data_file is not None:
-                values_dict["datafile"] = data_file
-
-            return values_dict
-
-        return values
+        return cls._convert_section_to_dict(values)
 
     @model_validator(mode="before")
     @classmethod
@@ -973,8 +1004,25 @@ class Spatial(INIBasedModel):
         remains supported for quantities such as ``initialvertical*`` (e.g.
         ``initialverticalsalinityprofile``) that use polygon files for a different
         purpose and have no new alternative yet.
+
+        The data file is resolved to its concrete file model only on the ``dataFile``
+        path (``dataValue`` absent). This prevents an invalid combination
+        (``dataValue`` together with ``dataFile``) from parsing a file before the
+        mutual-exclusion check rejects it, so callers get the exclusion error rather
+        than a file-parse error.
         """
         values = cls._process_section_values(values)
+
+        on_datavalue_path = (
+            values.get("datavalue") is not None or values.get("dataValue") is not None
+        )
+        if not on_datavalue_path:
+            values = cls._resolve_file_models(
+                values,
+                ("datafile", "dataFile"),
+                ("datafiletype", "dataFileType"),
+            )
+
         values = cls._normalize_spatial_keys(values)
 
         datavalue = values.get("datavalue")
@@ -998,69 +1046,33 @@ class Spatial(INIBasedModel):
             return resolve_file_model(v, PolyFile)
         return v
 
-    @field_validator("datafiletype", mode="before")
-    @classmethod
-    def validate_data_file_type(cls, v):
-        if v is None:
-            return v
-        return enum_value_parser(v, DataFileType)
-
-    @field_validator("interpolationmethod", mode="before")
-    @classmethod
-    def validate_interpolation_method(cls, v):
-        return enum_value_parser(v, InterpolationMethod)
-
     @field_validator("averagingtype", mode="before")
     @classmethod
     def validate_average_type(cls, v):
         return enum_value_parser(v, AveragingType)
 
-    @field_validator("locationtype", mode="before")
-    @classmethod
-    def validate_location_type(cls, v):
-        return enum_value_parser(v, LocationType)
-
-    @field_validator("operand", mode="before")
-    @classmethod
-    def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
-
     @field_validator("targetlayer", mode="before")
     @classmethod
     def validate_targetlayer(cls, v):
-        """Coerce a raw ``targetLayer`` value to a :class:`TargetLayer` enum member or a positive :class:`int`.
+        """Coerce targetLayer to a TargetLayer member or a positive integer layer number.
 
-        Accepts the following inputs (all string comparisons are case-insensitive):
-
-        * ``"bottom"`` → :attr:`TargetLayer.bottom`
-        * ``"all"``    → :attr:`TargetLayer.all`
-        * A string representation of a positive integer (e.g. ``"1"``, ``"2"``) → ``int``
-        * An already-resolved :class:`TargetLayer` instance → returned unchanged
-        * ``None`` → returned unchanged (field is optional)
-
-        Args:
-            v: The raw field value supplied by the user or parsed from an INI file.
-
-        Returns:
-            TargetLayer | int | None: The validated and coerced value.
-
-        Raises:
-            ValueError: When ``v`` is not ``None``, not a :class:`TargetLayer`, and
-                cannot be interpreted as ``"bottom"``, ``"all"``, or a positive integer.
+        Accepts ``bottom`` and ``all`` (case-insensitive) or a positive integer. The
+        old external-forcings ``LAYER`` values ``-1`` and ``0`` are represented by
+        ``bottom`` and ``all`` respectively and are not accepted as integers here.
         """
-        processed_v = v
+        result = v
         if v is not None and not isinstance(v, TargetLayer):
-            str_input = str(v)
-            if str_input.lower() in (TargetLayer.bottom.value, TargetLayer.all.value):
-                processed_v = TargetLayer(str_input.lower())
-            elif str_input.isdigit() and int(str_input) > 0:
-                processed_v = int(str_input)
+            text = str(v).strip()
+            if text.lower() in (TargetLayer.bottom.value, TargetLayer.all.value):
+                result = TargetLayer(text.lower())
+            elif text.lstrip("+").isdigit() and int(text) > 0:
+                result = int(text)
             else:
                 raise ValueError(
-                    "TargetLayer must be eit'bottom', 'all' or a positive integer but "
+                    "targetLayer must be 'bottom', 'all', or a positive integer, "
                     f"got '{v}'."
                 )
-        return processed_v
+        return result
 
 
 class ExtGeneral(INIGeneral):
@@ -1124,6 +1136,24 @@ class ExtModel(INIModel):
             )
         return self
 
+    @property
+    def n_forcing_blocks(self) -> int:
+        """Total number of forcing blocks held across all block types.
+
+        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[Meteo]` and
+        `[Spatial]` block, whether produced by conversion or loaded from an existing
+        file. Use this to decide whether the model has any content worth writing;
+        counting the individual lists by hand is error-prone and has silently
+        dropped block types before.
+        """
+        return (
+            len(self.boundary)
+            + len(self.lateral)
+            + len(self.sourcesink)
+            + len(self.meteo)
+            + len(self.spatial)
+        )
+
     @classmethod
     def _ext(cls) -> str:
         return ".ext"
@@ -1135,22 +1165,6 @@ class ExtModel(INIModel):
 
 class SourceSinkError(Exception):
     """SourceSinkError."""
-
-    def __init__(self, error_message: str):
-        """Initialize with an error message."""
-        super().__init__(error_message)
-
-
-class InitialFieldError(Exception):
-    """InitialFieldError."""
-
-    def __init__(self, error_message: str):
-        """Initialize with an error message."""
-        super().__init__(error_message)
-
-
-class MeteoError(Exception):
-    """MeteoError."""
 
     def __init__(self, error_message: str):
         """Initialize with an error message."""
