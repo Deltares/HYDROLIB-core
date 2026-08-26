@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
     Astronomic,
@@ -55,6 +56,15 @@ from hydrolib.tools.extforce_convert.utils import (
 
 if TYPE_CHECKING:
     from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
+
+#: Maps old-format "factor" quantity names to the base quantity they scale.
+#: These quantities are no longer needed in the new format; instead, the base
+#: quantity is used with ``operand = multiply``.
+FACTOR_QUANTITY_BASE: Dict[str, str] = {
+    "windspeedfactor": "windxy",
+    "solarradiationfactor": "solarradiation",
+}
 
 
 class BaseConverter(ABC):
@@ -138,6 +148,10 @@ class SpatialBlockBuilder:
         """
         self.forcing = forcing
         self.new_forcing_path = new_forcing_path
+
+        quantity_str = str(forcing.quantity).lower()
+        self._is_factor = quantity_str in FACTOR_QUANTITY_BASE
+
         self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
             forcing.quantity
         )
@@ -164,6 +178,21 @@ class SpatialBlockBuilder:
                 f"{self.forcing.quantity} and FILENAME={self.forcing.filename}."
             )
 
+    def _set_operand(self) -> Operand:
+        """Return the operand for the new Spatial block.
+
+        Factor quantities (``windspeedfactor``, ``solarradiationfactor``) are
+        always converted with ``operand = multiply``, regardless of the operand
+        value recorded in the old external forcings file.
+
+        Returns:
+            Operand: ``Operand.multiply`` for factor quantities, otherwise the
+                operand value as parsed from the old external forcings block.
+        """
+        if self._is_factor:
+            return Operand.multiply
+        return self.forcing.operand
+
     def _set_representation(self):
         """Populate `self.block` with the spatial representation for this forcing.
 
@@ -188,7 +217,7 @@ class SpatialBlockBuilder:
                 "quantity": self.quantity_name,
                 "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
                 "datavalue": self.forcing.value,
-                "operand": self.forcing.operand,
+                "operand": self._set_operand(),
                 "interpolationmethod": InterpolationMethod.constant,
             }
         elif is_polygon:
@@ -197,7 +226,7 @@ class SpatialBlockBuilder:
                 "datafile": DiskOnlyFileModel(self.new_forcing_path),
                 "datafiletype": self.file_type,
                 "interpolationmethod": InterpolationMethod.constant,
-                "operand": self.forcing.operand,
+                "operand": self._set_operand(),
             }
         else:
             self.block = {
@@ -208,7 +237,7 @@ class SpatialBlockBuilder:
             self.block = convert_interpolation_data(self.forcing, self.block)
             if is_initial_vertical:
                 self.block["interpolationmethod"] = InterpolationMethod.constant
-            self.block["operand"] = self.forcing.operand
+            self.block["operand"] = self._set_operand()
             self.block["extrapolationallowed"] = bool(
                 self.forcing.extrapolation_method
             )

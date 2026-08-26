@@ -6,8 +6,6 @@ mdu:
 external_forcing:
     unsupported_quantity_names:
         # Meteo
-        - solarradiationfactor
-        - windspeedfactor
         - windstresscoefficient
         - wind_speed
         - wind_from_direction
@@ -58,4 +56,6 @@ external_forcing:
         # rejects it.
         bedrock_surface_elevation: bedrockSurfaceElevation
         friction_coefficient_time_dependent: frictionCoefficientTimeDependent
+        windspeedfactor: windxy
+        solarradiationfactor: solarradiation
 

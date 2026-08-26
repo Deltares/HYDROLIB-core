@@ -16,6 +16,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield import DataFileType, InterpolationMethod
 from hydrolib.tools.extforce_convert.converters import (
+    FACTOR_QUANTITY_BASE,
     ConverterFactory,
     SpatialConverter,
 )
@@ -270,6 +271,83 @@ class TestSpatialE2E:
         assert len(structure_model.structure) == 0
         assert len(ext_model.meteo) == 0
 
+
+_FACTOR_QUANTITY_CASES = [
+    pytest.param(
+        "windspeedfactor",
+        "windxy",
+        id="windspeedfactor->windxy",
+    ),
+    pytest.param(
+        "solarradiationfactor",
+        "solarradiation",
+        id="solarradiationfactor->solarradiation",
+    ),
+]
+
+
+class TestFactorQuantityConversion:
+    """
+    Tests that factor quantities (windspeedfactor, solarradiationfactor) are correctly
+    converted to [Spatial] blocks with operand=multiply and the base meteorological quantity.
+    """
+
+    @pytest.mark.parametrize("factor_quantity, expected_base_quantity", _FACTOR_QUANTITY_CASES)
+    def test_factor_quantity_in_factor_quantity_base(
+        self, factor_quantity: str, expected_base_quantity: str
+    ):
+        """All supported factor quantities have an entry in FACTOR_QUANTITY_BASE."""
+        assert factor_quantity in FACTOR_QUANTITY_BASE
+        assert FACTOR_QUANTITY_BASE[factor_quantity] == expected_base_quantity
+
+    @pytest.mark.parametrize("factor_quantity, expected_base_quantity", _FACTOR_QUANTITY_CASES)
+    def test_polygon_factor_quantity_converts_to_spatial_with_multiply(
+        self, factor_quantity: str, expected_base_quantity: str
+    ):
+        """A polygon-based factor quantity converts to a Spatial block with targetMaskFile,
+        dataValue, and operand=multiply, using the base quantity (not the factor quantity name).
+        """
+        forcing = ExtOldForcing(
+            quantity=factor_quantity,
+            filename=DiskOnlyFileModel("mask.pol"),
+            filetype=10,
+            method=4,
+            value=0.8,
+            operand="O",
+        )
+
+        new_block = SpatialConverter().convert(
+            forcing, forcing.filename.filepath)
+
+        assert isinstance(new_block, Spatial)
+        assert new_block.quantity == expected_base_quantity
+        assert new_block.operand == Operand.multiply
+        assert new_block.datavalue == pytest.approx(0.8)
+        assert new_block.targetmaskfile is not None
+        assert new_block.interpolationmethod == InterpolationMethod.constant
+        assert new_block.datafile is None
+
+    @pytest.mark.parametrize("factor_quantity, expected_base_quantity", _FACTOR_QUANTITY_CASES)
+    def test_factor_quantity_operand_is_always_multiply_regardless_of_original(
+        self, factor_quantity: str, expected_base_quantity: str
+    ):
+        """The operand is always set to multiply for factor quantities, no matter the original."""
+        for original_operand in ["O", "A", "+", "*", "X", "N"]:
+            forcing = ExtOldForcing(
+                quantity=factor_quantity,
+                filename=DiskOnlyFileModel("mask.pol"),
+                filetype=10,
+                method=4,
+                value=1.0,
+                operand=original_operand,
+            )
+
+            new_block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+
+            assert new_block.operand == Operand.multiply, (
+                f"Expected multiply for operand={original_operand!r}, "
+                f"got {new_block.operand!r}"
+            )
 
 class TestSpatialExtrapolationConversion:
     """The old external-forcing EXTRAPOLATION_METHOD (0/1) must be carried into the
