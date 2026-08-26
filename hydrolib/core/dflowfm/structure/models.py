@@ -7,7 +7,7 @@ import logging
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
-from typing import Annotated, Dict, List, Literal, Optional, Set, Union
+from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
@@ -36,6 +36,33 @@ from hydrolib.core.dflowfm.ini.util import (
 from hydrolib.core.dflowfm.tim.models import TimModel
 
 logger = logging.getLogger(__name__)
+
+_STRUCTURE_TYPE_CANONICAL_MAP = {
+    "weir": "weir",
+    "universalweir": "universalWeir",
+    "culvert": "culvert",
+    "longculvert": "longCulvert",
+    "pump": "pump",
+    "compound": "compound",
+    "orifice": "orifice",
+    "generalstructure": "generalStructure",
+    "dambreak": "dambreak",
+    "bridge": "bridge",
+}
+
+
+def _normalize_structure_type(data: Any) -> Any:
+    """Normalize the 'type' field in a structure dict to its canonical camelCase form.
+
+    This is necessary because the discriminated union in Pydantic v2 reads the
+    raw 'type' value before any field validators run, so case-insensitive input
+    (e.g. ``generalstructure``) must be normalized to the canonical tag
+    (e.g. ``generalStructure``) before the discriminator check.
+    """
+    if isinstance(data, dict) and "type" in data:
+        type_lower = str(data["type"]).lower()
+        data["type"] = _STRUCTURE_TYPE_CANONICAL_MAP.get(type_lower, data["type"])
+    return data
 
 
 def load_model(value):
@@ -1267,6 +1294,22 @@ class StructureModel(INIModel):
 
     general: StructureGeneral = StructureGeneral()
     structure: Annotated[List[StructureUnion], BeforeValidator(make_list)] = []
+
+    @field_validator("structure", mode="before")
+    @classmethod
+    def _normalize_structure_types(cls, v: Any) -> Any:
+        """Normalize the 'type' field to canonical camelCase before discriminated union matching.
+
+        In Pydantic v2, the discriminator tag is read from the raw input *before*
+        any field validators run. Without normalization, lowercase values such as
+        ``generalstructure`` fail to match the expected tag ``generalStructure``.
+        """
+        if isinstance(v, list):
+            for item in v:
+                _normalize_structure_type(item)
+        else:
+            _normalize_structure_type(v)
+        return v
 
     @classmethod
     def _ext(cls) -> str:
