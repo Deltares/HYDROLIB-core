@@ -1237,64 +1237,121 @@ class LateralConverter(BaseConverter):
         Returns:
             Any: A constant float, a ForcingModel, or a file path representing the discharge.
         """
-        if forcing.value is not None and not isinstance(forcing.filename, (PolyFile,)):
+        if forcing.value is not None and not isinstance(forcing.filename, PolyFile):
             return forcing.value
 
         if isinstance(forcing.filename, TimModel):
-            tim_file = forcing.filename.filepath
-            if time_unit is None:
-                raise ValueError(
-                    "The 'time_unit' argument must be provided when converting a "
-                    "lateral discharge from a TIM file."
-                )
-            location_name = tim_file.stem
-            tim_model = TimModel(tim_file, quantities_names=["discharge"])
-            units = tim_model.get_units()
-            user_defined_names = [location_name]
-            time_series_list = TimToForcingConverter.convert(
-                tim_model, time_unit, units=units, user_defined_names=user_defined_names
-            )
-            forcing_model = ForcingModel(forcing=time_series_list)
-            forcing_model.filepath = tim_file.with_suffix(".bc")
-            self.legacy_files = tim_file
-            return forcing_model
+            return self._get_discharge_from_tim_model(forcing, time_unit)
 
         if isinstance(forcing.filename, PolyFile):
-            location_file = forcing.filename.filepath
-            tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
-
-            if tim_model is not None:
-                if time_unit is None:
-                    raise ValueError(
-                        "The 'time_unit' argument must be provided when converting a "
-                        "lateral discharge from a TIM file."
-                    )
-                location_name = location_file.stem
-                units = tim_model.get_units()
-                user_defined_names = [location_name] * len(units)
-                time_series_list = TimToForcingConverter.convert(
-                    tim_model,
-                    time_unit,
-                    units=units,
-                    user_defined_names=user_defined_names,
-                )
-                forcing_model = ForcingModel(forcing=time_series_list)
-                forcing_model.filepath = location_file.with_suffix(".bc")
-                return forcing_model
-
-            # Fall back to constant value if available
-            if forcing.value is not None:
-                return forcing.value
-
-            raise ValueError(
-                f"Could not determine the discharge for lateral '{location_file.stem}': "
-                f"no constant VALUE, no '{location_file.stem}.tim', and no "
-                f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
-                "Ensure a time-series (.tim) file or a VALUE field is present in the "
-                "old external forcings block."
-            )
+            return self._get_discharge_from_poly_file(forcing, time_unit)
 
         return forcing.value
+
+    def _get_discharge_from_tim_model(
+        self, forcing: ExtOldForcing, time_unit: Optional[str]
+    ) -> ForcingModel:
+        """Convert a TIM file referenced directly in the forcing block into a ForcingModel.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block whose filename is a TimModel.
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            ForcingModel: The converted forcing model.
+
+        Raises:
+            ValueError: If time_unit is None.
+        """
+        if time_unit is None:
+            raise ValueError(
+                "The 'time_unit' argument must be provided when converting a "
+                "lateral discharge from a TIM file."
+            )
+        tim_file = forcing.filename.filepath
+        location_name = tim_file.stem
+        tim_model = TimModel(tim_file, quantities_names=["discharge"])
+        units = tim_model.get_units()
+        user_defined_names = [location_name]
+        time_series_list = TimToForcingConverter.convert(
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        )
+        forcing_model = ForcingModel(forcing=time_series_list)
+        forcing_model.filepath = tim_file.with_suffix(".bc")
+        self.legacy_files = tim_file
+        return forcing_model
+
+    def _get_discharge_from_poly_file(
+        self, forcing: ExtOldForcing, time_unit: Optional[str]
+    ) -> Any:
+        """Derive the discharge for a lateral defined via a PolyFile.
+
+        Tries to resolve an associated TIM file first; falls back to a constant
+        value if present; otherwise raises an error.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block whose filename is a PolyFile.
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            Any: A ForcingModel (when a TIM file is found) or a constant float.
+
+        Raises:
+            ValueError: If neither a TIM file nor a constant value can be found.
+        """
+        location_file = forcing.filename.filepath
+        tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
+
+        if tim_model is not None:
+            return self._convert_poly_tim_to_forcing_model(
+                tim_model, location_file, time_unit
+            )
+
+        if forcing.value is not None:
+            return forcing.value
+
+        raise ValueError(
+            f"Could not determine the discharge for lateral '{location_file.stem}': "
+            f"no constant VALUE, no '{location_file.stem}.tim', and no "
+            f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
+            "Ensure a time-series (.tim) file or a VALUE field is present in the "
+            "old external forcings block."
+        )
+
+    def _convert_poly_tim_to_forcing_model(
+        self, tim_model: TimModel, location_file: Any, time_unit: Optional[str]
+    ) -> ForcingModel:
+        """Convert a TIM model associated with a PolyFile into a ForcingModel.
+
+        Args:
+            tim_model (TimModel): The resolved TIM model.
+            location_file: The path of the polygon file (used to derive names and output path).
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            ForcingModel: The converted forcing model.
+
+        Raises:
+            ValueError: If time_unit is None.
+        """
+        if time_unit is None:
+            raise ValueError(
+                "The 'time_unit' argument must be provided when converting a "
+                "lateral discharge from a TIM file."
+            )
+        location_name = location_file.stem
+        units = tim_model.get_units()
+        user_defined_names = [location_name] * len(units)
+        time_series_list = TimToForcingConverter.convert(
+            tim_model,
+            time_unit,
+            units=units,
+            user_defined_names=user_defined_names,
+        )
+        forcing_model = ForcingModel(forcing=time_series_list)
+        forcing_model.filepath = location_file.with_suffix(".bc")
+        return forcing_model
+
 
     def _get_location_data(self, forcing: ExtOldForcing) -> Dict[str, Any]:
         """Extract location data from the old forcing block.
