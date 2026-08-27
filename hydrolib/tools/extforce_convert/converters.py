@@ -1189,6 +1189,42 @@ class LateralConverter(BaseConverter):
 
         return new_block
 
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Optional[TimModel]:
+        """Resolve and merge any TIM files accompanying the lateral polyline.
+
+        Searches the directory next to the polyline file for any ``.tim`` files
+        whose stem starts with the polyline stem (e.g. ``lateral.tim``,
+        ``lateral_0001.tim``, ``lateral_0002.tim``, …), merges them into a
+        single `TimModel` via
+        :meth:`BoundaryConditionConverter.merge_tim_files`, and sets every
+        column's quantity name to ``"discharge"``.
+
+        The matched file paths are also appended to :attr:`legacy_files` so they
+        can be cleaned up after the conversion.
+
+        Args:
+            polyline (PolyFile): The lateral polyline whose filepath locates the
+                accompanying TIM file(s).
+            quantity (str): The old external forcing quantity, used only in the
+                error message raised by :meth:`BoundaryConditionConverter.merge_tim_files`
+                when a listed file is missing.
+
+        Returns:
+            Optional[TimModel]: The merged `TimModel` (with ``quantities_names``
+                set to ``"discharge"`` for every column), or ``None`` when no
+                ``.tim`` files are found next to the polyline.
+        """
+        resolved = resolve_relative_to_root(polyline.filepath, self.root_dir)
+        stem = polyline.filepath.stem
+        tim_files = sorted(resolved.parent.glob(f"{stem}*.tim"))
+        if not tim_files:
+            return None
+        tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
+        n_columns = len(tim_model.get_units())
+        tim_model.quantities_names = ["discharge"] * n_columns
+        self.legacy_files = tim_files
+        return tim_model
+
     def _get_discharge(
         self, forcing: ExtOldForcing, time_unit: Optional[str]
     ) -> Any:
@@ -1201,11 +1237,9 @@ class LateralConverter(BaseConverter):
         Returns:
             Any: A constant float, a ForcingModel, or a file path representing the discharge.
         """
-        # Constant discharge specified via VALUE field
         if forcing.value is not None and not isinstance(forcing.filename, (PolyFile,)):
             return forcing.value
 
-        # Time series in a TIM file (filetype 1 or 2)
         if isinstance(forcing.filename, TimModel):
             tim_file = forcing.filename.filepath
             if time_unit is None:
@@ -1225,34 +1259,19 @@ class LateralConverter(BaseConverter):
             self.legacy_files = tim_file
             return forcing_model
 
-        # PolyFile-based location: look for a corresponding TIM file
         if isinstance(forcing.filename, PolyFile):
             location_file = forcing.filename.filepath
-            if self.root_dir is not None:
-                resolved_location_file = resolve_relative_to_root(
-                    location_file, self.root_dir
-                )
-            else:
-                resolved_location_file = location_file
+            tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
 
-            tim_file = resolved_location_file.with_suffix(".tim")
-            if not tim_file.exists():
-                numbered_tim_file = resolved_location_file.parent / (
-                    resolved_location_file.stem + "_0001.tim"
-                )
-                if numbered_tim_file.exists():
-                    tim_file = numbered_tim_file
-
-            if tim_file.exists():
+            if tim_model is not None:
                 if time_unit is None:
                     raise ValueError(
                         "The 'time_unit' argument must be provided when converting a "
                         "lateral discharge from a TIM file."
                     )
                 location_name = location_file.stem
-                tim_model = TimModel(tim_file, quantities_names=["discharge"])
                 units = tim_model.get_units()
-                user_defined_names = [location_name]
+                user_defined_names = [location_name] * len(units)
                 time_series_list = TimToForcingConverter.convert(
                     tim_model,
                     time_unit,
@@ -1261,7 +1280,6 @@ class LateralConverter(BaseConverter):
                 )
                 forcing_model = ForcingModel(forcing=time_series_list)
                 forcing_model.filepath = location_file.with_suffix(".bc")
-                self.legacy_files = tim_file
                 return forcing_model
 
             # Fall back to constant value if available
