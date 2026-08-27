@@ -12,6 +12,7 @@ from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 from pydantic import (
     BeforeValidator,
     Field,
+    SerializeAsAny,
     ValidationInfo,
     field_validator,
     model_validator,
@@ -1293,23 +1294,15 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: Annotated[List[StructureUnion], BeforeValidator(make_list)] = []
-
-    @field_validator("structure", mode="before")
-    @classmethod
-    def _normalize_structure_types(cls, v: Any) -> Any:
-        """Normalize the 'type' field to canonical camelCase before discriminated union matching.
-
-        In Pydantic v2, the discriminator tag is read from the raw input *before*
-        any field validators run. Without normalization, lowercase values such as
-        ``generalstructure`` fail to match the expected tag ``generalStructure``.
-        """
-        if isinstance(v, list):
-            for item in v:
-                _normalize_structure_type(item)
-        else:
-            _normalize_structure_type(v)
-        return v
+    structure: Annotated[
+        List[
+            Annotated[
+                SerializeAsAny[StructureUnion],
+                BeforeValidator(_normalize_structure_type),
+            ]
+        ],
+        BeforeValidator(make_list),
+    ] = []
 
     @classmethod
     def _ext(cls) -> str:
