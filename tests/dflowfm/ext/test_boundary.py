@@ -11,6 +11,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Operand
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
+from hydrolib.tools.extforce_convert.utils import construct_filemodel_new_or_existing
 
 
 def test_existing_file():
@@ -326,4 +327,72 @@ class TestBoundaryForcingFileNonRecursiveLoad:
         assert bc_path.read_text(encoding="utf8") == original_bc, (
             "The .bc forcing file was rewritten by save(recurse=True); it should have been "
             "left untouched because it was never loaded."
+        )
+
+    def test_save_preserves_forcingfile_reference_after_nonrecursive_load(
+        self, tmp_path: Path
+    ):
+        """Test that saving preserves the ``forcingFile`` reference in the [Boundary] block.
+
+        Test scenario:
+            After a ``recurse=False`` load (where ``forcingFile`` is a ``DiskOnlyFileModel``
+            placeholder), saving must still write ``forcingFile = bnd.bc`` into the ext block,
+            and reloading the saved file must recover the same reference.
+        """
+        ext_path = _write_boundary_ext_tree(tmp_path)
+        out_path = tmp_path / "out.ext"
+
+        model = ExtModel(filepath=ext_path, recurse=False)
+        model.save(filepath=out_path, recurse=True, exclude_unset=True)
+
+        saved_text = out_path.read_text(encoding="utf8")
+        assert "forcingFile" in saved_text and "bnd.bc" in saved_text, (
+            f"Saved ext block lost the forcingFile reference:\n{saved_text}"
+        )
+
+        reloaded = ExtModel(filepath=out_path, recurse=False)
+        assert str(reloaded.boundary[0].forcingfile.filepath) == "bnd.bc", (
+            f"Reloaded forcingFile reference changed: {reloaded.boundary[0].forcingfile.filepath}"
+        )
+
+    def test_forcing_property_returns_none_for_disk_only_placeholder(self, tmp_path: Path):
+        """Test that the ``forcing`` property returns None for an unparsed placeholder.
+
+        Test scenario:
+            When ``forcingfile`` is a ``DiskOnlyFileModel`` (non-recursive load), the
+            ``Boundary.forcing`` property must return ``None`` rather than raise
+            ``AttributeError``.
+        """
+        ext_path = _write_boundary_ext_tree(tmp_path)
+
+        model = ExtModel(filepath=ext_path, recurse=False)
+        boundary = model.boundary[0]
+
+        assert isinstance(boundary.forcingfile, DiskOnlyFileModel), (
+            f"Expected DiskOnlyFileModel, got {type(boundary.forcingfile).__name__}"
+        )
+        assert boundary.forcing is None, (
+            f"Expected forcing property to be None for a placeholder, got {boundary.forcing!r}"
+        )
+
+    def test_converter_load_pattern_does_not_empty_bc(self, tmp_path: Path):
+        """Test the converter's exact load pattern does not empty an existing .bc file.
+
+        Test scenario:
+            Reproduces issue #1143 at the mechanism level: the external-forcings converter
+            loads a pre-existing new-style ext file via
+            ``construct_filemodel_new_or_existing(ExtModel, path, recurse=False)``
+            (``main_converter`` line 128) and later saves with ``recurse=True``. The
+            referenced ``.bc`` file must survive intact.
+        """
+        ext_path = _write_boundary_ext_tree(tmp_path)
+        bc_path = tmp_path / "bnd.bc"
+        original_bc = bc_path.read_text(encoding="utf8")
+
+        model = construct_filemodel_new_or_existing(ExtModel, ext_path, recurse=False)
+        model.save(recurse=True, exclude_unset=True)
+
+        assert bc_path.read_text(encoding="utf8") == original_bc, (
+            "The converter load pattern (recurse=False) followed by save(recurse=True) "
+            "emptied the existing .bc file (issue #1143)."
         )
