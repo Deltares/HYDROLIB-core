@@ -346,8 +346,11 @@ class TestBoundaryForcingFileNonRecursiveLoad:
         model.save(filepath=out_path, recurse=True, exclude_unset=True)
 
         saved_text = out_path.read_text(encoding="utf8")
-        assert "forcingFile" in saved_text and "bnd.bc" in saved_text, (
-            f"Saved ext block lost the forcingFile reference:\n{saved_text}"
+        assert "forcingFile" in saved_text, (
+            f"Saved ext block lost the forcingFile keyword:\n{saved_text}"
+        )
+        assert "bnd.bc" in saved_text, (
+            f"Saved ext block lost the .bc reference:\n{saved_text}"
         )
 
         reloaded = ExtModel(filepath=out_path, recurse=False)
