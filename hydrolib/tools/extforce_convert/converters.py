@@ -1121,17 +1121,6 @@ class LateralConverter(BaseConverter):
         super().__init__(root_dir=root_dir)
         self._mdu_parser = mdu_parser
 
-    def _get_time_unit(self, time_unit: Optional[str]) -> Optional[str]:
-        """Return *time_unit*, falling back to the MDU reference date when available."""
-        if time_unit is not None:
-            return time_unit
-        if (
-            self._mdu_parser is not None
-            and self._mdu_parser.temperature_salinity_data is not None
-        ):
-            return self._mdu_parser.temperature_salinity_data.get("refdate")
-        return None
-
     def convert(
         self, forcing: ExtOldForcing, time_unit: Optional[str] = None
     ) -> Lateral:
@@ -1188,6 +1177,17 @@ class LateralConverter(BaseConverter):
             )
 
         return new_block
+
+    def _get_time_unit(self, time_unit: Optional[str]) -> Optional[str]:
+        """Return *time_unit*, falling back to the MDU reference date when available."""
+        if time_unit is not None:
+            return time_unit
+        if (
+            self._mdu_parser is not None
+            and self._mdu_parser.temperature_salinity_data is not None
+        ):
+            return self._mdu_parser.temperature_salinity_data.get("refdate")
+        return None
 
     def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Optional[TimModel]:
         """Resolve and merge any TIM files accompanying the lateral polyline.
