@@ -6019,9 +6019,9 @@ dropped block types before.</p>
 <span class="sd">        :func:`validate_location_specification` helper.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># A non-null locationFile is a self-contained location specification.</span>
-        <span class="n">raw_loc_file</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationfile&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationFile&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_is_non_null_location_file</span><span class="p">(</span><span class="n">raw_loc_file</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">values</span>
+        <span class="c1"># raw_loc_file = values.get(&quot;locationfile&quot;) or values.get(&quot;locationFile&quot;)</span>
+        <span class="c1"># if _is_non_null_location_file(raw_loc_file):</span>
+        <span class="c1">#     return values</span>
 
         <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span><span class="n">minimum_num_coordinates</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -6263,9 +6263,9 @@ All other combinations are validated by the generic
 <span class="sd">    :func:`validate_location_specification` helper.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># A non-null locationFile is a self-contained location specification.</span>
-    <span class="n">raw_loc_file</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationfile&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationFile&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">_is_non_null_location_file</span><span class="p">(</span><span class="n">raw_loc_file</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">values</span>
+    <span class="c1"># raw_loc_file = values.get(&quot;locationfile&quot;) or values.get(&quot;locationFile&quot;)</span>
+    <span class="c1"># if _is_non_null_location_file(raw_loc_file):</span>
+    <span class="c1">#     return values</span>
 
     <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span><span class="n">minimum_num_coordinates</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
