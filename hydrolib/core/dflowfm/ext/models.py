@@ -232,7 +232,7 @@ class Boundary(INIBasedModel):
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
-    forcingfile: ForcingModel = Field(alias="forcingFile")
+    forcingfile: ForcingModel | DiskOnlyFileModel = Field(alias="forcingFile")
     bndwidth1d: float | None = Field(None, alias="bndWidth1D")
     bndbldepth: float | None = Field(None, alias="bndBlDepth")
     returntime: float | None = Field(None, alias="returnTime")
@@ -245,8 +245,8 @@ class Boundary(INIBasedModel):
     @classmethod
     def validate_forcingfile(cls, data: Any) -> Any:
         if isinstance(data, (str, Path)):
-            data = ForcingModel(filepath=data)
-        elif not isinstance(data, ForcingModel):
+            data = resolve_file_model(data, ForcingModel)
+        elif not isinstance(data, (ForcingModel, DiskOnlyFileModel)):
             raise TypeError(
                 "Forcing file must be a ForcingModel or a path to a forcing file."
             )
@@ -321,16 +321,19 @@ class Boundary(INIBasedModel):
         """Retrieves the corresponding forcing data for this boundary.
 
         Returns:
-            ForcingBase: The corresponding forcing data, or None when no matching forcing block is found.
+            ForcingBase: The corresponding forcing data, or None when no matching forcing block is
+            found or when the forcing file has not been parsed (e.g. loaded with ``recurse=False``,
+            in which case it is a ``DiskOnlyFileModel`` placeholder).
         """
         result = None
-        for forcing in self.forcingfile.forcing:
-            if self.nodeid == forcing.name and any(
-                quantity.quantity.startswith(self.quantity)
-                for quantity in forcing.quantityunitpair
-            ):
-                result = forcing
-                break
+        if isinstance(self.forcingfile, ForcingModel):
+            for forcing in self.forcingfile.forcing:
+                if self.nodeid == forcing.name and any(
+                    quantity.quantity.startswith(self.quantity)
+                    for quantity in forcing.quantityunitpair
+                ):
+                    result = forcing
+                    break
 
         return result
 
