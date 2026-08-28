@@ -7,11 +7,12 @@ import logging
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
-from typing import Annotated, Dict, List, Literal, Optional, Set, Union
+from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
     Field,
+    SerializeAsAny,
     ValidationInfo,
     field_validator,
     model_validator,
@@ -36,6 +37,33 @@ from hydrolib.core.dflowfm.ini.util import (
 from hydrolib.core.dflowfm.tim.models import TimModel
 
 logger = logging.getLogger(__name__)
+
+_STRUCTURE_TYPE_CANONICAL_MAP = {
+    "weir": "weir",
+    "universalweir": "universalWeir",
+    "culvert": "culvert",
+    "longculvert": "longCulvert",
+    "pump": "pump",
+    "compound": "compound",
+    "orifice": "orifice",
+    "generalstructure": "generalStructure",
+    "dambreak": "dambreak",
+    "bridge": "bridge",
+}
+
+
+def _normalize_structure_type(data: Any) -> Any:
+    """Normalize the 'type' field in a structure dict to its canonical camelCase form.
+
+    This is necessary because the discriminated union in Pydantic v2 reads the
+    raw 'type' value before any field validators run, so case-insensitive input
+    (e.g. ``generalstructure``) must be normalized to the canonical tag
+    (e.g. ``generalStructure``) before the discriminator check.
+    """
+    if isinstance(data, dict) and "type" in data:
+        type_lower = str(data["type"]).lower()
+        data["type"] = _STRUCTURE_TYPE_CANONICAL_MAP.get(type_lower, data["type"])
+    return data
 
 
 def load_model(value):
@@ -117,12 +145,6 @@ class Structure(INIBasedModel):
     def _split_to_list(cls, v, info: ValidationInfo):
         return split_string_on_delimiter(cls, v, info)
 
-    @field_validator("type", mode="after")
-    @classmethod
-    def lowercase_type(cls, v: str) -> str:
-        if isinstance(v, str):
-            return v.lower()
-        return v
 
     @model_validator(mode="after")
     def check_location(self):
@@ -1266,7 +1288,15 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: Annotated[List[StructureUnion], BeforeValidator(make_list)] = []
+    structure: Annotated[
+        List[
+            Annotated[
+                SerializeAsAny[StructureUnion],
+                BeforeValidator(_normalize_structure_type),
+            ]
+        ],
+        BeforeValidator(make_list),
+    ] = []
 
     @classmethod
     def _ext(cls) -> str:

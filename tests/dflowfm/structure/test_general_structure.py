@@ -163,7 +163,7 @@ class TestGeneralStructure:
         assert struct.name == "structure_potato"
         assert struct.branchid == "branch"
         assert struct.chainage == pytest.approx(3.53)
-        assert struct.type == "generalstructure"
+        assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(11.0)
         assert struct.upstream1level == pytest.approx(12.0)
@@ -346,7 +346,7 @@ class TestGeneralStructure:
         assert struct.name == "extravagante_waarde"
         assert struct.branchid == "stump"
         assert struct.chainage == pytest.approx(13.53)
-        assert struct.type == "generalstructure"
+        assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(111.0)
         assert struct.upstream1level == pytest.approx(112.0)
