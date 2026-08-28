@@ -329,17 +329,18 @@ def _is_non_null_location_file(raw: Any) -> bool:
     empty string, or a dict with ``filepath=None``.
     """
     if raw is None:
-        return False
-    if isinstance(raw, str):
-        return raw.strip() != ""
-    if isinstance(raw, Path):
-        return True
-    if isinstance(raw, dict):
-        return raw.get("filepath") is not None
-    # DiskOnlyFileModel instance
-    if hasattr(raw, "filepath"):
-        return raw.filepath is not None
-    return False
+        result = False
+    elif isinstance(raw, str):
+        result = raw.strip() != ""
+    elif isinstance(raw, Path):
+        result = True
+    elif isinstance(raw, dict):
+        result = raw.get("filepath") is not None
+    elif hasattr(raw, "filepath"):
+        result = raw.filepath is not None
+    else:
+        result = False
+    return result
 
 
 class Lateral(INIBasedModel):
@@ -394,7 +395,10 @@ class Lateral(INIBasedModel):
             return values
 
         return validate_location_specification(
-            values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
+            values,
+            config=LocationValidationConfiguration(
+                minimum_num_coordinates=1
+            )
         )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
@@ -402,27 +406,8 @@ class Lateral(INIBasedModel):
 
     @field_validator("locationtype", mode="before")
     @classmethod
-    def validate_location_type(cls, v: str) -> str:
-        """
-        Method to validate whether the specified location type is correct.
-
-        Args:
-            v (str): Given value for the locationtype field.
-
-        Raises:
-            ValueError: When the value given for locationtype is unknown.
-
-        Returns:
-            str: Validated locationtype string.
-        """
-        possible_values = ["1d", "2d", "all"]
-        if v.lower() not in possible_values:
-            raise ValueError(
-                "Value given ({}) not accepted, should be one of: {}".format(
-                    v, ", ".join(possible_values)
-                )
-            )
-        return v
+    def validate_location_type(cls, v: Any) -> LocationType:
+        return enum_value_parser(v, LocationType)
 
 
 class SourceSink(INIBasedModel):
