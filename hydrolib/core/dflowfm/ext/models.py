@@ -389,9 +389,9 @@ class Lateral(INIBasedModel):
         :func:`validate_location_specification` helper.
         """
         # A non-null locationFile is a self-contained location specification.
-        raw_loc_file = values.get("locationfile") or values.get("locationFile")
-        if _is_non_null_location_file(raw_loc_file):
-            return values
+        # raw_loc_file = values.get("locationfile") or values.get("locationFile")
+        # if _is_non_null_location_file(raw_loc_file):
+        #     return values
 
         return validate_location_specification(
             values, config=LocationValidationConfiguration(minimum_num_coordinates=1)

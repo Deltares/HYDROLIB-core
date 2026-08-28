@@ -547,9 +547,34 @@ def validate_location_specification(
         location_type = values.get(fields.location_type.lower(), None)
         if str_is_empty_or_none(location_type):
             values[fields.location_type.lower()] = expected_location_type
+        elif location_type in (LocationType.twod, LocationType.all):
+            # 2d / all are only valid when xCoordinates+yCoordinates are given
+            raise ValueError(
+                f"{fields.location_type}='{location_type}' is only valid when "
+                f"{fields.x_coordinates} and {fields.y_coordinates} are also specified. "
+                f"When {fields.node_id} or {fields.branch_id} with {fields.chainage} are given, "
+                f"the only accepted value is '1d'."
+            )
         elif location_type != expected_location_type:
             raise ValueError(
                 f"{fields.location_type} should be {expected_location_type} but was {location_type}"
+            )
+
+    def validate_location_type_for_coordinates() -> None:
+        """Validate/default locationType for coordinate-based location specs.
+
+        When xCoordinates and yCoordinates are given, locationType may be
+        ``1d``, ``2d`` or ``all`` (spec: "Only when xCoordinates and
+        yCoordinates are also specified"). If absent it defaults to ``all``.
+        Any other value raises a ValueError.
+        """
+        location_type = values.get(fields.location_type.lower(), None)
+        if str_is_empty_or_none(location_type):
+            values[fields.location_type.lower()] = LocationType.all
+        elif location_type not in (LocationType.oned, LocationType.twod, LocationType.all):
+            raise ValueError(
+                f"{fields.location_type} has invalid value '{location_type}'. "
+                f"Possible values are: 1d, 2d, all"
             )
 
     def validate_coordinates_with_num_coordinates() -> None:
@@ -634,6 +659,8 @@ def validate_location_specification(
         if config.validate_num_coordinates:
             if is_valid_coordinates_with_num_coordinates_specification():
                 validate_coordinates_with_num_coordinates()
+                if config.validate_location_type:
+                    validate_location_type_for_coordinates()
                 return values
 
             error_parts.append(
@@ -643,6 +670,8 @@ def validate_location_specification(
         else:
             if is_valid_coordinates_specification():
                 validate_coordinates()
+                if config.validate_location_type:
+                    validate_location_type_for_coordinates()
                 return values
 
             error_parts.append(f"{fields.x_coordinates} and {fields.y_coordinates}")

@@ -126,14 +126,23 @@ class TestLocationSpecificationValidator:
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
-        "values",
+        "values, expected_message",
         [
             pytest.param(
                 {
                     "nodeid": "some_nodeid",
                     "locationtype": "2d",
                 },
-                id="nodeid",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-locationtype-2d",
+            ),
+            pytest.param(
+                {
+                    "nodeid": "some_nodeid",
+                    "locationtype": "all",
+                },
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-locationtype-all",
             ),
             pytest.param(
                 {
@@ -141,23 +150,68 @@ class TestLocationSpecificationValidator:
                     "chainage": 1.23,
                     "locationtype": "2d",
                 },
-                id="branchid",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-locationtype-2d",
+            ),
+            pytest.param(
+                {
+                    "branchid": "some_branchid",
+                    "chainage": 1.23,
+                    "locationtype": "all",
+                },
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-locationtype-all",
             ),
         ],
     )
-    def test_incorrect_location_type_raises_error(self, values: dict):
+    def test_incorrect_location_type_raises_error(self, values: dict, expected_message: str):
         with pytest.raises(ValidationError) as error:
             TestLocationSpecificationValidator.DummyModel(**values)
 
-        expected_message = "locationType should be 1d but was 2d"
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
-        "values",
+        "values, expected_locationtype",
+        [
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "1d"},
+                "1d",
+                id="coordinates-locationtype-1d",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "2d"},
+                "2d",
+                id="coordinates-locationtype-2d",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "all"},
+                "all",
+                id="coordinates-locationtype-all",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0]},
+                "all",
+                id="coordinates-locationtype-default-all",
+            ),
+        ],
+    )
+    def test_location_type_valid_with_coordinates(self, values: dict, expected_locationtype: str):
+        result = validate_location_specification(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=1),
+        )
+        assert result.get("locationtype") == expected_locationtype
+
+    @pytest.mark.parametrize(
+        "values, expected",
         [
             pytest.param(
                 {
                     "nodeid": "some_nodeid",
+                },
+                {
+                    "nodeid": "some_nodeid",
+                    "locationtype": "1d",
                 },
                 id="nodeid",
             ),
@@ -165,6 +219,11 @@ class TestLocationSpecificationValidator:
                 {
                     "branchid": "some_branchid",
                     "chainage": 1.23,
+                },
+                {
+                    "branchid": "some_branchid",
+                    "chainage": 1.23,
+                    "locationtype": "1d",
                 },
                 id="branchid",
             ),
@@ -174,16 +233,22 @@ class TestLocationSpecificationValidator:
                     "ycoordinates": [7.89, 8.91, 9.12],
                     "numcoordinates": 3,
                 },
+                {
+                    "xcoordinates": [4.56, 5.67, 6.78],
+                    "ycoordinates": [7.89, 8.91, 9.12],
+                    "numcoordinates": 3,
+                    "locationtype": "all",
+                },
                 id="coordinates",
             ),
         ],
     )
-    def test_correct_fields_initializes(self, values: dict):
+    def test_correct_fields_initializes(self, values: dict, expected: dict):
         validated_values = validate_location_specification(
             values,
             config=LocationValidationConfiguration(minimum_num_coordinates=3),
         )
-        assert validated_values == values
+        assert validated_values == expected
 
     @pytest.mark.parametrize(
         "values, expected",
@@ -208,6 +273,7 @@ class TestLocationSpecificationValidator:
                     "xcoordinates": [4.56, 5.67, 6.78],
                     "ycoordinates": [7.89, 8.91, 9.12],
                     "numcoordinates": 3,
+                    "locationtype": "all",
                 },
                 id="coordinate aliases",
             ),

@@ -180,25 +180,53 @@ class TestValidateLocationTypeDependencies:
         assert str(exc_err.value) == LOCATION_ERROR
 
     @pytest.mark.parametrize(
-        "dict_values",
+        "dict_values, locationtype, expected_message",
         [
-            pytest.param(dict(nodeid="42"), id="Given nodeid"),
+            pytest.param(
+                dict(nodeid="42"),
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="nodeid-wrongType",
+            ),
             pytest.param(
                 dict(branchid="aBranchId", chainage=4.2),
-                id="Given branchid and chainage",
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="branchid-wrongType",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-2d",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-all",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-2d",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-all",
             ),
         ],
     )
     def test_given_1d_args_and_location_type_other_then_raises_valueerror(
-        self, dict_values: dict
+        self, dict_values: dict, locationtype: str, expected_message: str
     ):
-        test_values = dict(
-            locationtype="wrongType",
-        )
-        test_dict = {**dict_values, **test_values}
+        test_dict = {**dict_values, "locationtype": locationtype}
         with pytest.raises(ValueError) as exc_err:
             Lateral.validate_that_location_specification_is_correct(test_dict)
-        assert str(exc_err.value) == "locationType should be 1d but was wrongType"
+        assert expected_message in str(exc_err.value)
 
     @pytest.mark.parametrize(
         "dict_values",
