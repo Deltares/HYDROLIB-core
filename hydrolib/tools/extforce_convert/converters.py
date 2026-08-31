@@ -1156,7 +1156,9 @@ class LateralConverter(BaseConverter):
             LateralError: If the Lateral object could not be created.
         """
         quantity = str(forcing.quantity).lower()
-        location_type = self._QUANTITY_TO_LOCATION_TYPE.get(quantity)
+        if quantity not in self._QUANTITY_TO_LOCATION_TYPE:
+            raise ValueError(f"Unsupported lateral quantity: {forcing.quantity}")
+        location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
 
         # Determine discharge and location data
         discharge = self._get_discharge(forcing, self._get_time_unit(time_unit))
