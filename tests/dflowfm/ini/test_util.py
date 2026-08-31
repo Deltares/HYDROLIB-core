@@ -174,22 +174,22 @@ class TestLocationSpecificationValidator:
         "values, expected_locationtype",
         [
             pytest.param(
-                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "1d"},
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "1d"},
                 "1d",
                 id="coordinates-locationtype-1d",
             ),
             pytest.param(
-                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "2d"},
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "2d"},
                 "2d",
                 id="coordinates-locationtype-2d",
             ),
             pytest.param(
-                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "locationtype": "all"},
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "all"},
                 "all",
                 id="coordinates-locationtype-all",
             ),
             pytest.param(
-                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0]},
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2},
                 "all",
                 id="coordinates-locationtype-default-all",
             ),
