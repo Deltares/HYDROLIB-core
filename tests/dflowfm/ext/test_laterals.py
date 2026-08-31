@@ -93,8 +93,8 @@ class TestValidateLocationType:
         with pytest.raises(ValueError) as exc_mssg:
             Lateral.validate_location_type(value)
         assert (
-            str(exc_mssg.value)
-            == f"Value given ({value}) not accepted, should be one of: 1d, 2d, all"
+            f"Invalid enum value: {value!r}. Expected one of: ['1d', '2d', 'all']"
+            in str(exc_mssg.value)
         )
 
     @pytest.mark.parametrize(
@@ -111,7 +111,7 @@ class TestValidateLocationType:
     )
     def test_given_correct_locationtype(self, location_type: str):
         return_value = Lateral.validate_location_type(location_type)
-        assert return_value == location_type
+        assert return_value == location_type.lower()
 
 
 class TestValidateLocationTypeDependencies:
@@ -345,7 +345,7 @@ class TestValidateFromCtor:
                 locationtype=location_type,
             )
         expected_error_mssg = (
-            f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
+            f"locationType has invalid value '{location_type}'. Possible values are: 1d, 2d, all"
         )
         assert expected_error_mssg in str(exc_mssg.value)
 
