@@ -1270,7 +1270,8 @@ class LateralConverter(BaseConverter):
                 "The 'time_unit' argument must be provided when converting a "
                 "lateral discharge from a TIM file."
             )
-        tim_file = forcing.filename.filepath
+
+        tim_file = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
         location_name = tim_file.stem
         tim_model = TimModel(tim_file, quantities_names=["discharge"])
         units = tim_model.get_units()
