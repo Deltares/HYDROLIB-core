@@ -767,12 +767,14 @@ class LocationValidator:
             self._try_validate_branch,
             self._try_validate_coordinates,
         ]
-        for try_validate in validators:
-            result = try_validate(error_parts)
-            if result is not None:
-                return result
-
-        raise ValueError(" or ".join(error_parts) + " should be provided")
+        result = next(
+            (r for try_validate in validators if (r := try_validate(error_parts)) is not None),
+            None,
+        )
+        if result is not None:
+            return result
+        else:
+            raise ValueError(" or ".join(error_parts) + " should be provided")
 
 
 def validate_location_specification(
