@@ -1,7 +1,6 @@
 import pytest
 import shutil
 
-from dataclasses import dataclass
 from pathlib import Path
 
 from hydrolib.core.base.models import DiskOnlyFileModel
@@ -430,54 +429,19 @@ class TestWaqSpatialConversion:
         assert result.quantity == quantity
 
 
-# This data is based on the c100_spatial_parameters_2D but has been modified to cover all
-# new waq quantities
-@dataclass(frozen=True)
-class _SpatialExpected:
-    """Describes the expected properties of one converted Spatial block.
-
-    Attributes:
-        quantity:             The quantity name in the new ext block.
-        is_polygon:           True  → polygon/InsidePolygon (targetmaskfile + datavalue).
-                              False → file-based (datafile + datafiletype).
-        file_name:            Basename of targetmaskfile (polygon) or datafile (non-polygon).
-        datavalue:            Expected VALUE for polygon blocks; None for file-based blocks.
-        datafiletype:         Expected datafiletype for file-based blocks; None for polygon.
-        interpolationmethod:  Expected interpolationMethod.
-        averagingtype:        Expected averagingType (only when METHOD=6); None otherwise.
-    """
-    quantity: str
-    is_polygon: bool
-    file_name: str
-    datavalue: float | None
-    datafiletype: DataFileType | None
-    interpolationmethod: InterpolationMethod
-    averagingtype: AveragingType | None = None
-
-
-# One entry per forcing block in westernscheldt.ext (in file order).
-_SPATIAL_BLOCKS: list[_SpatialExpected] = [
+_SPATIAL_BLOCKS = [
     # initial conditions
-    _SpatialExpected("initialtracerOXY", True, "fullextent.pol", 10.0, None,
-                     InterpolationMethod.constant, None),
-    _SpatialExpected("initialtracerCBOD5", True, "fullextent.pol", 3.0, None,
-                     InterpolationMethod.constant, None),
+    ("initialtracerOXY", True, "fullextent.pol", 10.0, None, InterpolationMethod.constant, None),
+    ("initialtracerCBOD5", True, "fullextent.pol", 3.0, None, InterpolationMethod.constant, None),
     # WAQ non-polygon parameters
-    _SpatialExpected("waqparameterSalinity", False, "salinity.xyz", None, DataFileType.sample,
-                     InterpolationMethod.averaging, AveragingType.nearestnb),
-    _SpatialExpected("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo,
-                     InterpolationMethod.triangulation, None),
+    ("waqparameterSalinity", False, "salinity.xyz", None, DataFileType.sample, InterpolationMethod.averaging, AveragingType.nearestnb),
+    ("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo, InterpolationMethod.triangulation, None),
     # WAQ polygon parameters
-    _SpatialExpected("waqparameterSOD", True, "EstruaryMiddle.pol", 1.0, None,
-                     InterpolationMethod.constant, None),
-    _SpatialExpected("waqsegmentfunctionSOD", True, "EstruaryEast.pol", 1.5, None,
-                     InterpolationMethod.constant, None),
-    _SpatialExpected("waqsegmentnumberSOD", True, "River.pol", 3.0, None,
-                     InterpolationMethod.constant, None),
-    _SpatialExpected("waqfunctionSOD", True, "HarbourVlissingen.pol", 4.5, None,
-                     InterpolationMethod.constant, None),
-    _SpatialExpected("waqmassbalanceareaSOD", True, "HarbourAntwerp.pol", 6.0, None,
-                     InterpolationMethod.constant, None),
+    ("waqparameterSOD", True, "EstruaryMiddle.pol", 1.0, None, InterpolationMethod.constant, None),
+    ("waqsegmentfunctionSOD", True, "EstruaryEast.pol", 1.5, None, InterpolationMethod.constant, None),
+    ("waqsegmentnumberSOD", True, "River.pol", 3.0, None, InterpolationMethod.constant, None),
+    ("waqfunctionSOD", True, "HarbourVlissingen.pol", 4.5, None, InterpolationMethod.constant, None),
+    ("waqmassbalanceareaSOD", True, "HarbourAntwerp.pol", 6.0, None, InterpolationMethod.constant, None),
 ]
 
 # Number of boundary blocks
@@ -512,53 +476,56 @@ class TestWaqQuantitiesConversion:
 
 
     @pytest.mark.parametrize(
-        "idx, expected",
-        list(enumerate(_SPATIAL_BLOCKS)),
-        ids=[f"{e.quantity}" for e in _SPATIAL_BLOCKS],
+        "idx, quantity, is_polygon, file_name, datavalue, datafiletype, interpolationmethod, averagingtype",
+        [(i,) + block for i, block in enumerate(_SPATIAL_BLOCKS)],
+        ids=[block[0] for block in _SPATIAL_BLOCKS],
     )
-    def test_spatial_block(self, converted, idx: int, expected: _SpatialExpected):
+    def test_spatial_block(
+        self, converted, idx: int,
+        quantity, is_polygon, file_name, datavalue, datafiletype, interpolationmethod, averagingtype,
+    ):
         """Each old-format forcing block is converted to the correct Spatial block."""
         ext_model, _ = converted
         spatial = ext_model.spatial[idx]
 
-        assert spatial.quantity == expected.quantity
+        assert spatial.quantity == quantity
         assert spatial.operand == Operand.override
-        assert spatial.interpolationmethod == expected.interpolationmethod
+        assert spatial.interpolationmethod == interpolationmethod
 
-        if expected.is_polygon:
-            assert spatial.targetmaskfile.filepath.name == expected.file_name, (
-                f"{expected.quantity}: expected targetmaskfile='{expected.file_name}', "
+        if is_polygon:
+            assert spatial.targetmaskfile.filepath.name == file_name, (
+                f"{quantity}: expected targetmaskfile='{file_name}', "
                 f"got '{spatial.targetmaskfile.filepath}'"
             )
-            assert spatial.datavalue == pytest.approx(expected.datavalue), (
-                f"{expected.quantity}: expected datavalue={expected.datavalue}, "
+            assert spatial.datavalue == pytest.approx(datavalue), (
+                f"{quantity}: expected datavalue={datavalue}, "
                 f"got {spatial.datavalue}"
             )
             assert spatial.datafile is None, (
-                f"{expected.quantity}: polygon block must have no datafile"
+                f"{quantity}: polygon block must have no datafile"
             )
             assert spatial.datafiletype is None, (
-                f"{expected.quantity}: polygon block must have no datafiletype"
+                f"{quantity}: polygon block must have no datafiletype"
             )
         else:
-            assert spatial.datafile.filepath.name == expected.file_name, (
-                f"{expected.quantity}: expected datafile='{expected.file_name}', "
+            assert spatial.datafile.filepath.name == file_name, (
+                f"{quantity}: expected datafile='{file_name}', "
                 f"got '{spatial.datafile.filepath}'"
             )
-            assert spatial.datafiletype == expected.datafiletype, (
-                f"{expected.quantity}: expected datafiletype={expected.datafiletype}, "
+            assert spatial.datafiletype == datafiletype, (
+                f"{quantity}: expected datafiletype={datafiletype}, "
                 f"got '{spatial.datafiletype}'"
             )
             assert spatial.targetmaskfile is None, (
-                f"{expected.quantity}: file-based block must have no targetmaskfile"
+                f"{quantity}: file-based block must have no targetmaskfile"
             )
             assert spatial.datavalue is None, (
-                f"{expected.quantity}: file-based block must have no datavalue"
+                f"{quantity}: file-based block must have no datavalue"
             )
 
-        if expected.averagingtype is not None:
-            assert spatial.averagingtype == expected.averagingtype, (
-                f"{expected.quantity}: expected averagingtype={expected.averagingtype}, "
+        if averagingtype is not None:
+            assert spatial.averagingtype == averagingtype, (
+                f"{quantity}: expected averagingtype={averagingtype}, "
                 f"got '{spatial.averagingtype}'"
             )
 
@@ -567,7 +534,7 @@ class TestWaqQuantitiesConversion:
         """Count, ordering, preserved boundaries, no inifield/structure blocks."""
         ext_model, structure_model = converted
 
-        expected_quantities = [e.quantity for e in _SPATIAL_BLOCKS]
+        expected_quantities = [block[0] for block in _SPATIAL_BLOCKS]
         actual_quantities = [s.quantity for s in ext_model.spatial]
 
         assert len(ext_model.spatial) == len(_SPATIAL_BLOCKS), (
