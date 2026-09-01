@@ -189,8 +189,10 @@ class SpatialBlockBuilder:
                 operand value as parsed from the old external forcings block.
         """
         if self._is_factor:
-            return Operand.multiply
-        return self.forcing.operand
+            operand = Operand.multiply
+        else:
+            operand = self.forcing.operand
+        return operand
 
     def _set_representation(self):
         """Populate `self.block` with the spatial representation for this forcing.
