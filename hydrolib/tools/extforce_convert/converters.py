@@ -58,13 +58,12 @@ if TYPE_CHECKING:
     from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
-#: Maps old-format "factor" quantity names to the base quantity they scale.
-#: These quantities are no longer needed in the new format; instead, the base
-#: quantity is used with ``operand = multiply``.
-FACTOR_QUANTITY_BASE: Dict[str, str] = {
-    "windspeedfactor": "windxy",
-    "solarradiationfactor": "solarradiation",
-}
+FACTOR_QUANTITIES = frozenset(
+    {
+        "windspeedfactor",
+        "solarradiationfactor",
+    }
+)
 
 
 class BaseConverter(ABC):
@@ -150,7 +149,7 @@ class SpatialBlockBuilder:
         self.new_forcing_path = new_forcing_path
 
         quantity_str = str(forcing.quantity).lower()
-        self._is_factor = quantity_str in FACTOR_QUANTITY_BASE
+        self._is_factor = quantity_str in FACTOR_QUANTITIES
 
         self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
             forcing.quantity

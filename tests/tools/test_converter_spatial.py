@@ -16,7 +16,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield import DataFileType, InterpolationMethod
 from hydrolib.tools.extforce_convert.converters import (
-    FACTOR_QUANTITY_BASE,
+    FACTOR_QUANTITIES,
     ConverterFactory,
     SpatialConverter,
 )
@@ -296,9 +296,8 @@ class TestFactorQuantityConversion:
     def test_factor_quantity_in_factor_quantity_base(
         self, factor_quantity: str, expected_base_quantity: str
     ):
-        """All supported factor quantities have an entry in FACTOR_QUANTITY_BASE."""
-        assert factor_quantity in FACTOR_QUANTITY_BASE
-        assert FACTOR_QUANTITY_BASE[factor_quantity] == expected_base_quantity
+        """All supported factor quantities have an entry in FACTOR_QUANTITIES."""
+        assert factor_quantity in FACTOR_QUANTITIES
 
     @pytest.mark.parametrize("factor_quantity, expected_base_quantity", _FACTOR_QUANTITY_CASES)
     def test_polygon_factor_quantity_converts_to_spatial_with_multiply(
