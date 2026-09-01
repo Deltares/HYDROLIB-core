@@ -1342,9 +1342,15 @@ class LateralConverter(BaseConverter):
                 "The 'time_unit' argument must be provided when converting a "
                 "lateral discharge from a TIM file."
             )
+
         location_name = location_file.stem
         units = tim_model.get_units()
-        user_defined_names = [location_name] * len(units)
+        if len(units) == 1:
+            user_defined_names = [location_name]
+        else:
+            user_defined_names = [f"{location_name}_{i + 1:04d}" for i in
+                                  range(len(units))]
+
         time_series_list = TimToForcingConverter.convert(
             tim_model,
             time_unit,
@@ -1354,7 +1360,6 @@ class LateralConverter(BaseConverter):
         forcing_model = ForcingModel(forcing=time_series_list)
         forcing_model.filepath = location_file.with_suffix(".bc")
         return forcing_model
-
 
     def _get_location_data(self, forcing: ExtOldForcing) -> Dict[str, Any]:
         """Extract location data from the old forcing block.

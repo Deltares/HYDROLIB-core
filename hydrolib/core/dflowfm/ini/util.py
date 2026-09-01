@@ -472,8 +472,8 @@ class LocationValidationFieldNames(BaseModel):
     """str, optional: The location type field name. Defaults to `locationType`."""
 
 
-class LocationSpecificationValidator:
-    """Encapsulates all logic for validating a location specification dict.
+class LocationValidator:
+    """Encapsulates all logic for validating a location dict.
 
     This class groups the boolean presence-checks, individual sub-validators,
     and the top-level orchestration that was previously spread across a single
@@ -656,6 +656,94 @@ class LocationSpecificationValidator:
             and not has_other
         )
 
+    def _try_validate_node(self, error_parts: List[str]) -> Optional[Dict]:
+        """Attempt to validate a node-based location specification.
+
+        Args:
+            error_parts (List[str]): Accumulator for error message fragments.
+
+        Returns:
+            Optional[Dict]: The validated values dict if the node specification
+                is valid, otherwise ``None``.
+        """
+        if not self._config.validate_node:
+            return None
+        if self._is_valid_node_specification:
+            if self._config.validate_location_type:
+                self._validate_location_type_for_node_or_branch(LocationType.oned)
+            return self._values
+        error_parts.append(self._fields.node_id)
+        return None
+
+    def _try_validate_branch(self, error_parts: List[str]) -> Optional[Dict]:
+        """Attempt to validate a branch-based location specification.
+
+        Args:
+            error_parts (List[str]): Accumulator for error message fragments.
+
+        Returns:
+            Optional[Dict]: The validated values dict if the branch specification
+                is valid, otherwise ``None``.
+        """
+        if not self._config.validate_branch:
+            return None
+        f = self._fields
+        if self._is_valid_branch_specification:
+            if self._config.validate_location_type:
+                self._validate_location_type_for_node_or_branch(LocationType.oned)
+            return self._values
+        error_parts.append(f"{f.branch_id} and {f.chainage}")
+        return None
+
+    def _try_validate_coordinates(self, error_parts: List[str]) -> Optional[Dict]:
+        """Attempt to validate a coordinate-based location specification.
+
+        Handles both the ``numCoordinates``-present and ``numCoordinates``-absent
+        sub-cases.
+
+        Args:
+            error_parts (List[str]): Accumulator for error message fragments.
+
+        Returns:
+            Optional[Dict]: The validated values dict if the coordinate
+                specification is valid, otherwise ``None``.
+        """
+        if not self._config.validate_coordinates:
+            return None
+        f = self._fields
+        if self._config.validate_num_coordinates:
+            return self._try_validate_coordinates_with_num_coordinates(error_parts)
+        if self._is_valid_coordinates_specification:
+            self._try_validate_coordinates()
+            if self._config.validate_location_type:
+                self._validate_location_type_for_coordinates()
+            return self._values
+        error_parts.append(f"{f.x_coordinates} and {f.y_coordinates}")
+        return None
+
+    def _try_validate_coordinates_with_num_coordinates(
+        self, error_parts: List[str]
+    ) -> Optional[Dict]:
+        """Attempt to validate a coordinate specification that includes ``numCoordinates``.
+
+        Args:
+            error_parts (List[str]): Accumulator for error message fragments.
+
+        Returns:
+            Optional[Dict]: The validated values dict if the specification is
+                valid, otherwise ``None``.
+        """
+        f = self._fields
+        if self._is_valid_coordinates_with_num_coordinates_specification:
+            self._validate_coordinates_with_num_coordinates()
+            if self._config.validate_location_type:
+                self._validate_location_type_for_coordinates()
+            return self._values
+        error_parts.append(
+            f"{f.x_coordinates}, {f.y_coordinates} and {f.num_coordinates}"
+        )
+        return None
+
     def validate(self) -> Dict:
         """Run the full location-specification validation.
 
@@ -667,41 +755,17 @@ class LocationSpecificationValidator:
             ValueError: When no valid location specification can be found in
                 the values dict, or when a sub-validator detects an inconsistency.
         """
-        cfg = self._config
-        f = self._fields
         error_parts: List[str] = []
 
-        if cfg.validate_node:
-            if self._is_valid_node_specification:
-                if cfg.validate_location_type:
-                    self._validate_location_type_for_node_or_branch(LocationType.oned)
-                return self._values
-            error_parts.append(f.node_id)
-
-        if cfg.validate_branch:
-            if self._is_valid_branch_specification:
-                if cfg.validate_location_type:
-                    self._validate_location_type_for_node_or_branch(LocationType.oned)
-                return self._values
-            error_parts.append(f"{f.branch_id} and {f.chainage}")
-
-        if cfg.validate_coordinates:
-            if cfg.validate_num_coordinates:
-                if self._is_valid_coordinates_with_num_coordinates_specification:
-                    self._validate_coordinates_with_num_coordinates()
-                    if cfg.validate_location_type:
-                        self._validate_location_type_for_coordinates()
-                    return self._values
-                error_parts.append(
-                    f"{f.x_coordinates}, {f.y_coordinates} and {f.num_coordinates}"
-                )
-            else:
-                if self._is_valid_coordinates_specification:
-                    self._validate_coordinates()
-                    if cfg.validate_location_type:
-                        self._validate_location_type_for_coordinates()
-                    return self._values
-                error_parts.append(f"{f.x_coordinates} and {f.y_coordinates}")
+        validators: List[Callable[[List[str]], Optional[Dict]]] = [
+            self._try_validate_node,
+            self._try_validate_branch,
+            self._try_validate_coordinates,
+        ]
+        for try_validate in validators:
+            result = try_validate(error_parts)
+            if result is not None:
+                return result
 
         raise ValueError(" or ".join(error_parts) + " should be provided")
 
@@ -738,7 +802,7 @@ def validate_location_specification(
     Returns:
         Dict: Validated (and possibly mutated) dictionary of input class fields.
     """
-    return LocationSpecificationValidator(values, config, fields).validate()
+    return LocationValidator(values, config, fields).validate()
 
 
 def rename_keys_for_backwards_compatibility(
