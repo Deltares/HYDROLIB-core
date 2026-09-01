@@ -9,8 +9,11 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
+from pathlib import Path
+
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
-from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral
+from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral, _is_non_null_location_file
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from tests.utils import test_data_dir
 
@@ -480,3 +483,38 @@ class TestValidateForcingData:
         assert isinstance(m.lateral[3].discharge, ForcingModel)
         assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
         assert m.lateral[3].discharge.forcing[0].name == "10637"
+
+
+class TestIsNonNullLocationFile:
+    """Tests for the _is_non_null_location_file helper function."""
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            pytest.param(None, id="None"),
+            pytest.param("", id="empty string"),
+            pytest.param("   ", id="whitespace-only string"),
+            pytest.param({"filepath": None}, id="dict with filepath=None"),
+            pytest.param({}, id="dict without filepath key"),
+            pytest.param(42, id="integer"),
+            pytest.param(["file.pol"], id="list"),
+            pytest.param(DiskOnlyFileModel(filepath=None), id="DiskOnlyFileModel(None)"),
+        ],
+    )
+    def test_returns_false(self, raw):
+        assert _is_non_null_location_file(raw) is False
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            pytest.param("some/path/file.pol", id="non-empty string"),
+            pytest.param("  file.pol  ", id="string with surrounding whitespace"),
+            pytest.param(Path("some/path/file.pol"), id="Path"),
+            pytest.param(Path(""), id="empty Path object"),
+            pytest.param({"filepath": Path("file.pol")}, id="dict with filepath set"),
+            pytest.param(DiskOnlyFileModel(filepath=Path("file.pol")), id="DiskOnlyFileModel with filepath"),
+        ],
+    )
+    def test_returns_true(self, raw):
+        assert _is_non_null_location_file(raw) is True
+
