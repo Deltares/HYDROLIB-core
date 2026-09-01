@@ -355,16 +355,16 @@ class Lateral(INIBasedModel):
     _header: Literal["Lateral"] = "Lateral"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationtype: Optional[str] = Field(None, alias="locationType")
-    nodeid: Optional[str] = Field(None, alias="nodeId")
-    branchid: Optional[str] = Field(None, alias="branchId")
-    chainage: Optional[float] = Field(None, alias="chainage")
-    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
-    locationfile: Optional[
-        Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
-    ] = Field(None, alias="locationFile")
+    locationtype: str | None = Field(None, alias="locationType")
+    nodeid: str | None = Field(None, alias="nodeId")
+    branchid: str | None = Field(None, alias="branchId")
+    chainage: float | None = Field(None, alias="chainage")
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    locationfile: Annotated[
+                      DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+                  ] | None = Field(None, alias="locationFile")
     applytransport: int = Field(0, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
