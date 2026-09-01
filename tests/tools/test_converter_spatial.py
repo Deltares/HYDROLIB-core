@@ -313,7 +313,7 @@ class TestFactorQuantityConversion:
             filetype=10,
             method=4,
             value=0.8,
-            operand="O",
+            operand=Operand.override,
         )
 
         new_block = SpatialConverter().convert(
@@ -332,7 +332,7 @@ class TestFactorQuantityConversion:
         self, factor_quantity: str, expected_base_quantity: str
     ):
         """The operand is always set to multiply for factor quantities, no matter the original."""
-        for original_operand in ["O", "A", "+", "*", "X", "N"]:
+        for original_operand in list(Operand):
             forcing = ExtOldForcing(
                 quantity=factor_quantity,
                 filename=DiskOnlyFileModel("mask.pol"),
