@@ -714,7 +714,7 @@ class LocationValidator:
         if self._config.validate_num_coordinates:
             return self._try_validate_coordinates_with_num_coordinates(error_parts)
         if self._is_valid_coordinates_specification:
-            self._try_validate_coordinates()
+            self._validate_coordinates()
             if self._config.validate_location_type:
                 self._validate_location_type_for_coordinates()
             return self._values

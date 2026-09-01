@@ -349,7 +349,7 @@ class Lateral(INIBasedModel):
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
-    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
+    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.6.3.2).
     """
 
     _header: Literal["Lateral"] = "Lateral"
@@ -365,6 +365,7 @@ class Lateral(INIBasedModel):
     locationfile: Optional[
         Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
     ] = Field(None, alias="locationFile")
+    applytransport: int = Field(0, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -402,6 +403,23 @@ class Lateral(INIBasedModel):
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
+
+    @field_validator("applytransport", mode="before")
+    @classmethod
+    def validate_applytransport(cls, v: Any) -> int:
+        if v is None:
+            return 0
+        try:
+            int_v = int(v)
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"applyTransport must be 0 or 1, got '{v}'."
+            )
+        if int_v not in (0, 1):
+            raise ValueError(
+                f"applyTransport must be 0 or 1, got '{int_v}'."
+            )
+        return int_v
 
     @field_validator("locationtype", mode="before")
     @classmethod

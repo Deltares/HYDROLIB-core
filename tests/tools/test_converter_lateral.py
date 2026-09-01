@@ -1,23 +1,3 @@
-"""Tests for the LateralConverter class.
-
-Covers the following discharge scenarios:
-- Scalar (constant float via forcing VALUE)
-- Time-series from a TIM file (TimModel → ForcingModel / .bc)
-- PolyFile location with adjacent TIM file(s) → ForcingModel
-- PolyFile location with a constant scalar value (no TIM file)
-- "realtime" discharge (verified via the Lateral model validator)
-- A fully-parsed ForcingModel as discharge ("bc file")
-
-Plus helpers: location-data extraction, location-type mapping,
-``_get_time_unit`` fallback, legacy-file tracking and error handling.
-
-Notes on ExtOldForcing constraints (validated by ExtOldForcing model):
-- ``VALUE`` field is only accepted when ``METHOD == 4`` (InterpolateSpace).
-- ``filetype=1``  → filename is parsed as ``TimModel``
-- ``filetype=9``  → filename is parsed as ``PolyFile``
-- ``filetype=4``  → filename is parsed as ``DiskOnlyFileModel``
-"""
-
 from pathlib import Path
 from typing import Optional
 from unittest.mock import MagicMock
@@ -25,6 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm import Operand
 from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     QuantityUnitPair,
@@ -71,7 +52,7 @@ def _make_pli_forcing(
         filename=path,
         filetype=9,
         method=method,
-        operand="override",
+        operand=Operand.override,
         value=value,
     )
 
@@ -86,7 +67,7 @@ def _make_tim_forcing(
         filename=path,
         filetype=1,
         method="1",
-        operand="override",
+        operand=Operand.override,
     )
 
 
@@ -102,7 +83,7 @@ def _make_diskonly_forcing(
         filename=DiskOnlyFileModel(path),
         filetype=4,
         method="4",
-        operand="override",
+        operand=Operand.override,
         value=value,
     )
 

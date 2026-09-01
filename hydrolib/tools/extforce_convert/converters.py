@@ -1377,10 +1377,8 @@ class LateralConverter(BaseConverter):
             result: Dict[str, Any] = {"id": location_name}
             if poly_file.objects:
                 first_obj = poly_file.objects[0]
-                # Override id with the PolyFile object name if available
                 if first_obj.metadata and first_obj.metadata.name:
                     result["id"] = first_obj.metadata.name
-            # Reference the polygon file directly instead of inlining coordinates.
             result["locationfile"] = poly_file.filepath
             return result
 
