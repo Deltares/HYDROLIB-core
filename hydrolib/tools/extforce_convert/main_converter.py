@@ -24,7 +24,6 @@ from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
     SourceSinkConverter,
-    SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
