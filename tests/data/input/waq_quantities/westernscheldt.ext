@@ -1,14 +1,14 @@
 * Initals
 
 QUANTITY=initialtracerOXY
-FILENAME=fullextent.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
 VALUE=10.0
 
 QUANTITY=initialtracerCBOD5
-FILENAME=fullextent.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
@@ -35,35 +35,35 @@ OPERAND=O
 * waq quantities using polygons
 
 QUANTITY=waqparameterSOD
-FILENAME=EstruaryMiddle.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
 VALUE=1.0
 
 QUANTITY=waqsegmentfunctionSOD
-FILENAME=EstruaryEast.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
 VALUE=1.5
 
 QUANTITY=waqsegmentnumberSOD
-FILENAME=River.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
 VALUE=3.0
 
 QUANTITY=waqfunctionSOD
-FILENAME=HarbourVlissingen.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O
 VALUE=4.5
 
 QUANTITY=waqmassbalanceareaSOD
-FILENAME=HarbourAntwerp.pol
+FILENAME=Estruary.pol
 FILETYPE=10
 METHOD=4
 OPERAND=O

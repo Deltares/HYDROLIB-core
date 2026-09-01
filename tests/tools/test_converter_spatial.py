@@ -431,17 +431,17 @@ class TestWaqSpatialConversion:
 
 _SPATIAL_BLOCKS = [
     # initial conditions
-    ("initialtracerOXY", True, "fullextent.pol", 10.0, None, InterpolationMethod.constant, None),
-    ("initialtracerCBOD5", True, "fullextent.pol", 3.0, None, InterpolationMethod.constant, None),
+    ("initialtracerOXY", True, "Estruary.pol", 10.0, None, InterpolationMethod.constant, None),
+    ("initialtracerCBOD5", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
     # WAQ non-polygon parameters
     ("waqparameterSalinity", False, "salinity.xyz", None, DataFileType.sample, InterpolationMethod.averaging, AveragingType.nearestnb),
     ("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo, InterpolationMethod.triangulation, None),
     # WAQ polygon parameters
-    ("waqparameterSOD", True, "EstruaryMiddle.pol", 1.0, None, InterpolationMethod.constant, None),
-    ("waqsegmentfunctionSOD", True, "EstruaryEast.pol", 1.5, None, InterpolationMethod.constant, None),
-    ("waqsegmentnumberSOD", True, "River.pol", 3.0, None, InterpolationMethod.constant, None),
-    ("waqfunctionSOD", True, "HarbourVlissingen.pol", 4.5, None, InterpolationMethod.constant, None),
-    ("waqmassbalanceareaSOD", True, "HarbourAntwerp.pol", 6.0, None, InterpolationMethod.constant, None),
+    ("waqparameterSOD", True, "Estruary.pol", 1.0, None, InterpolationMethod.constant, None),
+    ("waqsegmentfunctionSOD", True, "Estruary.pol", 1.5, None, InterpolationMethod.constant, None),
+    ("waqsegmentnumberSOD", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
+    ("waqfunctionSOD", True, "Estruary.pol", 4.5, None, InterpolationMethod.constant, None),
+    ("waqmassbalanceareaSOD", True, "Estruary.pol", 6.0, None, InterpolationMethod.constant, None),
 ]
 
 # Number of boundary blocks
