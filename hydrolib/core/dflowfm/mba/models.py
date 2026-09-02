@@ -157,7 +157,7 @@ class MassBalanceAreaModel(INIModel):
 
     Attributes:
         general (MassBalanceAreaGeneral): `[General]` block with file metadata.
-        massbalancearea (List[MassBalanceArea]): List of `[MassBalanceArea]` blocks, one per area.
+        massbalancearea (list[MassBalanceArea]): List of `[MassBalanceArea]` blocks, one per area.
     """
 
     general: MassBalanceAreaGeneral = MassBalanceAreaGeneral()

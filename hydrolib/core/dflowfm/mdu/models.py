@@ -1130,7 +1130,7 @@ ObsCrsFile = Annotated[
     BeforeValidator(load_crs),
 ]
 MbaFile = Annotated[
-    Union[MassBalanceAreaModel, DiskOnlyFileModel],
+    MassBalanceAreaModel | DiskOnlyFileModel,
     BeforeValidator(load_mba),
 ]
 DryPointsFile = Annotated[
@@ -1206,11 +1206,11 @@ class Output(INIBasedModel):
             "Space separated list of files, containing information about observation cross sections.",
             alias="crsFile",
         )
-        mbafile: Optional[str] = Field(
+        mbafile: str | None = Field(
             "Space separated list of files, containing information about mass balance areas.",
             alias="mbaFile",
         )
-        mbainterval: Optional[str] = Field(
+        mbainterval: str | None = Field(
             "Mass balance area output interval [s]. Must be a multiple of DtUser.",
             alias="mbaInterval",
         )
@@ -1689,8 +1689,8 @@ class Output(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
-    mbafile: Optional[List[MbaFile]] = Field(None, alias="mbaFile")
-    mbainterval: Optional[List[float]] = Field(None, alias="mbaInterval")
+    mbafile: list[MbaFile] | None = Field(None, alias="mbaFile")
+    mbainterval: list[float] | None = Field(None, alias="mbaInterval")
     foufile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile")
