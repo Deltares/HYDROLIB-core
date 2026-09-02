@@ -10,20 +10,15 @@ list of files). See the D-Flow FM 1D2D User Manual, Appendix F.2.5.
 
 from typing import Annotated, Literal
 
-from pydantic import (
-    BeforeValidator,
-    Field,
-    ValidationInfo,
-    field_validator,
-    model_validator,
-)
+from pydantic import BeforeValidator, Field, model_validator
 
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
 )
+from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
-from hydrolib.core.dflowfm.ini.util import make_list, split_string_on_delimiter
+from hydrolib.core.dflowfm.ini.util import make_list
 
 
 class MassBalanceAreaGeneral(INIGeneral):
@@ -62,7 +57,7 @@ class MassBalanceAreaGeneral(INIGeneral):
     filetype: Literal["massBalanceAreas"] = Field("massBalanceAreas", alias="fileType")
 
 
-class MassBalanceArea(INIBasedModel):
+class MassBalanceArea(CoordinateValidator, INIBasedModel):
     """A single mass balance area included in the mass balance area file.
 
     The area polygon is defined either by a separate polygon file (`locationFile`) or by specifying the
@@ -136,11 +131,6 @@ class MassBalanceArea(INIBasedModel):
     numcoordinates: int | None = Field(None, alias="numCoordinates")
     xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
     ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
 
     @model_validator(mode="after")
     def _validate_location_specification(self) -> "MassBalanceArea":
