@@ -777,41 +777,6 @@ class LocationValidator:
             raise ValueError(" or ".join(error_parts) + " should be provided")
 
 
-def validate_location_specification(
-    values: Dict,
-    config: Optional[LocationValidationConfiguration] = None,
-    fields: Optional[LocationValidationFieldNames] = None,
-) -> Dict:
-    """Validate the location specification fields in a 1D2D ini-based model dict.
-
-    This is a convenience wrapper around :class:`LocationSpecificationValidator`.
-    Validates for the presence of exactly one of:
-
-    * ``nodeId``
-    * ``branchId`` with ``chainage``
-    * ``xCoordinates`` with ``yCoordinates``
-    * ``xCoordinates`` with ``yCoordinates`` and ``numCoordinates``
-
-    Args:
-        values (Dict):
-            Dictionary of object's validated fields.
-        config (LocationValidationConfiguration, optional):
-            Configuration for the location validation. Default is None.
-        fields (LocationValidationFieldNames, optional):
-            Field names that should be used for the location validation.
-            Default is None.
-
-    Raises:
-        ValueError: When no valid location specification is present, when
-            ``numCoordinates`` is inconsistent, or when ``locationType`` is
-            invalid for the given location type.
-
-    Returns:
-        Dict: Validated (and possibly mutated) dictionary of input class fields.
-    """
-    return LocationValidator(values, config, fields).validate()
-
-
 def rename_keys_for_backwards_compatibility(
     values: Dict, keys_to_rename: Dict[str, List[str]]
 ) -> Dict:
