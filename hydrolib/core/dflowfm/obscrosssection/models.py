@@ -7,8 +7,8 @@ from pydantic import Field, ValidationInfo, field_validator, model_validator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
+    LocationValidator,
     split_string_on_delimiter,
-    validate_location_specification,
 )
 
 
@@ -81,7 +81,7 @@ class ObservationCrossSection(INIBasedModel):
         self,
     ) -> "ObservationCrossSection":
         """Validates that the correct location specification is given."""
-        validate_location_specification(
+        location_validator = LocationValidator(
             self.model_dump(),
             config=LocationValidationConfiguration(
                 validate_node=False,
@@ -89,6 +89,7 @@ class ObservationCrossSection(INIBasedModel):
                 validate_location_type=False,
             ),
         )
+        location_validator.validate()
         return self
 
     def _get_identifier(self, data: dict) -> Optional[str]:

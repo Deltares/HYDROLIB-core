@@ -8,15 +8,13 @@ See: https://github.com/Deltares/HYDROLIB-core/issues/1034
 """
 
 from pathlib import Path
-from typing import Dict, List, Optional
-
 import pytest
 from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.ext.models import Lateral, SourceSink
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    validate_location_specification,
+    LocationValidator,
 )
 
 
@@ -42,7 +40,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "3",
         }
 
-        result = validate_location_specification(values)
+        result = LocationValidator(values).validate()
 
         assert result is values, "Should return the same dict on success"
 
@@ -59,7 +57,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": 3,
         }
 
-        result = validate_location_specification(values)
+        result = LocationValidator(values).validate()
 
         assert result is values, "Should return the same dict on success"
 
@@ -75,7 +73,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "1",
         }
 
-        result = validate_location_specification(values)
+        result = LocationValidator(values).validate()
 
         assert result is values, "Single coordinate as string should validate"
 
@@ -92,7 +90,7 @@ class TestValidateLocationSpecificationRawStrings:
         }
         config = LocationValidationConfiguration(minimum_num_coordinates=3)
 
-        result = validate_location_specification(values, config=config)
+        result = LocationValidator(values, config=config).validate()
 
         assert result is values, "Should pass with exactly minimum coordinates"
 
@@ -110,7 +108,7 @@ class TestValidateLocationSpecificationRawStrings:
         config = LocationValidationConfiguration(minimum_num_coordinates=3)
 
         with pytest.raises(ValueError, match="at least 3 coordinate"):
-            validate_location_specification(values, config=config)
+            LocationValidator(values, config=config).validate()
 
     def test_raw_string_mismatched_numcoordinates_raises_error(self):
         """Test validation rejects when numcoordinates doesn't match raw string count.
@@ -125,7 +123,7 @@ class TestValidateLocationSpecificationRawStrings:
         }
 
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
-            validate_location_specification(values)
+            LocationValidator(values).validate()
 
     def test_raw_string_mismatched_x_y_lengths_raises_error(self):
         """Test validation rejects when x and y raw strings have different counts.
@@ -140,7 +138,7 @@ class TestValidateLocationSpecificationRawStrings:
         }
 
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
-            validate_location_specification(values)
+            LocationValidator(values).validate()
 
     def test_list_coordinates_still_work(self):
         """Test validation still works with pre-parsed list coordinates.
@@ -154,7 +152,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": 3,
         }
 
-        result = validate_location_specification(values)
+        result = LocationValidator(values).validate()
 
         assert result is values, "Pre-parsed lists should still work"
 
