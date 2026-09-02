@@ -26,7 +26,6 @@ from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
-    split_string_on_delimiter,
     validate_datetime_string,
 )
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
@@ -832,7 +831,7 @@ class Wind(INIBasedModel):
     )
     @classmethod
     def split_field_values(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
 
 class Waves(INIBasedModel):
@@ -1886,7 +1885,7 @@ class Output(INIBasedModel):
     )
     @classmethod
     def split_string_to_list(cls, value, info: ValidationInfo):
-        return split_string_on_delimiter(cls, value, info)
+        return cls.split_string_on_delimiter(value, info)
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -2291,7 +2290,7 @@ class Geometry(INIBasedModel):
     )
     @classmethod
     def split_on_delimiter(cls, value, info: ValidationInfo):
-        return split_string_on_delimiter(cls, value, info)
+        return cls.split_string_on_delimiter(value, info)
 
     def is_intermediate_link(self) -> bool:
         return True

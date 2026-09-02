@@ -7,7 +7,6 @@ from pydantic import Field, ValidationInfo, field_validator, model_validator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    split_string_on_delimiter,
     validate_location_specification,
 )
 
@@ -74,7 +73,7 @@ class ObservationCrossSection(INIBasedModel):
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def validate_that_location_specification_is_correct(

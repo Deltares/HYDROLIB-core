@@ -19,7 +19,6 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_correct_length,
     validate_location_specification,
 )
@@ -329,7 +328,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -420,7 +419,7 @@ class ZWCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -535,7 +534,7 @@ class YZCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -636,7 +635,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
     @field_validator("xcoordinates", mode="before")
     def split_string_xcoordinates(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("xyzcount")
     @classmethod

@@ -36,7 +36,6 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_location_specification,
 )
 from hydrolib.core.dflowfm.inifield.models import (
@@ -351,7 +350,7 @@ class Lateral(INIBasedModel):
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("discharge", mode="before")
     @classmethod
@@ -428,7 +427,7 @@ class SourceSink(INIBasedModel):
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator(
         "discharge", "salinity", "temperature", mode="before"
