@@ -1,6 +1,7 @@
 """External forcing converter."""
 
 from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -24,10 +25,10 @@ from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    Spatial,
-    SpatialError,
     SourceSink,
     SourceSinkError,
+    Spatial,
+    SpatialError,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
@@ -38,6 +39,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
@@ -209,9 +211,7 @@ class SpatialBlockBuilder:
             if is_initial_vertical:
                 self.block["interpolationmethod"] = InterpolationMethod.constant
             self.block["operand"] = self.forcing.operand
-            self.block["extrapolationallowed"] = bool(
-                self.forcing.extrapolation_method
-            )
+            self.block["extrapolationallowed"] = bool(self.forcing.extrapolation_method)
             self._add_tracers()
 
     def _add_tracers(self):
@@ -1094,6 +1094,55 @@ class SourceSinkConverter(BaseConverter):
             )
 
         return new_block
+
+
+MASS_BALANCE_AREA_PREFIXES = ("waqmassbalancearea", "massbalancearea")
+"""tuple: Old-ext quantity prefixes for mass balance areas, longest-first."""
+
+
+class MassBalanceAreaConverter(BaseConverter):
+    """Mass balance area converter.
+
+    Converts an old external forcing block whose quantity is ``waqmassbalancearea<name>``
+    (or ``massbalancearea<name>``) into a :class:`MassBalanceArea` block for the standalone
+    mass balance area file (``<*_mba.ini>``). The area name is taken from the quantity
+    suffix and the polygon from ``FILENAME``; ``VALUE`` is ignored (Manual F.2.5, UNST-10107).
+    """
+
+    def convert(self, forcing: ExtOldForcing) -> MassBalanceArea:
+        """Convert a single old mass balance area forcing block.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block. Its ``quantity`` carries the area name as a
+                suffix and its ``filename`` points at the polygon file.
+
+        Returns:
+            MassBalanceArea: The converted block for the mass balance area file.
+        """
+        name = MassBalanceAreaConverter._strip_prefix(str(forcing.quantity))
+        result = MassBalanceArea(name=name, locationfile=forcing.filename.filepath)
+        return result
+
+    @staticmethod
+    def _strip_prefix(quantity: str) -> str:
+        """Return the area name, i.e. the quantity with its mass-balance-area prefix removed.
+
+        Matching is case-insensitive and longest-prefix-first; the suffix casing is preserved.
+
+        Args:
+            quantity (str): The old-ext quantity, e.g. ``waqmassbalanceareaEstruaryWest``.
+
+        Returns:
+            str: The area name (the quantity unchanged if no known prefix matches).
+        """
+        lower = quantity.lower()
+        name = quantity
+        for prefix in MASS_BALANCE_AREA_PREFIXES:
+            if lower.startswith(prefix):
+                name = quantity[len(prefix) :]
+                break
+        return name
 
 
 class ConverterFactory:
