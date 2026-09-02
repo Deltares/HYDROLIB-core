@@ -30,6 +30,10 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list,
     validate_required_fields,
 )
+from hydrolib.core.dflowfm.validators import (
+    LocationTypeDataFileTypeValidators,
+    OperandInterpolationValidators,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,61 +56,6 @@ class IniFieldGeneral(INIGeneral):
     _header: Literal["General"] = "General"
     fileversion: str = Field("2.00", alias="fileVersion")
     filetype: Literal["iniField"] = Field("iniField", alias="fileType")
-
-
-class OperandInterpolationValidators(ABC):
-    """Field validators common to every spatial-field block.
-
-    A plain validator mixin (not an `INIBasedModel` itself); the concrete block
-    bases `SpatialForcingBase` and `AbstractSpatialField` bring in `INIBasedModel`.
-
-    Holds the `operand` and `interpolationMethod` validators shared by all four
-    spatial-field blocks: `Meteo` / `Spatial` (external forcings) and
-    `InitialField` / `ParameterField` (inifield). It is inherited directly by the
-    two concrete block bases `SpatialForcingBase` (for `Meteo` / `Spatial`) and
-    `AbstractSpatialField` (for `InitialField` / `ParameterField`). The validators
-    use ``check_fields=False`` so each applies only to the subclasses that declare
-    the corresponding field.
-
-    `averagingType` is intentionally not shared: `Meteo` reaches this base too and
-    stores `averagingType` as a raw integer, so an enum validator on it must stay
-    off `Meteo`.
-    """
-
-    @field_validator("operand", mode="before", check_fields=False)
-    @classmethod
-    def _validate_operand(cls, v):
-        return enum_value_parser(v, Operand, Operand.legacy_alternatives())
-
-    @field_validator("interpolationmethod", mode="before", check_fields=False)
-    @classmethod
-    def _validate_interpolationmethod(cls, v):
-        return enum_value_parser(v, InterpolationMethod)
-
-
-class LocationTypeDataFileTypeValidators(ABC):
-    """Field validators shared by the data-file spatial blocks.
-
-    An independent plain validator mixin holding the `locationType` and
-    `dataFileType` validators shared by `Spatial` (external forcings) and
-    `InitialField` / `ParameterField` (inifield). `Meteo` does not use it — it has
-    a `forcingFileType` and no `locationType` field. It does not inherit
-    `OperandInterpolationValidators`; classes that need both validator groups
-    (`Spatial`, `AbstractSpatialField`) inherit both mixins directly.
-    """
-
-    @field_validator("locationtype", mode="before", check_fields=False)
-    @classmethod
-    def _validate_locationtype(cls, v):
-        return enum_value_parser(v, LocationType)
-
-    @field_validator("datafiletype", mode="before", check_fields=False)
-    @classmethod
-    def _validate_datafiletype(cls, v):
-        result = v
-        if v is not None:
-            result = enum_value_parser(v, DataFileType)
-        return result
 
 
 class AbstractSpatialField(
