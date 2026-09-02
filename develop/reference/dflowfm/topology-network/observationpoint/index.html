@@ -3780,8 +3780,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">94</span>
 <span class="normal">95</span>
 <span class="normal">96</span>
-<span class="normal">97</span>
-<span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPoint</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPoint</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An observation point that is included in the observation point file.</span>
 
@@ -3831,14 +3830,13 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
-        <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
                 <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">),</span>
             <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">location_validator</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
@@ -3974,18 +3972,16 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">91</span>
 <span class="normal">92</span>
 <span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">94</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
-    <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">validate_location_specification</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
             <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">),</span>
         <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">),</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">location_validator</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4223,7 +4219,8 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/obs/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">100</span>
+<span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
@@ -4238,8 +4235,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPointModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPointModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall observation point model that contains the contents of one observation point file.</span>
 
