@@ -2,8 +2,9 @@
 
 from typing import List, Literal, Optional
 
-from pydantic import Field, ValidationInfo, field_validator, model_validator
+from pydantic import Field, model_validator
 
+from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
@@ -29,7 +30,7 @@ class ObservationCrossSectionGeneral(INIGeneral):
     filetype: Literal["obsCross"] = Field("obsCross", alias="fileType")
 
 
-class ObservationCrossSection(INIBasedModel):
+class ObservationCrossSection(CoordinateValidator, INIBasedModel):
     """The observation cross section that is included in the observation cross section file.
 
     All lowercased attributes match with the observation cross section output as described
@@ -69,11 +70,6 @@ class ObservationCrossSection(INIBasedModel):
     numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
     xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
     ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo):
-        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def validate_that_location_specification_is_correct(

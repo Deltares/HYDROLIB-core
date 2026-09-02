@@ -22,6 +22,7 @@ from hydrolib.core.base.models import (
     set_default_disk_only_file_model,
 )
 from hydrolib.core.base.utils import resolve_file_model, str_is_empty_or_none
+from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.bc.models import (
     ForcingBase,
     ForcingData,
@@ -323,7 +324,7 @@ class Boundary(INIBasedModel):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
-class Lateral(INIBasedModel):
+class Lateral(CoordinateValidator, INIBasedModel):
     """A `[Lateral]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -346,11 +347,6 @@ class Lateral(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("discharge", mode="before")
     @classmethod
@@ -392,7 +388,7 @@ class Lateral(INIBasedModel):
         return v
 
 
-class SourceSink(INIBasedModel):
+class SourceSink(CoordinateValidator, INIBasedModel):
     """A `[SourceSink]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
@@ -423,11 +419,6 @@ class SourceSink(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return cls.split_string_on_delimiter(v, info)
 
     @field_validator(
         "discharge", "salinity", "temperature", mode="before"

@@ -21,6 +21,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import str_is_empty_or_none
+from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -81,7 +82,7 @@ ForcingDataUnion = Annotated[
 ]
 
 
-class Structure(INIBasedModel):
+class Structure(CoordinateValidator, INIBasedModel):
     """Structure model."""
 
     class Comments(INIBasedModel.Comments):
@@ -138,12 +139,6 @@ class Structure(INIBasedModel):
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo):
-        return cls.split_string_on_delimiter(v, info)
-
 
     @model_validator(mode="after")
     def check_location(self):
