@@ -4,12 +4,12 @@ from typing import List, Literal, Optional
 
 from pydantic import Field, model_validator
 
-from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     validate_location_specification,
 )
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 
 class ObservationCrossSectionGeneral(INIGeneral):

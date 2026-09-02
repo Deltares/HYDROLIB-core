@@ -16,9 +16,9 @@ from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
 )
-from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import make_list
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 
 class MassBalanceAreaGeneral(INIGeneral):

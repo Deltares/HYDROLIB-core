@@ -9,7 +9,7 @@ file-format subpackage such as `dflowfm.ini`.
 from abc import ABC
 from typing import Any
 
-from pydantic import ValidationInfo, field_validator
+from pydantic import ValidationInfo
 from pydantic.fields import FieldInfo
 
 
@@ -83,24 +83,3 @@ class ListFieldDelimiter(ABC):
             v = v.split(cls.get_list_field_delimiter(info.field_name))
             v = [item.strip() for item in v if item != ""]
         return v
-
-
-class CoordinateValidator(ListFieldDelimiter):
-    """Validator mixin for blocks that carry polygon coordinates.
-
-    Holds the shared before-validator that splits space-delimited ``xCoordinates`` /
-    ``yCoordinates`` strings into lists of floats. The coordinate fields themselves
-    stay declared on each concrete block, so every block keeps control of its own
-    keyword order. The validator uses ``check_fields=False`` so it applies only to
-    subclasses that actually declare the coordinate fields, and it resolves the
-    delimiter via the inherited `ListFieldDelimiter`, so this mixin does not depend
-    on any file-format subpackage.
-
-    Intended to be combined with a concrete block model, e.g.
-    ``class MassBalanceArea(CoordinateValidator, INIBasedModel): ...``.
-    """
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before", check_fields=False)
-    @classmethod
-    def _split_coordinates_to_list(cls, v, info: ValidationInfo):
-        return cls.split_string_on_delimiter(v, info)

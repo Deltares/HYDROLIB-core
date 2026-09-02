@@ -21,7 +21,6 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import str_is_empty_or_none
-from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
@@ -35,6 +34,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_required_fields,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 logger = logging.getLogger(__name__)
 

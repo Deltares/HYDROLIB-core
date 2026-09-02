@@ -22,7 +22,6 @@ from hydrolib.core.base.models import (
     set_default_disk_only_file_model,
 )
 from hydrolib.core.base.utils import resolve_file_model, str_is_empty_or_none
-from hydrolib.core.base.validators import CoordinateValidator
 from hydrolib.core.dflowfm.bc.models import (
     ForcingBase,
     ForcingData,
@@ -48,6 +47,7 @@ from hydrolib.core.dflowfm.inifield.models import (
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 # Deprecated aliases — MeteoForcingFileType and MeteoInterpolationMethod are merged
 # into DataFileType and InterpolationMethod respectively. These aliases remain for
