@@ -106,9 +106,9 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "2",
         }
         config = LocationValidationConfiguration(minimum_num_coordinates=3)
-
+        location_validator = LocationValidator(values, config=config)
         with pytest.raises(ValueError, match="at least 3 coordinate"):
-            LocationValidator(values, config=config).validate()
+            location_validator.validate()
 
     def test_raw_string_mismatched_numcoordinates_raises_error(self):
         """Test validation rejects when numcoordinates doesn't match raw string count.
@@ -121,9 +121,9 @@ class TestValidateLocationSpecificationRawStrings:
             "ycoordinates": "4.0 5.0 6.0",
             "numcoordinates": "5",
         }
-
+        location_validator = LocationValidator(values)
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
-            LocationValidator(values).validate()
+            location_validator.validate()
 
     def test_raw_string_mismatched_x_y_lengths_raises_error(self):
         """Test validation rejects when x and y raw strings have different counts.
@@ -136,9 +136,9 @@ class TestValidateLocationSpecificationRawStrings:
             "ycoordinates": "4.0 5.0",
             "numcoordinates": "3",
         }
-
+        location_validator = LocationValidator(values)
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
-            LocationValidator(values).validate()
+            location_validator.validate()
 
     def test_list_coordinates_still_work(self):
         """Test validation still works with pre-parsed list coordinates.
