@@ -1153,55 +1153,55 @@ class Output(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the Output section fields."""
 
-        wrishp_crs: Optional[str] = Field(
+        wrishp_crs: str | None = Field(
             "Writing cross sections to shape file (0=no, 1=yes).", alias="wrishp_crs"
         )
-        wrishp_weir: Optional[str] = Field(
+        wrishp_weir: str | None = Field(
             "Writing weirs to shape file (0=no, 1=yes).", alias="wrishp_weir"
         )
-        wrishp_gate: Optional[str] = Field(
+        wrishp_gate: str | None = Field(
             "Writing gates to shape file (0=no, 1=yes).", alias="wrishp_gate"
         )
-        wrishp_fxw: Optional[str] = Field(
+        wrishp_fxw: str | None = Field(
             "Writing fixed weirs to shape file (0=no, 1=yes).", alias="wrishp_fxw"
         )
-        wrishp_thd: Optional[str] = Field(
+        wrishp_thd: str | None = Field(
             "Writing thin dams to shape file (0=no, 1=yes).", alias="wrishp_thd"
         )
-        wrishp_obs: Optional[str] = Field(
+        wrishp_obs: str | None = Field(
             "Writing observation points to shape file (0=no, 1=yes).",
             alias="wrishp_obs",
         )
-        wrishp_emb: Optional[str] = Field(
+        wrishp_emb: str | None = Field(
             "Writing embankments file (0=no, 1=yes).", alias="wrishp_emb"
         )
-        wrishp_dryarea: Optional[str] = Field(
+        wrishp_dryarea: str | None = Field(
             "Writing dry areas to shape file (0=no, 1=yes).", alias="wrishp_dryArea"
         )
-        wrishp_enc: Optional[str] = Field(
+        wrishp_enc: str | None = Field(
             "Writing enclosures to shape file (0=no, 1=yes).", alias="wrishp_enc"
         )
-        wrishp_src: Optional[str] = Field(
+        wrishp_src: str | None = Field(
             "Writing sources and sinks to shape file (0=no, 1=yes).", alias="wrishp_src"
         )
-        wrishp_pump: Optional[str] = Field(
+        wrishp_pump: str | None = Field(
             "Writing pumps to shape file (0=no, 1=yes).", alias="wrishp_pump"
         )
-        outputdir: Optional[str] = Field(
+        outputdir: str | None = Field(
             "Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.",
             alias="outputDir",
         )
-        waqoutputdir: Optional[str] = Field(
+        waqoutputdir: str | None = Field(
             "Output directory of Water Quality files.", alias="waqOutputDir"
         )
-        flowgeomfile: Optional[str] = Field(
+        flowgeomfile: str | None = Field(
             "*_flowgeom.nc Flow geometry file in netCDF format.", alias="flowGeomFile"
         )
-        obsfile: Optional[str] = Field(
+        obsfile: str | None = Field(
             "Space separated list of files, containing information about observation points.",
             alias="obsFile",
         )
-        crsfile: Optional[str] = Field(
+        crsfile: str | None = Field(
             "Space separated list of files, containing information about observation cross sections.",
             alias="crsFile",
         )
@@ -1213,452 +1213,452 @@ class Output(INIBasedModel):
             "Mass balance area output interval [s]. Must be a multiple of DtUser.",
             alias="mbaInterval",
         )
-        foufile: Optional[str] = Field(
+        foufile: str | None = Field(
             "Fourier analysis input file *.fou", alias="fouFile"
         )
-        fouupdatestep: Optional[str] = Field(
+        fouupdatestep: str | None = Field(
             "Fourier update step type: 0=every user time step, 1=every computational timestep, 2=same as history output.",
             alias="fouUpdateStep",
         )
-        hisfile: Optional[str] = Field(
+        hisfile: str | None = Field(
             "*_his.nc History file in netCDF format.", alias="hisFile"
         )
-        hisinterval: Optional[str] = Field(
+        hisinterval: str | None = Field(
             "History output, given as 'interval' 'start period' 'end period' [s].",
             alias="hisInterval",
         )
-        xlsinterval: Optional[str] = Field(
+        xlsinterval: str | None = Field(
             "Interval between XLS history [s].", alias="xlsInterval"
         )
-        mapfile: Optional[str] = Field(
+        mapfile: str | None = Field(
             "*_map.nc Map file in netCDF format.", alias="mapFile"
         )
-        mapinterval: Optional[str] = Field(
+        mapinterval: str | None = Field(
             "Map file output, given as 'interval' 'start period' 'end period' [s].",
             alias="mapInterval",
         )
-        rstinterval: Optional[str] = Field(
+        rstinterval: str | None = Field(
             "Restart file output, given as 'interval' 'start period' 'end period' [s].",
             alias="rstInterval",
         )
-        mapformat: Optional[str] = Field(
+        mapformat: str | None = Field(
             "Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.",
             alias="mapFormat",
         )
-        ncformat: Optional[str] = Field(
+        ncformat: str | None = Field(
             "Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).",
             alias="ncFormat",
         )
-        ncnounlimited: Optional[str] = Field(
+        ncnounlimited: str | None = Field(
             "Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)",
             alias="ncNoUnlimited",
         )
-        ncnoforcedflush: Optional[str] = Field(
+        ncnoforcedflush: str | None = Field(
             "Do not force flushing of map-like files every output timestep (1: yes, 0: no).",
             alias="ncNoForcedFlush",
         )
-        ncwritelatlon: Optional[str] = Field(
+        ncwritelatlon: str | None = Field(
             "Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy) (1: yes, 0: no).",
             alias="ncWriteLatLon",
         )
-        wrihis_balance: Optional[str] = Field(
+        wrihis_balance: str | None = Field(
             "Write mass balance totals to his file, (1: yes, 0: no).",
             alias="wrihis_balance",
         )
-        wrihis_sourcesink: Optional[str] = Field(
+        wrihis_sourcesink: str | None = Field(
             "Write sources-sinks statistics to his file, (1: yes, 0: no).",
             alias="wrihis_sourceSink",
         )
-        wrihis_structure_gen: Optional[str] = Field(
+        wrihis_structure_gen: str | None = Field(
             "Write general structure parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_gen",
         )
-        wrihis_structure_dam: Optional[str] = Field(
+        wrihis_structure_dam: str | None = Field(
             "Write dam parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_dam",
         )
-        wrihis_structure_pump: Optional[str] = Field(
+        wrihis_structure_pump: str | None = Field(
             "Write pump parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_pump",
         )
-        wrihis_structure_gate: Optional[str] = Field(
+        wrihis_structure_gate: str | None = Field(
             "Write gate parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_gate",
         )
-        wrihis_structure_weir: Optional[str] = Field(
+        wrihis_structure_weir: str | None = Field(
             "Write weir parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_weir",
         )
-        wrihis_structure_orifice: Optional[str] = Field(
+        wrihis_structure_orifice: str | None = Field(
             "Write orifice parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_orifice",
         )
-        wrihis_structure_bridge: Optional[str] = Field(
+        wrihis_structure_bridge: str | None = Field(
             "Write bridge parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_bridge",
         )
-        wrihis_structure_culvert: Optional[str] = Field(
+        wrihis_structure_culvert: str | None = Field(
             "Write culvert parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_culvert",
         )
-        wrihis_structure_longculvert: Optional[str] = Field(
+        wrihis_structure_longculvert: str | None = Field(
             "Write long culvert parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_longCulvert",
         )
-        wrihis_structure_dambreak: Optional[str] = Field(
+        wrihis_structure_dambreak: str | None = Field(
             "Write dam break parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_damBreak",
         )
-        wrihis_structure_uniweir: Optional[str] = Field(
+        wrihis_structure_uniweir: str | None = Field(
             "Write universal weir parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_uniWeir",
         )
-        wrihis_structure_compound: Optional[str] = Field(
+        wrihis_structure_compound: str | None = Field(
             "Write compound structure parameters to his file, (1: yes, 0: no).",
             alias="wrihis_structure_compound",
         )
-        wrihis_turbulence: Optional[str] = Field(
+        wrihis_turbulence: str | None = Field(
             "Write k, eps and vicww to his file (1: yes, 0: no)'",
             alias="wrihis_turbulence",
         )
-        wrihis_wind: Optional[str] = Field(
+        wrihis_wind: str | None = Field(
             "Write wind velocities to his file (1: yes, 0: no)'", alias="wrihis_wind"
         )
-        wrihis_airdensity: Optional[str] = Field(
+        wrihis_airdensity: str | None = Field(
             "Write air density to his file (1: yes, 0: no)", alias="wrihis_airdensity"
         )
-        wrihis_rain: Optional[str] = Field(
+        wrihis_rain: str | None = Field(
             "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
         )
-        wrihis_infiltration: Optional[str] = Field(
+        wrihis_infiltration: str | None = Field(
             "Write infiltration to his file (1: yes, 0: no)'",
             alias="wrihis_infiltration",
         )
-        wrihis_temperature: Optional[str] = Field(
+        wrihis_temperature: str | None = Field(
             "Write temperature to his file (1: yes, 0: no)'", alias="wrihis_temperature"
         )
-        wrihis_waves: Optional[str] = Field(
+        wrihis_waves: str | None = Field(
             "Write wave data to his file (1: yes, 0: no)'", alias="wrihis_waves"
         )
-        wrihis_heat_fluxes: Optional[str] = Field(
+        wrihis_heat_fluxes: str | None = Field(
             "Write heat fluxes to his file (1: yes, 0: no)'", alias="wrihis_heat_fluxes"
         )
-        wrihis_salinity: Optional[str] = Field(
+        wrihis_salinity: str | None = Field(
             "Write salinity to his file (1: yes, 0: no)'", alias="wrihis_salinity"
         )
-        wrihis_density: Optional[str] = Field(
+        wrihis_density: str | None = Field(
             "Write density to his file (1: yes, 0: no)'", alias="wrihis_density"
         )
-        wrihis_waterlevel_s1: Optional[str] = Field(
+        wrihis_waterlevel_s1: str | None = Field(
             "Write water level to his file (1: yes, 0: no)'",
             alias="wrihis_waterlevel_s1",
         )
-        wrihis_bedlevel: Optional[str] = Field(
+        wrihis_bedlevel: str | None = Field(
             "Write bed level to his file (1: yes, 0: no)'", alias="wrihis_bedlevel"
         )
-        wrihis_waterdepth: Optional[str] = Field(
+        wrihis_waterdepth: str | None = Field(
             "Write water depth to his file (1: yes, 0: no)'", alias="wrihis_waterdepth"
         )
-        wrihis_velocity_vector: Optional[str] = Field(
+        wrihis_velocity_vector: str | None = Field(
             "Write velocity vectors to his file (1: yes, 0: no)'",
             alias="wrihis_velocity_vector",
         )
-        wrihis_upward_velocity_component: Optional[str] = Field(
+        wrihis_upward_velocity_component: str | None = Field(
             "Write upward velocity to his file (1: yes, 0: no)'",
             alias="wrihis_upward_velocity_component",
         )
-        wrihis_velocity: Optional[str] = Field(
+        wrihis_velocity: str | None = Field(
             "Write velocity magnitude in observation point to his file, (1: yes, 0: no).",
             alias="wrihis_velocity",
         )
-        wrihis_discharge: Optional[str] = Field(
+        wrihis_discharge: str | None = Field(
             "Write discharge magnitude in observation point to his file, (1: yes, 0: no).",
             alias="wrihis_discharge",
         )
-        wrihis_sediment: Optional[str] = Field(
+        wrihis_sediment: str | None = Field(
             "Write sediment transport to his file (1: yes, 0: no)'",
             alias="wrihis_sediment",
         )
-        wrihis_constituents: Optional[str] = Field(
+        wrihis_constituents: str | None = Field(
             "Write tracers to his file (1: yes, 0: no)'", alias="wrihis_constituents"
         )
-        wrihis_zcor: Optional[str] = Field(
+        wrihis_zcor: str | None = Field(
             "Write vertical coordinates to his file (1: yes, 0: no)'",
             alias="wrihis_zcor",
         )
-        wrihis_lateral: Optional[str] = Field(
+        wrihis_lateral: str | None = Field(
             "Write lateral data to his file, (1: yes, 0: no).", alias="wrihis_lateral"
         )
-        wrihis_taucurrent: Optional[str] = Field(
+        wrihis_taucurrent: str | None = Field(
             "Write mean bed shear stress to his file (1: yes, 0: no)'",
             alias="wrihis_taucurrent",
         )
-        wrimap_waterlevel_s0: Optional[str] = Field(
+        wrimap_waterlevel_s0: str | None = Field(
             "Write water levels at old time level to map file, (1: yes, 0: no).",
             alias="wrimap_waterLevel_s0",
         )
-        wrimap_waterlevel_s1: Optional[str] = Field(
+        wrimap_waterlevel_s1: str | None = Field(
             "Write water levels at new time level to map file, (1: yes, 0: no).",
             alias="wrimap_waterLevel_s1",
         )
-        wrimap_evaporation: Optional[str] = Field(
+        wrimap_evaporation: str | None = Field(
             "Write evaporation to map file, (1: yes, 0: no).",
             alias="wrimap_evaporation",
         )
-        wrimap_waterdepth: Optional[str] = Field(
+        wrimap_waterdepth: str | None = Field(
             "Write water depths to map file (1: yes, 0: no).",
             alias="wrimap_waterdepth",
         )
-        wrimap_velocity_component_u0: Optional[str] = Field(
+        wrimap_velocity_component_u0: str | None = Field(
             "Write velocities at old time level to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_component_u0",
         )
-        wrimap_velocity_component_u1: Optional[str] = Field(
+        wrimap_velocity_component_u1: str | None = Field(
             "Write velocities at new time level to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_component_u1",
         )
-        wrimap_velocity_vector: Optional[str] = Field(
+        wrimap_velocity_vector: str | None = Field(
             "Write cell-center velocity vectors to map file, (1: yes, 0: no).",
             alias="wrimap_velocity_vector",
         )
-        wrimap_velocity_magnitude: Optional[str] = Field(
+        wrimap_velocity_magnitude: str | None = Field(
             "Write cell-center velocity vector magnitude to map file (1: yes, 0: no).",
             alias="wrimap_velocity_magnitude",
         )
-        wrimap_upward_velocity_component: Optional[str] = Field(
+        wrimap_upward_velocity_component: str | None = Field(
             "Write upward velocity component to map file, (1: yes, 0: no).",
             alias="wrimap_upward_velocity_component",
         )
-        wrimap_density_rho: Optional[str] = Field(
+        wrimap_density_rho: str | None = Field(
             "Write density to map file, (1: yes, 0: no).", alias="wrimap_density_rho"
         )
-        wrimap_horizontal_viscosity_viu: Optional[str] = Field(
+        wrimap_horizontal_viscosity_viu: str | None = Field(
             "Write horizontal viscosity to map file, (1: yes, 0: no).",
             alias="wrimap_horizontal_viscosity_viu",
         )
-        wrimap_horizontal_diffusivity_diu: Optional[str] = Field(
+        wrimap_horizontal_diffusivity_diu: str | None = Field(
             "Write horizontal diffusivity to map file, (1: yes, 0: no).",
             alias="wrimap_horizontal_diffusivity_diu",
         )
-        wrimap_flow_flux_q1: Optional[str] = Field(
+        wrimap_flow_flux_q1: str | None = Field(
             "Write fluxes to map file, (1: yes, 0: no).", alias="wrimap_flow_flux_q1"
         )
-        wrimap_spiral_flow: Optional[str] = Field(
+        wrimap_spiral_flow: str | None = Field(
             "Write spiral flow to map file, (1: yes, 0: no).",
             alias="wrimap_spiral_flow",
         )
-        wrimap_numlimdt: Optional[str] = Field(
+        wrimap_numlimdt: str | None = Field(
             "Write numlimdt to map file, (1: yes, 0: no).", alias="wrimap_numLimdt"
         )
-        wrimap_taucurrent: Optional[str] = Field(
+        wrimap_taucurrent: str | None = Field(
             "Write bottom friction to map file, (1: yes, 0: no).",
             alias="wrimap_tauCurrent",
         )
-        wrimap_chezy: Optional[str] = Field(
+        wrimap_chezy: str | None = Field(
             "Write chezy values to map file, (1: yes, 0: no).", alias="wrimap_chezy"
         )
-        wrimap_turbulence: Optional[str] = Field(
+        wrimap_turbulence: str | None = Field(
             "Write turbulence to map file, (1: yes, 0: no).", alias="wrimap_turbulence"
         )
-        wrimap_rain: Optional[str] = Field(
+        wrimap_rain: str | None = Field(
             "Write rainfall rate to map file, (1: yes, 0: no).", alias="wrimap_rain"
         )
-        wrimap_wind: Optional[str] = Field(
+        wrimap_wind: str | None = Field(
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
         )
-        wrimap_windstress: Optional[str] = Field(
+        wrimap_windstress: str | None = Field(
             "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
         )
-        wrimap_airdensity: Optional[str] = Field(
+        wrimap_airdensity: str | None = Field(
             "Write air density rates to map file (1: yes, 0: no)",
             alias="wrimap_airdensity",
         )
-        wrimap_calibration: Optional[str] = Field(
+        wrimap_calibration: str | None = Field(
             "Write roughness calibration factors to map file.",
             alias="wrimap_calibration",
         )
-        wrimap_salinity: Optional[str] = Field(
+        wrimap_salinity: str | None = Field(
             "Write salinity to map file.", alias="wrimap_salinity"
         )
-        wrimap_temperature: Optional[str] = Field(
+        wrimap_temperature: str | None = Field(
             "Write temperature to map file.", alias="wrimap_temperature"
         )
-        writek_cdwind: Optional[str] = Field(
+        writek_cdwind: str | None = Field(
             "Write wind friction coefficients to tek file (1: yes, 0: no).",
             alias="writek_CdWind",
         )
-        wrimap_heat_fluxes: Optional[str] = Field(
+        wrimap_heat_fluxes: str | None = Field(
             "Write heat fluxes to map file, (1: yes, 0: no).",
             alias="wrimap_heat_fluxes",
         )
-        wrimap_wet_waterdepth_threshold: Optional[str] = Field(
+        wrimap_wet_waterdepth_threshold: str | None = Field(
             "Waterdepth threshold above which a grid point counts as 'wet'. Defaults to 0.2·Epshu. It is used for Wrimap_time_water_on_ground, Wrimap_waterdepth_on_ground and Wrimap_volume_on_ground.",
             alias="wrimap_wet_waterDepth_threshold",
         )
-        wrimap_time_water_on_ground: Optional[str] = Field(
+        wrimap_time_water_on_ground: str | None = Field(
             "Write cumulative time when water is above ground level (only for 1D nodes) to map file, (1: yes, 0: no).",
             alias="wrimap_time_water_on_ground",
         )
-        wrimap_freeboard: Optional[str] = Field(
+        wrimap_freeboard: str | None = Field(
             "Write freeboard (only for 1D nodes) to map file, (1: yes, 0: no).",
             alias="wrimap_freeboard",
         )
-        wrimap_waterdepth_on_ground: Optional[str] = Field(
+        wrimap_waterdepth_on_ground: str | None = Field(
             "Write waterdepth that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).",
             alias="wrimap_waterDepth_on_ground",
         )
-        wrimap_volume_on_ground: Optional[str] = Field(
+        wrimap_volume_on_ground: str | None = Field(
             "Write volume that is above ground level to map file (only for 1D nodes) (1: yes, 0: no).",
             alias="wrimap_volume_on_ground",
         )
-        wrimap_total_net_inflow_1d2d: Optional[str] = Field(
+        wrimap_total_net_inflow_1d2d: str | None = Field(
             "Write current total 1D2D net inflow (discharge) and cumulative total 1D2D net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).",
             alias="wrimap_total_net_inflow_1d2d",
         )
-        wrimap_total_net_inflow_lateral: Optional[str] = Field(
+        wrimap_total_net_inflow_lateral: str | None = Field(
             "Write current total lateral net inflow (discharge) and cumulative total lateral net inflow (volume) to map file (only for 1D nodes) (1:yes, 0:no).",
             alias="wrimap_total_net_inflow_lateral",
         )
-        wrimap_water_level_gradient: Optional[str] = Field(
+        wrimap_water_level_gradient: str | None = Field(
             "Write water level gradient to map file (only for 1D links) (1:yes, 0:no).",
             alias="wrimap_water_level_gradient",
         )
-        wrimap_tidal_potential: Optional[str] = Field(
+        wrimap_tidal_potential: str | None = Field(
             "Write tidal potential to map file (1: yes, 0: no)",
             alias="wrimap_tidal_potential",
         )
-        wrimap_sal_potential: Optional[str] = Field(
+        wrimap_sal_potential: str | None = Field(
             "Write self attraction and loading potential to map file (1: yes, 0: no)",
             alias="wrimap_SAL_potential",
         )
-        wrimap_internal_tides_dissipation: Optional[str] = Field(
+        wrimap_internal_tides_dissipation: str | None = Field(
             "Write internal tides dissipation to map file (1: yes, 0: no)",
             alias="wrimap_internal_tides_dissipation",
         )
-        wrimap_flow_analysis: Optional[str] = Field(
+        wrimap_flow_analysis: str | None = Field(
             "Write flow analysis data to the map file (1:yes, 0:no).",
             alias="wrimap_flow_analysis",
         )
-        mapoutputtimevector: Optional[str] = Field(
+        mapoutputtimevector: str | None = Field(
             "File (.mpt) containing fixed map output times (s) w.r.t. RefDate.",
             alias="mapOutputTimeVector",
         )
-        fullgridoutput: Optional[str] = Field(
+        fullgridoutput: str | None = Field(
             "Full grid output mode for layer positions (0: compact, 1: full time-varying grid layer data).",
             alias="fullGridOutput",
         )
-        eulervelocities: Optional[str] = Field(
+        eulervelocities: str | None = Field(
             "Write Eulerian velocities, (1: yes, 0: no).", alias="eulerVelocities"
         )
-        classmapfile: Optional[str] = Field(
+        classmapfile: str | None = Field(
             "Name of class map file.", alias="classMapFile"
         )
-        waterlevelclasses: Optional[str] = Field(
+        waterlevelclasses: str | None = Field(
             "Series of values between which water level classes are computed.",
             alias="waterLevelClasses",
         )
-        waterdepthclasses: Optional[str] = Field(
+        waterdepthclasses: str | None = Field(
             "Series of values between which water depth classes are computed.",
             alias="waterDepthClasses",
         )
-        classmapinterval: Optional[str] = Field(
+        classmapinterval: str | None = Field(
             "Interval [s] between class map file outputs.", alias="classMapInterval"
         )
-        waqinterval: Optional[str] = Field(
+        waqinterval: str | None = Field(
             "Interval [s] between DELWAQ file outputs.", alias="waqInterval"
         )
-        statsinterval: Optional[str] = Field(
+        statsinterval: str | None = Field(
             "Interval [s] between screen step outputs in seconds simulation time, if negative in seconds wall clock time.",
             alias="statsInterval",
         )
-        timingsinterval: Optional[str] = Field(
+        timingsinterval: str | None = Field(
             "Timings output interval TimingsInterval.", alias="timingsInterval"
         )
-        richardsononoutput: Optional[str] = Field(
+        richardsononoutput: str | None = Field(
             "Write Richardson number, (1: yes, 0: no).", alias="richardsonOnOutput"
         )
-        wrimap_every_dt: Optional[str] = Field(
+        wrimap_every_dt: str | None = Field(
             "Write output to map file every computational timestep, between start and stop time from MapInterval, (1: yes, 0: no).",
             alias="wrimap_every_dt",
         )
-        wrimap_input_roughness: Optional[str] = Field(
+        wrimap_input_roughness: str | None = Field(
             "Write chezy input roughness on flow links to map file, (1: yes, 0: no).",
             alias="wrimap_input_roughness",
         )
-        wrimap_flowarea_au: Optional[str] = Field(
+        wrimap_flowarea_au: str | None = Field(
             "Write flow areas au to map file (1: yes, 0: no).",
             alias="wrimap_flowarea_au",
         )
-        wrihis_airdensity: Optional[str] = Field(
+        wrihis_airdensity: str | None = Field(
             "Write air density to his file (1: yes, 0: no).", alias="wrihis_airdensity"
         )
-        wrimap_flow_flux_q1_main: Optional[str] = Field(
+        wrimap_flow_flux_q1_main: str | None = Field(
             "Write flow flux in main channel to map file (1: yes, 0: no).",
             alias="wrimap_flow_flux_q1_main",
         )
-        wrimap_windstress: Optional[str] = Field(
+        wrimap_windstress: str | None = Field(
             "Write wind stress to map file (1: yes, 0: no).", alias="wrimap_windstress"
         )
-        wrishp_genstruc: Optional[str] = Field(
+        wrishp_genstruc: str | None = Field(
             "Writing general structures to shape file (0=no, 1=yes).",
             alias="wrishp_genstruc",
         )
-        wrimap_qin: Optional[str] = Field(
+        wrimap_qin: str | None = Field(
             "Write sum of all influxes to map file (1: yes, 0: no).", alias="wrimap_qin"
         )
-        wrimap_dtcell: Optional[str] = Field(
+        wrimap_dtcell: str | None = Field(
             "Write time step per cell based on CFL (1: yes, 0: no).",
             alias="wrimap_dtcell",
         )
-        wrimap_velocity_vectorq: Optional[str] = Field(
+        wrimap_velocity_vectorq: str | None = Field(
             "Write cell-center velocity vectors (discharge-based) to map file (1: yes, 0: no).",
             alias="wrimap_velocity_vectorq",
         )
-        wrimap_bnd: Optional[str] = Field(
+        wrimap_bnd: str | None = Field(
             "Write boundary points to map file (1: yes, 0: no).", alias="wrimap_bnd"
         )
-        wrishp_dambreak: Optional[str] = Field(
+        wrishp_dambreak: str | None = Field(
             "Writing dambreaks to shape file (0=no, 1=yes).", alias="wrishp_dambreak"
         )
-        wrimap_waterdepth_hu: Optional[str] = Field(
+        wrimap_waterdepth_hu: str | None = Field(
             "Write water depths on u-points to map file (1: yes, 0: no).",
             alias="wrimap_waterdepth_hu",
         )
-        ncmapdataprecision: Optional[str] = Field(
+        ncmapdataprecision: str | None = Field(
             "Precision for NetCDF data in map files (double or single).",
             alias="ncMapDataPrecision",
         )
-        nchisdataprecision: Optional[str] = Field(
+        nchisdataprecision: str | None = Field(
             "Precision for NetCDF data in his files (double or single).",
             alias="ncHisDataPrecision",
         )
-        wrimap_interception: Optional[str] = Field(
+        wrimap_interception: str | None = Field(
             "Write interception to map file (1: yes, 0: no).",
             alias="wrimap_interception",
         )
-        wrimap_airdensity: Optional[str] = Field(
+        wrimap_airdensity: str | None = Field(
             "Write air density to map file, (1:yes, 0:no).", alias="wrimap_airdensity"
         )
-        wrimap_volume1: Optional[str] = Field(
+        wrimap_volume1: str | None = Field(
             "Write volumes to map file (1: yes, 0: no).", alias="wrimap_volume1"
         )
-        wrimap_ancillary_variables: Optional[str] = Field(
+        wrimap_ancillary_variables: str | None = Field(
             "Write ancillary variables attributes to map file (1: yes, 0: no).",
             alias="wrimap_ancillary_variables",
         )
-        wrimap_chezy_on_flow_links: Optional[str] = Field(
+        wrimap_chezy_on_flow_links: str | None = Field(
             "Write chezy roughness on flow links to map file, (1: yes, 0: no)",
             alias="wrimap_chezy_on_flow_links",
         )
-        writepart_domain: Optional[str] = Field(
+        writepart_domain: str | None = Field(
             "Write partition domain info. for postprocessing (0: no, 1: yes).",
             alias="writepart_domain",
         )
-        velocitydirectionclassesinterval: Optional[str] = Field(
+        velocitydirectionclassesinterval: str | None = Field(
             "Class map's step size of class values for velocity direction.",
             alias="VelocityDirectionClassesInterval",
         )
-        velocitymagnitudeclasses: Optional[str] = Field(
+        velocitymagnitudeclasses: str | None = Field(
             "Class map's list of class values for velocity magnitudes.",
             alias="VelocityMagnitudeClasses",
         )
@@ -1677,17 +1677,17 @@ class Output(INIBasedModel):
     wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
-    outputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+    outputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
         "", alias="outputDir"
     )
-    waqoutputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = (
+    waqoutputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = (
         Field("", alias="waqOutputDir")
     )
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
-    obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
-    crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
+    obsfile: list[ObsFile] | None = Field(None, alias="obsFile")
+    crsfile: list[ObsCrsFile] | None = Field(None, alias="crsFile")
     mbafile: list[MbaFile] | None = Field(None, alias="mbaFile")
     mbainterval: list[float] | None = Field(None, alias="mbaInterval")
     foufile: Annotated[
@@ -1697,13 +1697,13 @@ class Output(INIBasedModel):
     hisfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="hisFile")
-    hisinterval: List[float] = Field([300.0], alias="hisInterval")
-    xlsinterval: List[float] = Field([0.0], alias="xlsInterval")
+    hisinterval: list[float] = Field([300.0], alias="hisInterval")
+    xlsinterval: list[float] = Field([0.0], alias="xlsInterval")
     mapfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="mapFile")
-    mapinterval: List[float] = Field([1200.0], alias="mapInterval")
-    rstinterval: List[float] = Field([0.0], alias="rstInterval")
+    mapinterval: list[float] = Field([1200.0], alias="mapInterval")
+    rstinterval: list[float] = Field([0.0], alias="rstInterval")
     mapformat: int = Field(4, alias="mapFormat")
     ncformat: int = Field(3, alias="ncFormat")
     ncnounlimited: bool = Field(False, alias="ncNoUnlimited")
@@ -1826,12 +1826,12 @@ class Output(INIBasedModel):
     classmapfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="classMapFile")
-    waterlevelclasses: List[float] = Field([0.0], alias="waterLevelClasses")
-    waterdepthclasses: List[float] = Field([0.0], alias="waterDepthClasses")
-    classmapinterval: List[float] = Field([0.0], alias="classMapInterval")
-    waqinterval: List[float] = Field([0.0], alias="waqInterval")
-    statsinterval: List[float] = Field([-60.0], alias="statsInterval")
-    timingsinterval: List[float] = Field([0.0], alias="timingsInterval")
+    waterlevelclasses: list[float] = Field([0.0], alias="waterLevelClasses")
+    waterdepthclasses: list[float] = Field([0.0], alias="waterDepthClasses")
+    classmapinterval: list[float] = Field([0.0], alias="classMapInterval")
+    waqinterval: list[float] = Field([0.0], alias="waqInterval")
+    statsinterval: list[float] = Field([-60.0], alias="statsInterval")
+    timingsinterval: list[float] = Field([0.0], alias="timingsInterval")
     richardsononoutput: bool = Field(False, alias="richardsonOnOutput")
     wrimap_every_dt: bool = Field(False, alias="wrimap_every_dt")
     wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
@@ -1861,7 +1861,7 @@ class Output(INIBasedModel):
     velocitydirectionclassesinterval: float = Field(
         0.0, alias="VelocityDirectionClassesInterval"
     )
-    velocitymagnitudeclasses: List[float] = Field(
+    velocitymagnitudeclasses: list[float] = Field(
         [0.0], alias="VelocityMagnitudeClasses"
     )
 
