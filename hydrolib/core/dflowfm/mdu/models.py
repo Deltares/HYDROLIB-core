@@ -2,7 +2,7 @@
 
 from enum import IntEnum
 from pathlib import Path
-from typing import Annotated, Any, Literal, Union, Optional, List, Dict
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 from pydantic import (
     BeforeValidator,
@@ -30,6 +30,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_datetime_string,
 )
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+from hydrolib.core.dflowfm.mba.models import MassBalanceAreaModel
 from hydrolib.core.dflowfm.net.models import NetworkModel
 from hydrolib.core.dflowfm.obs.models import ObservationPointModel
 from hydrolib.core.dflowfm.obscrosssection.models import ObservationCrossSectionModel
@@ -54,6 +55,14 @@ def load_crs(value):
     file_suffix_model_map = {
         ".pli": PolyFile,
         ".ini": ObservationCrossSectionModel,
+    }
+    return load_model(value, file_suffix_model_map)
+
+
+def load_mba(value):
+    """Load a mass balance area model from a file path."""
+    file_suffix_model_map = {
+        ".ini": MassBalanceAreaModel,
     }
     return load_model(value, file_suffix_model_map)
 
@@ -1102,12 +1111,12 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="trtDef")
-    trtl: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="trtL")
+    trtdef: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="trtDef"
+    )
+    trtl: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="trtL"
+    )
     dttrt: float = Field(60.0, alias="dtTrt")
     trtmxr: Optional[int] = Field(8, alias="trtMxR")
 
@@ -1119,6 +1128,10 @@ ObsFile = Annotated[
 ObsCrsFile = Annotated[
     Union[PolyFile, ObservationCrossSectionModel, DiskOnlyFileModel],
     BeforeValidator(load_crs),
+]
+MbaFile = Annotated[
+    Union[MassBalanceAreaModel, DiskOnlyFileModel],
+    BeforeValidator(load_mba),
 ]
 DryPointsFile = Annotated[
     Union[XYZModel, PolyFile, DiskOnlyFileModel], BeforeValidator(load_dry)
@@ -1192,6 +1205,14 @@ class Output(INIBasedModel):
         crsfile: Optional[str] = Field(
             "Space separated list of files, containing information about observation cross sections.",
             alias="crsFile",
+        )
+        mbafile: Optional[str] = Field(
+            "Space separated list of files, containing information about mass balance areas.",
+            alias="mbaFile",
+        )
+        mbainterval: Optional[str] = Field(
+            "Mass balance area output interval [s]. Must be a multiple of DtUser.",
+            alias="mbaInterval",
         )
         foufile: Optional[str] = Field(
             "Fourier analysis input file *.fou", alias="fouFile"
@@ -1657,17 +1678,19 @@ class Output(INIBasedModel):
     wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
-    outputdir: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="outputDir")
-    waqoutputdir: Annotated[
-        Optional[Path], WrapValidator(_preserve_empty_string)
-    ] = Field("", alias="waqOutputDir")
+    outputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="outputDir"
+    )
+    waqoutputdir: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = (
+        Field("", alias="waqOutputDir")
+    )
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="flowGeomFile")
     obsfile: Optional[List[ObsFile]] = Field(None, alias="obsFile")
     crsfile: Optional[List[ObsCrsFile]] = Field(None, alias="crsFile")
+    mbafile: Optional[List[MbaFile]] = Field(None, alias="mbaFile")
+    mbainterval: Optional[List[float]] = Field(None, alias="mbaInterval")
     foufile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="fouFile")

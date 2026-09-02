@@ -17,6 +17,8 @@ from hydrolib.tools.extforce_convert.utils import (
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
+MBA_FILE_LINE = "mbaFile"
+MBA_INTERVAL_LINE = "mbaInterval"
 PATH_RELATIVE_TO_PARENT = "PathsRelativeToParent"
 
 __all__ = ["MDUParser"]
@@ -841,6 +843,28 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
+    def update_mba_file(self, file_name: str) -> None:
+        """Update the mbaFile entry in the MDU `[output]` section.
+
+        Args:
+            file_name (str):
+                The name of the mass balance area file (`<*_mba.ini>`) to set.
+
+        Notes:
+            - The entry is added at the end of the output section if absent; if it exists with no
+            value, it is populated, otherwise it is left unchanged.
+        """
+        self.update_file_entry(MBA_FILE_LINE, file_name, "output")
+
+    def update_mba_interval(self, value: str) -> None:
+        """Update the mbaInterval entry in the MDU `[output]` section.
+
+        Args:
+            value (str):
+                The mass balance area output interval [s]; must be a multiple of DtUser.
+        """
+        self.update_file_entry(MBA_INTERVAL_LINE, value, "output")
+
     def update_extforce_file_new(
         self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False
     ) -> None:
@@ -852,7 +876,9 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         if remove_old_ext_file:
-            old_ext_force_line = self.find_keyword_lines("ExtForceFile", exact_match=True)
+            old_ext_force_line = self.find_keyword_lines(
+                "ExtForceFile", exact_match=True
+            )
             if old_ext_force_line is not None:
                 self.content.pop(old_ext_force_line)
 
@@ -911,7 +937,7 @@ class MDUParser:
             stripped_line = haystack.lstrip()
             if_exist = stripped_line.startswith(needle)
             if if_exist and exact_match:
-                remainder = stripped_line[len(needle):]
+                remainder = stripped_line[len(needle) :]
                 if_exist = remainder == "" or not (
                     remainder[0].isalnum() or remainder[0] == "_"
                 )
