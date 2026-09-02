@@ -22,6 +22,16 @@ class TestMassBalanceAreaGeneral:
         assert general.fileversion == "1.00", f"Got {general.fileversion}"
         assert general.filetype == "massBalanceAreas", f"Got {general.filetype}"
 
+    def test_filetype_is_fixed(self):
+        """Test that fileType only accepts the canonical 'massBalanceAreas' value.
+
+        Test scenario:
+            The fileType is a fixed identifier for the kernel, so any other value
+            must be rejected.
+        """
+        with pytest.raises(ValidationError):
+            MassBalanceAreaGeneral(fileType="somethingElse")
+
 
 class TestMassBalanceArea:
     def test_instantiation_with_location_file(self):
@@ -51,6 +61,42 @@ class TestMassBalanceArea:
         assert area.numcoordinates == 3, f"Got {area.numcoordinates}"
         assert area.xcoordinates == [0.0, 1.0, 2.0], f"Got {area.xcoordinates}"
         assert area.ycoordinates == [0.0, 1.0, 0.0], f"Got {area.ycoordinates}"
+
+    def test_coordinates_from_space_separated_strings(self):
+        """Test that space-separated coordinate strings are parsed into float lists.
+
+        Test scenario:
+            When read from file, coordinates arrive as a delimited string; the
+            before-validator must split them into a list of floats.
+        """
+        area = MassBalanceArea(
+            name="poly",
+            numCoordinates=3,
+            xCoordinates="0.0 1.0 2.0",
+            yCoordinates="0.0 1.0 0.0",
+        )
+        assert area.xcoordinates == [0.0, 1.0, 2.0], f"Got {area.xcoordinates}"
+        assert area.ycoordinates == [0.0, 1.0, 0.0], f"Got {area.ycoordinates}"
+
+    def test_name_at_max_length_is_valid(self):
+        """Test that a name of exactly 255 characters is accepted (boundary).
+
+        Test scenario:
+            Manual Table F.3 caps the name at 255 characters; exactly 255 is valid.
+        """
+        area = MassBalanceArea(name="x" * 255, locationFile="a.pol")
+        assert len(area.name) == 255, f"Got length {len(area.name)}"
+
+    def test_get_identifier_returns_name(self):
+        """Test that _get_identifier returns the area name.
+
+        Test scenario:
+            The identifier is used to label validation errors; it must be the name.
+        """
+        area = MassBalanceArea(name="AreaX", locationFile="a.pol")
+        assert (
+            area._get_identifier({"name": "AreaX"}) == "AreaX"
+        ), f"Got {area._get_identifier({'name': 'AreaX'})}"
 
     def test_name_exceeding_max_length_raises(self):
         """Test that a name longer than 255 characters is rejected.
@@ -138,6 +184,23 @@ class TestMassBalanceAreaModel:
         assert (
             MassBalanceAreaModel._filename() == "mba"
         ), f"Got {MassBalanceAreaModel._filename()}"
+
+    def test_save_includes_general_block(self, tmp_path: Path):
+        """Test that a saved mba file always carries its [General] fileType.
+
+        Test scenario:
+            The [General] block identifies the file to the kernel; it must be
+            written out even though it holds only default values.
+        """
+        model = MassBalanceAreaModel(
+            massbalancearea=[MassBalanceArea(name="A", locationFile="A.pol")]
+        )
+        path = tmp_path / "general_mba.ini"
+        model.save(filepath=path)
+
+        text = path.read_text()
+        assert "[General]" in text, f"Missing [General] block:\n{text}"
+        assert "massBalanceAreas" in text, f"Missing fileType:\n{text}"
 
     def test_roundtrip_location_file(self, tmp_path: Path):
         """Test that a locationFile-based model survives save and reload.
