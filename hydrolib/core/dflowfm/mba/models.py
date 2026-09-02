@@ -27,7 +27,23 @@ from hydrolib.core.dflowfm.ini.util import make_list, split_string_on_delimiter
 
 
 class MassBalanceAreaGeneral(INIGeneral):
-    """The mass balance area file's `[General]` section with file meta data."""
+    """The mass balance area file's `[General]` section with file meta data.
+
+    Examples:
+        - The default general block reports the fixed version and file type:
+            ```python
+            >>> from hydrolib.core.dflowfm.mba.models import MassBalanceAreaGeneral
+            >>> general = MassBalanceAreaGeneral()
+            >>> general.fileversion
+            '1.00'
+            >>> general.filetype
+            'massBalanceAreas'
+
+            ```
+
+    See Also:
+        MassBalanceAreaModel: Top-level model that owns this `[General]` block.
+    """
 
     class Comments(INIBasedModel.Comments):
         """Comments for the MassBalanceAreaGeneral section fields."""
@@ -55,6 +71,36 @@ class MassBalanceArea(INIBasedModel):
 
     All lowercased attributes match the mass balance area input as described in the D-Flow FM 1D2D
     User Manual, Appendix F.2.5.
+
+    Examples:
+        - Define an area by a separate polygon file:
+            ```python
+            >>> from hydrolib.core.dflowfm.mba.models import MassBalanceArea
+            >>> area = MassBalanceArea(name="EstruaryWest", locationFile="EstruaryWest.pol")
+            >>> area.name
+            'EstruaryWest'
+            >>> area.locationfile.filepath.name
+            'EstruaryWest.pol'
+
+            ```
+        - Define an area by inline polygon coordinates:
+            ```python
+            >>> from hydrolib.core.dflowfm.mba.models import MassBalanceArea
+            >>> area = MassBalanceArea(
+            ...     name="triangle",
+            ...     numCoordinates=3,
+            ...     xCoordinates=[0.0, 1.0, 2.0],
+            ...     yCoordinates=[0.0, 1.0, 0.0],
+            ... )
+            >>> area.numcoordinates
+            3
+            >>> area.xcoordinates
+            [0.0, 1.0, 2.0]
+
+            ```
+
+    See Also:
+        MassBalanceAreaModel: Top-level model that holds a list of these areas.
     """
 
     class Comments(INIBasedModel.Comments):
@@ -158,6 +204,37 @@ class MassBalanceAreaModel(INIModel):
     Attributes:
         general (MassBalanceAreaGeneral): `[General]` block with file metadata.
         massbalancearea (list[MassBalanceArea]): List of `[MassBalanceArea]` blocks, one per area.
+
+    Examples:
+        - Build a model with two areas and inspect them:
+            ```python
+            >>> from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
+            >>> model = MassBalanceAreaModel(
+            ...     massbalancearea=[
+            ...         MassBalanceArea(name="EstruaryWest", locationFile="EstruaryWest.pol"),
+            ...         MassBalanceArea(name="River", locationFile="River.pol"),
+            ...     ]
+            ... )
+            >>> [area.name for area in model.massbalancearea]
+            ['EstruaryWest', 'River']
+            >>> model.general.filetype
+            'massBalanceAreas'
+
+            ```
+        - An empty model has the fixed file type and no areas:
+            ```python
+            >>> from hydrolib.core.dflowfm.mba.models import MassBalanceAreaModel
+            >>> model = MassBalanceAreaModel()
+            >>> model.general.filetype
+            'massBalanceAreas'
+            >>> model.massbalancearea
+            []
+
+            ```
+
+    See Also:
+        MassBalanceArea: A single `[MassBalanceArea]` block.
+        MassBalanceAreaGeneral: The `[General]` metadata block.
     """
 
     general: MassBalanceAreaGeneral = MassBalanceAreaGeneral()
