@@ -14,11 +14,15 @@ from pydantic import (
     model_validator,
 )
 from pydantic.types import NonNegativeFloat, PositiveInt
-from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import (
+    AveragingType,
+    DataFileType,
+    InterpolationMethod,
+    Operand,
+)
 from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -28,67 +32,6 @@ from hydrolib.core.dflowfm.ini.util import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-class DataFileType(StrEnum):
-    """Enum class containing the valid values for the dataFileType attribute.
-
-    Contains valid values for the dataFileType attribute in several subclasses
-    of AbstractSpatialField (inifield) and Spatial (ext). This is the merged enum
-    combining values that were previously split between IniFieldFile and ExtForceFileNew.
-    """
-
-    arcinfo = "arcInfo"
-    geotiff = "GeoTIFF"
-    sample = "sample"
-    onedfield = "1dField"
-    polygon = "polygon"
-    uniform = "uniform"
-    netcdf = "netcdf"
-
-    bcascii = "bcAscii"
-    unimagdir = "uniMagDir"
-    spiderweb = "spiderweb"
-    curvigrid = "curviGrid"
-
-    allowedvaluestext = "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
-
-
-class InterpolationMethod(StrEnum):
-    """Enum class containing the valid values for the interpolationMethod attribute.
-
-    Contains valid values for the interpolationMethod attribute in several
-    subclasses of AbstractSpatialField (inifield) and Spatial (ext). This is the
-    merged enum combining values previously split between IniFieldFile and ExtForceFileNew.
-    """
-
-    constant = "constant"
-    triangulation = "triangulation"
-    averaging = "averaging"
-    linear_space_time = "linearSpaceTime"
-    bilinear = "bilinear"
-
-    allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear."
-
-
-class AveragingType(StrEnum):
-    """Enum class containing the valid values for the averagingType attribute.
-
-    Contains valid values for the averagingType attribute in several subclasses
-    of AbstractIniField.
-    """
-
-    mean = "mean"  # simple average
-    nearestnb = "nearestNb"  # nearest neighbour value
-    max = "max"  # highest
-    min = "min"  # lowest
-    invdist = "invDist"  # inverse-weighted distance average
-    minabs = "minAbs"  # smallest absolute value
-    median = "median"
-
-    allowedvaluestext = (
-        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
-    )
 
 
 class IniFieldGeneral(INIGeneral):
