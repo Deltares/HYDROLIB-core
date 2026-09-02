@@ -8,7 +8,7 @@ The file is referenced from the MDU ``[output]`` section via the ``mbaFile`` key
 list of files). See the D-Flow FM 1D2D User Manual, Appendix F.2.5.
 """
 
-from typing import Annotated, List, Literal, Optional
+from typing import Annotated, Literal
 
 from pydantic import (
     BeforeValidator,
@@ -32,10 +32,10 @@ class MassBalanceAreaGeneral(INIGeneral):
     class Comments(INIBasedModel.Comments):
         """Comments for the MassBalanceAreaGeneral section fields."""
 
-        fileversion: Optional[str] = Field(
+        fileversion: str | None = Field(
             "File version. Do not edit this.", alias="fileVersion"
         )
-        filetype: Optional[str] = Field(
+        filetype: str | None = Field(
             "File type. Should be 'massBalanceAreas'. Do not edit this.",
             alias="fileType",
         )
@@ -60,22 +60,22 @@ class MassBalanceArea(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the MassBalanceArea section fields."""
 
-        name: Optional[str] = "Name of the mass balance area (max. 255 characters)."
-        locationfile: Optional[str] = Field(
+        name: str | None = "Name of the mass balance area (max. 255 characters)."
+        locationfile: str | None = Field(
             "(optional) Name of mass balance area polygon (*.pol).",
             alias="locationFile",
         )
-        numcoordinates: Optional[str] = Field(
+        numcoordinates: str | None = Field(
             "(optional) Number of values in xCoordinates and yCoordinates. "
             "This value should be greater than or equal to 3.",
             alias="numCoordinates",
         )
-        xcoordinates: Optional[str] = Field(
+        xcoordinates: str | None = Field(
             "(optional) x-coordinates of the mass balance area polygon. "
             "(number of values = numCoordinates)",
             alias="xCoordinates",
         )
-        ycoordinates: Optional[str] = Field(
+        ycoordinates: str | None = Field(
             "(optional) y-coordinates of the mass balance area polygon. "
             "(number of values = numCoordinates)",
             alias="yCoordinates",
@@ -87,9 +87,9 @@ class MassBalanceArea(INIBasedModel):
     locationfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
-    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
 
     @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
@@ -146,7 +146,7 @@ class MassBalanceArea(INIBasedModel):
             )
         return self
 
-    def _get_identifier(self, data: dict) -> Optional[str]:
+    def _get_identifier(self, data: dict) -> str | None:
         return data.get("name")
 
 
@@ -161,7 +161,7 @@ class MassBalanceAreaModel(INIModel):
     """
 
     general: MassBalanceAreaGeneral = MassBalanceAreaGeneral()
-    massbalancearea: Annotated[List[MassBalanceArea], BeforeValidator(make_list)] = []
+    massbalancearea: Annotated[list[MassBalanceArea], BeforeValidator(make_list)] = []
 
     @classmethod
     def _filename(cls) -> str:
