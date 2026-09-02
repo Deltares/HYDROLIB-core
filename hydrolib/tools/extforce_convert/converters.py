@@ -1171,7 +1171,9 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if (
+        if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
+            return MassBalanceAreaConverter()
+        elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
             or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
