@@ -536,12 +536,14 @@ class LocationValidator:
                 values[lowered] = values.pop(alias)
         return values
 
-    def _get_length(self, field: str) -> int:
+    def _get_coordinate_length(self, field: str) -> int:
         """Return the number of coordinate values stored in *field*."""
         value = self._values[field.lower()]
         if isinstance(value, str):
-            return len(value.split())
-        return len(to_list(value))
+            result = len(value.split())
+        else:
+            result = len(to_list(value))
+        return result
 
     def _validate_location_type_for_node_or_branch(
         self, expected: LocationType
@@ -594,8 +596,8 @@ class LocationValidator:
     def _validate_coordinates(self) -> None:
         """Validate that x/y coordinate lists are the same length and meet the minimum."""
         f = self._fields
-        len_x = self._get_length(f.x_coordinates)
-        len_y = self._get_length(f.y_coordinates)
+        len_x = self._get_coordinate_length(f.x_coordinates)
+        len_y = self._get_coordinate_length(f.y_coordinates)
         if len_x != len_y:
             raise ValueError(
                 f"{f.x_coordinates} and {f.y_coordinates} should have an equal amount of coordinates"
@@ -605,8 +607,8 @@ class LocationValidator:
     def _validate_coordinates_with_num_coordinates(self) -> None:
         """Validate that x/y coordinate lists and numCoordinates are all consistent."""
         f = self._fields
-        length_x = self._get_length(f.x_coordinates)
-        length_y = self._get_length(f.y_coordinates)
+        length_x = self._get_coordinate_length(f.x_coordinates)
+        length_y = self._get_coordinate_length(f.y_coordinates)
         num_coordinates = int(self._values[f.num_coordinates.lower()])
         if not num_coordinates == length_x == length_y:
             raise ValueError(
@@ -656,7 +658,7 @@ class LocationValidator:
             and not has_other
         )
 
-    def _try_validate_node(self, error_parts: List[str]) -> Optional[Dict]:
+    def _try_validate_node(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a node-based location specification.
 
         Args:
@@ -676,7 +678,7 @@ class LocationValidator:
                 error_parts.append(self._fields.node_id)
         return result
 
-    def _try_validate_branch(self, error_parts: List[str]) -> Optional[Dict]:
+    def _try_validate_branch(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a branch-based location specification.
 
         Args:
@@ -697,7 +699,7 @@ class LocationValidator:
                 error_parts.append(f"{f.branch_id} and {f.chainage}")
         return result
 
-    def _try_validate_coordinates(self, error_parts: List[str]) -> Optional[Dict]:
+    def _try_validate_coordinates(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a coordinate-based location specification.
 
         Handles both the ``numCoordinates``-present and ``numCoordinates``-absent
@@ -725,8 +727,8 @@ class LocationValidator:
         return result
 
     def _try_validate_coordinates_with_num_coordinates(
-        self, error_parts: List[str]
-    ) -> Optional[Dict]:
+        self, error_parts: list[str]
+    ) -> dict | None:
         """Attempt to validate a coordinate specification that includes ``numCoordinates``.
 
         Args:
@@ -771,10 +773,9 @@ class LocationValidator:
             (r for try_validate in validators if (r := try_validate(error_parts)) is not None),
             None,
         )
-        if result is not None:
-            return result
-        else:
+        if result is None:
             raise ValueError(" or ".join(error_parts) + " should be provided")
+        return result
 
 
 def rename_keys_for_backwards_compatibility(
