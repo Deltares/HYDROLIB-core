@@ -316,7 +316,8 @@ class TestFactorQuantityConversion:
         )
 
         new_block = SpatialConverter().convert(
-            forcing, forcing.filename.filepath)
+            forcing, forcing.filename.filepath
+        )
 
         assert isinstance(new_block, Spatial)
         assert new_block.quantity == expected_base_quantity
