@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from hydrolib.core.dflowfm.mba.models import MassBalanceAreaModel
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
@@ -168,6 +168,67 @@ class TestConvertMassBalanceAreaFromMDU:
         assert (
             parser.get_keyword("mbaInterval") is None
         ), f"mbaInterval should not be derived, got {parser.get_keyword('mbaInterval')}"
+
+    def test_existing_mba_file_is_reused_and_appended(
+        self, input_files_dir: Path, tmp_path: Path
+    ):
+        """Test that a pre-existing `[output] mbaFile` is loaded and appended to.
+
+        Test scenario:
+            When the source MDU already references an mba file, the converter must
+            load that file and append the converted areas to it (preserving the
+            areas already there), rather than creating a separate `new_mba.ini`.
+            The MDU keyword must keep pointing at the existing file.
+        """
+        mdu = self._prepare_model(input_files_dir, tmp_path)
+
+        # Seed a valid mba file with one area already in it.
+        preexisting = mdu.parent / "preexisting_mba.ini"
+        MassBalanceAreaModel(
+            massbalancearea=[
+                MassBalanceArea(
+                    name="Pre",
+                    numCoordinates=3,
+                    xCoordinates=[0.0, 1.0, 2.0],
+                    yCoordinates=[0.0, 1.0, 0.0],
+                )
+            ]
+        ).save(filepath=preexisting)
+
+        # Point the MDU [output] section at that existing file.
+        lines = mdu.read_text().splitlines(keepends=True)
+        patched = [
+            (
+                line + "mbaFile = preexisting_mba.ini\n"
+                if line.strip().lower() == "[output]"
+                else line
+            )
+            for line in lines
+        ]
+        mdu.write_text("".join(patched))
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+        converter.update()
+        converter.save(backup=False)
+
+        # The converter operates on the existing file, not a fresh new_mba.ini.
+        assert (
+            converter.mba_model.filepath.name == "preexisting_mba.ini"
+        ), f"Got {converter.mba_model.filepath.name}"
+        assert not (
+            mdu.parent / "new_mba.ini"
+        ).exists(), "A separate new_mba.ini should not be created"
+
+        # The pre-existing area is kept and the converted areas are appended after it.
+        reloaded = MassBalanceAreaModel(filepath=preexisting)
+        names = [a.name for a in reloaded.massbalancearea]
+        assert names == ["Pre", "EstruaryWest", "River"], f"Got {names}"
+
+        # The MDU keeps pointing at the existing file (not overwritten with new_mba.ini).
+        parser = MDUParser(mdu)
+        assert (
+            parser.get_keyword("mbaFile") == "preexisting_mba.ini"
+        ), f"Got {parser.get_keyword('mbaFile')}"
 
     def test_areas_not_in_new_ext_file(self, input_files_dir: Path, tmp_path: Path):
         """Test that mass balance areas do not leak into the new ext file.

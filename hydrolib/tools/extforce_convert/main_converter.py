@@ -365,7 +365,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.structure_model
 
-    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStr) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
 
         Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
@@ -480,24 +480,21 @@ class ExternalForcingConverter:
     def from_mdu(
         cls,
         mdu_file: PathOrStr,
-        ext_file_user: Optional[PathOrStr] = None,
-        structure_file_user: Optional[PathOrStr] = None,
-        path_style: Optional[PathStyle] = None,
+        path_style: PathStyle | None = None,
         debug: bool = False,
-    ) -> "ExternalForcingConverter":
+    ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
+
+        The output file paths (new external forcings, structures and mass balance area files) are
+        always read from the MDU file itself. When the MDU references an existing file the converted
+        quantities are appended to it; otherwise a default file is created next to the old external
+        forcing file.
 
         Args:
             mdu_file (PathOrStr): Path to the D-Flow FM main input file (.mdu).
                 Must be parsable into a standard FMModel.
                 When this contains a valid filename for ExtFile, conversion
                 will be performed.
-            ext_file_user (PathOrStr, optional): Path to the output external forcings
-                file. Defaults to the given ExtForceFileNew in the MDU file, if
-                present, or forcings.ext otherwise.
-            structure_file_user (PathOrStr, optional): Path to the output structures.ini
-                file. Defaults to the given StructureFile in the MDU file, if
-                present, or structures.ini otherwise.
             path_style (Optional[PathStyle], optional):
                 Path style for the file paths in the models. If None, the system style is used.
                 Converts absolute paths based on the provided style to the system style.
@@ -519,16 +516,18 @@ class ExternalForcingConverter:
             mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
         )
 
-        ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
-        structure_file_user = mdu_parser.get_structure_file(structure_file_user)
+        ext_file = mdu_parser.extforce_block.get_new_extforce_file()
+        structure_file = mdu_parser.get_structure_file()
+        mba_file = mdu_parser.get_mba_file()
 
         return cls(
             extoldfile,
-            ext_file_user,
-            structure_file_user,
+            ext_file,
+            structure_file,
             mdu_parser,
             path_style=path_style,
             debug=debug,
+            mba_file=mba_file,
         )
 
     def _update_mdu_file(self):

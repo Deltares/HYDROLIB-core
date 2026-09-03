@@ -1152,7 +1152,7 @@ class MDUParser:
 
     def get_structure_file(
         self,
-        usr_structure_file: Optional[PathOrStr],
+        usr_structure_file: Optional[PathOrStr] = None,
     ) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
@@ -1167,6 +1167,37 @@ class MDUParser:
                 "The structure file is not found in the mdu file, and not provided by the user. \n"
                 f"given: {path}."
             )
+            path = None
+
+        return path
+
+    def get_mba_file(
+        self,
+        usr_mba_file: Optional[PathOrStr] = None,
+    ) -> Path | None:
+        """Resolve the mass balance area file from the MDU `[output] mbaFile` keyword.
+
+        When the MDU already references an `mbaFile`, the converter loads that file and appends the
+        converted areas to it, rather than creating a fresh one. This mirrors how the new external
+        forcings and structure files are resolved from the MDU.
+
+        Args:
+            usr_mba_file (Optional[PathOrStr]): An explicit path provided by the user. When given it
+                takes precedence over the MDU keyword.
+
+        Returns:
+            Path | None: The resolved absolute path, or ``None`` when neither the user nor the MDU
+                specifies one (the converter then falls back to its default ``new_mba.ini``).
+        """
+        mba_file = self.get_keyword(MBA_FILE_LINE)
+        root_dir = self.mdu_path.parent
+
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = usr_mba_file if usr_mba_file is not None else mba_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
+        else:
             path = None
 
         return path

@@ -149,7 +149,7 @@ class TestGetParser:
         Test that --outfiles accepts exactly three values and parses them correctly.
         """
         args = self.parser.parse_args(
-            ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini", "c.str"]
+            ["--extoldfile", str(self.ext), "--outfiles", "a.ext", "b.ini", "c.str"]
         )
         assert args.outfiles == ["a.ext", "b.ini", "c.str"]
 
@@ -214,7 +214,7 @@ class TestGetParser:
         """
         with pytest.raises(SystemExit):
             self.parser.parse_args(
-                ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini"]
+                ["--extoldfile", str(self.ext), "--outfiles", "a.ext", "b.ini"]
             )  # only 2
 
     @pytest.mark.unit

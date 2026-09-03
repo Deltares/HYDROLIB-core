@@ -156,7 +156,7 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store",
         nargs=3,
         metavar=("EXTFILE", "INIFIELDFILE", "STRUCTUREFILE"),
-        help="Save forcings, initial fields and structures to specified filenames (only valid with --mdufile or --extoldfile).",
+        help="Save forcings, initial fields and structures to specified filenames (only valid with --extoldfile).",
     )
 
     parser.add_argument(
@@ -200,10 +200,10 @@ def main(args=None):
 
     Optional:
       --outfiles, -o EXTFILE INIFIELDFILE STRUCTUREFILE
-                               Specify output filenames for forcings, initial fields, and structures (only with --mdufile or --extoldfile).
-                               Note: requires exactly three paths and is only valid for single-file conversions
-                               (i.e., when using --mdufile or --extoldfile). Using --outfiles with --dir is invalid
-                               and will result in an error.
+                               Specify output filenames for forcings, initial fields, and structures (only with --extoldfile).
+                               Note: requires exactly three paths and is only valid with --extoldfile. With --mdufile the
+                               output paths are read from the MDU file itself, so --outfiles is not accepted there; using
+                               --outfiles with --mdufile or --dir is invalid and will result in an error.
       --no-backup                  Do not create a backup of overwritten files.
       --remove-legacy-files, -r    Remove legacy/old files (e.g. .tim) after conversion.
       --debug-mode                 Convert only supported quantities; leave unsupported quantities in the legacy external forcing file (default: False).
@@ -218,9 +218,9 @@ def main(args=None):
       args (Optional[List[str]]): Optional list of argument strings to parse instead of sys.argv. Useful for testing.
 
     Notes:
-      - `--outfiles` cannot be combined with `--dir`.
-      - `--outfiles` applies only to a single conversion target (from --mdufile or --extoldfile) and must provide three
-        filenames, in this order: EXTFILE INIFIELDFILE STRUCTUREFILE.
+      - `--outfiles` can only be combined with `--extoldfile`; it cannot be used with `--mdufile` or `--dir`.
+      - With `--mdufile`, the output file paths are always read from the MDU file itself.
+      - `--outfiles` must provide three filenames, in this order: EXTFILE INIFIELDFILE STRUCTUREFILE.
       - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
@@ -242,18 +242,21 @@ def main(args=None):
             >>> extforce_convert --mdufile model.mdu --path-style unix # doctest: +SKIP
             ```
         - invalid flags combinations that will raise an error:
-            --outfiles only works with single-file modes, not with --dir
+            --outfiles only works with --extoldfile, not with --mdufile or --dir
             ```shell
+            >>> extforce_convert --mdufile model.mdu --outfiles a.ext b.ini c.str # doctest: +SKIP
             >>> extforce_convert --dir ./models --outfiles a.ext b.ini c.str # doctest: +SKIP
             ```
     """
     parser = _get_parser()
     args = parser.parse_args(args)
 
-    # Disallow --outfiles when converting a directory.
-    if args.dir is not None and args.outfiles is not None:
+    # --outfiles only applies to --extoldfile; with --mdufile the output paths are read from
+    # the MDU file, and --dir is a multi-file mode.
+    if args.outfiles is not None and args.extoldfile is None:
         parser.error(
-            "--outfiles cannot be used with --dir. It only applies to single-file conversions."
+            "--outfiles can only be used with --extoldfile. With --mdufile the output file "
+            "paths are taken from the MDU file, and --dir converts multiple models."
         )
 
     if args.mdufile:
@@ -283,8 +286,6 @@ def convert_with_mdu_file(args: Namespace):
     """
     converter = ExternalForcingConverter.from_mdu(
         args.mdufile,
-        ext_file_user=(args.outfiles[0] if args.outfiles else None),
-        structure_file_user=(args.outfiles[2] if args.outfiles else None),
         path_style=args.path_style,
         debug=args.debug_mode,
     )
