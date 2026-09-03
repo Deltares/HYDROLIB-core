@@ -1219,13 +1219,15 @@ class LateralConverter(BaseConverter):
         resolved = resolve_relative_to_root(polyline.filepath, self.root_dir)
         stem = polyline.filepath.stem
         tim_files = sorted(resolved.parent.glob(f"{stem}*.tim"))
-        if not tim_files:
-            return None
-        tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
-        n_columns = len(tim_model.get_units())
-        tim_model.quantities_names = ["discharge"] * n_columns
-        self.legacy_files = tim_files
-        return tim_model
+        if tim_files:
+            tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
+            n_columns = len(tim_model.get_units())
+            tim_model.quantities_names = ["discharge"] * n_columns
+            self.legacy_files = tim_files
+            result = tim_model
+        else:
+            result = None
+        return result
 
     def _get_discharge(
         self, forcing: ExtOldForcing, time_unit: str | None
