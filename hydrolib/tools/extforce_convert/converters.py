@@ -1128,7 +1128,7 @@ class MassBalanceAreaConverter(BaseConverter):
                 f"Failed to create the MassBalanceArea object for QUANTITY="
                 f"{forcing.quantity} and FILENAME={forcing.filename}. "
                 f"for the following Errors: {e}"
-            )
+            ) from e
         return result
 
     @staticmethod
