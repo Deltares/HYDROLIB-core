@@ -146,6 +146,7 @@ class TestMassBalanceAreaConverterErrors:
             quantity="waqmassbalanceareaBad",
             filename=SimpleNamespace(filepath=None),
         )
+        converter = MassBalanceAreaConverter()
 
         with pytest.raises(MassBalanceAreaError, match="waqmassbalanceareaBad"):
-            MassBalanceAreaConverter().convert(forcing)
+            converter.convert(forcing)

@@ -56,7 +56,8 @@ class TestConvertMassBalanceAreaFromMDU:
 
         text = converter.mba_model.filepath.read_text()
         assert "[General]" in text, "Missing [General] block"
-        assert "fileType" in text and "massBalanceAreas" in text, f"Got:\n{text[:200]}"
+        assert "fileType" in text, f"Missing fileType in:\n{text[:200]}"
+        assert "massBalanceAreas" in text, f"Missing massBalanceAreas in:\n{text[:200]}"
 
     def test_mdu_output_keywords_are_set(self, input_files_dir: Path, tmp_path: Path):
         """Test that the MDU [output] section gets mbaFile and mbaInterval.

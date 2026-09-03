@@ -1224,9 +1224,10 @@ class TestRecurseFalseDiskOnlyFileModel:
         value = self._get_attr(loaded, dotted_path)
 
         if is_list:
-            assert (
-                isinstance(value, list) and len(value) >= 1
-            ), f"{dotted_path} expected non-empty list, got {value!r}"
+            assert isinstance(
+                value, list
+            ), f"{dotted_path} expected list, got {type(value).__name__}"
+            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value
@@ -1289,9 +1290,10 @@ class TestRecurseFalseDiskOnlyFileModel:
         value = self._get_attr(loaded, dotted_path)
 
         if is_list:
-            assert (
-                isinstance(value, list) and len(value) >= 1
-            ), f"{dotted_path} expected non-empty list, got {value!r}"
+            assert isinstance(
+                value, list
+            ), f"{dotted_path} expected list, got {type(value).__name__}"
+            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value
@@ -1374,8 +1376,11 @@ class TestRecurseFalseDiskOnlyFileModel:
         output = Output(**{field_name: [placeholder]})
 
         value = getattr(output, field_name)
+        assert isinstance(
+            value, list
+        ), f"Expected list at Output.{field_name}, got {type(value).__name__}"
         assert (
-            isinstance(value, list) and len(value) == 1
+            len(value) == 1
         ), f"Expected single-element list at Output.{field_name}, got {value!r}"
         assert isinstance(value[0], DiskOnlyFileModel), (
             f"Expected DiskOnlyFileModel placeholder after direct construction,"
