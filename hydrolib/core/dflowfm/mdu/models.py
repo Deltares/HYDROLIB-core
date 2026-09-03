@@ -1324,9 +1324,6 @@ class Output(INIBasedModel):
         wrihis_wind: str | None = Field(
             "Write wind velocities to his file (1: yes, 0: no)'", alias="wrihis_wind"
         )
-        wrihis_airdensity: str | None = Field(
-            "Write air density to his file (1: yes, 0: no)", alias="wrihis_airdensity"
-        )
         wrihis_rain: str | None = Field(
             "Write precipitation to his file (1: yes, 0: no)'", alias="wrihis_rain"
         )
@@ -1470,7 +1467,7 @@ class Output(INIBasedModel):
             "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
         )
         wrimap_airdensity: str | None = Field(
-            "Write air density rates to map file (1: yes, 0: no)",
+            "Write air density to map file, (1:yes, 0:no).",
             alias="wrimap_airdensity",
         )
         wrimap_calibration: str | None = Field(
@@ -1596,9 +1593,6 @@ class Output(INIBasedModel):
             "Write flow flux in main channel to map file (1: yes, 0: no).",
             alias="wrimap_flow_flux_q1_main",
         )
-        wrimap_windstress: str | None = Field(
-            "Write wind stress to map file (1: yes, 0: no).", alias="wrimap_windstress"
-        )
         wrishp_genstruc: str | None = Field(
             "Writing general structures to shape file (0=no, 1=yes).",
             alias="wrishp_genstruc",
@@ -1635,9 +1629,6 @@ class Output(INIBasedModel):
         wrimap_interception: str | None = Field(
             "Write interception to map file (1: yes, 0: no).",
             alias="wrimap_interception",
-        )
-        wrimap_airdensity: str | None = Field(
-            "Write air density to map file, (1:yes, 0:no).", alias="wrimap_airdensity"
         )
         wrimap_volume1: str | None = Field(
             "Write volumes to map file (1: yes, 0: no).", alias="wrimap_volume1"
@@ -1680,8 +1671,8 @@ class Output(INIBasedModel):
     outputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
         "", alias="outputDir"
     )
-    waqoutputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = (
-        Field("", alias="waqOutputDir")
+    waqoutputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
+        "", alias="waqOutputDir"
     )
     flowgeomfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
@@ -1836,9 +1827,7 @@ class Output(INIBasedModel):
     wrimap_every_dt: bool = Field(False, alias="wrimap_every_dt")
     wrimap_input_roughness: bool = Field(False, alias="wrimap_input_roughness")
     wrimap_flowarea_au: bool = Field(False, alias="wrimap_flowarea_au")
-    wrihis_airdensity: bool = Field(False, alias="wrihis_airdensity")
     wrimap_flow_flux_q1_main: bool = Field(False, alias="wrimap_flow_flux_q1_main")
-    wrimap_windstress: bool = Field(False, alias="wrimap_windstress")
     wrishp_genstruc: bool = Field(False, alias="wrishp_genstruc")
     wrimap_qin: bool = Field(False, alias="wrimap_qin")
     wrimap_dtcell: bool = Field(False, alias="wrimap_dtcell")
@@ -1853,7 +1842,6 @@ class Output(INIBasedModel):
         "double", alias="ncHisDataPrecision"
     )
     wrimap_interception: bool = Field(False, alias="wrimap_interception")
-    wrimap_airdensity: bool = Field(False, alias="wrimap_airdensity")
     wrimap_volume1: bool = Field(False, alias="wrimap_volume1")
     wrimap_ancillary_variables: bool = Field(False, alias="wrimap_ancillary_variables")
     wrimap_chezy_on_flow_links: bool = Field(False, alias="wrimap_chezy_on_flow_links")
