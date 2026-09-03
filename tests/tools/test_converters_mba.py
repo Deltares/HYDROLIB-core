@@ -1,6 +1,8 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea
 from hydrolib.tools.extforce_convert.converters import (
@@ -9,6 +11,7 @@ from hydrolib.tools.extforce_convert.converters import (
     SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.utils import CONVERTER_DATA
+from hydrolib.core.dflowfm.mba.models import MassBalanceAreaError
 
 
 def _make_forcing(quantity: str, filename: str) -> SimpleNamespace:
@@ -126,3 +129,23 @@ class TestMassBalanceAreaRouting:
             ["waqmassbalanceareaestruarywest"]
         )
         assert unsupported == set(), f"Expected supported, got {unsupported}"
+
+
+class TestMassBalanceAreaConverterErrors:
+    """The converter wraps construction failures in a MassBalanceAreaError."""
+
+    def test_missing_polygon_raises_mba_error(self):
+        """Test that a forcing with no polygon file raises a specific MassBalanceAreaError.
+
+        Test scenario:
+            A malformed block without a FILENAME leaves locationFile empty, so the
+            MassBalanceArea validator rejects it; the converter surfaces this as a
+            MassBalanceAreaError naming the quantity.
+        """
+        forcing = SimpleNamespace(
+            quantity="waqmassbalanceareaBad",
+            filename=SimpleNamespace(filepath=None),
+        )
+
+        with pytest.raises(MassBalanceAreaError, match="waqmassbalanceareaBad"):
+            MassBalanceAreaConverter().convert(forcing)

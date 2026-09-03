@@ -1,7 +1,6 @@
 import shutil
 from pathlib import Path
 
-from hydrolib.core.dflowfm.ext.models import Spatial
 from hydrolib.core.dflowfm.mba.models import MassBalanceAreaModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -17,11 +16,11 @@ class TestConvertMassBalanceAreaFromMDU:
         return dst / "westernscheldt.mdu"
 
     def test_areas_written_to_mba_file(self, input_files_dir: Path, tmp_path: Path):
-        """Test that the 6 waqmassbalancearea quantities become a single `_mba.ini`.
+        """Test that the waqmassbalancearea quantities become a single `_mba.ini`.
 
         Test scenario:
-            Convert the c105 model; the mass balance areas move to the mba file
-            with a [General] block and one [MassBalanceArea] per area, deriving
+            Convert the model; the mass balance areas move to the mba file with a
+            [General] block and one [MassBalanceArea] per area (in order), deriving
             the name from the quantity suffix and the polygon from FILENAME.
         """
         mdu = self._prepare_model(input_files_dir, tmp_path)
@@ -36,14 +35,7 @@ class TestConvertMassBalanceAreaFromMDU:
         reloaded = MassBalanceAreaModel(filepath=mba_path)
         assert reloaded.general.filetype == "massBalanceAreas"
         names = [a.name for a in reloaded.massbalancearea]
-        assert names == [
-            "EstruaryWest",
-            "EstruaryMiddle",
-            "EstruaryEast",
-            "River",
-            "HarbourVlissingen",
-            "HarbourAntwerp",
-        ], f"Got {names}"
+        assert names == ["EstruaryWest", "River"], f"Got {names}"
         assert reloaded.massbalancearea[0].locationfile.filepath == Path(
             "EstruaryWest.pol"
         ), f"Got {reloaded.massbalancearea[0].locationfile.filepath}"
@@ -88,18 +80,19 @@ class TestConvertMassBalanceAreaFromMDU:
         """Test that mass balance areas do not leak into the new ext file.
 
         Test scenario:
-            The new ext file holds only the two initialtracer Spatial blocks; the
-            mass balance areas belong exclusively to the mba file (Manual F.2.5).
+            Every converted area belongs exclusively to the mba file (Manual F.2.5);
+            none may appear as a block in the new external forcings file.
         """
         mdu = self._prepare_model(input_files_dir, tmp_path)
         converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
         ext_model, _ = converter.update()
 
         assert (
-            len(ext_model.spatial) == 2
-        ), f"Got {len(ext_model.spatial)} spatial blocks"
-        assert all(isinstance(b, Spatial) for b in ext_model.spatial)
-        spatial_quantities = [b.quantity for b in ext_model.spatial]
-        assert not any(
-            "massbalancearea" in str(q).lower() for q in spatial_quantities
-        ), f"Mass balance areas leaked into ext spatial: {spatial_quantities}"
+            len(converter.mba_model.massbalancearea) == 2
+        ), f"Expected 2 mba areas, got {len(converter.mba_model.massbalancearea)}"
+        assert (
+            len(ext_model.spatial) == 0
+        ), f"Mass balance areas leaked into ext [spatial]: {len(ext_model.spatial)}"
+        assert (
+            ext_model.n_forcing_blocks == 0
+        ), f"Mass balance areas leaked into the new ext file: {ext_model.n_forcing_blocks} block(s)"
