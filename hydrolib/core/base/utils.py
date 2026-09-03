@@ -102,6 +102,22 @@ def get_str_len(str_field: Optional[str]) -> int:
     """
     return len(str_field) if str_field else 0
 
+def is_int(value: Any) -> bool:
+    """
+    Check if the given value can be converted to an integer.
+
+    Args:
+        value (Any): The value to check.
+
+    Returns:
+        bool: True if the value can be converted to an integer, False otherwise.
+    """
+    result = True
+    try:
+        int(value)
+    except (ValueError, TypeError):
+        result = False
+    return result
 
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
