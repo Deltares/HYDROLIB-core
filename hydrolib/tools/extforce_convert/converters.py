@@ -1122,7 +1122,7 @@ class LateralConverter(BaseConverter):
         self._mdu_parser = mdu_parser
 
     def convert(
-        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
+        self, forcing: ExtOldForcing, time_unit: str | None = None
     ) -> Lateral:
         """Lateral discharge converter.
 
@@ -1182,7 +1182,7 @@ class LateralConverter(BaseConverter):
 
         return new_block
 
-    def _get_time_unit(self, time_unit: Optional[str]) -> Optional[str]:
+    def _get_time_unit(self, time_unit: str | None) -> str | None:
         """Return *time_unit*, falling back to the MDU reference date when available."""
         result = time_unit
         if result is None and self._mdu_parser is not None:
@@ -1191,7 +1191,7 @@ class LateralConverter(BaseConverter):
                 result = temperature_salinity_data.get("refdate")
         return result
 
-    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Optional[TimModel]:
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> TimModel | None:
         """Resolve and merge any TIM files accompanying the lateral polyline.
 
         Searches the directory next to the polyline file for any ``.tim`` files
@@ -1228,7 +1228,7 @@ class LateralConverter(BaseConverter):
         return tim_model
 
     def _get_discharge(
-        self, forcing: ExtOldForcing, time_unit: Optional[str]
+        self, forcing: ExtOldForcing, time_unit: str | None
     ) -> Any:
         """Derive the discharge value from the old forcing block.
 
@@ -1251,7 +1251,7 @@ class LateralConverter(BaseConverter):
         return forcing.value
 
     def _get_discharge_from_tim_model(
-        self, forcing: ExtOldForcing, time_unit: Optional[str]
+        self, forcing: ExtOldForcing, time_unit: str | None
     ) -> ForcingModel:
         """Convert a TIM file referenced directly in the forcing block into a ForcingModel.
 
@@ -1285,7 +1285,7 @@ class LateralConverter(BaseConverter):
         return forcing_model
 
     def _get_discharge_from_poly_file(
-        self, forcing: ExtOldForcing, time_unit: Optional[str]
+        self, forcing: ExtOldForcing, time_unit: str | None
     ) -> Any:
         """Derive the discharge for a lateral defined via a PolyFile.
 
@@ -1322,7 +1322,7 @@ class LateralConverter(BaseConverter):
         )
 
     def _convert_poly_tim_to_forcing_model(
-        self, tim_model: TimModel, location_file: Any, time_unit: Optional[str]
+        self, tim_model: TimModel, location_file: Any, time_unit: str | None
     ) -> ForcingModel:
         """Convert a TIM model associated with a PolyFile into a ForcingModel.
 
