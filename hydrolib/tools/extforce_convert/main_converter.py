@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -551,11 +552,23 @@ class ExternalForcingConverter:
 
         if len(self.mba_model.massbalancearea) > 0:
             self.mdu_parser.update_mba_file(self.mba_model.filepath.name)
-            # mbaInterval is required in [output] (Manual F.2.5) but the old model carries
-            # the interval as the legacy [processes] DtMassBalance keyword; carry it over.
-            dt_mass_balance = self.mdu_parser.get_keyword("DtMassBalance")
-            if dt_mass_balance:
-                self.mdu_parser.update_mba_interval(dt_mass_balance)
+            # mbaInterval is required in [output] (Manual F.2.5). The old model carries the
+            # interval as the legacy [processes] DtMassBalance keyword; fall back to the
+            # [processes] DtProcesses value when DtMassBalance is absent.
+            interval = self.mdu_parser.get_keyword("DtMassBalance")
+            if not interval:
+                interval = self.mdu_parser.get_keyword("DtProcesses")
+            if interval:
+                self.mdu_parser.update_mba_interval(interval)
+            else:
+                warnings.warn(
+                    "Mass balance areas were converted and '[output] mbaFile' was set, but no "
+                    "'[processes] DtMassBalance' or 'DtProcesses' value was found to derive the "
+                    "required '[output] mbaInterval' (D-Flow FM 1D2D User Manual F.2.5). Set "
+                    "'mbaInterval' manually in the MDU.",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
