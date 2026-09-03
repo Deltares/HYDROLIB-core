@@ -1362,7 +1362,7 @@ class LateralConverter(BaseConverter):
         forcing_model.filepath = location_file.with_suffix(".bc")
         return forcing_model
 
-    def _get_location_data(self, forcing: ExtOldForcing) -> Dict[str, Any]:
+    def _get_location_data(self, forcing: ExtOldForcing) -> dict[str, Any]:
         """Extract location data from the old forcing block.
 
         Args:
