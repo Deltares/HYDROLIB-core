@@ -1239,16 +1239,15 @@ class LateralConverter(BaseConverter):
         Returns:
             Any: A constant float, a ForcingModel, or a file path representing the discharge.
         """
-        if forcing.value is not None and not isinstance(forcing.filename, PolyFile):
-            return forcing.value
+        result = forcing.value
 
-        if isinstance(forcing.filename, TimModel):
-            return self._get_discharge_from_tim_model(forcing, time_unit)
+        if forcing.value is None or isinstance(forcing.filename, PolyFile):
+            if isinstance(forcing.filename, TimModel):
+                result = self._get_discharge_from_tim_model(forcing, time_unit)
+            elif isinstance(forcing.filename, PolyFile):
+                result = self._get_discharge_from_poly_file(forcing, time_unit)
 
-        if isinstance(forcing.filename, PolyFile):
-            return self._get_discharge_from_poly_file(forcing, time_unit)
-
-        return forcing.value
+        return result
 
     def _get_discharge_from_tim_model(
         self, forcing: ExtOldForcing, time_unit: str | None
