@@ -4753,7 +4753,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity_prefix</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">lower_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the provided quantity string starts with any known valid prefix.</span>
 
 <span class="sd">        If the quantity matches a prefix, ensures it is followed by a name.</span>
@@ -5314,7 +5314,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="normal">343</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity_prefix</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">lower_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the provided quantity string starts with any known valid prefix.</span>
 
 <span class="sd">    If the quantity matches a prefix, ensures it is followed by a name.</span>
