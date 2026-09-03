@@ -111,12 +111,14 @@ def is_int(value: Any) -> bool:
 
     Returns:
         bool: True if the value can be converted to an integer, False otherwise.
+            Boolean values are explicitly treated as non-integers.
     """
-    result = True
-    try:
-        int(value)
-    except (ValueError, TypeError):
-        result = False
+    result = not isinstance(value, bool)
+    if result:
+        try:
+            int(value)
+        except (ValueError, TypeError):
+            result = False
     return result
 
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
