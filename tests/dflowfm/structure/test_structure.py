@@ -3,7 +3,6 @@ from typing import Any, Dict, List, Union
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -209,14 +208,14 @@ def test_create_structure_without_type(locfields_structure):
 @pytest.mark.parametrize(
     "structure_type,expected",
     [
-        ("WEIR", "weir"),
-        ("UniversalWeir", "universalweir"),
-        ("Culvert", "culvert"),
-        ("Pump", "pump"),
-        ("Orifice", "orifice"),
+        ("WEIR", "WEIR"),
+        ("UniversalWeir", "UniversalWeir"),
+        ("Culvert", "Culvert"),
+        ("Pump", "Pump"),
+        ("Orifice", "Orifice"),
     ],
 )
-def test_parses_structure_type_case_insensitive(
+def test_parses_structure_type_preserves_input(
     locfields_structure, structure_type, expected
 ):
     structure = Structure(type=structure_type, **locfields_structure)
@@ -227,10 +226,10 @@ def test_parses_structure_type_case_insensitive(
 @pytest.mark.parametrize(
     "input,expected",
     [
-        ("Compound", "compound"),
+        ("Compound", "Compound"),
     ],
 )
-def test_parses_compound_type_case_insensitive(input, expected):
+def test_parses_compound_type_preserves_input(input, expected):
     structure = Structure(type=input)
 
     assert structure.type == expected

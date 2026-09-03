@@ -7,6 +7,7 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 from pydantic import field_validator
 
 from hydrolib.core.base.models import BaseModel
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,
@@ -373,8 +374,8 @@ class Parser:
             config = ParserConfig()
         parser = cls(config)
 
-        with filepath.open(encoding="utf8") as f:
-            for line in f:
-                parser.feed_line(line)
+        content = open_file_with_fallback_encoding(filepath)
+        for line in content.splitlines(keepends=True):
+            parser.feed_line(line)
 
         return parser.finalize()

@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from hydrolib.core.base.parser import BaseParser
+from hydrolib.core.base.parser import BaseParser, open_file_with_fallback_encoding
 
 AstronomicData = Dict[str, Tuple[float, float, float]]
 HarmonicData = Dict[str, Tuple[str, float, float]]
@@ -47,10 +47,10 @@ class CMPParser(BaseParser):
 
                 ```
         """
-        with filepath.open(encoding="utf8") as file:
-            lines = file.readlines()
-            comments, start_components_index = CMPParser._read_header_comments(lines)
-            component = CMPParser._read_components_data(lines, start_components_index)
+        content = open_file_with_fallback_encoding(filepath)
+        lines = content.splitlines(keepends=True)
+        comments, start_components_index = CMPParser._read_header_comments(lines)
+        component = CMPParser._read_components_data(lines, start_components_index)
         return {"comments": comments, "component": component}
 
     @staticmethod

@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
+
 
 def _strip(lines: Iterable[str]) -> Iterable[str]:
     return (line.strip() for line in lines)
@@ -53,5 +55,5 @@ def read(keys: Iterable[str], path: Path) -> Dict:
     Returns:
         RainfallRunoffModel: The RainfallRunoffModel corresponding with the file.
     """
-    with path.open("r", encoding="utf8") as f:
-        return parse(keys, f)
+    content = open_file_with_fallback_encoding(path)
+    return parse(keys, content.splitlines(keepends=True))

@@ -1,6 +1,7 @@
 """Models for INI-based D-Flow FM file formats, including INIBasedModel and INIModel."""
 
 import logging
+import types
 from abc import ABC
 from enum import Enum
 from inspect import isclass
@@ -512,7 +513,9 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the type is a Union; otherwise, False.
         """
-        return get_origin(field_type) is Union
+        return get_origin(field_type) is Union or isinstance(
+            field_type, types.UnionType
+        )
 
     @staticmethod
     def _union_has_filemodel(field_type: type) -> bool:

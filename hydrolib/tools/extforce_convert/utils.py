@@ -10,16 +10,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.base.models import DiskOnlyFileModel, FileModel
+from hydrolib.core.base.models import FileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
     MeteoInterpolationMethod,
+    TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldFileType,
     ExtOldForcing,
     ExtOldModel,
     ExtOldQuantity,
+    Layer,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -27,8 +29,8 @@ from hydrolib.core.dflowfm.inifield.models import (
     InterpolationMethod,
 )
 
-SOURCESINK_SALINITY_IN_BC = "sourcesink_salinitydelta"
-SOURCESINK_TEMP_IN_BC = "sourcesink_temperaturedelta"
+SOURCESINK_SALINITY_IN_BC = "sourcesink_salinity"
+SOURCESINK_TEMP_IN_BC = "sourcesink_temperature"
 SOURCESINK_NAME_IN_EXT = "discharge_salinity_temperature_sorsin"
 
 
@@ -41,6 +43,11 @@ __all__ = [
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
 ]
+
+
+# Every `QUANTITY=` value the old external forcings file accepts, lowercased. Used to
+# reject `old_to_new_quantity_names` keys that match no quantity and so would never fire.
+KNOWN_OLD_QUANTITY_NAMES = frozenset(q.value.lower() for q in ExtOldQuantity)
 
 
 AVERAGING_TYPE_DICT = {
@@ -132,10 +139,7 @@ def oldfiletype_to_forcing_file_type(
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif oldfiletype == ExtOldFileType.Polyline:  # 9
-        # Boundary polyline files no longer need a filetype of their own (intentionally no error raised)
-        pass
-    elif oldfiletype == ExtOldFileType.InsidePolygon:  # 10
+    elif oldfiletype in [ExtOldFileType.Polyline,  ExtOldFileType.InsidePolygon]:  # 9 and # 10
         forcing_file_type = DataFileType.polygon
     elif oldfiletype == ExtOldFileType.NetCDFGridData:  # 11
         forcing_file_type = MeteoForcingFileType.netcdf
@@ -156,7 +160,7 @@ def oldmethod_to_interpolation_method(
             or "unknown" for invalid input.
     """
     if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = MeteoInterpolationMethod.linearSpaceTime
+        interpolation_method = InterpolationMethod.linear_space_time
     elif oldmethod == 5:
         interpolation_method = InterpolationMethod.triangulation
     elif oldmethod == 4:
@@ -277,52 +281,18 @@ def path_relative_to_parent(
     return forcing_path
 
 
-def create_initial_cond_and_parameter_input_dict(
-    forcing: ExtOldForcing,
-    new_forcing_path: Path,
-) -> Dict[str, str]:
-    """Create the input dictionary for the `InitialField` or `ParameterField`.
+def old_layer_to_target_layer(layer: Layer | int) -> TargetLayer | int:
+    """Map an old external-forcing LAYER value to the new Spatial targetLayer.
 
-    Args:
-        forcing: [ExtOldForcing]
-            External forcing block from the old external forcings file.
-        new_forcing_path: [Path]
-            The path to the new forcing file.
-
-    Returns:
-        Dict[str, str]:
-            the input dictionary to the `InitialField` or `ParameterField` constructor
+    `-1` becomes `bottom`, `0` becomes `all`, and a positive layer number is
+    kept unchanged (UNST-9273, GitHub #1166 / #1167).
     """
-    quantity_name = (
-        forcing.quantity
-        if forcing.quantity != ExtOldQuantity.BedRockSurfaceElevation
-        else "bedrockSurfaceElevation"
-    )
-    block_data = {
-        "quantity": quantity_name,
-        "datafile": DiskOnlyFileModel(new_forcing_path),
-        "datafiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-    }
-    if block_data["datafiletype"] == "polygon":
-        block_data["value"] = forcing.value
-
-    if forcing.sourcemask != DiskOnlyFileModel(None):
-        raise ValueError(
-            f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-            f"convert this input. Encountered for QUANTITY="
-            f"{forcing.quantity} and FILENAME={forcing.filename}."
-        )
-    block_data = convert_interpolation_data(forcing, block_data)
-    block_data["operand"] = forcing.operand
-
-    if hasattr(forcing, "extrapolation"):
-        block_data["extrapolationmethod"] = (
-            "yes" if forcing.extrapolation == 1 else "no"
-        )
-    for key, value in forcing.model_dump().items():
-        if key.lower().startswith("tracer") and value is not None:
-            block_data[key] = value
-    return block_data
+    result = layer
+    if layer == -1:
+        result = TargetLayer.bottom
+    elif layer == 0:
+        result = TargetLayer.all
+    return result
 
 
 def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int]:
@@ -343,17 +313,17 @@ def find_temperature_salinity_in_quantities(strings: List[str]) -> Dict[str, int
         ```python
         >>> from hydrolib.tools.extforce_convert.utils import find_temperature_salinity_in_quantities
         >>> find_temperature_salinity_in_quantities(["temperature", "Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3, 'sourcesink_temperaturedelta': 4})
+        OrderedDict({'sourcesink_salinity': 3, 'sourcesink_temperature': 4})
         >>> find_temperature_salinity_in_quantities(["Temperature"])
-        OrderedDict({'sourcesink_temperaturedelta': 3})
+        OrderedDict({'sourcesink_temperature': 3})
         >>> find_temperature_salinity_in_quantities(["Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3})
+        OrderedDict({'sourcesink_salinity': 3})
         >>> find_temperature_salinity_in_quantities(["tracers"])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities([])
         OrderedDict()
         >>> find_temperature_salinity_in_quantities(["discharge_salinity_temperature_sorsin", "Salinity"])
-        OrderedDict({'sourcesink_salinitydelta': 3})
+        OrderedDict({'sourcesink_salinity': 3})
 
         ```
 
@@ -447,14 +417,114 @@ class MDUConfig(BaseModel):
 
 
 class ExternalForcingConfigs(BaseModel):
-    unsupported_quantity_names: List[str] = Field(default_factory=list)
-    unsupported_prefixes: List[str] = Field(default_factory=list)
+    unsupported_quantity_names: list[str] = Field(default_factory=list)
+    unsupported_prefixes: list[str] = Field(default_factory=list)
+    old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantity_names", "unsupported_prefixes", mode="before"
     )
-    def ensure_unique(cls, v: List[str]) -> List[str]:
+    def ensure_unique(cls, v: list[str]) -> list[str]:
         return check_unique(v)
+
+    @field_validator("old_to_new_quantity_names", mode="before")
+    def normalize_old_to_new_quantity_names(
+        cls, v: dict[str, str] | None
+    ) -> dict[str, str]:
+        """Normalize the old quantity names, keeping the new names verbatim.
+
+        Old names are lowercased and trimmed so lookups match the case-insensitive
+        `QUANTITY=` values of the old external forcings file. New names are only
+        trimmed: they are written straight into the initial and parameter fields
+        file, where the kernel expects a specific casing (e.g. `seaIceThickness`),
+        so lowercasing them here would defeat the purpose of the table.
+
+        Args:
+            v (dict[str, str] | None):
+                A mapping of old quantity names to new quantity names. `None` is
+                treated as an empty mapping.
+
+        Returns:
+            dict[str, str]:
+                The mapping with its keys lowercased and trimmed.
+
+        Raises:
+            ValueError:
+                If `v` is not a mapping, if any name is not a string, if any name is
+                empty, if an old name is not a known `ExtOldQuantity`, or if two old
+                names collide once lowercased.
+        """
+        if v is None:
+            v = {}
+
+        if not isinstance(v, dict):
+            raise ValueError(
+                f"'old_to_new_quantity_names' must be a mapping of old to new quantity names, "
+                f"got {type(v).__name__}."
+            )
+
+        normalized = {}
+        for old_name, new_name in v.items():
+            if not isinstance(old_name, str) or not isinstance(new_name, str):
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be strings, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            key = old_name.strip().lower()
+            value = new_name.strip()
+            if not key or not value:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' entries must be non-empty, got "
+                    f"{old_name!r}: {new_name!r}."
+                )
+
+            if key not in KNOWN_OLD_QUANTITY_NAMES:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' key {old_name!r} is not a known "
+                    f"quantity of the old external forcings file. A key that matches "
+                    f"no quantity would silently never be applied."
+                )
+
+            if key in normalized:
+                raise ValueError(
+                    f"'old_to_new_quantity_names' maps {key!r} more than once, to "
+                    f"{normalized[key]!r} and {value!r}."
+                )
+            normalized[key] = value
+
+        return normalized
+
+    def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
+        """Map an old quantity name onto the name used in the new format.
+
+        Args:
+            quantity (ExtOldQuantity | str):
+                The `QUANTITY` value of a block in the old external forcings file.
+                `ExtOldForcing.quantity` is typed `ExtOldQuantity | str`, and the
+                enum member is accepted directly: `str()` on it yields its value.
+
+        Returns:
+            str:
+                The corresponding new name if `quantity` is in `old_to_new_quantity_names`,
+                otherwise `quantity` unchanged.
+
+        Examples:
+            ```python
+            >>> from hydrolib.tools.extforce_convert.utils import ExternalForcingConfigs
+            >>> configs = ExternalForcingConfigs(
+            ...     old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+            ... )
+            >>> configs.rename_quantity("sea_ice_thickness")
+            'seaIceThickness'
+            >>> configs.rename_quantity("frictioncoefficient")
+            'frictioncoefficient'
+
+            ```
+        """
+        name = str(quantity)
+        renamed = self.old_to_new_quantity_names.get(name.strip().lower(), name)
+        return renamed
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""

@@ -28,7 +28,7 @@ from tests.utils import (
 
 class TestIniField:
     _datafiletype_cases = [
-        ("dataFileType", "ARCINFO", "arcinfo"),
+        ("dataFileType", "ARCINFO", "arcInfo"),
         ("dataFileType", "geotiff", "GeoTIFF"),
         ("dataFileType", "samPLE", "sample"),
         ("dataFileType", "1dfield", "1dField"),
@@ -42,10 +42,11 @@ class TestIniField:
     ]
 
     _operand_cases = [
-        ("operand", "o", "O"),
-        ("operand", "a", "A"),
-        ("operand", "x", "X"),
-        ("operand", "N", "N"),
+        ("operand", "OverRide", "override"),
+        ("operand", "ADD", "add"),
+        ("operand", "mULTiPLy", "multiply"),
+        ("operand", "Maximum", "maximum"),
+        ("operand", "MiNiMuM", "minimum"),
     ]
 
     _averagingtype_cases = [
@@ -68,6 +69,7 @@ class TestIniField:
             quantity="waterlevel",
             datafile="iniwlev.xyz",
             datafiletype="sample",
+            interpolationmethod="constant"
         )
 
         return inifield_values
@@ -125,7 +127,7 @@ class TestIniField:
         assert m.parameter[1].datafiletype == DataFileType.polygon
         assert m.parameter[1].interpolationmethod == InterpolationMethod.constant
         assert m.parameter[1].value == pytest.approx(0.03)
-        assert m.parameter[1].operand == Operand.mult
+        assert m.parameter[1].operand == Operand.multiply
 
     def test_load_and_save(self, input_files_dir: Path):
         """Test whether a model loaded from file is serialized correctly.
@@ -204,7 +206,7 @@ class TestIniField:
 def test_initial_conditions_interpolation_methods(
     initial_condition_interpolation_methods: List[str],
 ):
-    assert len(InterpolationMethod) == 5
+    assert len(InterpolationMethod) == 6
     assert all(
         quantity.value in initial_condition_interpolation_methods
         for quantity in InterpolationMethod.__members__.values()
@@ -212,7 +214,7 @@ def test_initial_conditions_interpolation_methods(
 
 
 def test_initial_condition_file_type(initial_condition_file_type: List[str]):
-    assert len(DataFileType) == 8
+    assert len(DataFileType) == 12
     assert all(
         quantity.value in initial_condition_file_type
         for quantity in DataFileType.__members__.values()
@@ -237,7 +239,7 @@ class TestInitialConditions:
         assert isinstance(initial_conditions.datafile, DiskOnlyFileModel)
         assert initial_conditions.datafiletype == DataFileType.arcinfo
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
@@ -249,7 +251,7 @@ class TestInitialConditions:
             datafiletype=DataFileType.arcinfo,
         )
         assert initial_conditions.interpolationmethod is None
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.extrapolationmethod is False
         assert initial_conditions.locationtype == "all"
 
@@ -259,30 +261,32 @@ class TestInitialConditions:
             datafile=DiskOnlyFileModel(),
             datafiletype=DataFileType.arcinfo,
             interpolationmethod=InterpolationMethod.constant,
-            operand="O",
+            operand="override",
             averagingtype=AveragingType.mean,
             averagingnummin=2,
             averagingpercentile=95.0,
         )
         assert initial_conditions.interpolationmethod == InterpolationMethod.constant
-        assert initial_conditions.operand == "O"
+        assert initial_conditions.operand == "override"
         assert initial_conditions.averagingtype == AveragingType.mean
         assert initial_conditions.averagingnummin == 2
         assert np.isclose(initial_conditions.averagingpercentile, 95.0)
 
     def test_invalid_datafiletype(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype="invalidType",
             )
 
     def test_invalid_interpolationmethod(self):
+        datafile = DiskOnlyFileModel()
         with pytest.raises(ValueError):
             InitialField(
                 quantity="waterlevel",
-                datafile=DiskOnlyFileModel(),
+                datafile=datafile,
                 datafiletype=DataFileType.arcinfo,
                 interpolationmethod="invalidMethod",
             )
@@ -322,9 +326,136 @@ class TestExcludeFromValidation:
             "datafiletype": DataFileType.polygon,
             "value": 0.0,
             "interpolationmethod": InterpolationMethod.constant,
-            "operand": "O",
+            "operand": "override",
             "tracerdecaytime": "8640000",
         }
 
         model = InitialField(**data)
         assert model.tracerdecaytime == 8640000
+
+
+class TestInitialVerticalProfilePolygonValidation:
+    """Tests for the relaxed polygon/value validation for initialvertical* quantities.
+
+    The validate_that_value_is_present_for_polygons validator skips the 'value required'
+    check for quantities whose name starts with 'initialvertical', because these quantities
+    use polygon datafiletype without a uniform fill value.
+
+    The validation only ever fires when interpolationmethod == constant; for all other
+    methods (triangulation, averaging, linearSpaceTime, None) the check is bypassed
+    regardless of quantity name.
+    """
+
+    _vertical_quantities = [
+        pytest.param("initialverticalsalinityprofile", id="salinity"),
+        pytest.param("initialverticaltemperatureprofile", id="temperature"),
+        pytest.param("initialverticalsedfracprofile", id="sedfrac"),
+    ]
+
+    _non_constant_methods = [
+        pytest.param(InterpolationMethod.triangulation, id="triangulation"),
+        pytest.param(InterpolationMethod.averaging, id="averaging"),
+        pytest.param(InterpolationMethod.linear_space_time, id="linearSpaceTime"),
+        pytest.param(None, id="none"),
+    ]
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    def test_initialvertical_polygon_without_value_is_valid_for_constant_interpolation(
+            self, quantity
+    ):
+        """initialvertical* + polygon + constant interpolation + no value must be valid.
+
+        This is the key model-level fix: without it, the constant interpolation + polygon
+        validation raises 'value should be provided when datafiletype is polygon'.
+        """
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=InterpolationMethod.constant,
+            operand=Operand.override,
+        )
+
+        assert model.quantity == quantity
+        assert model.datafiletype == DataFileType.polygon
+        assert model.value is None
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize("interpolationmethod", _non_constant_methods)
+    def test_initialvertical_polygon_without_value_is_valid_for_non_constant_interpolation_methods(
+        self, quantity, interpolationmethod
+    ):
+        """initialvertical* + polygon + non-constant interpolation + no value must be valid.
+
+        The 'value required' check is only guarded by interpolationmethod == constant,
+        so all other methods must allow polygon without a value for any quantity name.
+        """
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            operand=Operand.override,
+        )
+
+        assert model.quantity == quantity
+        assert model.value is None
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("interpolationmethod", _non_constant_methods)
+    def test_non_initialvertical_polygon_without_value_is_valid_for_non_constant_methods(
+        self, interpolationmethod
+    ):
+        """Non-initialvertical + polygon + non-constant interpolation + no value must be valid.
+
+        The validation only fires for constant interpolation, so other methods never
+        require a value even for regular quantities.
+        """
+        model = InitialField(
+            quantity="initialwaterlevel",
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            operand=Operand.override,
+        )
+
+        assert model.value is None
+
+    @pytest.mark.unit
+    def test_non_initialvertical_polygon_without_value_raises_for_constant(self):
+        """Non-initialvertical + polygon + constant interpolation + no value must raise."""
+        datafile = DiskOnlyFileModel()
+        with pytest.raises(ValidationError, match="value should be provided when datafiletype is polygon"):
+            InitialField(
+                quantity="initialwaterlevel",
+                datafile=datafile,
+                datafiletype=DataFileType.polygon,
+                interpolationmethod=InterpolationMethod.constant,
+                operand=Operand.override,
+            )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("quantity", _vertical_quantities)
+    @pytest.mark.parametrize(
+        "interpolationmethod",
+        [
+            pytest.param(InterpolationMethod.constant, id="constant"),
+            *_non_constant_methods,
+        ],
+    )
+    def test_initialvertical_polygon_with_value_is_valid_for_all_methods(
+        self, quantity, interpolationmethod
+    ):
+        """Providing a value for any initialvertical* polygon quantity is always allowed."""
+        model = InitialField(
+            quantity=quantity,
+            datafile=DiskOnlyFileModel(),
+            datafiletype=DataFileType.polygon,
+            interpolationmethod=interpolationmethod,
+            value=12.34,
+            operand=Operand.override,
+        )
+
+        assert np.isclose(model.value, 12.34)

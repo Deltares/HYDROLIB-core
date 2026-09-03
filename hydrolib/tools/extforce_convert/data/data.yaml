@@ -1,4 +1,4 @@
-version: 1.0
+version: 1.1
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
     deprecated_value: 0
@@ -32,9 +32,6 @@ external_forcing:
         - erodablelayerthicknessgrainsize3
         - shiptxy
         # will be moved from the initial conditions file to the new forcing file
-        - nudge_salinity_temperature
-        - sea_ice_area_fraction
-        - sea_ice_thickness
         # do not convert for now
         - bedrock_surface_elevation
         # Lateral quantities are supported in the kernel, but not yet in the converter
@@ -50,3 +47,15 @@ external_forcing:
         - waqsegmentnumber
         - massbalancearea
         - waqmassbalancearea
+    # Quantities the kernel spells differently in the initial and parameter fields
+    # file than in the old external forcings file. Keys are matched
+    # case-insensitively; values are emitted verbatim, so their casing matters.
+    old_to_new_quantity_names:
+        sea_ice_thickness: seaIceThickness
+        sea_ice_area_fraction: seaIceAreaFraction
+        nudge_salinity_temperature: nudgeSalinityTemperature
+        # `bedrock_surface_elevation` is also in `unsupported_quantity_names` above, so a run of the converter
+        # rejects it.
+        bedrock_surface_elevation: bedrockSurfaceElevation
+        friction_coefficient_time_dependent: frictionCoefficientTimeDependent
+
