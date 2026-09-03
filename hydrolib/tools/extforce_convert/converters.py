@@ -1164,8 +1164,10 @@ class LateralConverter(BaseConverter):
         discharge = self._get_discharge(forcing, self._get_time_unit(time_unit))
         location_data = self._get_location_data(forcing)
 
-        data: Dict[str, Any] = {"id": location_data.pop("id")}
-        data["name"] = forcing.quantity
+        data = {
+            "id": location_data.pop("id"),
+            "name": forcing.quantity
+        }
         if location_type is not None:
             data["locationtype"] = location_type
         data.update(location_data)
