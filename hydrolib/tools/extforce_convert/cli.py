@@ -1,7 +1,7 @@
 """CLI.
 
-CLI for converting D-Flow FM legacy external forcings files to current external forcings file/initial
-fields file/structures file.
+CLI for converting D-Flow FM legacy external forcings files to current external forcings,
+structure, and mass balance area files.
 """
 
 import argparse
