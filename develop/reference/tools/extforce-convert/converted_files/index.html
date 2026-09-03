@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3799,17 +3799,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1.5) Mass balance area block (separate _mba.ini file)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#2-legacy-tim-new-bc-time-series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4276,17 +4265,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1.5) Mass balance area block (separate _mba.ini file)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#2-legacy-tim-new-bc-time-series" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4441,8 +4419,7 @@ You're not viewing the latest release version.
 ├─ model.mdu                      # updated to reference new files
 ├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
 ├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
-├─ new-structure.ini              # StructureModel: structures (if any)
-└─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
+└─ new-structure.ini              # StructureModel: structures (if any)
 </code></pre></div></p>
 <h3 id="example-mdu-file">Example MDU file<a class="headerlink" href="#example-mdu-file" title="Permanent link">&para;</a></h3>
 <h4 id="before-the-conversion">before the conversion<a class="headerlink" href="#before-the-conversion" title="Permanent link">&para;</a></h4>
@@ -4563,10 +4540,6 @@ You're not viewing the latest release version.
 <span class="k">[geometry]</span>
 <span class="na">IniFieldFile</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">new-initial-conditions.ini</span><span class="w">    </span><span class="c1">; only if inifield has entries</span>
 <span class="na">StructureFile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">new-structure.ini</span><span class="w">             </span><span class="c1">; only if structures exist</span>
-
-<span class="k">[output]</span>
-<span class="na">mbaFile</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">new_mba.ini</span><span class="w">                    </span><span class="c1">; only if mass balance areas exist</span>
-<span class="na">mbaInterval</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">300.0</span><span class="w">                          </span><span class="c1">; carried over from [processes] DtMassBalance</span>
 </code></pre></div></p>
 <h3 id="backups-and-cleanup">Backups and cleanup<a class="headerlink" href="#backups-and-cleanup" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4623,9 +4596,7 @@ You're not viewing the latest release version.
 - Boundary quantities → <code>[boundary]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
 - Source/sink quantities → <code>[sourcesink]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
 - Initial/parameter quantities → <code>[initial]</code> / <code>[parameter]</code> block in <code>new-initial-conditions.ini</code>.
-- Structures → <code>[structure]</code> in <code>new-structure.ini</code>.
-- Mass balance area quantities (<code>waqmassbalancearea&lt;name&gt;</code>) → <code>[MassBalanceArea]</code> block in a new <code>_mba.ini</code>
-  file, plus <code>mbaFile</code>/<code>mbaInterval</code> keywords in the MDU <code>[output]</code> section.</p>
+- Structures → <code>[structure]</code> in <code>new-structure.ini</code>.</p>
 <h4 id="11-meteo-block-new-external-forcing-file">1.1) Meteo Block (new external forcing file)<a class="headerlink" href="#11-meteo-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
 <span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.tim</span>
@@ -4747,33 +4718,6 @@ that exact casing.</p>
 <li><code>averagingnummin</code> from <code>NUMMIN</code></li>
 <li><code>averagingpercentile</code> from <code>PERCENTILEMINMAX</code></li>
 </ul>
-<h4 id="15-mass-balance-area-block-separate-_mbaini-file">1.5) Mass balance area block (separate <code>_mba.ini</code> file)<a class="headerlink" href="#15-mass-balance-area-block-separate-_mbaini-file" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">waqmassbalanceareaEstruaryWest</span>
-<span class="na">FILENAME</span><span class="o">=</span><span class="s">EstruaryWest.pol</span>
-<span class="na">FILETYPE</span><span class="o">=</span><span class="s">10</span>
-<span class="na">METHOD</span><span class="o">=</span><span class="s">4</span>
-<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
-<span class="na">VALUE</span><span class="o">=</span><span class="s">1.0</span>
-</code></pre></div>
-Each <code>waqmassbalancearea&lt;name&gt;</code> (or <code>massbalancearea&lt;name&gt;</code>) block is moved out of the external forcings
-file into a single mass balance area file (<code>&lt;*_mba.ini&gt;</code>, default <code>new_mba.ini</code>):
-- The area <code>name</code> is taken from the quantity suffix (the text after the <code>waqmassbalancearea</code> prefix).
-- <code>FILENAME</code> → <code>locationFile</code> (the area polygon).
-- <code>FILETYPE</code>/<code>METHOD</code>/<code>OPERAND</code> are dropped, and <code>VALUE</code> is ignored for mass balance areas.</p>
-<p>Resulting <code>_mba.ini</code>:
-<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
-<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
-<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">massBalanceAreas</span>
-
-<span class="k">[MassBalanceArea]</span>
-<span class="na">name</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">EstruaryWest</span>
-<span class="na">locationFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">EstruaryWest.pol</span>
-</code></pre></div>
-The MDU <code>[output]</code> section is updated with <code>mbaFile = new_mba.ini</code>. The required <code>mbaInterval</code> keyword
-(Manual F.2.5) is carried over from the legacy <code>[processes] DtMassBalance</code> value, when present.</p>
-<blockquote>
-<p>Kernel support: the <code>_mba.ini</code> file and the <code>mbaFile</code>/<code>mbaInterval</code> keywords require DIMRset ≥ 2.31.18.</p>
-</blockquote>
 <h4 id="2-legacy-tim-new-bc-time-series">2) Legacy <code>.tim</code> → new <code>.bc</code> (time series)<a class="headerlink" href="#2-legacy-tim-new-bc-time-series" title="Permanent link">&para;</a></h4>
 <p>Minimal legacy TIM example
 <div class="highlight"><pre><span></span><code>* time  value
