@@ -407,19 +407,19 @@ class Lateral(INIBasedModel):
     @field_validator("applytransport", mode="before")
     @classmethod
     def validate_applytransport(cls, v: Any) -> int:
-        if v is None:
-            return 0
-        try:
-            int_v = int(v)
-        except (TypeError, ValueError):
-            raise ValueError(
-                f"applyTransport must be 0 or 1, got '{v}'."
-            )
-        if int_v not in (0, 1):
-            raise ValueError(
-                f"applyTransport must be 0 or 1, got '{int_v}'."
-            )
-        return int_v
+        result = 0
+        if v is not None:
+            try:
+                result = int(v)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    f"applyTransport must be 0 or 1, got '{v}'."
+                )
+            if result not in (0, 1):
+                raise ValueError(
+                    f"applyTransport must be 0 or 1, got '{result}'."
+                )
+        return result
 
     @field_validator("locationtype", mode="before")
     @classmethod
