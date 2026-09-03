@@ -216,7 +216,7 @@ class ExternalForcingConverter:
         """New External forcing Model."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
-                "ext_model not set, please use the `ext_model` setter. to set it."
+                "ext_model not set, please use the `ext_model` setter to set it."
             )
         return self._ext_model
 
