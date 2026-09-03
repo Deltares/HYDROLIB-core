@@ -42,14 +42,14 @@ class ExternalForcingConverter:
 
     def __init__(
         self,
-        extold_model: Union[PathOrStr, ExtOldModel],
-        ext_file: Optional[PathOrStr] = None,
-        structure_file: Optional[PathOrStr] = None,
-        mdu_parser: MDUParser = None,
+        extold_model: PathOrStr | ExtOldModel,
+        ext_file: PathOrStr | None = None,
+        structure_file: PathOrStr | None = None,
+        mdu_parser: MDUParser | None = None,
         verbose: bool = False,
-        path_style: PathStyle = None,
-        debug: Optional[bool] = False,
-        mba_file: Optional[PathOrStr] = None,
+        path_style: PathStyle | None = None,
+        debug: bool | None = False,
+        mba_file: PathOrStr | None = None,
     ):
         r"""Initialize the converter.
 
