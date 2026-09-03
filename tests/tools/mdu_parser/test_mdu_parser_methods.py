@@ -306,26 +306,12 @@ class TestMDUParserGetStructureFile:
         return parser
 
     @pytest.mark.unit
-    def test_get_structure_file_when_user_provides_path(self, tmp_path):
-        """When the caller supplies a path it is joined with mdu_path.parent (not mdu_path).
-
-        Before the fix, self.mdu_path / usr_structure_file was used, which appended the
-        filename to the .mdu file itself rather than its parent directory.
-        """
-        parser = self._make_parser(["[geometry]\n", "StructureFile = existing.ini\n"])
-        parser.mdu_path = tmp_path / "run" / "model.mdu"
-
-        result = MDUParser.get_structure_file(parser, "user-structures.ini")
-
-        assert result == tmp_path / "run" / "user-structures.ini"
-
-    @pytest.mark.unit
     def test_get_structure_file_when_mdu_has_non_empty_value(self, tmp_path):
         """A non-empty StructureFile value in the MDU is resolved relative to mdu_path.parent."""
         parser = self._make_parser(["[geometry]\n", "StructureFile = structures.ini\n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result == tmp_path / "run" / "structures.ini"
 
@@ -335,7 +321,7 @@ class TestMDUParserGetStructureFile:
         parser = self._make_parser(["[geometry]\n", "StructureFile = \n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result is None
 
@@ -345,7 +331,7 @@ class TestMDUParserGetStructureFile:
         parser = self._make_parser(["[geometry]\n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result is None
 

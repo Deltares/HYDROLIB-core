@@ -139,17 +139,12 @@ class ExternalForcingBlock:
 
         return old_ext_force_file
 
-    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+    def get_new_extforce_file(self) -> Path:
         """Get the new external forcing file path.
 
         Notes:
             - If the `extforcefilenew` exists in the MDU file, it will be used.
             - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
-            - If an `ext_file` is provided, it will be used as the new extforce file.
-
-        Args:
-            ext_file (Path):
-                Optional path to an external forcing file to use as the new extforce file.
 
         Returns:
             Path:
@@ -163,21 +158,17 @@ class ExternalForcingBlock:
             # if the extforce_file_new exist in the MDU file, we use it
             ext_file = (self.root_dir / _extforce_file_new).resolve()
         else:
-            # if the extforce_file_new does not exist in the MDU file
-            if ext_file is None:
-                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
-                ext_file = self.root_dir / self.extforce_file.with_stem(
-                    self.extforce_file.stem + "-new"
+            # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
+            # name to create the new extforce file
+            ext_file = self.root_dir / self.extforce_file.with_stem(
+                self.extforce_file.stem + "-new"
+            )
+            if ext_file.exists():
+                raise FileExistsError(
+                    "The converter detected that there is no new extforce file in the mdu file, \n"
+                    f"But there is an extforce file with the name {ext_file} that already exists. \n"
+                    "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
                 )
-                if ext_file.exists():
-                    raise FileExistsError(
-                        "The converter detected that there is no new extforce file in the mdu file, \n"
-                        f"But there is an extforce file with the name {ext_file} that already exists. \n"
-                        "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
-                    )
-            else:
-                # if an ext_file is provided, we use it
-                ext_file = Path(ext_file).resolve()
 
         return ext_file
 
@@ -1150,53 +1141,34 @@ class MDUParser:
 
         return path
 
-    def get_structure_file(
-        self,
-        usr_structure_file: Optional[PathOrStr] = None,
-    ) -> Path | None:
+    def get_structure_file(self) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
 
-        # if given by the user use that, otherwise use the one in the mdu file
-        path = usr_structure_file if usr_structure_file is not None else structure_file
-
-        if path:
-            path = (root_dir / Path(path)).resolve()
+        if structure_file:
+            path = (root_dir / Path(structure_file)).resolve()
         else:
-            print(
-                "The structure file is not found in the mdu file, and not provided by the user. \n"
-                f"given: {path}."
-            )
+            print("The structure file is not found in the mdu file.")
             path = None
 
         return path
 
-    def get_mba_file(
-        self,
-        usr_mba_file: Optional[PathOrStr] = None,
-    ) -> Path | None:
+    def get_mba_file(self) -> Path | None:
         """Resolve the mass balance area file from the MDU `[output] mbaFile` keyword.
 
         When the MDU already references an `mbaFile`, the converter loads that file and appends the
         converted areas to it, rather than creating a fresh one. This mirrors how the new external
         forcings and structure files are resolved from the MDU.
 
-        Args:
-            usr_mba_file (Optional[PathOrStr]): An explicit path provided by the user. When given it
-                takes precedence over the MDU keyword.
-
         Returns:
-            Path | None: The resolved absolute path, or ``None`` when neither the user nor the MDU
-                specifies one (the converter then falls back to its default ``new_mba.ini``).
+            Path | None: The resolved absolute path, or ``None`` when the MDU does not specify one
+                (the converter then falls back to its default ``new_mba.ini``).
         """
         mba_file = self.get_keyword(MBA_FILE_LINE)
         root_dir = self.mdu_path.parent
 
-        # if given by the user use that, otherwise use the one in the mdu file
-        path = usr_mba_file if usr_mba_file is not None else mba_file
-
-        if path:
-            path = (root_dir / Path(path)).resolve()
+        if mba_file:
+            path = (root_dir / Path(mba_file)).resolve()
         else:
             path = None
 
