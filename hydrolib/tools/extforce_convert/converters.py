@@ -39,7 +39,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
-from hydrolib.core.dflowfm.mba.models import MassBalanceArea
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaError
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
@@ -1121,7 +1121,14 @@ class MassBalanceAreaConverter(BaseConverter):
             MassBalanceArea: The converted block for the mass balance area file.
         """
         name = MassBalanceAreaConverter._strip_prefix(str(forcing.quantity))
-        result = MassBalanceArea(name=name, locationfile=forcing.filename.filepath)
+        try:
+            result = MassBalanceArea(name=name, locationfile=forcing.filename.filepath)
+        except Exception as e:
+            raise MassBalanceAreaError(
+                f"Failed to create the MassBalanceArea object for QUANTITY="
+                f"{forcing.quantity} and FILENAME={forcing.filename}. "
+                f"for the following Errors: {e}"
+            )
         return result
 
     @staticmethod

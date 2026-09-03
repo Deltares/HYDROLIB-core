@@ -233,3 +233,7 @@ class MassBalanceAreaModel(INIModel):
     @classmethod
     def _filename(cls) -> str:
         return "mba"
+
+
+class MassBalanceAreaError(Exception):
+    """MassBalanceAreaError."""
