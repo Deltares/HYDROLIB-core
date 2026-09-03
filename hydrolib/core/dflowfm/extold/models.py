@@ -391,9 +391,9 @@ class ExtOldForcing(BaseModel):
 
             if is_int(value):
                 int_value = int(value)
-                try:
-                    result = ExtOldFileType(int_value)
-                except ValueError:
+                if int_value in valid_values:
+                    result = int_value
+                else:
                     raise ValueError(
                         f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
                     )
