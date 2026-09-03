@@ -25,10 +25,8 @@ class ListFieldDelimiter(ABC):
     expected to be Pydantic models, since the lookups use ``cls.model_fields``.
 
     Note:
-        `INIBasedModel` keeps its own copies of ``get_list_delimiter`` /
-        ``get_list_field_delimiter``; this mixin intentionally duplicates them so
-        that base-level mixins need not depend on the `dflowfm.ini` subpackage. No
-        hard migration is done here.
+        `INIBasedModel` inherits this mixin, so delimiter behavior is centralized
+        here and reused across dependent models.
     """
 
     @classmethod
