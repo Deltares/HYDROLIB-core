@@ -316,7 +316,7 @@ class ExtOldForcing(BaseModel):
     @classmethod
     def validate_quantity_prefix(
         cls, lower_value: str, value_str: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """Checks if the provided quantity string starts with any known valid prefix.
 
         If the quantity matches a prefix, ensures it is followed by a name.
