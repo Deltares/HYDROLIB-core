@@ -1184,14 +1184,12 @@ class LateralConverter(BaseConverter):
 
     def _get_time_unit(self, time_unit: Optional[str]) -> Optional[str]:
         """Return *time_unit*, falling back to the MDU reference date when available."""
-        if time_unit is not None:
-            return time_unit
-        if (
-            self._mdu_parser is not None
-            and self._mdu_parser.temperature_salinity_data is not None
-        ):
-            return self._mdu_parser.temperature_salinity_data.get("refdate")
-        return None
+        result = time_unit
+        if result is None and self._mdu_parser is not None:
+            temperature_salinity_data = self._mdu_parser.temperature_salinity_data
+            if temperature_salinity_data is not None:
+                result = temperature_salinity_data.get("refdate")
+        return result
 
     def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Optional[TimModel]:
         """Resolve and merge any TIM files accompanying the lateral polyline.
