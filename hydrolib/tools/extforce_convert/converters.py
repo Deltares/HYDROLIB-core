@@ -1307,20 +1307,20 @@ class LateralConverter(BaseConverter):
         tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
 
         if tim_model is not None:
-            return self._convert_poly_tim_to_forcing_model(
+            result = self._convert_poly_tim_to_forcing_model(
                 tim_model, location_file, time_unit
             )
-
-        if forcing.value is not None:
-            return forcing.value
-
-        raise ValueError(
-            f"Could not determine the discharge for lateral '{location_file.stem}': "
-            f"no constant VALUE, no '{location_file.stem}.tim', and no "
-            f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
-            "Ensure a time-series (.tim) file or a VALUE field is present in the "
-            "old external forcings block."
-        )
+        elif forcing.value is not None:
+            result = forcing.value
+        else:
+            raise ValueError(
+                f"Could not determine the discharge for lateral '{location_file.stem}': "
+                f"no constant VALUE, no '{location_file.stem}.tim', and no "
+                f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
+                "Ensure a time-series (.tim) file or a VALUE field is present in the "
+                "old external forcings block."
+            )
+        return result
 
     def _convert_poly_tim_to_forcing_model(
         self, tim_model: TimModel, location_file: Any, time_unit: str | None
@@ -1375,26 +1375,24 @@ class LateralConverter(BaseConverter):
         if isinstance(forcing.filename, PolyFile):
             poly_file = forcing.filename
             location_name = poly_file.filepath.stem
-            result: Dict[str, Any] = {"id": location_name}
+            result = {"id": location_name}
             if poly_file.objects:
                 first_obj = poly_file.objects[0]
                 if first_obj.metadata and first_obj.metadata.name:
                     result["id"] = first_obj.metadata.name
             result["locationfile"] = poly_file.filepath
-            return result
-
-        if isinstance(forcing.filename, TimModel):
+        elif isinstance(forcing.filename, TimModel):
             location_name = forcing.filename.filepath.stem
-            return {"id": location_name}
-
-        # DiskOnlyFileModel or other
-        if (
+            result = {"id": location_name}
+        elif (
             hasattr(forcing.filename, "filepath")
             and forcing.filename.filepath is not None
         ):
-            return {"id": forcing.filename.filepath.stem}
+            result = {"id": forcing.filename.filepath.stem}
+        else:
+            result = {"id": str(forcing.quantity)}
 
-        return {"id": str(forcing.quantity)}
+        return result
 
 
 class ConverterFactory:
