@@ -574,6 +574,7 @@ class SourceSink(INIBasedModel):
         return values
 
     @model_validator(mode="before")
+    @classmethod
     def validate_locationfile_z_conflict(cls, values):
         """Reject `.pliz` locationFile combined with explicit `zSource`/`zSink`.
 
@@ -742,6 +743,7 @@ class BubbleScreen(INIBasedModel):
         return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
+    @classmethod
     def validate_location_specification(cls, values):
         locationfile = values.get("locationfile", values.get("locationFile"))
         numcoordinates = values.get("numcoordinates", values.get("numCoordinates"))
