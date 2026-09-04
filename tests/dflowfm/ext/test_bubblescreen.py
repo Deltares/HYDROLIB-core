@@ -16,7 +16,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.ext.models import BubbleScreen, ExtModel
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def inline_block_kwargs() -> dict:
     """Provide kwargs for a valid inline-coordinate BubbleScreen.
 
@@ -34,7 +34,7 @@ def inline_block_kwargs() -> dict:
     }
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def locationfile_block_kwargs() -> dict:
     """Provide kwargs for a valid locationFile-style BubbleScreen.
 

@@ -120,25 +120,27 @@ class TestSourceSinkValidator:
             )
 
     def test_locationfile_with_zsource_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
         with pytest.raises(
             ValueError,
             match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
         ):
             SourceSink(
                 id="left",
-                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                locationfile=locationfile,
                 zsource=-7.5,
                 discharge=1.0,
             )
 
     def test_locationfile_with_zsink_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
         with pytest.raises(
             ValueError,
             match=r"locationFile.*\.pliz.*cannot be combined with.*zSink",
         ):
             SourceSink(
                 id="left",
-                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                locationfile=locationfile,
                 zsink=-2.5,
                 discharge=1.0,
             )
@@ -160,13 +162,14 @@ class TestSourceSinkValidator:
         assert block.zsink == -7.5
 
     def test_locationfile_with_zsource_list_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
         with pytest.raises(
             ValueError,
             match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
         ):
             SourceSink(
                 id="left",
-                locationfile=DiskOnlyFileModel(filepath=Path("left.pliz")),
+                locationfile=locationfile,
                 zsource=[-7.5, -3.01],
                 discharge=1.0,
             )
