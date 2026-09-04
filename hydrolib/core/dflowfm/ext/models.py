@@ -71,11 +71,11 @@ SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = (
 )
 
 class TargetLayer(StrEnum):
-    """Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.
+    """Valid non-numeric values for the `targetLayer` attribute of a `[Spatial]` block.
 
-    Corresponds to the ``LAYER`` value in the old external forcings file: ``bottom``
-    (old ``-1``) and ``all`` (old ``0``). A positive integer layer number is also
-    accepted; see ``Spatial.targetlayer``.
+    Corresponds to the `LAYER` value in the old external forcings file: `bottom`
+    (old `-1`) and `all` (old `0`). A positive integer layer number is also
+    accepted; see `Spatial.targetlayer`.
     """
 
     bottom = "bottom"
@@ -120,13 +120,13 @@ def _resolve_forcing_data(
     Any other value (including `None`) is passed through unchanged so that
     Optional fields and already-validated values still work.
 
-    When the active file-load context has ``recurse=False``, the path resolution
-    step returns a ``DiskOnlyFileModel`` instead of fully parsing the `.bc` file
-    into a ``ForcingModel``. This lightweight placeholder avoids expensive I/O
-    during non-recursive loads while still satisfying the ``ForcingData`` type
-    annotation. An ``AfterValidator`` on ``ForcingData`` ensures that a
-    ``DiskOnlyFileModel`` can never slip through under a recursive load
-    (``recurse=True``), where the `.bc` file is expected to be fully parsed.
+    When the active file-load context has `recurse=False`, the path resolution
+    step returns a `DiskOnlyFileModel` instead of fully parsing the `.bc` file
+    into a `ForcingModel`. This lightweight placeholder avoids expensive I/O
+    during non-recursive loads while still satisfying the `ForcingData` type
+    annotation. An `AfterValidator` on `ForcingData` ensures that a
+    `DiskOnlyFileModel` can never slip through under a recursive load
+    (`recurse=True`), where the `.bc` file is expected to be fully parsed.
 
     Args:
         v: The raw value to coerce.
@@ -139,8 +139,8 @@ def _resolve_forcing_data(
 
     Returns:
         float | RealTime | ForcingModel | DiskOnlyFileModel | None:
-            The resolved forcing data value. ``DiskOnlyFileModel`` is returned
-            only when ``recurse=False`` in the active file-load context.
+            The resolved forcing data value. `DiskOnlyFileModel` is returned
+            only when `recurse=False` in the active file-load context.
 
     Raises:
         ValueError: When `v` is the `realtime` keyword (any case) and
@@ -292,8 +292,8 @@ class Boundary(INIBasedModel):
 
         Returns:
             ForcingBase: The corresponding forcing data, or None when no matching forcing block is
-            found or when the forcing file has not been parsed (e.g. loaded with ``recurse=False``,
-            in which case it is a ``DiskOnlyFileModel`` placeholder).
+            found or when the forcing file has not been parsed (e.g. loaded with `recurse=False`,
+            in which case it is a `DiskOnlyFileModel` placeholder).
         """
         result = None
         if isinstance(self.forcingfile, ForcingModel):
@@ -430,6 +430,29 @@ class SourceSink(INIBasedModel):
     def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
         return split_string_on_delimiter(cls, v, info)
 
+    @field_validator("zsource", "zsink", mode="before")
+    @classmethod
+    def split_z_values(cls, v):
+        """Parse `zSource`/`zSink` from a space-separated string.
+
+        Range sources are written as e.g. `zSource = -7.5 -3.01` in the ext
+        file; the parser delivers this as a single string that Pydantic
+        cannot coerce to `float` or `List[float]`. An empty or whitespace-only
+        string (e.g. `zSource =`) is treated as "not provided" (`None`),
+        consistent with `str_is_empty_or_none`.
+        """
+        result = v
+        if isinstance(v, str):
+            if str_is_empty_or_none(v):
+                result = None
+            else:
+                parts = v.split()
+                if len(parts) == 1:
+                    result = float(parts[0])
+                else:
+                    result = [float(p) for p in parts]
+        return result
+
     @field_validator(
         "discharge", "salinity", "temperature", mode="before"
     )
@@ -557,11 +580,219 @@ class SourceSink(INIBasedModel):
 
     @model_validator(mode="before")
     @classmethod
+    def validate_locationfile_z_conflict(cls, values):
+        """Reject `.pliz` locationFile combined with explicit `zSource`/`zSink`.
+
+        A `.pliz` polyline already encodes vertical placement via its column
+        count (3 or 5 cols). Combining it with explicit `zSource`/`zSink` is
+        ambiguous and is rejected by the kernel. A plain `.pli` polyline
+        carries no z, so combining it with explicit `zSource`/`zSink` is
+        allowed (and required for a coupled source-sink specified via
+        `locationFile`).
+        """
+        locationfile = values.get("locationfile", values.get("locationFile"))
+        zsource = values.get("zsource", values.get("zSource"))
+        zsink = values.get("zsink", values.get("zSink"))
+
+        locationfile_path = None
+        if hasattr(locationfile, "filepath"):
+            locationfile_path = locationfile.filepath
+        elif isinstance(locationfile, (str, Path)):
+            locationfile_path = Path(locationfile)
+
+        file_has_z = locationfile_path is not None and str(
+            locationfile_path
+        ).lower().endswith(".pliz")
+
+        conflict_field = None
+        if file_has_z and zsource is not None:
+            conflict_field = "zSource"
+        elif file_has_z and zsink is not None:
+            conflict_field = "zSink"
+
+        if conflict_field is not None:
+            raise ValueError(
+                f"`locationFile` (a `.pliz` polyline) cannot be combined with explicit "
+                f"`{conflict_field}` for the SourceSink block `{values.get('id')}`. "
+                f"The `.pliz` file already encodes vertical placement. "
+                f"Either remove `{conflict_field}` or use a `.pli` locationFile "
+                f"(no z column) so the explicit z-values are unambiguous."
+            )
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
     def validate_locationfile(cls, data: Any) -> Any:
         file_location = data.get("locationfile") or data.get("locationFile")
         data.pop("locationFile", None)  # Remove alias if present
 
         # Convert string to DiskOnlyFileModel if needed
+        if isinstance(file_location, (str, Path)):
+            data["locationfile"] = DiskOnlyFileModel(file_location)
+        else:
+            data["locationfile"] = file_location
+        return data
+
+
+class BubbleScreen(INIBasedModel):
+    """A `[BubbleScreen]` block for use inside an external forcings file.
+
+    Represents a bubble screen (air curtain): a row of nozzles on the waterway
+    bed that releases air bubbles to create a hydraulic barrier. Location is
+    specified either via a `locationFile` (a plain `.pli`) or via inline
+    `numCoordinates`/`xCoordinates`/`yCoordinates`. Unlike `SourceSink`,
+    BubbleScreen polylines carry no z information; vertical placement is given
+    exclusively by the required `zLevel` field.
+
+    Attributes:
+        id: Unique identifier for the block within the ext file.
+        name: Human-readable label. Defaults to an empty string.
+        locationfile: Reference to an external `.pli` polyline file that
+            defines the screen location. Mutually exclusive with inline
+            coordinates.
+        numcoordinates: Number of vertices in the inline polyline.
+        xcoordinates: X-coordinates of the inline polyline vertices.
+        ycoordinates: Y-coordinates of the inline polyline vertices.
+        zlevel: Depth of the nozzle row in model vertical coordinate units.
+        discharge: Volumetric air-flow rate. Accepts a scalar `float`,
+            the string `"realtime"`, or a path to a `.bc` forcing file.
+
+    Raises:
+        ValidationError: If neither `locationFile` nor the full set of inline
+            coordinate fields (`numCoordinates`, `xCoordinates`,
+            `yCoordinates`) is provided.
+        ValidationError: If `numCoordinates` does not match the length of
+            `xCoordinates` or `yCoordinates`.
+
+    Examples:
+        - Build a block with inline coordinates and inspect the geometry:
+            ```python
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="air_curtain",
+            ...     numcoordinates=2,
+            ...     xcoordinates=[100.0, 200.0],
+            ...     ycoordinates=[50.0, 50.0],
+            ...     zlevel=-3.5,
+            ...     discharge=1.2,
+            ... )
+            >>> screen.id
+            'air_curtain'
+            >>> screen.zlevel
+            -3.5
+            >>> screen.xcoordinates
+            [100.0, 200.0]
+
+            ```
+        - Build a block that references an external polyline file:
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.core.base.models import DiskOnlyFileModel
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> screen = BubbleScreen(
+            ...     id="canal_lock",
+            ...     locationfile=DiskOnlyFileModel(filepath=Path("lock_screen.pli")),
+            ...     zlevel=-6.0,
+            ...     discharge=0.8,
+            ... )
+            >>> screen.id
+            'canal_lock'
+            >>> str(screen.locationfile.filepath)
+            'lock_screen.pli'
+
+            ```
+        - Omitting both location forms raises `ValidationError`:
+            ```python
+            >>> from pydantic import ValidationError
+            >>> from hydrolib.core.dflowfm.ext.models import BubbleScreen
+            >>> try:
+            ...     BubbleScreen(id="bad", zlevel=-5.0, discharge=1.0)
+            ... except ValidationError:
+            ...     print("location is required")
+            location is required
+
+            ```
+
+    See Also:
+        SourceSink: Sister block for water and solute injection or extraction.
+        ExtModel: The new-format external forcings file model that hosts
+            `[BubbleScreen]` blocks under its `bubblescreen` list.
+
+    """
+
+    _header: Literal["BubbleScreen"] = "BubbleScreen"
+    id: str = Field(alias="id")
+    name: str = Field("", alias="name")
+    locationfile: DiskOnlyFileModel | None = Field(
+        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
+    )
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    zlevel: float = Field(alias="zLevel")
+    discharge: ForcingData = Field(alias="discharge")
+
+    def is_intermediate_link(self) -> bool:
+        return True
+
+    @field_validator("xcoordinates", "ycoordinates", mode="before")
+    @classmethod
+    def split_coordinates(cls, v, info: ValidationInfo) -> list[float]:
+        return split_string_on_delimiter(cls, v, info)
+
+    @field_validator("discharge", mode="before")
+    @classmethod
+    def resolve_forcing_reference(cls, v):
+        """Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel."""
+        return _resolve_forcing_data(v)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_location_specification(cls, values):
+        locationfile = values.get("locationfile", values.get("locationFile"))
+        numcoordinates = values.get("numcoordinates", values.get("numCoordinates"))
+        xcoordinates = values.get("xcoordinates", values.get("xCoordinates"))
+        ycoordinates = values.get("ycoordinates", values.get("yCoordinates"))
+
+        has_locationfile = locationfile is not None
+        if hasattr(locationfile, "filepath"):
+            has_locationfile = locationfile.filepath is not None
+
+        all_inline_present = (
+            numcoordinates is not None
+            and xcoordinates is not None
+            and ycoordinates is not None
+        )
+        lengths_match = all_inline_present and (
+            _coordinate_length(xcoordinates)
+            == _coordinate_length(ycoordinates)
+            == int(numcoordinates)
+        )
+
+        if all_inline_present and not lengths_match:
+            raise ValueError(
+                f"`numCoordinates` ({int(numcoordinates)}) does not match the length of "
+                f"`xCoordinates` ({_coordinate_length(xcoordinates)}) and `yCoordinates` "
+                f"({_coordinate_length(ycoordinates)}) for the BubbleScreen block "
+                f"`{values.get('id')}`."
+            )
+
+        if not (has_locationfile or lengths_match):
+            raise ValueError(
+                "Either `locationFile` or the combination of `numCoordinates`, "
+                "`xCoordinates`, and `yCoordinates` must be provided "
+                f"for the BubbleScreen block `{values.get('id')}`."
+            )
+
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_locationfile(cls, data: Any) -> Any:
+        file_location = data.get("locationfile") or data.get("locationFile")
+        data.pop("locationFile", None)
+
         if isinstance(file_location, (str, Path)):
             data["locationfile"] = DiskOnlyFileModel(file_location)
         else:
@@ -625,18 +856,18 @@ class SpatialForcingBase(OperandInterpolationValidators, INIBasedModel, ABC):
     ) -> Dict[str, Any]:
         """Select the concrete file model for the data/forcing file from its type.
 
-        Mirrors the historical per-class ``choose_file_model`` bodies: when both a
+        Mirrors the historical per-class `choose_file_model` bodies: when both a
         file keyword and its type keyword are present and the file is still a raw
         path, the path is resolved into the model class from
-        ``FILETYPE_FILEMODEL_MAPPING`` (types not in the mapping fall back to
-        ``DiskOnlyFileModel``).
+        `FILETYPE_FILEMODEL_MAPPING` (types not in the mapping fall back to
+        `DiskOnlyFileModel`).
 
         Args:
             values: Raw, unvalidated input values for the block.
             file_keys: The lowercase and camelCase names of the file keyword,
-                e.g. ``("datafile", "dataFile")``.
+                e.g. `("datafile", "dataFile")`.
             type_keys: The lowercase and camelCase names of the file-type keyword,
-                e.g. ``("datafiletype", "dataFileType")``.
+                e.g. `("datafiletype", "dataFileType")`.
 
         Returns:
             Dict[str, Any]: The (possibly updated) values dictionary.
@@ -746,8 +977,8 @@ class Meteo(SpatialForcingBase):
     def choose_file_model(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Select the right class for the forcingFile parameter based on forcingFileType.
 
-        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against
-        this block's ``forcingFile``/``forcingFileType`` keywords.
+        Uses the shared `SpatialForcingBase._resolve_file_models` helper against
+        this block's `forcingFile`/`forcingFileType` keywords.
         """
         return cls._resolve_file_models(
             values,
@@ -880,9 +1111,9 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def _normalize_spatial_keys(cls, values: Dict) -> Dict:
         """Normalize camelCase aliases and coerce any unresolved datafile to DiskOnlyFileModel.
 
-        ``dataFile`` is normally resolved to its concrete file model earlier in the
-        validation flow (see ``_resolve_file_models``). This fallback only wraps a
-        path that is still raw (e.g. no ``dataFileType`` was supplied) so that the
+        `dataFile` is normally resolved to its concrete file model earlier in the
+        validation flow (see `_resolve_file_models`). This fallback only wraps a
+        path that is still raw (e.g. no `dataFileType` was supplied) so that the
         field always holds a file model rather than a bare string.
         """
         data_file = values.get("datafile") or values.get("dataFile")
@@ -901,7 +1132,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def _validate_datavalue_path(
         cls, values: Dict, has_datafile: bool, has_datafiletype: bool
     ) -> None:
-        """Validate the ``dataValue`` usage path (constant value inside polygon)."""
+        """Validate the `dataValue` usage path (constant value inside polygon)."""
         if has_datafile or has_datafiletype:
             raise ValueError(
                 "When 'dataValue' is provided, 'dataFile' and 'dataFileType' must not be specified."
@@ -919,7 +1150,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def _validate_datafile_path(
         cls, values: Dict, has_datafile: bool, has_datafiletype: bool
     ) -> None:
-        """Validate the ``dataFile`` usage path and emit deprecation warning when needed."""
+        """Validate the `dataFile` usage path and emit deprecation warning when needed."""
         if not has_datafile:
             raise ValueError("'dataFile' is required when 'dataValue' is not specified.")
         if not has_datafiletype:
@@ -945,9 +1176,9 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def _process_section_values(cls, values):
         """Flatten a Section object into a dictionary of raw values.
 
-        The raw ``dataFile`` value is left as a path/string so that the subsequent
-        ``_resolve_file_models`` step can select the concrete file model from
-        ``dataFileType`` (rather than being forced to ``DiskOnlyFileModel`` here).
+        The raw `dataFile` value is left as a path/string so that the subsequent
+        `_resolve_file_models` step can select the concrete file model from
+        `dataFileType` (rather than being forced to `DiskOnlyFileModel` here).
 
         Args:
             values: The values to process, which may be a Section object or a dictionary.
@@ -962,25 +1193,25 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def validate_datavalue_or_datafile(cls, values: Dict) -> Dict:
         """Validates the two mutually exclusive usage paths of a Spatial block.
 
-        When ``dataValue`` is provided the block describes a constant value applied
+        When `dataValue` is provided the block describes a constant value applied
         inside a polygon mask.  In this mode:
-        - ``dataFile`` and ``dataFileType`` must **not** be specified.
-        - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.
-        - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).
+        - `dataFile` and `dataFileType` must **not** be specified.
+        - `targetMaskFile` (a `.pol` file) is optional but often used.
+        - `interpolationMethod` must be `constant` (set automatically when omitted).
 
-        When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both
+        When `dataValue` is absent, `dataFile` and `dataFileType` are both
         required.
 
-        Note: using ``dataFileType=polygon`` for "inside polygon" initial-condition
-        data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +
-        ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType
-        remains supported for quantities such as ``initialvertical*`` (e.g.
-        ``initialverticalsalinityprofile``) that use polygon files for a different
+        Note: using `dataFileType=polygon` for "inside polygon" initial-condition
+        data is **deprecated**.  Use `dataValue` + `targetMaskFile=*.pol` +
+        `interpolationMethod=constant` instead.  The `polygon` dataFileType
+        remains supported for quantities such as `initialvertical*` (e.g.
+        `initialverticalsalinityprofile`) that use polygon files for a different
         purpose and have no new alternative yet.
 
-        The data file is resolved to its concrete file model only on the ``dataFile``
-        path (``dataValue`` absent). This prevents an invalid combination
-        (``dataValue`` together with ``dataFile``) from parsing a file before the
+        The data file is resolved to its concrete file model only on the `dataFile`
+        path (`dataValue` absent). This prevents an invalid combination
+        (`dataValue` together with `dataFile`) from parsing a file before the
         mutual-exclusion check rejects it, so callers get the exclusion error rather
         than a file-parse error.
         """
@@ -1029,9 +1260,9 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     def validate_targetlayer(cls, v):
         """Coerce targetLayer to a TargetLayer member or a positive integer layer number.
 
-        Accepts ``bottom`` and ``all`` (case-insensitive) or a positive integer. The
-        old external-forcings ``LAYER`` values ``-1`` and ``0`` are represented by
-        ``bottom`` and ``all`` respectively and are not accepted as integers here.
+        Accepts `bottom` and `all` (case-insensitive) or a positive integer. The
+        old external-forcings `LAYER` values `-1` and `0` are represented by
+        `bottom` and `all` respectively and are not accepted as integers here.
         """
         result = v
         if v is not None and not isinstance(v, TargetLayer):
@@ -1067,6 +1298,8 @@ class ExtModel(INIModel):
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
         sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
+        bubblescreen (List[BubbleScreen]): List of `[BubbleScreen]` blocks for all bubble
+            screens (air curtains).
         meteo (List[Meteo]): List of `[Meteo]` blocks for legacy meteorological forcings.
             Deprecated: use `spatial` instead.
         spatial (List[Spatial]): List of `[Spatial]` blocks for spatial forcings (meteo,
@@ -1081,6 +1314,9 @@ class ExtModel(INIModel):
         default_factory=list
     )
     sourcesink: Annotated[List[SourceSink], BeforeValidator(make_list)] = Field(
+        default_factory=list
+    )
+    bubblescreen: Annotated[List[BubbleScreen], BeforeValidator(make_list)] = Field(
         default_factory=list
     )
     meteo: Annotated[List[Meteo], BeforeValidator(make_list)] = Field(
@@ -1113,16 +1349,17 @@ class ExtModel(INIModel):
     def n_forcing_blocks(self) -> int:
         """Total number of forcing blocks held across all block types.
 
-        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[Meteo]` and
-        `[Spatial]` block, whether produced by conversion or loaded from an existing
-        file. Use this to decide whether the model has any content worth writing;
-        counting the individual lists by hand is error-prone and has silently
-        dropped block types before.
+        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[BubbleScreen]`,
+        `[Meteo]` and `[Spatial]` block, whether produced by conversion or loaded
+        from an existing file. Use this to decide whether the model has any content
+        worth writing; counting the individual lists by hand is error-prone and has
+        silently dropped block types before.
         """
         return (
             len(self.boundary)
             + len(self.lateral)
             + len(self.sourcesink)
+            + len(self.bubblescreen)
             + len(self.meteo)
             + len(self.spatial)
         )

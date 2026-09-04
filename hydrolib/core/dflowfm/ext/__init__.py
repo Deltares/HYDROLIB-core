@@ -14,11 +14,13 @@ from .models import (
     Spatial,
     SpatialError,
     SourceSink,
+    BubbleScreen,
 )
 
 __all__ = [
     "AveragingType",
     "Boundary",
+    "BubbleScreen",
     "DataFileType",
     "ExtGeneral",
     "ExtModel",
