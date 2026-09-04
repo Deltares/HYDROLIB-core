@@ -914,9 +914,9 @@ class MDUParser:
             keyword: The keyword to search for.
             case_sensitive: Whether the search should be case-sensitive.
             exact_match: When True, only match lines where the keyword is
-                followed by a word boundary (whitespace, ``=`` or end of line),
-                so searching for ``ExtForceFile`` does not match a line that
-                starts with ``ExtForceFileNew``.
+                followed by a word boundary (whitespace, `=` or end of line),
+                so searching for `ExtForceFile` does not match a line that
+                starts with `ExtForceFileNew`.
 
         Returns:
             The 0-based line index where the keyword is found, or None if not found.
