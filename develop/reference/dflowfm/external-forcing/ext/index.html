@@ -5089,8 +5089,8 @@ Hold "Ctrl" to enable pan &amp; zoom
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ForcingBase: The corresponding forcing data, or None when no matching forcing block is</span>
-<span class="sd">            found or when the forcing file has not been parsed (e.g. loaded with ``recurse=False``,</span>
-<span class="sd">            in which case it is a ``DiskOnlyFileModel`` placeholder).</span>
+<span class="sd">            found or when the forcing file has not been parsed (e.g. loaded with `recurse=False`,</span>
+<span class="sd">            in which case it is a `DiskOnlyFileModel` placeholder).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forcingfile</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">):</span>
@@ -5491,12 +5491,12 @@ Hold "Ctrl" to enable pan &amp; zoom
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1385</span>
-<span class="normal">1386</span>
-<span class="normal">1387</span>
-<span class="normal">1388</span>
-<span class="normal">1389</span>
-<span class="normal">1390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BoundaryError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BoundaryError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BoundaryError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -5534,9 +5534,9 @@ Hold "Ctrl" to enable pan &amp; zoom
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1388</span>
-<span class="normal">1389</span>
-<span class="normal">1390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1395</span>
+<span class="normal">1396</span>
+<span class="normal">1397</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5785,13 +5785,7 @@ ExtModel: The new-format external forcings file model that hosts
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
@@ -5949,15 +5943,19 @@ ExtModel: The new-format external forcings file model that hosts
 <span class="normal">793</span>
 <span class="normal">794</span>
 <span class="normal">795</span>
-<span class="normal">796</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BubbleScreen</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">796</span>
+<span class="normal">797</span>
+<span class="normal">798</span>
+<span class="normal">799</span>
+<span class="normal">800</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BubbleScreen</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[BubbleScreen]` block for use inside an external forcings file.</span>
 
 <span class="sd">    Represents a bubble screen (air curtain): a row of nozzles on the waterway</span>
 <span class="sd">    bed that releases air bubbles to create a hydraulic barrier. Location is</span>
-<span class="sd">    specified either via a ``locationFile`` (a plain `.pli`) or via inline</span>
-<span class="sd">    ``numCoordinates``/``xCoordinates``/``yCoordinates``. Unlike ``SourceSink``,</span>
+<span class="sd">    specified either via a `locationFile` (a plain `.pli`) or via inline</span>
+<span class="sd">    `numCoordinates`/`xCoordinates`/`yCoordinates`. Unlike `SourceSink`,</span>
 <span class="sd">    BubbleScreen polylines carry no z information; vertical placement is given</span>
-<span class="sd">    exclusively by the required ``zLevel`` field.</span>
+<span class="sd">    exclusively by the required `zLevel` field.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        id: Unique identifier for the block within the ext file.</span>
@@ -5969,15 +5967,15 @@ ExtModel: The new-format external forcings file model that hosts
 <span class="sd">        xcoordinates: X-coordinates of the inline polyline vertices.</span>
 <span class="sd">        ycoordinates: Y-coordinates of the inline polyline vertices.</span>
 <span class="sd">        zlevel: Depth of the nozzle row in model vertical coordinate units.</span>
-<span class="sd">        discharge: Volumetric air-flow rate. Accepts a scalar ``float``,</span>
-<span class="sd">            the string ``&quot;realtime&quot;``, or a path to a ``.bc`` forcing file.</span>
+<span class="sd">        discharge: Volumetric air-flow rate. Accepts a scalar `float`,</span>
+<span class="sd">            the string `&quot;realtime&quot;`, or a path to a `.bc` forcing file.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValidationError: If neither ``locationFile`` nor the full set of inline</span>
-<span class="sd">            coordinate fields (``numCoordinates``, ``xCoordinates``,</span>
-<span class="sd">            ``yCoordinates``) is provided.</span>
-<span class="sd">        ValidationError: If ``numCoordinates`` does not match the length of</span>
-<span class="sd">            ``xCoordinates`` or ``yCoordinates``.</span>
+<span class="sd">        ValidationError: If neither `locationFile` nor the full set of inline</span>
+<span class="sd">            coordinate fields (`numCoordinates`, `xCoordinates`,</span>
+<span class="sd">            `yCoordinates`) is provided.</span>
+<span class="sd">        ValidationError: If `numCoordinates` does not match the length of</span>
+<span class="sd">            `xCoordinates` or `yCoordinates`.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        - Build a block with inline coordinates and inspect the geometry:</span>
@@ -6016,7 +6014,7 @@ ExtModel: The new-format external forcings file model that hosts
 <span class="sd">            &#39;lock_screen.pli&#39;</span>
 
 <span class="sd">            ```</span>
-<span class="sd">        - Omitting both location forms raises ``ValidationError``:</span>
+<span class="sd">        - Omitting both location forms raises `ValidationError`:</span>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; from pydantic import ValidationError</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.ext.models import BubbleScreen</span>
@@ -6031,7 +6029,7 @@ ExtModel: The new-format external forcings file model that hosts
 <span class="sd">    See Also:</span>
 <span class="sd">        SourceSink: Sister block for water and solute injection or extraction.</span>
 <span class="sd">        ExtModel: The new-format external forcings file model that hosts</span>
-<span class="sd">            ``[BubbleScreen]`` blocks under its ``bubblescreen`` list.</span>
+<span class="sd">            `[BubbleScreen]` blocks under its `bubblescreen` list.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -6059,22 +6057,10 @@ ExtModel: The new-format external forcings file model that hosts
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolve_forcing_reference</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel.&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">RealTime</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">resolve_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">resolve_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">ForcingModel</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">_resolve_forcing_data</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_location_specification</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="n">locationfile</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationfile&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;locationFile&quot;</span><span class="p">))</span>
         <span class="n">numcoordinates</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numcoordinates&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numCoordinates&quot;</span><span class="p">))</span>
@@ -6085,16 +6071,26 @@ ExtModel: The new-format external forcings file model that hosts
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">locationfile</span><span class="p">,</span> <span class="s2">&quot;filepath&quot;</span><span class="p">):</span>
             <span class="n">has_locationfile</span> <span class="o">=</span> <span class="n">locationfile</span><span class="o">.</span><span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-        <span class="n">has_coordinates</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">all_inline_present</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">numcoordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="n">xcoordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="n">ycoordinates</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="ow">and</span> <span class="n">_coordinate_length</span><span class="p">(</span><span class="n">xcoordinates</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">lengths_match</span> <span class="o">=</span> <span class="n">all_inline_present</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">_coordinate_length</span><span class="p">(</span><span class="n">xcoordinates</span><span class="p">)</span>
             <span class="o">==</span> <span class="n">_coordinate_length</span><span class="p">(</span><span class="n">ycoordinates</span><span class="p">)</span>
             <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">numcoordinates</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">has_locationfile</span> <span class="ow">or</span> <span class="n">has_coordinates</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">all_inline_present</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">lengths_match</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`numCoordinates` (</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">numcoordinates</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match the length of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`xCoordinates` (</span><span class="si">{</span><span class="n">_coordinate_length</span><span class="p">(</span><span class="n">xcoordinates</span><span class="p">)</span><span class="si">}</span><span class="s2">) and `yCoordinates` &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">_coordinate_length</span><span class="p">(</span><span class="n">ycoordinates</span><span class="p">)</span><span class="si">}</span><span class="s2">) for the BubbleScreen block &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">`.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">has_locationfile</span> <span class="ow">or</span> <span class="n">lengths_match</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Either `locationFile` or the combination of `numCoordinates`, &quot;</span>
                 <span class="s2">&quot;`xCoordinates`, and `yCoordinates` must be provided &quot;</span>
@@ -6150,41 +6146,15 @@ ExtModel: The new-format external forcings file model that hosts
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span>
-<span class="normal">743</span>
-<span class="normal">744</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
 <span class="normal">745</span>
 <span class="normal">746</span>
 <span class="normal">747</span>
-<span class="normal">748</span>
-<span class="normal">749</span>
-<span class="normal">750</span>
-<span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span>
-<span class="normal">754</span>
-<span class="normal">755</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">748</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_forcing_reference</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel.&quot;&quot;&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">RealTime</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">resolve_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">resolve_file_model</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ForcingModel</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">ForcingModel</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">_resolve_forcing_data</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6227,12 +6197,12 @@ ExtModel: The new-format external forcings file model that hosts
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
-<span class="normal">1282</span>
-<span class="normal">1283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1282</span>
+<span class="normal">1283</span>
+<span class="normal">1284</span>
+<span class="normal">1285</span>
+<span class="normal">1286</span>
+<span class="normal">1287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The external forcing file&#39;s `[General]` section with file meta-data.&quot;&quot;&quot;</span>
 
     <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
@@ -6338,6 +6308,18 @@ ExtModel: The new-format external forcings file model that hosts
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="hydrolib.core.dflowfm.ext.models.ExtModel.bubblescreen">bubblescreen</span></code></td>
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="BubbleScreen (hydrolib.core.dflowfm.ext.models.BubbleScreen)" href="#hydrolib.core.dflowfm.ext.models.BubbleScreen">BubbleScreen</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of <code>[BubbleScreen]</code> blocks for all bubble
+screens (air curtains).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="hydrolib.core.dflowfm.ext.models.ExtModel.meteo">meteo</span></code></td>
             <td>
                   <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="Meteo (hydrolib.core.dflowfm.ext.models.Meteo)" href="#hydrolib.core.dflowfm.ext.models.Meteo">Meteo</a>]</code>
@@ -6373,11 +6355,7 @@ initial conditions, and spatial parameters).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1286</span>
-<span class="normal">1287</span>
-<span class="normal">1288</span>
-<span class="normal">1289</span>
-<span class="normal">1290</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1290</span>
 <span class="normal">1291</span>
 <span class="normal">1292</span>
 <span class="normal">1293</span>
@@ -6453,7 +6431,14 @@ initial conditions, and spatial parameters).</p>
 <span class="normal">1363</span>
 <span class="normal">1364</span>
 <span class="normal">1365</span>
-<span class="normal">1366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
+<span class="normal">1366</span>
+<span class="normal">1367</span>
+<span class="normal">1368</span>
+<span class="normal">1369</span>
+<span class="normal">1370</span>
+<span class="normal">1371</span>
+<span class="normal">1372</span>
+<span class="normal">1373</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (new format).</span>
 
@@ -6464,6 +6449,8 @@ initial conditions, and spatial parameters).</p>
 <span class="sd">        boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.</span>
 <span class="sd">        lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.</span>
 <span class="sd">        sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.</span>
+<span class="sd">        bubblescreen (List[BubbleScreen]): List of `[BubbleScreen]` blocks for all bubble</span>
+<span class="sd">            screens (air curtains).</span>
 <span class="sd">        meteo (List[Meteo]): List of `[Meteo]` blocks for legacy meteorological forcings.</span>
 <span class="sd">            Deprecated: use `spatial` instead.</span>
 <span class="sd">        spatial (List[Spatial]): List of `[Spatial]` blocks for spatial forcings (meteo,</span>
@@ -6513,16 +6500,17 @@ initial conditions, and spatial parameters).</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_forcing_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Total number of forcing blocks held across all block types.</span>
 
-<span class="sd">        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[Meteo]` and</span>
-<span class="sd">        `[Spatial]` block, whether produced by conversion or loaded from an existing</span>
-<span class="sd">        file. Use this to decide whether the model has any content worth writing;</span>
-<span class="sd">        counting the individual lists by hand is error-prone and has silently</span>
-<span class="sd">        dropped block types before.</span>
+<span class="sd">        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[BubbleScreen]`,</span>
+<span class="sd">        `[Meteo]` and `[Spatial]` block, whether produced by conversion or loaded</span>
+<span class="sd">        from an existing file. Use this to decide whether the model has any content</span>
+<span class="sd">        worth writing; counting the individual lists by hand is error-prone and has</span>
+<span class="sd">        silently dropped block types before.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary</span><span class="p">)</span>
             <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lateral</span><span class="p">)</span>
             <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sourcesink</span><span class="p">)</span>
+            <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bubblescreen</span><span class="p">)</span>
             <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meteo</span><span class="p">)</span>
             <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial</span><span class="p">)</span>
         <span class="p">)</span>
@@ -6564,11 +6552,11 @@ initial conditions, and spatial parameters).</p>
     <div class="doc doc-contents ">
 
         <p>Total number of forcing blocks held across all block types.</p>
-<p>Sums every <code>[Boundary]</code>, <code>[Lateral]</code>, <code>[SourceSink]</code>, <code>[Meteo]</code> and
-<code>[Spatial]</code> block, whether produced by conversion or loaded from an existing
-file. Use this to decide whether the model has any content worth writing;
-counting the individual lists by hand is error-prone and has silently
-dropped block types before.</p>
+<p>Sums every <code>[Boundary]</code>, <code>[Lateral]</code>, <code>[SourceSink]</code>, <code>[BubbleScreen]</code>,
+<code>[Meteo]</code> and <code>[Spatial]</code> block, whether produced by conversion or loaded
+from an existing file. Use this to decide whether the model has any content
+worth writing; counting the individual lists by hand is error-prone and has
+silently dropped block types before.</p>
 
     </div>
 
@@ -6985,11 +6973,7 @@ dropped block types before.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">891</span>
-<span class="normal">892</span>
-<span class="normal">893</span>
-<span class="normal">894</span>
-<span class="normal">895</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">895</span>
 <span class="normal">896</span>
 <span class="normal">897</span>
 <span class="normal">898</span>
@@ -7085,7 +7069,11 @@ dropped block types before.</p>
 <span class="normal">988</span>
 <span class="normal">989</span>
 <span class="normal">990</span>
-<span class="normal">991</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Meteo</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="p">):</span>
+<span class="normal">991</span>
+<span class="normal">992</span>
+<span class="normal">993</span>
+<span class="normal">994</span>
+<span class="normal">995</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Meteo</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Meteo]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].</span>
@@ -7170,8 +7158,8 @@ dropped block types before.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Select the right class for the forcingFile parameter based on forcingFileType.</span>
 
-<span class="sd">        Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against</span>
-<span class="sd">        this block&#39;s ``forcingFile``/``forcingFileType`` keywords.</span>
+<span class="sd">        Uses the shared `SpatialForcingBase._resolve_file_models` helper against</span>
+<span class="sd">        this block&#39;s `forcingFile`/`forcingFileType` keywords.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_file_models</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span>
@@ -7232,11 +7220,7 @@ specific to this block.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">900</span>
-<span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
-<span class="normal">904</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">904</span>
 <span class="normal">905</span>
 <span class="normal">906</span>
 <span class="normal">907</span>
@@ -7258,7 +7242,11 @@ specific to this block.</p>
 <span class="normal">923</span>
 <span class="normal">924</span>
 <span class="normal">925</span>
-<span class="normal">926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">926</span>
+<span class="normal">927</span>
+<span class="normal">928</span>
+<span class="normal">929</span>
+<span class="normal">930</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Meteo block fields.</span>
 
 <span class="sd">    Inherits the shared descriptions from `SpatialForcingBase.Comments`; only</span>
@@ -7332,11 +7320,7 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">971</span>
-<span class="normal">972</span>
-<span class="normal">973</span>
-<span class="normal">974</span>
-<span class="normal">975</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">975</span>
 <span class="normal">976</span>
 <span class="normal">977</span>
 <span class="normal">978</span>
@@ -7344,13 +7328,17 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 <span class="normal">980</span>
 <span class="normal">981</span>
 <span class="normal">982</span>
-<span class="normal">983</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">983</span>
+<span class="normal">984</span>
+<span class="normal">985</span>
+<span class="normal">986</span>
+<span class="normal">987</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select the right class for the forcingFile parameter based on forcingFileType.</span>
 
-<span class="sd">    Uses the shared ``SpatialForcingBase._resolve_file_models`` helper against</span>
-<span class="sd">    this block&#39;s ``forcingFile``/``forcingFileType`` keywords.</span>
+<span class="sd">    Uses the shared `SpatialForcingBase._resolve_file_models` helper against</span>
+<span class="sd">    this block&#39;s `forcingFile`/`forcingFileType` keywords.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resolve_file_models</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
@@ -7399,12 +7387,12 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1393</span>
-<span class="normal">1394</span>
-<span class="normal">1395</span>
-<span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1400</span>
+<span class="normal">1401</span>
+<span class="normal">1402</span>
+<span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParameterFieldError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;ParameterFieldError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -7442,9 +7430,9 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1403</span>
+<span class="normal">1404</span>
+<span class="normal">1405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7725,7 +7713,13 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
-<span class="normal">629</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSink</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSink</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[SourceSink]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].</span>
@@ -7769,15 +7763,20 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
 
 <span class="sd">        Range sources are written as e.g. `zSource = -7.5 -3.01` in the ext</span>
 <span class="sd">        file; the parser delivers this as a single string that Pydantic</span>
-<span class="sd">        cannot coerce to `float` or `List[float]`.</span>
+<span class="sd">        cannot coerce to `float` or `List[float]`. An empty or whitespace-only</span>
+<span class="sd">        string (e.g. `zSource =`) is treated as &quot;not provided&quot; (`None`),</span>
+<span class="sd">        consistent with `str_is_empty_or_none`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span>
@@ -7906,6 +7905,7 @@ this block's <code>forcingFile</code>/<code>forcingFileType</code> keywords.</p>
         <span class="k">return</span> <span class="n">values</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_locationfile_z_conflict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reject `.pliz` locationFile combined with explicit `zSource`/`zSink`.</span>
 
@@ -8002,12 +8002,7 @@ Args:
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">514</span>
 <span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
@@ -8026,7 +8021,12 @@ Args:
 <span class="normal">530</span>
 <span class="normal">531</span>
 <span class="normal">532</span>
-<span class="normal">533</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dynamic_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dynamic_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize SourceSink and set dynamic fields as instance attributes.</span>
 
 <span class="sd">    When `dynamic_fields` is provided, exactly those names (whose values are passed</span>
@@ -8075,7 +8075,9 @@ Args:
         <p>Parse <code>zSource</code>/<code>zSink</code> from a space-separated string.</p>
 <p>Range sources are written as e.g. <code>zSource = -7.5 -3.01</code> in the ext
 file; the parser delivers this as a single string that Pydantic
-cannot coerce to <code>float</code> or <code>List[float]</code>.</p>
+cannot coerce to <code>float</code> or <code>List[float]</code>. An empty or whitespace-only
+string (e.g. <code>zSource =</code>) is treated as "not provided" (<code>None</code>),
+consistent with <code>str_is_empty_or_none</code>.</p>
 
 
             <details class="mkdocstrings-source">
@@ -8096,22 +8098,32 @@ cannot coerce to <code>float</code> or <code>List[float]</code>.</p>
 <span class="normal">446</span>
 <span class="normal">447</span>
 <span class="normal">448</span>
-<span class="normal">449</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;zsource&quot;</span><span class="p">,</span> <span class="s2">&quot;zsink&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;zsource&quot;</span><span class="p">,</span> <span class="s2">&quot;zsink&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">split_z_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse `zSource`/`zSink` from a space-separated string.</span>
 
 <span class="sd">    Range sources are written as e.g. `zSource = -7.5 -3.01` in the ext</span>
 <span class="sd">    file; the parser delivers this as a single string that Pydantic</span>
-<span class="sd">    cannot coerce to `float` or `List[float]`.</span>
+<span class="sd">    cannot coerce to `float` or `List[float]`. An empty or whitespace-only</span>
+<span class="sd">    string (e.g. `zSource =`) is treated as &quot;not provided&quot; (`None`),</span>
+<span class="sd">    consistent with `str_is_empty_or_none`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">parts</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8144,12 +8156,7 @@ cannot coerce to <code>float</code> or <code>List[float]</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span>
-<span class="normal">540</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
@@ -8183,7 +8190,12 @@ cannot coerce to <code>float</code> or <code>List[float]</code>.</p>
 <span class="normal">571</span>
 <span class="normal">572</span>
 <span class="normal">573</span>
-<span class="normal">574</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span>
+<span class="normal">578</span>
+<span class="normal">579</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_location_specification</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensures that either `locationfile` or a valid set of coordinates is provided.</span>
@@ -8235,6 +8247,10 @@ cannot coerce to <code>float</code> or <code>List[float]</code>.</p>
 <h3 id="hydrolib.core.dflowfm.ext.models.SourceSink.validate_locationfile_z_conflict" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">validate_locationfile_z_conflict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></code>
 
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
 <a href="#hydrolib.core.dflowfm.ext.models.SourceSink.validate_locationfile_z_conflict" class="headerlink" title="Permanent link">&para;</a></h3>
 
 
@@ -8251,12 +8267,7 @@ allowed (and required for a coupled source-sink specified via
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
-<span class="normal">580</span>
-<span class="normal">581</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">581</span>
 <span class="normal">582</span>
 <span class="normal">583</span>
 <span class="normal">584</span>
@@ -8291,7 +8302,14 @@ allowed (and required for a coupled source-sink specified via
 <span class="normal">613</span>
 <span class="normal">614</span>
 <span class="normal">615</span>
-<span class="normal">616</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_locationfile_z_conflict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reject `.pliz` locationFile combined with explicit `zSource`/`zSink`.</span>
 
@@ -8374,12 +8392,12 @@ allowed (and required for a coupled source-sink specified via
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1369</span>
-<span class="normal">1370</span>
-<span class="normal">1371</span>
-<span class="normal">1372</span>
-<span class="normal">1373</span>
-<span class="normal">1374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSinkError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1376</span>
+<span class="normal">1377</span>
+<span class="normal">1378</span>
+<span class="normal">1379</span>
+<span class="normal">1380</span>
+<span class="normal">1381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SourceSinkError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SourceSinkError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -8417,9 +8435,9 @@ allowed (and required for a coupled source-sink specified via
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1372</span>
-<span class="normal">1373</span>
-<span class="normal">1374</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1379</span>
+<span class="normal">1380</span>
+<span class="normal">1381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -8470,11 +8488,7 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 994</span>
-<span class="normal"> 995</span>
-<span class="normal"> 996</span>
-<span class="normal"> 997</span>
-<span class="normal"> 998</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 998</span>
 <span class="normal"> 999</span>
 <span class="normal">1000</span>
 <span class="normal">1001</span>
@@ -8751,7 +8765,11 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
 <span class="normal">1272</span>
 <span class="normal">1273</span>
 <span class="normal">1274</span>
-<span class="normal">1275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Spatial</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="p">,</span> <span class="n">LocationTypeDataFileTypeValidators</span><span class="p">):</span>
+<span class="normal">1275</span>
+<span class="normal">1276</span>
+<span class="normal">1277</span>
+<span class="normal">1278</span>
+<span class="normal">1279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Spatial</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="p">,</span> <span class="n">LocationTypeDataFileTypeValidators</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Spatial]` block for use inside an external forcings file.</span>
 
 <span class="sd">    I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].</span>
@@ -8867,9 +8885,9 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_spatial_keys</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize camelCase aliases and coerce any unresolved datafile to DiskOnlyFileModel.</span>
 
-<span class="sd">        ``dataFile`` is normally resolved to its concrete file model earlier in the</span>
-<span class="sd">        validation flow (see ``_resolve_file_models``). This fallback only wraps a</span>
-<span class="sd">        path that is still raw (e.g. no ``dataFileType`` was supplied) so that the</span>
+<span class="sd">        `dataFile` is normally resolved to its concrete file model earlier in the</span>
+<span class="sd">        validation flow (see `_resolve_file_models`). This fallback only wraps a</span>
+<span class="sd">        path that is still raw (e.g. no `dataFileType` was supplied) so that the</span>
 <span class="sd">        field always holds a file model rather than a bare string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_file</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;datafile&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dataFile&quot;</span><span class="p">)</span>
@@ -8888,7 +8906,7 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_datavalue_path</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">has_datafile</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">has_datafiletype</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the ``dataValue`` usage path (constant value inside polygon).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the `dataValue` usage path (constant value inside polygon).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">has_datafile</span> <span class="ow">or</span> <span class="n">has_datafiletype</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;When &#39;dataValue&#39; is provided, &#39;dataFile&#39; and &#39;dataFileType&#39; must not be specified.&quot;</span>
@@ -8906,7 +8924,7 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_datafile_path</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">has_datafile</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">has_datafiletype</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the ``dataFile`` usage path and emit deprecation warning when needed.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the `dataFile` usage path and emit deprecation warning when needed.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">has_datafile</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;dataFile&#39; is required when &#39;dataValue&#39; is not specified.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">has_datafiletype</span><span class="p">:</span>
@@ -8932,9 +8950,9 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_section_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flatten a Section object into a dictionary of raw values.</span>
 
-<span class="sd">        The raw ``dataFile`` value is left as a path/string so that the subsequent</span>
-<span class="sd">        ``_resolve_file_models`` step can select the concrete file model from</span>
-<span class="sd">        ``dataFileType`` (rather than being forced to ``DiskOnlyFileModel`` here).</span>
+<span class="sd">        The raw `dataFile` value is left as a path/string so that the subsequent</span>
+<span class="sd">        `_resolve_file_models` step can select the concrete file model from</span>
+<span class="sd">        `dataFileType` (rather than being forced to `DiskOnlyFileModel` here).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            values: The values to process, which may be a Section object or a dictionary.</span>
@@ -8949,25 +8967,25 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_datavalue_or_datafile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates the two mutually exclusive usage paths of a Spatial block.</span>
 
-<span class="sd">        When ``dataValue`` is provided the block describes a constant value applied</span>
+<span class="sd">        When `dataValue` is provided the block describes a constant value applied</span>
 <span class="sd">        inside a polygon mask.  In this mode:</span>
-<span class="sd">        - ``dataFile`` and ``dataFileType`` must **not** be specified.</span>
-<span class="sd">        - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.</span>
-<span class="sd">        - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).</span>
+<span class="sd">        - `dataFile` and `dataFileType` must **not** be specified.</span>
+<span class="sd">        - `targetMaskFile` (a `.pol` file) is optional but often used.</span>
+<span class="sd">        - `interpolationMethod` must be `constant` (set automatically when omitted).</span>
 
-<span class="sd">        When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both</span>
+<span class="sd">        When `dataValue` is absent, `dataFile` and `dataFileType` are both</span>
 <span class="sd">        required.</span>
 
-<span class="sd">        Note: using ``dataFileType=polygon`` for &quot;inside polygon&quot; initial-condition</span>
-<span class="sd">        data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +</span>
-<span class="sd">        ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType</span>
-<span class="sd">        remains supported for quantities such as ``initialvertical*`` (e.g.</span>
-<span class="sd">        ``initialverticalsalinityprofile``) that use polygon files for a different</span>
+<span class="sd">        Note: using `dataFileType=polygon` for &quot;inside polygon&quot; initial-condition</span>
+<span class="sd">        data is **deprecated**.  Use `dataValue` + `targetMaskFile=*.pol` +</span>
+<span class="sd">        `interpolationMethod=constant` instead.  The `polygon` dataFileType</span>
+<span class="sd">        remains supported for quantities such as `initialvertical*` (e.g.</span>
+<span class="sd">        `initialverticalsalinityprofile`) that use polygon files for a different</span>
 <span class="sd">        purpose and have no new alternative yet.</span>
 
-<span class="sd">        The data file is resolved to its concrete file model only on the ``dataFile``</span>
-<span class="sd">        path (``dataValue`` absent). This prevents an invalid combination</span>
-<span class="sd">        (``dataValue`` together with ``dataFile``) from parsing a file before the</span>
+<span class="sd">        The data file is resolved to its concrete file model only on the `dataFile`</span>
+<span class="sd">        path (`dataValue` absent). This prevents an invalid combination</span>
+<span class="sd">        (`dataValue` together with `dataFile`) from parsing a file before the</span>
 <span class="sd">        mutual-exclusion check rejects it, so callers get the exclusion error rather</span>
 <span class="sd">        than a file-parse error.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -9016,9 +9034,9 @@ forcings) and the <code>[Initial]</code> / <code>[Parameter]</code> blocks in in
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_targetlayer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce targetLayer to a TargetLayer member or a positive integer layer number.</span>
 
-<span class="sd">        Accepts ``bottom`` and ``all`` (case-insensitive) or a positive integer. The</span>
-<span class="sd">        old external-forcings ``LAYER`` values ``-1`` and ``0`` are represented by</span>
-<span class="sd">        ``bottom`` and ``all`` respectively and are not accepted as integers here.</span>
+<span class="sd">        Accepts `bottom` and `all` (case-insensitive) or a positive integer. The</span>
+<span class="sd">        old external-forcings `LAYER` values `-1` and `0` are represented by</span>
+<span class="sd">        `bottom` and `all` respectively and are not accepted as integers here.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">TargetLayer</span><span class="p">):</span>
@@ -9079,11 +9097,7 @@ fields unique to the Spatial block are declared here.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1007</span>
-<span class="normal">1008</span>
-<span class="normal">1009</span>
-<span class="normal">1010</span>
-<span class="normal">1011</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1011</span>
 <span class="normal">1012</span>
 <span class="normal">1013</span>
 <span class="normal">1014</span>
@@ -9144,7 +9158,11 @@ fields unique to the Spatial block are declared here.</p>
 <span class="normal">1069</span>
 <span class="normal">1070</span>
 <span class="normal">1071</span>
-<span class="normal">1072</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">1072</span>
+<span class="normal">1073</span>
+<span class="normal">1074</span>
+<span class="normal">1075</span>
+<span class="normal">1076</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">SpatialForcingBase</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Spatial block fields.</span>
 
 <span class="sd">    Inherits the shared descriptions from `SpatialForcingBase.Comments`; only</span>
@@ -9273,11 +9291,7 @@ than a file-parse error.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1187</span>
-<span class="normal">1188</span>
-<span class="normal">1189</span>
-<span class="normal">1190</span>
-<span class="normal">1191</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1191</span>
 <span class="normal">1192</span>
 <span class="normal">1193</span>
 <span class="normal">1194</span>
@@ -9323,30 +9337,34 @@ than a file-parse error.</p>
 <span class="normal">1234</span>
 <span class="normal">1235</span>
 <span class="normal">1236</span>
-<span class="normal">1237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">1237</span>
+<span class="normal">1238</span>
+<span class="normal">1239</span>
+<span class="normal">1240</span>
+<span class="normal">1241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_datavalue_or_datafile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates the two mutually exclusive usage paths of a Spatial block.</span>
 
-<span class="sd">    When ``dataValue`` is provided the block describes a constant value applied</span>
+<span class="sd">    When `dataValue` is provided the block describes a constant value applied</span>
 <span class="sd">    inside a polygon mask.  In this mode:</span>
-<span class="sd">    - ``dataFile`` and ``dataFileType`` must **not** be specified.</span>
-<span class="sd">    - ``targetMaskFile`` (a ``.pol`` file) is optional but often used.</span>
-<span class="sd">    - ``interpolationMethod`` must be ``constant`` (set automatically when omitted).</span>
+<span class="sd">    - `dataFile` and `dataFileType` must **not** be specified.</span>
+<span class="sd">    - `targetMaskFile` (a `.pol` file) is optional but often used.</span>
+<span class="sd">    - `interpolationMethod` must be `constant` (set automatically when omitted).</span>
 
-<span class="sd">    When ``dataValue`` is absent, ``dataFile`` and ``dataFileType`` are both</span>
+<span class="sd">    When `dataValue` is absent, `dataFile` and `dataFileType` are both</span>
 <span class="sd">    required.</span>
 
-<span class="sd">    Note: using ``dataFileType=polygon`` for &quot;inside polygon&quot; initial-condition</span>
-<span class="sd">    data is **deprecated**.  Use ``dataValue`` + ``targetMaskFile=*.pol`` +</span>
-<span class="sd">    ``interpolationMethod=constant`` instead.  The ``polygon`` dataFileType</span>
-<span class="sd">    remains supported for quantities such as ``initialvertical*`` (e.g.</span>
-<span class="sd">    ``initialverticalsalinityprofile``) that use polygon files for a different</span>
+<span class="sd">    Note: using `dataFileType=polygon` for &quot;inside polygon&quot; initial-condition</span>
+<span class="sd">    data is **deprecated**.  Use `dataValue` + `targetMaskFile=*.pol` +</span>
+<span class="sd">    `interpolationMethod=constant` instead.  The `polygon` dataFileType</span>
+<span class="sd">    remains supported for quantities such as `initialvertical*` (e.g.</span>
+<span class="sd">    `initialverticalsalinityprofile`) that use polygon files for a different</span>
 <span class="sd">    purpose and have no new alternative yet.</span>
 
-<span class="sd">    The data file is resolved to its concrete file model only on the ``dataFile``</span>
-<span class="sd">    path (``dataValue`` absent). This prevents an invalid combination</span>
-<span class="sd">    (``dataValue`` together with ``dataFile``) from parsing a file before the</span>
+<span class="sd">    The data file is resolved to its concrete file model only on the `dataFile`</span>
+<span class="sd">    path (`dataValue` absent). This prevents an invalid combination</span>
+<span class="sd">    (`dataValue` together with `dataFile`) from parsing a file before the</span>
 <span class="sd">    mutual-exclusion check rejects it, so callers get the exclusion error rather</span>
 <span class="sd">    than a file-parse error.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -9403,11 +9421,7 @@ old external-forcings <code>LAYER</code> values <code>-1</code> and <code>0</cod
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1254</span>
-<span class="normal">1255</span>
-<span class="normal">1256</span>
-<span class="normal">1257</span>
-<span class="normal">1258</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1258</span>
 <span class="normal">1259</span>
 <span class="normal">1260</span>
 <span class="normal">1261</span>
@@ -9424,14 +9438,18 @@ old external-forcings <code>LAYER</code> values <code>-1</code> and <code>0</cod
 <span class="normal">1272</span>
 <span class="normal">1273</span>
 <span class="normal">1274</span>
-<span class="normal">1275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;targetlayer&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">1275</span>
+<span class="normal">1276</span>
+<span class="normal">1277</span>
+<span class="normal">1278</span>
+<span class="normal">1279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;targetlayer&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_targetlayer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Coerce targetLayer to a TargetLayer member or a positive integer layer number.</span>
 
-<span class="sd">    Accepts ``bottom`` and ``all`` (case-insensitive) or a positive integer. The</span>
-<span class="sd">    old external-forcings ``LAYER`` values ``-1`` and ``0`` are represented by</span>
-<span class="sd">    ``bottom`` and ``all`` respectively and are not accepted as integers here.</span>
+<span class="sd">    Accepts `bottom` and `all` (case-insensitive) or a positive integer. The</span>
+<span class="sd">    old external-forcings `LAYER` values `-1` and `0` are represented by</span>
+<span class="sd">    `bottom` and `all` respectively and are not accepted as integers here.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">v</span>
     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">TargetLayer</span><span class="p">):</span>
@@ -9488,12 +9506,12 @@ old external-forcings <code>LAYER</code> values <code>-1</code> and <code>0</cod
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1377</span>
-<span class="normal">1378</span>
-<span class="normal">1379</span>
-<span class="normal">1380</span>
-<span class="normal">1381</span>
-<span class="normal">1382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpatialError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1384</span>
+<span class="normal">1385</span>
+<span class="normal">1386</span>
+<span class="normal">1387</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpatialError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SpatialError.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -9531,9 +9549,9 @@ old external-forcings <code>LAYER</code> values <code>-1</code> and <code>0</cod
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1380</span>
-<span class="normal">1381</span>
-<span class="normal">1382</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1387</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize with an error message.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9589,11 +9607,7 @@ preserved, so only behaviour (not fields) is hoisted here.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">799</span>
-<span class="normal">800</span>
-<span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">803</span>
 <span class="normal">804</span>
 <span class="normal">805</span>
 <span class="normal">806</span>
@@ -9678,7 +9692,11 @@ preserved, so only behaviour (not fields) is hoisted here.</p>
 <span class="normal">885</span>
 <span class="normal">886</span>
 <span class="normal">887</span>
-<span class="normal">888</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpatialForcingBase</span><span class="p">(</span><span class="n">OperandInterpolationValidators</span><span class="p">,</span> <span class="n">INIBasedModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">888</span>
+<span class="normal">889</span>
+<span class="normal">890</span>
+<span class="normal">891</span>
+<span class="normal">892</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SpatialForcingBase</span><span class="p">(</span><span class="n">OperandInterpolationValidators</span><span class="p">,</span> <span class="n">INIBasedModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Shared behaviour for the `[Meteo]` and `[Spatial]` external-forcing blocks.</span>
 
 <span class="sd">    `Meteo` (legacy) and `Spatial` (its successor) share the same data-file model</span>
@@ -9734,18 +9752,18 @@ preserved, so only behaviour (not fields) is hoisted here.</p>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Select the concrete file model for the data/forcing file from its type.</span>
 
-<span class="sd">        Mirrors the historical per-class ``choose_file_model`` bodies: when both a</span>
+<span class="sd">        Mirrors the historical per-class `choose_file_model` bodies: when both a</span>
 <span class="sd">        file keyword and its type keyword are present and the file is still a raw</span>
 <span class="sd">        path, the path is resolved into the model class from</span>
-<span class="sd">        ``FILETYPE_FILEMODEL_MAPPING`` (types not in the mapping fall back to</span>
-<span class="sd">        ``DiskOnlyFileModel``).</span>
+<span class="sd">        `FILETYPE_FILEMODEL_MAPPING` (types not in the mapping fall back to</span>
+<span class="sd">        `DiskOnlyFileModel`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            values: Raw, unvalidated input values for the block.</span>
 <span class="sd">            file_keys: The lowercase and camelCase names of the file keyword,</span>
-<span class="sd">                e.g. ``(&quot;datafile&quot;, &quot;dataFile&quot;)``.</span>
+<span class="sd">                e.g. `(&quot;datafile&quot;, &quot;dataFile&quot;)`.</span>
 <span class="sd">            type_keys: The lowercase and camelCase names of the file-type keyword,</span>
-<span class="sd">                e.g. ``(&quot;datafiletype&quot;, &quot;dataFileType&quot;)``.</span>
+<span class="sd">                e.g. `(&quot;datafiletype&quot;, &quot;dataFileType&quot;)`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[str, Any]: The (possibly updated) values dictionary.</span>
@@ -9814,11 +9832,7 @@ stay on the subclasses because their wording differs.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>hydrolib/core/dflowfm/ext/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">817</span>
-<span class="normal">818</span>
-<span class="normal">819</span>
-<span class="normal">820</span>
-<span class="normal">821</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">821</span>
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span>
@@ -9839,7 +9853,11 @@ stay on the subclasses because their wording differs.</p>
 <span class="normal">839</span>
 <span class="normal">840</span>
 <span class="normal">841</span>
-<span class="normal">842</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments shared by the `[Meteo]` and `[Spatial]` block fields.</span>
 
 <span class="sd">    Only the descriptions that are identical in both blocks live here. The</span>
@@ -9939,11 +9957,11 @@ accepted; see <code>Spatial.targetlayer</code>.</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TargetLayer</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Valid non-numeric values for the `targetLayer` attribute of a `[Spatial]` block.</span>
 
-<span class="sd">    Corresponds to the ``LAYER`` value in the old external forcings file: ``bottom``</span>
-<span class="sd">    (old ``-1``) and ``all`` (old ``0``). A positive integer layer number is also</span>
-<span class="sd">    accepted; see ``Spatial.targetlayer``.</span>
+<span class="sd">    Corresponds to the `LAYER` value in the old external forcings file: `bottom`</span>
+<span class="sd">    (old `-1`) and `all` (old `0`). A positive integer layer number is also</span>
+<span class="sd">    accepted; see `Spatial.targetlayer`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">bottom</span> <span class="o">=</span> <span class="s2">&quot;bottom&quot;</span>
