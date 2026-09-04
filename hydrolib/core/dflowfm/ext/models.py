@@ -36,18 +36,20 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_location_specification,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
-    OperandInterpolationValidators,
     DataFileType,
     InterpolationMethod,
-    LocationTypeDataFileTypeValidators,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.validators import (
+    CoordinateValidator,
+    LocationTypeDataFileTypeValidators,
+    OperandInterpolationValidators,
+)
 
 # Deprecated aliases — MeteoForcingFileType and MeteoInterpolationMethod are merged
 # into DataFileType and InterpolationMethod respectively. These aliases remain for
@@ -324,7 +326,7 @@ class Boundary(INIBasedModel):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
-class Lateral(INIBasedModel):
+class Lateral(CoordinateValidator, INIBasedModel):
     """A `[Lateral]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
@@ -347,11 +349,6 @@ class Lateral(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
 
     @field_validator("discharge", mode="before")
     @classmethod
@@ -393,7 +390,7 @@ class Lateral(INIBasedModel):
         return v
 
 
-class SourceSink(INIBasedModel):
+class SourceSink(CoordinateValidator, INIBasedModel):
     """A `[SourceSink]` block for use inside an external forcings file.
 
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.SourceSink].
@@ -424,11 +421,6 @@ class SourceSink(INIBasedModel):
 
     def is_intermediate_link(self) -> bool:
         return True
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def split_coordinates(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
 
     @field_validator(
         "discharge", "salinity", "temperature", mode="before"

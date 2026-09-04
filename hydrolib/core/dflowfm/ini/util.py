@@ -1,7 +1,6 @@
 """util.py provides additional utility methods related to handling ini files."""
 
 import warnings
-
 from datetime import datetime
 from enum import Enum
 from operator import eq
@@ -12,27 +11,6 @@ from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.utils import operator_str, str_is_empty_or_none, to_list
 from hydrolib.core.dflowfm.common.models import LocationType
-
-
-def split_string_on_delimiter(cls, v: Any, field: ValidationInfo):
-    """Split a string on the list field delimiter, and return a list of strings.
-
-    If the input is a string, it is split on the delimiter defined in the class.
-    If the input is anything else, it is returned as is.
-
-    Args:
-        cls (Type[BaseModel]): The class that contains the field.
-        v (Any): The value to split.
-        field (ValidationInfo): The field information.
-
-    Returns:
-        List[str] or Any: A list of strings if the input was a string, otherwise
-            the input value as is.
-    """
-    if isinstance(v, str):
-        v = v.split(cls.get_list_field_delimiter(field.field_name))
-        v = [item.strip() for item in v if item != ""]
-    return v
 
 
 def enum_value_parser(

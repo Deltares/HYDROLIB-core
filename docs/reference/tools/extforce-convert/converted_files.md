@@ -22,7 +22,8 @@ project/
 ├─ model.mdu                      # updated to reference new files
 ├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
 ├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
-└─ new-structure.ini              # StructureModel: structures (if any)
+├─ new-structure.ini              # StructureModel: structures (if any)
+└─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
 ```
 
 ### Example MDU file
@@ -163,6 +164,10 @@ ExtForceFileNew = new-external-forcing.ext
 [geometry]
 IniFieldFile   = new-initial-conditions.ini    ; only if inifield has entries
 StructureFile  = new-structure.ini             ; only if structures exist
+
+[output]
+mbaFile        = new_mba.ini                    ; only if mass balance areas exist
+mbaInterval    = 300.0                          ; carried over from [processes] DtMassBalance
 ```
 
 ### Backups and cleanup
@@ -237,6 +242,8 @@ A single legacy block may be routed to different destination models depending on
 - Source/sink quantities → `[sourcesink]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
 - Initial/parameter quantities → `[initial]` / `[parameter]` block in `new-initial-conditions.ini`.
 - Structures → `[structure]` in `new-structure.ini`.
+- Mass balance area quantities (`waqmassbalancearea<name>`) → `[MassBalanceArea]` block in a new `_mba.ini`
+  file, plus `mbaFile`/`mbaInterval` keywords in the MDU `[output]` section.
 
 #### 1.1) Meteo Block (new external forcing file)
 ```ini
@@ -345,6 +352,36 @@ that exact casing.
   - `averagingrelsize` from `RELATIVESEARCHCELLSIZE`
   - `averagingnummin` from `NUMMIN`
   - `averagingpercentile` from `PERCENTILEMINMAX`
+
+#### 1.5) Mass balance area block (separate `_mba.ini` file)
+```ini
+QUANTITY=waqmassbalanceareaEstruaryWest
+FILENAME=EstruaryWest.pol
+FILETYPE=10
+METHOD=4
+OPERAND=O
+VALUE=1.0
+```
+Each `waqmassbalancearea<name>` (or `massbalancearea<name>`) block is moved out of the external forcings
+file into a single mass balance area file (`<*_mba.ini>`, default `new_mba.ini`):
+- The area `name` is taken from the quantity suffix (the text after the `waqmassbalancearea` prefix).
+- `FILENAME` → `locationFile` (the area polygon).
+- `FILETYPE`/`METHOD`/`OPERAND` are dropped, and `VALUE` is ignored for mass balance areas.
+
+Resulting `_mba.ini`:
+```ini
+[General]
+fileVersion = 1.00
+fileType    = massBalanceAreas
+
+[MassBalanceArea]
+name         = EstruaryWest
+locationFile = EstruaryWest.pol
+```
+The MDU `[output]` section is updated with `mbaFile = new_mba.ini`. The required `mbaInterval` keyword
+(Manual F.2.5) is carried over from the legacy `[processes] DtMassBalance` value, when present.
+
+> Kernel support: the `_mba.ini` file and the `mbaFile`/`mbaInterval` keywords require DIMRset ≥ 2.31.18.
 
 #### 2) Legacy `.tim` → new `.bc` (time series)
 

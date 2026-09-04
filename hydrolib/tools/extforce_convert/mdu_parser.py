@@ -17,6 +17,8 @@ from hydrolib.tools.extforce_convert.utils import (
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
+MBA_FILE_LINE = "mbaFile"
+MBA_INTERVAL_LINE = "mbaInterval"
 PATH_RELATIVE_TO_PARENT = "PathsRelativeToParent"
 
 __all__ = ["MDUParser"]
@@ -137,17 +139,12 @@ class ExternalForcingBlock:
 
         return old_ext_force_file
 
-    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+    def get_new_extforce_file(self) -> Path:
         """Get the new external forcing file path.
 
         Notes:
             - If the `extforcefilenew` exists in the MDU file, it will be used.
             - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
-            - If an `ext_file` is provided, it will be used as the new extforce file.
-
-        Args:
-            ext_file (Path):
-                Optional path to an external forcing file to use as the new extforce file.
 
         Returns:
             Path:
@@ -161,21 +158,17 @@ class ExternalForcingBlock:
             # if the extforce_file_new exist in the MDU file, we use it
             ext_file = (self.root_dir / _extforce_file_new).resolve()
         else:
-            # if the extforce_file_new does not exist in the MDU file
-            if ext_file is None:
-                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
-                ext_file = self.root_dir / self.extforce_file.with_stem(
-                    self.extforce_file.stem + "-new"
+            # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
+            # name to create the new extforce file
+            ext_file = self.root_dir / self.extforce_file.with_stem(
+                self.extforce_file.stem + "-new"
+            )
+            if ext_file.exists():
+                raise FileExistsError(
+                    "The converter detected that there is no new extforce file in the mdu file, \n"
+                    f"But there is an extforce file with the name {ext_file} that already exists. \n"
+                    "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
                 )
-                if ext_file.exists():
-                    raise FileExistsError(
-                        "The converter detected that there is no new extforce file in the mdu file, \n"
-                        f"But there is an extforce file with the name {ext_file} that already exists. \n"
-                        "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
-                    )
-            else:
-                # if an ext_file is provided, we use it
-                ext_file = Path(ext_file).resolve()
 
         return ext_file
 
@@ -841,6 +834,28 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
+    def update_mba_file(self, file_name: str) -> None:
+        """Update the mbaFile entry in the MDU `[output]` section.
+
+        Args:
+            file_name (str):
+                The name of the mass balance area file (`<*_mba.ini>`) to set.
+
+        Notes:
+            - The entry is added at the end of the output section if absent; if it exists with no
+            value, it is populated, otherwise it is left unchanged.
+        """
+        self.update_file_entry(MBA_FILE_LINE, file_name, "output")
+
+    def update_mba_interval(self, value: str) -> None:
+        """Update the mbaInterval entry in the MDU `[output]` section.
+
+        Args:
+            value (str):
+                The mass balance area output interval [s]; must be a multiple of DtUser.
+        """
+        self.update_file_entry(MBA_INTERVAL_LINE, value, "output")
+
     def update_extforce_file_new(
         self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False
     ) -> None:
@@ -852,7 +867,9 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         if remove_old_ext_file:
-            old_ext_force_line = self.find_keyword_lines("ExtForceFile", exact_match=True)
+            old_ext_force_line = self.find_keyword_lines(
+                "ExtForceFile", exact_match=True
+            )
             if old_ext_force_line is not None:
                 self.content.pop(old_ext_force_line)
 
@@ -897,9 +914,9 @@ class MDUParser:
             keyword: The keyword to search for.
             case_sensitive: Whether the search should be case-sensitive.
             exact_match: When True, only match lines where the keyword is
-                followed by a word boundary (whitespace, ``=`` or end of line),
-                so searching for ``ExtForceFile`` does not match a line that
-                starts with ``ExtForceFileNew``.
+                followed by a word boundary (whitespace, `=` or end of line),
+                so searching for `ExtForceFile` does not match a line that
+                starts with `ExtForceFileNew`.
 
         Returns:
             The 0-based line index where the keyword is found, or None if not found.
@@ -911,7 +928,7 @@ class MDUParser:
             stripped_line = haystack.lstrip()
             if_exist = stripped_line.startswith(needle)
             if if_exist and exact_match:
-                remainder = stripped_line[len(needle):]
+                remainder = stripped_line[len(needle) :]
                 if_exist = remainder == "" or not (
                     remainder[0].isalnum() or remainder[0] == "_"
                 )
@@ -1124,23 +1141,35 @@ class MDUParser:
 
         return path
 
-    def get_structure_file(
-        self,
-        usr_structure_file: Optional[PathOrStr],
-    ) -> Path | None:
+    def get_structure_file(self) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
 
-        # if given by the user use that, otherwise use the one in the mdu file
-        path = usr_structure_file if usr_structure_file is not None else structure_file
-
-        if path:
-            path = (root_dir / Path(path)).resolve()
+        if structure_file:
+            path = (root_dir / Path(structure_file)).resolve()
         else:
-            print(
-                "The structure file is not found in the mdu file, and not provided by the user. \n"
-                f"given: {path}."
-            )
+            print("The structure file is not found in the mdu file.")
+            path = None
+
+        return path
+
+    def get_mba_file(self) -> Path | None:
+        """Resolve the mass balance area file from the MDU `[output] mbaFile` keyword.
+
+        When the MDU already references an `mbaFile`, the converter loads that file and appends the
+        converted areas to it, rather than creating a fresh one. This mirrors how the new external
+        forcings and structure files are resolved from the MDU.
+
+        Returns:
+            Path | None: The resolved absolute path, or ``None`` when the MDU does not specify one
+                (the converter then falls back to its default ``new_mba.ini``).
+        """
+        mba_file = self.get_keyword(MBA_FILE_LINE)
+        root_dir = self.mdu_path.parent
+
+        if mba_file:
+            path = (root_dir / Path(mba_file)).resolve()
+        else:
             path = None
 
         return path

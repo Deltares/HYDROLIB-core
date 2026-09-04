@@ -52,10 +52,12 @@ def _should_execute(model: "BaseModel", _: FileLoadContext) -> bool:
 def set_default_disk_only_file_model(v: Any):
     """Return a default DiskOnlyFileModel dict from the given value."""
     if v is None:
-        return {"filepath": None}
+        result = {"filepath": None}
     elif isinstance(v, (Path, str)):
-        return {"filepath": Path(v)}
-    return v
+        result = {"filepath": Path(v)}
+    else:
+        result = v
+    return result
 
 
 class BaseModel(PydanticBaseModel):

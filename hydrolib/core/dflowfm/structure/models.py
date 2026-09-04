@@ -28,13 +28,13 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_conditionally,
     validate_correct_length,
     validate_forbidden_fields,
     validate_required_fields,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ ForcingDataUnion = Annotated[
 ]
 
 
-class Structure(INIBasedModel):
+class Structure(CoordinateValidator, INIBasedModel):
     """Structure model."""
 
     class Comments(INIBasedModel.Comments):
@@ -139,12 +139,6 @@ class Structure(INIBasedModel):
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
-
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
-    @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
-
 
     @model_validator(mode="after")
     def check_location(self):
@@ -444,7 +438,7 @@ class UniversalWeir(Structure):
     @field_validator("yvalues", "zvalues", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
@@ -495,7 +489,7 @@ class Culvert(Structure):
     @field_validator("relopening", "losscoeff", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
@@ -595,7 +589,7 @@ class LongCulvert(Structure):
     @field_validator("zcoordinates", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("zcoordinates", mode="after")
     @classmethod
@@ -656,7 +650,7 @@ class Pump(Structure):
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
         """Split the string on the delimiter and return a list of floats."""
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("orientation", mode="before")
     @classmethod
@@ -761,7 +755,7 @@ class Compound(Structure):
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[str]:
         """Split the string on the delimiter and return a list of strings."""
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
 
 class Orifice(Structure):

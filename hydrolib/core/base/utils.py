@@ -224,7 +224,6 @@ class PathToDictionaryConverter:
             Any:
                 The converted value, which is a dictionary if the value is a file model type.
         """
-        from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
         fields = cls.model_fields
         key = info.field_name
@@ -241,7 +240,7 @@ class PathToDictionaryConverter:
                         if isinstance(v, (str, Path))
                         else v
                     )
-                    for v in split_string_on_delimiter(cls, value, info)
+                    for v in cls.split_string_on_delimiter(value, info)
                 ]
 
         return value

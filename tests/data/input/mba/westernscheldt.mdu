@@ -1,0 +1,27 @@
+# Trimmed fixture for the mass balance area conversion tests
+# (tests/tools/test_main_converter_mba.py). Only the sections the converter reads are kept:
+# [external forcing] (old/new ext files), [time]/[physics] (temperature-salinity probe),
+# [output] (mbaFile/mbaInterval insertion target) and [processes] (DtMassBalance/DtProcesses).
+
+[geometry]
+NetFile           = westerscheldt_net.nc
+
+[physics]
+Salinity          = 0
+Temperature       = 0
+
+[time]
+RefDate           = 20010101
+Tunit             = S
+
+[external forcing]
+ExtForceFile      = westernscheldt.ext
+ExtForceFileNew   = westernscheldt_new.ext
+
+[output]
+OutputDir         = dflowfmoutput
+
+[processes]
+SubstanceFile                     = oxygen_sod_fixed.sub
+DtProcesses                       = 300.0
+DtMassBalance                     = 300.0

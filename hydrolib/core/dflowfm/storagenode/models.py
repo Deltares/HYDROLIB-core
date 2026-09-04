@@ -16,7 +16,6 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_correct_length,
     validate_required_fields,
 )
@@ -188,7 +187,7 @@ class StorageNode(INIBasedModel):
     @field_validator("levels", "storagearea", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_list_length_levels(self) -> "StorageNode":

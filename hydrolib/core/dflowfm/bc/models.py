@@ -56,7 +56,6 @@ from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
     make_list,
     rename_keys_for_backwards_compatibility,
-    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -783,7 +782,7 @@ class T3D(VectorForcingBase):
     @field_validator("vertpositions", mode="before")
     @classmethod
     def _split_vertpositions(cls, value: Any, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, value, info)
+        return cls.split_string_on_delimiter(value, info)
 
     @field_validator("vertinterpolation", mode="before")
     @classmethod

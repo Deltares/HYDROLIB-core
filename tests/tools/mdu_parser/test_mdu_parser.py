@@ -1483,8 +1483,7 @@ class GetNewExtforceFile:
     Unit tests for ExternalForcingBlock.get_new_extforce_file method.
     Covers:
         - extforcefilenew present
-        - extforcefilenew absent, ext_file not provided
-        - extforcefilenew absent, ext_file provided
+        - extforcefilenew absent (derives the old name with a "-new" suffix)
         - file already exists (raises FileExistsError)
         - missing extforcefile (raises ValueError)
         - root_dir not set (raises AttributeError or TypeError)
@@ -1503,19 +1502,11 @@ class GetNewExtforceFile:
         assert result.name == "new.ext"
         assert str(result).endswith("new.ext")
 
-    def test_extforcefilenew_absent_and_ext_file_not_provided(self):
-        """If extforcefilenew is absent and ext_file is not provided, returns old.ext-new path."""
+    def test_extforcefilenew_absent(self):
+        """If extforcefilenew is absent, returns the old.ext name with a "-new" suffix."""
         block = self.make_block(extforcefile="old.ext")
         result = block.get_new_extforce_file()
         assert result.name == "old-new.ext"
-
-    def test_extforcefilenew_absent_and_ext_file_provided(self):
-        """If extforcefilenew is absent and ext_file is provided, returns its resolved path."""
-        block = self.make_block(extforcefile="old.ext")
-        custom = Path("custom.ext")
-        result = block.get_new_extforce_file(ext_file=custom)
-        assert result.name == "custom.ext"
-        assert result.is_absolute()
 
     def test_file_already_exists_raises(self, tmp_path):
         """

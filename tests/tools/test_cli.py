@@ -144,16 +144,6 @@ class TestGetParser:
         assert args.extoldfile is None
 
     @pytest.mark.unit
-    def test_outfiles_with_three_values(self):
-        """
-        Test that --outfiles accepts exactly three values and parses them correctly.
-        """
-        args = self.parser.parse_args(
-            ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini", "c.str"]
-        )
-        assert args.outfiles == ["a.ext", "b.ini", "c.str"]
-
-    @pytest.mark.unit
     def test_backup_and_no_backup(self):
         """
         Test that --backup and --no-backup flags are mutually exclusive and set the backup attribute correctly.
@@ -206,16 +196,6 @@ class TestGetParser:
         """
         with pytest.raises(SystemExit):
             self.parser.parse_args([])
-
-    @pytest.mark.unit
-    def test_wrong_number_of_outfiles(self):
-        """
-        Test that providing fewer than three values to --outfiles raises SystemExit.
-        """
-        with pytest.raises(SystemExit):
-            self.parser.parse_args(
-                ["--mdufile", str(self.mdu), "--outfiles", "a.ext", "b.ini"]
-            )  # only 2
 
     @pytest.mark.unit
     def test_nonexistent_file_argument(self):

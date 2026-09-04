@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -16,13 +17,15 @@ from hydrolib.core.dflowfm.ext.models import (
     Lateral,
     Meteo,
     SourceSink,
-    Spatial
+    Spatial,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
+    MassBalanceAreaConverter,
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -39,13 +42,14 @@ class ExternalForcingConverter:
 
     def __init__(
         self,
-        extold_model: Union[PathOrStr, ExtOldModel],
-        ext_file: Optional[PathOrStr] = None,
-        structure_file: Optional[PathOrStr] = None,
-        mdu_parser: MDUParser = None,
+        extold_model: PathOrStr | ExtOldModel,
+        ext_file: PathOrStr | None = None,
+        structure_file: PathOrStr | None = None,
+        mdu_parser: MDUParser | None = None,
         verbose: bool = False,
-        path_style: PathStyle = None,
-        debug: Optional[bool] = False,
+        path_style: PathStyle | None = None,
+        debug: bool | None = False,
+        mba_file: PathOrStr | None = None,
     ):
         r"""Initialize the converter.
 
@@ -73,6 +77,9 @@ class ExternalForcingConverter:
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+            mba_file (PathOrStr, optional):
+                Path to the new mass balance area file (`<*_mba.ini>`). Defaults to
+                `new_mba.ini` next to the old external forcing file.
 
         Raises:
             FileNotFoundError: If the old external forcing file does not exist.
@@ -132,6 +139,11 @@ class ExternalForcingConverter:
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
         self._structure_model = construct_filemodel_new_or_existing(
             StructureModel, path, recurse=False
+        )
+
+        path = rdir / "new_mba.ini" if mba_file is None else mba_file
+        self._mba_model = construct_filemodel_new_or_existing(
+            MassBalanceAreaModel, path, recurse=False
         )
 
         if mdu_parser is not None:
@@ -204,7 +216,7 @@ class ExternalForcingConverter:
         """New External forcing Model."""
         if not hasattr(self, "_ext_model"):
             raise ValueError(
-                "ext_model not set, please use the `ext_model` setter. to set it."
+                "ext_model not set, please use the `ext_model` setter to set it."
             )
         return self._ext_model
 
@@ -230,6 +242,21 @@ class ExternalForcingConverter:
     def structure_model(self, path: PathOrStr):
         self._structure_model = construct_filemodel_new_or_existing(
             StructureModel, path
+        )
+
+    @property
+    def mba_model(self) -> MassBalanceAreaModel:
+        """MassBalanceAreaModel: object with all mass balance area blocks."""
+        if not hasattr(self, "_mba_model"):
+            raise ValueError(
+                "mba_model not set, please use the `mba_model` setter. to set it."
+            )
+        return self._mba_model
+
+    @mba_model.setter
+    def mba_model(self, path: PathOrStr):
+        self._mba_model = construct_filemodel_new_or_existing(
+            MassBalanceAreaModel, path
         )
 
     @staticmethod
@@ -268,6 +295,7 @@ class ExternalForcingConverter:
             SourceSink: (self.ext_model, "sourcesink"),
             Spatial: (self.ext_model, "spatial"),
             Structure: (self.structure_model, "structure"),
+            MassBalanceArea: (self.mba_model, "massbalancearea"),
         }
 
     def update(
@@ -337,7 +365,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.structure_model
 
-    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStr) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
 
         Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
@@ -356,7 +384,9 @@ class ExternalForcingConverter:
             self.mdu_parser,
         )
 
-    def _convert_forcing(self, forcing) -> Boundary | Lateral | Meteo | SourceSink:
+    def _convert_forcing(
+        self, forcing
+    ) -> Boundary | Lateral | Meteo | SourceSink | MassBalanceArea:
         """Convert a single forcing block to the appropriate new format.
 
         Notes:
@@ -376,6 +406,8 @@ class ExternalForcingConverter:
                 forcing, source_sink_quantities
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
+            new_quantity_block = converter_class.convert(forcing)
+        elif isinstance(converter_class, MassBalanceAreaConverter):
             new_quantity_block = converter_class.convert(forcing)
         else:
             # SpatialConverter: meteo, initial-condition and parameter quantities all
@@ -402,6 +434,9 @@ class ExternalForcingConverter:
         if len(self.structure_model.structure) > 0:
             self._save_structure_model(backup, recursive)
 
+        if len(self.mba_model.massbalancearea) > 0:
+            self._save_mba_model(backup, recursive)
+
         if self.un_supported_quantities:
             backup_file(self.extold_model.filepath)
             self.extold_model.save(recurse=recursive, exclude_unset=True)
@@ -424,6 +459,13 @@ class ExternalForcingConverter:
             recurse=recursive, exclude_unset=True, path_style=self.path_style
         )
 
+    def _save_mba_model(self, backup: bool, recursive: bool):
+        # Not saved with exclude_unset: the [General] block (fileVersion/fileType) uses
+        # default values that identify the file to the kernel and must always be written.
+        if backup and self.mba_model.filepath.exists():
+            backup_file(self.mba_model.filepath)
+        self.mba_model.save(recurse=recursive, path_style=self.path_style)
+
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
         if len(self.legacy_files) > 0:
@@ -438,24 +480,21 @@ class ExternalForcingConverter:
     def from_mdu(
         cls,
         mdu_file: PathOrStr,
-        ext_file_user: Optional[PathOrStr] = None,
-        structure_file_user: Optional[PathOrStr] = None,
-        path_style: Optional[PathStyle] = None,
+        path_style: PathStyle | None = None,
         debug: bool = False,
-    ) -> "ExternalForcingConverter":
+    ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
+
+        The output file paths (new external forcings, structures and mass balance area files) are
+        always read from the MDU file itself. When the MDU references an existing file the converted
+        quantities are appended to it; otherwise a default file is created next to the old external
+        forcing file.
 
         Args:
             mdu_file (PathOrStr): Path to the D-Flow FM main input file (.mdu).
                 Must be parsable into a standard FMModel.
                 When this contains a valid filename for ExtFile, conversion
                 will be performed.
-            ext_file_user (PathOrStr, optional): Path to the output external forcings
-                file. Defaults to the given ExtForceFileNew in the MDU file, if
-                present, or forcings.ext otherwise.
-            structure_file_user (PathOrStr, optional): Path to the output structures.ini
-                file. Defaults to the given StructureFile in the MDU file, if
-                present, or structures.ini otherwise.
             path_style (Optional[PathStyle], optional):
                 Path style for the file paths in the models. If None, the system style is used.
                 Converts absolute paths based on the provided style to the system style.
@@ -477,16 +516,18 @@ class ExternalForcingConverter:
             mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
         )
 
-        ext_file_user = mdu_parser.extforce_block.get_new_extforce_file(ext_file_user)
-        structure_file_user = mdu_parser.get_structure_file(structure_file_user)
+        ext_file = mdu_parser.extforce_block.get_new_extforce_file()
+        structure_file = mdu_parser.get_structure_file()
+        mba_file = mdu_parser.get_mba_file()
 
         return cls(
             extoldfile,
-            ext_file_user,
-            structure_file_user,
+            ext_file,
+            structure_file,
             mdu_parser,
             path_style=path_style,
             debug=debug,
+            mba_file=mba_file,
         )
 
     def _update_mdu_file(self):
@@ -507,6 +548,26 @@ class ExternalForcingConverter:
 
         if len(self.structure_model.structure) > 0:
             self.mdu_parser.update_structure_file(self.structure_model.filepath.name)
+
+        if len(self.mba_model.massbalancearea) > 0:
+            self.mdu_parser.update_mba_file(self.mba_model.filepath.name)
+            # mbaInterval is required in [output] (Manual F.2.5). The old model carries the
+            # interval as the legacy [processes] DtMassBalance keyword; fall back to the
+            # [processes] DtProcesses value when DtMassBalance is absent.
+            interval = self.mdu_parser.get_keyword("DtMassBalance")
+            if not interval:
+                interval = self.mdu_parser.get_keyword("DtProcesses")
+            if interval:
+                self.mdu_parser.update_mba_interval(interval)
+            else:
+                warnings.warn(
+                    "Mass balance areas were converted and '[output] mbaFile' was set, but no "
+                    "'[processes] DtMassBalance' or 'DtProcesses' value was found to derive the "
+                    "required '[output] mbaInterval' (D-Flow FM 1D2D User Manual F.2.5). Set "
+                    "'mbaInterval' manually in the MDU.",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
     def _log_conversion_details(self):
         """Log details about the conversion process if verbosity is enabled."""
