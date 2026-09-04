@@ -1213,19 +1213,21 @@ class ConverterFactory:
             ValueError: If no converter is available for the given quantity.
         """
         if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
-            return MassBalanceAreaConverter()
+            converter = MassBalanceAreaConverter()
         elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
             or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
         ):
-            return SpatialConverter()
+            converter = SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+            converter = BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+            converter = SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
+
+        return converter
 
     @staticmethod
     def contains(quantity_class, quantity) -> bool:
