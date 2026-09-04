@@ -66,6 +66,32 @@ class TestObservationPoint:
                 assert obspoint.chainage == obsvalues["chainage"]
 
 
+class TestObservationPointAliasInput:
+    """Regression tests: `ObservationPoint` must accept camelCase aliases (e.g. `branchId`)
+    in addition to the lowercase field names, because the shared location-validator helper
+    normalizes alias keys before validation."""
+
+    def test_construct_with_branch_alias(self):
+        obs = ObservationPoint(name="op1", branchId="branch_01", chainage=1.23)
+        assert obs.branchid == "branch_01"
+        assert obs.chainage == pytest.approx(1.23)
+        assert obs.locationtype == LocationType.oned
+
+    def test_construct_with_xy_coordinates(self):
+        obs = ObservationPoint(
+            name="op2", locationtype="2d", x=1.0, y=2.0
+        )
+        assert obs.x == pytest.approx(1.0)
+        assert obs.y == pytest.approx(2.0)
+
+    def test_construct_with_locationtype_alias(self):
+        obs = ObservationPoint(
+            name="op3", locationType="1d", branchId="branch_01", chainage=5.0
+        )
+        assert obs.locationtype == LocationType.oned
+        assert obs.branchid == "branch_01"
+
+
 class TestObservationPointModel:
     def test_obspoint_file(self):
         filepath = test_data_dir / "input/dflowfm_individual_files/obsPoints_obs.ini"

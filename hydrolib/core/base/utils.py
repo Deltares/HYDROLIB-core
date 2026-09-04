@@ -102,6 +102,24 @@ def get_str_len(str_field: Optional[str]) -> int:
     """
     return len(str_field) if str_field else 0
 
+def is_int(value: Any) -> bool:
+    """
+    Check if the given value can be converted to an integer.
+
+    Args:
+        value (Any): The value to check.
+
+    Returns:
+        bool: True if the value can be converted to an integer, False otherwise.
+            Boolean values are explicitly treated as non-integers.
+    """
+    result = not isinstance(value, bool)
+    if result:
+        try:
+            int(value)
+        except (ValueError, TypeError):
+            result = False
+    return result
 
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
@@ -371,6 +389,17 @@ class FilePathStyleConverter:
     def __init__(self):
         """Initialize the converter with the current operating system's path style."""
         self._os_path_style = get_path_style_for_current_operating_system()
+
+    def __eq__(self, other: object) -> bool:
+        # Value-based equality so models holding this as a private attribute
+        # compare equal when their state matches (issue #1055).
+        if not isinstance(other, FilePathStyleConverter):
+            return NotImplemented
+        result = self._os_path_style == other._os_path_style
+        return result
+
+    def __hash__(self) -> int:
+        return hash(self._os_path_style)
 
     def convert_to_os_style(self, file_path: Path, source_path_style: PathStyle) -> str:
         """Convert the file path from the source path style to the path style of the current operating system.

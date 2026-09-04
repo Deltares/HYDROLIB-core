@@ -64,7 +64,7 @@ def _convert_old_ext(mdu_path: Path) -> ExtModel:
         "hydrolib.tools.extforce_convert.main_converter"
         ".ExternalForcingConverter._update_mdu_file"
     ):
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
     return ext_model
 
 

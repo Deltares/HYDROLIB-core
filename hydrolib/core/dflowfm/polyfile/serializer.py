@@ -66,7 +66,7 @@ class Serializer:
     def _get_point_values(point: Point) -> Generator[float, None, None]:
         yield point.x
         yield point.y
-        if point.z:
+        if point.z is not None:
             yield point.z
         for value in point.data:
             yield value

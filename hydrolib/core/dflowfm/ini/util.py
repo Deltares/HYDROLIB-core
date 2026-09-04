@@ -1,5 +1,7 @@
 """util.py provides additional utility methods related to handling ini files."""
 
+import warnings
+
 from datetime import datetime
 from enum import Enum
 from operator import eq
@@ -94,6 +96,12 @@ def parse_enum(
                 and any(v_lower == alt.lower() for alt in alts)
             ):
                 result = entry
+                warnings.warn(
+                    f"{enum.__name__} value {v!r} is deprecated; "
+                    f"use {entry.value!r} instead.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
                 break
     if result is None:
         valid_values = [e.value for e in enum]
@@ -500,6 +508,24 @@ def validate_location_specification(
 
     if fields is None:
         fields = LocationValidationFieldNames()
+
+    # `mode="before"` validators receive the raw input dict before Pydantic
+    # has resolved aliases, so a user passing the camelCase alias (e.g.
+    # `branchId`) leaves the key in its original case. The lookups below all
+    # use the lowercase field-name form, so normalize alias keys here.
+    if isinstance(values, dict):
+        for alias in (
+            fields.node_id,
+            fields.branch_id,
+            fields.chainage,
+            fields.x_coordinates,
+            fields.y_coordinates,
+            fields.num_coordinates,
+            fields.location_type,
+        ):
+            lowered = alias.lower()
+            if alias != lowered and alias in values and lowered not in values:
+                values[lowered] = values.pop(alias)
 
     has_node_id = not str_is_empty_or_none(values.get(fields.node_id.lower()))
     has_branch_id = not str_is_empty_or_none(values.get(fields.branch_id.lower()))

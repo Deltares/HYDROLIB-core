@@ -1,3 +1,45 @@
+## 1.1.0 (2026-09-03)
+
+### Feat
+
+- **ext**: add Spatial block and extend extforce_convert to produce it (#1177)
+- **extforce_convert**: support substance files in the external forcing converter (#999)
+- **operand**: accept readable string constants alongside deprecated single-char values (#1137)
+- **extforce_convert**: add data-driven quantity rename table for sea ice and meteo quantities (#1151)
+
+### Fix
+
+- **structure**: normalize structure type to canonical camelCase for Pydantic v2 discriminator (#1186)
+- **ext**: keep existing .bc files intact when saving a non-recursively loaded ExtModel (#1187)
+- **converters**: remove delta suffix from source/sink salinity and temperature variables (#1163)
+- **ci**: standardize poetry version key, replace branch names and actions/checkout
+references with specific commit hashes
+- **bc**: guard ForcingData Union so DiskOnlyFileModel is only valid under non-recursive loads (#1172)
+- **data**: update external forcing unsupported quantities and error messages (#1147)
+- **timeseries**: add validation to ensure datablock columns match quantity unit pairs (#1135)
+- **models**: consolidate maxitverticalforestersal/tem into single maxitverticalforester field (#1132)
+- **models**: add stemheightconvention support to vegetation models (#1123)
+- **writer**: add required attributes for mesh1d topology, xy, edge, and node coordinates (#1124)
+- **tests**: remove warnings and fix warning-triggering test code (#1131)
+- **dimr**: resolve DeprecationWarning from naive creationDate default (#1120)
+- **serializer**: ensure z value is checked for None before yielding
+
+## 1.0.1 (2026-05-19)
+
+### Fix
+
+- **ini/util**: normalize camelCase alias keys in location validator (#1092)
+- **core**: make FilePathStyleConverter compare by value (#1089)
+- **sourcesink**: support .bc files on discharge and Delta-suffix fields (#1087)
+- **meteo**: lowercase attribute names with deprecated camelCase aliases (#1084)
+- **ext**: restore Boundary.forcingfile single-value form (#1080)
+- **dimr**: always emit <process> and keep mixed components on save (#1056)
+- **mdu**: preserve empty string on waqoutputdir/trtdef/trtl assignment (#1054)
+
+### Refactor
+
+- **ci**: migrate workflows to shared Deltares composite actions (#1065)
+
 ## 1.0.0 (2026-04-13)
 
 First stable major release. This version consolidates the Pydantic v2 migration

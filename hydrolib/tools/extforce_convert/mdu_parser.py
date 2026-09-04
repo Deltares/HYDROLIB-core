@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -714,8 +715,8 @@ class MDUParser:
         Returns:
             List of strings, one for each line in the file
         """
-        with open(self.mdu_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        content = open_file_with_fallback_encoding(Path(self.mdu_path))
+        lines = content.splitlines(keepends=True)
         return lines
 
     def save(self, backup: bool = False) -> None:
@@ -851,7 +852,7 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         if remove_old_ext_file:
-            old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+            old_ext_force_line = self.find_keyword_lines("ExtForceFile", exact_match=True)
             if old_ext_force_line is not None:
                 self.content.pop(old_ext_force_line)
 
@@ -888,28 +889,32 @@ class MDUParser:
         return temperature_and_salinity_info
 
     def find_keyword_lines(
-        self, keyword: str, case_sensitive: bool = False
-    ) -> Union[int, None]:
+        self, keyword: str, case_sensitive: bool = False, exact_match: bool = False
+    ) -> int | None:
         """Find line numbers in the MDU file where the keyword appears.
 
         Args:
             keyword: The keyword to search for.
             case_sensitive: Whether the search should be case-sensitive.
+            exact_match: When True, only match lines where the keyword is
+                followed by a word boundary (whitespace, ``=`` or end of line),
+                so searching for ``ExtForceFile`` does not match a line that
+                starts with ``ExtForceFileNew``.
 
         Returns:
-            A list of line number where the keyword is found.
+            The 0-based line index where the keyword is found, or None if not found.
         """
-        if not case_sensitive:
-            keyword = keyword.lower()
+        needle = keyword if case_sensitive else keyword.lower()
         line_number = None
         for i, line in enumerate(self.content, start=0):
             haystack = line if case_sensitive else line.lower()
             stripped_line = haystack.lstrip()
-            if_exist = (
-                stripped_line.startswith(keyword)
-                if case_sensitive
-                else stripped_line.lower().startswith(keyword.lower())
-            )
+            if_exist = stripped_line.startswith(needle)
+            if if_exist and exact_match:
+                remainder = stripped_line[len(needle):]
+                if_exist = remainder == "" or not (
+                    remainder[0].isalnum() or remainder[0] == "_"
+                )
             if if_exist:
                 line_number = i
                 break
@@ -1100,47 +1105,45 @@ class MDUParser:
 
     def get_inifield_file(
         self,
-        inifield_file: Optional[PathOrStr],
-    ) -> Path:
+        user_inifield_file: PathOrStr | None,
+    ) -> Path | None:
         ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
-        if inifield_file is not None:
-            # user defined initial field file
-            inifield_file = root_dir / inifield_file
-        elif isinstance(ini_field_file, Path):
-            # from the LegacyFMModel
-            inifield_file = ini_field_file.resolve()
-        elif isinstance(ini_field_file, str):
-            # from reading the geometry section
-            inifield_file = root_dir / ini_field_file
+
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = user_inifield_file if user_inifield_file is not None else ini_field_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
         else:
             print(
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
-                f"given: {inifield_file}."
+                f"given: {path}."
             )
-        return inifield_file
+            path = None
+
+        return path
 
     def get_structure_file(
         self,
         usr_structure_file: Optional[PathOrStr],
-    ) -> Path:
+    ) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
+        root_dir = self.mdu_path.parent
 
-        if usr_structure_file is not None:
-            # user defined structure file
-            usr_structure_file = self.mdu_path / usr_structure_file
-        elif isinstance(structure_file, Path):
-            # from the LegacyFMModel
-            usr_structure_file = structure_file.resolve()
-        elif isinstance(structure_file, str):
-            # from reading the geometry section
-            usr_structure_file = self.mdu_path / structure_file
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = usr_structure_file if usr_structure_file is not None else structure_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
         else:
             print(
-                "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {usr_structure_file}."
+                "The structure file is not found in the mdu file, and not provided by the user. \n"
+                f"given: {path}."
             )
-        return usr_structure_file
+            path = None
+
+        return path
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:

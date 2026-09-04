@@ -4,7 +4,11 @@ from typing import List
 import pytest
 from pydantic import ValidationError
 
+from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
+from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
+from hydrolib.core.dflowfm.structure.models import StructureModel, Weir
 from tests.utils import error_occurs_only_once
 
 
@@ -155,3 +159,55 @@ class TestINIBasedModel:
         test_model.float_values = ["1d1", "2d-1"]
 
         assert test_model.float_values == pytest.approx([1e1, 2e-1])
+
+
+class TestINIBasedModelEquality:
+    """Regression tests for Pydantic equality on INI-based file models.
+
+    `IniBasedModel` holds a `FilePathStyleConverter` as a Pydantic private
+    attribute. If that helper compares by identity, two freshly built
+    instances of any INI-based model fail `==`, which surprises users who
+    expect value-based equality (issue #1055).
+    """
+
+    @pytest.mark.parametrize(
+        "model_cls",
+        [
+            INIBasedModel,
+            StructureModel,
+            ExtModel,
+            CrossDefModel,
+            CrossLocModel,
+            FrictionModel,
+        ],
+    )
+    def test_two_empty_models_are_equal(self, model_cls):
+        assert model_cls() == model_cls()
+
+    def test_two_populated_structure_models_are_equal(self):
+        # Populated case: same INI-based model class with the same nested
+        # content must also compare equal, not only fresh empty instances.
+        weir_kwargs = dict(
+            id="w1",
+            branchid="b1",
+            chainage=1.0,
+            crestlevel=0.0,
+            allowedflowdir="positive",
+        )
+        a = StructureModel(structure=[Weir(**weir_kwargs)])
+        b = StructureModel(structure=[Weir(**weir_kwargs)])
+        assert a == b
+
+    def test_populated_structure_models_with_different_content_differ(self):
+        # Sanity check: two populated models that differ on a public field
+        # must compare unequal, so the equality contract is not trivially
+        # satisfied by all populated instances.
+        base = dict(
+            branchid="b1",
+            chainage=1.0,
+            crestlevel=0.0,
+            allowedflowdir="positive",
+        )
+        a = StructureModel(structure=[Weir(id="w1", **base)])
+        b = StructureModel(structure=[Weir(id="w2", **base)])
+        assert a != b

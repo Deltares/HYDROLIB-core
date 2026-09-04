@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -13,6 +14,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldMethod,
     ExtOldModel,
     ExtOldQuantity,
+    Layer,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -127,7 +129,7 @@ class TestValidateQuantity:
     def test_with_valid_quantity_string_equal_casing(self, quantity):
         quantity_str = quantity.value
         forcing = ExtOldForcing(
-            quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            quantity=quantity_str, filename="", filetype=9, method=1, operand="override"
         )
         assert forcing.quantity == quantity
 
@@ -135,14 +137,14 @@ class TestValidateQuantity:
     def test_with_valid_quantity_string_different_casing(self, quantity):
         quantity_str = quantity.value.upper()
         forcing = ExtOldForcing(
-            quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            quantity=quantity_str, filename="", filetype=9, method=1, operand="override"
         )
         assert forcing.quantity == quantity
 
     @pytest.mark.parametrize("quantity", ExtOldQuantity)
     def test_with_valid_quantity_enum(self, quantity):
         forcing = ExtOldForcing(
-            quantity=quantity, filename="", filetype=9, method=1, operand="O"
+            quantity=quantity, filename="", filetype=9, method=1, operand="override"
         )
         assert forcing.quantity == quantity
 
@@ -150,7 +152,7 @@ class TestValidateQuantity:
     def test_with_tracerquantity_appended_with_tracer_name(self, quantity):
         quantity_str = quantity + "Some_Tracer_Name"
         forcing = ExtOldForcing(
-            quantity=quantity_str, filename="", filetype=9, method=1, operand="O"
+            quantity=quantity_str, filename="", filetype=9, method=1, operand="override"
         )
         assert forcing.quantity == quantity_str
 
@@ -158,7 +160,7 @@ class TestValidateQuantity:
     def test_with_just_a_tracerquantity_raises_error(self, quantity):
         with pytest.raises(ValueError) as error:
             _ = ExtOldForcing(
-                quantity=quantity, filename="", filetype=9, method=1, operand="O"
+                quantity=quantity, filename="", filetype=9, method=1, operand="override"
             )
 
         exp_error = f"QUANTITY '{quantity}' should be appended with a valid name."
@@ -175,7 +177,7 @@ class TestValidateQuantity:
                 filename="",
                 filetype=9,
                 method=1,
-                operand="O",
+                operand="override",
             )
 
         supported_values_str = ", ".join(([x.value for x in ExtOldQuantity]))
@@ -242,6 +244,83 @@ class TestValidateOperand:
         )
 
 
+class TestValidateFileType:
+    @pytest.mark.parametrize("filetype", ExtOldFileType)
+    def test_with_valid_filetype_enum(self, filetype):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename="",
+            filetype=filetype,
+            method=1,
+            operand="O",
+        )
+        assert forcing.filetype == filetype
+
+    @pytest.mark.parametrize("filetype", ExtOldFileType)
+    def test_with_valid_filetype_int(self, filetype):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename="",
+            filetype=filetype.value,
+            method=1,
+            operand="O",
+        )
+        assert forcing.filetype == filetype
+
+    def test_with_invalid_filetype_int_raises_value_error(self):
+        invalid_filetype = 99
+
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid filetype. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
+    def test_with_non_integer_filetype_raises_value_error(self):
+        invalid_filetype = "not_a_number"
+
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid integer. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
+    @pytest.mark.parametrize("invalid_filetype", [True, False])
+    def test_with_boolean_filetype_raises_value_error(self, invalid_filetype):
+        with pytest.raises(ValueError) as error:
+            _ = ExtOldForcing(
+                quantity=ExtOldQuantity.WaterLevelBnd,
+                filename="",
+                filetype=invalid_filetype,
+                method=1,
+                operand="O",
+            )
+
+        valid_values = [e.value for e in ExtOldFileType]
+        assert (
+            f"FILETYPE '{invalid_filetype}' is not a valid integer. Supported values: {valid_values}."
+            in str(error.value)
+        )
+
+
 class TestValidateVarName:
     def test_validate_varname_with_valid_filetype_11(self):
         filetype = 11
@@ -253,7 +332,7 @@ class TestValidateVarName:
             varname=varname,
             filetype=filetype,
             method=1,
-            operand="O",
+            operand="override",
         )
 
         assert forcing.varname == varname
@@ -269,7 +348,7 @@ class TestValidateVarName:
                 varname=varname,
                 filetype=filetype,
                 method=1,
-                operand="O",
+                operand="override",
             )
 
         exp_msg = "VARNAME only allowed when FILETYPE is 11"
@@ -288,7 +367,7 @@ class TestValidateSourceMask:
             sourcemask=sourcemask,
             filetype=filetype,
             method=1,
-            operand="O",
+            operand="override",
         )
 
         assert forcing.sourcemask.filepath.name == sourcemask
@@ -304,7 +383,7 @@ class TestValidateSourceMask:
                 sourcemask=sourcemask,
                 filetype=filetype,
                 method=1,
-                operand="O",
+                operand="override",
             )
 
         exp_msg = "SOURCEMASK only allowed when FILETYPE is 4 or 6"
@@ -324,7 +403,7 @@ class TestValidateExtrapolationMethod:
             filetype=9,
             method=method,
             extrapolation_method=extrapolation_method,
-            operand="O",
+            operand="override",
         )
 
         assert forcing.extrapolation_method == extrapolation_method
@@ -342,7 +421,7 @@ class TestValidateExtrapolationMethod:
                 filetype=9,
                 method=method,
                 extrapolation_method=extrapolation_method,
-                operand="O",
+                operand="override",
             )
 
         exp_msg = "EXTRAPOLATION_METHOD only allowed to be 1 when METHOD is 3"
@@ -363,7 +442,7 @@ class TestValidateMaxSearchRadius:
             method=3,
             extrapolation_method=extrapolation_method,
             maxsearchradius=maxsearchradius,
-            operand="O",
+            operand="override",
         )
 
         assert forcing.extrapolation_method == extrapolation_method
@@ -382,7 +461,7 @@ class TestValidateMaxSearchRadius:
                 method=3,
                 extrapolation_method=extrapolation_method,
                 maxsearchradius=maxsearchradius,
-                operand="O",
+                operand="override",
             )
 
         exp_msg = "MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is 1"
@@ -399,7 +478,7 @@ class TestValidateValue:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             value=value,
         )
 
@@ -415,7 +494,7 @@ class TestValidateValue:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 value=value,
             )
 
@@ -433,7 +512,7 @@ class TestValidateFactor:
             filename="",
             filetype=9,
             method=1,
-            operand="O",
+            operand="override",
             factor=factor,
         )
 
@@ -449,7 +528,7 @@ class TestValidateFactor:
                 filename="",
                 filetype=9,
                 method=1,
-                operand="O",
+                operand="override",
                 factor=factor,
             )
 
@@ -467,7 +546,7 @@ class TestValidateIFrcTyp:
             filename="",
             filetype=9,
             method=1,
-            operand="O",
+            operand="override",
             ifrctyp=ifrctyp,
         )
 
@@ -483,7 +562,7 @@ class TestValidateIFrcTyp:
                 filename="",
                 filetype=9,
                 method=1,
-                operand="O",
+                operand="override",
                 ifrctyp=ifrctyp,
             )
 
@@ -501,7 +580,7 @@ class TestValidateAveragingType:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             averagingtype=averagingtype,
         )
 
@@ -517,7 +596,7 @@ class TestValidateAveragingType:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 averagingtype=averagingtype,
             )
 
@@ -535,7 +614,7 @@ class TestValidateRelativeSearchCellSize:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             relativesearchcellsize=relativesearchcellsize,
         )
 
@@ -551,7 +630,7 @@ class TestValidateRelativeSearchCellSize:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 relativesearchcellsize=relativesearchcellsize,
             )
 
@@ -569,7 +648,7 @@ class TestValidateExtrapolTol:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             extrapoltol=extrapoltol,
         )
 
@@ -585,7 +664,7 @@ class TestValidateExtrapolTol:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 extrapoltol=extrapoltol,
             )
 
@@ -603,7 +682,7 @@ class TestValidatePercentileMinMax:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             percentileminmax=percentileminmax,
         )
 
@@ -619,7 +698,7 @@ class TestValidatePercentileMinMax:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 percentileminmax=percentileminmax,
             )
 
@@ -639,7 +718,7 @@ class TestValidateArea:
             filename="",
             filetype=9,
             method=1,
-            operand="O",
+            operand="override",
             area=area,
         )
 
@@ -655,7 +734,7 @@ class TestValidateArea:
                 filename="",
                 filetype=9,
                 method=1,
-                operand="O",
+                operand="override",
                 area=area,
             )
 
@@ -675,7 +754,7 @@ class TestValidateNumMin:
             filename="",
             filetype=9,
             method=method,
-            operand="O",
+            operand="override",
             nummin=nummin,
         )
 
@@ -691,9 +770,41 @@ class TestValidateNumMin:
                 filename="",
                 filetype=9,
                 method=method,
-                operand="O",
+                operand="override",
                 nummin=nummin,
             )
 
         exp_msg = "NUMMIN only allowed when METHOD is 6"
         assert exp_msg in str(error.value)
+
+
+class TestExtOldForcingLayer:
+    """The old LAYER field accepts -1 (bottom), 0 (all) or a positive layer number,
+    and rejects other (non-positive) integers."""
+
+    @pytest.mark.parametrize(
+        "layer, expected",
+        [(-1, Layer.bottom), (0, Layer.all), (5, 5)],
+    )
+    def test_valid_layer_is_accepted(self, layer, expected):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WindX,
+            filename="wind.nc",
+            filetype=11,
+            method="3",
+            operand="O",
+            layer=layer,
+        )
+        assert forcing.layer == expected
+
+    @pytest.mark.parametrize("layer", [-5, -2])
+    def test_invalid_negative_layer_is_rejected(self, layer):
+        with pytest.raises(ValidationError):
+            ExtOldForcing(
+                quantity=ExtOldQuantity.WindX,
+                filename="wind.nc",
+                filetype=11,
+                method="3",
+                operand="O",
+                layer=layer,
+            )

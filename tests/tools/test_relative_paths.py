@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldModel
-from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
@@ -14,17 +14,19 @@ from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 class TestInitialConditionConverter:
 
     @pytest.mark.parametrize("quantity", ["initialsalinity", "AdvectionType"])
-    def test_convert_different_locations(self, tmp_path: Path, quantity: str):
+    def test_convert_resolves_datafile_relative_to_ext_file(
+        self, tmp_path: Path, quantity: str
+    ):
+        """Initial-condition and parameter quantities convert to Spatial blocks in the
+        ext file, so their datafile path is resolved relative to the new ext file
+        (created alongside the old ext file), not the initial field file."""
         ext_old_path = tmp_path / "tests/computation/test/tba/old-ext-file.ext"
-        initialfield_path = (
-            tmp_path / "tests/initial-conditions/test/initial-condition.ini"
-        )
         forcing_data = {
             "QUANTITY": quantity,
             "filename": "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz",
             "filetype": 7,
             "method": 5,
-            "operand": "O",
+            "operand": "override",
         }
         forcing = ExtOldForcing(**forcing_data)
         with patch(
@@ -33,19 +35,21 @@ class TestInitialConditionConverter:
         ):
             extold_model = MagicMock(spec=ExtOldModel)
             extold_model.filepath = ext_old_path
-            inifield_model = MagicMock(spec=IniFieldModel)
-            inifield_model.filepath = initialfield_path
+            ext_model = MagicMock(spec=ExtModel)
+            ext_model.filepath = ext_old_path.parent / "new-external-forcing.ext"
             mdu_parser = MagicMock(spec=MDUParser)
             mdu_parser.loaded_fm_data = {"general": {"pathsrelativetoparent": "1"}}
             external_forcing_converter = ExternalForcingConverter("old-ext-file.ext")
-            external_forcing_converter._inifield_model = inifield_model
+            external_forcing_converter._ext_model = ext_model
             external_forcing_converter._extold_model = extold_model
             external_forcing_converter._root_dir = tmp_path
             external_forcing_converter._legacy_files = []
             external_forcing_converter._mdu_parser = mdu_parser
-        initial_field = external_forcing_converter._convert_forcing(forcing)
-        assert initial_field.datafile == DiskOnlyFileModel(
-            "iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz"
+        spatial_block = external_forcing_converter._convert_forcing(forcing)
+        # New ext file is co-located with the old ext file, so the relative datafile
+        # path is preserved.
+        assert spatial_block.datafile == DiskOnlyFileModel(
+            "../../../initial-conditions/test/iniSal_autoTransportTimeStep1_filtered_inclVZM.xyz"
         )
 
 
@@ -71,23 +75,23 @@ class TestSourceSinks:
         }
 
         converter = ExternalForcingConverter.from_mdu(mdu_file)
-        ext_model, _, _ = converter.update()
+        ext_model, _ = converter.update()
         assert len(ext_model.sourcesink) == 1
         assert len(ext_model.boundary) == 1
 
         source_sink = ext_model.sourcesink[0]
         assert source_sink.discharge.filepath == source_sink_paths["bc_relative_path"]
         assert (
-            source_sink.salinitydelta.filepath == source_sink_paths["bc_relative_path"]
+            source_sink.salinity.filepath == source_sink_paths["bc_relative_path"]
         )
         assert (
-            source_sink.temperaturedelta.filepath
+            source_sink.temperature.filepath
             == source_sink_paths["bc_relative_path"]
         )
 
         assert len(ext_model.boundary) == 1
         boundary = ext_model.boundary[0]
-        assert boundary.forcingfile[0].filepath == boundary_paths["bc_relative_path"]
+        assert boundary.forcingfile.filepath == boundary_paths["bc_relative_path"]
 
         converter.save()
 

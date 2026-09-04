@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import yaml
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, PositiveInt, field_validator, model_validator
 from strenum import StrEnum
 
 from hydrolib.core.base.models import (
@@ -19,7 +19,10 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.base.utils import resolve_file_model
+from hydrolib.core.base.utils import (
+    is_int,
+    resolve_file_model
+)
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -50,6 +53,7 @@ FILETYPE_FILEMODEL_MAPPING = {
     10: PolyFile,
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
+    14: DiskOnlyFileModel,
 }
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
@@ -164,6 +168,17 @@ ExtOldExtrapolationMethod = IntEnum(
 )
 
 
+class Layer(IntEnum):
+    """Non-numeric values for the `LAYER` attribute of an old external forcing block.
+
+    Corresponds to the new Spatial `targetLayer`: `bottom` (-1) and `all` (0).
+    A positive layer number is also allowed; see `ExtOldForcing.layer`.
+    """
+
+    bottom = -1
+    all = 0
+
+
 class ExtOldForcing(BaseModel):
     """Class holding the external forcing values.
 
@@ -238,39 +253,41 @@ class ExtOldForcing(BaseModel):
             The area for sources and sinks.
         nummin (Optional[int]):
             The minimum required number of source data points in each target cell.
+        layer (Optional[Union[Layer, PositiveInt]]):
+            The target layer for the data: -1 (bottom), 0 (all), or a positive layer
+            number. Converts to the new Spatial `targetLayer` field.
     """
 
     quantity: Union[ExtOldQuantity, str] = Field(alias="QUANTITY")
     filename: Union[PolyFile, TimModel, DiskOnlyFileModel] = Field(
         None, alias="FILENAME"
     )
-    varname: Optional[str] = Field(None, alias="VARNAME")
+    varname: str | None = Field(None, alias="VARNAME")
     sourcemask: DiskOnlyFileModel = Field(
         default_factory=lambda: DiskOnlyFileModel(None), alias="SOURCEMASK"
     )
     filetype: ExtOldFileType = Field(alias="FILETYPE")
     method: ExtOldMethod = Field(alias="METHOD")
-    extrapolation_method: Optional[ExtOldExtrapolationMethod] = Field(
+    extrapolation_method: ExtOldExtrapolationMethod | None = Field(
         None, alias="EXTRAPOLATION_METHOD"
     )
 
-    maxsearchradius: Optional[float] = Field(None, alias="MAXSEARCHRADIUS")
+    maxsearchradius: float | None = Field(None, alias="MAXSEARCHRADIUS")
     operand: Operand = Field(alias="OPERAND")
-    value: Optional[float] = Field(None, alias="VALUE")
-    factor: Optional[float] = Field(None, alias="FACTOR")
-    ifrctyp: Optional[float] = Field(None, alias="IFRCTYP")
-    averagingtype: Optional[float] = Field(None, alias="AVERAGINGTYPE")
+    value: float | None = Field(None, alias="VALUE")
+    factor: float | None = Field(None, alias="FACTOR")
+    ifrctyp: float | None = Field(None, alias="IFRCTYP")
+    averagingtype: float | None = Field(None, alias="AVERAGINGTYPE")
 
-    relativesearchcellsize: Optional[float] = Field(
-        None, alias="RELATIVESEARCHCELLSIZE"
-    )
-    extrapoltol: Optional[float] = Field(None, alias="EXTRAPOLTOL")
-    percentileminmax: Optional[float] = Field(None, alias="PERCENTILEMINMAX")
-    area: Optional[float] = Field(None, alias="AREA")
-    nummin: Optional[int] = Field(None, alias="NUMMIN")
+    relativesearchcellsize: float | None = Field(None, alias="RELATIVESEARCHCELLSIZE")
+    extrapoltol: float | None = Field(None, alias="EXTRAPOLTOL")
+    percentileminmax: float | None = Field(None, alias="PERCENTILEMINMAX")
+    area: float | None = Field(None, alias="AREA")
+    nummin: int | None = Field(None, alias="NUMMIN")
+    layer: Layer | PositiveInt | None = Field(None, alias="LAYER")
 
-    tracerfallvelocity: Optional[float] = Field(None, alias="TRACERFALLVELOCITY")
-    tracerdecaytime: Optional[float] = Field(None, alias="TRACERDECAYTIME")
+    tracerfallvelocity: float | None = Field(None, alias="TRACERFALLVELOCITY")
+    tracerdecaytime: float | None = Field(None, alias="TRACERDECAYTIME")
 
     def is_intermediate_link(self) -> bool:
         return True
@@ -346,14 +363,50 @@ class ExtOldForcing(BaseModel):
             if not found:
                 supported_value_str = ", ".join(([x.value for x in ExtOldQuantity]))
                 raise ValueError(
-                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}"
+                    f"QUANTITY '{value_str}' not supported. Supported values: {supported_value_str}. \n"
+                    f"Please refer to the D-Flow FM User Manual for a more detailed list of supported quantities: "
+                    f"https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D#subsection.C.6.3"
                 )
         return value
+
+    @field_validator("filetype", mode="before")
+    @classmethod
+    def validate_filetype(cls, value) -> ExtOldFileType:
+        """Validate that the filetype value is a valid ExtOldFileType member.
+
+        Args:
+            value: The raw filetype value to validate.
+
+        Returns:
+            ExtOldFileType: The validated filetype enum member.
+
+        Raises:
+            ValueError: If the value cannot be converted to an integer or is not a
+                valid ExtOldFileType value.
+        """
+        if isinstance(value, ExtOldFileType):
+            result = value
+        else:
+            valid_values = [member.value for member in ExtOldFileType]
+
+            if is_int(value):
+                int_value = int(value)
+                if int_value in valid_values:
+                    result = int_value
+                else:
+                    raise ValueError(
+                        f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
+                    )
+            else:
+                raise ValueError(
+                    f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+                )
+        return result
 
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
-        return enum_value_parser(value, Operand)
+        return enum_value_parser(value, Operand, Operand.legacy_alternatives())
 
     @model_validator(mode="after")
     def validate_varname(self):
@@ -509,20 +562,24 @@ class ExtOldForcing(BaseModel):
             12: DiskOnlyFileModel,
         }
         """
+        result = values
+
         # if the filetype and the filename are present in the values
-        if any(par in values for par in ["filetype", "FILETYPE"]) and any(
-            par in values for par in ["filename", "FILENAME"]
-        ):
+        has_filetype = any(par in values for par in ["filetype", "FILETYPE"])
+        has_filename = any(par in values for par in ["filename", "FILENAME"])
+        if has_filetype and has_filename:
             file_type_var_name = "filetype" if "filetype" in values else "FILETYPE"
             filename_var_name = "filename" if "filename" in values else "FILENAME"
             file_type = values.get(file_type_var_name)
             raw_path = values.get(filename_var_name)
 
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
-                values[filename_var_name] = resolve_file_model(raw_path, model)
+            if isinstance(raw_path, (Path, str)) and is_int(file_type):
+                int_file_type = int(file_type)
+                model = FILETYPE_FILEMODEL_MAPPING.get(int_file_type)
+                if model is not None:
+                    result[filename_var_name] = resolve_file_model(raw_path, model)
 
-        return values
+        return result
 
     @model_validator(mode="before")
     @classmethod
