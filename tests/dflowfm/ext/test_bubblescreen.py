@@ -181,6 +181,29 @@ class TestBubbleScreenInit:
             f"string discharge not coerced to float: {block.discharge}"
         )
 
+    def test_init_resolve_forcing_reference_accepts_realtime(
+        self, inline_block_kwargs
+    ):
+        """The ``resolve_forcing_reference`` validator accepts the ``realtime`` keyword.
+
+        Args:
+            inline_block_kwargs: Fixture providing a valid base block.
+
+        Test scenario:
+            The D-Flow FM User Manual (Table C.15, §C.6.3.6) marks ``discharge``
+            with ``*``, whose legend (Table C.14, §C.6.3.5) permits a scalar, a
+            ``.bc`` file, or the ``realtime`` keyword; the sediment/tracer
+            exclusion does not apply to ``discharge``. A ``discharge = realtime``
+            input must therefore be accepted and stored as the string
+            ``"realtime"`` (StrEnum equality).
+        """
+        kwargs = {**inline_block_kwargs, "discharge": "realtime"}
+        block = BubbleScreen(**kwargs)
+
+        assert block.discharge == "realtime", (
+            f"realtime discharge not accepted: {block.discharge!r}"
+        )
+
     def test_init_without_location_raises(self):
         """``validate_location_specification`` raises when neither location style is given.
 
@@ -229,7 +252,10 @@ class TestBubbleScreenInit:
             under-/over-specified x, under-specified y, and a wrong
             ``numCoordinates`` count.
         """
-        with pytest.raises((ValidationError, ValueError)):
+        with pytest.raises(
+            (ValidationError, ValueError),
+            match=r"numCoordinates.*does not match",
+        ) as exc_info:
             BubbleScreen(
                 id="bubbles1",
                 numcoordinates=numcoordinates,
@@ -238,6 +264,10 @@ class TestBubbleScreenInit:
                 zlevel=-5.0,
                 discharge=1.0,
             )
+
+        assert "bubbles1" in str(exc_info.value), (
+            f"mismatch error should mention block id 'bubbles1', got: {exc_info.value}"
+        )
 
     def test_init_missing_zlevel_raises(self):
         """``zLevel`` is a required field with no default.

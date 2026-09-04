@@ -752,16 +752,26 @@ class BubbleScreen(INIBasedModel):
         if hasattr(locationfile, "filepath"):
             has_locationfile = locationfile.filepath is not None
 
-        has_coordinates = (
+        all_inline_present = (
             numcoordinates is not None
             and xcoordinates is not None
             and ycoordinates is not None
-            and _coordinate_length(xcoordinates)
+        )
+        lengths_match = all_inline_present and (
+            _coordinate_length(xcoordinates)
             == _coordinate_length(ycoordinates)
             == int(numcoordinates)
         )
 
-        if not (has_locationfile or has_coordinates):
+        if all_inline_present and not lengths_match:
+            raise ValueError(
+                f"`numCoordinates` ({int(numcoordinates)}) does not match the length of "
+                f"`xCoordinates` ({_coordinate_length(xcoordinates)}) and `yCoordinates` "
+                f"({_coordinate_length(ycoordinates)}) for the BubbleScreen block "
+                f"`{values.get('id')}`."
+            )
+
+        if not (has_locationfile or lengths_match):
             raise ValueError(
                 "Either `locationFile` or the combination of `numCoordinates`, "
                 "`xCoordinates`, and `yCoordinates` must be provided "
