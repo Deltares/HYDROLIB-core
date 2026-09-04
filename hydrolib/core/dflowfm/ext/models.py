@@ -437,15 +437,20 @@ class SourceSink(INIBasedModel):
 
         Range sources are written as e.g. `zSource = -7.5 -3.01` in the ext
         file; the parser delivers this as a single string that Pydantic
-        cannot coerce to `float` or `List[float]`.
+        cannot coerce to `float` or `List[float]`. An empty or whitespace-only
+        string (e.g. `zSource =`) is treated as "not provided" (`None`),
+        consistent with `str_is_empty_or_none`.
         """
         result = v
         if isinstance(v, str):
-            parts = v.split()
-            if len(parts) == 1:
-                result = float(parts[0])
+            if str_is_empty_or_none(v):
+                result = None
             else:
-                result = [float(p) for p in parts]
+                parts = v.split()
+                if len(parts) == 1:
+                    result = float(parts[0])
+                else:
+                    result = [float(p) for p in parts]
         return result
 
     @field_validator(
