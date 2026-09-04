@@ -9,8 +9,11 @@ import numpy as np
 import pytest
 from pydantic import ValidationError
 
+from pathlib import Path
+
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import Constant, ForcingModel, RealTime
-from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral
+from hydrolib.core.dflowfm.ext.models import ExtModel, Lateral, _is_non_null_location_file
 from hydrolib.core.dflowfm.ini.models import INIBasedModel
 from tests.utils import test_data_dir
 
@@ -93,8 +96,8 @@ class TestValidateLocationType:
         with pytest.raises(ValueError) as exc_mssg:
             Lateral.validate_location_type(value)
         assert (
-            str(exc_mssg.value)
-            == f"Value given ({value}) not accepted, should be one of: 1d, 2d, all"
+            f"Invalid enum value: {value!r}. Expected one of: ['1d', '2d', 'all']"
+            in str(exc_mssg.value)
         )
 
     @pytest.mark.parametrize(
@@ -111,7 +114,7 @@ class TestValidateLocationType:
     )
     def test_given_correct_locationtype(self, location_type: str):
         return_value = Lateral.validate_location_type(location_type)
-        assert return_value == location_type
+        assert return_value == location_type.lower()
 
 
 class TestValidateLocationTypeDependencies:
@@ -180,25 +183,53 @@ class TestValidateLocationTypeDependencies:
         assert str(exc_err.value) == LOCATION_ERROR
 
     @pytest.mark.parametrize(
-        "dict_values",
+        "dict_values, locationtype, expected_message",
         [
-            pytest.param(dict(nodeid="42"), id="Given nodeid"),
+            pytest.param(
+                dict(nodeid="42"),
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="nodeid-wrongType",
+            ),
             pytest.param(
                 dict(branchid="aBranchId", chainage=4.2),
-                id="Given branchid and chainage",
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="branchid-wrongType",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-2d",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-all",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-2d",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-all",
             ),
         ],
     )
     def test_given_1d_args_and_location_type_other_then_raises_valueerror(
-        self, dict_values: dict
+        self, dict_values: dict, locationtype: str, expected_message: str
     ):
-        test_values = dict(
-            locationtype="wrongType",
-        )
-        test_dict = {**dict_values, **test_values}
+        test_dict = {**dict_values, "locationtype": locationtype}
         with pytest.raises(ValueError) as exc_err:
             Lateral.validate_that_location_specification_is_correct(test_dict)
-        assert str(exc_err.value) == "locationType should be 1d but was wrongType"
+        assert expected_message in str(exc_err.value)
 
     @pytest.mark.parametrize(
         "dict_values",
@@ -317,7 +348,7 @@ class TestValidateFromCtor:
                 locationtype=location_type,
             )
         expected_error_mssg = (
-            f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
+            f"locationType has invalid value '{location_type}'. Possible values are: 1d, 2d, all"
         )
         assert expected_error_mssg in str(exc_mssg.value)
 
@@ -452,3 +483,38 @@ class TestValidateForcingData:
         assert isinstance(m.lateral[3].discharge, ForcingModel)
         assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
         assert m.lateral[3].discharge.forcing[0].name == "10637"
+
+
+class TestIsNonNullLocationFile:
+    """Tests for the _is_non_null_location_file helper function."""
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            pytest.param(None, id="None"),
+            pytest.param("", id="empty string"),
+            pytest.param("   ", id="whitespace-only string"),
+            pytest.param({"filepath": None}, id="dict with filepath=None"),
+            pytest.param({}, id="dict without filepath key"),
+            pytest.param(42, id="integer"),
+            pytest.param(["file.pol"], id="list"),
+            pytest.param(DiskOnlyFileModel(filepath=None), id="DiskOnlyFileModel(None)"),
+        ],
+    )
+    def test_returns_false(self, raw):
+        assert _is_non_null_location_file(raw) is False
+
+    @pytest.mark.parametrize(
+        "raw",
+        [
+            pytest.param("some/path/file.pol", id="non-empty string"),
+            pytest.param("  file.pol  ", id="string with surrounding whitespace"),
+            pytest.param(Path("some/path/file.pol"), id="Path"),
+            pytest.param(Path(""), id="empty Path object"),
+            pytest.param({"filepath": Path("file.pol")}, id="dict with filepath set"),
+            pytest.param(DiskOnlyFileModel(filepath=Path("file.pol")), id="DiskOnlyFileModel with filepath"),
+        ],
+    )
+    def test_returns_true(self, raw):
+        assert _is_non_null_location_file(raw) is True
+

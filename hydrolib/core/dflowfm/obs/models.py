@@ -9,9 +9,9 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    LocationValidator,
     enum_value_parser,
     make_list,
-    validate_location_specification,
 )
 
 
@@ -85,13 +85,14 @@ class ObservationPoint(INIBasedModel):
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
         """Validates that the correct location specification is given."""
-        return validate_location_specification(
+        location_validator = LocationValidator(
             values,
             config=LocationValidationConfiguration(
                 validate_node=False, validate_num_coordinates=False
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
+        return location_validator.validate()
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("name")

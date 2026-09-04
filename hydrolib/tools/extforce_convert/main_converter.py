@@ -23,6 +23,7 @@ from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
+    LateralConverter,
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -337,7 +338,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.structure_model
 
-    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStr) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
 
         Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file
@@ -376,6 +377,8 @@ class ExternalForcingConverter:
                 forcing, source_sink_quantities
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
+            new_quantity_block = converter_class.convert(forcing)
+        elif isinstance(converter_class, LateralConverter):
             new_quantity_block = converter_class.convert(forcing)
         else:
             # SpatialConverter: meteo, initial-condition and parameter quantities all

@@ -18,7 +18,7 @@ from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    validate_location_specification,
+    LocationValidator,
 )
 from tests.utils import (
     assert_files_equal,
@@ -356,8 +356,7 @@ class TestCrossSectionLocation:
         ],
     )
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
-        with pytest.raises(ValueError) as exc_err:
-            validate_location_specification(
+        location_validator = LocationValidator(
                 dict_values,
                 config=LocationValidationConfiguration(
                     validate_node=False,
@@ -366,8 +365,10 @@ class TestCrossSectionLocation:
                 ),
                 fields=LocationValidationFieldNames(
                     x_coordinates="x", y_coordinates="y"
-                ),
-            )
+                )
+        )
+        with pytest.raises(ValueError) as exc_err:
+            location_validator.validate()
         assert (
             str(exc_err.value) == "branchId and chainage or x and y should be provided"
         )
@@ -380,7 +381,7 @@ class TestCrossSectionLocation:
             y=24,
         )
 
-        assert validate_location_specification(
+        assert LocationValidator(
             test_dict,
             config=LocationValidationConfiguration(
                 validate_node=False,
@@ -388,7 +389,7 @@ class TestCrossSectionLocation:
                 validate_location_type=False,
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
-        )
+        ).validate()
 
 
 class TestCrossSectionModel:
