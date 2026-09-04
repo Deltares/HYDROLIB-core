@@ -1294,6 +1294,8 @@ class ExtModel(INIModel):
         boundary (List[Boundary]): List of `[Boundary]` blocks for all boundary conditions.
         lateral (List[Lateral]): List of `[Lateral]` blocks for all lateral discharges.
         sourcesink (List[SourceSink]): List of `[SourceSink]` blocks for all source/sink terms.
+        bubblescreen (List[BubbleScreen]): List of `[BubbleScreen]` blocks for all bubble
+            screens (air curtains).
         meteo (List[Meteo]): List of `[Meteo]` blocks for legacy meteorological forcings.
             Deprecated: use `spatial` instead.
         spatial (List[Spatial]): List of `[Spatial]` blocks for spatial forcings (meteo,
@@ -1343,16 +1345,17 @@ class ExtModel(INIModel):
     def n_forcing_blocks(self) -> int:
         """Total number of forcing blocks held across all block types.
 
-        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[Meteo]` and
-        `[Spatial]` block, whether produced by conversion or loaded from an existing
-        file. Use this to decide whether the model has any content worth writing;
-        counting the individual lists by hand is error-prone and has silently
-        dropped block types before.
+        Sums every `[Boundary]`, `[Lateral]`, `[SourceSink]`, `[BubbleScreen]`,
+        `[Meteo]` and `[Spatial]` block, whether produced by conversion or loaded
+        from an existing file. Use this to decide whether the model has any content
+        worth writing; counting the individual lists by hand is error-prone and has
+        silently dropped block types before.
         """
         return (
             len(self.boundary)
             + len(self.lateral)
             + len(self.sourcesink)
+            + len(self.bubblescreen)
             + len(self.meteo)
             + len(self.spatial)
         )
