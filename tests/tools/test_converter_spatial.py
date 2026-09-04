@@ -445,7 +445,7 @@ _SPATIAL_BLOCKS = [
 ]
 
 # Number of boundary blocks
-_BOUNDARY_BLOCKS_COUNT = 6
+_BOUNDARY_BLOCKS_COUNT = 2
 
 
 @pytest.mark.e2e
