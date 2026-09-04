@@ -19,7 +19,10 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
     SerializerConfig,
 )
-from hydrolib.core.base.utils import resolve_file_model
+from hydrolib.core.base.utils import (
+    is_int,
+    resolve_file_model
+)
 from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.parser import Parser
 from hydrolib.core.dflowfm.extold.serializer import Serializer
@@ -50,6 +53,7 @@ FILETYPE_FILEMODEL_MAPPING = {
     10: PolyFile,
     11: DiskOnlyFileModel,
     12: DiskOnlyFileModel,
+    14: DiskOnlyFileModel,
 }
 
 BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES = tuple(
@@ -365,6 +369,40 @@ class ExtOldForcing(BaseModel):
                 )
         return value
 
+    @field_validator("filetype", mode="before")
+    @classmethod
+    def validate_filetype(cls, value) -> ExtOldFileType:
+        """Validate that the filetype value is a valid ExtOldFileType member.
+
+        Args:
+            value: The raw filetype value to validate.
+
+        Returns:
+            ExtOldFileType: The validated filetype enum member.
+
+        Raises:
+            ValueError: If the value cannot be converted to an integer or is not a
+                valid ExtOldFileType value.
+        """
+        if isinstance(value, ExtOldFileType):
+            result = value
+        else:
+            valid_values = [member.value for member in ExtOldFileType]
+
+            if is_int(value):
+                int_value = int(value)
+                if int_value in valid_values:
+                    result = int_value
+                else:
+                    raise ValueError(
+                        f"FILETYPE '{int_value}' is not a valid filetype. Supported values: {valid_values}."
+                    )
+            else:
+                raise ValueError(
+                    f"FILETYPE '{value}' is not a valid integer. Supported values: {valid_values}."
+                )
+        return result
+
     @field_validator("operand", mode="before")
     @classmethod
     def validate_operand(cls, value):
@@ -524,20 +562,24 @@ class ExtOldForcing(BaseModel):
             12: DiskOnlyFileModel,
         }
         """
+        result = values
+
         # if the filetype and the filename are present in the values
-        if any(par in values for par in ["filetype", "FILETYPE"]) and any(
-            par in values for par in ["filename", "FILENAME"]
-        ):
+        has_filetype = any(par in values for par in ["filetype", "FILETYPE"])
+        has_filename = any(par in values for par in ["filename", "FILENAME"])
+        if has_filetype and has_filename:
             file_type_var_name = "filetype" if "filetype" in values else "FILETYPE"
             filename_var_name = "filename" if "filename" in values else "FILENAME"
             file_type = values.get(file_type_var_name)
             raw_path = values.get(filename_var_name)
 
-            if isinstance(raw_path, (Path, str)):
-                model = FILETYPE_FILEMODEL_MAPPING.get(int(file_type))
-                values[filename_var_name] = resolve_file_model(raw_path, model)
+            if isinstance(raw_path, (Path, str)) and is_int(file_type):
+                int_file_type = int(file_type)
+                model = FILETYPE_FILEMODEL_MAPPING.get(int_file_type)
+                if model is not None:
+                    result[filename_var_name] = resolve_file_model(raw_path, model)
 
-        return values
+        return result
 
     @model_validator(mode="before")
     @classmethod
