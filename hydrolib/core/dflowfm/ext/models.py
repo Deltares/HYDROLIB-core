@@ -739,20 +739,7 @@ class BubbleScreen(INIBasedModel):
     @classmethod
     def resolve_forcing_reference(cls, v):
         """Resolve string/Path inputs to scalar, RealTime enum, or ForcingModel."""
-        result = v
-        if isinstance(v, str):
-            try:
-                result = float(v)
-            except ValueError:
-                try:
-                    result = RealTime(v.lower())
-                except ValueError:
-                    result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, Path):
-            result = resolve_file_model(v, ForcingModel)
-        elif isinstance(v, dict):
-            result = ForcingModel(**v)
-        return result
+        return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
     def validate_location_specification(cls, values):
