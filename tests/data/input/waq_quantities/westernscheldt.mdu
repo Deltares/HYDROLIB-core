@@ -1,0 +1,7 @@
+[external forcing]
+ExtForceFile      = westernscheldt.ext
+ExtForceFileNew   = westernscheldt_new.ext
+
+[time]
+
+[physics]

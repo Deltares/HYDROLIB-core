@@ -88,10 +88,44 @@ ExtOldBoundaryQuantity = StrEnum(
     QUANTITIES_DATA["BoundaryCondition"]["quantity_names"],
     type=_ExtOldBoundaryQuantity,
 )
-ExtOldParametersQuantity = StrEnum(
-    "ExtOldParametersQuantity", QUANTITIES_DATA["Parameter"]["quantity_names"]
-)
 PARAMETER_QUANTITIES_VALID_PREFIXES = tuple(QUANTITIES_DATA["Parameter"]["prefixes"])
+
+
+class _ExtOldParametersQuantity(StrEnum):
+    """StrEnum for parameter quantities in the old external forcings format.
+
+    If there is a missing quantity that is mentioned in the "Accepted quantity names" section of the user manual
+    [Sec.C.5.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.3).
+    and [Sec.D.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.3).
+    please open and issue in github.
+    """
+
+    @classmethod
+    def _missing_(cls, value):
+        """Custom implementation for handling missing values.
+
+        The method parses any missing values and only allows the ones that start with
+        a valid parameter prefix (e.g. waqfunction, waqsegmentnumber, waqsegmentfunction,
+        waqmassbalancearea).
+        """
+        if isinstance(value, str) and value.startswith(
+            PARAMETER_QUANTITIES_VALID_PREFIXES
+        ):
+            new_member = str.__new__(cls, value)
+            new_member._value_ = value
+            return new_member
+        else:
+            raise ValueError(
+                f"{value} is not a valid {cls.__name__} possible quantities are {', '.join(cls.__members__)}, "
+                f"and quantities that start with one of: {', '.join(PARAMETER_QUANTITIES_VALID_PREFIXES)}"
+            )
+
+
+ExtOldParametersQuantity = StrEnum(
+    "ExtOldParametersQuantity",
+    QUANTITIES_DATA["Parameter"]["quantity_names"],
+    type=_ExtOldParametersQuantity,
+)
 ExtOldMeteoQuantity = StrEnum(
     "ExtOldMeteoQuantity",
     QUANTITIES_DATA["Meteo"]["quantity_names"],

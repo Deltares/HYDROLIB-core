@@ -337,7 +337,7 @@ class ExternalForcingConverter:
 
         return self.ext_model, self.structure_model
 
-    def _resolve_forcing_path(self, forcing, ref_path: PathOrStrth) -> Path:
+    def _resolve_forcing_path(self, forcing, ref_path: PathOrStr) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
 
         Honours the `pathsRelativeToParent` MDU setting, resolving the forcing file

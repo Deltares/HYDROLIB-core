@@ -15,6 +15,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldQuantity,
 )
 from hydrolib.core.dflowfm.inifield import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.inifield.models import AveragingType
 from hydrolib.tools.extforce_convert.converters import (
     FACTOR_QUANTITIES,
     ConverterFactory,
@@ -134,7 +135,7 @@ class TestSpatialE2E:
     * pt_old.ext    – old-format external forcing file with 24 initial-condition
                       quantities (initialtracerXXX / initialwaqbotXXX)
 
-    The converter is expected to convert all 25 old-format quantities to
+    The converter is expected to convert all 26 old-format quantities to
     ``Spatial`` blocks that are appended to the new ext model.
     """
 
@@ -441,7 +442,191 @@ class TestSpatialVariableNameConversion:
             method="3",
             operand="O",
         )
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        result = converter.convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
 
         block = SpatialConverter().convert(forcing, forcing.filename.filepath)
 
         assert block.datavariablename is None
+
+
+class TestWaqSpatialConversion:
+    """Tests verifying that WAQ quantities are converted to [Spatial] blocks."""
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqparameter",
+            "waqfunctionTau",
+            "waqfunctionradsurfave",
+            "waqsegmentnumber1",
+            "waqsegmentfunctionVel",
+            "waqmassbalanceareasomething",
+        ],
+    )
+    def test_waq_parameter_quantities_use_spatial_converter(self, quantity):
+        """ConverterFactory must route WAQ parameter quantities to SpatialConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, SpatialConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "initialwaqbotSomething",
+            "initialwaqbot",
+        ],
+    )
+    def test_initialwaqbot_uses_spatial_converter(self, quantity):
+        """ConverterFactory must route initialwaqbot quantities to SpatialConverter."""
+        converter = ConverterFactory.create_converter(quantity)
+        assert isinstance(converter, SpatialConverter)
+
+    @pytest.mark.parametrize(
+        "quantity",
+        [
+            "waqfunctionTau",
+            "waqsegmentnumber1",
+            "waqmassbalanceareasomething",
+            "waqparameterSomething",
+            "initialwaqbotSomething"
+        ],
+    )
+    def test_waq_prefix_quantities_produce_spatial_block(self, quantity):
+        """Converter must return a Spatial object for WAQ prefix-based quantities."""
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename=DiskOnlyFileModel("fake-file.asc"),
+            filetype=4,
+            method=4,
+            operand="O",
+        )
+        converter = ConverterFactory.create_converter(forcing.quantity)
+        result = converter.convert(forcing, Path("fake-file.asc"))
+        assert isinstance(result, Spatial)
+        assert result.quantity == quantity
+
+
+_SPATIAL_BLOCKS = [
+    # initial conditions
+    ("initialtracerOXY", True, "Estruary.pol", 10.0, None, InterpolationMethod.constant, None),
+    ("initialtracerCBOD5", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
+    # WAQ non-polygon parameters
+    ("waqparameterSalinity", False, "salinity.xyz", None, DataFileType.sample, InterpolationMethod.averaging, AveragingType.nearestnb),
+    ("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo, InterpolationMethod.triangulation, None),
+    # WAQ polygon parameters
+    ("waqparameterSOD", True, "Estruary.pol", 1.0, None, InterpolationMethod.constant, None),
+    ("waqsegmentfunctionSOD", True, "Estruary.pol", 1.5, None, InterpolationMethod.constant, None),
+    ("waqsegmentnumberSOD", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
+    ("waqfunctionSOD", True, "Estruary.pol", 4.5, None, InterpolationMethod.constant, None),
+    ("waqmassbalanceareaSOD", True, "Estruary.pol", 6.0, None, InterpolationMethod.constant, None),
+]
+
+# Number of boundary blocks
+_BOUNDARY_BLOCKS_COUNT = 2
+
+
+@pytest.mark.e2e
+class TestWaqQuantitiesConversion:
+    """End-to-end tests for converting the waq_quantities test model.
+
+    The MDU file (westernscheldt.mdu) references:
+        - initialtracerOXY, initialtracerCBOD5  (polygon / InsidePolygon)
+        - waqparameterSalinity                  (samples, METHOD=6 / averaging)
+        - waqparameterTemp                       (arcInfo, METHOD=5 / triangulation)
+        - waqparameterSOD                        (polygon)
+        - waqsegmentfunctionSOD                  (polygon)
+        - waqsegmentnumberSOD                    (polygon)
+        - waqfunctionSOD                         (polygon)
+        - waqmassbalanceareaSOD                  (polygon)
+
+    """
+
+    @pytest.fixture
+    def converted(self, tmp_path: Path, input_files_dir: Path):
+        """Copy the waq_quantities model to a temp dir and run the converter."""
+        src = input_files_dir / "waq_quantities"
+        dst = tmp_path / src.name
+        shutil.copytree(src, dst)
+        mdu_file = dst / "westernscheldt.mdu"
+        converter = ExternalForcingConverter.from_mdu(mdu_file)
+        return converter.update()
+
+
+    @pytest.mark.parametrize(
+        "idx, quantity, is_polygon, file_name, datavalue, datafiletype, interpolationmethod, averagingtype",
+        [(i,) + block for i, block in enumerate(_SPATIAL_BLOCKS)],
+        ids=[block[0] for block in _SPATIAL_BLOCKS],
+    )
+    def test_spatial_block(
+        self, converted, idx: int,
+        quantity, is_polygon, file_name, datavalue, datafiletype, interpolationmethod, averagingtype,
+    ):
+        """Each old-format forcing block is converted to the correct Spatial block."""
+        ext_model, _ = converted
+        spatial = ext_model.spatial[idx]
+
+        assert spatial.quantity == quantity
+        assert spatial.operand == Operand.override
+        assert spatial.interpolationmethod == interpolationmethod
+
+        if is_polygon:
+            assert spatial.targetmaskfile.filepath.name == file_name, (
+                f"{quantity}: expected targetmaskfile='{file_name}', "
+                f"got '{spatial.targetmaskfile.filepath}'"
+            )
+            assert spatial.datavalue == pytest.approx(datavalue), (
+                f"{quantity}: expected datavalue={datavalue}, "
+                f"got {spatial.datavalue}"
+            )
+            assert spatial.datafile is None, (
+                f"{quantity}: polygon block must have no datafile"
+            )
+            assert spatial.datafiletype is None, (
+                f"{quantity}: polygon block must have no datafiletype"
+            )
+        else:
+            assert spatial.datafile.filepath.name == file_name, (
+                f"{quantity}: expected datafile='{file_name}', "
+                f"got '{spatial.datafile.filepath}'"
+            )
+            assert spatial.datafiletype == datafiletype, (
+                f"{quantity}: expected datafiletype={datafiletype}, "
+                f"got '{spatial.datafiletype}'"
+            )
+            assert spatial.targetmaskfile is None, (
+                f"{quantity}: file-based block must have no targetmaskfile"
+            )
+            assert spatial.datavalue is None, (
+                f"{quantity}: file-based block must have no datavalue"
+            )
+
+        if averagingtype is not None:
+            assert spatial.averagingtype == averagingtype, (
+                f"{quantity}: expected averagingtype={averagingtype}, "
+                f"got '{spatial.averagingtype}'"
+            )
+
+
+    def test_structural_properties(self, converted):
+        """Count, ordering, preserved boundaries, no inifield/structure blocks."""
+        ext_model, structure_model = converted
+
+        expected_quantities = [block[0] for block in _SPATIAL_BLOCKS]
+        actual_quantities = [s.quantity for s in ext_model.spatial]
+
+        assert len(ext_model.spatial) == len(_SPATIAL_BLOCKS), (
+            f"Expected {len(_SPATIAL_BLOCKS)} Spatial blocks, got {len(ext_model.spatial)}. "
+            f"Actual quantities: {actual_quantities}"
+        )
+        assert actual_quantities == expected_quantities, (
+            f"Quantity order differs.\n"
+            f"  expected: {expected_quantities}\n"
+            f"  actual  : {actual_quantities}"
+        )
+        assert len(ext_model.boundary) == _BOUNDARY_BLOCKS_COUNT, (
+            f"Expected {_BOUNDARY_BLOCKS_COUNT} boundary blocks, got {len(ext_model.boundary)}"
+        )
+
+        assert len(structure_model.structure) == 0
+        assert len(ext_model.meteo) == 0
