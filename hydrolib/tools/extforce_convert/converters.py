@@ -1,6 +1,7 @@
 """External forcing converter."""
 
 from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -29,6 +30,8 @@ from hydrolib.core.dflowfm.ext.models import (
     SpatialError,
     SourceSink,
     SourceSinkError,
+    Spatial,
+    SpatialError,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
@@ -39,6 +42,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldSourcesSinks,
 )
 from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaError
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
@@ -1126,6 +1130,62 @@ class SourceSinkConverter(BaseConverter):
         return new_block
 
 
+MASS_BALANCE_AREA_PREFIXES = ("waqmassbalancearea", "massbalancearea")
+"""tuple: Old-ext quantity prefixes for mass balance areas, longest-first."""
+
+
+class MassBalanceAreaConverter(BaseConverter):
+    """Mass balance area converter.
+
+    Converts an old external forcing block whose quantity is ``waqmassbalancearea<name>``
+    (or ``massbalancearea<name>``) into a :class:`MassBalanceArea` block for the standalone
+    mass balance area file (``<*_mba.ini>``). The area name is taken from the quantity
+    suffix and the polygon from ``FILENAME``; ``VALUE`` is ignored (Manual F.2.5, UNST-10107).
+    """
+
+    def convert(self, forcing: ExtOldForcing) -> MassBalanceArea:
+        """Convert a single old mass balance area forcing block.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block. Its ``quantity`` carries the area name as a
+                suffix and its ``filename`` points at the polygon file.
+
+        Returns:
+            MassBalanceArea: The converted block for the mass balance area file.
+        """
+        name = MassBalanceAreaConverter._strip_prefix(str(forcing.quantity))
+        try:
+            result = MassBalanceArea(name=name, locationfile=forcing.filename.filepath)
+        except Exception as e:
+            raise MassBalanceAreaError(
+                f"Failed to create the MassBalanceArea object for QUANTITY="
+                f"{forcing.quantity} and FILENAME={forcing.filename}. "
+                f"for the following Errors: {e}"
+            ) from e
+        return result
+
+    @staticmethod
+    def _strip_prefix(quantity: str) -> str:
+        """Return the area name, i.e. the quantity with its mass-balance-area prefix removed.
+
+        Matching is case-insensitive and longest-prefix-first; the suffix casing is preserved.
+
+        Args:
+            quantity (str): The old-ext quantity, e.g. ``waqmassbalanceareaEstruaryWest``.
+
+        Returns:
+            str: The area name (the quantity unchanged if no known prefix matches).
+        """
+        lower = quantity.lower()
+        name = quantity
+        for prefix in MASS_BALANCE_AREA_PREFIXES:
+            if lower.startswith(prefix):
+                name = quantity[len(prefix) :]
+                break
+        return name
+
+
 class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
@@ -1152,18 +1212,22 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if (
+        if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
+            converter = MassBalanceAreaConverter()
+        elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
             or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
         ):
-            return SpatialConverter()
+            converter = SpatialConverter()
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+            converter = BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+            converter = SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
+
+        return converter
 
     @staticmethod
     def contains(quantity_class, quantity) -> bool:

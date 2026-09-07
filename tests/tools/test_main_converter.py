@@ -1,7 +1,7 @@
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
@@ -52,11 +52,7 @@ class TestExtOldToNewFromMDU:
         assert mdu_filename.with_suffix(".mdu.bak").exists()
 
     def test_extrapolate_slr(
-            self,
-            capsys,
-            monkeypatch,
-            tmp_path: Path,
-            input_files_dir: Path
+        self, capsys, monkeypatch, tmp_path: Path, input_files_dir: Path
     ):
         """
         - This test used mdu file with `Unknown keywords` so the reading of the mdu file using the `LegacyFMModel`
@@ -112,12 +108,7 @@ class TestExtOldToNewFromMDU:
         assert "ExtForceFileNew" in mdu_text
         assert new_ext_name in mdu_text
 
-    def test_recursive(
-            self,
-            capsys,
-            monkeypatch,
-            input_files_dir: Path
-    ):
+    def test_recursive(self, capsys, monkeypatch, input_files_dir: Path):
         monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
         path = input_files_dir / "e02/f006_external_forcing"
         with patch(
@@ -127,7 +118,7 @@ class TestExtOldToNewFromMDU:
             recursive_converter(path, suppress_errors=True)
 
     @pytest.mark.parametrize(
-        "mdu_file_content, input_files, expected, content",
+        "mdu_file_content, expected, content",
         [
             (
                 {
@@ -140,8 +131,7 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                (None, None, None),
-                ("new_forcing.ext", "initial_conditions.ini", "structures.ini"),
+                ("new_forcing.ext", None, "structures.ini"),
                 [
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
@@ -159,8 +149,7 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                ("user_provided.ext", None, None),
-                ("user_provided.ext", "initial_conditions.ini", "structures.ini"),
+                ("old_forcing-new.ext", None, "structures.ini"),
                 [
                     "extforcefile=old_forcing.ext",
                     "inifieldfile=initial_conditions.ini",
@@ -177,8 +166,7 @@ class TestExtOldToNewFromMDU:
                         "structurefile": "structures.ini",
                     },
                 },
-                (None, "user_initial_conditions.ini", None),
-                ("new_forcing.ext", "user_initial_conditions.ini", "structures.ini"),
+                ("new_forcing.ext", None, "structures.ini"),
                 [
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
@@ -195,8 +183,7 @@ class TestExtOldToNewFromMDU:
                         "inifieldfile": "initial_conditions.ini",
                     },
                 },
-                (None, None, "user_structures.ini"),
-                ("new_forcing.ext", "initial_conditions.ini", "user_structures.ini"),
+                ("new_forcing.ext", None, "new-structure.ini"),
                 [
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=new_forcing.ext",
@@ -214,8 +201,7 @@ class TestExtOldToNewFromMDU:
                         "structurefile": Path("structures.ini"),
                     },
                 },
-                (None, None, None),
-                ("old_forcing-new.ext", "initial_conditions.ini", "structures.ini"),
+                ("old_forcing-new.ext", None, "structures.ini"),
                 [
                     "extforcefile=old_forcing.ext",
                     "extforcefilenew=",
@@ -225,23 +211,23 @@ class TestExtOldToNewFromMDU:
             ),
         ],
         ids=[
-            "Valid MDU file with all fields present",
-            "MDU file missing extforcefilenew, user provides ext_file",
-            "MDU file missing inifieldfile, user provides inifield_file",
-            "MDU file missing structurefile, user provides structure_file",
-            "MDU file empty extforcefilenew",
+            "MDU provides extforcefilenew and structurefile",
+            "MDU missing extforcefilenew derives -new suffix",
+            "MDU missing inifieldfile",
+            "MDU missing structurefile defaults to new-structure.ini",
+            "MDU empty extforcefilenew derives -new suffix",
         ],
     )
     def test_from_mdu(
         self,
         mdu_file_content: Dict[str, Any],
-        input_files: Tuple[Optional[str], Optional[str], Optional[str]],
         expected: Tuple[str, str, str],
         tmp_path: Path,
         content: List[str],
     ):
-        # input_files = (ext_file, inifield_file, structure_file); the inifield entry
-        # is ignored now that the converter no longer produces an initial field file.
+        # expected = (ext_file, inifield_file, structure_file); the inifield entry is not
+        # asserted (the converter no longer produces an initial field file). The output paths
+        # are always derived from the MDU file, never supplied to `from_mdu` directly.
         """Test the from_mdu method of ExternalForcingConverter with various scenarios."""
         mdu_file = tmp_path / "test.mdu"
         mdu_file.touch()
@@ -266,9 +252,7 @@ class TestExtOldToNewFromMDU:
             mock_get_mdu_info.return_value = mdu_file_content
             mock_content.return_value = content
 
-            converter = ExternalForcingConverter.from_mdu(
-                mdu_file, input_files[0], structure_file_user=input_files[2]
-            )
+            converter = ExternalForcingConverter.from_mdu(mdu_file)
         mdu_file.unlink()
 
         assert converter.ext_model.filepath.name == expected[0]
@@ -321,9 +305,7 @@ class TestExternalFocingConverter:
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
-        converter = ExternalForcingConverter(
-            path, new_ext_file, new_structure_file
-        )
+        converter = ExternalForcingConverter(path, new_ext_file, new_structure_file)
 
         assert converter.ext_model.filepath == new_ext_file
         assert converter.structure_model.filepath == new_structure_file
@@ -402,9 +384,9 @@ class TestExternalFocingConverter:
 
         converter.save(backup=False)
 
-        assert new_ext_path.exists(), (
-            f"spatial-only conversion did not write the new ext file to {new_ext_path}"
-        )
+        assert (
+            new_ext_path.exists()
+        ), f"spatial-only conversion did not write the new ext file to {new_ext_path}"
         assert "[Spatial]" in new_ext_path.read_text()
 
     def test_read_old_file(
@@ -701,8 +683,7 @@ class TestUpdate:
             ext_model.spatial[i].datafiletype for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_type"]
         assert [
-            str(ext_model.spatial[i].datafile.filepath)
-            for i in range(num_quantities)
+            str(ext_model.spatial[i].datafile.filepath) for i in range(num_quantities)
         ] == old_forcing_file_initial_condition["file_path"]
 
 
