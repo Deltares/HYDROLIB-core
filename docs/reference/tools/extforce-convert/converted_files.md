@@ -378,8 +378,23 @@ fileType    = massBalanceAreas
 name         = EstruaryWest
 locationFile = EstruaryWest.pol
 ```
-The MDU `[output]` section is updated with `mbaFile = new_mba.ini`. The required `mbaInterval` keyword
-(Manual F.2.5) is carried over from the legacy `[processes] DtMassBalance` value, when present.
+The MDU `[output]` section is updated with `mbaFile` and the required `mbaInterval` keyword.
+
+**Where the converted areas are written** depends on what the MDU's `[output] mbaFile` already
+references. `mbaFile` is a space-separated list of `<*_mba.ini>` files (Manual F.2.5), so:
+
+- **No `mbaFile`** — a new `new_mba.ini` is created next to the old external forcing file and
+  `mbaFile = new_mba.ini` is added to `[output]`.
+- **One existing `mbaFile`** — the converted areas are appended to that existing file (its areas are
+  kept), and the keyword is left pointing at it.
+- **Multiple existing `mbaFile`s** — the converted areas are appended to the **first** file in the list;
+  the other files and the `mbaFile` keyword are left unchanged, and a warning is emitted. Which file
+  receives the areas does not affect the model, because the kernel combines the areas of every listed
+  file into one set.
+
+**`mbaInterval`** is carried over from the legacy `[processes] DtMassBalance` value, or from
+`[processes] DtProcesses` when `DtMassBalance` is absent. If neither is present the interval cannot be
+derived; `mbaInterval` is left unset and a warning is emitted so it can be set manually.
 
 > Kernel support: the `_mba.ini` file and the `mbaFile`/`mbaInterval` keywords require DIMRset ≥ 2.31.18.
 

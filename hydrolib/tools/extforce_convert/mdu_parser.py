@@ -1,5 +1,6 @@
 """MDU Parser."""
 
+import warnings
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -1154,23 +1155,35 @@ class MDUParser:
         return path
 
     def get_mba_file(self) -> Path | None:
-        """Resolve the mass balance area file from the MDU `[output] mbaFile` keyword.
+        """Resolve the mass balance area file to reuse from the MDU `[output] mbaFile` keyword.
 
-        When the MDU already references an `mbaFile`, the converter loads that file and appends the
-        converted areas to it, rather than creating a fresh one. This mirrors how the new external
-        forcings and structure files are resolved from the MDU.
+        `mbaFile` is a space-separated list of `<*_mba.ini>` files (Manual F.2.5). The converter appends
+        the converted areas into a single existing file when one is referenced:
+
+        - no `mbaFile` entry -> ``None`` (the converter creates its default ``new_mba.ini``);
+        - one or more files -> the first listed file (resolved). The converted areas are appended to it.
+          Which file receives them does not affect the model, because the kernel combines the areas of
+          every listed file. When more than one is listed, a warning notes that the first is used.
 
         Returns:
-            Path | None: The resolved absolute path, or ``None`` when the MDU does not specify one
-                (the converter then falls back to its default ``new_mba.ini``).
+            Path | None: The file to append the converted areas to, or ``None`` when none is referenced.
         """
         mba_file = self.get_keyword(MBA_FILE_LINE)
         root_dir = self.mdu_path.parent
+        mba_files = mba_file.split() if mba_file else []
 
-        if mba_file:
-            path = (root_dir / Path(mba_file)).resolve()
-        else:
+        if not mba_files:
             path = None
+        else:
+            if len(mba_files) > 1:
+                warnings.warn(
+                    "The MDU '[output] mbaFile' lists multiple mass balance area files "
+                    f"({' '.join(mba_files)}); the converted areas are appended to the first one "
+                    f"({mba_files[0]}).",
+                    UserWarning,
+                    stacklevel=2,
+                )
+            path = (root_dir / Path(mba_files[0])).resolve()
 
         return path
 

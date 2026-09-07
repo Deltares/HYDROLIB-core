@@ -231,6 +231,74 @@ class TestConvertMassBalanceAreaFromMDU:
             parser.get_keyword("mbaFile") == "preexisting_mba.ini"
         ), f"Got {parser.get_keyword('mbaFile')}"
 
+    def test_multiple_existing_mba_files_appends_to_first(
+        self, input_files_dir: Path, tmp_path: Path
+    ):
+        """Test that with several `mbaFile`s the converted areas go into the first.
+
+        Test scenario:
+            `mbaFile` is a space-separated list (Manual F.2.5). When the MDU lists more than one
+            file, the converter warns and appends the converted areas to the first listed file,
+            leaving the other file and the `mbaFile` keyword unchanged. No new_mba.ini is created.
+        """
+        mdu = self._prepare_model(input_files_dir, tmp_path)
+
+        # Seed two valid mba files, each with one area already in it.
+        for name, area in (("first_mba.ini", "Pre1"), ("second_mba.ini", "Pre2")):
+            MassBalanceAreaModel(
+                massbalancearea=[
+                    MassBalanceArea(
+                        name=area,
+                        numCoordinates=3,
+                        xCoordinates=[0.0, 1.0, 2.0],
+                        yCoordinates=[0.0, 1.0, 0.0],
+                    )
+                ]
+            ).save(filepath=mdu.parent / name)
+
+        # Reference both files from the MDU [output] section.
+        lines = mdu.read_text().splitlines(keepends=True)
+        patched = [
+            (
+                line + "mbaFile = first_mba.ini second_mba.ini\n"
+                if line.strip().lower() == "[output]"
+                else line
+            )
+            for line in lines
+        ]
+        mdu.write_text("".join(patched))
+
+        with pytest.warns(UserWarning, match="multiple mass balance area files"):
+            converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+        converter.update()
+        converter.save(backup=False)
+
+        # Converted areas are appended to the first file; the second is untouched.
+        assert (
+            converter.mba_model.filepath.name == "first_mba.ini"
+        ), f"Got {converter.mba_model.filepath.name}"
+        assert not (
+            mdu.parent / "new_mba.ini"
+        ).exists(), "No new_mba.ini should be created"
+
+        first = MassBalanceAreaModel(filepath=mdu.parent / "first_mba.ini")
+        assert [a.name for a in first.massbalancearea] == [
+            "Pre1",
+            "EstruaryWest",
+            "River",
+        ], f"Got {[a.name for a in first.massbalancearea]}"
+
+        second = MassBalanceAreaModel(filepath=mdu.parent / "second_mba.ini")
+        assert [a.name for a in second.massbalancearea] == [
+            "Pre2"
+        ], f"Got {[a.name for a in second.massbalancearea]}"
+
+        # The mbaFile keyword still lists both files, unchanged.
+        parser = MDUParser(mdu)
+        assert (
+            parser.get_keyword("mbaFile") == "first_mba.ini second_mba.ini"
+        ), f"Got {parser.get_keyword('mbaFile')}"
+
     def test_areas_not_in_new_ext_file(self, input_files_dir: Path, tmp_path: Path):
         """Test that mass balance areas do not leak into the new ext file.
 
