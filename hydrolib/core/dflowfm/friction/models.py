@@ -22,7 +22,6 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -198,7 +197,7 @@ class FrictBranch(INIBasedModel):
     @field_validator("levels", "chainage", "frictionvalues", mode="before")
     @classmethod
     def split_field_values(cls, v, info: ValidationInfo) -> Optional[List[float]]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("frictiontype", mode="before")
     @classmethod

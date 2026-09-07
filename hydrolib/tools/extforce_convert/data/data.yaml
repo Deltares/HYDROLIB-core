@@ -38,8 +38,6 @@ external_forcing:
     unsupported_prefixes:
         # initial conditions
         - initialsediment
-        # Parameters
-        - massbalancearea
     # Quantities the kernel spells differently in the initial and parameter fields
     # file than in the old external forcings file. Keys are matched
     # case-insensitively; values are emitted verbatim, so their casing matters.

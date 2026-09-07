@@ -1,9 +1,13 @@
+from copy import deepcopy
 from types import MethodType
 from unittest.mock import MagicMock
 
 import pytest
 
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+from hydrolib.tools.extforce_convert.mdu_parser import (
+    FileStyleProperties,
+    MDUParser,
+)
 
 
 class TestMDUParserGetKeyword:
@@ -302,26 +306,12 @@ class TestMDUParserGetStructureFile:
         return parser
 
     @pytest.mark.unit
-    def test_get_structure_file_when_user_provides_path(self, tmp_path):
-        """When the caller supplies a path it is joined with mdu_path.parent (not mdu_path).
-
-        Before the fix, self.mdu_path / usr_structure_file was used, which appended the
-        filename to the .mdu file itself rather than its parent directory.
-        """
-        parser = self._make_parser(["[geometry]\n", "StructureFile = existing.ini\n"])
-        parser.mdu_path = tmp_path / "run" / "model.mdu"
-
-        result = MDUParser.get_structure_file(parser, "user-structures.ini")
-
-        assert result == tmp_path / "run" / "user-structures.ini"
-
-    @pytest.mark.unit
     def test_get_structure_file_when_mdu_has_non_empty_value(self, tmp_path):
         """A non-empty StructureFile value in the MDU is resolved relative to mdu_path.parent."""
         parser = self._make_parser(["[geometry]\n", "StructureFile = structures.ini\n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result == tmp_path / "run" / "structures.ini"
 
@@ -331,7 +321,7 @@ class TestMDUParserGetStructureFile:
         parser = self._make_parser(["[geometry]\n", "StructureFile = \n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result is None
 
@@ -341,6 +331,53 @@ class TestMDUParserGetStructureFile:
         parser = self._make_parser(["[geometry]\n"])
         parser.mdu_path = tmp_path / "run" / "model.mdu"
 
-        result = MDUParser.get_structure_file(parser, None)
+        result = MDUParser.get_structure_file(parser)
 
         assert result is None
+
+
+class TestMDUParserUpdateMbaFile:
+    """Unit tests for MDUParser.update_mba_file and update_mba_interval."""
+
+    @staticmethod
+    def _make_parser(content):
+        parser = MagicMock(spec=MDUParser)
+        parser.file_style_properties = FileStyleProperties(content)
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
+        parser.get_section = MethodType(MDUParser.get_section, parser)
+        parser.has_field = MethodType(MDUParser.has_field, parser)
+        parser.update_file_entry = MethodType(MDUParser.update_file_entry, parser)
+        parser.insert_line = MethodType(MDUParser.insert_line, parser)
+        parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
+        parser.content = deepcopy(content)
+        return parser
+
+    @pytest.mark.unit
+    def test_update_mba_file_adds_entry_to_output_section(self):
+        """A missing mbaFile entry is appended to the [output] section."""
+        content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[output]\n",
+            "OutputDir = out\n",
+        ]
+        parser = self._make_parser(content)
+
+        MDUParser.update_mba_file(parser, "westernscheldt_mba.ini")
+
+        assert parser.get_keyword("mbaFile") == "westernscheldt_mba.ini"
+
+    @pytest.mark.unit
+    def test_update_mba_interval_adds_entry_to_output_section(self):
+        """A missing mbaInterval entry is appended to the [output] section."""
+        content = [
+            "[general]\n",
+            "Name = Test\n",
+            "[output]\n",
+            "OutputDir = out\n",
+        ]
+        parser = self._make_parser(content)
+
+        MDUParser.update_mba_interval(parser, "300.0")
+
+        assert parser.get_keyword("mbaInterval") == "300.0"

@@ -462,7 +462,6 @@ class TestWaqSpatialConversion:
             "waqfunctionradsurfave",
             "waqsegmentnumber1",
             "waqsegmentfunctionVel",
-            "waqmassbalanceareasomething",
         ],
     )
     def test_waq_parameter_quantities_use_spatial_converter(self, quantity):
@@ -487,7 +486,6 @@ class TestWaqSpatialConversion:
         [
             "waqfunctionTau",
             "waqsegmentnumber1",
-            "waqmassbalanceareasomething",
             "waqparameterSomething",
             "initialwaqbotSomething"
         ],
@@ -519,7 +517,6 @@ _SPATIAL_BLOCKS = [
     ("waqsegmentfunctionSOD", True, "Estruary.pol", 1.5, None, InterpolationMethod.constant, None),
     ("waqsegmentnumberSOD", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
     ("waqfunctionSOD", True, "Estruary.pol", 4.5, None, InterpolationMethod.constant, None),
-    ("waqmassbalanceareaSOD", True, "Estruary.pol", 6.0, None, InterpolationMethod.constant, None),
 ]
 
 # Number of boundary blocks

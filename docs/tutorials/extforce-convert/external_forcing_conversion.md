@@ -14,7 +14,6 @@ This document provides detailed usage instructions, argument descriptions, and e
         - [`--mdufile` / `-m`](#-mdufile-m)
         - [`--extoldfile` / `-e`](#-extoldfile-e)
         - [`--dir` / `-d`](#-dir-d)
-    - [`--outfiles` / `-o`](#-outfiles-o)
     - [Backups](#backups)
         - [`--no-backup`](#-no-backup)
     - [`--remove-legacy-files` / `-r`](#-remove-legacy-files-r)
@@ -98,18 +97,8 @@ Specifies a single legacy external forcing file (e.g., `.ext` format) to be conv
 Specifies a directory path; the tool will search recursively for `.mdu` files and convert them.
 - **Example**: `-d /path/to/projects`
 
----
-
-### `--outfiles` / `-o`
-**Syntax**: `--outfiles EXTFILE INIFIELDFILE STRUCTUREFILE` or `-o EXTFILE INIFIELDFILE STRUCTUREFILE`  
-Allows you to explicitly set the output filenames for:
-1. External forcings file
-2. Initial fields file
-3. Structures file
-
-If you omit these, default names will be used (e.g., `inifields.ini`, `structures.ini`, etc.).
-
-Important: `--outfiles` applies only to single-file conversions (with `--mdufile` or `--extoldfile`). It cannot be used together with `--dir`.
+The output filenames are always derived automatically: from the MDU file when using `--mdufile`, and next to
+the legacy file when using `--extoldfile` (or `--dir`).
 
 ---
 
@@ -143,11 +132,12 @@ Below are several usage examples to illustrate typical operations:
    ```
    This command infers the input/output from the `project.mdu` file, prints extra diagnostic info, and creates backup files.
 
-2. **Convert a legacy external forcing file, specify exact output filenames, do not create backups**:
+2. **Convert a legacy external forcing file, do not create backups**:
    ```bash
-   extforce-convert -e oldforcing.ext -o newforcing.ext inifields.ini structures.ini --no-backup
+   extforce-convert -e oldforcing.ext --no-backup
    ```
-   This specifies an old external forcing file, outputs three new files with specified names, and overwrites any existing files without backups.
+   This converts an old external forcing file into new-format files (named automatically next to the legacy
+   file) and overwrites any existing files without backups.
 
 3. **Recursively convert all `.mdu` files in a directory, remove legacy files**:
    ```bash
@@ -166,7 +156,6 @@ Below are several usage examples to illustrate typical operations:
 ## Additional Notes
 
 - If no valid input argument (`--mdufile`, `--extoldfile`, or `--dir`) is provided, the program will exit with an error indicating that no input was specified.
-- `--outfiles` cannot be combined with `--dir`.
 - Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.
 - If you encounter any errors during conversion, re-run the command with `-v` (verbose) or check the backup files (if enabled) for debugging.
 
