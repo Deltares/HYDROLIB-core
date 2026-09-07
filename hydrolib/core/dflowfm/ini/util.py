@@ -483,7 +483,6 @@ class LocationValidator:
         self.fields = fields if fields is not None else LocationValidationFieldNames()
         self.values = self.normalize_aliases(values)
 
-        # Pre-compute presence flags once so every property/method can reuse them.
         f = self.fields
         v = self.values
         self.has_node_id = not str_is_empty_or_none(v.get(f.node_id.lower()))
@@ -500,21 +499,25 @@ class LocationValidator:
         passing e.g. `branchId` instead of `branchid` needs to be handled
         explicitly.
         """
-        if not isinstance(values, dict):
-            return values
-        for alias in (
-            self.fields.node_id,
-            self.fields.branch_id,
-            self.fields.chainage,
-            self.fields.x_coordinates,
-            self.fields.y_coordinates,
-            self.fields.num_coordinates,
-            self.fields.location_type,
-        ):
-            lowered = alias.lower()
-            if alias != lowered and alias in values and lowered not in values:
-                values[lowered] = values.pop(alias)
-        return values
+        normalized_values = values
+        if isinstance(normalized_values, dict):
+            for field in (
+                self.fields.node_id,
+                self.fields.branch_id,
+                self.fields.chainage,
+                self.fields.x_coordinates,
+                self.fields.y_coordinates,
+                self.fields.num_coordinates,
+                self.fields.location_type,
+            ):
+                lowered = field.lower()
+                if (
+                    field != lowered
+                    and field in normalized_values
+                    and lowered not in normalized_values
+                ):
+                    normalized_values[lowered] = normalized_values.pop(field)
+        return normalized_values
 
     def get_coordinate_length(self, field: str) -> int:
         """Return the number of coordinate values stored in *field*."""
