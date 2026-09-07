@@ -325,9 +325,9 @@ class Boundary(INIBasedModel):
 def _is_non_null_location_file(raw: Any) -> bool:
     """Return True when *raw* represents a non-null locationFile value.
 
-    Accepts a ``Path``, a non-empty ``str``, or a ``DiskOnlyFileModel``-style
-    dict whose ``filepath`` key is not *None*.  Returns False for *None*, an
-    empty string, or a dict with ``filepath=None``.
+    Accepts a `Path`, a non-empty `str`, or a `DiskOnlyFileModel`-style
+    dict whose `filepath` key is not *None*.  Returns False for *None*, an
+    empty string, or a dict with `filepath=None`.
     """
     if raw is None:
         result = False

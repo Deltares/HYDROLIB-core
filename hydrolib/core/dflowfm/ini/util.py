@@ -483,7 +483,7 @@ class LocationValidator:
     Args:
         values (Dict):
             Dictionary of object's validated fields (mutated in-place when
-            defaulting ``locationType``).
+            defaulting `locationType`).
         config (LocationValidationConfiguration, optional):
             Switches that control which location types are accepted.
             Defaults to :class:`LocationValidationConfiguration` with all
@@ -496,8 +496,8 @@ class LocationValidator:
     def __init__(
         self,
         values: Dict,
-        config: Optional[LocationValidationConfiguration] = None,
-        fields: Optional[LocationValidationFieldNames] = None,
+        config: LocationValidationConfiguration | None = None,
+        fields: LocationValidationFieldNames | None = None,
     ) -> None:
         self._config = config if config is not None else LocationValidationConfiguration()
         self._fields = fields if fields is not None else LocationValidationFieldNames()
@@ -516,8 +516,8 @@ class LocationValidator:
     def _normalize_aliases(self, values: Dict) -> Dict:
         """Lower-case any camelCase alias keys that Pydantic has not yet resolved.
 
-        ``mode="before"`` validators receive the raw input dict, so a caller
-        passing e.g. ``branchId`` instead of ``branchid`` needs to be handled
+        `mode="before"` validators receive the raw input dict, so a caller
+        passing e.g. `branchId` instead of `branchid` needs to be handled
         explicitly.
         """
         if not isinstance(values, dict):
@@ -548,9 +548,9 @@ class LocationValidator:
     def _validate_location_type_for_node_or_branch(
         self, expected: LocationType
     ) -> None:
-        """Validate / default ``locationType`` for node- or branch-based specs.
+        """Validate / default `locationType` for node- or branch-based specs.
 
-        Only ``1d`` is accepted; ``2d`` and ``all`` are rejected because they
+        Only `1d` is accepted; `2d` and `all` are rejected because they
         require coordinate fields to be meaningful.
         """
         f = self._fields
@@ -570,10 +570,10 @@ class LocationValidator:
             )
 
     def _validate_location_type_for_coordinates(self) -> None:
-        """Validate / default ``locationType`` for coordinate-based specs.
+        """Validate / default `locationType` for coordinate-based specs.
 
-        When ``xCoordinates`` and ``yCoordinates`` are given, ``locationType``
-        may be ``1d``, ``2d`` or ``all``.  Absent defaults to ``all``.
+        When `xCoordinates` and `yCoordinates` are given, `locationType`
+        may be `1d`, `2d` or `all`.  Absent defaults to `all`.
         """
         f = self._fields
         location_type = self._values.get(f.location_type.lower(), None)
@@ -666,7 +666,7 @@ class LocationValidator:
 
         Returns:
             Optional[Dict]: The validated values dict if the node specification
-                is valid, otherwise ``None``.
+                is valid, otherwise `None`.
         """
         result = None
         if self._config.validate_node:
@@ -686,7 +686,7 @@ class LocationValidator:
 
         Returns:
             Optional[Dict]: The validated values dict if the branch specification
-                is valid, otherwise ``None``.
+                is valid, otherwise `None`.
         """
         result = None
         if self._config.validate_branch:
@@ -702,15 +702,15 @@ class LocationValidator:
     def _try_validate_coordinates(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a coordinate-based location specification.
 
-        Handles both the ``numCoordinates``-present and ``numCoordinates``-absent
+        Handles both the `numCoordinates`-present and `numCoordinates`-absent
         sub-cases.
 
         Args:
             error_parts (List[str]): Accumulator for error message fragments.
 
         Returns:
-            Optional[Dict]: The validated values dict if the coordinate
-                specification is valid, otherwise ``None``.
+            dict | None: The validated values dict if the coordinate
+                specification is valid, otherwise `None`.
         """
         result = None
         if self._config.validate_coordinates:
@@ -729,14 +729,14 @@ class LocationValidator:
     def _try_validate_coordinates_with_num_coordinates(
         self, error_parts: list[str]
     ) -> dict | None:
-        """Attempt to validate a coordinate specification that includes ``numCoordinates``.
+        """Attempt to validate a coordinate specification that includes `numCoordinates`.
 
         Args:
             error_parts (List[str]): Accumulator for error message fragments.
 
         Returns:
-            Optional[Dict]: The validated values dict if the specification is
-                valid, otherwise ``None``.
+            dict | None: The validated values dict if the specification is
+                valid, otherwise `None`.
         """
         result = None
         f = self._fields
@@ -755,16 +755,16 @@ class LocationValidator:
         """Run the full location-specification validation.
 
         Returns:
-            Dict: The (possibly mutated) values dict, with ``locationType``
+            Dict: The (possibly mutated) values dict, with `locationType`
             defaulted where applicable.
 
         Raises:
             ValueError: When no valid location specification can be found in
                 the values dict, or when a sub-validator detects an inconsistency.
         """
-        error_parts: List[str] = []
+        error_parts = []
 
-        validators: List[Callable[[List[str]], Optional[Dict]]] = [
+        validators = [
             self._try_validate_node,
             self._try_validate_branch,
             self._try_validate_coordinates,
@@ -774,7 +774,7 @@ class LocationValidator:
             None,
         )
         if result is None:
-            raise ValueError(" or ".join(error_parts) + " should be provided")
+            raise ValueError(f"{' or '.join(error_parts)} should be provided")
         return result
 
 
