@@ -1087,21 +1087,21 @@ class Trachytopes(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the Trachytopes section fields."""
 
-        trtrou: Optional[str] = Field(
+        trtrou: str | None = Field(
             "Flag for trachytopes (Y=on, N=off).", alias="trtRou"
         )
-        trtdef: Optional[str] = Field(
+        trtdef: str | None = Field(
             "File (*.ttd) including trachytope definitions.", alias="trtDef"
         )
-        trtl: Optional[str] = Field(
+        trtl: str | None = Field(
             "File (*.arl) including distribution of trachytope definitions.",
             alias="trtL",
         )
-        dttrt: Optional[str] = Field(
+        dttrt: str | None = Field(
             "Interval for updating of bottom roughness due to trachytopes in seconds [s].",
             alias="dtTrt",
         )
-        trtmxr: Optional[str] = Field(
+        trtmxr: str | None = Field(
             "Maximum recursion level for composite trachytope definitions",
             alias="trtMxR",
         )
@@ -1110,14 +1110,14 @@ class Trachytopes(INIBasedModel):
 
     _header: Literal["Trachytopes"] = "Trachytopes"
     trtrou: str = Field("N", alias="trtRou")  # TODO bool
-    trtdef: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+    trtdef: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
         "", alias="trtDef"
     )
-    trtl: Annotated[Optional[Path], WrapValidator(_preserve_empty_string)] = Field(
+    trtl: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
         "", alias="trtL"
     )
     dttrt: float = Field(60.0, alias="dtTrt")
-    trtmxr: Optional[int] = Field(8, alias="trtMxR")
+    trtmxr: int | None = Field(8, alias="trtMxR")
 
 
 ObsFile = Annotated[
