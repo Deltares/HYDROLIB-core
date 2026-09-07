@@ -9,7 +9,6 @@ from pydantic import (
     BeforeValidator,
     ConfigDict,
     Field,
-    ValidationInfo,
     field_validator,
     model_validator,
 )
