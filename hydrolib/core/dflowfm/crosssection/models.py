@@ -16,7 +16,7 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    LocationValidator,
+    LocationValidatorUtils,
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
@@ -737,7 +737,7 @@ class CrossSection(INIBasedModel):
     @model_validator(mode="after")
     def validate_that_location_specification_is_correct(self):
         """Validate that the correct location specification is given."""
-        location_validator = LocationValidator(
+        location_validator = LocationValidatorUtils(
             self.model_dump(),
             config=LocationValidationConfiguration(
                 validate_node=False,

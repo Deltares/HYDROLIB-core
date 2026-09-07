@@ -450,7 +450,7 @@ class LocationValidationFieldNames(BaseModel):
     """str, optional: The location type field name. Defaults to `locationType`."""
 
 
-class LocationValidator:
+class LocationValidatorUtils:
     """Encapsulates all logic for validating a location dict.
 
     This class groups the boolean presence-checks, individual sub-validators,
@@ -767,7 +767,7 @@ def validate_location_specification(
     fields: LocationValidationFieldNames | None = None,
 ) -> Dict:
     """Validate location keys and default `locationType` where applicable."""
-    return LocationValidator(values, config=config, fields=fields).validate()
+    return LocationValidatorUtils(values, config=config, fields=fields).validate()
 
 
 def rename_keys_for_backwards_compatibility(

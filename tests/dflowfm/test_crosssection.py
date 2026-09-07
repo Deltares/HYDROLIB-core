@@ -18,7 +18,7 @@ from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
-    LocationValidator,
+    LocationValidatorUtils,
 )
 from tests.utils import (
     assert_files_equal,
@@ -356,7 +356,7 @@ class TestCrossSectionLocation:
         ],
     )
     def test_wrong_values_raises_valueerror(self, dict_values: dict):
-        location_validator = LocationValidator(
+        location_validator = LocationValidatorUtils(
                 dict_values,
                 config=LocationValidationConfiguration(
                     validate_node=False,
@@ -381,7 +381,7 @@ class TestCrossSectionLocation:
             y=24,
         )
 
-        assert LocationValidator(
+        assert LocationValidatorUtils(
             test_dict,
             config=LocationValidationConfiguration(
                 validate_node=False,

@@ -32,7 +32,7 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    LocationValidator,
+    LocationValidatorUtils,
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
@@ -391,7 +391,7 @@ class Lateral(CoordinateValidator, INIBasedModel):
         """
         raw_loc_file = values.get("locationfile") or values.get("locationFile")
         if not _is_non_null_location_file(raw_loc_file):
-            location_validator = LocationValidator(
+            location_validator = LocationValidatorUtils(
                 values,
                 config=LocationValidationConfiguration(minimum_num_coordinates=1),
             )

@@ -14,7 +14,7 @@ from pydantic import ValidationError
 from hydrolib.core.dflowfm.ext.models import Lateral, SourceSink
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
-    LocationValidator,
+    LocationValidatorUtils,
 )
 
 
@@ -40,7 +40,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "3",
         }
 
-        result = LocationValidator(values).validate()
+        result = LocationValidatorUtils(values).validate()
 
         assert result is values, "Should return the same dict on success"
 
@@ -57,7 +57,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": 3,
         }
 
-        result = LocationValidator(values).validate()
+        result = LocationValidatorUtils(values).validate()
 
         assert result is values, "Should return the same dict on success"
 
@@ -73,7 +73,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "1",
         }
 
-        result = LocationValidator(values).validate()
+        result = LocationValidatorUtils(values).validate()
 
         assert result is values, "Single coordinate as string should validate"
 
@@ -90,7 +90,7 @@ class TestValidateLocationSpecificationRawStrings:
         }
         config = LocationValidationConfiguration(minimum_num_coordinates=3)
 
-        result = LocationValidator(values, config=config).validate()
+        result = LocationValidatorUtils(values, config=config).validate()
 
         assert result is values, "Should pass with exactly minimum coordinates"
 
@@ -106,7 +106,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": "2",
         }
         config = LocationValidationConfiguration(minimum_num_coordinates=3)
-        location_validator = LocationValidator(values, config=config)
+        location_validator = LocationValidatorUtils(values, config=config)
         with pytest.raises(ValueError, match="at least 3 coordinate"):
             location_validator.validate()
 
@@ -121,7 +121,7 @@ class TestValidateLocationSpecificationRawStrings:
             "ycoordinates": "4.0 5.0 6.0",
             "numcoordinates": "5",
         }
-        location_validator = LocationValidator(values)
+        location_validator = LocationValidatorUtils(values)
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
             location_validator.validate()
 
@@ -136,7 +136,7 @@ class TestValidateLocationSpecificationRawStrings:
             "ycoordinates": "4.0 5.0",
             "numcoordinates": "3",
         }
-        location_validator = LocationValidator(values)
+        location_validator = LocationValidatorUtils(values)
         with pytest.raises(ValueError, match="numCoordinates should be equal"):
             location_validator.validate()
 
@@ -152,7 +152,7 @@ class TestValidateLocationSpecificationRawStrings:
             "numcoordinates": 3,
         }
 
-        result = LocationValidator(values).validate()
+        result = LocationValidatorUtils(values).validate()
 
         assert result is values, "Pre-parsed lists should still work"
 
