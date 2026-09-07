@@ -477,21 +477,23 @@ class LocationValidator:
         config: LocationValidationConfiguration | None = None,
         fields: LocationValidationFieldNames | None = None,
     ) -> None:
-        self._config = config if config is not None else LocationValidationConfiguration()
-        self._fields = fields if fields is not None else LocationValidationFieldNames()
-        self._values = self._normalize_aliases(values)
+        self.config = (
+            config if config is not None else LocationValidationConfiguration()
+        )
+        self.fields = fields if fields is not None else LocationValidationFieldNames()
+        self.values = self.normalize_aliases(values)
 
         # Pre-compute presence flags once so every property/method can reuse them.
-        f = self._fields
-        v = self._values
-        self._has_node_id = not str_is_empty_or_none(v.get(f.node_id.lower()))
-        self._has_branch_id = not str_is_empty_or_none(v.get(f.branch_id.lower()))
-        self._has_chainage = v.get(f.chainage.lower()) is not None
-        self._has_x_coordinates = v.get(f.x_coordinates.lower()) is not None
-        self._has_y_coordinates = v.get(f.y_coordinates.lower()) is not None
-        self._has_num_coordinates = v.get(f.num_coordinates.lower()) is not None
+        f = self.fields
+        v = self.values
+        self.has_node_id = not str_is_empty_or_none(v.get(f.node_id.lower()))
+        self.has_branch_id = not str_is_empty_or_none(v.get(f.branch_id.lower()))
+        self.has_chainage = v.get(f.chainage.lower()) is not None
+        self.has_x_coordinates = v.get(f.x_coordinates.lower()) is not None
+        self.has_y_coordinates = v.get(f.y_coordinates.lower()) is not None
+        self.has_num_coordinates = v.get(f.num_coordinates.lower()) is not None
 
-    def _normalize_aliases(self, values: Dict) -> Dict:
+    def normalize_aliases(self, values: Dict) -> Dict:
         """Lower-case any camelCase alias keys that Pydantic has not yet resolved.
 
         `mode="before"` validators receive the raw input dict, so a caller
@@ -501,29 +503,29 @@ class LocationValidator:
         if not isinstance(values, dict):
             return values
         for alias in (
-            self._fields.node_id,
-            self._fields.branch_id,
-            self._fields.chainage,
-            self._fields.x_coordinates,
-            self._fields.y_coordinates,
-            self._fields.num_coordinates,
-            self._fields.location_type,
+            self.fields.node_id,
+            self.fields.branch_id,
+            self.fields.chainage,
+            self.fields.x_coordinates,
+            self.fields.y_coordinates,
+            self.fields.num_coordinates,
+            self.fields.location_type,
         ):
             lowered = alias.lower()
             if alias != lowered and alias in values and lowered not in values:
                 values[lowered] = values.pop(alias)
         return values
 
-    def _get_coordinate_length(self, field: str) -> int:
+    def get_coordinate_length(self, field: str) -> int:
         """Return the number of coordinate values stored in *field*."""
-        value = self._values[field.lower()]
+        value = self.values[field.lower()]
         if isinstance(value, str):
             result = len(value.split())
         else:
             result = len(to_list(value))
         return result
 
-    def _validate_location_type_for_node_or_branch(
+    def validate_location_type_for_node_or_branch(
         self, expected: LocationType
     ) -> None:
         """Validate / default `locationType` for node- or branch-based specs.
@@ -531,10 +533,10 @@ class LocationValidator:
         Only `1d` is accepted; `2d` and `all` are rejected because they
         require coordinate fields to be meaningful.
         """
-        f = self._fields
-        location_type = self._values.get(f.location_type.lower(), None)
+        f = self.fields
+        location_type = self.values.get(f.location_type.lower(), None)
         if str_is_empty_or_none(location_type):
-            self._values[f.location_type.lower()] = expected
+            self.values[f.location_type.lower()] = expected
         elif location_type in (LocationType.twod, LocationType.all):
             raise ValueError(
                 f"{f.location_type}='{location_type}' is only valid when "
@@ -547,96 +549,96 @@ class LocationValidator:
                 f"{f.location_type} should be {expected} but was {location_type}"
             )
 
-    def _validate_location_type_for_coordinates(self) -> None:
+    def validate_location_type_for_coordinates(self) -> None:
         """Validate / default `locationType` for coordinate-based specs.
 
         When `xCoordinates` and `yCoordinates` are given, `locationType`
         may be `1d`, `2d` or `all`.  Absent defaults to `all`.
         """
-        f = self._fields
-        location_type = self._values.get(f.location_type.lower(), None)
+        f = self.fields
+        location_type = self.values.get(f.location_type.lower(), None)
         if str_is_empty_or_none(location_type):
-            self._values[f.location_type.lower()] = LocationType.all
+            self.values[f.location_type.lower()] = LocationType.all
         elif location_type not in (LocationType.oned, LocationType.twod, LocationType.all):
             raise ValueError(
                 f"{f.location_type} has invalid value '{location_type}'. "
                 f"Possible values are: 1d, 2d, all"
             )
 
-    def _validate_minimum_num_coordinates(self, actual_num: int) -> None:
-        f = self._fields
-        if actual_num < self._config.minimum_num_coordinates:
+    def validate_minimum_num_coordinates(self, actual_num: int) -> None:
+        f = self.fields
+        if actual_num < self.config.minimum_num_coordinates:
             raise ValueError(
                 f"{f.x_coordinates} and {f.y_coordinates} should have at least "
-                f"{self._config.minimum_num_coordinates} coordinate(s)"
+                f"{self.config.minimum_num_coordinates} coordinate(s)"
             )
 
-    def _validate_coordinates(self) -> None:
+    def validate_coordinates(self) -> None:
         """Validate that x/y coordinate lists are the same length and meet the minimum."""
-        f = self._fields
-        len_x = self._get_coordinate_length(f.x_coordinates)
-        len_y = self._get_coordinate_length(f.y_coordinates)
+        f = self.fields
+        len_x = self.get_coordinate_length(f.x_coordinates)
+        len_y = self.get_coordinate_length(f.y_coordinates)
         if len_x != len_y:
             raise ValueError(
                 f"{f.x_coordinates} and {f.y_coordinates} should have an equal amount of coordinates"
             )
-        self._validate_minimum_num_coordinates(len_x)
+        self.validate_minimum_num_coordinates(len_x)
 
-    def _validate_coordinates_with_num_coordinates(self) -> None:
+    def validate_coordinates_with_num_coordinates(self) -> None:
         """Validate that x/y coordinate lists and numCoordinates are all consistent."""
-        f = self._fields
-        length_x = self._get_coordinate_length(f.x_coordinates)
-        length_y = self._get_coordinate_length(f.y_coordinates)
-        num_coordinates = int(self._values[f.num_coordinates.lower()])
+        f = self.fields
+        length_x = self.get_coordinate_length(f.x_coordinates)
+        length_y = self.get_coordinate_length(f.y_coordinates)
+        num_coordinates = int(self.values[f.num_coordinates.lower()])
         if not num_coordinates == length_x == length_y:
             raise ValueError(
                 f"{f.num_coordinates} should be equal to the amount of "
                 f"{f.x_coordinates} and {f.y_coordinates}"
             )
-        self._validate_minimum_num_coordinates(num_coordinates)
+        self.validate_minimum_num_coordinates(num_coordinates)
 
     @property
-    def _is_valid_node_specification(self) -> bool:
+    def is_valid_node_specification(self) -> bool:
         has_other = (
-            self._has_branch_id
-            or self._has_chainage
-            or self._has_x_coordinates
-            or self._has_y_coordinates
-            or self._has_num_coordinates
+            self.has_branch_id
+            or self.has_chainage
+            or self.has_x_coordinates
+            or self.has_y_coordinates
+            or self.has_num_coordinates
         )
-        return self._has_node_id and not has_other
+        return self.has_node_id and not has_other
 
     @property
-    def _is_valid_branch_specification(self) -> bool:
+    def is_valid_branch_specification(self) -> bool:
         has_other = (
-            self._has_node_id
-            or self._has_x_coordinates
-            or self._has_y_coordinates
-            or self._has_num_coordinates
+            self.has_node_id
+            or self.has_x_coordinates
+            or self.has_y_coordinates
+            or self.has_num_coordinates
         )
-        return self._has_branch_id and self._has_chainage and not has_other
+        return self.has_branch_id and self.has_chainage and not has_other
 
     @property
-    def _is_valid_coordinates_specification(self) -> bool:
+    def is_valid_coordinates_specification(self) -> bool:
         has_other = (
-            self._has_node_id
-            or self._has_branch_id
-            or self._has_chainage
-            or self._has_num_coordinates
+            self.has_node_id
+            or self.has_branch_id
+            or self.has_chainage
+            or self.has_num_coordinates
         )
-        return self._has_x_coordinates and self._has_y_coordinates and not has_other
+        return self.has_x_coordinates and self.has_y_coordinates and not has_other
 
     @property
-    def _is_valid_coordinates_with_num_coordinates_specification(self) -> bool:
-        has_other = self._has_node_id or self._has_branch_id or self._has_chainage
+    def is_valid_coordinates_with_num_coordinates_specification(self) -> bool:
+        has_other = self.has_node_id or self.has_branch_id or self.has_chainage
         return (
-            self._has_x_coordinates
-            and self._has_y_coordinates
-            and self._has_num_coordinates
+            self.has_x_coordinates
+            and self.has_y_coordinates
+            and self.has_num_coordinates
             and not has_other
         )
 
-    def _try_validate_node(self, error_parts: list[str]) -> dict | None:
+    def try_validate_node(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a node-based location specification.
 
         Args:
@@ -647,16 +649,16 @@ class LocationValidator:
                 is valid, otherwise `None`.
         """
         result = None
-        if self._config.validate_node:
-            if self._is_valid_node_specification:
-                if self._config.validate_location_type:
-                    self._validate_location_type_for_node_or_branch(LocationType.oned)
-                result = self._values
+        if self.config.validate_node:
+            if self.is_valid_node_specification:
+                if self.config.validate_location_type:
+                    self.validate_location_type_for_node_or_branch(LocationType.oned)
+                result = self.values
             else:
-                error_parts.append(self._fields.node_id)
+                error_parts.append(self.fields.node_id)
         return result
 
-    def _try_validate_branch(self, error_parts: list[str]) -> dict | None:
+    def try_validate_branch(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a branch-based location specification.
 
         Args:
@@ -667,17 +669,17 @@ class LocationValidator:
                 is valid, otherwise `None`.
         """
         result = None
-        if self._config.validate_branch:
-            f = self._fields
-            if self._is_valid_branch_specification:
-                if self._config.validate_location_type:
-                    self._validate_location_type_for_node_or_branch(LocationType.oned)
-                result = self._values
+        if self.config.validate_branch:
+            f = self.fields
+            if self.is_valid_branch_specification:
+                if self.config.validate_location_type:
+                    self.validate_location_type_for_node_or_branch(LocationType.oned)
+                result = self.values
             else:
                 error_parts.append(f"{f.branch_id} and {f.chainage}")
         return result
 
-    def _try_validate_coordinates(self, error_parts: list[str]) -> dict | None:
+    def try_validate_coordinates(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a coordinate-based location specification.
 
         Handles both the `numCoordinates`-present and `numCoordinates`-absent
@@ -691,20 +693,20 @@ class LocationValidator:
                 specification is valid, otherwise `None`.
         """
         result = None
-        if self._config.validate_coordinates:
-            f = self._fields
-            if self._config.validate_num_coordinates:
-                result = self._try_validate_coordinates_with_num_coordinates(error_parts)
-            elif self._is_valid_coordinates_specification:
-                self._validate_coordinates()
-                if self._config.validate_location_type:
-                    self._validate_location_type_for_coordinates()
-                result = self._values
+        if self.config.validate_coordinates:
+            f = self.fields
+            if self.config.validate_num_coordinates:
+                result = self.try_validate_coordinates_with_num_coordinates(error_parts)
+            elif self.is_valid_coordinates_specification:
+                self.validate_coordinates()
+                if self.config.validate_location_type:
+                    self.validate_location_type_for_coordinates()
+                result = self.values
             else:
                 error_parts.append(f"{f.x_coordinates} and {f.y_coordinates}")
         return result
 
-    def _try_validate_coordinates_with_num_coordinates(
+    def try_validate_coordinates_with_num_coordinates(
         self, error_parts: list[str]
     ) -> dict | None:
         """Attempt to validate a coordinate specification that includes `numCoordinates`.
@@ -717,12 +719,12 @@ class LocationValidator:
                 valid, otherwise `None`.
         """
         result = None
-        f = self._fields
-        if self._is_valid_coordinates_with_num_coordinates_specification:
-            self._validate_coordinates_with_num_coordinates()
-            if self._config.validate_location_type:
-                self._validate_location_type_for_coordinates()
-            result = self._values
+        f = self.fields
+        if self.is_valid_coordinates_with_num_coordinates_specification:
+            self.validate_coordinates_with_num_coordinates()
+            if self.config.validate_location_type:
+                self.validate_location_type_for_coordinates()
+            result = self.values
         else:
             error_parts.append(
                 f"{f.x_coordinates}, {f.y_coordinates} and {f.num_coordinates}"
@@ -743,9 +745,9 @@ class LocationValidator:
         error_parts = []
 
         validators = [
-            self._try_validate_node,
-            self._try_validate_branch,
-            self._try_validate_coordinates,
+            self.try_validate_node,
+            self.try_validate_branch,
+            self.try_validate_coordinates,
         ]
         result = next(
             (r for try_validate in validators if (r := try_validate(error_parts)) is not None),
@@ -754,6 +756,15 @@ class LocationValidator:
         if result is None:
             raise ValueError(f"{' or '.join(error_parts)} should be provided")
         return result
+
+
+def validate_location_specification(
+    values: Dict,
+    config: LocationValidationConfiguration | None = None,
+    fields: LocationValidationFieldNames | None = None,
+) -> Dict:
+    """Validate location keys and default `locationType` where applicable."""
+    return LocationValidator(values, config=config, fields=fields).validate()
 
 
 def rename_keys_for_backwards_compatibility(
