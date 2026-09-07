@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1646,17 +1646,6 @@ You're not viewing the latest release version.
         
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#-outfiles-o" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        --outfiles / -o
-      
-    </span>
-  </a>
   
 </li>
         
@@ -4035,17 +4024,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#-outfiles-o" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        --outfiles / -o
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#backups" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4159,7 +4137,6 @@ You're not viewing the latest release version.
 <li><a href="#-dir-d"><code>--dir</code> / <code>-d</code></a></li>
 </ul>
 </li>
-<li><a href="#-outfiles-o"><code>--outfiles</code> / <code>-o</code></a></li>
 <li><a href="#backups">Backups</a><ul>
 <li><a href="#-no-backup"><code>--no-backup</code></a></li>
 </ul>
@@ -4221,15 +4198,8 @@ Specifies a single legacy external forcing file (e.g., <code>.ext</code> format)
 <p><strong>Syntax</strong>: <code>--dir DIRECTORY</code> or <code>-d DIRECTORY</code><br />
 Specifies a directory path; the tool will search recursively for <code>.mdu</code> files and convert them.
 - <strong>Example</strong>: <code>-d /path/to/projects</code></p>
-<hr />
-<h3 id="-outfiles-o"><code>--outfiles</code> / <code>-o</code><a class="headerlink" href="#-outfiles-o" title="Permanent link">&para;</a></h3>
-<p><strong>Syntax</strong>: <code>--outfiles EXTFILE INIFIELDFILE STRUCTUREFILE</code> or <code>-o EXTFILE INIFIELDFILE STRUCTUREFILE</code><br />
-Allows you to explicitly set the output filenames for:
-1. External forcings file
-2. Initial fields file
-3. Structures file</p>
-<p>If you omit these, default names will be used (e.g., <code>inifields.ini</code>, <code>structures.ini</code>, etc.).</p>
-<p>Important: <code>--outfiles</code> applies only to single-file conversions (with <code>--mdufile</code> or <code>--extoldfile</code>). It cannot be used together with <code>--dir</code>.</p>
+<p>The output filenames are always derived automatically: from the MDU file when using <code>--mdufile</code>, and next to
+the legacy file when using <code>--extoldfile</code> (or <code>--dir</code>).</p>
 <hr />
 <h3 id="backups">Backups<a class="headerlink" href="#backups" title="Permanent link">&para;</a></h3>
 <h4 id="-no-backup"><code>--no-backup</code><a class="headerlink" href="#-no-backup" title="Permanent link">&para;</a></h4>
@@ -4254,10 +4224,11 @@ Handle absolute paths in input files according to the specified style. Use this 
    This command infers the input/output from the <code>project.mdu</code> file, prints extra diagnostic info, and creates backup files.</p>
 </li>
 <li>
-<p><strong>Convert a legacy external forcing file, specify exact output filenames, do not create backups</strong>:
-   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-e<span class="w"> </span>oldforcing.ext<span class="w"> </span>-o<span class="w"> </span>newforcing.ext<span class="w"> </span>inifields.ini<span class="w"> </span>structures.ini<span class="w"> </span>--no-backup
+<p><strong>Convert a legacy external forcing file, do not create backups</strong>:
+   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-e<span class="w"> </span>oldforcing.ext<span class="w"> </span>--no-backup
 </code></pre></div>
-   This specifies an old external forcing file, outputs three new files with specified names, and overwrites any existing files without backups.</p>
+   This converts an old external forcing file into new-format files (named automatically next to the legacy
+   file) and overwrites any existing files without backups.</p>
 </li>
 <li>
 <p><strong>Recursively convert all <code>.mdu</code> files in a directory, remove legacy files</strong>:
@@ -4276,7 +4247,6 @@ Handle absolute paths in input files according to the specified style. Use this 
 <h2 id="additional-notes">Additional Notes<a class="headerlink" href="#additional-notes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>If no valid input argument (<code>--mdufile</code>, <code>--extoldfile</code>, or <code>--dir</code>) is provided, the program will exit with an error indicating that no input was specified.</li>
-<li><code>--outfiles</code> cannot be combined with <code>--dir</code>.</li>
 <li>Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.</li>
 <li>If you encounter any errors during conversion, re-run the command with <code>-v</code> (verbose) or check the backup files (if enabled) for debugging.</li>
 </ul>
