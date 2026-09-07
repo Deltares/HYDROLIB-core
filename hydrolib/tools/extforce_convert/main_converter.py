@@ -249,7 +249,7 @@ class ExternalForcingConverter:
         """MassBalanceAreaModel: object with all mass balance area blocks."""
         if not hasattr(self, "_mba_model"):
             raise ValueError(
-                "mba_model not set, please use the `mba_model` setter. to set it."
+                "mba_model is not set, please use the `mba_model` setter to set it."
             )
         return self._mba_model
 
