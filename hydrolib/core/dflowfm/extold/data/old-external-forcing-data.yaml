@@ -164,6 +164,12 @@ Misellaneous:
      ShiptXY: shiptxy
      MovingStationXY: movingstationxy
 
+MassBalanceArea:
+    # The area name is a suffix of the quantity, e.g. waqmassbalanceareaEstruaryWest.
+    prefixes:
+        - waqmassbalancearea
+        - massbalancearea
+
 FileType:
     TimeSeries: 1
     TimeSeriesMagnitudeAndDirection: 2

@@ -141,6 +141,10 @@ ExtOldInitialConditionQuantity = StrEnum(
 
 ExtOldSourcesSinks = StrEnum("ExtOldSourcesSinks", QUANTITIES_DATA["SourceSink"])
 
+MASS_BALANCE_AREA_QUANTITIES_VALID_PREFIXES = tuple(
+    QUANTITIES_DATA["MassBalanceArea"]["prefixes"]
+)
+
 ALL_QUANTITIES = (
     QUANTITIES_DATA["BoundaryCondition"]["quantity_names"]
     | QUANTITIES_DATA["Meteo"]["quantity_names"]
@@ -156,6 +160,7 @@ ALL_PREFIXES = (
     BOUNDARY_CONDITION_QUANTITIES_VALID_PREFIXES
     + INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES
     + PARAMETER_QUANTITIES_VALID_PREFIXES
+    + MASS_BALANCE_AREA_QUANTITIES_VALID_PREFIXES
 )
 
 ExtOldQuantity = StrEnum("ExtOldQuantity", ALL_QUANTITIES)
@@ -315,7 +320,7 @@ class ExtOldForcing(BaseModel):
     @classmethod
     def validate_quantity_prefix(
         cls, lower_value: str, value_str: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """Checks if the provided quantity string starts with any known valid prefix.
 
         If the quantity matches a prefix, ensures it is followed by a name.
