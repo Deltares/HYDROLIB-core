@@ -535,7 +535,6 @@ class TestWaqQuantitiesConversion:
         - waqsegmentfunctionSOD                  (polygon)
         - waqsegmentnumberSOD                    (polygon)
         - waqfunctionSOD                         (polygon)
-        - waqmassbalanceareaSOD                  (polygon)
 
     """
 

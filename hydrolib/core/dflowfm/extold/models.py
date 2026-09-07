@@ -105,8 +105,7 @@ class _ExtOldParametersQuantity(StrEnum):
         """Custom implementation for handling missing values.
 
         The method parses any missing values and only allows the ones that start with
-        a valid parameter prefix (e.g. waqfunction, waqsegmentnumber, waqsegmentfunction,
-        waqmassbalancearea).
+        a valid parameter prefix (e.g. waqfunction, waqsegmentnumber, waqsegmentfunction).
         """
         if isinstance(value, str) and value.startswith(
             PARAMETER_QUANTITIES_VALID_PREFIXES

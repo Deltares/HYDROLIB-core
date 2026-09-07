@@ -435,7 +435,6 @@ class TestOldParametersQuantity:
             "waqfunctionradsurfave",
             "waqsegmentnumber1",
             "waqsegmentfunctionVel",
-            "waqmassbalanceareasomething",
         ],
     )
     def test_the_missing_method_with_waq_prefixes(self, quantity_name):
