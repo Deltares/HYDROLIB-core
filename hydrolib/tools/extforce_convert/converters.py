@@ -1115,7 +1115,7 @@ class LateralConverter(BaseConverter):
             root_dir (PathOrStr, optional): Root directory used to resolve file paths.
             mdu_parser (MDUParser, optional): MDU parser used to obtain the reference
                 date (time_unit) required when converting time-series discharge from
-                a TIM file. When *None*, the ``time_unit`` argument of :meth:`convert`
+                a TIM file. When *None*, the `time_unit` argument of :meth:`convert`
                 must be supplied manually.
         """
         super().__init__(root_dir=root_dir)
@@ -1194,12 +1194,12 @@ class LateralConverter(BaseConverter):
     def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> TimModel | None:
         """Resolve and merge any TIM files accompanying the lateral polyline.
 
-        Searches the directory next to the polyline file for any ``.tim`` files
-        whose stem starts with the polyline stem (e.g. ``lateral.tim``,
-        ``lateral_0001.tim``, ``lateral_0002.tim``, …), merges them into a
+        Searches the directory next to the polyline file for any `.tim` files
+        whose stem starts with the polyline stem (e.g. `lateral.tim`,
+        `lateral_0001.tim`, `lateral_0002.tim`, …), merges them into a
         single `TimModel` via
         :meth:`BoundaryConditionConverter.merge_tim_files`, and sets every
-        column's quantity name to ``"discharge"``.
+        column's quantity name to `"discharge"`.
 
         The matched file paths are also appended to :attr:`legacy_files` so they
         can be cleaned up after the conversion.
@@ -1212,9 +1212,9 @@ class LateralConverter(BaseConverter):
                 when a listed file is missing.
 
         Returns:
-            Optional[TimModel]: The merged `TimModel` (with ``quantities_names``
-                set to ``"discharge"`` for every column), or ``None`` when no
-                ``.tim`` files are found next to the polyline.
+            Optional[TimModel]: The merged `TimModel` (with `quantities_names`
+                set to `"discharge"` for every column), or `None` when no
+                `.tim` files are found next to the polyline.
         """
         resolved = resolve_relative_to_root(polyline.filepath, self.root_dir)
         stem = polyline.filepath.stem
