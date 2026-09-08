@@ -1155,6 +1155,19 @@ class LateralConverter(BaseConverter):
         super().__init__(root_dir=root_dir)
         self._mdu_parser = mdu_parser
 
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        time_unit: str,
+        user_defined_names: list[str],
+    ) -> ForcingModel:
+        """Convert a TIM model into a BC ForcingModel for lateral discharge."""
+        units = tim_model.get_units()
+        time_series_list = TimToForcingConverter.convert(
+            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        )
+        return ForcingModel(forcing=time_series_list)
+
     def convert(
         self, forcing: ExtOldForcing, time_unit: str | None = None
     ) -> Lateral:
@@ -1217,7 +1230,7 @@ class LateralConverter(BaseConverter):
         return new_block
 
     def _get_time_unit(self, time_unit: str | None) -> str | None:
-        """Return *time_unit*, falling back to the MDU reference date when available."""
+        """Return `time_unit`, falling back to the MDU reference date when available."""
         result = time_unit
         if result is None and self._mdu_parser is not None:
             temperature_salinity_data = self._mdu_parser.temperature_salinity_data
@@ -1277,7 +1290,7 @@ class LateralConverter(BaseConverter):
         """
         result = forcing.value
 
-        if forcing.value is None or isinstance(forcing.filename, PolyFile):
+        if forcing.value is None:
             if isinstance(forcing.filename, TimModel):
                 result = self._get_discharge_from_tim_model(forcing, time_unit)
             elif isinstance(forcing.filename, PolyFile):
@@ -1309,12 +1322,13 @@ class LateralConverter(BaseConverter):
         tim_file = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
         location_name = tim_file.stem
         tim_model = TimModel(tim_file, quantities_names=["discharge"])
-        units = tim_model.get_units()
         user_defined_names = [location_name]
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+
+        forcing_model = self.convert_tim_to_bc(
+            tim_model,
+            time_unit,
+            user_defined_names=user_defined_names,
         )
-        forcing_model = ForcingModel(forcing=time_series_list)
         forcing_model.filepath = tim_file.with_suffix(".bc")
         self.legacy_files = tim_file
         return forcing_model
@@ -1383,20 +1397,19 @@ class LateralConverter(BaseConverter):
         if len(units) == 1:
             user_defined_names = [location_name]
         else:
-            user_defined_names = [f"{location_name}_{i + 1:04d}" for i in
-                                  range(len(units))]
+            user_defined_names = [f"{location_name}_{str(i + 1).zfill(4)}"
+                                  for i in range(len(units))]
 
-        time_series_list = TimToForcingConverter.convert(
+        forcing_model = self.convert_tim_to_bc(
             tim_model,
             time_unit,
-            units=units,
             user_defined_names=user_defined_names,
         )
-        forcing_model = ForcingModel(forcing=time_series_list)
         forcing_model.filepath = location_file.with_suffix(".bc")
         return forcing_model
 
-    def _get_location_data(self, forcing: ExtOldForcing) -> dict[str, Any]:
+    @staticmethod
+    def _get_location_data(forcing: ExtOldForcing) -> dict[str, Any]:
         """Extract location data from the old forcing block.
 
         Args:
@@ -1406,25 +1419,12 @@ class LateralConverter(BaseConverter):
             Dict[str, Any]: A dict with 'id' and either a 'locationfile' key (when
                 the source is a PolyFile) or inline coordinate fields.
         """
-        if isinstance(forcing.filename, PolyFile):
-            poly_file = forcing.filename
-            location_name = poly_file.filepath.stem
-            result = {"id": location_name}
-            if poly_file.objects:
-                first_obj = poly_file.objects[0]
-                if first_obj.metadata and first_obj.metadata.name:
-                    result["id"] = first_obj.metadata.name
-            result["locationfile"] = poly_file.filepath
-        elif isinstance(forcing.filename, TimModel):
-            location_name = forcing.filename.filepath.stem
-            result = {"id": location_name}
-        elif (
-            hasattr(forcing.filename, "filepath")
-            and forcing.filename.filepath is not None
-        ):
-            result = {"id": forcing.filename.filepath.stem}
-        else:
-            result = {"id": str(forcing.quantity)}
+        location_filepath = (forcing.get_location_filepath() if
+                             isinstance(forcing.filename, PolyFile) else None)
+        result = {"id": forcing.get_location_id()}
+
+        if location_filepath is not None:
+            result["locationfile"] = location_filepath
 
         return result
 
