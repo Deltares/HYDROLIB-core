@@ -1167,20 +1167,6 @@ class LateralConverter(BaseConverter):
         return ForcingModel(forcing=time_series_list)
 
     @staticmethod
-    def filter_lateral_quantities(quantities: list[str]) -> list[str]:
-        """Keep only quantities supported by ``_QUANTITY_TO_LOCATION_TYPE``.
-
-        Args:
-            quantities (List[str]):
-                All quantities present in the old external forcings file.
-        """
-        return [
-            quantity
-            for quantity in quantities
-            if quantity.lower() in LateralConverter._QUANTITY_TO_LOCATION_TYPE
-        ]
-
-    @staticmethod
     def check_lateral_quantity(quantity: str) -> None:
         """Validate that a lateral quantity is supported by the converter.
 
