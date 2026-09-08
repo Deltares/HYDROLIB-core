@@ -348,6 +348,7 @@ class TestMDUParserUpdateMbaFile:
         parser.has_field = MethodType(MDUParser.has_field, parser)
         parser.update_file_entry = MethodType(MDUParser.update_file_entry, parser)
         parser.add_section = MethodType(MDUParser.add_section, parser)
+        parser.has_section = MethodType(MDUParser.has_section, parser)
         parser.insert_line = MethodType(MDUParser.insert_line, parser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
         parser.content = deepcopy(content)
@@ -411,6 +412,7 @@ class TestMDUParserAddSection:
     def _make_parser(content):
         parser = MagicMock(spec=MDUParser)
         parser.add_section = MethodType(MDUParser.add_section, parser)
+        parser.has_section = MethodType(MDUParser.has_section, parser)
         parser.insert_line = MethodType(MDUParser.insert_line, parser)
         parser.get_section = MethodType(MDUParser.get_section, parser)
         parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
@@ -471,6 +473,26 @@ class TestMDUParserAddSection:
             "[output]\n",
         ]
         assert "Name = Test\n\n[output]\n" in "".join(parser.content)
+
+    @pytest.mark.unit
+    def test_add_section_raises_when_section_already_exists(self):
+        """Adding a section that already exists is rejected (case-insensitive)."""
+        parser = self._make_parser(["[general]\n", "Name = Test\n", "[Output]\n"])
+
+        with pytest.raises(ValueError, match="already exists"):
+            MDUParser.add_section(parser, "output")
+
+        # the content is left untouched
+        assert parser.content == ["[general]\n", "Name = Test\n", "[Output]\n"]
+
+    @pytest.mark.unit
+    def test_has_section_true_and_false(self):
+        """has_section reports presence case-insensitively."""
+        parser = self._make_parser(["[general]\n", "Name = Test\n", "[output]\n"])
+
+        assert MDUParser.has_section(parser, "output") is True
+        assert MDUParser.has_section(parser, "OUTPUT") is True
+        assert MDUParser.has_section(parser, "processes") is False
 
     @pytest.mark.e2e
     def test_add_section_on_real_mdu_file(self, tmp_path):

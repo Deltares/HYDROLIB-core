@@ -810,6 +810,17 @@ class MDUParser:
 
                 self.insert_line(line.content, line_number)
 
+    def has_section(self, section_name: str) -> bool:
+        """Return whether the MDU already contains a `[section_name]` section.
+
+        Args:
+            section_name (str): The section to look for, without the surrounding brackets.
+
+        Returns:
+            bool: True if the section is present, False otherwise.
+        """
+        return self.get_section(section_name).start is not None
+
     def add_section(self, section_name: str) -> None:
         """Append an empty `[section_name]` section at the end of the MDU content.
 
@@ -818,7 +829,15 @@ class MDUParser:
 
         Args:
             section_name (str): The section to create, without the surrounding brackets.
+
+        Raises:
+            ValueError: If the section already exists (use `has_section` to check first).
         """
+        if self.has_section(section_name):
+            raise ValueError(
+                f"Cannot add section '[{section_name}]': it already exists in the MDU file."
+            )
+
         if self.content and self.content[-1].strip() != "":
             # if the last line is not empty, we add a blank line before the new section header
             if not self.content[-1].endswith("\n"):
