@@ -212,4 +212,3 @@ class TestLateralConverter:
 
 		with pytest.raises(ValueError, match="Could not determine the discharge"):
 			converter.convert(forcing)
-
