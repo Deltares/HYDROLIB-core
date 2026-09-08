@@ -36,7 +36,6 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    validate_location_specification,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,

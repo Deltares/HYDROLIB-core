@@ -8,7 +8,6 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidatorUtils,
-    validate_location_specification,
 )
 from hydrolib.core.dflowfm.validators import CoordinateValidator
 
