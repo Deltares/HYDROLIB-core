@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,7 +9,9 @@ from hydrolib.core.dflowfm.ext.models import ForcingModel, Lateral, LateralError
 from hydrolib.core.dflowfm.extold.models import ExtOldFileType, ExtOldForcing, ExtOldMethod
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.tools.extforce_convert.converters import LateralConverter
+from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+from tests.utils import compare_two_files, ignore_version_lines
 
 
 @pytest.fixture
@@ -41,6 +44,16 @@ def lateral_poly_file(lateral_files_dir: Path) -> Path:
 @pytest.fixture
 def lateral_tim_file(lateral_files_dir: Path) -> Path:
 	return Path("lateral.tim")
+
+
+@pytest.fixture
+def lateral_ext_file(lateral_files_dir: Path) -> Path:
+	return lateral_files_dir / "lateral.ext"
+
+
+@pytest.fixture
+def lateral_expected_ext_file(lateral_files_dir: Path) -> Path:
+	return lateral_files_dir / "lateral-new.ext"
 
 
 @pytest.fixture
@@ -212,3 +225,50 @@ class TestLateralConverter:
 
 		with pytest.raises(ValueError, match="Could not determine the discharge"):
 			converter.convert(forcing)
+
+
+class TestMainConverter:
+	def test_lateral_ext_conversion_matches_expected_results(
+		self,
+		tmp_path: Path,
+		lateral_files_dir: Path,
+		lateral_ext_file: Path,
+		lateral_expected_ext_file: Path,
+		mdu_parser_mock: MagicMock,
+	):
+		workspace = tmp_path / "lateral"
+		workspace.mkdir()
+
+		for name in [
+			"lateral.ext",
+			"afstroming.pol",
+			"afstroming.tim",
+			"rainfall_minus_evaporation.pol",
+			"rainfall_minus_evaporation.tim",
+		]:
+			shutil.copy2(lateral_files_dir / name, workspace / name)
+
+		input_file = workspace / lateral_ext_file.name
+		output_file = workspace / "lateral-new.ext"
+		mdu_parser_mock.mdu_path = workspace / "mock.mdu"
+
+		converter = ExternalForcingConverter(
+			input_file,
+			ext_file=output_file,
+			mdu_parser=mdu_parser_mock,
+		)
+		result = converter.update()
+		assert result is not None
+		ext_model, structure_model = result
+		converter.save(backup=False, recursive=True)
+
+		assert len(ext_model.lateral) == 2
+		assert len(structure_model.structure) == 0
+		assert output_file.exists()
+		diff = compare_two_files(
+			lateral_expected_ext_file,
+			output_file,
+			ignore_line=ignore_version_lines,
+		)
+		assert diff == []
+

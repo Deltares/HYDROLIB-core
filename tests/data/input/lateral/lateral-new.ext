@@ -1,0 +1,16 @@
+# written by HYDROLIB-core 1.1.0
+
+[Lateral]
+id           = L1
+name         = lateraldischarge1d
+locationType = 1d
+locationFile = afstroming.pol
+discharge    = afstroming.bc
+
+[Lateral]
+id           = L2
+name         = lateraldischarge2d
+locationType = 2d
+locationFile = rainfall_minus_evaporation.pol
+discharge    = rainfall_minus_evaporation.bc
+
