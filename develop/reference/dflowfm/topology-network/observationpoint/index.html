@@ -3831,7 +3831,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
-        <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+        <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
                 <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
@@ -3978,7 +3978,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
-    <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+    <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
             <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>

@@ -5575,7 +5575,7 @@ i.e., a <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.cross
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that the correct location specification is given.&quot;&quot;&quot;</span>
-        <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+        <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
             <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
                 <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -5727,7 +5727,7 @@ i.e., a <a class="autorefs autorefs-internal" href="#hydrolib.core.dflowfm.cross
 <span class="normal">750</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that the correct location specification is given.&quot;&quot;&quot;</span>
-    <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidator</span><span class="p">(</span>
+    <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
         <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
             <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
