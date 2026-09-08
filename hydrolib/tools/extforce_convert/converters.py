@@ -26,8 +26,6 @@ from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    Spatial,
-    SpatialError,
     Lateral,
     LateralError,
     SourceSink,
@@ -1137,7 +1135,7 @@ class LateralConverter(BaseConverter):
     """Lateral discharge converter."""
 
     _QUANTITY_TO_LOCATION_TYPE = {
-        "lateraldischarge": None,
+        "lateraldischarge": "all",
         "lateraldischarge1d": "1d",
         "lateraldischarge2d": "2d",
     }
@@ -1167,6 +1165,34 @@ class LateralConverter(BaseConverter):
             tim_model, time_unit, units=units, user_defined_names=user_defined_names
         )
         return ForcingModel(forcing=time_series_list)
+
+    @staticmethod
+    def filter_lateral_quantities(quantities: list[str]) -> list[str]:
+        """Keep only quantities supported by ``_QUANTITY_TO_LOCATION_TYPE``.
+
+        Args:
+            quantities (List[str]):
+                All quantities present in the old external forcings file.
+        """
+        return [
+            quantity
+            for quantity in quantities
+            if quantity.lower() in LateralConverter._QUANTITY_TO_LOCATION_TYPE
+        ]
+
+    @staticmethod
+    def check_lateral_quantity(quantity: str) -> None:
+        """Validate that a lateral quantity is supported by the converter.
+
+        Args:
+            quantity (str): The lateral quantity to validate.
+
+        Raises:
+            LateralError: If the quantity is not supported by this converter.
+        """
+        if str(quantity).lower() not in LateralConverter._QUANTITY_TO_LOCATION_TYPE:
+            raise LateralError(f"Unsupported lateral quantity: {quantity}")
+
 
     def convert(
         self, forcing: ExtOldForcing, time_unit: str | None = None
@@ -1198,16 +1224,14 @@ class LateralConverter(BaseConverter):
             block, ready to be included in a new external forcings file.
 
         Raises:
-            ValueError: If the forcing block contains a quantity that is not
-                supported by the converter.
             LateralError: If the Lateral object could not be created.
         """
         quantity = str(forcing.quantity).lower()
-        if quantity not in self._QUANTITY_TO_LOCATION_TYPE:
-            raise ValueError(f"Unsupported lateral quantity: {forcing.quantity}")
+
+        self.check_lateral_quantity(quantity)
+
         location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
 
-        # Determine discharge and location data
         discharge = self._get_discharge(forcing, self._get_time_unit(time_unit))
         location_data = self._get_location_data(forcing)
 
