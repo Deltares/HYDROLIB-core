@@ -804,6 +804,20 @@ class MDUParser:
 
                 self.insert_line(line.content, line_number)
 
+    def add_section(self, section_name: str) -> None:
+        """Append an empty `[section_name]` section at the end of the MDU content.
+
+        A blank separator line is inserted first when the file does not already end with one.
+        Section order is not significant to the kernel (Manual D.2).
+
+        Args:
+            section_name (str): The section to create, without the surrounding brackets.
+        """
+        if self.content and self.content[-1].strip() != "":
+            # separate the new section from the preceding content with a blank line
+            self.insert_line("", len(self.content))
+        self.insert_line(f"[{section_name}]", len(self.content))
+
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
 

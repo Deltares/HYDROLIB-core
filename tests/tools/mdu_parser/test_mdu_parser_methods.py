@@ -347,6 +347,7 @@ class TestMDUParserUpdateMbaFile:
         parser.get_section = MethodType(MDUParser.get_section, parser)
         parser.has_field = MethodType(MDUParser.has_field, parser)
         parser.update_file_entry = MethodType(MDUParser.update_file_entry, parser)
+        parser.add_section = MethodType(MDUParser.add_section, parser)
         parser.insert_line = MethodType(MDUParser.insert_line, parser)
         parser.get_keyword = MethodType(MDUParser.get_keyword, parser)
         parser.content = deepcopy(content)
@@ -381,3 +382,93 @@ class TestMDUParserUpdateMbaFile:
         MDUParser.update_mba_interval(parser, "300.0")
 
         assert parser.get_keyword("mbaInterval") == "300.0"
+
+class TestMDUParserAddSection:
+    """Unit tests for MDUParser.add_section."""
+
+    @staticmethod
+    def _make_parser(content):
+        parser = MagicMock(spec=MDUParser)
+        parser.add_section = MethodType(MDUParser.add_section, parser)
+        parser.insert_line = MethodType(MDUParser.insert_line, parser)
+        parser.get_section = MethodType(MDUParser.get_section, parser)
+        parser.find_keyword_lines = MethodType(MDUParser.find_keyword_lines, parser)
+        parser.content = deepcopy(content)
+        return parser
+
+    @pytest.mark.unit
+    def test_appends_header_with_blank_separator(self):
+        """A new section header is appended, preceded by a blank separator line."""
+        parser = self._make_parser(["[general]\n", "Name = Test\n"])
+
+        MDUParser.add_section(parser, "output")
+
+        assert parser.content == [
+            "[general]\n",
+            "Name = Test\n",
+            "\n",
+            "[output]\n",
+        ]
+        assert parser.get_section("output").start is not None
+
+    @pytest.mark.unit
+    def test_no_double_blank_when_file_already_ends_with_blank(self):
+        """No extra blank line is added when the file already ends with one."""
+        parser = self._make_parser(["[general]\n", "Name = Test\n", "\n"])
+
+        MDUParser.add_section(parser, "output")
+
+        assert parser.content == [
+            "[general]\n",
+            "Name = Test\n",
+            "\n",
+            "[output]\n",
+        ]
+
+    @pytest.mark.unit
+    def test_add_section_on_empty_content(self):
+        """On empty content the header is added without a leading blank line."""
+        parser = self._make_parser([])
+
+        MDUParser.add_section(parser, "output")
+
+        assert parser.content == ["[output]\n"]
+        assert parser.get_section("output").start == 0
+
+    @pytest.mark.e2e
+    def test_add_section_on_real_mdu_file(self, tmp_path):
+        """End-to-end: a section added to a real MDU file is found and usable after reload.
+
+        Builds a minimal, valid MDU that has no [output] section, adds one via add_section,
+        writes a keyword into it, saves, and confirms the keyword survives a reload.
+        """
+        mdu = tmp_path / "m.mdu"
+        mdu.write_text(
+            "[geometry]\n"
+            "NetFile = net.nc\n"
+            "\n"
+            "[physics]\n"
+            "Salinity = 0\n"
+            "Temperature = 0\n"
+            "\n"
+            "[time]\n"
+            "RefDate = 20010101\n"
+            "Tunit = S\n"
+            "\n"
+            "[external forcing]\n"
+            "ExtForceFile = old.ext\n"
+        )
+        parser = MDUParser(mdu)
+        assert parser.get_section("output").start is None, "precondition: no [output]"
+
+        parser.add_section("output")
+
+        assert parser.get_section("output").start is not None
+        # the created section is usable: a keyword can be written into it and read back
+        parser.update_file_entry("mbaFile", "new_mba.ini", "output")
+        assert parser.get_keyword("mbaFile") == "new_mba.ini"
+
+        parser.save(backup=False)
+        reloaded = MDUParser(mdu)
+        assert reloaded.get_section("output").start is not None
+        assert reloaded.get_keyword("mbaFile") == "new_mba.ini"
