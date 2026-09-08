@@ -383,6 +383,27 @@ class TestMDUParserUpdateMbaFile:
 
         assert parser.get_keyword("mbaInterval") == "300.0"
 
+    @pytest.mark.unit
+    def test_update_mba_file_creates_output_section_when_absent(self):
+        """When the MDU has no [output] section, one is created for the mbaFile entry.
+
+        Regression: an MDU may legitimately omit the (optional) [output] section, so the
+        entry must not be appended into a non-existent section.
+        """
+        content = [
+            "[general]\n",
+            "Name = Test\n",
+        ]
+        parser = self._make_parser(content)
+
+        MDUParser.update_mba_file(parser, "westernscheldt_mba.ini")
+
+        assert (
+            parser.get_section("output").start is not None
+        ), "an [output] section should have been created"
+        assert parser.get_keyword("mbaFile") == "westernscheldt_mba.ini"
+
+
 class TestMDUParserAddSection:
     """Unit tests for MDUParser.add_section."""
 
