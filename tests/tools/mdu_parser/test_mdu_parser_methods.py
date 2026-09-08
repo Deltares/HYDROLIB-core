@@ -456,6 +456,22 @@ class TestMDUParserAddSection:
         assert parser.content == ["[output]\n"]
         assert parser.get_section("output").start == 0
 
+    @pytest.mark.unit
+    def test_blank_separator_when_last_line_has_no_trailing_newline(self):
+        """A real blank line separates the new section even if the file has no final newline."""
+        parser = self._make_parser(["[general]\n", "Name = Test"])
+
+        MDUParser.add_section(parser, "output")
+
+        # the previous line is terminated and a genuine blank line precedes the header
+        assert parser.content == [
+            "[general]\n",
+            "Name = Test\n",
+            "\n",
+            "[output]\n",
+        ]
+        assert "Name = Test\n\n[output]\n" in "".join(parser.content)
+
     @pytest.mark.e2e
     def test_add_section_on_real_mdu_file(self, tmp_path):
         """End-to-end: a section added to a real MDU file is found and usable after reload.

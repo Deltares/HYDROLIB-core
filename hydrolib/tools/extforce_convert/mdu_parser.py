@@ -820,7 +820,10 @@ class MDUParser:
             section_name (str): The section to create, without the surrounding brackets.
         """
         if self.content and self.content[-1].strip() != "":
-            # separate the new section from the preceding content with a blank line
+            # if the last line is not empty, we add a blank line before the new section header
+            if not self.content[-1].endswith("\n"):
+                self.content[-1] += "\n"
+
             self.insert_line("", len(self.content))
         self.insert_line(f"[{section_name}]", len(self.content))
 
