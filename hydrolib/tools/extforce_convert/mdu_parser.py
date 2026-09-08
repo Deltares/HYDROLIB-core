@@ -781,12 +781,11 @@ class MDUParser:
             section = self.get_section(section_name)
             if section.start is None:
                 # the target section does not exist yet (e.g. an MDU without an [output]
-                # section); create it first, then add the entry to it below.
-                self.add_section(section_name)
-                section = self.get_section(section_name)
-
-            # add the entry at the end of the (now existing) section
-            line_number = section.last_key_value_line_index + 1
+                # section); create it and add the entry right after its header.
+                line_number = self.add_section(section_name) + 1
+            else:
+                # add the entry at the end of the existing section
+                line_number = section.last_key_value_line_index + 1
             self.insert_line(line.content, line_number)
         else:
             # if the field already exists, we update it
@@ -821,7 +820,7 @@ class MDUParser:
         """
         return self.get_section(section_name).start is not None
 
-    def add_section(self, section_name: str) -> None:
+    def add_section(self, section_name: str) -> int:
         """Append an empty `[section_name]` section at the end of the MDU content.
 
         A blank separator line is inserted first when the file does not already end with one.
@@ -829,6 +828,9 @@ class MDUParser:
 
         Args:
             section_name (str): The section to create, without the surrounding brackets.
+
+        Returns:
+            int: The index in `content` of the appended section-header line.
 
         Raises:
             ValueError: If the section already exists (use `has_section` to check first).
@@ -845,6 +847,7 @@ class MDUParser:
 
             self.insert_line("", len(self.content))
         self.insert_line(f"[{section_name}]", len(self.content))
+        return len(self.content) - 1
 
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.

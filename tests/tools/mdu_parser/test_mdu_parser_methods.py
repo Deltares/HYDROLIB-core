@@ -424,7 +424,7 @@ class TestMDUParserAddSection:
         """A new section header is appended, preceded by a blank separator line."""
         parser = _make_mdu_parser(["[general]\n", "Name = Test\n"])
 
-        parser.add_section("output")
+        header_index = parser.add_section("output")
 
         assert parser.content == [
             "[general]\n",
@@ -432,6 +432,7 @@ class TestMDUParserAddSection:
             "\n",
             "[output]\n",
         ]
+        assert header_index == 3, f"Got {header_index}"
         assert parser.get_section("output").start is not None
 
     @pytest.mark.unit
@@ -453,9 +454,10 @@ class TestMDUParserAddSection:
         """On empty content the header is added without a leading blank line."""
         parser = _make_mdu_parser([])
 
-        parser.add_section("output")
+        header_index = parser.add_section("output")
 
         assert parser.content == ["[output]\n"]
+        assert header_index == 0, f"Got {header_index}"
         assert parser.get_section("output").start == 0
 
     @pytest.mark.unit
