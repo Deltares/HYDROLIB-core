@@ -779,7 +779,13 @@ class MDUParser:
                 equal_sign_position=equal_sign_position,
             )
             section = self.get_section(section_name)
-            # put the inifield file at the end of the geometry section
+            if section.start is None:
+                # the target section does not exist yet (e.g. an MDU without an [output]
+                # section); create it first, then add the entry to it below.
+                self.add_section(section_name)
+                section = self.get_section(section_name)
+
+            # add the entry at the end of the (now existing) section
             line_number = section.last_key_value_line_index + 1
             self.insert_line(line.content, line_number)
         else:
