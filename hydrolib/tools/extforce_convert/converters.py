@@ -1418,8 +1418,7 @@ class LateralConverter(BaseConverter):
         forcing_model.filepath = location_file.with_suffix(".bc")
         return forcing_model
 
-    @staticmethod
-    def _get_location_data(forcing: ExtOldForcing) -> dict[str, Any]:
+    def _get_location_data(self, forcing: ExtOldForcing) -> dict[str, Any]:
         """Extract location data from the old forcing block.
 
         Args:
@@ -1429,7 +1428,7 @@ class LateralConverter(BaseConverter):
             Dict[str, Any]: A dict with 'id' and either a 'locationfile' key (when
                 the source is a PolyFile) or inline coordinate fields.
         """
-        location_filepath = forcing.get_location_filepath() if isinstance(
+        location_filepath = forcing.filename.filepath if isinstance(
             forcing.filename, PolyFile) else None
         result = {"id": forcing.get_location_id()}
 

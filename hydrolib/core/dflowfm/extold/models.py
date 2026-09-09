@@ -357,9 +357,6 @@ class ExtOldForcing(BaseModel):
 
         return result
 
-    def get_location_filepath(self) -> Path | None:
-        """Return the resolved filepath held by `filename` when available."""
-        return self.filename.filepath
 
     @model_validator(mode="before")
     @classmethod
