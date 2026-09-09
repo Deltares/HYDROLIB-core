@@ -337,7 +337,7 @@ class TestMDUParserGetStructureFile:
 
 
 def _make_mdu_parser(content: list) -> MagicMock:
-    """Build a MagicMock ``MDUParser`` with the pure text-manipulation methods bound.
+    """Build a MagicMock `MDUParser` with the pure text-manipulation methods bound.
 
     Lets the parser be driven in unit tests without reading a real MDU file: `content` and
     `file_style_properties` are set from the given lines and every method that operates on them
