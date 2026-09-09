@@ -9,6 +9,8 @@ Most relevant classes are:
 
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from pathlib import Path
@@ -107,7 +109,7 @@ class TimeInterpolation(StrEnum):
     block_to = "block-To"
 
     @classmethod
-    def from_old_method(cls, method: int) -> "TimeInterpolation":
+    def from_old_method(cls, method: int) -> TimeInterpolation:
         """Map an old external forcing `METHOD` to a time interpolation.
 
         Old `METHOD=0` means no time interpolation: the value is held from the last
