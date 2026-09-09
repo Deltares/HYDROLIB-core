@@ -188,6 +188,8 @@ FileType:
     # 14. NetCDF wave data
 
 OldMethods:
+    BlockFrom: 0
+    # 0. No time interpolation; value is held from the last specified time.
     PassThrough: 1
     # 1. Pass through (no interpolation)
     InterpolateTimeAndSpace: 2
