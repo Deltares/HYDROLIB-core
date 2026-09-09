@@ -94,16 +94,36 @@ class VerticalPositionType(StrEnum):
 
 
 class TimeInterpolation(StrEnum):
-    """Enum class containing the valid values for the time interpolation."""
+    """Enum class containing the valid values for the time interpolation.
+
+    Attributes:
+        linear: Linear interpolation between times.
+        block_from: Equal to that at the start of the time interval (latest specified time value).
+        block_to: Equal to that at the end of the time interval (upcoming specified time value).
+    """
 
     linear = "linear"
-    """str: Linear interpolation between times."""
-
     block_from = "block-From"
-    """str: Equal to that at the start of the time interval (latest specified time value)."""
-
     block_to = "block-To"
-    """str: Equal to that at the end of the time interval (upcoming specified time value)."""
+
+    @classmethod
+    def from_old_method(cls, method: int) -> "TimeInterpolation":
+        """Map an old external forcing `METHOD` to a time interpolation.
+
+        Old `METHOD=0` means no time interpolation: the value is held from the last
+        specified time, i.e. `block-From`. Every other method keeps the default linear
+        time interpolation.
+
+        Args:
+            method (int): The `METHOD` value of the old forcing block.
+
+        Returns:
+            TimeInterpolation: `block-From` for `METHOD=0`, otherwise `linear`.
+        """
+        result = cls.linear
+        if int(method) == 0:
+            result = cls.block_from
+        return result
 
 
 class QuantityUnitPair(BaseModel):
