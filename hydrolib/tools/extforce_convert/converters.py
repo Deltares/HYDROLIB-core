@@ -1429,8 +1429,8 @@ class LateralConverter(BaseConverter):
             Dict[str, Any]: A dict with 'id' and either a 'locationfile' key (when
                 the source is a PolyFile) or inline coordinate fields.
         """
-        location_filepath = (forcing.get_location_filepath() if
-                             isinstance(forcing.filename, PolyFile) else None)
+        location_filepath = forcing.get_location_filepath() if isinstance(
+            forcing.filename, PolyFile) else None
         result = {"id": forcing.get_location_id()}
 
         if location_filepath is not None:
