@@ -802,49 +802,64 @@ class MDUParser:
             has_field: Whether a keyword is already present in the file.
             add_section: Append a new empty section, used when the target is missing.
         """
-        leading_spaces = self.file_style_properties.leading_spaces
-        equal_sign_position = self.file_style_properties.equal_sign_position
-
-        if not self.has_field(field_name):
-            # if the field does not exist, we create a new line for it and add it to the end of the section
-            # create the line
-            line = Line.from_key_value(
-                field_name,
-                file_name,
-                leading_spaces=leading_spaces,
-                equal_sign_position=equal_sign_position,
-            )
-            # get the section
-            section = self.get_section(section_name)
-            if section.start is None:
-                # the target section does not exist yet (e.g. an MDU without an [output]
-                # section); create it and add the entry right after its header.
-                line_number = self.add_section(section_name) + 1
-            else:
-                # add the entry at the end of the existing section
-                line_number = section.last_key_value_line_index + 1
-            self.insert_line(line.content, line_number)
+        if self.has_field(field_name):
+            self._fill_empty_file_entry(field_name, file_name)
         else:
-            # if the field already exists, we update it
-            # find the line number of the existing field
-            existing_field_line_num = self.find_keyword_lines(field_name)
-            line = Line(self.content[existing_field_line_num])
-            # only update the value if there was no value.
-            if not line.value:
-                line = line.update_value(file_name)
-                line.recenter_comments(self.file_style_properties.comments_position)
-                line.recenter_equal_sign(
-                    equal_sign_position=equal_sign_position,
-                    leading_spaces=leading_spaces,
-                )
+            self._append_file_entry(field_name, file_name, section_name)
 
-                if existing_field_line_num is not None:
-                    # remove the old line
-                    self.content.pop(existing_field_line_num)
+    def _append_file_entry(
+        self, field_name: str, file_name: str, section_name: str
+    ) -> None:
+        """Append a new `field_name = file_name` line to a section.
 
-                line_number = existing_field_line_num
+        The line is added after the last key-value line of `section_name`. If that
+        section does not exist yet, it is created and the entry is added right after
+        its header.
 
-                self.insert_line(line.content, line_number)
+        Args:
+            field_name (str): The MDU keyword to add.
+            file_name (str): The value to write for the keyword.
+            section_name (str): The section to append to, without the brackets.
+        """
+        # create a new line with the correct formatting for the file style
+        line = Line.from_key_value(
+            field_name,
+            file_name,
+            leading_spaces=self.file_style_properties.leading_spaces,
+            equal_sign_position=self.file_style_properties.equal_sign_position,
+        )
+        # get the section
+        section = self.get_section(section_name)
+        if section.start is None:
+            # the target section does not exist yet (e.g. an MDU without an [output]
+            # section); create it and add the entry right after its header.
+            line_number = self.add_section(section_name) + 1
+        else:
+            # add the entry at the end of the existing section
+            line_number = section.last_key_value_line_index + 1
+        self.insert_line(line.content, line_number)
+
+    def _fill_empty_file_entry(self, field_name: str, file_name: str) -> None:
+        """Fill an existing keyword's value, only when it is currently empty.
+
+        A keyword that already has a value is left untouched; its value is never
+        overwritten.
+
+        Args:
+            field_name (str): The existing MDU keyword to fill.
+            file_name (str): The value to write when the keyword has no value.
+        """
+        line_number = self.find_keyword_lines(field_name)
+        line = Line(self.content[line_number])
+        if not line.value:
+            line = line.update_value(file_name)
+            line.recenter_comments(self.file_style_properties.comments_position)
+            line.recenter_equal_sign(
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+                leading_spaces=self.file_style_properties.leading_spaces,
+            )
+            self.content.pop(line_number)
+            self.insert_line(line.content, line_number)
 
     def has_section(self, section_name: str) -> bool:
         """Return whether the MDU already contains a `[section_name]` section.

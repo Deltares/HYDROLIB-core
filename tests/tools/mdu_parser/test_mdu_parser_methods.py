@@ -355,6 +355,8 @@ def _make_mdu_parser(content: list) -> MagicMock:
         "insert_line",
         "add_section",
         "update_file_entry",
+        "_append_file_entry",
+        "_fill_empty_file_entry",
         "update_mba_file",
         "update_mba_interval",
     ):
