@@ -368,7 +368,7 @@ class Lateral(CoordinateValidator, INIBasedModel):
         Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
         | None
     ) = Field(None, alias="locationFile")
-    applytransport: int | None = Field(None, alias="applyTransport")
+    applytransport: int = Field(0, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
