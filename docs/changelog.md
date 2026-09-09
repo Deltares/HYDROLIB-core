@@ -1,3 +1,17 @@
+## 1.2.0 (2026-09-09)
+
+### Feat
+
+- **extforce-convert**: support new WAQ quantities in spatial conversion (#1169)
+- **extforce_convert**: convert mass balance areas to a separate _mba.ini file (#1191)
+- **converters,tests**: add factor quantity base conversion and align operand handling (#1184)
+
+### Fix
+
+- **extforce-convert**: preserve [General] metadata in generated ext and structure files (#1198)
+- **extforce_convert**: create the MDU [output] section when absent (#1195)
+- **models,utils,data**: tighten filetype validation and add setup files (#1162)
+
 ## 1.1.0 (2026-09-03)
 
 ### Feat
