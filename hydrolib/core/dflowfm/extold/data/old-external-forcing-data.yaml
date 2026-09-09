@@ -102,12 +102,11 @@ Parameter:
         IBotLevType: ibotlevtype
         # Missing in the converter
         FloeDiameter: floe_diameter
-        WaqParameter: waqparameter
     prefixes:
-        # Missing in the converter
         - waqfunction
         - waqsegmentfunction
         - waqsegmentnumber
+        - waqparameter
 
 
 InitialConditions:
@@ -163,6 +162,12 @@ Lateral:
 Misellaneous:
      ShiptXY: shiptxy
      MovingStationXY: movingstationxy
+
+MassBalanceArea:
+    # The area name is a suffix of the quantity, e.g. waqmassbalanceareaEstruaryWest.
+    prefixes:
+        - waqmassbalancearea
+        - massbalancearea
 
 FileType:
     TimeSeries: 1
