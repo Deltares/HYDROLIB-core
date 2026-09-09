@@ -803,11 +803,11 @@ class MDUParser:
             add_section: Append a new empty section, used when the target is missing.
         """
         if self.has_field(field_name):
-            self._fill_empty_file_entry(field_name, file_name)
+            self._update_existing_entry(field_name, file_name)
         else:
-            self._append_file_entry(field_name, file_name, section_name)
+            self._add_new_entry(field_name, file_name, section_name)
 
-    def _append_file_entry(
+    def _add_new_entry(
         self, field_name: str, file_name: str, section_name: str
     ) -> None:
         """Append a new `field_name = file_name` line to a section.
@@ -839,7 +839,7 @@ class MDUParser:
             line_number = section.last_key_value_line_index + 1
         self.insert_line(line.content, line_number)
 
-    def _fill_empty_file_entry(self, field_name: str, file_name: str) -> None:
+    def _update_existing_entry(self, field_name: str, file_name: str) -> None:
         """Fill an existing keyword's value, only when it is currently empty.
 
         A keyword that already has a value is left untouched; its value is never

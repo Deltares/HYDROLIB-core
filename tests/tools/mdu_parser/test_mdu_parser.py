@@ -389,11 +389,9 @@ class TestUpdateInifieldFile:
         parser.find_section_bounds = types.MethodType(MDUParser.get_section, parser)
         parser.has_field = types.MethodType(MDUParser.has_field, parser)
         parser.update_file_entry = types.MethodType(MDUParser.update_file_entry, parser)
-        parser._append_file_entry = types.MethodType(
-            MDUParser._append_file_entry, parser
-        )
-        parser._fill_empty_file_entry = types.MethodType(
-            MDUParser._fill_empty_file_entry, parser
+        parser._add_new_entry = types.MethodType(MDUParser._add_new_entry, parser)
+        parser._update_existing_entry = types.MethodType(
+            MDUParser._update_existing_entry, parser
         )
         parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
         parser.content = deepcopy(content)
@@ -1568,11 +1566,9 @@ class TestUpdateExtForceFileNew:
             MDUParser.update_extforce_file_new, parser
         )
         parser.update_file_entry = types.MethodType(MDUParser.update_file_entry, parser)
-        parser._append_file_entry = types.MethodType(
-            MDUParser._append_file_entry, parser
-        )
-        parser._fill_empty_file_entry = types.MethodType(
-            MDUParser._fill_empty_file_entry, parser
+        parser._add_new_entry = types.MethodType(MDUParser._add_new_entry, parser)
+        parser._update_existing_entry = types.MethodType(
+            MDUParser._update_existing_entry, parser
         )
         parser.has_field = types.MethodType(MDUParser.has_field, parser)
         parser.find_keyword_lines = types.MethodType(
