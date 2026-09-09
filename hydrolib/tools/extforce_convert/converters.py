@@ -1348,18 +1348,21 @@ class LateralConverter(BaseConverter):
     ) -> Any:
         """Derive the discharge for a lateral defined via a PolyFile.
 
-        Tries to resolve an associated TIM file first; falls back to a constant
-        value if present; otherwise raises an error.
+        Tries to resolve an associated TIM file; otherwise raises an error.
+
+        Note:
+            Constant `VALUE` handling happens in `_get_discharge` before this method
+            is called, so this method only covers the PolyFile + time-series path.
 
         Args:
             forcing (ExtOldForcing): The old forcing block whose filename is a PolyFile.
             time_unit (Optional[str]): The time unit string for time series data.
 
         Returns:
-            Any: A ForcingModel (when a TIM file is found) or a constant float.
+            Any: A ForcingModel when a TIM file is found.
 
         Raises:
-            ValueError: If neither a TIM file nor a constant value can be found.
+            ValueError: If no accompanying TIM file can be found.
         """
         location_file = forcing.filename.filepath
         tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
@@ -1368,8 +1371,6 @@ class LateralConverter(BaseConverter):
             result = self._convert_poly_tim_to_forcing_model(
                 tim_model, location_file, time_unit
             )
-        elif forcing.value is not None:
-            result = forcing.value
         else:
             raise ValueError(
                 f"Could not determine the discharge for lateral '{location_file.stem}': "
