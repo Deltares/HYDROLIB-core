@@ -767,42 +767,139 @@ class MDUParser:
     def update_file_entry(
         self, field_name: str, file_name: str, section_name: str
     ) -> None:
-        leading_spaces = self.file_style_properties.leading_spaces
-        equal_sign_position = self.file_style_properties.equal_sign_position
+        """Add or fill a `field_name = file_name` entry in the given MDU section.
 
-        if not self.has_field(field_name):
-            # if the field does not exist, we create a new line for it and add it to the end of the section
-            line = Line.from_key_value(
-                field_name,
-                file_name,
-                leading_spaces=leading_spaces,
-                equal_sign_position=equal_sign_position,
-            )
-            section = self.get_section(section_name)
-            # put the inifield file at the end of the geometry section
-            line_number = section.last_key_value_line_index + 1
-            self.insert_line(line.content, line_number)
+        The behaviour depends on whether the field is already present:
+
+        - Field absent: a new `field_name = file_name` line is appended at the end of
+          `section_name`. If that section does not exist yet (e.g. an MDU without an
+          `[output]` section), the section is created and the entry is added right after
+          its header.
+        - Field present but empty (`field_name =` with no value): the value is filled in
+          with `file_name`.
+        - Field present with a value: it is left unchanged; an existing value is never
+          overwritten.
+
+        Args:
+            field_name (str):
+                The MDU keyword to add or fill (e.g. `"ExtForceFileNew"`), matched
+                case-insensitively.
+            file_name (str):
+                The value to write for the keyword, typically the name of the new file.
+            section_name (str):
+                The section the entry belongs to, without the surrounding brackets
+                (e.g. `"geometry"`, `"output"`, `"external forcing"`).
+
+        Notes:
+            - The line is formatted to the file's detected style (leading spaces and
+              equal-sign / comment alignment), so a newly added or filled entry lines up
+              with the surrounding keywords.
+            - The value is only ever set when the field is missing or empty; this method
+              does not repoint a keyword that already has a value, and it does not report
+              when it leaves such a keyword untouched.
+
+        See Also:
+            has_field: Whether a keyword is already present in the file.
+            add_section: Append a new empty section, used when the target is missing.
+        """
+        if self.has_field(field_name):
+            self._update_existing_entry(field_name, file_name)
         else:
-            # if the field already exists, we update it
-            # find the line number of the existing field
-            existing_field_line_num = self.find_keyword_lines(field_name)
-            line = Line(self.content[existing_field_line_num])
-            # only update the value if there was no value.
-            if not line.value:
-                line = line.update_value(file_name)
-                line.recenter_comments(self.file_style_properties.comments_position)
-                line.recenter_equal_sign(
-                    equal_sign_position=equal_sign_position,
-                    leading_spaces=leading_spaces,
-                )
+            self._add_new_entry(field_name, file_name, section_name)
 
-                if existing_field_line_num is not None:
-                    # remove the old line
-                    self.content.pop(existing_field_line_num)
+    def _add_new_entry(
+        self, field_name: str, file_name: str, section_name: str
+    ) -> None:
+        """Append a new `field_name = file_name` line to a section.
 
-                line_number = existing_field_line_num
+        The line is added after the last key-value line of `section_name`. If that
+        section does not exist yet, it is created and the entry is added right after
+        its header.
 
-                self.insert_line(line.content, line_number)
+        Args:
+            field_name (str): The MDU keyword to add.
+            file_name (str): The value to write for the keyword.
+            section_name (str): The section to append to, without the brackets.
+        """
+        # create a new line with the correct formatting for the file style
+        line = Line.from_key_value(
+            field_name,
+            file_name,
+            leading_spaces=self.file_style_properties.leading_spaces,
+            equal_sign_position=self.file_style_properties.equal_sign_position,
+        )
+        # get the section
+        section = self.get_section(section_name)
+        if section.start is None:
+            # the target section does not exist yet (e.g. an MDU without an [output]
+            # section); create it and add the entry right after its header.
+            line_number = self.add_section(section_name) + 1
+        else:
+            # add the entry at the end of the existing section
+            line_number = section.last_key_value_line_index + 1
+        self.insert_line(line.content, line_number)
+
+    def _update_existing_entry(self, field_name: str, file_name: str) -> None:
+        """Fill an existing keyword's value, only when it is currently empty.
+
+        A keyword that already has a value is left untouched; its value is never
+        overwritten.
+
+        Args:
+            field_name (str): The existing MDU keyword to fill.
+            file_name (str): The value to write when the keyword has no value.
+        """
+        line_number = self.find_keyword_lines(field_name)
+        line = Line(self.content[line_number])
+        if not line.value:
+            line = line.update_value(file_name)
+            line.recenter_comments(self.file_style_properties.comments_position)
+            line.recenter_equal_sign(
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+                leading_spaces=self.file_style_properties.leading_spaces,
+            )
+            self.content.pop(line_number)
+            self.insert_line(line.content, line_number)
+
+    def has_section(self, section_name: str) -> bool:
+        """Return whether the MDU already contains a `[section_name]` section.
+
+        Args:
+            section_name (str): The section to look for, without the surrounding brackets.
+
+        Returns:
+            bool: True if the section is present, False otherwise.
+        """
+        return self.get_section(section_name).start is not None
+
+    def add_section(self, section_name: str) -> int:
+        """Append an empty `[section_name]` section at the end of the MDU content.
+
+        A blank separator line is inserted first when the file does not already end with one.
+        Section order is not significant to the kernel (Manual D.2).
+
+        Args:
+            section_name (str): The section to create, without the surrounding brackets.
+
+        Returns:
+            int: The index in `content` of the appended section-header line.
+
+        Raises:
+            ValueError: If the section already exists (use `has_section` to check first).
+        """
+        if self.has_section(section_name):
+            raise ValueError(
+                f"Cannot add section '[{section_name}]': it already exists in the MDU file."
+            )
+
+        if self.content and self.content[-1].strip() != "":
+            # if the last line is not empty, we add a blank line before the new section header
+            if not self.content[-1].endswith("\n"):
+                self.content[-1] += "\n"
+
+            self.insert_line("", len(self.content))
+        self.insert_line(f"[{section_name}]", len(self.content))
+        return len(self.content) - 1
 
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
