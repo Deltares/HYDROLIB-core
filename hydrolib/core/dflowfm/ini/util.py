@@ -556,13 +556,12 @@ class LocationValidatorUtils:
         """Validate / default `locationType` for coordinate-based specs.
 
         When `xCoordinates` and `yCoordinates` are given, `locationType`
-        may be `1d`, `2d` or `all`.  Absent defaults to `all`.
+        may be `1d`, `2d` or `all`.
         """
         f = self.fields
         location_type = self.values.get(f.location_type.lower(), None)
-        if str_is_empty_or_none(location_type):
-            self.values[f.location_type.lower()] = LocationType.all
-        elif location_type not in (LocationType.oned, LocationType.twod, LocationType.all):
+
+        if location_type not in (LocationType.oned, LocationType.twod, LocationType.all):
             raise ValueError(
                 f"{f.location_type} has invalid value '{location_type}'. "
                 f"Possible values are: 1d, 2d, all"
