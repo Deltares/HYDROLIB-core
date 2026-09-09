@@ -400,18 +400,12 @@ class Lateral(CoordinateValidator, INIBasedModel):
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
-    @field_validator("applytransport", mode="before")
+    @field_validator("applytransport", mode="after")
     @classmethod
     def validate_applytransport(cls, v: Any) -> int:
-        result = 0
-        if v is not None:
-            try:
-                result = int(v)
-            except (TypeError, ValueError):
-                raise ValueError(f"applyTransport must be 0 or 1, got '{v}'.")
-            if result not in (0, 1):
-                raise ValueError(f"applyTransport must be 0 or 1, got '{result}'.")
-        return result
+        if v not in (0, 1):
+            raise ValueError(f"applyTransport must be 0 or 1, got '{v}'.")
+        return v
 
     @field_validator("locationtype", mode="before")
     @classmethod
