@@ -13,7 +13,6 @@ from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import FileModel
 from hydrolib.core.dflowfm.ext.models import (
     MeteoForcingFileType,
-    MeteoInterpolationMethod,
     TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
@@ -147,31 +146,6 @@ def oldfiletype_to_forcing_file_type(
     return forcing_file_type
 
 
-def oldmethod_to_interpolation_method(
-    oldmethod: int,
-) -> Union[InterpolationMethod, MeteoInterpolationMethod, str]:
-    """Convert old external forcing `METHOD` integer value to valid `interpolationMethod` string value.
-
-    Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
-
-    Returns:
-        Union[InterpolationMethod,str]: Corresponding value for `interpolationMethod`,
-            or "unknown" for invalid input.
-    """
-    if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = InterpolationMethod.linear_space_time
-    elif oldmethod == 5:
-        interpolation_method = InterpolationMethod.triangulation
-    elif oldmethod == 4:
-        interpolation_method = InterpolationMethod.constant
-    elif oldmethod in range(6, 10):
-        interpolation_method = InterpolationMethod.averaging
-    else:
-        interpolation_method = "unknown"
-    return interpolation_method
-
-
 def map_method_to_averaging_type(
     old_forcing_method: int,
     averaging_type: int,
@@ -228,7 +202,7 @@ def convert_interpolation_data(
         - if the interpolation method is "Averaging" (method = 6), the dictionary will also contain
             the "averagingtype", "averagingrelsize", "averagingnummin", and "averagingpercentile" keys.
     """
-    data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
+    data["interpolationmethod"] = InterpolationMethod.from_old_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
         data["averagingtype"] = map_method_to_averaging_type(
             forcing.method, forcing.averagingtype
