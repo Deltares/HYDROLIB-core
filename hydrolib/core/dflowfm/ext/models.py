@@ -323,28 +323,6 @@ class Boundary(INIBasedModel):
         return enum_value_parser(v, Operand, Operand.legacy_alternatives())
 
 
-def _is_non_null_location_file(raw: Any) -> bool:
-    """Return True when *raw* represents a non-null locationFile value.
-
-    Accepts a `Path`, a non-empty `str`, or a `DiskOnlyFileModel`-style
-    dict whose `filepath` key is not *None*.  Returns False for *None*, an
-    empty string, or a dict with `filepath=None`.
-    """
-    if raw is None:
-        result = False
-    elif isinstance(raw, str):
-        result = raw.strip() != ""
-    elif isinstance(raw, Path):
-        result = True
-    elif isinstance(raw, dict):
-        result = raw.get("filepath") is not None
-    elif hasattr(raw, "filepath"):
-        result = raw.filepath is not None
-    else:
-        result = False
-    return result
-
-
 class Lateral(CoordinateValidator, INIBasedModel):
     """A `[Lateral]` block for use inside an external forcings file.
 
@@ -368,7 +346,7 @@ class Lateral(CoordinateValidator, INIBasedModel):
         Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
         | None
     ) = Field(None, alias="locationFile")
-    applytransport: int = Field(0, alias="applyTransport")
+    applytransport: int | None = Field(None, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -388,13 +366,11 @@ class Lateral(CoordinateValidator, INIBasedModel):
         All other combinations are validated by the generic
         :func:`validate_location_specification` helper.
         """
-        raw_loc_file = values.get("locationfile") or values.get("locationFile")
-        if not _is_non_null_location_file(raw_loc_file):
-            location_validator = LocationValidatorUtils(
-                values,
-                config=LocationValidationConfiguration(minimum_num_coordinates=1),
-            )
-            values = location_validator.validate()
+        location_validator = LocationValidatorUtils(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=1),
+        )
+        values = location_validator.validate()
         return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:

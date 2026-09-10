@@ -1223,10 +1223,9 @@ class LateralConverter(BaseConverter):
 
         data = {
             "id": location_data.pop("id"),
-            "name": forcing.quantity
+            "name": forcing.quantity,
+            "locationtype": location_type,
         }
-        if location_type is not None:
-            data["locationtype"] = location_type
         data.update(location_data)
         data["discharge"] = discharge
 
@@ -1300,11 +1299,8 @@ class LateralConverter(BaseConverter):
         """
         result = forcing.value
 
-        if forcing.value is None:
-            if isinstance(forcing.filename, TimModel):
-                result = self._get_discharge_from_tim_model(forcing, time_unit)
-            elif isinstance(forcing.filename, PolyFile):
-                result = self._get_discharge_from_poly_file(forcing, time_unit)
+        if forcing.value is None and isinstance(forcing.filename, PolyFile):
+            result = self._get_discharge_from_poly_file(forcing, time_unit)
 
         return result
 
@@ -1419,7 +1415,8 @@ class LateralConverter(BaseConverter):
         forcing_model.filepath = location_file.with_suffix(".bc")
         return forcing_model
 
-    def _get_location_data(self, forcing: ExtOldForcing) -> dict[str, Any]:
+    @staticmethod
+    def _get_location_data(forcing: ExtOldForcing) -> dict[str, Any]:
         """Extract location data from the old forcing block.
 
         Args:
