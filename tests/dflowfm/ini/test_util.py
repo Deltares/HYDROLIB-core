@@ -25,6 +25,7 @@ class TestLocationValidationConfiguration:
         assert config.validate_branch == True
         assert config.validate_num_coordinates == True
         assert config.validate_location_type == True
+        assert config.validate_location_file == False
         assert config.minimum_num_coordinates == 0
 
 
@@ -38,6 +39,7 @@ class TestLocationValidationFieldNames:
         assert fields.y_coordinates == "yCoordinates"
         assert fields.num_coordinates == "numCoordinates"
         assert fields.location_type == "locationType"
+        assert fields.location_file == "locationFile"
 
 
 class TestLocationSpecificationValidator:
@@ -190,7 +192,7 @@ class TestLocationSpecificationValidator:
             ),
             pytest.param(
                 {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2},
-                "all",
+                None,
                 id="coordinates-locationtype-default-all",
             ),
         ],
@@ -203,15 +205,11 @@ class TestLocationSpecificationValidator:
         assert result.get("locationtype") == expected_locationtype
 
     @pytest.mark.parametrize(
-        "values, expected",
+        "values",
         [
             pytest.param(
                 {
                     "nodeid": "some_nodeid",
-                },
-                {
-                    "nodeid": "some_nodeid",
-                    "locationtype": "1d",
                 },
                 id="nodeid",
             ),
@@ -219,11 +217,6 @@ class TestLocationSpecificationValidator:
                 {
                     "branchid": "some_branchid",
                     "chainage": 1.23,
-                },
-                {
-                    "branchid": "some_branchid",
-                    "chainage": 1.23,
-                    "locationtype": "1d",
                 },
                 id="branchid",
             ),
@@ -233,22 +226,16 @@ class TestLocationSpecificationValidator:
                     "ycoordinates": [7.89, 8.91, 9.12],
                     "numcoordinates": 3,
                 },
-                {
-                    "xcoordinates": [4.56, 5.67, 6.78],
-                    "ycoordinates": [7.89, 8.91, 9.12],
-                    "numcoordinates": 3,
-                    "locationtype": "all",
-                },
                 id="coordinates",
             ),
         ],
     )
-    def test_correct_fields_initializes(self, values: dict, expected: dict):
+    def test_correct_fields_initializes(self, values: dict):
         validated_values = LocationValidatorUtils(
             values,
             config=LocationValidationConfiguration(minimum_num_coordinates=3),
         ).validate()
-        assert validated_values == expected
+        assert validated_values == values
 
     @pytest.mark.parametrize(
         "values, expected",
@@ -273,7 +260,6 @@ class TestLocationSpecificationValidator:
                     "xcoordinates": [4.56, 5.67, 6.78],
                     "ycoordinates": [7.89, 8.91, 9.12],
                     "numcoordinates": 3,
-                    "locationtype": "all",
                 },
                 id="coordinate aliases",
             ),
@@ -370,6 +356,90 @@ class TestLocationSpecificationValidator:
         validated_values = LocationValidatorUtils(values, config).validate()
 
         assert validated_values == values
+
+    @pytest.mark.parametrize(
+        "values, expected",
+        [
+            pytest.param(
+                {"locationFile": "locations.pli"},
+                {"locationfile": "locations.pli"},
+                id="locationfile-alias-only",
+            ),
+            pytest.param(
+                {
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                {
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="coordinate-triplet-only",
+            ),
+            pytest.param(
+                {
+                    "locationfile": "locations.pli",
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                {
+                    "locationfile": "locations.pli",
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="locationfile-and-coordinate-triplet",
+            ),
+        ],
+    )
+    def test_validate_locationfile_enabled_accepts_supported_forms(
+        self, values: dict, expected: dict
+    ):
+        config = LocationValidationConfiguration(
+            validate_location_file=True,
+            validate_node=False,
+            validate_branch=False,
+            validate_location_type=False,
+        )
+
+        validated_values = LocationValidatorUtils(values, config).validate()
+
+        assert validated_values == expected
+
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param({}, id="missing-location-and-coordinates"),
+            pytest.param(
+                {
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                },
+                id="partial-coordinate-triplet",
+            ),
+            pytest.param(
+                {
+                    "numcoordinates": 3,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="coordinate-length-mismatch",
+            ),
+        ],
+    )
+    def test_validate_locationfile_enabled_rejects_invalid_forms(self, values: dict):
+        config = LocationValidationConfiguration(
+            validate_location_file=True,
+            validate_node=False,
+            validate_branch=False,
+            validate_location_type=False,
+        )
+        location_validator = LocationValidatorUtils(values, config)
+        with pytest.raises(ValueError):
+            location_validator.validate()
 
 
 class TestGetKeyRenamingRootValidator:

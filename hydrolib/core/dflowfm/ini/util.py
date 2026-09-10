@@ -569,7 +569,8 @@ class LocationValidatorUtils:
         f = self.fields
         location_type = self.values.get(f.location_type.lower(), None)
 
-        if location_type not in (LocationType.oned, LocationType.twod, LocationType.all):
+        if (location_type is not None and
+                location_type not in (LocationType.oned, LocationType.twod, LocationType.all)):
             raise ValueError(
                 f"{f.location_type} has invalid value '{location_type}'. "
                 f"Possible values are: 1d, 2d, all"
