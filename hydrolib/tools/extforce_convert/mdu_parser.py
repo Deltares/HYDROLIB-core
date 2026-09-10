@@ -1,5 +1,6 @@
 """MDU Parser."""
 
+import shlex
 import warnings
 from collections import Counter
 from dataclasses import dataclass, field
@@ -151,13 +152,25 @@ class ExternalForcingBlock:
             Path:
                 Path to the new external forcing file.
         """
-        _extforce_file_new = (
-            Path(self.extforcefilenew) if self.extforcefilenew else None
+        raw_path = (
+            str(self.extforcefilenew).strip() if self.extforcefilenew else ""
+        )
+        path_list = (
+            shlex.split(raw_path) if raw_path else []
         )
 
-        if _extforce_file_new:
-            # if the extforce_file_new exist in the MDU file, we use it
-            ext_file = (self.root_dir / _extforce_file_new).resolve()
+        if path_list:
+            if len(path_list) > 1:
+                remaining_files = " ".join(path_list[1:])
+                warnings.warn(
+                    "ExtForceFileNew contains multiple filenames; using the first one "
+                    f"({path_list[0]}) and ignoring the rest: {remaining_files}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+            # If ExtForceFileNew exists in the MDU file, use the first referenced file.
+            ext_file = (self.root_dir / Path(path_list[0])).resolve()
         else:
             # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
             # name to create the new extforce file
