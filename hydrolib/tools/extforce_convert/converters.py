@@ -1304,41 +1304,6 @@ class LateralConverter(BaseConverter):
 
         return result
 
-    def _get_discharge_from_tim_model(
-        self, forcing: ExtOldForcing, time_unit: str | None
-    ) -> ForcingModel:
-        """Convert a TIM file referenced directly in the forcing block into a ForcingModel.
-
-        Args:
-            forcing (ExtOldForcing): The old forcing block whose filename is a TimModel.
-            time_unit (Optional[str]): The time unit string for time series data.
-
-        Returns:
-            ForcingModel: The converted forcing model.
-
-        Raises:
-            ValueError: If time_unit is None.
-        """
-        if time_unit is None:
-            raise ValueError(
-                "The 'time_unit' argument must be provided when converting a "
-                "lateral discharge from a TIM file."
-            )
-
-        tim_file = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
-        location_name = tim_file.stem
-        tim_model = TimModel(tim_file, quantities_names=["discharge"])
-        user_defined_names = [location_name]
-
-        forcing_model = self.convert_tim_to_bc(
-            tim_model,
-            time_unit,
-            user_defined_names=user_defined_names,
-        )
-        forcing_model.filepath = tim_file.with_suffix(".bc")
-        self.legacy_files = tim_file
-        return forcing_model
-
     def _get_discharge_from_poly_file(
         self, forcing: ExtOldForcing, time_unit: str | None
     ) -> Any:
