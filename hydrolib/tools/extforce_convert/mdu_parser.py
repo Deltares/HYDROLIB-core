@@ -145,13 +145,23 @@ class ExternalForcingBlock:
     def get_new_extforce_file(self) -> Path:
         """Get the new external forcing file path.
 
+        `ExtForceFileNew` may list several files separated by a space, with any name
+        containing spaces enclosed in double quotes (D-Flow FM 1D2D User Manual, the
+        `ExtForceFileNew` keyword). When more than one file is listed, the converted
+        quantities are appended to the **first** file only; the remaining files are left
+        untouched and a `UserWarning` naming them is emitted. This is a deliberate policy:
+        the converter writes all migrated quantities into a single new external forcings
+        file, and the first listed file is chosen as that target.
+
         Notes:
-            - If the `extforcefilenew` exists in the MDU file, it will be used.
-            - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
+            - If `extforcefilenew` is present in the MDU file, the first listed file is used
+              (see above for the multiple-file behaviour).
+            - If it is absent, a new file is created from the old extforce file name with a
+              "-new" suffix.
 
         Returns:
             Path:
-                Path to the new external forcing file.
+                Path to the new external forcing file that converted quantities are written to.
         """
         raw_path = str(self.extforcefilenew).strip() if self.extforcefilenew else ""
         path_list = parse_files_names(raw_path)
