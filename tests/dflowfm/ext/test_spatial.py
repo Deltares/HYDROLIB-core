@@ -36,7 +36,7 @@ def _write_ext(directory: Path, spatial_body: str) -> Path:
     """Write a minimal new-format `.ext` with a single `[Spatial]` block and return its path."""
     content = (
         "[General]\n"
-        "fileVersion = 2.01\n"
+        "fileVersion = 3.00\n"
         "fileType    = extForce\n"
         "\n"
         "[Spatial]\n"

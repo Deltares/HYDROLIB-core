@@ -1056,7 +1056,7 @@ class ExtGeneral(INIGeneral):
     """The external forcing file's `[General]` section with file meta-data."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("2.01", alias="fileVersion")
+    fileversion: str = Field("3.00", alias="fileVersion")
     filetype: Literal["extForce"] = Field("extForce", alias="fileType")
 
 

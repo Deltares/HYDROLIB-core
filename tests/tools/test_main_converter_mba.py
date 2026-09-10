@@ -43,6 +43,18 @@ class TestConvertMassBalanceAreaFromMDU:
         ]
         mdu.write_text("".join(patched))
 
+    def _remove_section(self, mdu: Path, section: str) -> None:
+        """Remove a whole section (header and body) from the MDU file."""
+        kept = []
+        in_section = False
+        for line in mdu.read_text().splitlines(keepends=True):
+            stripped = line.strip().lower()
+            if stripped.startswith("[") and stripped.endswith("]"):
+                in_section = stripped == f"[{section.lower()}]"
+            if not in_section:
+                kept.append(line)
+        mdu.write_text("".join(kept))
+
     def test_areas_written_to_mba_file(self, input_files_dir: Path, tmp_path: Path):
         """Test that the waqmassbalancearea quantities become a single `_mba.ini`.
 
@@ -298,6 +310,37 @@ class TestConvertMassBalanceAreaFromMDU:
         assert (
             parser.get_keyword("mbaFile") == "first_mba.ini second_mba.ini"
         ), f"Got {parser.get_keyword('mbaFile')}"
+
+    def test_missing_output_section_is_created(
+        self, input_files_dir: Path, tmp_path: Path
+    ):
+        """Test that conversion works when the MDU has no `[output]` section.
+
+        Test scenario:
+            The `[output]` section is optional and a legacy model may omit it, while still
+            carrying `waqmassbalancearea` in its old ext and `DtMassBalance` in `[processes]`.
+            The converter must create the `[output]` section for the new `mbaFile`/`mbaInterval`
+            keywords instead of failing to write into a non-existent section.
+        """
+        mdu = self._prepare_model(input_files_dir, tmp_path)
+        self._remove_section(mdu, "output")
+        header_lines = [ln.strip().lower() for ln in mdu.read_text().splitlines()]
+        assert "[output]" not in header_lines, "precondition: no [output] section"
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+        converter.update()
+        converter.save(backup=False)
+
+        parser = MDUParser(mdu)
+        assert (
+            parser.get_section("output").start is not None
+        ), "an [output] section should have been created"
+        assert (
+            parser.get_keyword("mbaFile") == "new_mba.ini"
+        ), f"Got {parser.get_keyword('mbaFile')}"
+        assert (
+            parser.get_keyword("mbaInterval") == "300.0"
+        ), f"Got {parser.get_keyword('mbaInterval')}"
 
     def test_areas_not_in_new_ext_file(self, input_files_dir: Path, tmp_path: Path):
         """Test that mass balance areas do not leak into the new ext file.
