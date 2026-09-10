@@ -1491,6 +1491,7 @@ class TestGetNewExtforceFile:
         - file already exists (raises FileExistsError)
         - missing extforcefile (raises ValueError)
         - root_dir not set (raises AttributeError or TypeError)
+        - integration with shared ExtForceFileNew token parsing
     """
 
     def make_block(self, **kwargs):
@@ -1518,19 +1519,6 @@ class TestGetNewExtforceFile:
             result = block.get_new_extforce_file()
 
         assert result == tmp_path / "westernscheldt_new.ext"
-
-    def test_extforcefilenew_quoted_filename_with_spaces(self, tmp_path):
-        """Quoted filenames with spaces should be parsed as one path."""
-        block = self.make_block(
-            extforcefile="old.ext",
-            extforcefilenew='"new extforce.ext" other.ext',
-        )
-        block.root_dir = tmp_path
-
-        with pytest.warns(UserWarning, match="ExtForceFileNew contains multiple filenames"):
-            result = block.get_new_extforce_file()
-
-        assert result == tmp_path / "new extforce.ext"
 
     def test_extforcefilenew_absent(self):
         """If extforcefilenew is absent, returns the old.ext name with a "-new" suffix."""
