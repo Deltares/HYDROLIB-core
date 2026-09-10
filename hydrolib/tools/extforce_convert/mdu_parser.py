@@ -116,11 +116,11 @@ class Section:
 
 @dataclass
 class ExternalForcingBlock:
-    extforcefile: Union[Path, str]
-    extforcefilenew: Optional[Union[Path, str]] = field(default=None)
-    comments: Optional[List[str]] = field(default=None)
+    extforcefile: Path | str
+    extforcefilenew: Path | str | None = field(default=None)
+    comments: list[str] | None = field(default=None)
     _header: Optional = "[external forcing]"
-    root_dir: Optional[Path] = field(default=None)
+    root_dir: Path | str = field(default=None)
 
     def __init__(self, **kwargs):
         valid_keys = {"extforcefile", "extforcefilenew", "comments", "_header"}
