@@ -366,32 +366,9 @@ class TestLocationSpecificationValidator:
                 id="locationfile-alias-only",
             ),
             pytest.param(
-                {
-                    "numcoordinates": 2,
-                    "xcoordinates": [1.0, 2.0],
-                    "ycoordinates": [3.0, 4.0],
-                },
-                {
-                    "numcoordinates": 2,
-                    "xcoordinates": [1.0, 2.0],
-                    "ycoordinates": [3.0, 4.0],
-                },
-                id="coordinate-triplet-only",
-            ),
-            pytest.param(
-                {
-                    "locationfile": "locations.pli",
-                    "numcoordinates": 2,
-                    "xcoordinates": [1.0, 2.0],
-                    "ycoordinates": [3.0, 4.0],
-                },
-                {
-                    "locationfile": "locations.pli",
-                    "numcoordinates": 2,
-                    "xcoordinates": [1.0, 2.0],
-                    "ycoordinates": [3.0, 4.0],
-                },
-                id="locationfile-and-coordinate-triplet",
+                {"locationfile": "locations.pli"},
+                {"locationfile": "locations.pli"},
+                id="locationfile-lowercase-only",
             ),
         ],
     )
@@ -419,6 +396,15 @@ class TestLocationSpecificationValidator:
                     "xcoordinates": [1.0, 2.0],
                 },
                 id="partial-coordinate-triplet",
+            ),
+            pytest.param(
+                {
+                    "locationfile": "locations.pli",
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="locationfile-and-coordinate-triplet",
             ),
             pytest.param(
                 {

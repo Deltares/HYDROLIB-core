@@ -665,9 +665,8 @@ class LocationValidatorUtils:
             if self.is_valid_location_file_specification:
                 result = self.values
             else:
-                error_parts.append(self.fields.location_file)
+                raise ValueError("locationFile should be provided without any other coordinates")
         return result
-
 
     def validate_node(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a node-based location specification.
@@ -774,7 +773,6 @@ class LocationValidatorUtils:
                 the values dict, or when a sub-validator detects an inconsistency.
         """
         error_parts = []
-
 
         validators = [
             self.validate_location_file,
