@@ -353,6 +353,7 @@ class TestFactorQuantityConversion:
                 f"got {new_block.operand!r}"
             )
 
+
 class TestSpatialUniformTimToBc:
     """A FILETYPE=1 (uniform time series `.tim`) spatial/parameter quantity must be
     converted to a `.bc` file. The old `dataFileType=uniform` (`.tim`) is deprecated in
