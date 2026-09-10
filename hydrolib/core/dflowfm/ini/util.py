@@ -661,11 +661,13 @@ class LocationValidatorUtils:
     def validate_location_file(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a locationFile-only location specification."""
         result = None
-        if self.config.validate_location_file:
+        if self.config.validate_location_file and self.has_location_file:
             if self.is_valid_location_file_specification:
                 result = self.values
             else:
-                raise ValueError("locationFile should be provided without any other coordinates")
+                raise ValueError(
+                    "locationFile should be provided without any other coordinates"
+                )
         return result
 
     def validate_node(self, error_parts: list[str]) -> dict | None:
