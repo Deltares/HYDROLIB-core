@@ -1,6 +1,6 @@
 """MDU Parser."""
 
-import shlex
+
 import warnings
 from collections import Counter
 from dataclasses import dataclass, field
@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.parser import open_file_with_fallback_encoding
+from hydrolib.core.base.utils import parse_files_names
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -152,12 +153,8 @@ class ExternalForcingBlock:
             Path:
                 Path to the new external forcing file.
         """
-        raw_path = (
-            str(self.extforcefilenew).strip() if self.extforcefilenew else ""
-        )
-        path_list = (
-            shlex.split(raw_path) if raw_path else []
-        )
+        raw_path = str(self.extforcefilenew).strip() if self.extforcefilenew else ""
+        path_list = parse_files_names(raw_path)
 
         if path_list:
             if len(path_list) > 1:
