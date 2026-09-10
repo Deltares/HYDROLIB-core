@@ -369,7 +369,7 @@ class SpatialConverter(BaseConverter):
 
         quantity = data["quantity"]
         tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
-        tim_model = TimModel(**TimParser.parse(tim_path))
+        tim_model = TimModel(filepath=tim_path)
         # A FILETYPE=1 uniform time series carries a single scalar column for the one
         # spatial quantity (unlike a source/sink .tim, whose columns are different
         # quantities). More than one data column has no mapping to a single [Spatial]
