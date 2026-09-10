@@ -1482,7 +1482,7 @@ class TestSection:
         assert non_existing_section.end is None
 
 
-class GetNewExtforceFile:
+class TestGetNewExtforceFile:
     """
     Unit tests for ExternalForcingBlock.get_new_extforce_file method.
     Covers:
@@ -1505,6 +1505,32 @@ class GetNewExtforceFile:
         result = block.get_new_extforce_file()
         assert result.name == "new.ext"
         assert str(result).endswith("new.ext")
+
+    def test_extforcefilenew_multiple_files_uses_first_and_warns(self, tmp_path):
+        """Multiple space-separated files should use the first entry only."""
+        block = self.make_block(
+            extforcefile="old.ext",
+            extforcefilenew="westernscheldt_new.ext westernscheldt_spatial.ext",
+        )
+        block.root_dir = tmp_path
+
+        with pytest.warns(UserWarning, match="ExtForceFileNew contains multiple filenames"):
+            result = block.get_new_extforce_file()
+
+        assert result == tmp_path / "westernscheldt_new.ext"
+
+    def test_extforcefilenew_quoted_filename_with_spaces(self, tmp_path):
+        """Quoted filenames with spaces should be parsed as one path."""
+        block = self.make_block(
+            extforcefile="old.ext",
+            extforcefilenew='"new extforce.ext" other.ext',
+        )
+        block.root_dir = tmp_path
+
+        with pytest.warns(UserWarning, match="ExtForceFileNew contains multiple filenames"):
+            result = block.get_new_extforce_file()
+
+        assert result == tmp_path / "new extforce.ext"
 
     def test_extforcefilenew_absent(self):
         """If extforcefilenew is absent, returns the old.ext name with a "-new" suffix."""
