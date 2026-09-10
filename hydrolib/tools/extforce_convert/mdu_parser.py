@@ -1,6 +1,5 @@
 """MDU Parser."""
 
-
 import warnings
 from collections import Counter
 from dataclasses import dataclass, field
