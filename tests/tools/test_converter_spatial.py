@@ -449,6 +449,24 @@ class TestSpatialUniformTimToBc:
         with pytest.raises(SpatialError, match="single data column"):
             converter.convert(forcing, forcing.filename.filepath)
 
+    def test_empty_tim_raises_clear_error(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        """An empty `.tim` should raise a clear SpatialError about missing data rows."""
+        tim_file = tmp_path / "empty.tim"
+        tim_file.write_text("")
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        with pytest.raises(SpatialError, match="contains no data rows"):
+            converter.convert(forcing, forcing.filename.filepath)
+
     def test_recursive_save_writes_the_bc_file(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
     ):
