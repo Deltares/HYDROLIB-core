@@ -421,6 +421,9 @@ class LocationValidationConfiguration(BaseModel):
     validate_location_type: bool = True
     """bool, optional: Whether or not the location type should be validated. Defaults to True."""
 
+    validate_location_file: bool = False
+    """bool, optional: Whether or not `locationFile` should be accepted as a standalone location specification. Defaults to False."""
+
     minimum_num_coordinates: int = 0
     """int, optional: The minimum required number of coordinates. This option is only relevant when `validate_coordinates` is True. Defaults to 0."""
 
@@ -448,6 +451,9 @@ class LocationValidationFieldNames(BaseModel):
 
     location_type: str = "locationType"
     """str, optional: The location type field name. Defaults to `locationType`."""
+
+    location_file: str = "locationFile"
+    """str, optional: The location file field name. Defaults to `locationFile`."""
 
 
 class LocationValidatorUtils:
@@ -491,6 +497,7 @@ class LocationValidatorUtils:
         self.has_x_coordinates = v.get(f.x_coordinates.lower()) is not None
         self.has_y_coordinates = v.get(f.y_coordinates.lower()) is not None
         self.has_num_coordinates = v.get(f.num_coordinates.lower()) is not None
+        self.has_location_file = v.get(f.location_file.lower()) is not None
 
     def normalize_aliases(self, values: Dict) -> Dict:
         """Lower-case any camelCase alias keys that Pydantic has not yet resolved.
@@ -509,6 +516,7 @@ class LocationValidatorUtils:
                 self.fields.y_coordinates,
                 self.fields.num_coordinates,
                 self.fields.location_type,
+                self.fields.location_file,
             ):
                 lowered = field.lower()
                 if (
@@ -640,6 +648,26 @@ class LocationValidatorUtils:
             and not has_other
         )
 
+    @property
+    def is_valid_location_file_specification(self) -> bool:
+        has_other = (
+            self.has_x_coordinates
+            or self.has_y_coordinates
+            or self.has_num_coordinates
+        )
+        return self.has_location_file and not has_other
+
+    def validate_location_file(self, error_parts: list[str]) -> dict | None:
+        """Attempt to validate a locationFile-only location specification."""
+        result = None
+        if self.config.validate_location_file:
+            if self.is_valid_location_file_specification:
+                result = self.values
+            else:
+                error_parts.append(self.fields.location_file)
+        return result
+
+
     def validate_node(self, error_parts: list[str]) -> dict | None:
         """Attempt to validate a node-based location specification.
 
@@ -746,7 +774,9 @@ class LocationValidatorUtils:
         """
         error_parts = []
 
+
         validators = [
+            self.validate_location_file,
             self.validate_node,
             self.validate_branch,
             self.validate_coordinates,

@@ -368,7 +368,10 @@ class Lateral(CoordinateValidator, INIBasedModel):
         """
         location_validator = LocationValidatorUtils(
             values,
-            config=LocationValidationConfiguration(minimum_num_coordinates=1),
+            config=LocationValidationConfiguration(
+                minimum_num_coordinates=1,
+                validate_location_file=True
+            ),
         )
         values = location_validator.validate()
         return values
