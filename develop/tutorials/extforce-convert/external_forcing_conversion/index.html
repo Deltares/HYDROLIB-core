@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4248,6 +4248,7 @@ Handle absolute paths in input files according to the specified style. Use this 
 <ul>
 <li>If no valid input argument (<code>--mdufile</code>, <code>--extoldfile</code>, or <code>--dir</code>) is provided, the program will exit with an error indicating that no input was specified.</li>
 <li>Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.</li>
+<li>When the MDU's <code>ExtForceFileNew</code> lists <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the <strong>first</strong> listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.</li>
 <li>If you encounter any errors during conversion, re-run the command with <code>-v</code> (verbose) or check the backup files (if enabled) for debugging.</li>
 </ul>
 <hr />
