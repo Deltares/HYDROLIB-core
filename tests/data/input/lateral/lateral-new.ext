@@ -1,5 +1,9 @@
 # written by HYDROLIB-core 1.1.0
 
+[General]
+fileVersion = 3.00
+fileType    = extForce
+
 [Lateral]
 id           = L1
 name         = lateraldischarge1d
@@ -13,4 +17,3 @@ name         = lateraldischarge2d
 locationType = 2d
 locationFile = rainfall_minus_evaporation.pol
 discharge    = rainfall_minus_evaporation.bc
-
