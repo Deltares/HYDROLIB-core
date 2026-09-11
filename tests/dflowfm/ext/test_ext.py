@@ -551,7 +551,6 @@ class TestSourceSink:
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
-            "locationfile": Path("tests/data/input/source-sink/leftsor.pliz"),
             "numcoordinates": 2,
             "xcoordinates": [63.350456, 45.200344],
             "ycoordinates": [12.950216, 6.350155],
@@ -569,8 +568,12 @@ class TestSourceSink:
 
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
 
     def test_extra_tracer(self, source_sink_data: Dict[str, Any]):
         """
@@ -579,8 +582,12 @@ class TestSourceSink:
         source_sink_data["initialtracer_any_name"] = [1, 2, 3]
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
         assert source_sink.initialtracer_any_name == [1, 2, 3]
 
     def test_multiple_dynamic_fields(self, source_sink_data: Dict[str, Any]):
@@ -592,8 +599,12 @@ class TestSourceSink:
         source_sink_data["sedfracbnd_any_name"] = [1, 2, 3]
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
         assert source_sink.initialtracer_any_name == [1, 2, 3]
         assert source_sink.tracerbndanyname == [1, 2, 3]
         assert source_sink.sedfracbnd_any_name == [1, 2, 3]
@@ -614,7 +625,6 @@ class TestSourceSink:
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
-            "locationfile": "tests/data/input/source-sink/leftsor.pliz",
             "numcoordinates": 2,
             "xcoordinates": [63.350456, 45.200344],
             "ycoordinates": [12.950216, 6.350155],

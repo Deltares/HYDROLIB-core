@@ -1,0 +1,20 @@
+# written by HYDROLIB-core 0.9.9
+
+[SourceSink]
+id             = left
+name           = discharge_salinity_temperature_sorsin
+locationFile   = left.pliz
+zSource        = -7.5
+Area           = 0.0
+discharge      = left.bc
+salinityDelta  = left.bc
+
+[SourceSink]
+id             = right
+name           = discharge_salinity_temperature_sorsin
+locationFile   = right.pliz
+zSource        = -2.5
+Area           = 0.0
+discharge      = right.bc
+salinityDelta  = right.bc
+
