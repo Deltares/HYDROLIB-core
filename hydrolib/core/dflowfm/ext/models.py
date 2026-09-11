@@ -390,8 +390,8 @@ class Lateral(CoordinateValidator, INIBasedModel):
 
     @field_validator("applytransport", mode="after")
     @classmethod
-    def validate_applytransport(cls, v: Any) -> int:
-        if v not in (0, 1):
+    def validate_applytransport(cls, v: Any) -> int | None:
+        if v not in (0, 1, None):
             raise ValueError(f"applyTransport must be 0 or 1, got '{v}'.")
         return v
 

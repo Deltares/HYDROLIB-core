@@ -465,6 +465,42 @@ class TestLateralAliasInput:
         assert lateral.numcoordinates == 2
 
 
+class TestApplyTransport:
+    def test_applytransport_none_is_allowed(self):
+        lateral = Lateral(
+            id="lat_applytransport_none",
+            nodeid="n1",
+            locationtype="1d",
+            applytransport=None,
+            discharge=1.23,
+        )
+        assert lateral.applytransport is None
+
+
+    @pytest.mark.parametrize("value", [1, 0, "0", "1"])
+    def test_applytransport_0_or_1_are_allowed(self, value):
+        lateral = Lateral(
+            id="lat_applytransport_none",
+            nodeid="n1",
+            locationtype="1d",
+            applytransport=value,
+            discharge=1.23,
+        )
+        assert lateral.applytransport == int(value)
+
+    @pytest.mark.parametrize("value", [2, -1])
+    def test_applytransport_invalid_value_raises(self, value):
+        with pytest.raises(ValidationError) as exc:
+            Lateral(
+                id="lat_applytransport_invalid",
+                nodeid="n1",
+                locationtype="1d",
+                applytransport=value,
+                discharge=1.23,
+            )
+        assert "applyTransport must be 0 or 1" in str(exc.value)
+
+
 class TestValidateForcingData:
     """
     Class to test the different types of discharge forcings.
