@@ -1,4 +1,4 @@
-"""Converter for old external forcing files to the new format."""
+﻿"""Converter for old external forcing files to the new format."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.utils import PathStyle
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
+    ExtGeneral,
     ExtModel,
     Lateral,
     Meteo,
@@ -21,7 +22,11 @@ from hydrolib.core.dflowfm.ext.models import (
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
-from hydrolib.core.dflowfm.structure.models import Structure, StructureModel
+from hydrolib.core.dflowfm.structure.models import (
+    Structure,
+    StructureGeneral,
+    StructureModel,
+)
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
@@ -444,6 +449,13 @@ class ExternalForcingConverter:
         if self.ext_model.n_forcing_blocks:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
+
+            # explicitly set the [General] block to ensure its always written to the new external forcing file.
+            # without it, the ext file will be saved without it as the exclude_unset=True
+            self.ext_model.general = ExtGeneral(
+                fileVersion=self.ext_model.general.fileversion,
+                fileType=self.ext_model.general.filetype,
+            )
             self.ext_model.save(
                 recurse=recursive, exclude_unset=True, path_style=self.path_style
             )
@@ -455,6 +467,13 @@ class ExternalForcingConverter:
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
+
+        # explicitly set the [General] block to ensure its always written to the new structure file.
+        # without it, the structure file will be saved without it as the exclude_unset=True
+        self.structure_model.general = StructureGeneral(
+            fileVersion=self.structure_model.general.fileversion,
+            fileType=self.structure_model.general.filetype,
+        )
         self.structure_model.save(
             recurse=recursive, exclude_unset=True, path_style=self.path_style
         )
