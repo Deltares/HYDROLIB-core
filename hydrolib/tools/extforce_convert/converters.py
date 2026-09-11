@@ -1181,7 +1181,8 @@ class LateralConverter(BaseConverter):
 
 
     def convert(
-        self, forcing: ExtOldForcing, time_unit: str | None = None
+        self,
+        forcing: ExtOldForcing
     ) -> Lateral:
         """Lateral discharge converter.
 
@@ -1199,11 +1200,6 @@ class LateralConverter(BaseConverter):
                 in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps,
                 required for the conversion process.
-            time_unit (Optional[str]):
-                Formatted string containing the units of time, including absolute
-                datetime reference information (according to UDunits). For example,
-                "minutes since 1992-10-8 15:15:42.5 -6:00". Required when the
-                discharge is given as a time series.
 
         Returns:
             Lateral: A Lateral object that represents the converted forcing
@@ -1219,13 +1215,15 @@ class LateralConverter(BaseConverter):
         location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
         location_data = self._get_location_data(forcing)
 
+        time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
+
         data = {
             "id": location_data.pop("id"),
             "name": forcing.quantity,
             "locationtype": location_type,
         }
         data.update(location_data)
-        data["discharge"] = self._get_discharge(forcing, self._get_time_unit(time_unit))
+        data["discharge"] = self._get_discharge(forcing, time_unit)
 
         try:
             new_block = Lateral(**data)
@@ -1235,15 +1233,6 @@ class LateralConverter(BaseConverter):
             )
 
         return new_block
-
-    def _get_time_unit(self, time_unit: str | None) -> str | None:
-        """Return `time_unit`, falling back to the MDU reference date when available."""
-        result = time_unit
-        if result is None and self._mdu_parser is not None:
-            temperature_salinity_data = self._mdu_parser.temperature_salinity_data
-            if temperature_salinity_data is not None:
-                result = temperature_salinity_data.get("refdate")
-        return result
 
     def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> TimModel | None:
         """Resolve and merge any TIM files accompanying the lateral polyline.
