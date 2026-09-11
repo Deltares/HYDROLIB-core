@@ -359,12 +359,20 @@ class Lateral(CoordinateValidator, INIBasedModel):
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
-        """Validates that the correct location specification is given.
+        """Validate that one complete location specification is provided for `[Lateral]`.
 
-        A `locationFile` referencing a polygon file is accepted as a complete
-        location specification on its own (no coordinates or nodeId/branchId needed).
-        All other combinations are validated by the generic
-        :func:`validate_location_specification` helper.
+        Validation is delegated to :class:`LocationValidatorUtils` with
+        `minimum_num_coordinates=1` and `validate_location_file=True`.
+        With that configuration, the input is accepted when it matches one of
+        these alternatives:
+
+        - `locationFile`
+        - `nodeId`
+        - `branchId` together with `chainage`
+        - `numCoordinates` + `xCoordinates` + `yCoordinates`
+
+        The helper applies the detailed consistency checks for each alternative
+        (including coordinate-length checks and `locationType` validation).
         """
         location_validator = LocationValidatorUtils(
             values,
