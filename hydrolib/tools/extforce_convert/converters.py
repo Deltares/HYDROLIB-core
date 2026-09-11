@@ -1218,12 +1218,11 @@ class LateralConverter(BaseConverter):
         time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
 
         data = {
-            "id": location_data.pop("id"),
+            **location_data,
             "name": forcing.quantity,
             "locationtype": location_type,
+            "discharge": self._get_discharge(forcing, time_unit),
         }
-        data.update(location_data)
-        data["discharge"] = self._get_discharge(forcing, time_unit)
 
         try:
             new_block = Lateral(**data)
