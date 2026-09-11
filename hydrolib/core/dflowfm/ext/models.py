@@ -60,14 +60,16 @@ SOURCE_SINKS_QUANTITIES_VALID_PREFIXES = (
     "initialtracer",
     "tracerbnd",
     "sedfracbnd",
-    "initialsedfrac",
+    "initialsedfrac"
 )
 # Reserved key used to thread the caller-provided `dynamic_fields` list through
 # Pydantic validation (via `SourceSink.__init__`) so `_exclude_from_validation`
 # can whitelist those names. It is stripped from the instance after init.
 _DYNAMIC_FIELDS_KEY = "__dynamic_fields__"
-SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = ("initialtracer", "initialsedfrac")
-
+SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES = (
+    "initialtracer",
+    "initialsedfrac"
+)
 
 class TargetLayer(StrEnum):
     """Valid non-numeric values for the ``targetLayer`` attribute of a `[Spatial]` block.
@@ -342,10 +344,9 @@ class Lateral(CoordinateValidator, INIBasedModel):
     numcoordinates: int | None = Field(None, alias="numCoordinates")
     xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
     ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
-    locationfile: (
-        Annotated[DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)]
-        | None
-    ) = Field(None, alias="locationFile")
+    locationfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] | None = Field(None, alias="locationFile")
     applytransport: int | None = Field(None, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
@@ -408,7 +409,6 @@ class SourceSink(CoordinateValidator, INIBasedModel):
     All lowercased attributes match with the source-sink input as described in
     [UM Sec.C.5.2.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.4).
     """
-
     model_config = ConfigDict(extra="allow")
 
     _header: Literal["SourceSink"] = "SourceSink"
@@ -792,7 +792,9 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
             "Name of file containing the data for this spatial quantity.",
             alias="dataFile",
         )
-        datafiletype: str | None = Field("Type of dataFile.", alias="dataFileType")
+        datafiletype: str | None = Field(
+            "Type of dataFile.", alias="dataFileType"
+        )
         datavariablename: str | None = Field(
             "Variable name used in dataFile associated with this quantity.",
             alias="dataVariableName",
@@ -830,8 +832,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
             alias="dataValue",
         )
         frictiontype: str | None = Field(
-            "Only for quantity=frictionCoefficient. The friction type.",
-            alias="frictionType",
+            "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType",
         )
         tracerfallvelocity: str | None = Field(
             "Only for initialtracer<tracername>. Fall velocity of the tracer.",
@@ -855,9 +856,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     )
     datafiletype: DataFileType | None = Field(None, alias="dataFileType")
     datavariablename: str | None = Field(None, alias="dataVariableName")
-    targetmaskfile: PolyFile | DiskOnlyFileModel | None = Field(
-        None, alias="targetMaskFile"
-    )
+    targetmaskfile: PolyFile | DiskOnlyFileModel | None = Field(None, alias="targetMaskFile")
     targetmaskinvert: bool | None = Field(None, alias="targetMaskInvert")
     interpolationmethod: InterpolationMethod | None = Field(
         None, alias="interpolationMethod"
@@ -870,9 +869,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     averagingtype: AveragingType | None = Field(None, alias="averagingType")
     averagingrelsize: NonNegativeFloat | None = Field(None, alias="averagingRelSize")
     averagingnummin: PositiveInt | None = Field(None, alias="averagingNumMin")
-    averagingpercentile: NonNegativeFloat | None = Field(
-        None, alias="averagingPercentile"
-    )
+    averagingpercentile: NonNegativeFloat | None = Field(None, alias="averagingPercentile")
     locationtype: LocationType | None = Field(
         LocationType.all.value, alias="locationType"
     )
@@ -927,13 +924,9 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
     ) -> None:
         """Validate the ``dataFile`` usage path and emit deprecation warning when needed."""
         if not has_datafile:
-            raise ValueError(
-                "'dataFile' is required when 'dataValue' is not specified."
-            )
+            raise ValueError("'dataFile' is required when 'dataValue' is not specified.")
         if not has_datafiletype:
-            raise ValueError(
-                "'dataFileType' is required when 'dataValue' is not specified."
-            )
+            raise ValueError("'dataFileType' is required when 'dataValue' is not specified.")
 
         raw_filetype = values.get("datafiletype") or values.get("dataFileType")
         quantity = values.get("quantity") or ""
@@ -1010,9 +1003,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
 
         datavalue = values.get("datavalue")
         has_datafile = (values.get("datafile") or values.get("dataFile")) is not None
-        has_datafiletype = (
-            values.get("datafiletype") or values.get("dataFileType")
-        ) is not None
+        has_datafiletype = (values.get("datafiletype") or values.get("dataFileType")) is not None
 
         if datavalue is not None:
             cls._validate_datavalue_path(values, has_datafile, has_datafiletype)
