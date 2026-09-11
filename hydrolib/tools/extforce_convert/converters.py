@@ -1217,8 +1217,6 @@ class LateralConverter(BaseConverter):
         self.check_lateral_quantity(quantity)
 
         location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
-
-        discharge = self._get_discharge(forcing, self._get_time_unit(time_unit))
         location_data = self._get_location_data(forcing)
 
         data = {
@@ -1227,7 +1225,7 @@ class LateralConverter(BaseConverter):
             "locationtype": location_type,
         }
         data.update(location_data)
-        data["discharge"] = discharge
+        data["discharge"] = self._get_discharge(forcing, self._get_time_unit(time_unit))
 
         try:
             new_block = Lateral(**data)
