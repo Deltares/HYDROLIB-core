@@ -162,35 +162,22 @@ class TestLateralConverter:
 		assert result.locationfile.filepath == lateral_poly_file
 		assert result.discharge == pytest.approx(1.23)
 
-	@pytest.mark.parametrize(
-		"provided_time_unit, expected_time_unit",
-		[
-			pytest.param(
-				"minutes since 2001-02-03 04:05:06",
-				"minutes since 2001-02-03 04:05:06",
-				id="explicit-time-unit",
-			),
-			pytest.param(None, "minutes since 2015-01-01 00:00:00", id="mdu-fallback"),
-		],
-	)
 	def test_convert_polyfile_with_single_tim_file(
 		self,
 		converter: LateralConverter,
 		lateral_poly_file: Path,
 		lateral_tim_file: Path,
-		provided_time_unit: str | None,
-		expected_time_unit: str,
 	):
 		forcing = _make_poly_forcing("lateraldischarge", lateral_poly_file)
 
-		result = converter.convert(forcing, time_unit=provided_time_unit)
+		result = converter.convert(forcing)
 
 		assert isinstance(result, Lateral)
 		assert result.locationfile.filepath == lateral_poly_file
 		assert isinstance(result.discharge, ForcingModel)
 		assert result.discharge.filepath == lateral_poly_file.with_suffix(".bc")
 		assert [series.name for series in result.discharge.forcing] == ["lateral"]
-		assert result.discharge.forcing[0].quantityunitpair[0].unit == expected_time_unit
+		assert result.discharge.forcing[0].quantityunitpair[0].unit == "minutes since 2015-01-01 00:00:00"
 		assert result.discharge.forcing[0].datablock == [[0.0, 1.0], [60.0, 2.0]]
 		assert [path.name for path in converter.legacy_files] == [lateral_tim_file.name]
 
@@ -199,11 +186,10 @@ class TestLateralConverter:
 		converter: LateralConverter,
 		river_poly_file: Path,
 		river_tim_files: list[Path],
-		start_date: str,
 	):
 		forcing = _make_poly_forcing("lateraldischarge", river_poly_file)
 
-		result = converter.convert(forcing, time_unit=start_date)
+		result = converter.convert(forcing)
 
 		assert isinstance(result.discharge, ForcingModel)
 		assert [series.name for series in result.discharge.forcing] == [
