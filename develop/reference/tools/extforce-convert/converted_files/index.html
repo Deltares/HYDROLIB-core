@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4481,7 +4481,12 @@ You're not viewing the latest release version.
 - If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing
   file.
 - If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new
-  entries, save it, and update the MDU file to reference it.</p>
+  entries, save it, and update the MDU file to reference it.
+- <code>ExtForceFileNew</code> may list <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed
+  in double quotes; D-Flow FM 1D2D User Manual, the <code>ExtForceFileNew</code> keyword). When more than one file is listed,
+  the converted quantities are appended to the <strong>first</strong> file only; the remaining files are left unchanged and a
+  warning naming them is emitted. This is intentional: all migrated quantities are written into a single new external
+  forcings file, and the first listed file is chosen as that target.</p>
 <h3 id="before-legacy-ext-old-format">Before: legacy <code>.ext</code> (old format)<a class="headerlink" href="#before-legacy-ext-old-format" title="Permanent link">&para;</a></h3>
 <p>A minimal legacy file with two forcings (boundary water level and global rainfall). Values (e.g., <code>FILETYPE</code>, <code>METHOD</code>) may differ in your model.</p>
 <div class="highlight"><pre><span></span><code><span class="na">* Example (old-style) external forcings file</span>
