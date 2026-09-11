@@ -715,9 +715,9 @@ class BubbleScreen(CoordinateValidator, INIBasedModel):
     _header: Literal["BubbleScreen"] = "BubbleScreen"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationfile: DiskOnlyFileModel | None = Field(
-        default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile"
-    )
+    locationfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="locationFile")
     numcoordinates: int | None = Field(None, alias="numCoordinates")
     xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
     ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
