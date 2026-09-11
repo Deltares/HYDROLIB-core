@@ -1,0 +1,11 @@
+QUANTITY                 =lateraldischarge1d
+FILENAME                 =afstroming.pol
+FILETYPE                 =10
+METHOD                   =3
+OPERAND                  =O
+
+QUANTITY                 =lateraldischarge2d
+FILENAME                 =rainfall_minus_evaporation.pol
+FILETYPE                 =10
+METHOD                   =3
+OPERAND                  =O

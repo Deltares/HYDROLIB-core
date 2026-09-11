@@ -32,10 +32,10 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
+    LocationValidatorUtils,
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    validate_location_specification,
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
@@ -331,19 +331,23 @@ class Lateral(CoordinateValidator, INIBasedModel):
     I.e., a [ExtModel][hydrolib.core.dflowfm.ext.models.ExtModel].
 
     All lowercased attributes match with the lateral input as described in
-    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.5.2.2).
+    [UM Sec.C.5.2.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.6.3.2).
     """
 
     _header: Literal["Lateral"] = "Lateral"
     id: str = Field(alias="id")
     name: str = Field("", alias="name")
-    locationtype: Optional[str] = Field(None, alias="locationType")
-    nodeid: Optional[str] = Field(None, alias="nodeId")
-    branchid: Optional[str] = Field(None, alias="branchId")
-    chainage: Optional[float] = Field(None, alias="chainage")
-    numcoordinates: Optional[int] = Field(None, alias="numCoordinates")
-    xcoordinates: Optional[List[float]] = Field(None, alias="xCoordinates")
-    ycoordinates: Optional[List[float]] = Field(None, alias="yCoordinates")
+    locationtype: str | None = Field(None, alias="locationType")
+    nodeid: str | None = Field(None, alias="nodeId")
+    branchid: str | None = Field(None, alias="branchId")
+    chainage: float | None = Field(None, alias="chainage")
+    numcoordinates: int | None = Field(None, alias="numCoordinates")
+    xcoordinates: list[float] | None = Field(None, alias="xCoordinates")
+    ycoordinates: list[float] | None = Field(None, alias="yCoordinates")
+    locationfile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] | None = Field(None, alias="locationFile")
+    applytransport: int | None = Field(None, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
 
     def is_intermediate_link(self) -> bool:
@@ -356,37 +360,45 @@ class Lateral(CoordinateValidator, INIBasedModel):
 
     @model_validator(mode="before")
     def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
-        """Validates that the correct location specification is given."""
-        return validate_location_specification(
-            values, config=LocationValidationConfiguration(minimum_num_coordinates=1)
+        """Validate that one complete location specification is provided for `[Lateral]`.
+
+        Validation is delegated to :class:`LocationValidatorUtils` with
+        `minimum_num_coordinates=1` and `validate_location_file=True`.
+        With that configuration, the input is accepted when it matches one of
+        these alternatives:
+
+        - `locationFile`
+        - `nodeId`
+        - `branchId` together with `chainage`
+        - `numCoordinates` + `xCoordinates` + `yCoordinates`
+
+        The helper applies the detailed consistency checks for each alternative
+        (including coordinate-length checks and `locationType` validation).
+        """
+        location_validator = LocationValidatorUtils(
+            values,
+            config=LocationValidationConfiguration(
+                minimum_num_coordinates=1,
+                validate_location_file=True
+            ),
         )
+        values = location_validator.validate()
+        return values
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
 
+    @field_validator("applytransport", mode="after")
+    @classmethod
+    def validate_applytransport(cls, v: Any) -> int | None:
+        if v not in (0, 1, None):
+            raise ValueError(f"applyTransport must be 0 or 1, got '{v}'.")
+        return v
+
     @field_validator("locationtype", mode="before")
     @classmethod
-    def validate_location_type(cls, v: str) -> str:
-        """
-        Method to validate whether the specified location type is correct.
-
-        Args:
-            v (str): Given value for the locationtype field.
-
-        Raises:
-            ValueError: When the value given for locationtype is unknown.
-
-        Returns:
-            str: Validated locationtype string.
-        """
-        possible_values = ["1d", "2d", "all"]
-        if v.lower() not in possible_values:
-            raise ValueError(
-                "Value given ({}) not accepted, should be one of: {}".format(
-                    v, ", ".join(possible_values)
-                )
-            )
-        return v
+    def validate_location_type(cls, v: Any) -> LocationType:
+        return enum_value_parser(v, LocationType)
 
 
 class SourceSink(CoordinateValidator, INIBasedModel):
@@ -820,7 +832,7 @@ class Spatial(SpatialForcingBase, LocationTypeDataFileTypeValidators):
             alias="dataValue",
         )
         frictiontype: str | None = Field(
-            "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType"
+            "Only for quantity=frictionCoefficient. The friction type.", alias="frictionType",
         )
         tracerfallvelocity: str | None = Field(
             "Only for initialtracer<tracername>. Fall velocity of the tracer.",
@@ -1153,6 +1165,14 @@ class BoundaryError(Exception):
 
 class ParameterFieldError(Exception):
     """ParameterFieldError."""
+
+    def __init__(self, error_message: str):
+        """Initialize with an error message."""
+        super().__init__(error_message)
+
+
+class LateralError(Exception):
+    """LateralError."""
 
     def __init__(self, error_message: str):
         """Initialize with an error message."""

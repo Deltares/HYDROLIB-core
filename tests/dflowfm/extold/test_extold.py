@@ -13,7 +13,6 @@ from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.extold.models import (
     HEADER,
     INITIAL_CONDITION_QUANTITIES_VALID_PREFIXES,
-    PARAMETER_QUANTITIES_VALID_PREFIXES,
     ExtOldFileType,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
