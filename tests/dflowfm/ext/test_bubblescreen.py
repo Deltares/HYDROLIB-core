@@ -1,8 +1,8 @@
 """Tests for the BubbleScreen INI block model.
 
-Covers construction and validation (``__init__`` + field/model validators),
-the ``is_intermediate_link`` method, round-trip serialization via
-``ExtModel.save``/``load``, and integration with the enclosing ``ExtModel``
+Covers construction and validation (`__init__` + field/model validators),
+the `is_intermediate_link` method, round-trip serialization via
+`ExtModel.save`/`load`, and integration with the enclosing `ExtModel`
 container. Organised per API surface so each test class targets a single
 method or behavior of the model.
 """
@@ -21,8 +21,8 @@ def inline_block_kwargs() -> dict:
     """Provide kwargs for a valid inline-coordinate BubbleScreen.
 
     Returns:
-        dict: Field kwargs with four polygon vertices, ``zLevel=-5.0``, and a
-        scalar ``discharge``. Safe to spread with ``**`` into ``BubbleScreen(...)``.
+        dict: Field kwargs with four polygon vertices, `zLevel=-5.0`, and a
+        scalar `discharge`. Safe to spread with `**` into `BubbleScreen(...)`.
     """
     return {
         "id": "bubbles1",
@@ -39,9 +39,9 @@ def locationfile_block_kwargs() -> dict:
     """Provide kwargs for a valid locationFile-style BubbleScreen.
 
     Returns:
-        dict: Field kwargs with a ``.pli`` ``locationFile``, ``zLevel=-5.0``,
-        and a scalar ``discharge``. Safe to spread with ``**`` into
-        ``BubbleScreen(...)``.
+        dict: Field kwargs with a `.pli` `locationFile`, `zLevel=-5.0`,
+        and a scalar `discharge`. Safe to spread with `**` into
+        `BubbleScreen(...)`.
     """
     return {
         "id": "bubbles1",
@@ -52,22 +52,22 @@ def locationfile_block_kwargs() -> dict:
 
 
 class TestBubbleScreenInit:
-    """Tests for ``BubbleScreen.__init__`` construction and field validators.
+    """Tests for `BubbleScreen.__init__` construction and field validators.
 
-    In Pydantic v2 the ``__init__`` entrypoint runs every field/model validator
-    (``split_coordinates``, ``resolve_forcing_reference``,
-    ``validate_location_specification``, ``validate_locationfile``), so
+    In Pydantic v2 the `__init__` entrypoint runs every field/model validator
+    (`split_coordinates`, `resolve_forcing_reference`,
+    `validate_location_specification`, `validate_locationfile`), so
     construction scenarios are the right surface to exercise them.
     """
 
     def test_init_with_inline_coordinates(self, inline_block_kwargs):
-        """Construct with inline ``numCoordinates`` + ``xCoordinates`` + ``yCoordinates``.
+        """Construct with inline `numCoordinates` + `xCoordinates` + `yCoordinates`.
 
         Args:
             inline_block_kwargs: Fixture with valid inline-coordinate kwargs.
 
         Test scenario:
-            A polygon with four vertices, a single ``zLevel``, and a scalar
+            A polygon with four vertices, a single `zLevel`, and a scalar
             discharge is a valid BubbleScreen. All supplied fields round-trip
             onto the model with the same values.
         """
@@ -86,14 +86,14 @@ class TestBubbleScreenInit:
         assert block.zlevel == -5.0, f"zlevel not preserved: {block.zlevel}"
 
     def test_init_with_locationfile(self, locationfile_block_kwargs):
-        """Construct with ``locationFile`` instead of inline coordinates.
+        """Construct with `locationFile` instead of inline coordinates.
 
         Args:
-            locationfile_block_kwargs: Fixture with a ``.pli`` locationFile.
+            locationfile_block_kwargs: Fixture with a `.pli` locationFile.
 
         Test scenario:
-            Location can alternatively be specified via a ``.pli`` file;
-            inline coord fields remain ``None`` in that case.
+            Location can alternatively be specified via a `.pli` file;
+            inline coord fields remain `None` in that case.
         """
         block = BubbleScreen(**locationfile_block_kwargs)
 
@@ -108,26 +108,26 @@ class TestBubbleScreenInit:
         )
 
     def test_init_name_defaults_to_empty_string(self, inline_block_kwargs):
-        """Optional ``name`` field defaults to empty string when omitted.
+        """Optional `name` field defaults to empty string when omitted.
 
         Args:
             inline_block_kwargs: Fixture providing a valid base block.
 
         Test scenario:
-            ``BubbleScreen`` mirrors ``SourceSink.name`` with a default of
-            ``""`` so the field is never ``None`` in serialised output.
+            `BubbleScreen` mirrors `SourceSink.name` with a default of
+            `""` so the field is never `None` in serialised output.
         """
         block = BubbleScreen(**inline_block_kwargs)
 
         assert block.name == "", f"name should default to '', got: {block.name!r}"
 
     def test_init_split_coordinates_parses_whitespace_string(self):
-        """The ``split_coordinates`` field validator handles space-separated strings.
+        """The `split_coordinates` field validator handles space-separated strings.
 
         Test scenario:
-            When ``ExtModel`` parses an INI file, the parser yields
-            ``xCoordinates`` as a single string like ``"450 450 550 550"``.
-            The validator must split this into a ``list[float]``.
+            When `ExtModel` parses an INI file, the parser yields
+            `xCoordinates` as a single string like `"450 450 550 550"`.
+            The validator must split this into a `list[float]`.
         """
         block = BubbleScreen(
             id="bubbles1",
@@ -148,13 +148,13 @@ class TestBubbleScreenInit:
     def test_init_resolve_forcing_reference_accepts_scalar(
         self, inline_block_kwargs
     ):
-        """The ``resolve_forcing_reference`` validator accepts a scalar discharge.
+        """The `resolve_forcing_reference` validator accepts a scalar discharge.
 
         Args:
             inline_block_kwargs: Fixture providing a valid base block.
 
         Test scenario:
-            A ``float`` discharge is kept as-is (no .bc resolution needed).
+            A `float` discharge is kept as-is (no .bc resolution needed).
         """
         block = BubbleScreen(**inline_block_kwargs)
 
@@ -165,13 +165,13 @@ class TestBubbleScreenInit:
     def test_init_resolve_forcing_reference_accepts_numeric_string(
         self, inline_block_kwargs
     ):
-        """The ``resolve_forcing_reference`` validator parses a numeric string.
+        """The `resolve_forcing_reference` validator parses a numeric string.
 
         Args:
             inline_block_kwargs: Fixture providing a valid base block.
 
         Test scenario:
-            When parsed from INI, ``discharge = 1.5`` arrives as a string.
+            When parsed from INI, `discharge = 1.5` arrives as a string.
             The validator must coerce it to a float.
         """
         kwargs = {**inline_block_kwargs, "discharge": "1.5"}
@@ -184,18 +184,18 @@ class TestBubbleScreenInit:
     def test_init_resolve_forcing_reference_accepts_realtime(
         self, inline_block_kwargs
     ):
-        """The ``resolve_forcing_reference`` validator accepts the ``realtime`` keyword.
+        """The `resolve_forcing_reference` validator accepts the `realtime` keyword.
 
         Args:
             inline_block_kwargs: Fixture providing a valid base block.
 
         Test scenario:
-            The D-Flow FM User Manual (Table C.15, §C.6.3.6) marks ``discharge``
-            with ``*``, whose legend (Table C.14, §C.6.3.5) permits a scalar, a
-            ``.bc`` file, or the ``realtime`` keyword; the sediment/tracer
-            exclusion does not apply to ``discharge``. A ``discharge = realtime``
+            The D-Flow FM User Manual (Table C.15, §C.6.3.6) marks `discharge`
+            with `*`, whose legend (Table C.14, §C.6.3.5) permits a scalar, a
+            `.bc` file, or the `realtime` keyword; the sediment/tracer
+            exclusion does not apply to `discharge`. A `discharge = realtime`
             input must therefore be accepted and stored as the string
-            ``"realtime"`` (StrEnum equality).
+            `"realtime"` (StrEnum equality).
         """
         kwargs = {**inline_block_kwargs, "discharge": "realtime"}
         block = BubbleScreen(**kwargs)
@@ -205,10 +205,10 @@ class TestBubbleScreenInit:
         )
 
     def test_init_without_location_raises(self):
-        """``validate_location_specification`` raises when neither location style is given.
+        """`validate_location_specification` raises when neither location style is given.
 
         Test scenario:
-            A BubbleScreen with no ``locationFile`` *and* no inline
+            A BubbleScreen with no `locationFile` *and* no inline
             coordinates is ambiguous. The validator must reject it with an
             error message mentioning both accepted forms.
         """
@@ -238,7 +238,7 @@ class TestBubbleScreenInit:
     def test_init_mismatched_coordinate_counts_raise(
         self, xcoordinates, ycoordinates, numcoordinates, scenario
     ):
-        """``validate_location_specification`` enforces coordinate-count consistency.
+        """`validate_location_specification` enforces coordinate-count consistency.
 
         Args:
             xcoordinates: The x-array to supply.
@@ -247,10 +247,10 @@ class TestBubbleScreenInit:
             scenario: Human-readable description of the mismatch kind.
 
         Test scenario:
-            Any of x-length, y-length, or ``numCoordinates`` disagreeing must
+            Any of x-length, y-length, or `numCoordinates` disagreeing must
             be rejected. Three parametrised sub-scenarios cover
             under-/over-specified x, under-specified y, and a wrong
-            ``numCoordinates`` count.
+            `numCoordinates` count.
         """
         with pytest.raises(
             (ValidationError, ValueError),
@@ -270,11 +270,11 @@ class TestBubbleScreenInit:
         )
 
     def test_init_missing_zlevel_raises(self):
-        """``zLevel`` is a required field with no default.
+        """`zLevel` is a required field with no default.
 
         Test scenario:
-            Omitting ``zLevel`` must raise ``ValidationError`` — unlike
-            ``SourceSink.zSource`` which is optional, BubbleScreen's vertical
+            Omitting `zLevel` must raise `ValidationError` — unlike
+            `SourceSink.zSource` which is optional, BubbleScreen's vertical
             placement is always explicit.
         """
         with pytest.raises(ValidationError) as exc_info:
@@ -291,10 +291,10 @@ class TestBubbleScreenInit:
         )
 
     def test_init_missing_discharge_raises(self):
-        """``discharge`` is a required field with no default.
+        """`discharge` is a required field with no default.
 
         Test scenario:
-            Omitting ``discharge`` must raise ``ValidationError`` — a
+            Omitting `discharge` must raise `ValidationError` — a
             BubbleScreen without a discharge value has no physical meaning.
         """
         with pytest.raises(ValidationError) as exc_info:
@@ -314,7 +314,7 @@ class TestBubbleScreenInit:
         """Pydantic aliases accept the INI CamelCase names when constructing from a dict.
 
         Test scenario:
-            INI keys like ``numCoordinates``/``xCoordinates``/``zLevel`` arrive
+            INI keys like `numCoordinates`/`xCoordinates`/`zLevel` arrive
             verbatim from the parser; the model must accept those alongside
             the lowercase Python attribute names.
         """
@@ -336,17 +336,17 @@ class TestBubbleScreenInit:
 
 
 class TestBubbleScreenIsIntermediateLink:
-    """Tests for ``BubbleScreen.is_intermediate_link``."""
+    """Tests for `BubbleScreen.is_intermediate_link`."""
 
     def test_is_intermediate_link_returns_true(self, inline_block_kwargs):
-        """``is_intermediate_link`` always reports the block participates in file resolution.
+        """`is_intermediate_link` always reports the block participates in file resolution.
 
         Args:
             inline_block_kwargs: Fixture providing a valid base block.
 
         Test scenario:
-            ``BubbleScreen`` references external resources via ``locationFile``
-            / ``.bc`` files, so the framework must descend into it during save.
+            `BubbleScreen` references external resources via `locationFile`
+            / `.bc` files, so the framework must descend into it during save.
         """
         block = BubbleScreen(**inline_block_kwargs)
 
@@ -357,7 +357,7 @@ class TestBubbleScreenIsIntermediateLink:
 
 
 class TestBubbleScreenSerialization:
-    """Tests for ``ExtModel.save`` + re-load round-trip of BubbleScreen blocks."""
+    """Tests for `ExtModel.save` + re-load round-trip of BubbleScreen blocks."""
 
     def test_save_roundtrip_preserves_inline_block(
         self, tmp_path: Path, inline_block_kwargs
@@ -369,7 +369,7 @@ class TestBubbleScreenSerialization:
             inline_block_kwargs: Fixture with valid inline-coordinate kwargs.
 
         Test scenario:
-            Writing an ``ExtModel`` containing a single inline BubbleScreen
+            Writing an `ExtModel` containing a single inline BubbleScreen
             and reading it back yields an equivalent block — id, zLevel, and
             all four x/y vertices match.
         """
@@ -402,11 +402,11 @@ class TestBubbleScreenSerialization:
 
         Args:
             tmp_path: pytest-provided temporary directory.
-            locationfile_block_kwargs: Fixture with a ``.pli`` locationFile.
+            locationfile_block_kwargs: Fixture with a `.pli` locationFile.
 
         Test scenario:
             HYDROLIB-core must preserve whichever location style was supplied,
-            so a ``locationFile``-style block stays ``locationFile``-style
+            so a `locationFile`-style block stays `locationFile`-style
             after save and reload.
         """
         block = BubbleScreen(**locationfile_block_kwargs)
@@ -427,14 +427,14 @@ class TestBubbleScreenSerialization:
 
 
 class TestBubbleScreenInExtModel:
-    """Tests for the ``ExtModel.bubblescreen`` container field and INI parsing."""
+    """Tests for the `ExtModel.bubblescreen` container field and INI parsing."""
 
     def test_extmodel_bubblescreen_defaults_to_empty_list(self):
-        """A fresh ``ExtModel`` reports no bubble screens rather than ``None``.
+        """A fresh `ExtModel` reports no bubble screens rather than `None`.
 
         Test scenario:
-            ``ExtModel.bubblescreen`` is a ``List[BubbleScreen]`` with
-            ``default_factory=list``; consumers should be able to iterate
+            `ExtModel.bubblescreen` is a `List[BubbleScreen]` with
+            `default_factory=list`; consumers should be able to iterate
             over it unconditionally.
         """
         model = ExtModel()
@@ -445,14 +445,14 @@ class TestBubbleScreenInExtModel:
         )
 
     def test_extmodel_parses_bubblescreen_block_from_ini(self, tmp_path: Path):
-        """A ``[BubbleScreen]`` section in an on-disk ext file is parsed into the model.
+        """A `[BubbleScreen]` section in an on-disk ext file is parsed into the model.
 
         Args:
             tmp_path: pytest-provided temporary directory.
 
         Test scenario:
-            Writing a minimal INI file with a single ``[BubbleScreen]`` block
-            and loading via ``ExtModel(path)`` populates ``bubblescreen`` with
+            Writing a minimal INI file with a single `[BubbleScreen]` block
+            and loading via `ExtModel(path)` populates `bubblescreen` with
             one entry whose fields match the INI values.
         """
         ext_content = (
@@ -489,15 +489,15 @@ class TestBubbleScreenInExtModel:
 
 
 class TestBubbleScreenPublicAPI:
-    """Tests that ``BubbleScreen`` is reachable via the package's public API."""
+    """Tests that `BubbleScreen` is reachable via the package's public API."""
 
     def test_bubblescreen_is_exported_from_ext_package(self):
-        """``BubbleScreen`` is re-exported from ``hydrolib.core.dflowfm.ext``.
+        """`BubbleScreen` is re-exported from `hydrolib.core.dflowfm.ext`.
 
         Test scenario:
             Public consumers should be able to
-            ``from hydrolib.core.dflowfm.ext import BubbleScreen`` without
-            reaching into the internal ``.models`` submodule.
+            `from hydrolib.core.dflowfm.ext import BubbleScreen` without
+            reaching into the internal `.models` submodule.
         """
         from hydrolib.core.dflowfm.ext import BubbleScreen as BS
 
