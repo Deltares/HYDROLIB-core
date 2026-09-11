@@ -9,6 +9,7 @@ import pytest
 from hydrolib.core.base.utils import FilePathStyleConverter, PathStyle
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
+    ExtGeneral,
     ExtModel,
     Lateral,
     Meteo,
@@ -108,6 +109,32 @@ class TestExtOldToNewFromMDU:
         mdu_text = mdu_filename.read_text()
         assert "ExtForceFileNew" in mdu_text
         assert new_ext_name in mdu_text
+
+    def test_saved_ext_file_has_general_header(
+        self, monkeypatch, tmp_path: Path, input_files_dir: Path
+    ):
+        """Regression: the saved new .ext file must carry its [General] header.
+
+        The [General] block (fileVersion/fileType) identifies the file to the
+        kernel. It is a model default (unset), so saving the ext model with
+        exclude_unset=True used to drop it, producing a file with no header.
+        """
+        monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
+        src = input_files_dir / "e02/f006_external_forcing/c011_extrapolate_slr"
+        model_dir = tmp_path / src.name
+        shutil.copytree(src, model_dir)
+        mdu_filename = model_dir / "slrextrapol.mdu"
+
+        converter = ExternalForcingConverter.from_mdu(mdu_filename)
+        ext_model, _ = converter.update()
+        assert ext_model.n_forcing_blocks == 1
+
+        converter.save()
+
+        text = ext_model.filepath.read_text()
+        assert "[General]" in text, f"Missing [General] block in:\n{text[:200]}"
+        assert "fileVersion" in text, f"Missing fileVersion in:\n{text[:200]}"
+        assert "fileType" in text, f"Missing fileType in:\n{text[:200]}"
 
     def test_recursive(self, capsys, monkeypatch, input_files_dir: Path):
         monkeypatch.setattr(main_converter, "_verbose", True, raising=False)
@@ -327,6 +354,7 @@ class TestExternalFocingConverter:
         ):
             converter = ExternalForcingConverter(mock_ext_old_model)
         converter._ext_model = MagicMock(spec=ExtModel)
+        converter._ext_model.general = ExtGeneral()
         converter._ext_model.meteo = [MagicMock(spec=Meteo)]
         converter._ext_model.spatial = [MagicMock(spec=Spatial)]
         converter._ext_model.sourcesink = [MagicMock(spec=SourceSink)]
@@ -476,6 +504,51 @@ class TestExternalFocingConverter:
         converter.structure_model.structure = []
         converter._update_mdu_file()
         mock_mdu_parser.update_structure_file.assert_not_called()
+
+    def test_saved_structure_file_has_general_header(self, tmp_path: Path):
+        """Regression: the saved structure file must carry its [General] header.
+
+        Like the new .ext file, the structure model's [General] block
+        (fileVersion/fileType) is a model default (unset) and was dropped by
+        exclude_unset, producing a structure file with no header.
+        """
+        mock_ext_old_model = MagicMock(spec=ExtOldModel)
+        mock_ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        with (
+            patch(
+                "hydrolib.tools.extforce_convert.main_converter."
+                "ExternalForcingConverter._read_old_file",
+                return_value=mock_ext_old_model,
+            ),
+            patch(
+                "hydrolib.tools.extforce_convert.utils."
+                "ConverterData.check_unsupported_quantities",
+                return_value=None,
+            ),
+        ):
+            converter = ExternalForcingConverter(mock_ext_old_model)
+
+        converter.structure_model.filepath = tmp_path / "new-structure.ini"
+        converter.structure_model.structure = [
+            Weir(
+                id="weir_id",
+                name="W001",
+                branchid="branch",
+                chainage=3.0,
+                allowedflowdir=FlowDirection.positive,
+                crestlevel=10.5,
+                crestwidth=None,
+                usevelocityheight=False,
+                _header="Structure",
+            )
+        ]
+
+        converter._save_structure_model(backup=False, recursive=True)
+
+        text = converter.structure_model.filepath.read_text()
+        assert "[General]" in text, f"Missing [General] block in:\n{text[:200]}"
+        assert "fileVersion" in text, f"Missing fileVersion in:\n{text[:200]}"
+        assert "fileType" in text, f"Missing fileType in:\n{text[:200]}"
 
     @pytest.fixture
     def setup_absolute_path_files(self, request, tmp_path: Path) -> dict:

@@ -449,7 +449,7 @@ class TestMeteoWireFormatRoundTrip:
 
     MINIMAL_INI = (
         "[General]\n"
-        "fileVersion = 2.01\n"
+        "fileVersion = 3.00\n"
         "fileType    = extForce\n"
         "\n"
         "[Meteo]\n"
