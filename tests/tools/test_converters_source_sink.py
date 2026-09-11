@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from hydrolib.core.dflowfm.bc.models import TimeInterpolation
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink, ForcingModel
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -428,6 +429,33 @@ class TestConverter:
 
         # check the converted bc_forcing
         compare_data(new_quantity_block)
+
+    def test_method_zero_uses_block_from(
+        self, converter: SourceSinkConverter, source_sink_dir: Path
+    ):
+        """METHOD=0 converts the source/sink .bc TimeSeries to block-From (issue #1197).
+
+        `METHOD=0` means no time interpolation (hold the last value), which maps to
+        `timeInterpolation = block-From` in the generated `.bc` forcings.
+        """
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename=location_file,
+            filetype=9,
+            method=0,
+            operand="override",
+            area=1.0,
+        )
+
+        new_quantity_block = converter.convert(
+            forcing, ["salinity", "temperature", "initialtracer_anyname"]
+        )
+
+        assert all(
+            f.timeinterpolation == TimeInterpolation.block_from
+            for f in new_quantity_block.discharge.forcing
+        )
 
     @pytest.mark.parametrize(
         "area", [None, 2.1, 0.0], ids=["Unset", "Area = 2.1", "Area = 0.0"]

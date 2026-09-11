@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.parser import open_file_with_fallback_encoding
+from hydrolib.core.base.utils import parse_files_names
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -116,11 +117,11 @@ class Section:
 
 @dataclass
 class ExternalForcingBlock:
-    extforcefile: Union[Path, str]
-    extforcefilenew: Optional[Union[Path, str]] = field(default=None)
-    comments: Optional[List[str]] = field(default=None)
+    extforcefile: Path | str
+    extforcefilenew: Path | str | None = field(default=None)
+    comments: list[str] | None = field(default=None)
     _header: Optional = "[external forcing]"
-    root_dir: Optional[Path] = field(default=None)
+    root_dir: Path | str = field(default=None)
 
     def __init__(self, **kwargs):
         valid_keys = {"extforcefile", "extforcefilenew", "comments", "_header"}
@@ -143,21 +144,39 @@ class ExternalForcingBlock:
     def get_new_extforce_file(self) -> Path:
         """Get the new external forcing file path.
 
+        `ExtForceFileNew` may list several files separated by a space, with any name
+        containing spaces enclosed in double quotes (D-Flow FM 1D2D User Manual, the
+        `ExtForceFileNew` keyword). When more than one file is listed, the converted
+        quantities are appended to the **first** file only; the remaining files are left
+        untouched and a `UserWarning` naming them is emitted. This is a deliberate policy:
+        the converter writes all migrated quantities into a single new external forcings
+        file, and the first listed file is chosen as that target.
+
         Notes:
-            - If the `extforcefilenew` exists in the MDU file, it will be used.
-            - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
+            - If `extforcefilenew` is present in the MDU file, the first listed file is used
+              (see above for the multiple-file behaviour).
+            - If it is absent, a new file is created from the old extforce file name with a
+              "-new" suffix.
 
         Returns:
             Path:
-                Path to the new external forcing file.
+                Path to the new external forcing file that converted quantities are written to.
         """
-        _extforce_file_new = (
-            Path(self.extforcefilenew) if self.extforcefilenew else None
-        )
+        raw_path = str(self.extforcefilenew).strip() if self.extforcefilenew else ""
+        path_list = parse_files_names(raw_path)
 
-        if _extforce_file_new:
-            # if the extforce_file_new exist in the MDU file, we use it
-            ext_file = (self.root_dir / _extforce_file_new).resolve()
+        if path_list:
+            if len(path_list) > 1:
+                remaining_files = " ".join(path_list[1:])
+                warnings.warn(
+                    "ExtForceFileNew contains multiple filenames; using the first one "
+                    f"({path_list[0]}) and ignoring the rest: {remaining_files}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+
+            # If ExtForceFileNew exists in the MDU file, use the first referenced file.
+            ext_file = (self.root_dir / Path(path_list[0])).resolve()
         else:
             # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
             # name to create the new extforce file

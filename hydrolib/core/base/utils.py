@@ -2,6 +2,7 @@
 
 import platform
 import re
+import shlex
 from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
@@ -611,3 +612,26 @@ class FortranScientificNotationConverter:
             else:
                 new_values[field_name] = value
         return new_values
+
+
+def parse_files_names(raw_value: str) -> list[str]:
+    """Split `ExtForceFileNew` into file names.
+
+    Supports whitespace and comma separators while preserving quoted file names with spaces.
+    Empty tokens are ignored.
+    """
+    file_names = []
+
+    if raw_value:
+        lexer = shlex.shlex(raw_value, posix=False)
+        lexer.whitespace += ","
+        lexer.whitespace_split = True
+
+        for token in lexer:
+            token = token.strip()
+            if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"}:
+                token = token[1:-1]
+            if token:
+                file_names.append(token)
+
+    return file_names

@@ -71,6 +71,23 @@ class TestExtForcing:
 
         assert isinstance(forcing.filename, DiskOnlyFileModel)
 
+    def test_method_zero_is_accepted(self, input_files_dir: Path):
+        """METHOD=0 (block interpolation) is a valid old-ext method and must parse.
+
+        It is not listed in the manual's METHOD table but is used by real models
+        (see issue #1197) and accepted by the kernel.
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename=input_files_dir / "tim/triple_data_for_timeseries.tim",
+            filetype=ExtOldFileType.TimeSeries,
+            method=0,
+            operand=Operand.override,
+        )
+
+        assert forcing.method == ExtOldMethod.BlockFrom
+        assert int(forcing.method) == 0
+
 
 @pytest.fixture
 def base_kwargs():

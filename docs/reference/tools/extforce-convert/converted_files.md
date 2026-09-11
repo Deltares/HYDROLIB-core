@@ -66,6 +66,11 @@ ExtForceFileNew                     =                                           
   file.
 - If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
+- `ExtForceFileNew` may list **several files separated by a space** (a file name containing spaces must be enclosed
+  in double quotes; D-Flow FM 1D2D User Manual, the `ExtForceFileNew` keyword). When more than one file is listed,
+  the converted quantities are appended to the **first** file only; the remaining files are left unchanged and a
+  warning naming them is emitted. This is intentional: all migrated quantities are written into a single new external
+  forcings file, and the first listed file is chosen as that target.
 
 
 ### Before: legacy `.ext` (old format)

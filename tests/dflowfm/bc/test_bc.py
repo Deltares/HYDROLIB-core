@@ -31,6 +31,21 @@ INCORRECT_NUMBER_QUP_IN_VECTOR_WITH_THREE_LAYERS_ERROR = (
 )
 
 
+class TestTimeInterpolation:
+    @pytest.mark.parametrize(
+        "method, expected",
+        [
+            (0, TimeInterpolation.block_from),
+            (1, TimeInterpolation.linear),
+            (3, TimeInterpolation.linear),
+        ],
+        ids=["method-0-block-from", "method-1-linear", "method-3-linear"],
+    )
+    def test_from_old_method(self, method, expected):
+        """METHOD=0 maps to block-From; every other method keeps linear."""
+        assert TimeInterpolation.from_old_method(method) == expected
+
+
 class TestQuantityUnitPair:
     def test_create_quantityunitpair(self):
         pair = QuantityUnitPair(quantity="some_quantity", unit="some_unit")

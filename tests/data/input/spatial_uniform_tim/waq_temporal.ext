@@ -1,0 +1,8 @@
+* WAQ temporal parameter provided as a uniform time series (FILETYPE=1, a *.tim file).
+* METHOD=0 means no time interpolation (hold the last value) -> block-From in the .bc.
+
+QUANTITY=waqfunctionTemp
+FILENAME=temperature.tim
+FILETYPE=1
+METHOD=0
+OPERAND=O

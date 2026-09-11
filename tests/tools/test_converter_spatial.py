@@ -2,10 +2,12 @@ import pytest
 import shutil
 
 from pathlib import Path
+from unittest.mock import MagicMock
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import Operand
-from hydrolib.core.dflowfm.ext.models import Spatial, TargetLayer
+from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeInterpolation
+from hydrolib.core.dflowfm.ext.models import ExtModel, Spatial, SpatialError, TargetLayer
 
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -22,6 +24,7 @@ from hydrolib.tools.extforce_convert.converters import (
     SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
 class TestConvertSpatial:
@@ -349,6 +352,227 @@ class TestFactorQuantityConversion:
                 f"Expected multiply for operand={original_operand!r}, "
                 f"got {new_block.operand!r}"
             )
+
+
+class TestSpatialUniformTimToBc:
+    """A FILETYPE=1 (uniform time series `.tim`) spatial/parameter quantity must be
+    converted to a `.bc` file. The old `dataFileType=uniform` (`.tim`) is deprecated in
+    favour of `dataFileType=bcAscii` (`.bc`) per the D-Flow FM User Manual; the `.tim` is
+    attached to the `[Spatial]` block as a `ForcingModel` dataFile so a recursive save
+    writes the `.bc`. METHOD=0 maps the time series to `timeInterpolation=block-From`
+    (GitHub #1197: the issue's waqfunctionTemp/FILETYPE=1/METHOD=0 block)."""
+
+    @pytest.fixture
+    def mdu_parser_mock(self) -> MagicMock:
+        mock = MagicMock(spec=MDUParser)
+        mock.temperature_salinity_data = {
+            "refdate": "minutes since 2001-01-01 00:00:00"
+        }
+        return mock
+
+    def test_waqfunction_method_zero_converts_tim_to_bc(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        tim_file = tmp_path / "temperature.tim"
+        tim_file.write_text("0.0 1.0\n100.0 2.0\n")
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        block = converter.convert(forcing, forcing.filename.filepath)
+
+        # The [Spatial] block references a .bc file (bcAscii), not the raw .tim.
+        assert isinstance(block, Spatial)
+        assert block.quantity == "waqfunctionTemp"
+        assert block.datafiletype == DataFileType.bcascii
+        assert block.interpolationmethod == InterpolationMethod.linear_space_time
+        assert isinstance(block.datafile, ForcingModel)
+        assert block.datafile.filepath.suffix == ".bc"
+        assert block.datafile.filepath.stem == "temperature"
+
+        # The produced .bc forcing carries block-From time interpolation (METHOD=0).
+        forcing_block = block.datafile.forcing[0]
+        assert forcing_block.name == "global"
+        assert forcing_block.timeinterpolation == TimeInterpolation.block_from
+        quantities = [qup.quantity for qup in forcing_block.quantityunitpair]
+        assert quantities == ["time", "waqfunctionTemp"]
+        assert forcing_block.datablock == [[0.0, 1.0], [100.0, 2.0]]
+
+        # The .tim is registered for cleanup.
+        assert tim_file in converter.legacy_files
+
+    def test_filetype_one_non_zero_method_keeps_linear_time_interpolation(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        """The .tim -> .bc conversion is not METHOD=0 specific; a non-zero method keeps
+        the default linear time interpolation but still becomes a bcAscii .bc file."""
+        tim_file = tmp_path / "param.tim"
+        tim_file.write_text("0.0 1.0\n100.0 2.0\n")
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=1,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        block = converter.convert(forcing, forcing.filename.filepath)
+
+        assert block.datafiletype == DataFileType.bcascii
+        assert isinstance(block.datafile, ForcingModel)
+        assert (
+            block.datafile.forcing[0].timeinterpolation == TimeInterpolation.linear
+        )
+
+    def test_multi_column_tim_raises_clear_error(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        """A uniform (FILETYPE=1) spatial quantity is single-column by definition; a
+        multi-column .tim has no mapping to one [Spatial] block and must raise a clear
+        SpatialError (not a cryptic TimModel validation error)."""
+        tim_file = tmp_path / "multi.tim"
+        tim_file.write_text("0.0 1.0 5.0\n100.0 2.0 6.0\n")  # time + TWO data columns
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        with pytest.raises(SpatialError, match="single data column"):
+            converter.convert(forcing, forcing.filename.filepath)
+
+    def test_empty_tim_raises_clear_error(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        """An empty `.tim` should raise a clear SpatialError about missing data rows."""
+        tim_file = tmp_path / "empty.tim"
+        tim_file.write_text("")
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        with pytest.raises(SpatialError, match="contains no data rows"):
+            converter.convert(forcing, forcing.filename.filepath)
+
+    def test_recursive_save_writes_the_bc_file(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        """Saving the ext model recursively writes the produced temperature.bc alongside
+        the external forcings file (the ForcingModel is a child of the [Spatial] block)."""
+        tim_file = tmp_path / "temperature.tim"
+        tim_file.write_text("0.0 1.0\n100.0 2.0\n")
+        forcing = ExtOldForcing(
+            quantity="waqfunctionTemp",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        block = converter.convert(forcing, forcing.filename.filepath)
+
+        ext_model = ExtModel()
+        ext_model.filepath = tmp_path / "new.ext"
+        ext_model.spatial = [block]
+        ext_model.save(recurse=True)
+
+        assert (tmp_path / "temperature.bc").exists()
+        bc_text = (tmp_path / "temperature.bc").read_text()
+        assert "block-From" in bc_text
+
+
+@pytest.mark.e2e
+class TestSpatialUniformTimToBcE2E:
+    """Full end-to-end conversion (no mocks) of a real model whose old external forcings
+    file provides a WAQ temporal parameter as a uniform time series (FILETYPE=1, a .tim).
+
+    The model (spatial_uniform_tim/) contains:
+    * model.mdu           - MDU with ExtForceFile, a [time] RefDate and empty [physics]
+    * waq_temporal.ext    - old-format file: waqfunctionTemp / temperature.tim / FILETYPE=1 / METHOD=0
+    * temperature.tim     - the uniform time series data file
+
+    The converter (driven via from_mdu, using the real MDUParser) must turn this into a
+    [Spatial] block referencing a converted temperature.bc (dataFileType=bcAscii,
+    interpolationMethod=linearSpaceTime), and the produced .bc must carry
+    timeInterpolation=block-From (GitHub #1197, D-Flow FM manual uniform->bcAscii).
+    """
+
+    @pytest.fixture
+    def model_copy(self, tmp_path: Path, input_files_dir: Path) -> Path:
+        """Copy the model to a temp dir so the conversion does not mutate the originals."""
+        src = input_files_dir / "spatial_uniform_tim"
+        dst = tmp_path / src.name
+        shutil.copytree(src, dst)
+        return dst
+
+    def test_uniform_tim_quantity_converts_to_bc_spatial_block(self, model_copy: Path):
+        mdu_file = model_copy / "model.mdu"
+        converter = ExternalForcingConverter.from_mdu(mdu_file)
+        ext_model, structure_model = converter.update()
+
+        # A single [Spatial] block, referencing a .bc (bcAscii), not the raw .tim.
+        assert len(ext_model.spatial) == 1
+        block = ext_model.spatial[0]
+        assert block.quantity == "waqfunctionTemp"
+        assert block.datafiletype == DataFileType.bcascii
+        assert block.interpolationmethod == InterpolationMethod.linear_space_time
+        assert isinstance(block.datafile, ForcingModel)
+        assert block.datafile.filepath.name == "temperature.bc"
+
+        # The produced .bc forcing holds block-From (METHOD=0) with the model's refdate.
+        forcing_block = block.datafile.forcing[0]
+        assert forcing_block.name == "global"
+        assert forcing_block.timeinterpolation == TimeInterpolation.block_from
+        assert [qup.quantity for qup in forcing_block.quantityunitpair] == [
+            "time",
+            "waqfunctionTemp",
+        ]
+        assert forcing_block.quantityunitpair[0].unit == "MINUTES SINCE 2001-01-01 00:00:00"
+        assert forcing_block.datablock == [[0.0, 1.0], [100.0, 2.0]]
+
+        assert len(structure_model.structure) == 0
+        assert len(ext_model.meteo) == 0
+
+    def test_saved_files_written_to_disk(self, model_copy: Path):
+        """Saving writes temperature.bc next to the new ext file, and the new ext file
+        references it as a bcAscii dataFile. The old .tim is cleaned up as a legacy file."""
+        mdu_file = model_copy / "model.mdu"
+        converter = ExternalForcingConverter.from_mdu(mdu_file)
+        converter.update()
+        converter.save(backup=False)
+
+        bc_file = model_copy / "temperature.bc"
+        assert bc_file.exists()
+        bc_text = bc_file.read_text()
+        assert "block-From" in bc_text
+        assert "waqfunctionTemp" in bc_text
+
+        new_ext_text = (model_copy / "waq_temporal_new.ext").read_text()
+        assert "dataFileType" in new_ext_text
+        assert "bcAscii" in new_ext_text
+        assert "temperature.bc" in new_ext_text
+
+        # The .tim is registered as a legacy file and removed on clean().
+        tim_file = model_copy / "temperature.tim"
+        assert tim_file in converter.legacy_files
+        converter.clean()
+        assert not tim_file.exists()
+
 
 class TestSpatialExtrapolationConversion:
     """The old external-forcing EXTRAPOLATION_METHOD (0/1) must be carried into the
