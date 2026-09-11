@@ -330,32 +330,6 @@ class ExtOldForcing(BaseModel):
     def is_intermediate_link(self) -> bool:
         return True
 
-    def get_location_id(self) -> str:
-        """Return a stable location identifier derived from `filename`.
-
-        Priority:
-        1. PolyFile first object name (when present), else PolyFile stem.
-        2. TimModel stem.
-        3. Any file model exposing a non-null `filepath` stem.
-        4. Fallback to the quantity string.
-        """
-        if isinstance(self.filename, PolyFile):
-            result = self.filename.filepath.stem
-            if self.filename.objects:
-                first_obj = self.filename.objects[0]
-                if first_obj.metadata and first_obj.metadata.name:
-                    result = first_obj.metadata.name
-        elif isinstance(self.filename, TimModel):
-            result = self.filename.filepath.stem
-        elif (
-            isinstance(self.filename, DiskOnlyFileModel)
-            and self.filename.filepath is not None
-        ):
-            result = self.filename.filepath.stem
-        else:
-            result = str(self.quantity)
-
-        return result
 
 
     @model_validator(mode="before")

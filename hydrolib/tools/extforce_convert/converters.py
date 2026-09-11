@@ -1386,17 +1386,15 @@ class LateralConverter(BaseConverter):
             forcing (ExtOldForcing): The old forcing block.
 
         Returns:
-            Dict[str, Any]: A dict with 'id' and either a 'locationfile' key (when
-                the source is a PolyFile) or inline coordinate fields.
+            Dict[str, Any]: A dict with PolyFile-based location data.
         """
-        location_filepath = forcing.filename.filepath if isinstance(
-            forcing.filename, PolyFile) else None
-        result = {"id": forcing.get_location_id()}
+        if not isinstance(forcing.filename, PolyFile):
+            raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
 
-        if location_filepath is not None:
-            result["locationfile"] = location_filepath
-
-        return result
+        return {
+            "id": forcing.filename.get_id(),
+            "locationfile": forcing.filename.filepath,
+        }
 
 
 MASS_BALANCE_AREA_PREFIXES = ("waqmassbalancearea", "massbalancearea")
