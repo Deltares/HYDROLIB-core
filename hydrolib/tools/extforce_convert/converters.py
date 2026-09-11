@@ -1286,47 +1286,22 @@ class LateralConverter(BaseConverter):
         """
         result = forcing.value
 
-        if forcing.value is None and isinstance(forcing.filename, PolyFile):
-            result = self._get_discharge_from_poly_file(forcing, time_unit)
+        if forcing.value is None:
+            location_file = forcing.filename.filepath
+            tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
 
-        return result
-
-    def _get_discharge_from_poly_file(
-        self, forcing: ExtOldForcing, time_unit: str | None
-    ) -> Any:
-        """Derive the discharge for a lateral defined via a PolyFile.
-
-        Tries to resolve an associated TIM file; otherwise raises an error.
-
-        Note:
-            Constant `VALUE` handling happens in `_get_discharge` before this method
-            is called, so this method only covers the PolyFile + time-series path.
-
-        Args:
-            forcing (ExtOldForcing): The old forcing block whose filename is a PolyFile.
-            time_unit (Optional[str]): The time unit string for time series data.
-
-        Returns:
-            Any: A ForcingModel when a TIM file is found.
-
-        Raises:
-            ValueError: If no accompanying TIM file can be found.
-        """
-        location_file = forcing.filename.filepath
-        tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
-
-        if tim_model is not None:
-            result = self._convert_poly_tim_to_forcing_model(
-                tim_model, location_file, time_unit
-            )
-        else:
-            raise ValueError(
-                f"Could not determine the discharge for lateral '{location_file.stem}': "
-                f"no constant VALUE, no '{location_file.stem}.tim', and no "
-                f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
-                "Ensure a time-series (.tim) file or a VALUE field is present in the "
-                "old external forcings block."
-            )
+            if tim_model is not None:
+                result = self._convert_poly_tim_to_forcing_model(
+                    tim_model, location_file, time_unit
+                )
+            else:
+                raise ValueError(
+                    f"Could not determine the discharge for lateral '{location_file.stem}': "
+                    f"no constant VALUE, no '{location_file.stem}.tim', and no "
+                    f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
+                    "Ensure a time-series (.tim) file or a VALUE field is present in the "
+                    "old external forcings block."
+                )
         return result
 
     def _convert_poly_tim_to_forcing_model(
