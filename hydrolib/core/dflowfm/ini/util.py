@@ -457,24 +457,35 @@ class LocationValidationFieldNames(BaseModel):
 
 
 class LocationValidatorUtils:
-    """Encapsulates all logic for validating a location dict.
+    """Validate one location specification from a raw/partially-normalized values dict.
 
-    This class groups the boolean presence-checks, individual sub-validators,
-    and the top-level orchestration that was previously spread across a single
-    function with many nested helpers.  It is used by the module-level
-    :func:`validate_location_specification` convenience wrapper.
+    The validator accepts a dictionary that may still contain camelCase aliases
+    (for example `branchId`, `xCoordinates`, `locationFile`) and normalizes
+    them to lowercase keys used internally by model validators. It then derives
+    presence flags and tries, in order, to validate exactly one supported
+    location form:
+
+    - `locationFile` (only when enabled via config)
+    - `nodeId`
+    - `branchId` + `chainage`
+    - `xCoordinates` + `yCoordinates` (+ optionally `numCoordinates`, depending on config)
+
+    During validation it also enforces cross-field rules, including
+    `locationType` compatibility and coordinate length consistency. For 1D node
+    and branch forms, missing/empty `locationType` is defaulted to `1d`.
+
+    The input dict is mutated in place (after alias normalization) and returned
+    on success; a `ValueError` is raised when no valid form can be established.
 
     Args:
         values (Dict):
-            Dictionary of object's validated fields (mutated in-place when
-            defaulting `locationType`).
+            Input location data to validate.
         config (LocationValidationConfiguration, optional):
-            Switches that control which location types are accepted.
-            Defaults to :class:`LocationValidationConfiguration` with all
-            options enabled.
+            Feature switches controlling which location forms and checks are enabled.
+            Defaults to `LocationValidationConfiguration()`.
         fields (LocationValidationFieldNames, optional):
-            Field-name overrides.  Defaults to
-            :class:`LocationValidationFieldNames` with standard D-FLOW FM names.
+            Field-name mapping used by the validator when reading/writing keys.
+            Defaults to `LocationValidationFieldNames()`.
     """
 
     def __init__(
