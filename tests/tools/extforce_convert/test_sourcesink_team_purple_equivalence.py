@@ -18,7 +18,7 @@ from hydrolib.tools.extforce_convert.main_converter import (
 )
 from tests.utils import test_data_dir
 
-DATA_ROOT = test_data_dir / "input" / "source-sink-format-variants"
+DATA_ROOT = test_data_dir / "input/source-sink/format-variants"
 
 
 EQUIVALENT_PAIRS = [

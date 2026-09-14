@@ -1,10 +1,8 @@
 """Round-trip tests for the SourceSink reference set from the kernel team.
 
-Each new-format `sources.ext` under `tests/data/input/source-sink-format-variants/`
+Each new-format `sources.ext` under `tests/data/input/source-sink/format-variants/`
 must parse cleanly, except folders ending in `_shouldError` which must raise.
 """
-
-from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -12,7 +10,7 @@ from pydantic import ValidationError
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from tests.utils import test_data_dir
 
-DATA_ROOT = test_data_dir / "input" / "source-sink-format-variants"
+DATA_ROOT = test_data_dir / "input/source-sink/format-variants"
 
 SINGLE_SOURCE_NEW_FORMAT_OK = [
     "2cols_new_format",
