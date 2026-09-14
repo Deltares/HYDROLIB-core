@@ -36,7 +36,9 @@ class TestSourceSink:
                 {
                     "id": "L1",
                     "name": "L1",
-                    "locationFile": "foobar.pli",
+                    "numCoordinates": 2,
+                    "xCoordinates": [0.0, 1.0],
+                    "yCoordinates": [0.0, 1.0],
                     "zSink": 0.0,
                     "zSource": 0.0,
                     "area": 1.0,
@@ -117,6 +119,101 @@ class TestSourceSinkValidator:
                 discharge=None,
             )
 
+    def test_locationfile_with_zsource_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsource=-7.5,
+                discharge=1.0,
+            )
+
+    def test_locationfile_with_zsink_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSink",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsink=-2.5,
+                discharge=1.0,
+            )
+
+    def test_pli_locationfile_with_zsource_allowed(self):
+        """Plain `.pli` (no z column) + explicit zSource is valid.
+
+        Used for coupled source-sink where the polyline only provides x,y and
+        vertical placement comes from explicit zSource/zSink fields.
+        """
+        block = SourceSink(
+            id="left",
+            locationfile=DiskOnlyFileModel(filepath=Path("left.pli")),
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
+
+    def test_locationfile_with_zsource_list_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsource=[-7.5, -3.01],
+                discharge=1.0,
+            )
+
+    def test_inline_with_zsource_list(self):
+        """Range source: zSource carries two values (zmin, zmax)."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=1,
+            xcoordinates=[25.0],
+            ycoordinates=[5.0],
+            zsource=[-7.5, -3.01],
+            discharge=1.0,
+        )
+        assert block.zsource == [-7.5, -3.01]
+        assert block.zsink is None
+
+    def test_inline_with_zsource_and_zsink_lists(self):
+        """Coupled range source-sink: both zSource and zSink are 2-value lists."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=[-2.5, -1.1],
+            zsink=[-7.5, -2.2],
+            discharge=1.0,
+        )
+        assert block.zsource == [-2.5, -1.1]
+        assert block.zsink == [-7.5, -2.2]
+
+    def test_inline_with_scalar_zsource_zsink(self):
+        """Coupled point source-sink: scalar zSource + scalar zSink."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
 
 SOURCESINK_BC_BODY = """[General]
 fileVersion = 1.01
@@ -313,7 +410,7 @@ class TestSourceSinkForcingData:
 
     @pytest.mark.parametrize("field", ["salinity", "temperature"])
     def test_quantities_load_bc_file_via_extmodel(
-        self, tmp_path: Path, field: str
+            self, tmp_path: Path, field: str
     ):
         """`salinity` / `temperature` accept a `.bc` filename in the `.ext`.
 
@@ -352,7 +449,7 @@ class TestNoDeltaSuffix:
         ],
     )
     def test_sourcesink_serializes_without_delta(
-        self, tmp_path: Path, kwargs: dict, expected_key: str
+            self, tmp_path: Path, kwargs: dict, expected_key: str
     ):
         """Serialized [SourceSink] block uses `salinity`/`temperature`, not the Delta variants.
 
@@ -380,7 +477,7 @@ class TestNoDeltaSuffix:
         ],
     )
     def test_sourcesink_reads_forcing_alias(
-        self, tmp_path: Path, wire_key: str, python_attr: str
+            self, tmp_path: Path, wire_key: str, python_attr: str
     ):
         """Wire key `wire_key` in an ext file maps to the `python_attr` field.
 
@@ -421,7 +518,7 @@ class TestSourceSinkDynamicForcingDeltas:
         ],
     )
     def test_numeric_string_is_coerced_to_float(
-        self, field: str, raw: str, expected: float
+            self, field: str, raw: str, expected: float
     ):
         """Numeric string on a dynamic Delta-suffix field is coerced to `float`.
 
@@ -444,7 +541,7 @@ class TestSourceSinkDynamicForcingDeltas:
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_bc_file_loads_forcingmodel_via_extmodel(
-        self, tmp_path: Path, field: str
+            self, tmp_path: Path, field: str
     ):
         """Dynamic Delta-suffix field accepts a `.bc` filename in the `.ext`.
 
@@ -507,6 +604,6 @@ class TestSourceSinkDynamicForcingDeltas:
             runtime.
         """
         with pytest.raises(
-            ValidationError, match="'realtime' keyword is not supported"
+                ValidationError, match="'realtime' keyword is not supported"
         ):
             SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))
