@@ -31,6 +31,7 @@ from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
     MassBalanceAreaConverter,
+    LateralConverter,
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -413,6 +414,8 @@ class ExternalForcingConverter:
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)
         elif isinstance(converter_class, MassBalanceAreaConverter):
+            new_quantity_block = converter_class.convert(forcing)
+        elif isinstance(converter_class, LateralConverter):
             new_quantity_block = converter_class.convert(forcing)
         else:
             # SpatialConverter: meteo, initial-condition and parameter quantities all
