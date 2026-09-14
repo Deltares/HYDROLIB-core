@@ -1,3 +1,9 @@
+## 1.3.0 (2026-09-14)
+
+### Feat
+
+- **dflowfm**: support lateral discharge conversion and validation (#1178)
+
 ## 1.2.0 (2026-09-09)
 
 ### Feat
