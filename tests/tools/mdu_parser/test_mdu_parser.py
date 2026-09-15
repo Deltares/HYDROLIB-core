@@ -1526,6 +1526,28 @@ class TestGetNewExtforceFile:
         result = block.get_new_extforce_file()
         assert result.name == "old-new.ext"
 
+    @pytest.mark.parametrize(
+        "extforcefile, extforcefilenew, expected_relpath",
+        [
+            ("old.ext", "subdir/new.ext", Path("subdir/new.ext")),
+            ("subdir/old.ext", None, Path("subdir/old-new.ext")),
+        ],
+    )
+    def test_get_new_extforce_file_resolves_paths(
+        self, tmp_path, extforcefile, extforcefilenew, expected_relpath
+    ):
+        """Both branches return resolved absolute paths under root_dir."""
+        block = self.make_block(
+            extforcefile=extforcefile,
+            extforcefilenew=extforcefilenew,
+        )
+        block.root_dir = tmp_path
+
+        result = block.get_new_extforce_file()
+
+        assert result == (tmp_path / expected_relpath).resolve()
+        assert result.is_absolute()
+
     def test_file_already_exists_raises(self, tmp_path):
         """
         If extforcefilenew is absent, ext_file not provided, and the new file already exists,
