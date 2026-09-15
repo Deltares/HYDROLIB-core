@@ -48,3 +48,6 @@ external_forcing:
         windspeedfactor: windxy
         solarradiationfactor: solarradiation
 
+    multiple_columns_quantity_names:
+        uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
+        windxy: {"wx": "m s-1", "wy": "m s-1"}
