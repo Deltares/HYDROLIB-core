@@ -420,6 +420,7 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_quantity_names: list[str] = Field(default_factory=list)
     unsupported_prefixes: list[str] = Field(default_factory=list)
     old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
+    multiple_columns_quantity_names: dict[str, dict[str, str]] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantity_names", "unsupported_prefixes", mode="before"
@@ -495,6 +496,72 @@ class ExternalForcingConfigs(BaseModel):
 
         return normalized
 
+    @field_validator("multiple_columns_quantity_names", mode="before")
+    def normalize_multiple_columns_quantity_names(
+        cls, v: dict[str, dict[str, str]] | None
+    ) -> dict[str, dict[str, str]]:
+        """Normalize vector quantity definitions keyed by old quantity name.
+
+        Expected style is mapping only: `{component: unit}`.
+        """
+        if v is None:
+            return {}
+
+        if not isinstance(v, dict):
+            raise ValueError(
+                "'multiple_columns_quantity_names' must be a mapping of quantity name to component names."
+            )
+
+        normalized: dict[str, dict[str, str]] = {}
+        for quantity_name, component_units in v.items():
+            if not isinstance(quantity_name, str):
+                raise ValueError(
+                    f"'multiple_columns_quantity_names' key must be a string, got {quantity_name!r}."
+                )
+
+            key = quantity_name.strip().lower()
+            if key not in KNOWN_OLD_QUANTITY_NAMES:
+                raise ValueError(
+                    f"'multiple_columns_quantity_names' key {quantity_name!r} is not a known quantity "
+                    "of the old external forcings file."
+                )
+
+            if not isinstance(component_units, dict) or not component_units:
+                raise ValueError(
+                    f"'multiple_columns_quantity_names[{quantity_name}]' must be a mapping of component names to units."
+                )
+
+            normalized_components: dict[str, str] = {}
+            for component_name, unit_name in component_units.items():
+                if not isinstance(component_name, str):
+                    raise ValueError(
+                        f"'multiple_columns_quantity_names[{quantity_name}]' contains a non-string component: {component_name!r}."
+                    )
+                component = component_name.strip()
+                if not component:
+                    raise ValueError(
+                        f"'multiple_columns_quantity_names[{quantity_name}]' contains an empty component name."
+                    )
+                if component in normalized_components:
+                    raise ValueError(
+                        f"'multiple_columns_quantity_names[{quantity_name}]' contains duplicate component name {component!r}."
+                    )
+
+                if not isinstance(unit_name, str):
+                    raise ValueError(
+                        f"'multiple_columns_quantity_names[{quantity_name}]' unit for component {component!r} must be a string."
+                    )
+                unit = unit_name.strip()
+                if not unit:
+                    raise ValueError(
+                        f"'multiple_columns_quantity_names[{quantity_name}]' unit for component {component!r} must be non-empty."
+                    )
+                normalized_components[component] = unit
+
+            normalized[key] = normalized_components
+
+        return normalized
+
     def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
         """Map an old quantity name onto the name used in the new format.
 
@@ -525,6 +592,18 @@ class ExternalForcingConfigs(BaseModel):
         name = str(quantity)
         renamed = self.old_to_new_quantity_names.get(name.strip().lower(), name)
         return renamed
+
+    def get_vector_component_units(
+        self, quantity: ExtOldQuantity | str
+    ) -> dict[str, str] | None:
+        """Return configured vector component/unit mapping for a multi-column quantity."""
+        name = str(quantity).strip().lower()
+        component_units = self.multiple_columns_quantity_names.get(name)
+        if component_units:
+            result = dict(component_units)
+        else:
+            result = None
+        return result
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""
