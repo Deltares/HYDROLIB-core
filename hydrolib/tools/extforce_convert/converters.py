@@ -998,7 +998,7 @@ class SourceSinkConverter(BaseConverter):
     def convert_tim_to_bc(
         tim_model: TimModel,
         time_unit: str,
-        time_interpolation: str = "linear",
+        time_interpolation: str,
         user_defined_names: List[str] = None,
         substance_units: Dict[str, str] = None,
     ) -> ForcingModel:
