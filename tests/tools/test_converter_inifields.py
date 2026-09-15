@@ -138,7 +138,9 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
@@ -247,7 +249,9 @@ class TestConvertParameters:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)

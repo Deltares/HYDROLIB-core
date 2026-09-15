@@ -27,6 +27,14 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 
+def _make_mdu_parser_mock() -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.temperature_salinity_data = {"refdate": "MINUTES SINCE 2015-01-01 00:00:00"}
+    parser.loaded_fm_data = {"general": {}}
+    parser.mdu_path = Path("test.mdu")
+    return parser
+
+
 class TestConvertSpatial:
     def test_default(self):
         forcing = ExtOldForcing(
@@ -37,7 +45,7 @@ class TestConvertSpatial:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
         assert new_quantity_block.quantity == "windx"
         assert new_quantity_block.operand == Operand.override
@@ -69,7 +77,9 @@ class TestConvertSpatial:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
 
         result = converter.convert(forcing, forcing.filename.filepath)
@@ -319,7 +329,7 @@ class TestFactorQuantityConversion:
             operand=Operand.override,
         )
 
-        new_block = SpatialConverter().convert(
+        new_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
 
@@ -346,7 +356,7 @@ class TestFactorQuantityConversion:
                 operand=original_operand,
             )
 
-            new_block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+            new_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
             assert new_block.operand == Operand.multiply, (
                 f"Expected multiply for operand={original_operand!r}, "
@@ -598,7 +608,7 @@ class TestSpatialExtrapolationConversion:
             kwargs["extrapolation_method"] = extrapolation_method
         forcing = ExtOldForcing(**kwargs)
 
-        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
         assert block.extrapolationallowed is expected
 
@@ -622,7 +632,7 @@ class TestSpatialTargetLayerConversion:
             layer=layer,
         )
 
-        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
         assert block.targetlayer == expected
 
@@ -635,7 +645,7 @@ class TestSpatialTargetLayerConversion:
             operand="O",
         )
 
-        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
         assert block.targetlayer is None
 
@@ -654,7 +664,7 @@ class TestSpatialVariableNameConversion:
             varname="wind_u",
         )
 
-        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
         assert block.datavariablename == "wind_u"
 
@@ -666,11 +676,13 @@ class TestSpatialVariableNameConversion:
             method="3",
             operand="O",
         )
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         result = converter.convert(forcing, Path("fake-file.asc"))
         assert isinstance(result, Spatial)
 
-        block = SpatialConverter().convert(forcing, forcing.filename.filepath)
+        block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(forcing, forcing.filename.filepath)
 
         assert block.datavariablename is None
 
@@ -690,7 +702,9 @@ class TestWaqSpatialConversion:
     )
     def test_waq_parameter_quantities_use_spatial_converter(self, quantity):
         """ConverterFactory must route WAQ parameter quantities to SpatialConverter."""
-        converter = ConverterFactory.create_converter(quantity)
+        converter = ConverterFactory.create_converter(
+            quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
 
     @pytest.mark.parametrize(
@@ -702,7 +716,9 @@ class TestWaqSpatialConversion:
     )
     def test_initialwaqbot_uses_spatial_converter(self, quantity):
         """ConverterFactory must route initialwaqbot quantities to SpatialConverter."""
-        converter = ConverterFactory.create_converter(quantity)
+        converter = ConverterFactory.create_converter(
+            quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
 
     @pytest.mark.parametrize(
@@ -723,7 +739,9 @@ class TestWaqSpatialConversion:
             method=4,
             operand="O",
         )
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         result = converter.convert(forcing, Path("fake-file.asc"))
         assert isinstance(result, Spatial)
         assert result.quantity == quantity

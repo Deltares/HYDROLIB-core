@@ -1,5 +1,6 @@
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -12,6 +13,13 @@ from hydrolib.tools.extforce_convert.converters import (
 )
 from hydrolib.tools.extforce_convert.utils import CONVERTER_DATA
 from hydrolib.core.dflowfm.mba.models import MassBalanceAreaError
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
+
+def _make_mdu_parser_mock() -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.temperature_salinity_data = {"refdate": "MINUTES SINCE 2015-01-01 00:00:00"}
+    return parser
 
 
 def _make_forcing(quantity: str, filename: str) -> SimpleNamespace:
@@ -36,7 +44,9 @@ class TestMassBalanceAreaConverter:
         """
         forcing = _make_forcing("waqmassbalanceareaEstruaryWest", "EstruaryWest.pol")
 
-        result = MassBalanceAreaConverter().convert(forcing)
+        result = MassBalanceAreaConverter(mdu_parser=_make_mdu_parser_mock()).convert(
+            forcing
+        )
 
         assert isinstance(result, MassBalanceArea), f"Got {type(result)}"
         assert result.name == "EstruaryWest", f"Got {result.name}"
@@ -52,7 +62,9 @@ class TestMassBalanceAreaConverter:
         """
         forcing = _make_forcing("massbalanceareaRiver", "River.pol")
 
-        result = MassBalanceAreaConverter().convert(forcing)
+        result = MassBalanceAreaConverter(mdu_parser=_make_mdu_parser_mock()).convert(
+            forcing
+        )
 
         assert result.name == "River", f"Got {result.name}"
         assert result.locationfile.filepath == Path("River.pol")
@@ -67,7 +79,9 @@ class TestMassBalanceAreaConverter:
             "WAQMASSBALANCEAREAHarbourAntwerp", "HarbourAntwerp.pol"
         )
 
-        result = MassBalanceAreaConverter().convert(forcing)
+        result = MassBalanceAreaConverter(mdu_parser=_make_mdu_parser_mock()).convert(
+            forcing
+        )
 
         assert result.name == "HarbourAntwerp", f"Got {result.name}"
 
@@ -110,17 +124,23 @@ class TestMassBalanceAreaRouting:
 
     def test_factory_routes_waq_prefix_to_mba_converter(self):
         """Test that the factory routes waqmassbalancearea<name> to the MBA converter."""
-        converter = ConverterFactory.create_converter("waqmassbalanceareaEstruaryWest")
+        converter = ConverterFactory.create_converter(
+            "waqmassbalanceareaEstruaryWest", mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, MassBalanceAreaConverter), f"Got {type(converter)}"
 
     def test_factory_routes_plain_prefix_to_mba_converter(self):
         """Test that the factory routes plain massbalancearea<name> to the MBA converter."""
-        converter = ConverterFactory.create_converter("massbalanceareaRiver")
+        converter = ConverterFactory.create_converter(
+            "massbalanceareaRiver", mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, MassBalanceAreaConverter), f"Got {type(converter)}"
 
     def test_factory_does_not_route_spatial_quantity_to_mba(self):
         """Test that a non-mba spatial quantity is unaffected by the new branch."""
-        converter = ConverterFactory.create_converter("frictioncoefficient")
+        converter = ConverterFactory.create_converter(
+            "frictioncoefficient", mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter), f"Got {type(converter)}"
 
     def test_quantity_no_longer_unsupported(self):
@@ -146,7 +166,7 @@ class TestMassBalanceAreaConverterErrors:
             quantity="waqmassbalanceareaBad",
             filename=SimpleNamespace(filepath=None),
         )
-        converter = MassBalanceAreaConverter()
+        converter = MassBalanceAreaConverter(mdu_parser=_make_mdu_parser_mock())
 
         with pytest.raises(MassBalanceAreaError, match="waqmassbalanceareaBad"):
             converter.convert(forcing)

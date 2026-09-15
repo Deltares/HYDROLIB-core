@@ -366,15 +366,10 @@ class TestBoundaryConverter:
             [9999999.0, 42.0, 37.45455, 37.0, 35.0, 32.0],
         ]
 
-    def test_convert_raises_when_mdu_parser_is_none(self, forcing: ExtOldForcing):
-        """convert() raises a clear error when no MDU parser was injected.
-
-        The reference time is read from the MDU parser, so converting a boundary
-        condition without one cannot proceed.
-        """
-        converter = BoundaryConditionConverter(mdu_parser=None)
-        with pytest.raises(ValueError, match="MDU model is required"):
-            converter.convert(forcing)
+    def test_constructor_raises_when_mdu_parser_is_none(self):
+        """Constructor raises a clear error when no MDU parser is injected."""
+        with pytest.raises(TypeError, match="mdu_parser is required"):
+            BoundaryConditionConverter(mdu_parser=None)
 
 
 class TestMainConverter:

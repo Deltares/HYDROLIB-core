@@ -884,33 +884,15 @@ class TestConvertSourceSinkWithSubstanceFile:
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""
 
-    def test_convert_raises_when_mdu_parser_is_none(self):
-        """Test that convert() raises ValueError when mdu_parser is None.
+    def test_constructor_raises_when_mdu_parser_is_none(self):
+        """Test that constructor raises TypeError when mdu_parser is None."""
+        with pytest.raises(TypeError, match="mdu_parser is required"):
+            SourceSinkConverter(mdu_parser=None)
 
-        Test scenario:
-            Constructing a SourceSinkConverter without an mdu_parser and then calling
-            convert() should raise a clear ValueError.
-        """
-        converter = SourceSinkConverter(mdu_parser=None)
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor.pliz",
-            filetype=9,
-            method="1",
-            operand="override",
-        )
-        with pytest.raises(ValueError, match="MDU model is required"):
-            converter.convert(forcing, [])
-
-    def test_convert_raises_when_temperature_salinity_data_is_none(self):
-        """Test that convert() raises ValueError when temperature_salinity_data is None.
-
-        Test scenario:
-            An mdu_parser that returns None for temperature_salinity_data should
-            trigger a clear ValueError at convert time.
-        """
+    def test_convert_raises_when_refdate_is_missing(self):
+        """Test that convert() raises ValueError when refdate is missing."""
         mock_parser = MagicMock(spec=MDUParser)
-        mock_parser.temperature_salinity_data = None
+        mock_parser.temperature_salinity_data = {}
         converter = SourceSinkConverter(mdu_parser=mock_parser)
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
@@ -919,7 +901,10 @@ class TestSourceSinkConverterEdgeCases:
             method="1",
             operand="override",
         )
-        with pytest.raises(ValueError, match="MDU model is required"):
+        with pytest.raises(
+            ValueError,
+            match="temperature_salinity_data'.*'refdate",
+        ):
             converter.convert(forcing, [])
 
     def test_active_substances_raises_for_missing_file(self):
