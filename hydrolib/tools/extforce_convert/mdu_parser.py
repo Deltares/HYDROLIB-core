@@ -180,9 +180,10 @@ class ExternalForcingBlock:
         else:
             # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
             # name to create the new extforce file
-            ext_file = self.root_dir / self.extforce_file.with_stem(
-                self.extforce_file.stem + "-new"
-            )
+            ext_file = (
+                self.root_dir
+                / self.extforce_file.with_stem(self.extforce_file.stem + "-new")
+            ).resolve()
             if ext_file.exists():
                 raise FileExistsError(
                     "The converter detected that there is no new extforce file in the mdu file, \n"
