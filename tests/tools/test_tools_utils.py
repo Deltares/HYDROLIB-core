@@ -304,6 +304,35 @@ class TestOldToNewQuantityNames:
         assert "more than once" in str(exc.value)
 
 
+class TestMultipleColumnsQuantityNames:
+    def test_multiple_columns_mapping_is_normalized(self):
+        configs = ExternalForcingConfigs(
+            multiple_columns_quantity_names={
+                " UXUYAdvectionVelocityBnd ": {" ux ": " m s-1 ", "uy": "m s-1"},
+            }
+        )
+        assert configs.multiple_columns_quantity_names == {
+            "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
+        }
+
+    def test_get_vector_component_units(self):
+        configs = ExternalForcingConfigs(
+            multiple_columns_quantity_names={
+                "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
+            }
+        )
+        assert configs.get_vector_component_units("UXUYADVECTIONVELOCITYBND") == {
+            "ux": "m s-1",
+            "uy": "m s-1",
+        }
+        assert configs.get_vector_component_units("waterlevelbnd") is None
+
+    def test_mapping_from_data_yaml_contains_uxuy(self):
+        assert CONVERTER_DATA.external_forcing.get_vector_component_units(
+            "uxuyadvectionvelocitybnd"
+        ) == {"ux": "m s-1", "uy": "m s-1"}
+
+
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
         model = MagicMock(spec=ExtOldModel)
