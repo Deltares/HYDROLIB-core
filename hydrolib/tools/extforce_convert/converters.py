@@ -271,11 +271,11 @@ class SpatialBlockBuilder:
 class SpatialConverter(BaseConverter):
     """Spatial quantities Converter."""
 
-    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+    def __init__(self, mdu_parser: MDUParser, root_dir: PathOrStr = None):
         """Spatial converter constructor.
 
         Args:
-            mdu_parser (MDUParser, optional):
+            mdu_parser (MDUParser):
                 Parser for the FM model. Only needed to convert a uniform time
                 series (`.tim`, FILETYPE=1) data file to a `.bc` file, which
                 requires the reference time the parser exposes. Defaults to None.
@@ -360,12 +360,9 @@ class SpatialConverter(BaseConverter):
             ValueError: If no `MDUParser` was injected, so the reference time needed for
                 the `.bc` time series is unavailable.
         """
-        if (
-            self._mdu_parser is None
-            or self._mdu_parser.temperature_salinity_data is None
-        ):
+        if self._mdu_parser.temperature_salinity_data is None:
             raise ValueError(
-                "An MDU model is required to convert a uniform time series (.tim) spatial "
+                "The MDU `temperature_salinity_data` is required to convert a uniform time series (.tim) spatial "
                 "quantity to a .bc file, because the .bc time series needs the reference time."
             )
         time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")

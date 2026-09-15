@@ -48,10 +48,11 @@ class ExternalForcingConverter:
 
     def __init__(
         self,
+        *,
         extold_model: PathOrStr | ExtOldModel,
         ext_file: PathOrStr | None = None,
         structure_file: PathOrStr | None = None,
-        mdu_parser: MDUParser | None = None,
+        mdu_parser: MDUParser,
         verbose: bool = False,
         path_style: PathStyle | None = None,
         debug: bool | None = False,
@@ -70,8 +71,8 @@ class ExternalForcingConverter:
                 Path to the new external forcing file.
             structure_file (PathOrStr, optional):
                 Path to the structure file.
-            mdu_parser (Optional[MDUParser], optional):
-                a Parser for the MDU file.
+            mdu_parser (MDUParser):
+                Parser for the MDU file.
             verbose (bool, optional, Defaults to False):
                 Enable verbose output.
             path_style (Optional[PathStyle], optional):
@@ -107,12 +108,14 @@ class ExternalForcingConverter:
             ... 'forcing': [forcing_data]
             ... }
             >>> old_model = ExtOldModel(**forcing_model_data) #doctest: +SKIP
-            >>> converter = ExternalForcingConverter(extold_model=old_model) #doctest: +SKIP
+            >>> mdu_parser = MDUParser("path/to/your/model.mdu") #doctest: +SKIP
+            >>> converter = ExternalForcingConverter(extold_model=old_model, mdu_parser=mdu_parser) #doctest: +SKIP
 
             ```
             - Create a converter from an old external forcing file:
             ```python
-            >>> converter = ExternalForcingConverter("old-external-forcing.ext") #doctest: +SKIP
+            >>> mdu_parser = MDUParser("path/to/your/model.mdu") #doctest: +SKIP
+            >>> converter = ExternalForcingConverter(extold_model="old-external-forcing.ext", mdu_parser=mdu_parser) #doctest: +SKIP
             >>> converter.update() #doctest: +SKIP
             ```
         """
@@ -125,11 +128,7 @@ class ExternalForcingConverter:
                     "extold_model must be a PathOrStr or ExtOldModel instance."
                 )
 
-        # if the mdu is not given then the root dir is the same as the extold model
-        if mdu_parser is not None:
-            rdir = mdu_parser.mdu_path.parent
-        else:
-            rdir = extold_model.filepath.parent
+        rdir = mdu_parser.mdu_path.parent
 
         self._extold_model = extold_model
         self._verbose = verbose
@@ -152,11 +151,10 @@ class ExternalForcingConverter:
             MassBalanceAreaModel, path, recurse=False
         )
 
-        if mdu_parser is not None:
-            self.temperature_salinity_data: Dict[str, int] = (
-                mdu_parser.temperature_salinity_data
-            )
-            self._mdu_parser = mdu_parser
+        self.temperature_salinity_data: Dict[str, int] = (
+            mdu_parser.temperature_salinity_data
+        )
+        self._mdu_parser = mdu_parser
 
         self._legacy_files = []
         self.debug = debug
@@ -196,11 +194,7 @@ class ExternalForcingConverter:
 
     @property
     def mdu_parser(self) -> MDUParser:
-        if hasattr(self, "_mdu_parser"):
-            val = self._mdu_parser
-        else:
-            val = None
-        return val
+        return self._mdu_parser
 
     @property
     def root_dir(self) -> Path:
@@ -357,8 +351,7 @@ class ExternalForcingConverter:
 
                 progress_bar.update(1)
 
-        if self.mdu_parser is not None:
-            self._update_mdu_file()
+        self._update_mdu_file()
 
         if self.un_supported_quantities:
             # replace the forcings by the forcings that were not converted (the unsupported quantities)
@@ -463,9 +456,8 @@ class ExternalForcingConverter:
                 recurse=recursive, exclude_unset=True, path_style=self.path_style
             )
 
-        if self.mdu_parser is not None:
-            self.mdu_parser.clean()
-            self.mdu_parser.save(backup=backup)
+        self.mdu_parser.clean()
+        self.mdu_parser.save(backup=backup)
 
     def _save_structure_model(self, backup: bool, recursive: bool):
         if backup and self.structure_model.filepath.exists():
@@ -543,10 +535,10 @@ class ExternalForcingConverter:
         mba_file = mdu_parser.get_mba_file()
 
         return cls(
-            extoldfile,
-            ext_file,
-            structure_file,
-            mdu_parser,
+            extold_model=extoldfile,
+            mdu_parser=mdu_parser,
+            ext_file=ext_file,
+            structure_file=structure_file,
             path_style=path_style,
             debug=debug,
             mba_file=mba_file,

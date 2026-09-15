@@ -28,6 +28,14 @@ from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import UnSupportedQuantitiesError
 
 
+def _make_mdu_parser_mock(base_dir: Path) -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.mdu_path = base_dir / "test.mdu"
+    parser.temperature_salinity_data = {}
+    parser.loaded_fm_data = {"general": {}}
+    return parser
+
+
 class TestExtOldToNewFromMDU:
     def test_wind_combi_uniform_curvi(
         self, capsys, tmp_path: Path, input_files_dir: Path
@@ -306,7 +314,10 @@ class TestExternalFocingConverter:
         """
         path = old_forcing_file_initial_condition["path"]
         ext_old_model = ExtOldModel(path)
-        converter = ExternalForcingConverter(path)
+        converter = ExternalForcingConverter(
+            extold_model=path,
+            mdu_parser=_make_mdu_parser_mock(ext_old_model.filepath.parent),
+        )
         assert isinstance(converter.extold_model, ExtOldModel)
         rdir = ext_old_model.filepath.parent
 
@@ -321,7 +332,10 @@ class TestExternalFocingConverter:
         """
         ext_old_model = "wrong model"
         with pytest.raises(FileNotFoundError):
-            ExternalForcingConverter(ext_old_model)
+            ExternalForcingConverter(
+                extold_model=ext_old_model,
+                mdu_parser=_make_mdu_parser_mock(Path.cwd()),
+            )
 
     def test_change_models_paths_using_setters(
         self, old_forcing_file_initial_condition: Dict[str, str]
@@ -333,7 +347,12 @@ class TestExternalFocingConverter:
         new_ext_file = Path("tests/data/input/new-external-forcing.ext")
         new_structure_file = Path("tests/data/input/new-structure.ext")
 
-        converter = ExternalForcingConverter(path, new_ext_file, new_structure_file)
+        converter = ExternalForcingConverter(
+            extold_model=path,
+            mdu_parser=_make_mdu_parser_mock(Path(path).parent),
+            ext_file=new_ext_file,
+            structure_file=new_structure_file,
+        )
 
         assert converter.ext_model.filepath == new_ext_file
         assert converter.structure_model.filepath == new_structure_file
@@ -352,7 +371,10 @@ class TestExternalFocingConverter:
             "hydrolib.tools.extforce_convert.utils.ConverterData.check_unsupported_quantities",
             return_value=1,
         ):
-            converter = ExternalForcingConverter(mock_ext_old_model)
+            converter = ExternalForcingConverter(
+                extold_model=mock_ext_old_model,
+                mdu_parser=_make_mdu_parser_mock(Path(mock_ext_old_model.filepath).parent),
+            )
         converter._ext_model = MagicMock(spec=ExtModel)
         converter._ext_model.general = ExtGeneral()
         converter._ext_model.meteo = [MagicMock(spec=Meteo)]
@@ -398,7 +420,9 @@ class TestExternalFocingConverter:
             "    9994.876953    1868.232910\n"
         )
 
-        converter = ExternalForcingConverter(extold_model=ext_file)
+        converter = ExternalForcingConverter(
+            extold_model=ext_file, mdu_parser=_make_mdu_parser_mock(ext_file.parent)
+        )
         converter.update()
 
         # The conversion is spatial-only: nothing lands in the counted lists.
@@ -430,7 +454,10 @@ class TestExternalFocingConverter:
         and parameters.
         test also check the verbose output.
         """
-        converter = ExternalForcingConverter(old_forcing_file)
+        converter = ExternalForcingConverter(
+            extold_model=old_forcing_file,
+            mdu_parser=_make_mdu_parser_mock(old_forcing_file.parent),
+        )
         assert len(converter.extold_model.forcing) == len(old_forcing_file_quantities)
         assert len(converter.extold_model.comment) == old_forcing_comment_len
         quantities = [forcing.quantity for forcing in converter.extold_model.forcing]
@@ -459,7 +486,10 @@ class TestExternalFocingConverter:
             ),
         ):
 
-            converter = ExternalForcingConverter(mock_ext_old_model)
+            converter = ExternalForcingConverter(
+                extold_model=mock_ext_old_model,
+                mdu_parser=_make_mdu_parser_mock(Path(mock_ext_old_model.filepath).parent),
+            )
 
         mock_mdu_parser = MagicMock()
         mock_mdu_parser.has_structure_file.return_value = False
@@ -526,7 +556,10 @@ class TestExternalFocingConverter:
                 return_value=None,
             ),
         ):
-            converter = ExternalForcingConverter(mock_ext_old_model)
+            converter = ExternalForcingConverter(
+                extold_model=mock_ext_old_model,
+                mdu_parser=_make_mdu_parser_mock(Path(mock_ext_old_model.filepath).parent),
+            )
 
         converter.structure_model.filepath = tmp_path / "new-structure.ini"
         converter.structure_model.structure = [
@@ -602,6 +635,9 @@ class TestExternalFocingConverter:
         converter = ExternalForcingConverter(
             extold_model=setup_absolute_path_files["ext_file"],
             path_style=setup_absolute_path_files["path_style"],
+            mdu_parser=_make_mdu_parser_mock(
+                setup_absolute_path_files["ext_file"].parent
+            ),
         )
         converter.update()
 
@@ -630,6 +666,9 @@ class TestExternalFocingConverter:
         converter = ExternalForcingConverter(
             extold_model=setup_absolute_path_files["ext_file"],
             path_style=setup_absolute_path_files["path_style"],
+            mdu_parser=_make_mdu_parser_mock(
+                setup_absolute_path_files["ext_file"].parent
+            ),
         )
         converter.update()
         converter.save()
@@ -671,7 +710,11 @@ class TestExternalFocingConverter:
         old_model["forcing"][1]["quantity"] = unsupported_quantity
         ext_old_model = ExtOldModel(**old_model)
         ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
-        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter = ExternalForcingConverter(
+            extold_model=ext_old_model,
+            mdu_parser=_make_mdu_parser_mock(ext_old_model.filepath.parent),
+            debug=True,
+        )
         converter.update()
 
         assert converter.un_supported_quantities == {unsupported_quantity.lower()}
@@ -689,7 +732,11 @@ class TestExternalFocingConverter:
         ext_old_model = ExtOldModel(**old_model)
         ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
         with pytest.raises(UnSupportedQuantitiesError) as error:
-            ExternalForcingConverter(extold_model=ext_old_model, debug=False)
+            ExternalForcingConverter(
+                extold_model=ext_old_model,
+                mdu_parser=_make_mdu_parser_mock(ext_old_model.filepath.parent),
+                debug=False,
+            )
         quantity = {unsupported_quantity.lower()}
         assert (
             f"The following quantities are not supported by the converter yet: {quantity}"
@@ -707,7 +754,11 @@ class TestExternalFocingConverter:
         old_model["forcing"][1]["quantity"] = unsupported_quantity
         ext_old_model = ExtOldModel(**old_model)
         ext_old_model.filepath = tmp_path / "mock_file.ext"
-        converter = ExternalForcingConverter(extold_model=ext_old_model, debug=True)
+        converter = ExternalForcingConverter(
+            extold_model=ext_old_model,
+            mdu_parser=_make_mdu_parser_mock(ext_old_model.filepath.parent),
+            debug=True,
+        )
         converter.update()
         with patch(
             "hydrolib.tools.extforce_convert.main_converter.ExtOldModel.save"
@@ -720,7 +771,10 @@ class TestExternalFocingConverter:
 class TestUpdate:
 
     def test_meteo_only(self, old_forcing_file_meteo: Dict[str, str]):
-        converter = ExternalForcingConverter(old_forcing_file_meteo["path"])
+        converter = ExternalForcingConverter(
+            extold_model=old_forcing_file_meteo["path"],
+            mdu_parser=_make_mdu_parser_mock(Path(old_forcing_file_meteo["path"]).parent),
+        )
 
         ext_model, structure_model = converter.update()
 
@@ -741,7 +795,12 @@ class TestUpdate:
     def test_initial_conditions_only(
         self, old_forcing_file_initial_condition: Dict[str, str]
     ):
-        converter = ExternalForcingConverter(old_forcing_file_initial_condition["path"])
+        converter = ExternalForcingConverter(
+            extold_model=old_forcing_file_initial_condition["path"],
+            mdu_parser=_make_mdu_parser_mock(
+                Path(old_forcing_file_initial_condition["path"]).parent
+            ),
+        )
 
         ext_model, structure_model = converter.update()
 
@@ -770,7 +829,8 @@ def test_clean():
     """
     with (patch("pathlib.Path.unlink", return_value=True) as mock_unlink,):
         converter = ExternalForcingConverter(
-            "tests/data/input/old-external-forcing.ext"
+            extold_model="tests/data/input/old-external-forcing.ext",
+            mdu_parser=_make_mdu_parser_mock(Path("tests/data/input")),
         )
         converter.legacy_files = [Path("fake.tim"), Path("fake2.tim")]
         converter.clean()

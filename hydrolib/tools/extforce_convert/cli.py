@@ -270,12 +270,10 @@ def convert_with_extold_file(args: Namespace):
         args : Namespace
             The arguments parsed from the command line.
     """
-    converter = ExternalForcingConverter(
-        args.extoldfile,
-        path_style=args.path_style,
-        debug=args.debug_mode,
+    raise ValueError(
+        "Direct --extoldfile conversion is no longer supported; provide --mdufile "
+        "so the converter can be initialized with an MDU parser."
     )
-    convert(converter, args)
 
 
 def convert(converter: ExternalForcingConverter, args: Namespace):

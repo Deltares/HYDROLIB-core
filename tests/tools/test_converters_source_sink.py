@@ -779,7 +779,9 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
+        converter = ExternalForcingConverter(
+            extold_model=self.path, mdu_parser=mdu_parser_mock
+        )
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
@@ -806,7 +808,9 @@ class TestMainConverter:
         mdu_parser_mock.temperature_salinity_data.update(
             {"salinity": True, "temperature": True}
         )
-        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
+        converter = ExternalForcingConverter(
+            extold_model=self.path, mdu_parser=mdu_parser_mock
+        )
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
