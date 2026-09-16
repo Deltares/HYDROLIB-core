@@ -331,10 +331,11 @@ class TestExternalFocingConverter:
         Test the constructor of the ExternalForcingConverter class with a wrong extold_model.
         """
         ext_old_model = "wrong model"
+        mdu_parser = _make_mdu_parser_mock(Path.cwd())
         with pytest.raises(FileNotFoundError):
             ExternalForcingConverter(
                 extold_model=ext_old_model,
-                mdu_parser=_make_mdu_parser_mock(Path.cwd()),
+                mdu_parser=mdu_parser,
             )
 
     def test_change_models_paths_using_setters(
@@ -731,10 +732,11 @@ class TestExternalFocingConverter:
         old_model["forcing"][1]["quantity"] = unsupported_quantity
         ext_old_model = ExtOldModel(**old_model)
         ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
+        mdu_parser = _make_mdu_parser_mock(ext_old_model.filepath.parent)
         with pytest.raises(UnSupportedQuantitiesError) as error:
             ExternalForcingConverter(
                 extold_model=ext_old_model,
-                mdu_parser=_make_mdu_parser_mock(ext_old_model.filepath.parent),
+                mdu_parser=mdu_parser,
                 debug=False,
             )
         quantity = {unsupported_quantity.lower()}
