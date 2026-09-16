@@ -11,8 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import FileModel
+from hydrolib.core.dflowfm.common import DataFileType
 from hydrolib.core.dflowfm.ext.models import (
-    MeteoForcingFileType,
     TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
@@ -24,7 +24,6 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
-    DataFileType,
     InterpolationMethod,
 )
 
@@ -105,43 +104,45 @@ def backup_file(filepath: PathOrStr) -> None:
 
 
 def oldfiletype_to_forcing_file_type(
-    oldfiletype: int,
-) -> Union[MeteoForcingFileType, str]:
+    old_file_type: int,
+) -> DataFileType | str:
     """Convert old external forcing `FILETYPE` integer value to valid `forcingFileType` string value.
 
     Args:
-        oldfiletype (int): The FILETYPE value in an old external forcings file.
+        old_file_type (int): The FILETYPE value in an old external forcings file.
 
     Returns:
-        Union[MeteoForcingFileType,str]: Corresponding value for `forcingFileType`,
+        Union[DataFileType,str]: Corresponding value for `forcingFileType`,
             or "unknown" for invalid input.
     """
     forcing_file_type = "unknown"
 
-    if oldfiletype == ExtOldFileType.TimeSeries:  # 1
-        forcing_file_type = MeteoForcingFileType.uniform
-    elif oldfiletype == ExtOldFileType.TimeSeriesMagnitudeAndDirection:  # 2
-        forcing_file_type = MeteoForcingFileType.unimagdir
-    elif oldfiletype == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
+    if old_file_type == ExtOldFileType.TimeSeries:  # 1
+        forcing_file_type = DataFileType.uniform
+    elif old_file_type == ExtOldFileType.TimeSeriesMagnitudeAndDirection:  # 2
+        forcing_file_type = DataFileType.unimagdir
+    elif old_file_type == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
         raise NotImplementedError(
-            "FILETYPE = 3 (spatially verying wind and pressure) is no longer supported."
+            "FILETYPE = 3 (spatially varying wind and pressure) is no longer supported."
         )
-    elif oldfiletype == ExtOldFileType.ArcInfo:  # 4
-        forcing_file_type = MeteoForcingFileType.arcinfo
-    elif oldfiletype == ExtOldFileType.SpiderWebData:  # 5
-        forcing_file_type = MeteoForcingFileType.spiderweb
-    elif oldfiletype == ExtOldFileType.CurvilinearData:  # 6
-        forcing_file_type = MeteoForcingFileType.curvigrid
-    elif oldfiletype == ExtOldFileType.Samples:  # 7
+    elif old_file_type == ExtOldFileType.ArcInfo:  # 4
+        forcing_file_type = DataFileType.arcinfo
+    elif old_file_type == ExtOldFileType.SpiderWebData:  # 5
+        forcing_file_type = DataFileType.spiderweb
+    elif old_file_type == ExtOldFileType.CurvilinearData:  # 6
+        forcing_file_type = DataFileType.curvigrid
+    elif old_file_type == ExtOldFileType.Samples:  # 7
         forcing_file_type = DataFileType.sample
-    elif oldfiletype == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
+    elif old_file_type == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif oldfiletype in [ExtOldFileType.Polyline,  ExtOldFileType.InsidePolygon]:  # 9 and # 10
+    elif old_file_type in [ExtOldFileType.Polyline, ExtOldFileType.InsidePolygon]:  # 9 and # 10
         forcing_file_type = DataFileType.polygon
-    elif oldfiletype == ExtOldFileType.NetCDFGridData:  # 11
-        forcing_file_type = MeteoForcingFileType.netcdf
+    elif old_file_type == ExtOldFileType.NetCDFGridData:  # 11
+        forcing_file_type = DataFileType.netcdf
+    elif old_file_type == ExtOldFileType.NetCDFFlowMapFile:  # 12
+        forcing_file_type = DataFileType.map
 
     return forcing_file_type
 
