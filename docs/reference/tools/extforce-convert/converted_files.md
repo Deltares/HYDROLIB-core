@@ -346,6 +346,7 @@ that exact casing.
 - 7 → `sample`
 - 10 → `polygon` (initial/parameter)
 - 11 → `netcdf`
+- 12 → `map` (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as `ncFlow`)
 - 3 (spatially varying wind/pressure) → not supported (raises error)
 - 8 (magnitude+direction timeseries on stations) → not supported (raises error)
 
