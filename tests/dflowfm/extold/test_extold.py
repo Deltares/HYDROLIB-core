@@ -1,6 +1,5 @@
 import copy
 from pathlib import Path
-from typing import List
 
 import pytest
 
@@ -473,3 +472,19 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         operand="override",
     )
     assert isinstance(forcing.filename, TimModel)
+
+
+def test_ext_old_forcing_accepts_filetype_12_netcdf_flow_map():
+    """FILETYPE=12 (NetCDF D-Flow FM map file) must be accepted by ExtOldForcing.
+
+    Regression test for https://github.com/Deltares/HYDROLIB-core/issues/1207.
+    """
+    forcing = ExtOldForcing(
+        quantity="initialwaterlevel",
+        filename="flow_map.nc",
+        filetype=12,
+        method=5,
+        operand="override",
+    )
+    assert isinstance(forcing.filename, DiskOnlyFileModel)
+
