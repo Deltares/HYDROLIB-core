@@ -57,7 +57,7 @@ from hydrolib.tools.extforce_convert.utils import (
     convert_interpolation_data,
     find_temperature_salinity_in_quantities,
     old_layer_to_target_layer,
-    oldfiletype_to_forcing_file_type,
+    convert_file_type,
 )
 
 if TYPE_CHECKING:
@@ -176,7 +176,7 @@ class SpatialBlockBuilder:
         self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
             forcing.quantity
         )
-        self.file_type = oldfiletype_to_forcing_file_type(forcing.filetype)
+        self.file_type = convert_file_type(forcing.filetype)
         self.block: Dict[str, Any] = {}
 
     def build(self) -> Dict[str, Any]:

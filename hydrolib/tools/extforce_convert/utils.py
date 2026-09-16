@@ -40,6 +40,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
+    "convert_file_type"
 ]
 
 
@@ -103,7 +104,7 @@ def backup_file(filepath: PathOrStr) -> None:
         filepath.replace(backup_path)
 
 
-def oldfiletype_to_forcing_file_type(
+def convert_file_type(
     old_file_type: int,
 ) -> DataFileType | str:
     """Convert old external forcing `FILETYPE` integer value to valid `forcingFileType` string value.
