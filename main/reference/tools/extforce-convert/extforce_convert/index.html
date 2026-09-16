@@ -4233,6 +4233,7 @@ You're not viewing the latest release version.
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.extold.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtOldModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
 <span class="c1"># Prepare a minimal ExtOldModel in memory</span>
 <span class="n">root_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;path/to/your/root/dir&quot;</span><span class="p">)</span>
@@ -4248,16 +4249,27 @@ You're not viewing the latest release version.
     <span class="s1">&#39;forcing&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">forcing_data</span><span class="p">]</span>
 <span class="p">}</span>
 <span class="n">old_model</span> <span class="o">=</span> <span class="n">ExtOldModel</span><span class="p">(</span><span class="o">**</span><span class="n">forcing_model_data</span><span class="p">)</span>  
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span><span class="n">extold_model</span><span class="o">=</span><span class="n">old_model</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">&quot;path/to/your/model.mdu&quot;</span><span class="p">)</span>  
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>  
+    <span class="n">extold_model</span><span class="o">=</span><span class="n">old_model</span><span class="p">,</span>  
+    <span class="n">mdu_parser</span><span class="o">=</span><span class="n">mdu_parser</span><span class="p">,</span>  
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  
+<span class="p">)</span>  
 <span class="n">ext_model</span><span class="p">,</span> <span class="n">ini_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
 </code></pre></div>
 <ul>
-<li>From legacy file path</li>
+<li>From legacy file path (requires an explicit <code>MDUParser</code>)</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span><span class="s2">&quot;old-external-forcing.ext&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">&quot;model.mdu&quot;</span><span class="p">)</span>  
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>  
+    <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;old-external-forcing.ext&quot;</span><span class="p">,</span>  
+    <span class="n">mdu_parser</span><span class="o">=</span><span class="n">mdu_parser</span><span class="p">,</span>  
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  
+<span class="p">)</span>  
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>  
 </code></pre></div>
@@ -4607,8 +4619,8 @@ Hold "Ctrl" to enable pan &amp; zoom
 <p>4) Programmatic inspection after update</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
-<span class="c1"># Create a converter (example path; adjust as needed)</span>
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span><span class="s2">&quot;path/to/old-forcings.ext&quot;</span><span class="p">)</span>  
+<span class="c1"># Create a converter from the FM model so the required MDU metadata is available.</span>
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">&quot;path/to/model.mdu&quot;</span><span class="p">)</span>  
 
 <span class="n">ext_model</span><span class="p">,</span> <span class="n">ini_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">meteo</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">boundary</span><span class="p">))</span>  
