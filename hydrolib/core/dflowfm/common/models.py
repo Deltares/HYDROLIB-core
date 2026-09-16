@@ -77,13 +77,18 @@ class DataFileType(StrEnum):
     polygon = "polygon"
     uniform = "uniform"
     netcdf = "netcdf"
+    map = "map"
 
     bcascii = "bcAscii"
     unimagdir = "uniMagDir"
     spiderweb = "spiderweb"
     curvigrid = "curviGrid"
 
-    allowedvaluestext = "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
+    allowedvaluestext = (
+        "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, map, "
+        "bcAscii, uniMagDir, spiderweb, curviGrid. The D-Flow FM user manual may also refer to "
+        "the map type as ncFlow."
+    )
 
 
 class InterpolationMethod(StrEnum):
