@@ -46,9 +46,6 @@ class Operand(StrEnum):
     def legacy_alternatives(cls) -> dict[str, list[str]]:
         """Return the Operand member corresponding to a legacy single-character value.
 
-        Args:
-            legacy_value: A legacy operand character (e.g. "O", "A", "+", "*", "X", "N").
-
         Returns:
             The matching Operand member.
 
