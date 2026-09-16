@@ -90,5 +90,7 @@ class LocationTypeDataFileTypeValidators(ABC):
     def _validate_datafiletype(cls, v):
         result = v
         if v is not None:
+            if isinstance(v, str) and v.lower() == "ncflow":
+                v = DataFileType.map.value
             result = enum_value_parser(v, DataFileType)
         return result
