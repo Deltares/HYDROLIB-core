@@ -919,9 +919,11 @@ class SourceSinkConverter(BaseConverter):
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
+            >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-            >>> converter = SourceSinkConverter()
-            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> mdu_parser = MDUParser("path/to/your/model.mdu") # doctest: +SKIP
+            >>> converter = SourceSinkConverter(mdu_parser=mdu_parser) # doctest: +SKIP
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list) # doctest: +SKIP
             >>> print(tim_model.quantities_names)
             ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'initialtracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP

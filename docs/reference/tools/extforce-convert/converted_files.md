@@ -211,7 +211,7 @@ How to trigger cleanup
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-converter = ExternalForcingConverter("path/to/old-forcings.ext")
+converter = ExternalForcingConverter.from_mdu("path/to/model.mdu")
 converter.update()
 converter.save()
 converter.clean()
