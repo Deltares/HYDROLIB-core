@@ -1,5 +1,7 @@
 """Common model types for D-Flow FM files, including LocationType and Operand enums."""
 
+from __future__ import annotations
+
 from strenum import StrEnum
 
 
@@ -102,6 +104,34 @@ class InterpolationMethod(StrEnum):
     bilinear = "bilinear"
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear."
+
+    @classmethod
+    def from_old_method(cls, old_method: int) -> InterpolationMethod | str:
+        """Convert an old external forcing `METHOD` to an `interpolationMethod` value.
+
+        Old `METHOD` values map onto the spatial interpolation methods as follows:
+        `0`, `1`, `2`, `3`, `11` → `linearSpaceTime`, `4` → `constant`,
+        `5` → `triangulation`, `6`-`9` → `averaging`. `METHOD=0` ("provider just
+        updates") converts like `1`/`2`/`3`/`11` (GitHub #1197).
+
+        Args:
+            old_method (int): The `METHOD` value in an old external forcings file.
+
+        Returns:
+            InterpolationMethod | str: The corresponding `interpolationMethod`
+                value, or `"unknown"` for an unsupported input.
+        """
+        if old_method in [0, 1, 2, 3, 11]:
+            interpolation_method = cls.linear_space_time
+        elif old_method == 5:
+            interpolation_method = cls.triangulation
+        elif old_method == 4:
+            interpolation_method = cls.constant
+        elif old_method in range(6, 10):
+            interpolation_method = cls.averaging
+        else:
+            interpolation_method = "unknown"
+        return interpolation_method
 
 
 class AveragingType(StrEnum):

@@ -184,6 +184,7 @@ Example usage
 from pathlib import Path
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 # Prepare a minimal ExtOldModel in memory
 root_dir = Path("path/to/your/root/dir")
@@ -199,17 +200,28 @@ forcing_model_data = {
     'forcing': [forcing_data]
 }
 old_model = ExtOldModel(**forcing_model_data)  
-converter = ExternalForcingConverter(extold_model=old_model, verbose=True)  
+mdu_parser = MDUParser("path/to/your/model.mdu")  
+converter = ExternalForcingConverter(  
+    extold_model=old_model,  
+    mdu_parser=mdu_parser,  
+    verbose=True,  
+)  
 ext_model, ini_model, struct_model = converter.update()  
 converter.save(backup=True)  
 ```
 
-- From legacy file path
+- From legacy file path (requires an explicit `MDUParser`)
 
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
-converter = ExternalForcingConverter("old-external-forcing.ext", verbose=True)  
+mdu_parser = MDUParser("model.mdu")  
+converter = ExternalForcingConverter(  
+    extold_model="old-external-forcing.ext",  
+    mdu_parser=mdu_parser,  
+    verbose=True,  
+)  
 converter.update()  
 converter.save()  
 ```
@@ -491,8 +503,8 @@ converter.save()
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-# Create a converter (example path; adjust as needed)
-converter = ExternalForcingConverter("path/to/old-forcings.ext")  
+# Create a converter from the FM model so the required MDU metadata is available.
+converter = ExternalForcingConverter.from_mdu("path/to/model.mdu")  
 
 ext_model, ini_model, struct_model = converter.update()  
 print(len(ext_model.meteo), len(ext_model.boundary))  

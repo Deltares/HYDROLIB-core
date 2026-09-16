@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from hydrolib.core.dflowfm.bc.models import TimeInterpolation
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink, ForcingModel
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldForcing,
@@ -429,6 +430,33 @@ class TestConverter:
         # check the converted bc_forcing
         compare_data(new_quantity_block)
 
+    def test_method_zero_uses_block_from(
+        self, converter: SourceSinkConverter, source_sink_dir: Path
+    ):
+        """METHOD=0 converts the source/sink .bc TimeSeries to block-From (issue #1197).
+
+        `METHOD=0` means no time interpolation (hold the last value), which maps to
+        `timeInterpolation = block-From` in the generated `.bc` forcings.
+        """
+        location_file = (source_sink_dir / "leftsor.pliz").resolve()
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
+            filename=location_file,
+            filetype=9,
+            method=0,
+            operand="override",
+            area=1.0,
+        )
+
+        new_quantity_block = converter.convert(
+            forcing, ["salinity", "temperature", "initialtracer_anyname"]
+        )
+
+        assert all(
+            f.timeinterpolation == TimeInterpolation.block_from
+            for f in new_quantity_block.discharge.forcing
+        )
+
     @pytest.mark.parametrize(
         "area", [None, 2.1, 0.0], ids=["Unset", "Area = 2.1", "Area = 0.0"]
     )
@@ -751,7 +779,9 @@ class TestMainConverter:
         polyline but the `tim-3-columns.tim` is mocked in the test.
 
         """
-        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
+        converter = ExternalForcingConverter(
+            extold_model=self.path, mdu_parser=mdu_parser_mock
+        )
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
@@ -778,7 +808,9 @@ class TestMainConverter:
         mdu_parser_mock.temperature_salinity_data.update(
             {"salinity": True, "temperature": True}
         )
-        converter = ExternalForcingConverter(self.path, mdu_parser=mdu_parser_mock)
+        converter = ExternalForcingConverter(
+            extold_model=self.path, mdu_parser=mdu_parser_mock
+        )
 
         with (
             patch("pathlib.Path.with_suffix", return_value=self.tim_file),
@@ -852,33 +884,15 @@ class TestConvertSourceSinkWithSubstanceFile:
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""
 
-    def test_convert_raises_when_mdu_parser_is_none(self):
-        """Test that convert() raises ValueError when mdu_parser is None.
+    def test_constructor_raises_when_mdu_parser_is_none(self):
+        """Test that constructor raises TypeError when mdu_parser is None."""
+        with pytest.raises(TypeError, match="mdu_parser is required"):
+            SourceSinkConverter(mdu_parser=None)
 
-        Test scenario:
-            Constructing a SourceSinkConverter without an mdu_parser and then calling
-            convert() should raise a clear ValueError.
-        """
-        converter = SourceSinkConverter(mdu_parser=None)
-        forcing = ExtOldForcing(
-            quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
-            filename="tests/data/input/source-sink/leftsor.pliz",
-            filetype=9,
-            method="1",
-            operand="override",
-        )
-        with pytest.raises(ValueError, match="MDU model is required"):
-            converter.convert(forcing, [])
-
-    def test_convert_raises_when_temperature_salinity_data_is_none(self):
-        """Test that convert() raises ValueError when temperature_salinity_data is None.
-
-        Test scenario:
-            An mdu_parser that returns None for temperature_salinity_data should
-            trigger a clear ValueError at convert time.
-        """
+    def test_convert_raises_when_refdate_is_missing(self):
+        """Test that convert() raises ValueError when refdate is missing."""
         mock_parser = MagicMock(spec=MDUParser)
-        mock_parser.temperature_salinity_data = None
+        mock_parser.temperature_salinity_data = {}
         converter = SourceSinkConverter(mdu_parser=mock_parser)
         forcing = ExtOldForcing(
             quantity=ExtOldQuantity.DischargeSalinityTemperatureSorSin,
@@ -887,7 +901,10 @@ class TestSourceSinkConverterEdgeCases:
             method="1",
             operand="override",
         )
-        with pytest.raises(ValueError, match="MDU model is required"):
+        with pytest.raises(
+            ValueError,
+            match="temperature_salinity_data'.*'refdate",
+        ):
             converter.convert(forcing, [])
 
     def test_active_substances_raises_for_missing_file(self):

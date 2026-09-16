@@ -18,6 +18,7 @@ from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     Harmonic,
     QuantityUnitPair,
+    TimeInterpolation,
     TimeSeries,
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
@@ -81,17 +82,33 @@ class BaseConverter(ABC):
     converter, depending on the quantity of the forcing block.
     """
 
-    def __init__(self, root_dir: PathOrStr = None):
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr | None = None
+    ):
         """Initialize the BaseConverter object.
 
         Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model.
             root_dir (PathOrStr, optional):
                 Root directory used to resolve the forcing file paths. Only the
                 converters that read forcing files from disk (boundary conditions and
                 source/sinks) need it. Defaults to None.
         """
+        if mdu_parser is None:
+            raise TypeError("mdu_parser is required.")
+        self._mdu_parser = mdu_parser
         self._root_dir = Path(root_dir) if isinstance(root_dir, str) else root_dir
         self._legacy_files = []
+
+    def _require_reference_date(self, context: str) -> str:
+        """Return the MDU refdate or raise a clear conversion error."""
+        ref_date = self._mdu_parser.temperature_salinity_data.get("refdate")
+        if not ref_date:
+            raise ValueError(
+                f"{context} requires MDU 'temperature_salinity_data' with a valid 'refdate'."
+            )
+        return ref_date
 
     @property
     def root_dir(self) -> Path:
@@ -270,9 +287,19 @@ class SpatialBlockBuilder:
 class SpatialConverter(BaseConverter):
     """Spatial quantities Converter."""
 
-    def __init__(self):
-        """Spatial converter constructor."""
-        super().__init__()
+    def __init__(self, mdu_parser: MDUParser, root_dir: PathOrStr = None):
+        """Spatial converter constructor.
+
+        Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model. Only needed to convert a uniform time
+                series (`.tim`, FILETYPE=1) data file to a `.bc` file, which
+                requires the reference time the parser exposes. Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the data file paths. Only needed for
+                the uniform-time-series `.tim` to `.bc` conversion. Defaults to None.
+        """
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
 
     def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
         """Spatial converter.
@@ -285,6 +312,12 @@ class SpatialConverter(BaseConverter):
         into a Spatial object. The Spatial object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
+
+        A FILETYPE=1 data file (a uniform time series in a `.tim`) is converted to a
+        `.bc` file: the old `dataFileType=uniform` (`.tim`) is deprecated in favour of
+        `dataFileType=bcAscii` (`.bc`) per the D-Flow FM User Manual. The `.tim` is
+        converted to a `ForcingModel` attached to the block as its `dataFile`, so a
+        recursive save writes the `.bc` alongside the external forcings file.
 
         Args:
             forcing (ExtOldForcing):
@@ -305,6 +338,9 @@ class SpatialConverter(BaseConverter):
         """
         data = SpatialBlockBuilder(forcing, new_forcing_path).build()
 
+        if data.get("datafiletype") == DataFileType.uniform:
+            data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
+
         try:
             spatial_block = Spatial(**data)
         except Exception as e:
@@ -313,23 +349,86 @@ class SpatialConverter(BaseConverter):
             )
         return spatial_block
 
+    def _uniform_tim_to_bc(
+        self, forcing: ExtOldForcing, data: Dict[str, Any], new_forcing_path: Path
+    ) -> Dict[str, Any]:
+        """Replace a uniform `.tim` data file with an inline `.bc` `ForcingModel`.
+
+        The old `dataFileType=uniform` (a space-uniform time series in a `.tim`) is
+        deprecated in favour of `dataFileType=bcAscii` (a `.bc` file) per the D-Flow FM
+        User Manual. The `.tim` is converted to a `ForcingModel` and stored as the block's
+        `dataFile` (so a recursive save writes the `.bc`), `dataFileType` is set to
+        `bcAscii`, and the `.tim` is registered as a legacy file to remove.
+
+        `METHOD=0` maps the resulting time series to `timeInterpolation=block-From`
+        (via `TimeInterpolation.from_old_method`).
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block being converted.
+            data (Dict[str, Any]): The Spatial constructor dict built so far.
+            new_forcing_path (Path): The resolved data file path in the new model.
+
+        Returns:
+            Dict[str, Any]: The updated Spatial constructor dict.
+
+        Raises:
+            ValueError: If no valid MDU `refdate` is available.
+        """
+        time_unit = self._require_reference_date("Spatial uniform TIM conversion")
+
+        quantity = data["quantity"]
+        tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
+        tim_model = TimModel(filepath=tim_path)
+        if not tim_model.timeseries:
+            raise SpatialError(
+                f"Invalid TIM input: '{tim_path}' contains no data rows. "
+                f"Encountered for QUANTITY={forcing.quantity}."
+            )
+        # A FILETYPE=1 uniform time series carries a single scalar column for the one
+        # spatial quantity (unlike a source/sink .tim, whose columns are different
+        # quantities). More than one data column has no mapping to a single [Spatial]
+        # block, so fail clearly rather than emit ambiguous forcings.
+        n_columns = len(tim_model.timeseries[0].data)
+        if n_columns != 1:
+            raise SpatialError(
+                f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
+                f"data column, but '{tim_path}' has {n_columns}. Encountered for "
+                f"QUANTITY={forcing.quantity}."
+            )
+        tim_model.quantities_names = [quantity]
+        units = tim_model.get_units()
+
+        forcing_list = TimToForcingConverter.convert(
+            tim_model,
+            time_unit,
+            TimeInterpolation.from_old_method(forcing.method),
+            units,
+            ["global"],
+        )
+        forcing_model = ForcingModel(forcing=forcing_list)
+        forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
+
+        data["datafile"] = forcing_model
+        data["datafiletype"] = DataFileType.bcascii
+        self.legacy_files = tim_path
+        return data
+
 
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
 
-    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
         """Boundary condition converter constructor.
 
         Args:
-            mdu_parser (MDUParser, optional):
-                Parser for the FM model. Required at `convert` time: the boundary
-                condition conversion needs the reference time the parser exposes.
-                Defaults to None.
+            mdu_parser (MDUParser):
+                Parser for the FM model.
             root_dir (PathOrStr, optional):
                 Root directory used to resolve the forcing file paths. Defaults to None.
         """
-        super().__init__(root_dir=root_dir)
-        self._mdu_parser = mdu_parser
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
 
     @staticmethod
     def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
@@ -477,12 +576,7 @@ class BoundaryConditionConverter(BaseConverter):
             - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
             end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
-        if (
-            self._mdu_parser is None
-            or self._mdu_parser.temperature_salinity_data is None
-        ):
-            raise ValueError("MDU model is required to convert Boundary conditions.")
-        time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
+        time_unit = self._require_reference_date("Boundary conversion")
 
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
@@ -501,7 +595,11 @@ class BoundaryConditionConverter(BaseConverter):
 
         if len(tim_files) > 0:
             time_series_list = self.convert_tim_to_bc(
-                tim_files, time_unit, quantity=quantity, label=label
+                tim_files,
+                time_unit,
+                time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+                quantity=quantity,
+                label=label,
             )
             forcings_list.extend(time_series_list)
             self.legacy_files = tim_files
@@ -631,19 +729,18 @@ class BoundaryConditionConverter(BaseConverter):
 class SourceSinkConverter(BaseConverter):
     """Source and sink converter."""
 
-    def __init__(self, mdu_parser: MDUParser = None, root_dir: PathOrStr = None):
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
         """Source and sink converter constructor.
 
         Args:
-            mdu_parser (MDUParser, optional):
-                Parser for the FM model. Required at `convert` time: the source and
-                sink conversion needs the substance file and the temperature/salinity
-                settings the parser exposes. Defaults to None.
+            mdu_parser (MDUParser):
+                Parser for the FM model.
             root_dir (PathOrStr, optional):
                 Root directory used to resolve the forcing file paths. Defaults to None.
         """
-        super().__init__(root_dir=root_dir)
-        self._mdu_parser = mdu_parser
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
 
     def _active_substances(self) -> Optional[List[Substance]]:
         """Read the active substances from the MDU's `SubstanceFile`.
@@ -822,9 +919,11 @@ class SourceSinkConverter(BaseConverter):
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
+            >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-            >>> converter = SourceSinkConverter()
-            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> mdu_parser = MDUParser("path/to/your/model.mdu") # doctest: +SKIP
+            >>> converter = SourceSinkConverter(mdu_parser=mdu_parser) # doctest: +SKIP
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list) # doctest: +SKIP
             >>> print(tim_model.quantities_names)
             ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'initialtracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
@@ -901,6 +1000,7 @@ class SourceSinkConverter(BaseConverter):
     def convert_tim_to_bc(
         tim_model: TimModel,
         time_unit: str,
+        time_interpolation: str,
         user_defined_names: List[str] = None,
         substance_units: Dict[str, str] = None,
     ) -> ForcingModel:
@@ -914,6 +1014,8 @@ class SourceSinkConverter(BaseConverter):
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
+            time_interpolation (str, default is linear):
+                The time interpolation for the resulting `.bc` forcings (e.g. `block-From` for old METHOD=0).
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
             substance_units (Dict[str, str], optional):
@@ -933,7 +1035,11 @@ class SourceSinkConverter(BaseConverter):
             units, tim_model.quantities_names, substance_units
         )
         time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+            tim_model,
+            time_unit,
+            time_interpolation,
+            units=units,
+            user_defined_names=user_defined_names,
         )
         forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
@@ -1058,14 +1164,8 @@ class SourceSinkConverter(BaseConverter):
             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
 
         """
-        if (
-            self._mdu_parser is None
-            or self._mdu_parser.temperature_salinity_data is None
-        ):
-            raise ValueError("MDU model is required to convert SourceSink quantities.")
-
         temp_salinity_mdu = self._mdu_parser.temperature_salinity_data
-        start_time = temp_salinity_mdu.get("refdate")
+        start_time = self._require_reference_date("SourceSink conversion")
         active_substance_names, substance_units = self._resolve_active_substances()
 
         location_file = forcing.filename.filepath
@@ -1087,6 +1187,7 @@ class SourceSinkConverter(BaseConverter):
         forcing_model = self.convert_tim_to_bc(
             tim_model,
             start_time,
+            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
             user_defined_names=labels,
             substance_units=substance_units,
         )
@@ -1141,18 +1242,17 @@ class LateralConverter(BaseConverter):
         "lateraldischarge2d": "2d",
     }
 
-    def __init__(self, root_dir: PathOrStr = None, mdu_parser=None):
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
         """Lateral converter constructor.
 
         Args:
             root_dir (PathOrStr, optional): Root directory used to resolve file paths.
-            mdu_parser (MDUParser, optional): MDU parser used to obtain the reference
-                date (time_unit) required when converting time-series discharge from
-                a TIM file. When *None*, the `time_unit` argument of :meth:`convert`
-                must be supplied manually.
+            mdu_parser (MDUParser): MDU parser used to obtain the reference
+                date (time_unit) required when converting time-series discharge.
         """
-        super().__init__(root_dir=root_dir)
-        self._mdu_parser = mdu_parser
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
 
     @staticmethod
     def convert_tim_to_bc(
@@ -1216,7 +1316,7 @@ class LateralConverter(BaseConverter):
         location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
         location_data = self._get_location_data(forcing)
 
-        time_unit = self._mdu_parser.temperature_salinity_data.get("refdate")
+        time_unit = self._require_reference_date("Lateral conversion")
 
         data = {
             **location_data,
@@ -1430,11 +1530,13 @@ class ConverterFactory:
         Args:
             quantity: The quantity for which the converter needs to be created.
             root_dir (PathOrStr, optional): Root directory used to resolve the forcing
-                file paths, forwarded to every converter. Only the boundary condition
-                and source/sink converters read it. Defaults to None.
+                file paths, forwarded to every converter. The boundary condition and
+                source/sink converters read it, as does the spatial converter when it
+                converts a uniform `.tim` data file to `.bc`. Defaults to None.
             mdu_parser (MDUParser, optional): Parser for the FM model, forwarded to
-                the converters that need it. Only the `SourceSinkConverter` uses it
-                at present. Defaults to None.
+                the converters that need it. The `SourceSinkConverter` and
+                `BoundaryConditionConverter` use it, as does the `SpatialConverter`
+                when converting a uniform `.tim` data file to `.bc`. Defaults to None.
 
         Returns:
             BaseConverter: An instance of a specific BaseConverter subclass
@@ -1444,13 +1546,13 @@ class ConverterFactory:
             ValueError: If no converter is available for the given quantity.
         """
         if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
-            converter = MassBalanceAreaConverter()
+            converter = MassBalanceAreaConverter(mdu_parser=mdu_parser)
         elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
             or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
         ):
-            converter = SpatialConverter()
+            converter = SpatialConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
             converter = BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):

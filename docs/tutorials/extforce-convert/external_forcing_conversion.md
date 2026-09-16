@@ -157,6 +157,7 @@ Below are several usage examples to illustrate typical operations:
 
 - If no valid input argument (`--mdufile`, `--extoldfile`, or `--dir`) is provided, the program will exit with an error indicating that no input was specified.
 - Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.
+- When the MDU's `ExtForceFileNew` lists **several files separated by a space** (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the **first** listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.
 - If you encounter any errors during conversion, re-run the command with `-v` (verbose) or check the backup files (if enabled) for debugging.
 
 ---

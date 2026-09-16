@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.bc.models import TimeInterpolation
 from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.tools.extforce_convert.converters import BoundaryConditionConverter
@@ -233,6 +234,33 @@ class TestBoundaryConverter:
         )
         assert forcing_model.forcing[0].datablock == [[0, 0.01], [120, 0.01]]
 
+    def test_with_tim_method_zero_uses_block_from(
+        self,
+        converter: BoundaryConditionConverter,
+        input_files_dir: Path,
+        tim_files: List[Path],
+    ):
+        """A METHOD=0 forcing converts to a .bc TimeSeries with block-From interpolation.
+
+        Issue #1197: `METHOD=0` means no time interpolation (hold the last value),
+        which maps to `timeInterpolation = block-From` in the new `.bc` file.
+        """
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.WaterLevelBnd,
+            filename=input_files_dir / "boundary-conditions/tfl_01.pli",
+            filetype=9,
+            method=0,
+            operand="override",
+        )
+        with patch.object(Path, "glob", side_effect=[tim_files, [], []]):
+            new_quantity_block = converter.convert(forcing)
+
+        forcing_model = new_quantity_block.forcingfile
+        assert all(
+            f.timeinterpolation == TimeInterpolation.block_from
+            for f in forcing_model.forcing
+        )
+
     def test_with_cmp(
         self,
         converter: BoundaryConditionConverter,
@@ -338,15 +366,10 @@ class TestBoundaryConverter:
             [9999999.0, 42.0, 37.45455, 37.0, 35.0, 32.0],
         ]
 
-    def test_convert_raises_when_mdu_parser_is_none(self, forcing: ExtOldForcing):
-        """convert() raises a clear error when no MDU parser was injected.
-
-        The reference time is read from the MDU parser, so converting a boundary
-        condition without one cannot proceed.
-        """
-        converter = BoundaryConditionConverter(mdu_parser=None)
-        with pytest.raises(ValueError, match="MDU model is required"):
-            converter.convert(forcing)
+    def test_constructor_raises_when_mdu_parser_is_none(self):
+        """Constructor raises a clear error when no MDU parser is injected."""
+        with pytest.raises(TypeError, match="mdu_parser is required"):
+            BoundaryConditionConverter(mdu_parser=None)
 
 
 class TestMainConverter:
@@ -366,7 +389,8 @@ class TestMainConverter:
         mock_mdu_parser.temperature_salinity_data = {"refdate": start_date}
         mock_mdu_parser.mdu_path = old_forcing_file_boundary["path"].parent / "mdu.mdu"
         converter = ExternalForcingConverter(
-            old_forcing_file_boundary["path"], mdu_parser=mock_mdu_parser
+            extold_model=old_forcing_file_boundary["path"],
+            mdu_parser=mock_mdu_parser,
         )
 
         with patch(

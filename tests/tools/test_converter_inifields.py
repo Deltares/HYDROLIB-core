@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -22,9 +23,19 @@ from hydrolib.tools.extforce_convert.converters import (
     SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     oldfiletype_to_forcing_file_type,
 )
+
+
+def _make_mdu_parser_mock(base_dir: Path | None = None) -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.temperature_salinity_data = {}
+    parser.loaded_fm_data = {"general": {}}
+    root = Path.cwd() if base_dir is None else base_dir
+    parser.mdu_path = root / "test.mdu"
+    return parser
 
 
 class TestConvertInitialCondition:
@@ -37,7 +48,7 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -57,7 +68,7 @@ class TestConvertInitialCondition:
             method="4",
             operand="O",
         )
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -83,7 +94,7 @@ class TestConvertInitialCondition:
             TRACERFALLVELOCITY=0.1,
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -127,7 +138,9 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
@@ -145,7 +158,7 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -170,7 +183,7 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -236,7 +249,9 @@ class TestConvertParameters:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
@@ -290,7 +305,10 @@ class TestConvertSeaIceQuantities:
         """
         ext_path = self._write_old_ext(tmp_path, old_quantity)
 
-        converter = ExternalForcingConverter(ext_path)
+        converter = ExternalForcingConverter(
+            extold_model=ext_path,
+            mdu_parser=_make_mdu_parser_mock(ext_path.parent),
+        )
         # The old file must still accept the old spelling.
         assert [f.quantity for f in converter.extold_model.forcing] == [old_quantity]
         # And the quantity must no longer be refused by the converter.
@@ -310,7 +328,10 @@ class TestConvertSeaIceQuantities:
         """
         ext_path = self._write_old_ext(tmp_path, "sea_ice_thickness")
 
-        converter = ExternalForcingConverter(str(ext_path))
+        converter = ExternalForcingConverter(
+            extold_model=str(ext_path),
+            mdu_parser=_make_mdu_parser_mock(ext_path.parent),
+        )
         converter.update()
         converter.save(backup=False)
 

@@ -39,7 +39,9 @@ class TestInitialConditionConverter:
             ext_model.filepath = ext_old_path.parent / "new-external-forcing.ext"
             mdu_parser = MagicMock(spec=MDUParser)
             mdu_parser.loaded_fm_data = {"general": {"pathsrelativetoparent": "1"}}
-            external_forcing_converter = ExternalForcingConverter("old-ext-file.ext")
+            external_forcing_converter = ExternalForcingConverter(
+                extold_model="old-ext-file.ext", mdu_parser=mdu_parser
+            )
             external_forcing_converter._ext_model = ext_model
             external_forcing_converter._extold_model = extold_model
             external_forcing_converter._root_dir = tmp_path
@@ -109,3 +111,4 @@ class TestSourceSinks:
 
         assert boundary_paths["bc_abs_path"].exists()
         boundary_paths["bc_abs_path"].unlink()
+

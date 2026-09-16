@@ -1,0 +1,11 @@
+[external forcing]
+ExtForceFile      = waq_temporal.ext
+ExtForceFileNew   = waq_temporal_new.ext
+
+[time]
+RefDate           = 20010101
+Tunit             = M
+
+[physics]
+Salinity          = 0
+Temperature       = 0
