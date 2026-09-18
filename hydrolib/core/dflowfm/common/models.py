@@ -90,6 +90,22 @@ class DataFileType(StrEnum):
         "the map type as ncFlow."
     )
 
+    @classmethod
+    def legacy_alternatives(cls) -> dict[str, list[str]]:
+        """Return the mapping of canonical `DataFileType` values to their legacy aliases.
+
+        Used by `enum_value_parser` to accept older spellings on input while steering callers
+        toward the canonical value via a `DeprecationWarning`. Currently maps `map` → `ncFlow`
+        (the D-Flow FM User Manual uses `ncFlow`, but the Delft3D kernel and issue #1207 use
+        `map`).
+
+        Returns:
+            dict[str, list[str]]: Canonical enum value → list of accepted legacy aliases.
+        """
+        return {
+            cls.map.value: ["ncFlow"],
+        }
+
 
 class InterpolationMethod(StrEnum):
     """Enum class containing the valid values for the interpolationMethod attribute.
