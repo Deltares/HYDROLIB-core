@@ -185,7 +185,7 @@ FileType:
     NetCDFGridData: 11
     # 11. NetCDF grid data (e.g. meteo fields)
     NetCDFFlowMapFile: 12
-    # 12. D-Flow FM map output in NetCDF format for non-restart initial fields
+    # 12. D-Flow FM map (NetCDF) file used as an initial-condition source (non-restart)
     NetCDFWaveData: 14
     # 14. NetCDF wave data
 
