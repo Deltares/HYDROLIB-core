@@ -389,6 +389,17 @@ class TestOldFiletypeToForcingFileType:
         """FILETYPE=12 (NetCDFFlowMapFile) maps to DataFileType.map."""
         assert convert_file_type(12) == DataFileType.map
 
+    @pytest.mark.unit
+    def test_filetype_14_unmapped_raises_valueerror(self):
+        """FILETYPE=14 (NetCDFWaveData) has no converter mapping and must raise `ValueError`.
+
+        Regression guard: the pre-fix code silently returned the string ``"unknown"`` here,
+        which caused a confusing Pydantic validation error further down the call chain
+        (complaining about ``dataFileType`` rather than the offending FILETYPE integer).
+        """
+        with pytest.raises(ValueError, match="FILETYPE = 14"):
+            convert_file_type(ExtOldFileType.NetCDFWaveData)
+
 
 class TestInitialVerticalInterpolationMethodOverride:
     """Tests for UNST-9218 / GitHub #1104: initialvertical* must use constant interpolation.

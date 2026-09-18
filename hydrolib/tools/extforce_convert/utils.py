@@ -59,6 +59,23 @@ AVERAGING_TYPE_DICT = {
 }
 
 
+# Mapping from old external-forcing `FILETYPE` integer values to the equivalent new-format
+# `DataFileType`. FILETYPE=3 and FILETYPE=8 are intentionally absent — see `convert_file_type`,
+# which raises `NotImplementedError` for those.
+OLD_FILETYPE_TO_DATAFILETYPE = {
+    ExtOldFileType.TimeSeries: DataFileType.uniform,  # 1
+    ExtOldFileType.TimeSeriesMagnitudeAndDirection: DataFileType.unimagdir,  # 2
+    ExtOldFileType.ArcInfo: DataFileType.arcinfo,  # 4
+    ExtOldFileType.SpiderWebData: DataFileType.spiderweb,  # 5
+    ExtOldFileType.CurvilinearData: DataFileType.curvigrid,  # 6
+    ExtOldFileType.Samples: DataFileType.sample,  # 7
+    ExtOldFileType.Polyline: DataFileType.polygon,  # 9
+    ExtOldFileType.InsidePolygon: DataFileType.polygon,  # 10
+    ExtOldFileType.NetCDFGridData: DataFileType.netcdf,  # 11
+    ExtOldFileType.NetCDFFlowMapFile: DataFileType.map,  # 12
+}
+
+
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
 with CONVERTER_DATA_PATH.open("r") as fh:
     try:
@@ -105,46 +122,38 @@ def backup_file(filepath: PathOrStr) -> None:
 
 def convert_file_type(
     old_file_type: int,
-) -> DataFileType | str:
-    """Convert old external forcing `FILETYPE` integer value to valid `forcingFileType` string value.
+) -> DataFileType:
+    """Convert old external forcing `FILETYPE` integer value to a `DataFileType` value.
 
     Args:
         old_file_type (int): The FILETYPE value in an old external forcings file.
 
     Returns:
-        Union[DataFileType,str]: Corresponding value for `forcingFileType`,
-            or "unknown" for invalid input.
-    """
-    forcing_file_type = "unknown"
+        DataFileType: The corresponding `DataFileType` member for the given legacy FILETYPE.
 
-    if old_file_type == ExtOldFileType.TimeSeries:  # 1
-        forcing_file_type = DataFileType.uniform
-    elif old_file_type == ExtOldFileType.TimeSeriesMagnitudeAndDirection:  # 2
-        forcing_file_type = DataFileType.unimagdir
-    elif old_file_type == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
+    Raises:
+        NotImplementedError: For FILETYPE values whose legacy semantics are intentionally no longer
+            supported (currently 3 — spatially varying wind and pressure, and 8 —
+            magnitude+direction timeseries on stations).
+        ValueError: For any other FILETYPE value that has no defined mapping to a `DataFileType`
+            (e.g. 14 — NetCDFWaveData — which the converter does not currently handle). The
+            offending integer is included in the message.
+    """
+    if old_file_type == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
         raise NotImplementedError(
             "FILETYPE = 3 (spatially varying wind and pressure) is no longer supported."
         )
-    elif old_file_type == ExtOldFileType.ArcInfo:  # 4
-        forcing_file_type = DataFileType.arcinfo
-    elif old_file_type == ExtOldFileType.SpiderWebData:  # 5
-        forcing_file_type = DataFileType.spiderweb
-    elif old_file_type == ExtOldFileType.CurvilinearData:  # 6
-        forcing_file_type = DataFileType.curvigrid
-    elif old_file_type == ExtOldFileType.Samples:  # 7
-        forcing_file_type = DataFileType.sample
-    elif old_file_type == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
+    if old_file_type == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif old_file_type in [ExtOldFileType.Polyline, ExtOldFileType.InsidePolygon]:  # 9 and # 10
-        forcing_file_type = DataFileType.polygon
-    elif old_file_type == ExtOldFileType.NetCDFGridData:  # 11
-        forcing_file_type = DataFileType.netcdf
-    elif old_file_type == ExtOldFileType.NetCDFFlowMapFile:  # 12
-        forcing_file_type = DataFileType.map
 
-    return forcing_file_type
+    try:
+        return OLD_FILETYPE_TO_DATAFILETYPE[old_file_type]
+    except KeyError:
+        raise ValueError(
+            f"FILETYPE = {int(old_file_type)} has no mapping to a new-format `dataFileType`."
+        ) from None
 
 
 def map_method_to_averaging_type(
