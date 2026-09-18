@@ -4769,6 +4769,17 @@ that exact casing.</p>
 <li>3 (spatially varying wind/pressure) → not supported (raises error)</li>
 <li>8 (magnitude+direction timeseries on stations) → not supported (raises error)</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title"><code>ncFlow</code> is accepted as a legacy alias of <code>map</code></p>
+<p>In a <strong>new-format</strong> <code>.ext</code> file, <code>dataFileType = ncFlow</code> is accepted on input and
+canonicalised to <code>dataFileType = map</code> on load. Reading a file that uses <code>ncFlow</code>, then
+saving it back through hydrolib-core, therefore rewrites the token to <code>map</code>. The alias is
+matched case-insensitively (<code>ncFlow</code>, <code>ncflow</code>, <code>NCFLOW</code> are all equivalent) and each match
+emits a <code>DeprecationWarning</code> steering the caller toward <code>map</code>. <code>ncFlow</code> is the wording used
+in older sections of the D-Flow FM User Manual; <code>map</code> is the wording used by the Delft3D
+kernel and by hydrolib-core (see <a href="https://github.com/Deltares/HYDROLIB-core/issues/1207">Deltares/HYDROLIB-core#1207</a> and
+<a href="https://github.com/Deltares/Delft3D/pull/1270">Deltares/Delft3D#1270</a>).</p>
+</div>
 <h5 id="method-and-averaging-mapping">METHOD and averaging mapping<a class="headerlink" href="#method-and-averaging-mapping" title="Permanent link">&para;</a></h5>
 <ul>
 <li><code>METHOD</code> → <code>interpolationmethod</code>.</li>
