@@ -486,5 +486,7 @@ def test_ext_old_forcing_accepts_filetype_12_netcdf_flow_map():
         method=5,
         operand="override",
     )
+    assert forcing.filetype == ExtOldFileType.NetCDFFlowMapFile
+    assert forcing.method == ExtOldMethod.InterpolateTime
     assert isinstance(forcing.filename, DiskOnlyFileModel)
 
