@@ -350,6 +350,20 @@ that exact casing.
 - 3 (spatially varying wind/pressure) → not supported (raises error)
 - 8 (magnitude+direction timeseries on stations) → not supported (raises error)
 
+!!! note "`ncFlow` is accepted as a legacy alias of `map`"
+
+    In a **new-format** `.ext` file, `dataFileType = ncFlow` is accepted on input and
+    canonicalised to `dataFileType = map` on load. Reading a file that uses `ncFlow`, then
+    saving it back through hydrolib-core, therefore rewrites the token to `map`. The alias is
+    matched case-insensitively (`ncFlow`, `ncflow`, `NCFLOW` are all equivalent) and each match
+    emits a `DeprecationWarning` steering the caller toward `map`. `ncFlow` is the wording used
+    in older sections of the D-Flow FM User Manual; `map` is the wording used by the Delft3D
+    kernel and by hydrolib-core (see [Deltares/HYDROLIB-core#1207][issue-1207] and
+    [Deltares/Delft3D#1270][d3d-1270]).
+
+[issue-1207]: https://github.com/Deltares/HYDROLIB-core/issues/1207
+[d3d-1270]: https://github.com/Deltares/Delft3D/pull/1270
+
 ##### METHOD and averaging mapping
 - `METHOD` → `interpolationmethod`.
 - When `METHOD = 6` (averaging), the following additional fields are set:
