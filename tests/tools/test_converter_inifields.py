@@ -400,6 +400,28 @@ class TestOldFiletypeToForcingFileType:
         with pytest.raises(ValueError, match="FILETYPE = 14"):
             convert_file_type(ExtOldFileType.NetCDFWaveData)
 
+    @pytest.mark.unit
+    def test_every_ext_old_file_type_member_is_handled(self):
+        """Every `ExtOldFileType` member must land in one of `convert_file_type`'s three
+        outcomes: `DataFileType` return, `NotImplementedError`, or `ValueError`.
+
+        Guards against silent drift when a new `FileType:` entry is added to the YAML source
+        of truth without a corresponding decision in `utils.py`. The same invariant is
+        checked at import time by a `RuntimeError` guard, but pinning it here keeps the
+        contract visible in the test suite.
+        """
+        for member in ExtOldFileType:
+            try:
+                result = convert_file_type(member)
+            except NotImplementedError:
+                continue
+            except ValueError:
+                continue
+            else:
+                assert isinstance(result, DataFileType), (
+                    f"FILETYPE = {int(member)} returned {result!r}, expected a DataFileType."
+                )
+
 
 class TestInitialVerticalInterpolationMethodOverride:
     """Tests for UNST-9218 / GitHub #1104: initialvertical* must use constant interpolation.

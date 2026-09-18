@@ -60,8 +60,8 @@ AVERAGING_TYPE_DICT = {
 
 
 # Mapping from old external-forcing `FILETYPE` integer values to the equivalent new-format
-# `DataFileType`. FILETYPE=3 and FILETYPE=8 are intentionally absent — see `convert_file_type`,
-# which raises `NotImplementedError` for those.
+# `DataFileType`. FILETYPE=3 and FILETYPE=8 are intentionally absent — `convert_file_type`
+# raises `NotImplementedError` for those.
 OLD_FILETYPE_TO_DATAFILETYPE = {
     ExtOldFileType.TimeSeries: DataFileType.uniform,  # 1
     ExtOldFileType.TimeSeriesMagnitudeAndDirection: DataFileType.unimagdir,  # 2
