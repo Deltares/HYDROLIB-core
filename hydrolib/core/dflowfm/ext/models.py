@@ -184,6 +184,8 @@ FILETYPE_FILEMODEL_MAPPING = {
     "spiderweb": DiskOnlyFileModel,
     "curvigrid": DiskOnlyFileModel,
     "netcdf": DiskOnlyFileModel,
+    "map": DiskOnlyFileModel,
+    "ncflow": DiskOnlyFileModel,
     "polygon": PolyFile,
 }
 

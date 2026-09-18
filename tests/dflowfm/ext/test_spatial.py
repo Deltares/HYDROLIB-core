@@ -160,6 +160,27 @@ class TestMeteoSpatialParity:
         )
         assert isinstance(block.datafile, DiskOnlyFileModel)
 
+    def test_spatial_map_datafiletype_is_supported(self):
+        block = Spatial(
+            quantity="initialwaterlevel",
+            dataFile="flow_map.nc",
+            dataFileType="map",
+            interpolationMethod="triangulation",
+        )
+        assert block.datafiletype == "map"
+        assert isinstance(block.datafile, DiskOnlyFileModel)
+
+    def test_spatial_ncflow_alias_is_normalized_to_map(self):
+        with pytest.warns(DeprecationWarning, match="ncFlow"):
+            block = Spatial(
+                quantity="initialwaterlevel",
+                dataFile="flow_map.nc",
+                dataFileType="ncFlow",
+                interpolationMethod="triangulation",
+            )
+        assert block.datafiletype == "map"
+        assert isinstance(block.datafile, DiskOnlyFileModel)
+
     def test_meteo_averagingtype_is_raw_int(self):
         """Characterizes Bug C: Meteo stores averagingType as a raw int."""
         block = Meteo(
