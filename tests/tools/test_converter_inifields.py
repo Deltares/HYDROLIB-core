@@ -390,7 +390,7 @@ class TestOldFiletypeToForcingFileType:
         assert convert_file_type(12) == DataFileType.map
 
     @pytest.mark.unit
-    def test_filetype_14_unmapped_raises_valueerror(self):
+    def test_filetype_14_unmapped_raises_value_error(self):
         """FILETYPE=14 (NetCDFWaveData) has no converter mapping and must raise `ValueError`.
 
         Regression guard: the pre-fix code silently returned the string ``"unknown"`` here,
