@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import FileModel
-from hydrolib.core.dflowfm.common import DataFileType
+from hydrolib.core.dflowfm.common import DataFileType, InterpolationMethod
 from hydrolib.core.dflowfm.ext.models import (
     TargetLayer,
 )
@@ -24,7 +24,6 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
-    InterpolationMethod,
 )
 
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinity"
