@@ -39,7 +39,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
-    "convert_file_type"
+    "convert_file_type",
 ]
 
 
