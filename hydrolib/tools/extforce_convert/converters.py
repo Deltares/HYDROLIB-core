@@ -399,8 +399,7 @@ class SpatialConverter(BaseConverter):
         tim_model.quantities_names = [quantity]
         units = tim_model.get_units()
 
-        forcing_list = TimToForcingConverter.convert(
-            tim_model,
+        forcing_list = TimToForcingConverter(tim_model).convert(
             time_unit,
             TimeInterpolation.from_old_method(forcing.method),
             units,
@@ -523,8 +522,7 @@ class BoundaryConditionConverter(BaseConverter):
                 tim_model.quantities_names = component_names
                 units = [component_units[component] for component in component_names]
                 time_series_list.extend(
-                    TimToForcingConverter.convert(
-                        tim_model,
+                    TimToForcingConverter(tim_model).convert(
                         time_unit,
                         time_interpolation,
                         units,
@@ -539,8 +537,7 @@ class BoundaryConditionConverter(BaseConverter):
             tim_model.quantities_names = [quantity] * len(tim_model.get_units())
 
             units = tim_model.get_units()
-            time_series_list = TimToForcingConverter.convert(
-                tim_model,
+            time_series_list = TimToForcingConverter(tim_model).convert(
                 time_unit,
                 time_interpolation,
                 units,
@@ -1078,8 +1075,7 @@ class SourceSinkConverter(BaseConverter):
         units = SourceSinkConverter._correct_substance_units(
             units, tim_model.quantities_names, substance_units
         )
-        time_series_list = TimToForcingConverter.convert(
-            tim_model,
+        time_series_list = TimToForcingConverter(tim_model).convert(
             time_unit,
             time_interpolation,
             units=units,
@@ -1306,8 +1302,8 @@ class LateralConverter(BaseConverter):
     ) -> ForcingModel:
         """Convert a TIM model into a BC ForcingModel for lateral discharge."""
         units = tim_model.get_units()
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        time_series_list = TimToForcingConverter(tim_model).convert(
+            time_unit, units=units, user_defined_names=user_defined_names
         )
         return ForcingModel(forcing=time_series_list)
 
@@ -1753,9 +1749,11 @@ class TimToForcingConverter:
     - `units`: A list of units corresponding to the forcing quantities.
     - `user_defined_names`: A list of user-defined names for the forcing blocks.
     """
-    @staticmethod
+    def __init__(self, tim_model: TimModel):
+        self.tim_model = tim_model
+
     def convert(
-        tim_model: TimModel,
+        self,
         time_unit: str,
         time_interpolation: str = "linear",
         units: list[str] | None = None,
@@ -1800,9 +1798,9 @@ class TimToForcingConverter:
             >>> tim_model = TimModel(file_path, user_defined_names)
             >>> print(tim_model.as_dict())
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
-            >>> converter = TimToForcingConverter()
+            >>> converter = TimToForcingConverter(tim_model)
             >>> time_series = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
+            ...     "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
             ... )
             >>> print(time_series[0].name)
             discharge
@@ -1817,23 +1815,38 @@ class TimToForcingConverter:
         if time_unit is None:
             raise ValueError("The 'start_time' must be provided.")
 
-        first_record = tim_model.timeseries[0].data
         if vector_quantities:
-            return TimToForcingConverter._convert_with_vectors(
-                tim_model,
+            time_series_list = self._convert_multiple_columns_quantities(
                 time_unit,
                 time_interpolation,
                 user_defined_names,
                 vector_quantities,
                 units,
             )
+        else:
+            time_series_list = self._convert_single_column_quantities(
+                time_unit,
+                time_interpolation,
+                user_defined_names,
+                units,
+            )
 
+        return time_series_list
+
+    def _convert_single_column_quantities(
+        self,
+        time_unit: str,
+        time_interpolation: str,
+        user_defined_names: list[str],
+        units: list[str],
+    ) -> list[TimeSeries]:
+        first_record = self.tim_model.timeseries[0].data
         if len(units) != len(user_defined_names) != len(first_record):
             raise ValueError(
                 "The lengths of 'units', 'user_defined_names' and length of the columns in the first row must match."
             )
 
-        df = tim_model.as_dataframe()
+        df = self.tim_model.as_dataframe()
         time_data = df.index.tolist()
         time_series_list = []
         for i, (column, vals) in enumerate(df.items()):
@@ -1853,9 +1866,8 @@ class TimToForcingConverter:
 
         return time_series_list
 
-    @staticmethod
-    def _convert_with_vectors(
-        tim_model: TimModel,
+    def _convert_multiple_columns_quantities(
+        self,
         time_unit: str,
         time_interpolation: str,
         user_defined_names: List[str],
@@ -1863,7 +1875,7 @@ class TimToForcingConverter:
         units: list[str],
     ) -> List[TimeSeries]:
         """Convert a multi-column TIM model into a vector `TimeSeries` block."""
-        first_record = tim_model.timeseries[0].data
+        first_record = self.tim_model.timeseries[0].data
         if len(units) != len(first_record):
             raise ValueError(
                 "The lengths of 'units' and columns in the first TIM row must match for vector quantities."
@@ -1874,7 +1886,7 @@ class TimToForcingConverter:
             )
 
 
-        df = tim_model.as_dataframe()
+        df = self.tim_model.as_dataframe()
         time_data = df.index.tolist()
         vector_name, component_units = next(iter(vector_quantities.items()))
         component_names = list(component_units.keys())

@@ -20,9 +20,8 @@ def test_tim_to_bc_converter(input_files_dir: Path, reference_files_dir: Path):
     units = ["m³/s", "m", "C", "ppt", "-"]
     time_unit = "minutes since 2015-01-01 00:00:00"
     df = tim_model.as_dataframe()
-    converter = TimToForcingConverter()
+    converter = TimToForcingConverter(tim_model)
     time_series_list = converter.convert(
-        tim_model=tim_model,
         time_unit=time_unit,
         units=units,
         user_defined_names=user_defined_names,
@@ -56,9 +55,8 @@ def test_tim_to_bc_converter_writes_vector_block(tmp_path: Path):
     tim_model = TimModel(tim_path)
     tim_model.quantities_names = ["ux", "uy"]
 
-    converter = TimToForcingConverter()
+    converter = TimToForcingConverter(tim_model)
     forcing_list = converter.convert(
-        tim_model=tim_model,
         time_unit="minutes since 2000-01-01 00:00:00 +00:00",
         units=["unused", "unused"],
         user_defined_names=["seauxuy"],
