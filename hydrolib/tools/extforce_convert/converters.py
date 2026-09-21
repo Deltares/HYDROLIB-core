@@ -1753,15 +1753,14 @@ class TimToForcingConverter:
     - `units`: A list of units corresponding to the forcing quantities.
     - `user_defined_names`: A list of user-defined names for the forcing blocks.
     """
-
     @staticmethod
     def convert(
         tim_model: TimModel,
         time_unit: str,
         time_interpolation: str = "linear",
-        units: List[str] = None,
-        user_defined_names: List[str] = None,
-        vector_quantities: Dict[str, Dict[str, str]] = None,
+        units: list[str] | None = None,
+        user_defined_names: list[str] | None = None,
+        vector_quantities: dict[str, dict[str, str]] | None = None,
     ) -> List[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
