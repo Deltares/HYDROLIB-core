@@ -1819,20 +1819,13 @@ class TimToForcingConverter:
 
         first_record = tim_model.timeseries[0].data
         if vector_quantities:
-            if len(units) != len(first_record):
-                raise ValueError(
-                    "The lengths of 'units' and columns in the first TIM row must match for vector quantities."
-                )
-            if len(user_defined_names) != 1:
-                raise ValueError(
-                    "For vector quantities, provide exactly one user-defined forcing name per TIM model."
-                )
             return TimToForcingConverter._convert_with_vectors(
                 tim_model,
                 time_unit,
                 time_interpolation,
                 user_defined_names,
                 vector_quantities,
+                units,
             )
 
         if len(units) != len(user_defined_names) != len(first_record):
@@ -1867,8 +1860,20 @@ class TimToForcingConverter:
         time_interpolation: str,
         user_defined_names: List[str],
         vector_quantities: Dict[str, Dict[str, str]],
+        units: list[str],
     ) -> List[TimeSeries]:
         """Convert a multi-column TIM model into a vector `TimeSeries` block."""
+        first_record = tim_model.timeseries[0].data
+        if len(units) != len(first_record):
+            raise ValueError(
+                "The lengths of 'units' and columns in the first TIM row must match for vector quantities."
+            )
+        if len(user_defined_names) != 1:
+            raise ValueError(
+                "For vector quantities, provide exactly one user-defined forcing name per TIM model."
+            )
+
+
         df = tim_model.as_dataframe()
         time_data = df.index.tolist()
         vector_name, component_units = next(iter(vector_quantities.items()))
