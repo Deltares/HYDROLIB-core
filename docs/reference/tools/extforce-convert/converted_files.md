@@ -66,6 +66,11 @@ ExtForceFileNew                     =                                           
   file.
 - If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
+- `ExtForceFileNew` may list **several files separated by a space** (a file name containing spaces must be enclosed
+  in double quotes; D-Flow FM 1D2D User Manual, the `ExtForceFileNew` keyword). When more than one file is listed,
+  the converted quantities are appended to the **first** file only; the remaining files are left unchanged and a
+  warning naming them is emitted. This is intentional: all migrated quantities are written into a single new external
+  forcings file, and the first listed file is chosen as that target.
 
 
 ### Before: legacy `.ext` (old format)
@@ -206,7 +211,7 @@ How to trigger cleanup
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-converter = ExternalForcingConverter("path/to/old-forcings.ext")
+converter = ExternalForcingConverter.from_mdu("path/to/model.mdu")
 converter.update()
 converter.save()
 converter.clean()
@@ -341,8 +346,23 @@ that exact casing.
 - 7 → `sample`
 - 10 → `polygon` (initial/parameter)
 - 11 → `netcdf`
+- 12 → `map` (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as `ncFlow`)
 - 3 (spatially varying wind/pressure) → not supported (raises error)
 - 8 (magnitude+direction timeseries on stations) → not supported (raises error)
+
+!!! note "`ncFlow` is accepted as a legacy alias of `map`"
+
+    In a **new-format** `.ext` file, `dataFileType = ncFlow` is accepted on input and
+    canonicalised to `dataFileType = map` on load. Reading a file that uses `ncFlow`, then
+    saving it back through hydrolib-core, therefore rewrites the token to `map`. The alias is
+    matched case-insensitively (`ncFlow`, `ncflow`, `NCFLOW` are all equivalent) and each match
+    emits a `DeprecationWarning` steering the caller toward `map`. `ncFlow` is the wording used
+    in older sections of the D-Flow FM User Manual; `map` is the wording used by the Delft3D
+    kernel and by hydrolib-core (see [Deltares/HYDROLIB-core#1207][issue-1207] and
+    [Deltares/Delft3D#1270][d3d-1270]).
+
+[issue-1207]: https://github.com/Deltares/HYDROLIB-core/issues/1207
+[d3d-1270]: https://github.com/Deltares/Delft3D/pull/1270
 
 ##### METHOD and averaging mapping
 - `METHOD` → `interpolationmethod`.

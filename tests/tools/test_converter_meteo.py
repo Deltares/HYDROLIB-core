@@ -1,4 +1,5 @@
 import pytest
+from unittest.mock import MagicMock
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common.models import Operand
@@ -6,6 +7,13 @@ from hydrolib.core.dflowfm.ext.models import Spatial
 from hydrolib.core.dflowfm.extold.models import ExtOldForcing, ExtOldQuantity
 from hydrolib.core.dflowfm.inifield import DataFileType, InterpolationMethod
 from hydrolib.tools.extforce_convert.converters import SpatialConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
+
+def _make_mdu_parser_mock() -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.temperature_salinity_data = {"refdate": "MINUTES SINCE 2015-01-01 00:00:00"}
+    return parser
 
 
 class TestConvertMeteo:
@@ -18,7 +26,7 @@ class TestConvertMeteo:
             operand="override",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -58,7 +66,7 @@ class TestMeteoLegacyOperandConversion:
             method="2",
             operand=legacy_operand,
         )
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
 

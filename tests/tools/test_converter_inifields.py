@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
@@ -22,9 +23,19 @@ from hydrolib.tools.extforce_convert.converters import (
     SpatialConverter,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
-    oldfiletype_to_forcing_file_type,
+    convert_file_type,
 )
+
+
+def _make_mdu_parser_mock(base_dir: Path | None = None) -> MagicMock:
+    parser = MagicMock(spec=MDUParser)
+    parser.temperature_salinity_data = {}
+    parser.loaded_fm_data = {"general": {}}
+    root = Path.cwd() if base_dir is None else base_dir
+    parser.mdu_path = root / "test.mdu"
+    return parser
 
 
 class TestConvertInitialCondition:
@@ -37,7 +48,7 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -57,7 +68,7 @@ class TestConvertInitialCondition:
             method="4",
             operand="O",
         )
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -65,6 +76,24 @@ class TestConvertInitialCondition:
         assert new_quantity_block.operand == "override"
         assert np.isclose(new_quantity_block.datavalue, 0.0)
         assert new_quantity_block.targetmaskfile is not None
+
+    def test_map_file_data_file(self):
+        forcing = ExtOldForcing(
+            quantity=ExtOldQuantity.InitialWaterLevel,
+            filename="dataOneDifferentMesh_rst.nc",
+            filetype=12,
+            method="5",
+            operand="O",
+        )
+
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
+            forcing, forcing.filename.filepath
+        )
+        assert isinstance(new_quantity_block, Spatial)
+        assert new_quantity_block.datafiletype == "map"
+        assert new_quantity_block.interpolationmethod == "triangulation"
+        assert new_quantity_block.operand == "override"
+        assert new_quantity_block.extrapolationallowed is False
 
     @pytest.mark.unit
     def test_tracer_fall_velocity(self):
@@ -83,7 +112,7 @@ class TestConvertInitialCondition:
             TRACERFALLVELOCITY=0.1,
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -127,7 +156,9 @@ class TestConvertInitialCondition:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
@@ -145,7 +176,7 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -170,7 +201,7 @@ class TestConvertParameters:
             operand="O",
         )
 
-        new_quantity_block = SpatialConverter().convert(
+        new_quantity_block = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
             forcing, forcing.filename.filepath
         )
         assert isinstance(new_quantity_block, Spatial)
@@ -236,7 +267,9 @@ class TestConvertParameters:
             operand="O",
         )
 
-        converter = ConverterFactory.create_converter(forcing.quantity)
+        converter = ConverterFactory.create_converter(
+            forcing.quantity, mdu_parser=_make_mdu_parser_mock()
+        )
         assert isinstance(converter, SpatialConverter)
         new_quantity_block = converter.convert(forcing, forcing.filename.filepath)
         assert isinstance(new_quantity_block, Spatial)
@@ -290,7 +323,10 @@ class TestConvertSeaIceQuantities:
         """
         ext_path = self._write_old_ext(tmp_path, old_quantity)
 
-        converter = ExternalForcingConverter(ext_path)
+        converter = ExternalForcingConverter(
+            extold_model=ext_path,
+            mdu_parser=_make_mdu_parser_mock(ext_path.parent),
+        )
         # The old file must still accept the old spelling.
         assert [f.quantity for f in converter.extold_model.forcing] == [old_quantity]
         # And the quantity must no longer be refused by the converter.
@@ -310,7 +346,10 @@ class TestConvertSeaIceQuantities:
         """
         ext_path = self._write_old_ext(tmp_path, "sea_ice_thickness")
 
-        converter = ExternalForcingConverter(str(ext_path))
+        converter = ExternalForcingConverter(
+            extold_model=str(ext_path),
+            mdu_parser=_make_mdu_parser_mock(ext_path.parent),
+        )
         converter.update()
         converter.save(backup=False)
 
@@ -320,7 +359,7 @@ class TestConvertSeaIceQuantities:
 
 
 class TestOldFiletypeToForcingFileType:
-    """Tests for oldfiletype_to_forcing_file_type — especially the FILETYPE=9 change."""
+    """Tests for the legacy FILETYPE → new DataFileType mapping."""
 
     @pytest.mark.unit
     def test_filetype_9_polyline_maps_to_polygon(self):
@@ -329,21 +368,59 @@ class TestOldFiletypeToForcingFileType:
         Before the fix, FILETYPE=9 fell through without setting a value, returning the
         default "unknown", which caused InitialField validation errors downstream.
         """
-        result = oldfiletype_to_forcing_file_type(ExtOldFileType.Polyline)
+        result = convert_file_type(ExtOldFileType.Polyline)
         assert result == DataFileType.polygon
 
     @pytest.mark.unit
     def test_filetype_10_inside_polygon_maps_to_polygon(self):
         """FILETYPE=10 (InsidePolygon) still maps to DataFileType.polygon (unchanged)."""
-        result = oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+        result = convert_file_type(ExtOldFileType.InsidePolygon)
         assert result == DataFileType.polygon
 
     @pytest.mark.unit
     def test_filetype_9_and_10_return_same_value(self):
         """FILETYPE=9 and FILETYPE=10 must now return the same datafiletype."""
-        assert oldfiletype_to_forcing_file_type(
+        assert convert_file_type(
             ExtOldFileType.Polyline
-        ) == oldfiletype_to_forcing_file_type(ExtOldFileType.InsidePolygon)
+        ) == convert_file_type(ExtOldFileType.InsidePolygon)
+
+    @pytest.mark.unit
+    def test_filetype_12_netcdf_flow_map_maps_to_map(self):
+        """FILETYPE=12 (NetCDFFlowMapFile) maps to DataFileType.map."""
+        assert convert_file_type(12) == DataFileType.map
+
+    @pytest.mark.unit
+    def test_filetype_14_unmapped_raises_value_error(self):
+        """FILETYPE=14 (NetCDFWaveData) has no converter mapping and must raise `ValueError`.
+
+        Regression guard: the pre-fix code silently returned the string ``"unknown"`` here,
+        which caused a confusing Pydantic validation error further down the call chain
+        (complaining about ``dataFileType`` rather than the offending FILETYPE integer).
+        """
+        with pytest.raises(ValueError, match="FILETYPE = 14"):
+            convert_file_type(ExtOldFileType.NetCDFWaveData)
+
+    @pytest.mark.unit
+    def test_every_ext_old_file_type_member_is_handled(self):
+        """Every `ExtOldFileType` member must land in one of `convert_file_type`'s three
+        outcomes: `DataFileType` return, `NotImplementedError`, or `ValueError`.
+
+        Guards against silent drift when a new `FileType:` entry is added to the YAML source
+        of truth without a corresponding decision in `utils.py`. The same invariant is
+        checked at import time by a `RuntimeError` guard, but pinning it here keeps the
+        contract visible in the test suite.
+        """
+        for member in ExtOldFileType:
+            try:
+                result = convert_file_type(member)
+            except NotImplementedError:
+                continue
+            except ValueError:
+                continue
+            else:
+                assert isinstance(result, DataFileType), (
+                    f"FILETYPE = {int(member)} returned {result!r}, expected a DataFileType."
+                )
 
 
 class TestInitialVerticalInterpolationMethodOverride:

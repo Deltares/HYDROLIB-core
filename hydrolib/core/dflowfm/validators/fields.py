@@ -88,7 +88,8 @@ class LocationTypeDataFileTypeValidators(ABC):
     @field_validator("datafiletype", mode="before", check_fields=False)
     @classmethod
     def _validate_datafiletype(cls, v):
-        result = v
-        if v is not None:
-            result = enum_value_parser(v, DataFileType)
-        return result
+        if v is None:
+            value = v
+        else:
+            value = enum_value_parser(v, DataFileType, DataFileType.legacy_alternatives())
+        return value

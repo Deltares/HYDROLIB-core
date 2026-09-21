@@ -1,3 +1,10 @@
+## 1.4.0 (2026-09-16)
+
+### Feat
+
+- **extforce-convert**: support METHOD=0 (block-from), multi ExtForceFileNew entries, and spatial TIM-to-BC conversion (#1201)
+- **ext**: add BubbleScreen support and source-sink variant conversion tests (#1052)
+
 ## 1.3.0 (2026-09-14)
 
 ### Feat

@@ -11,9 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import FileModel
+from hydrolib.core.dflowfm.common import DataFileType, InterpolationMethod
 from hydrolib.core.dflowfm.ext.models import (
-    MeteoForcingFileType,
-    MeteoInterpolationMethod,
     TargetLayer,
 )
 from hydrolib.core.dflowfm.extold.models import (
@@ -25,8 +24,6 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.core.dflowfm.inifield.models import (
     AveragingType,
-    DataFileType,
-    InterpolationMethod,
 )
 
 SOURCESINK_SALINITY_IN_BC = "sourcesink_salinity"
@@ -42,6 +39,7 @@ __all__ = [
     "backup_file",
     "construct_filemodel_new_or_existing",
     "path_relative_to_parent",
+    "convert_file_type",
 ]
 
 
@@ -58,6 +56,23 @@ AVERAGING_TYPE_DICT = {
     5: AveragingType.invdist,
     6: AveragingType.minabs,
     7: AveragingType.median,
+}
+
+
+# Mapping from old external-forcing `FILETYPE` integer values to the equivalent new-format
+# `DataFileType`. FILETYPE=3 and FILETYPE=8 are intentionally absent — `convert_file_type`
+# raises `NotImplementedError` for those.
+OLD_FILETYPE_TO_DATAFILETYPE = {
+    ExtOldFileType.TimeSeries: DataFileType.uniform,  # 1
+    ExtOldFileType.TimeSeriesMagnitudeAndDirection: DataFileType.unimagdir,  # 2
+    ExtOldFileType.ArcInfo: DataFileType.arcinfo,  # 4
+    ExtOldFileType.SpiderWebData: DataFileType.spiderweb,  # 5
+    ExtOldFileType.CurvilinearData: DataFileType.curvigrid,  # 6
+    ExtOldFileType.Samples: DataFileType.sample,  # 7
+    ExtOldFileType.Polyline: DataFileType.polygon,  # 9
+    ExtOldFileType.InsidePolygon: DataFileType.polygon,  # 10
+    ExtOldFileType.NetCDFGridData: DataFileType.netcdf,  # 11
+    ExtOldFileType.NetCDFFlowMapFile: DataFileType.map,  # 12
 }
 
 
@@ -105,71 +120,40 @@ def backup_file(filepath: PathOrStr) -> None:
         filepath.replace(backup_path)
 
 
-def oldfiletype_to_forcing_file_type(
-    oldfiletype: int,
-) -> Union[MeteoForcingFileType, str]:
-    """Convert old external forcing `FILETYPE` integer value to valid `forcingFileType` string value.
+def convert_file_type(
+    old_file_type: int,
+) -> DataFileType:
+    """Convert old external forcing `FILETYPE` integer value to a `DataFileType` value.
 
     Args:
-        oldfiletype (int): The FILETYPE value in an old external forcings file.
+        old_file_type (int): The FILETYPE value in an old external forcings file.
 
     Returns:
-        Union[MeteoForcingFileType,str]: Corresponding value for `forcingFileType`,
-            or "unknown" for invalid input.
-    """
-    forcing_file_type = "unknown"
+        DataFileType: The corresponding `DataFileType` member for the given legacy FILETYPE.
 
-    if oldfiletype == ExtOldFileType.TimeSeries:  # 1
-        forcing_file_type = MeteoForcingFileType.uniform
-    elif oldfiletype == ExtOldFileType.TimeSeriesMagnitudeAndDirection:  # 2
-        forcing_file_type = MeteoForcingFileType.unimagdir
-    elif oldfiletype == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
+    Raises:
+        NotImplementedError: For FILETYPE values whose legacy semantics are intentionally no longer
+            supported (currently 3 — spatially varying wind and pressure, and 8 —
+            magnitude+direction timeseries on stations).
+        ValueError: For any other FILETYPE value that has no defined mapping to a `DataFileType`
+            (e.g. 14 — NetCDFWaveData — which the converter does not currently handle). The
+            offending integer is included in the message.
+    """
+    if old_file_type == ExtOldFileType.SpatiallyVaryingWindPressure:  # 3
         raise NotImplementedError(
-            "FILETYPE = 3 (spatially verying wind and pressure) is no longer supported."
+            "FILETYPE = 3 (spatially varying wind and pressure) is no longer supported."
         )
-    elif oldfiletype == ExtOldFileType.ArcInfo:  # 4
-        forcing_file_type = MeteoForcingFileType.arcinfo
-    elif oldfiletype == ExtOldFileType.SpiderWebData:  # 5
-        forcing_file_type = MeteoForcingFileType.spiderweb
-    elif oldfiletype == ExtOldFileType.CurvilinearData:  # 6
-        forcing_file_type = MeteoForcingFileType.curvigrid
-    elif oldfiletype == ExtOldFileType.Samples:  # 7
-        forcing_file_type = DataFileType.sample
-    elif oldfiletype == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
+    if old_file_type == ExtOldFileType.TriangulationMagnitudeAndDirection:  # 8
         raise NotImplementedError(
             "FILETYPE = 8 (magnitude+direction timeseries on stations) is no longer supported."
         )
-    elif oldfiletype in [ExtOldFileType.Polyline,  ExtOldFileType.InsidePolygon]:  # 9 and # 10
-        forcing_file_type = DataFileType.polygon
-    elif oldfiletype == ExtOldFileType.NetCDFGridData:  # 11
-        forcing_file_type = MeteoForcingFileType.netcdf
 
-    return forcing_file_type
-
-
-def oldmethod_to_interpolation_method(
-    oldmethod: int,
-) -> Union[InterpolationMethod, MeteoInterpolationMethod, str]:
-    """Convert old external forcing `METHOD` integer value to valid `interpolationMethod` string value.
-
-    Args:
-        oldmethod (int): The METHOD value in an old external forcings file.
-
-    Returns:
-        Union[InterpolationMethod,str]: Corresponding value for `interpolationMethod`,
-            or "unknown" for invalid input.
-    """
-    if oldmethod in [1, 2, 3, 11]:
-        interpolation_method = InterpolationMethod.linear_space_time
-    elif oldmethod == 5:
-        interpolation_method = InterpolationMethod.triangulation
-    elif oldmethod == 4:
-        interpolation_method = InterpolationMethod.constant
-    elif oldmethod in range(6, 10):
-        interpolation_method = InterpolationMethod.averaging
-    else:
-        interpolation_method = "unknown"
-    return interpolation_method
+    try:
+        return OLD_FILETYPE_TO_DATAFILETYPE[old_file_type]
+    except KeyError:
+        raise ValueError(
+            f"FILETYPE = {int(old_file_type)} has no mapping to a new-format `dataFileType`."
+        ) from None
 
 
 def map_method_to_averaging_type(
@@ -228,7 +212,7 @@ def convert_interpolation_data(
         - if the interpolation method is "Averaging" (method = 6), the dictionary will also contain
             the "averagingtype", "averagingrelsize", "averagingnummin", and "averagingpercentile" keys.
     """
-    data["interpolationmethod"] = oldmethod_to_interpolation_method(forcing.method)
+    data["interpolationmethod"] = InterpolationMethod.from_old_method(forcing.method)
     if data["interpolationmethod"] == InterpolationMethod.averaging:
         data["averagingtype"] = map_method_to_averaging_type(
             forcing.method, forcing.averagingtype

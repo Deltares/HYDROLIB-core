@@ -58,11 +58,16 @@ def initial_condition_file_type() -> List[str]:
         "polygon",
         "uniform",
         "netcdf",
+        "map",
         "bcAscii",
         "uniMagDir",
         "spiderweb",
         "curviGrid",
-        "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid.",
+        (
+            "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, map, "
+            "bcAscii, uniMagDir, spiderweb, curviGrid. The D-Flow FM user manual may also refer to "
+            "the map type as ncFlow."
+        ),
     ]
 
 

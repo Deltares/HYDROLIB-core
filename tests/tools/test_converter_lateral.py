@@ -239,7 +239,7 @@ class TestMainConverter:
 		mdu_parser_mock.mdu_path = workspace / "mock.mdu"
 
 		converter = ExternalForcingConverter(
-			input_file,
+			extold_model=input_file,
 			ext_file=output_file,
 			mdu_parser=mdu_parser_mock,
 		)

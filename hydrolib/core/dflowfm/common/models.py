@@ -1,5 +1,7 @@
 """Common model types for D-Flow FM files, including LocationType and Operand enums."""
 
+from __future__ import annotations
+
 from strenum import StrEnum
 
 
@@ -44,9 +46,6 @@ class Operand(StrEnum):
     def legacy_alternatives(cls) -> dict[str, list[str]]:
         """Return the Operand member corresponding to a legacy single-character value.
 
-        Args:
-            legacy_value: A legacy operand character (e.g. "O", "A", "+", "*", "X", "N").
-
         Returns:
             The matching Operand member.
 
@@ -78,13 +77,34 @@ class DataFileType(StrEnum):
     polygon = "polygon"
     uniform = "uniform"
     netcdf = "netcdf"
+    map = "map"
 
     bcascii = "bcAscii"
     unimagdir = "uniMagDir"
     spiderweb = "spiderweb"
     curvigrid = "curviGrid"
 
-    allowedvaluestext = "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, bcAscii, uniMagDir, spiderweb, curviGrid."
+    allowedvaluestext = (
+        "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, map, "
+        "bcAscii, uniMagDir, spiderweb, curviGrid. The D-Flow FM user manual may also refer to "
+        "the map type as ncFlow."
+    )
+
+    @classmethod
+    def legacy_alternatives(cls) -> dict[str, list[str]]:
+        """Return the mapping of canonical `DataFileType` values to their legacy aliases.
+
+        Used by `enum_value_parser` to accept older spellings on input while steering callers
+        toward the canonical value via a `DeprecationWarning`. Currently maps `map` → `ncFlow`
+        (the D-Flow FM User Manual uses `ncFlow`, but the Delft3D kernel and issue #1207 use
+        `map`).
+
+        Returns:
+            dict[str, list[str]]: Canonical enum value → list of accepted legacy aliases.
+        """
+        return {
+            cls.map.value: ["ncFlow"],
+        }
 
 
 class InterpolationMethod(StrEnum):
@@ -102,6 +122,34 @@ class InterpolationMethod(StrEnum):
     bilinear = "bilinear"
 
     allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear."
+
+    @classmethod
+    def from_old_method(cls, old_method: int) -> InterpolationMethod | str:
+        """Convert an old external forcing `METHOD` to an `interpolationMethod` value.
+
+        Old `METHOD` values map onto the spatial interpolation methods as follows:
+        `0`, `1`, `2`, `3`, `11` → `linearSpaceTime`, `4` → `constant`,
+        `5` → `triangulation`, `6`-`9` → `averaging`. `METHOD=0` ("provider just
+        updates") converts like `1`/`2`/`3`/`11` (GitHub #1197).
+
+        Args:
+            old_method (int): The `METHOD` value in an old external forcings file.
+
+        Returns:
+            InterpolationMethod | str: The corresponding `interpolationMethod`
+                value, or `"unknown"` for an unsupported input.
+        """
+        if old_method in [0, 1, 2, 3, 11]:
+            interpolation_method = cls.linear_space_time
+        elif old_method == 5:
+            interpolation_method = cls.triangulation
+        elif old_method == 4:
+            interpolation_method = cls.constant
+        elif old_method in range(6, 10):
+            interpolation_method = cls.averaging
+        else:
+            interpolation_method = "unknown"
+        return interpolation_method
 
 
 class AveragingType(StrEnum):
