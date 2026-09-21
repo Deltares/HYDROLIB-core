@@ -474,7 +474,7 @@ class BoundaryConditionConverter(BaseConverter):
         time_interpolation: str = "linear",
         quantity: str = None,
         label: str = None,
-        vector_quantities: Dict[str, Dict[str, str]] = None,
+        vector_quantities: dict[str, dict[str, str]] = None,
     ) -> List[TimeSeries]:
         """Convert a TimModel into a ForcingModel.
 
