@@ -497,6 +497,12 @@ class BoundaryConditionConverter(BaseConverter):
                 the nested mapping defines component names to units. When provided, each
                 TIM file is converted into a single vector `TimeSeries` block.
 
+                Input-layout contract (differs from the scalar path): a vector quantity
+                expects **one multi-column TIM file per location**, carrying one column per
+                component in the configured order (e.g. `ux`, `uy`). Unlike the scalar path,
+                the files are NOT merged column-wise via `merge_tim_files`; supplying one
+                single-column file per component raises a `ValueError`.
+
         Returns:
             ForcingModel: The converted ForcingModel.
 
@@ -517,7 +523,9 @@ class BoundaryConditionConverter(BaseConverter):
                 if n_columns != len(component_names):
                     raise ValueError(
                         f"TIM file '{tim_file}' for vector quantity '{vector_name}' has {n_columns} data columns, "
-                        f"but {len(component_names)} components were configured: {component_names}."
+                        f"but {len(component_names)} components were configured: {component_names}. "
+                        f"A vector quantity expects a single multi-column TIM file per location, with one column "
+                        f"per component (in order), not one single-column file per component."
                     )
 
                 tim_model.quantities_names = component_names
