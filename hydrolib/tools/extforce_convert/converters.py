@@ -20,6 +20,7 @@ from hydrolib.core.dflowfm.bc.models import (
     QuantityUnitPair,
     TimeInterpolation,
     TimeSeries,
+    VectorQuantityUnitPairs,
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
@@ -397,14 +398,14 @@ class SpatialConverter(BaseConverter):
             )
         tim_model.quantities_names = [quantity]
         units = tim_model.get_units()
-
-        forcing_list = TimToForcingConverter.convert(
-            tim_model,
-            time_unit,
-            TimeInterpolation.from_old_method(forcing.method),
-            units,
-            ["global"],
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+            units=units,
+            user_defined_names=["global"],
         )
+        forcing_list = tim_to_bc_converter.convert()
         forcing_model = ForcingModel(forcing=forcing_list)
         forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
 
@@ -471,8 +472,9 @@ class BoundaryConditionConverter(BaseConverter):
         tim_files: List[PathOrStr],
         time_unit: str,
         time_interpolation: str = "linear",
-        quantity: str = None,
-        label: str = None,
+        quantity: str | None = None,
+        label: str | None = None,
+        vector_quantities: dict[str, dict[str, str]] | None = None,
     ) -> List[TimeSeries]:
         """Convert a TimModel into a ForcingModel.
 
@@ -490,6 +492,16 @@ class BoundaryConditionConverter(BaseConverter):
                 name of the quantity that the tim files represent.
             label (str, default is None):
                 the label from the pli file to be used to name the time series sections in the .bc model.
+            vector_quantities (Dict[str, Dict[str, str]], default is None):
+                Optional vector quantity definition. The outer key is the vector name and
+                the nested mapping defines component names to units. When provided, each
+                TIM file is converted into a single vector `TimeSeries` block.
+
+                Input-layout contract (differs from the scalar path): a vector quantity
+                expects **one multi-column TIM file per location**, carrying one column per
+                component in the configured order (e.g. `ux`, `uy`). Unlike the scalar path,
+                the files are NOT merged column-wise via `merge_tim_files`; supplying one
+                single-column file per component raises a `ValueError`.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -498,18 +510,53 @@ class BoundaryConditionConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
-        tim_model = self.merge_tim_files(tim_files, quantity)
+        tim_files = [Path(path) for path in tim_files]
+        labels = BoundaryConditionConverter._get_file_labels(label, tim_files)
 
-        # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = BoundaryConditionConverter._get_file_labels(
-            label, tim_files
-        )
-        tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+        if vector_quantities:
+            vector_name, component_units = next(iter(vector_quantities.items()))
+            component_names = list(component_units.keys())
+            time_series_list = []
+            for tim_file, forcing_name in zip(tim_files, labels):
+                tim_model = TimModel(tim_file)
+                n_columns = len(tim_model.timeseries[0].data)
+                if n_columns != len(component_names):
+                    raise ValueError(
+                        f"TIM file '{tim_file}' for vector quantity '{vector_name}' has {n_columns} data columns, "
+                        f"but {len(component_names)} components were configured: {component_names}. "
+                        f"A vector quantity expects a single multi-column TIM file per location, with one column "
+                        f"per component (in order), not one single-column file per component."
+                    )
 
-        units = tim_model.get_units()
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, time_interpolation, units, user_defined_names
-        )
+                tim_model.quantities_names = component_names
+                units = [component_units[component] for component in component_names]
+                tim_to_bc_converter = TimToForcingConverter(
+                    tim_model=tim_model,
+                    time_unit=time_unit,
+                    time_interpolation=time_interpolation,
+                    units=units,
+                    user_defined_names=[forcing_name]
+                )
+                time_series_list.extend(
+                    tim_to_bc_converter.convert(
+                        vector_quantities={vector_name: component_units},
+                    )
+                )
+
+        else:
+            tim_model = self.merge_tim_files(tim_files, quantity)
+
+            tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+
+            units = tim_model.get_units()
+            tim_to_bc_converter = TimToForcingConverter(
+                tim_model=tim_model,
+                time_unit=time_unit,
+                time_interpolation=time_interpolation,
+                units=units,
+                user_defined_names=labels
+            )
+            time_series_list = tim_to_bc_converter.convert()
         return time_series_list
 
     def locate_files(self, location_file: Path):
@@ -594,12 +641,20 @@ class BoundaryConditionConverter(BaseConverter):
         forcings_list = []
 
         if len(tim_files) > 0:
+            vector_component_units = CONVERTER_DATA.external_forcing.get_vector_component_units(
+                forcing.quantity
+            )
+            vector_quantities = None
+            if vector_component_units:
+                vector_quantities = {str(forcing.quantity): vector_component_units}
+
             time_series_list = self.convert_tim_to_bc(
                 tim_files,
                 time_unit,
                 time_interpolation=TimeInterpolation.from_old_method(forcing.method),
                 quantity=quantity,
                 label=label,
+                vector_quantities=vector_quantities,
             )
             forcings_list.extend(time_series_list)
             self.legacy_files = tim_files
@@ -1034,13 +1089,14 @@ class SourceSinkConverter(BaseConverter):
         units = SourceSinkConverter._correct_substance_units(
             units, tim_model.quantities_names, substance_units
         )
-        time_series_list = TimToForcingConverter.convert(
-            tim_model,
-            time_unit,
-            time_interpolation,
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            time_interpolation=time_interpolation,
             units=units,
             user_defined_names=user_defined_names,
         )
+        time_series_list = tim_to_bc_converter.convert()
         forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
 
@@ -1262,9 +1318,13 @@ class LateralConverter(BaseConverter):
     ) -> ForcingModel:
         """Convert a TIM model into a BC ForcingModel for lateral discharge."""
         units = tim_model.get_units()
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            units=units,
+            user_defined_names=user_defined_names,
         )
+        time_series_list = tim_to_bc_converter.convert()
         return ForcingModel(forcing=time_series_list)
 
     @staticmethod
@@ -1709,18 +1769,16 @@ class TimToForcingConverter:
     - `units`: A list of units corresponding to the forcing quantities.
     - `user_defined_names`: A list of user-defined names for the forcing blocks.
     """
-
-    @staticmethod
-    def convert(
+    def __init__(
+        self,
+        *,
         tim_model: TimModel,
         time_unit: str,
         time_interpolation: str = "linear",
-        units: List[str] = None,
-        user_defined_names: List[str] = None,
-    ) -> List[TimeSeries]:
+        user_defined_names: list[str] | None = None,
+        units: list[str],
+    ):
         """
-        Convert a TimModel into a ForcingModel.
-
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
@@ -1729,10 +1787,42 @@ class TimToForcingConverter:
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
+            units (list[str]):
+                A list of units corresponding to the forcing quantities. Required
+                (keyword-only): its length must match the number of TIM data columns.
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
+        """
+        first_record = tim_model.timeseries[0].data
+        if time_unit is None:
+            raise ValueError("The 'start_time' must be provided.")
+
+        if units is None:
+            raise ValueError("'units' must be provided.")
+
+        if len(units) != len(first_record):
+            raise ValueError(
+                "The number of 'units' must match the number of data columns in the first TIM row."
+            )
+
+        self.tim_model_df = tim_model.as_dataframe()
+        self.time_unit = time_unit
+        self.time_interpolation = time_interpolation
+        self.user_defined_names = user_defined_names
+        self.units = units
+
+    def convert(
+        self,
+        vector_quantities: dict[str, dict[str, str]] | None = None,
+    ) -> list[TimeSeries]:
+        """
+        Convert a TimModel into a ForcingModel.
+
+        Args:
+            vector_quantities (Dict[str, Dict[str, str]], optional):
+                Optional vector quantity definition. The outer key is the vector name and
+                the nested mapping defines component names to units. When provided, the
+                method emits one vector `TimeSeries` block per TIM model.
 
         Returns:
             TimeSeries:
@@ -1752,10 +1842,14 @@ class TimToForcingConverter:
             >>> tim_model = TimModel(file_path, user_defined_names)
             >>> print(tim_model.as_dict())
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
-            >>> converter = TimToForcingConverter()
-            >>> time_series = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
-            ... )
+            >>> converter = TimToForcingConverter(
+            >>>     tim_model=tim_model,
+            >>>     time_unit="minutes since 2015-01-01 00:00:00",
+            >>>     time_interpolation="linear",
+            >>>     units=["m3/s"],
+            >>>     user_defined_names=["discharge"],
+            >>> )
+            >>> time_series = converter.convert()
             >>> print(time_series[0].name)
             discharge
             >>> print(time_series[0].datablock)
@@ -1763,29 +1857,37 @@ class TimToForcingConverter:
 
             ```
         """
-        if units is None or user_defined_names is None:
-            raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+        if self.user_defined_names is None:
+            raise ValueError("'user_defined_names' must be provided.")
 
-        if time_unit is None:
-            raise ValueError("The 'start_time' must be provided.")
+        if vector_quantities:
+            time_series_list = self._convert_vector_quantities(
+                vector_quantities,
+            )
+        else:
+            time_series_list = self._convert_scalar_quantities()
 
-        first_record = tim_model.timeseries[0].data
-        if len(units) != len(user_defined_names) != len(first_record):
+        return time_series_list
+
+    def _convert_scalar_quantities(
+        self,
+    ) -> list[TimeSeries]:
+        if len(self.units) != len(self.user_defined_names):
             raise ValueError(
                 "The lengths of 'units', 'user_defined_names' and length of the columns in the first row must match."
             )
 
-        df = tim_model.as_dataframe()
+        df = self.tim_model_df
         time_data = df.index.tolist()
         time_series_list = []
         for i, (column, vals) in enumerate(df.items()):
-            unit = units[i]
+            unit = self.units[i]
             forcing = TimeSeries(
-                name=user_defined_names[i],
+                name=self.user_defined_names[i],
                 function="timeseries",
-                timeinterpolation=time_interpolation,
+                timeinterpolation=self.time_interpolation,
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="time", unit=time_unit),
+                    QuantityUnitPair(quantity="time", unit=self.time_unit),
                     QuantityUnitPair(quantity=column, unit=unit),
                 ],
                 datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
@@ -1794,6 +1896,53 @@ class TimToForcingConverter:
             time_series_list.append(forcing)
 
         return time_series_list
+
+    def _convert_vector_quantities(
+        self,
+        vector_quantities: dict[str, dict[str, str]],
+    ) -> List[TimeSeries]:
+        """Convert a multi-column TIM model into a vector `TimeSeries` block."""
+        if len(self.user_defined_names) != 1:
+            raise ValueError(
+                "For vector quantities, provide exactly one user-defined forcing name per TIM model."
+            )
+        df = self.tim_model_df
+        time_data = df.index.tolist()
+        vector_name, component_units = next(iter(vector_quantities.items()))
+        component_names = list(component_units.keys())
+
+        if len(component_names) != len(df.columns):
+            raise ValueError(
+                f"Vector quantity '{vector_name}' expects {len(component_names)} columns, "
+                f"but TIM data has {len(df.columns)} columns."
+            )
+
+        component_rows = df[component_names].values.tolist()
+
+        forcing = TimeSeries(
+            name=self.user_defined_names[0],
+            function="timeseries",
+            timeinterpolation=self.time_interpolation,
+            quantityunitpair=[
+                QuantityUnitPair(quantity="time", unit=self.time_unit),
+                VectorQuantityUnitPairs(
+                    vectorname=vector_name,
+                    elementname=component_names,
+                    quantityunitpair=[
+                        QuantityUnitPair(
+                            quantity=component, unit=component_units[component]
+                        )
+                        for component in component_names
+                    ],
+                ),
+            ],
+            datablock=[
+                [time_val, *row]
+                for time_val, row in zip(time_data, component_rows)
+            ],
+        )
+
+        return [forcing]
 
 
 class T3DToForcingConverter:

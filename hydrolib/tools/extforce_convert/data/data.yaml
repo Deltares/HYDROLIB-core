@@ -4,7 +4,7 @@ mdu:
     deprecated_value: 0
 
 external_forcing:
-    unsupported_quantity_names:
+    unsupported_quantities:
         # Meteo
         - windstresscoefficient
         - wind_speed
@@ -37,14 +37,17 @@ external_forcing:
     # Quantities the kernel spells differently in the initial and parameter fields
     # file than in the old external forcings file. Keys are matched
     # case-insensitively; values are emitted verbatim, so their casing matters.
-    old_to_new_quantity_names:
+    renamed_quantities:
         sea_ice_thickness: seaIceThickness
         sea_ice_area_fraction: seaIceAreaFraction
         nudge_salinity_temperature: nudgeSalinityTemperature
-        # `bedrock_surface_elevation` is also in `unsupported_quantity_names` above, so a run of the converter
+        # `bedrock_surface_elevation` is also in `unsupported_quantities` above, so a run of the converter
         # rejects it.
         bedrock_surface_elevation: bedrockSurfaceElevation
         friction_coefficient_time_dependent: frictionCoefficientTimeDependent
         windspeedfactor: windxy
         solarradiationfactor: solarradiation
 
+    vector_quantities:
+        uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
+        windxy: {"wx": "m s-1", "wy": "m s-1"}
