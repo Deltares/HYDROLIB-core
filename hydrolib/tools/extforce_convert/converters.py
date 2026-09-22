@@ -1917,6 +1917,8 @@ class TimToForcingConverter:
                 f"but TIM data has {len(df.columns)} columns."
             )
 
+        component_rows = df[component_names].values.tolist()
+
         forcing = TimeSeries(
             name=self.user_defined_names[0],
             function="timeseries",
@@ -1935,8 +1937,8 @@ class TimToForcingConverter:
                 ),
             ],
             datablock=[
-                [time_val, *[df.loc[time_val, component] for component in component_names]]
-                for time_val in time_data
+                [time_val, *row]
+                for time_val, row in zip(time_data, component_rows)
             ],
         )
 
