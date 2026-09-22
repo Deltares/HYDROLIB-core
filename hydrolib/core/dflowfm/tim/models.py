@@ -368,11 +368,11 @@ class TimModel(ParsableFileModel):
         data = self.as_dataframe().to_dict(orient="list")
         return data
 
-    def get_units(self) -> Optional[List[str]]:
+    def get_units(self) -> list[str] | None:
         """Return the units for each quantity in the timeseries.
 
         Returns:
-            List[str]: A list of units for each quantity in the timeseries.
+            list[str] | None : A list of units for each quantity in the timeseries.
 
         Examples:
             Create a `TimModel` object from a .tim file:
@@ -386,5 +386,8 @@ class TimModel(ParsableFileModel):
                 ```
         """
         if self.quantities_names is None:
-            return None
-        return TimModel._get_quantity_unit(self.quantities_names)
+            value = None
+        else:
+            value = TimModel._get_quantity_unit(self.quantities_names)
+
+        return value
