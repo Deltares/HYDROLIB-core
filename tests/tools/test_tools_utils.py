@@ -111,23 +111,23 @@ class TestMissingQuantities:
 
     def test_missing_quantities_normalization(self):
         mq = ExternalForcingConfigs(
-            unsupported_quantity_names=[" A ", "a", "B", None, 123, " b "],
+            unsupported_quantities=[" A ", "a", "B", None, 123, " b "],
             unsupported_prefixes=[" p1 ", "p2"],
         )
         # stripped, lowercased, deduped
-        assert mq.unsupported_quantity_names == ["a", "b"]
+        assert mq.unsupported_quantities == ["a", "b"]
         # unchanged (no validator on Prefixes)
         assert mq.unsupported_prefixes == ["p1", "p2"]
 
     def test_empty_input_defaults(self):
         mq = ExternalForcingConfigs()
-        assert mq.unsupported_quantity_names == []
+        assert mq.unsupported_quantities == []
         assert mq.unsupported_prefixes == []
 
     def test_from_yaml_file(self, tmp_path):
         yaml_text = """
     external_forcing:
-      unsupported_quantity_names:
+      unsupported_quantities:
         - " x "
         - "X"
         - y
@@ -136,12 +136,12 @@ class TestMissingQuantities:
     """
         data = yaml.safe_load(yaml_text)
         mq = ExternalForcingConfigs(**(data.get("external_forcing") or {}))
-        assert mq.unsupported_quantity_names == ["x", "y"]
+        assert mq.unsupported_quantities == ["x", "y"]
         assert mq.unsupported_prefixes == ["pre"]
 
 
 class TestOldToNewQuantityNames:
-    """Tests for the `old_to_new_quantity_names` rename table on `ExternalForcingConfigs`."""
+    """Tests for the `renamed_quantities` rename table on `ExternalForcingConfigs`."""
 
     def test_keys_are_normalized_and_values_kept_verbatim(self):
         """
@@ -151,18 +151,18 @@ class TestOldToNewQuantityNames:
             fields file, so lowercasing it would defeat the table's purpose.
         """
         configs = ExternalForcingConfigs(
-            old_to_new_quantity_names={"  Sea_Ice_Thickness ": " seaIceThickness "}
+            renamed_quantities={"  Sea_Ice_Thickness ": " seaIceThickness "}
         )
-        assert configs.old_to_new_quantity_names == {
+        assert configs.renamed_quantities == {
             "sea_ice_thickness": "seaIceThickness"
         }
 
     def test_defaults_to_empty_when_omitted(self):
         """
-        Input: no `old_to_new_quantity_names` at all.
+        Input: no `renamed_quantities` at all.
         Expect: an empty mapping, so a config without the section renames nothing.
         """
-        assert ExternalForcingConfigs().old_to_new_quantity_names == {}
+        assert ExternalForcingConfigs().renamed_quantities == {}
 
     def test_none_becomes_empty_mapping(self):
         """
@@ -171,8 +171,8 @@ class TestOldToNewQuantityNames:
         """
         assert (
             ExternalForcingConfigs(
-                old_to_new_quantity_names=None
-            ).old_to_new_quantity_names
+                renamed_quantities=None
+            ).renamed_quantities
             == {}
         )
 
@@ -183,13 +183,13 @@ class TestOldToNewQuantityNames:
         """
         yaml_text = """
     external_forcing:
-      old_to_new_quantity_names:
+      renamed_quantities:
         sea_ice_thickness: seaIceThickness
         BedRock_Surface_Elevation: bedrockSurfaceElevation
     """
         data = yaml.safe_load(yaml_text)
         configs = ExternalForcingConfigs(**(data.get("external_forcing") or {}))
-        assert configs.old_to_new_quantity_names == {
+        assert configs.renamed_quantities == {
             "sea_ice_thickness": "seaIceThickness",
             "bedrock_surface_elevation": "bedrockSurfaceElevation",
         }
@@ -213,7 +213,7 @@ class TestOldToNewQuantityNames:
             names pass through unchanged so the converter keeps using the old name.
         """
         configs = ExternalForcingConfigs(
-            old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+            renamed_quantities={"sea_ice_thickness": "seaIceThickness"}
         )
         assert configs.rename_quantity(quantity) == expected
 
@@ -228,7 +228,7 @@ class TestOldToNewQuantityNames:
         would make every lookup silently miss.
         """
         configs = ExternalForcingConfigs(
-            old_to_new_quantity_names={
+            renamed_quantities={
                 ExtOldQuantity.SeaIceThickness.value: "seaIceThickness"
             }
         )
@@ -244,13 +244,13 @@ class TestOldToNewQuantityNames:
         """
         configs = CONVERTER_DATA.external_forcing
         assert (
-            configs.old_to_new_quantity_names["sea_ice_thickness"] == "seaIceThickness"
+            configs.renamed_quantities["sea_ice_thickness"] == "seaIceThickness"
         )
         assert (
-            configs.old_to_new_quantity_names["sea_ice_area_fraction"]
+            configs.renamed_quantities["sea_ice_area_fraction"]
             == "seaIceAreaFraction"
         )
-        assert configs.unsupported_quantity_names
+        assert configs.unsupported_quantities
         assert configs.unsupported_prefixes
 
     @pytest.mark.parametrize(
@@ -270,7 +270,7 @@ class TestOldToNewQuantityNames:
         Expect: a validation error at load time rather than a silently broken table.
         """
         with pytest.raises(ValidationError):
-            ExternalForcingConfigs(old_to_new_quantity_names=invalid)
+            ExternalForcingConfigs(renamed_quantities=invalid)
 
     def test_unknown_old_quantity_name_is_rejected(self):
         """
@@ -284,7 +284,7 @@ class TestOldToNewQuantityNames:
         """
         with pytest.raises(ValidationError) as exc:
             ExternalForcingConfigs(
-                old_to_new_quantity_names={"sea_ice_thicknes": "seaIceThickness"}
+                renamed_quantities={"sea_ice_thicknes": "seaIceThickness"}
             )
         assert "not a known" in str(exc.value)
 
@@ -296,7 +296,7 @@ class TestOldToNewQuantityNames:
         """
         with pytest.raises(ValidationError) as exc:
             ExternalForcingConfigs(
-                old_to_new_quantity_names={
+                renamed_quantities={
                     "Sea_Ice_Thickness": "seaIceThickness",
                     "sea_ice_thickness": "somethingElse",
                 }
@@ -307,17 +307,17 @@ class TestOldToNewQuantityNames:
 class TestMultipleColumnsQuantityNames:
     def test_multiple_columns_mapping_is_normalized(self):
         configs = ExternalForcingConfigs(
-            multiple_columns_quantity_names={
+            vector_quantities={
                 " UXUYAdvectionVelocityBnd ": {" ux ": " m s-1 ", "uy": "m s-1"},
             }
         )
-        assert configs.multiple_columns_quantity_names == {
+        assert configs.vector_quantities == {
             "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
         }
 
     def test_get_vector_component_units(self):
         configs = ExternalForcingConfigs(
-            multiple_columns_quantity_names={
+            vector_quantities={
                 "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
             }
         )
@@ -343,10 +343,10 @@ class TestCheckUnsupportedQuantities:
         CONVERTER_DATA.check_unsupported_quantities(model)  # should not raise
 
     def test_check_raises_on_unsupported(self):
-        if not CONVERTER_DATA.external_forcing.unsupported_quantity_names:
+        if not CONVERTER_DATA.external_forcing.unsupported_quantities:
             pytest.skip("No unsupported quantities configured.")
         unsupported = next(
-            iter(CONVERTER_DATA.external_forcing.unsupported_quantity_names)
+            iter(CONVERTER_DATA.external_forcing.unsupported_quantities)
         )
 
         model = MagicMock(spec=ExtOldModel)
@@ -397,7 +397,7 @@ class TestConverterData:
         assert isinstance(data.external_forcing, ExternalForcingConfigs)
         assert data.mdu.deprecated_keywords == set()
         assert data.mdu.deprecated_value == 0
-        assert data.external_forcing.unsupported_quantity_names == []
+        assert data.external_forcing.unsupported_quantities == []
         assert data.external_forcing.unsupported_prefixes == []
 
     def test_nested_dicts_are_coerced_and_normalized(self):
@@ -409,12 +409,12 @@ class TestConverterData:
             version=1.0,
             mdu={"deprecated_keywords": [" A ", "a"], "deprecated_value": 0},
             external_forcing={
-                "unsupported_quantity_names": [" WindX ", "windx", "PUMP"],
+                "unsupported_quantities": [" WindX ", "windx", "PUMP"],
                 "unsupported_prefixes": [" WAQfunction "],
             },
         )
         assert data.mdu.deprecated_keywords == {"a"}
-        assert data.external_forcing.unsupported_quantity_names == ["windx", "pump"]
+        assert data.external_forcing.unsupported_quantities == ["windx", "pump"]
         assert data.external_forcing.unsupported_prefixes == ["waqfunction"]
 
     def test_check_unsupported_quantities_passes_when_all_supported(self):
@@ -423,7 +423,7 @@ class TestConverterData:
         Expect: an empty set and no error.
         """
         data = ConverterData(
-            version=1.0, external_forcing={"unsupported_quantity_names": ["pump"]}
+            version=1.0, external_forcing={"unsupported_quantities": ["pump"]}
         )
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [SimpleNamespace(quantity="windx")]
@@ -435,7 +435,7 @@ class TestConverterData:
         Expect: it is still recognized as unsupported, since both sides are lowercased.
         """
         data = ConverterData(
-            version=1.0, external_forcing={"unsupported_quantity_names": ["Pump"]}
+            version=1.0, external_forcing={"unsupported_quantities": ["Pump"]}
         )
         model = MagicMock(spec=ExtOldModel)
         model.forcing = [SimpleNamespace(quantity="PUMP")]
@@ -450,7 +450,7 @@ class TestConverterData:
         data = ConverterData(
             version=1.0,
             external_forcing={
-                "unsupported_quantity_names": ["pump"],
+                "unsupported_quantities": ["pump"],
                 "unsupported_prefixes": ["waqfunction"],
             },
         )
@@ -471,7 +471,7 @@ class TestConverterData:
         Expect: an empty set, not an error.
         """
         data = ConverterData(
-            version=1.0, external_forcing={"unsupported_quantity_names": ["pump"]}
+            version=1.0, external_forcing={"unsupported_quantities": ["pump"]}
         )
         model = MagicMock(spec=ExtOldModel)
         model.forcing = []
@@ -491,14 +491,14 @@ class TestConverterData:
 def test_missing_quantities_are_unique():
     path = Path(CONVERTER_DATA_PATH)
     data = yaml.safe_load(path.read_text()) or {}
-    unsupported_quantity_names = data.get("external_forcing", {}).get(
-        "unsupported_quantity_names", []
+    unsupported_quantities = data.get("external_forcing", {}).get(
+        "unsupported_quantities", []
     )
     # only consider strings; strip to avoid whitespace duplicates
-    unsupported_quantity_names = [
-        s.strip() for s in unsupported_quantity_names if isinstance(s, str)
+    unsupported_quantities = [
+        s.strip() for s in unsupported_quantities if isinstance(s, str)
     ]
-    dupes = [k for k, c in Counter(unsupported_quantity_names).items() if c > 1]
+    dupes = [k for k, c in Counter(unsupported_quantities).items() if c > 1]
     assert not dupes, f"Duplicate entries in external_forcing: {dupes}"
 
     unsupported_prefixes = data.get("external_forcing", {}).get(

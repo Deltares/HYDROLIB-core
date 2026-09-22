@@ -44,7 +44,7 @@ __all__ = [
 
 
 # Every `QUANTITY=` value the old external forcings file accepts, lowercased. Used to
-# reject `old_to_new_quantity_names` keys that match no quantity and so would never fire.
+# reject `renamed_quantities` keys that match no quantity and so would never fire.
 KNOWN_OLD_QUANTITY_NAMES = frozenset(q.value.lower() for q in ExtOldQuantity)
 
 
@@ -401,19 +401,19 @@ class MDUConfig(BaseModel):
 
 
 class ExternalForcingConfigs(BaseModel):
-    unsupported_quantity_names: list[str] = Field(default_factory=list)
+    unsupported_quantities: list[str] = Field(default_factory=list)
     unsupported_prefixes: list[str] = Field(default_factory=list)
-    old_to_new_quantity_names: dict[str, str] = Field(default_factory=dict)
-    multiple_columns_quantity_names: dict[str, dict[str, str]] = Field(default_factory=dict)
+    renamed_quantities: dict[str, str] = Field(default_factory=dict)
+    vector_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
 
     @field_validator(
-        "unsupported_quantity_names", "unsupported_prefixes", mode="before"
+        "unsupported_quantities", "unsupported_prefixes", mode="before"
     )
     def ensure_unique(cls, v: list[str]) -> list[str]:
         return check_unique(v)
 
-    @field_validator("old_to_new_quantity_names", mode="before")
-    def normalize_old_to_new_quantity_names(
+    @field_validator("renamed_quantities", mode="before")
+    def normalize_renamed_quantities(
         cls, v: dict[str, str] | None
     ) -> dict[str, str]:
         """Normalize the old quantity names, keeping the new names verbatim.
@@ -444,7 +444,7 @@ class ExternalForcingConfigs(BaseModel):
 
         if not isinstance(v, dict):
             raise ValueError(
-                f"'old_to_new_quantity_names' must be a mapping of old to new quantity names, "
+                f"'renamed_quantities' must be a mapping of old to new quantity names, "
                 f"got {type(v).__name__}."
             )
 
@@ -452,7 +452,7 @@ class ExternalForcingConfigs(BaseModel):
         for old_name, new_name in v.items():
             if not isinstance(old_name, str) or not isinstance(new_name, str):
                 raise ValueError(
-                    f"'old_to_new_quantity_names' entries must be strings, got "
+                    f"'renamed_quantities' entries must be strings, got "
                     f"{old_name!r}: {new_name!r}."
                 )
 
@@ -460,28 +460,28 @@ class ExternalForcingConfigs(BaseModel):
             value = new_name.strip()
             if not key or not value:
                 raise ValueError(
-                    f"'old_to_new_quantity_names' entries must be non-empty, got "
+                    f"'renamed_quantities' entries must be non-empty, got "
                     f"{old_name!r}: {new_name!r}."
                 )
 
             if key not in KNOWN_OLD_QUANTITY_NAMES:
                 raise ValueError(
-                    f"'old_to_new_quantity_names' key {old_name!r} is not a known "
+                    f"'renamed_quantities' key {old_name!r} is not a known "
                     f"quantity of the old external forcings file. A key that matches "
                     f"no quantity would silently never be applied."
                 )
 
             if key in normalized:
                 raise ValueError(
-                    f"'old_to_new_quantity_names' maps {key!r} more than once, to "
+                    f"'renamed_quantities' maps {key!r} more than once, to "
                     f"{normalized[key]!r} and {value!r}."
                 )
             normalized[key] = value
 
         return normalized
 
-    @field_validator("multiple_columns_quantity_names", mode="before")
-    def normalize_multiple_columns_quantity_names(
+    @field_validator("vector_quantities", mode="before")
+    def normalize_vector_quantities(
         cls, v: dict[str, dict[str, str]] | None
     ) -> dict[str, dict[str, str]]:
         """Normalize vector quantity definitions keyed by old quantity name.
@@ -493,52 +493,52 @@ class ExternalForcingConfigs(BaseModel):
 
         if not isinstance(v, dict):
             raise ValueError(
-                "'multiple_columns_quantity_names' must be a mapping of quantity name to component names."
+                "'vector_quantities' must be a mapping of quantity name to component names."
             )
 
         normalized: dict[str, dict[str, str]] = {}
         for quantity_name, component_units in v.items():
             if not isinstance(quantity_name, str):
                 raise ValueError(
-                    f"'multiple_columns_quantity_names' key must be a string, got {quantity_name!r}."
+                    f"'vector_quantities' key must be a string, got {quantity_name!r}."
                 )
 
             key = quantity_name.strip().lower()
             if key not in KNOWN_OLD_QUANTITY_NAMES:
                 raise ValueError(
-                    f"'multiple_columns_quantity_names' key {quantity_name!r} is not a known quantity "
+                    f"'vector_quantities' key {quantity_name!r} is not a known quantity "
                     "of the old external forcings file."
                 )
 
             if not isinstance(component_units, dict) or not component_units:
                 raise ValueError(
-                    f"'multiple_columns_quantity_names[{quantity_name}]' must be a mapping of component names to units."
+                    f"'vector_quantities[{quantity_name}]' must be a mapping of component names to units."
                 )
 
             normalized_components: dict[str, str] = {}
             for component_name, unit_name in component_units.items():
                 if not isinstance(component_name, str):
                     raise ValueError(
-                        f"'multiple_columns_quantity_names[{quantity_name}]' contains a non-string component: {component_name!r}."
+                        f"'vector_quantities[{quantity_name}]' contains a non-string component: {component_name!r}."
                     )
                 component = component_name.strip()
                 if not component:
                     raise ValueError(
-                        f"'multiple_columns_quantity_names[{quantity_name}]' contains an empty component name."
+                        f"'vector_quantities[{quantity_name}]' contains an empty component name."
                     )
                 if component in normalized_components:
                     raise ValueError(
-                        f"'multiple_columns_quantity_names[{quantity_name}]' contains duplicate component name {component!r}."
+                        f"'vector_quantities[{quantity_name}]' contains duplicate component name {component!r}."
                     )
 
                 if not isinstance(unit_name, str):
                     raise ValueError(
-                        f"'multiple_columns_quantity_names[{quantity_name}]' unit for component {component!r} must be a string."
+                        f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be a string."
                     )
                 unit = unit_name.strip()
                 if not unit:
                     raise ValueError(
-                        f"'multiple_columns_quantity_names[{quantity_name}]' unit for component {component!r} must be non-empty."
+                        f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be non-empty."
                     )
                 normalized_components[component] = unit
 
@@ -557,14 +557,14 @@ class ExternalForcingConfigs(BaseModel):
 
         Returns:
             str:
-                The corresponding new name if `quantity` is in `old_to_new_quantity_names`,
+                The corresponding new name if `quantity` is in `renamed_quantities`,
                 otherwise `quantity` unchanged.
 
         Examples:
             ```python
             >>> from hydrolib.tools.extforce_convert.utils import ExternalForcingConfigs
             >>> configs = ExternalForcingConfigs(
-            ...     old_to_new_quantity_names={"sea_ice_thickness": "seaIceThickness"}
+            ...     renamed_quantities={"sea_ice_thickness": "seaIceThickness"}
             ... )
             >>> configs.rename_quantity("sea_ice_thickness")
             'seaIceThickness'
@@ -574,7 +574,7 @@ class ExternalForcingConfigs(BaseModel):
             ```
         """
         name = str(quantity)
-        renamed = self.old_to_new_quantity_names.get(name.strip().lower(), name)
+        renamed = self.renamed_quantities.get(name.strip().lower(), name)
         return renamed
 
     def get_vector_component_units(
@@ -582,7 +582,7 @@ class ExternalForcingConfigs(BaseModel):
     ) -> dict[str, str] | None:
         """Return configured vector component/unit mapping for a multi-column quantity."""
         name = str(quantity).strip().lower()
-        component_units = self.multiple_columns_quantity_names.get(name)
+        component_units = self.vector_quantities.get(name)
         if component_units:
             result = dict(component_units)
         else:
@@ -592,7 +592,7 @@ class ExternalForcingConfigs(BaseModel):
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""
         normalized = [str(q).lower() for q in quantities]
-        result = set(self.unsupported_quantity_names).intersection(normalized)
+        result = set(self.unsupported_quantities).intersection(normalized)
 
         for q in normalized:
             if any(q.startswith(p) for p in self.unsupported_prefixes):

@@ -314,7 +314,7 @@ OPERAND=O
 VALUE=0.15
 ```
 Mapped to `new-initial-conditions.ini`:
-- `QUANTITY` → `[initial].quantity` (renamed if the quantity is listed in `old_to_new_quantity_names`; see below)
+- `QUANTITY` → `[initial].quantity` (renamed if the quantity is listed in `renamed_quantities`; see below)
 - `FILENAME` → `datafile`
 - `FILETYPE=10` → `datafiletype = polygon`
 - `METHOD`/`AVERAGINGTYPE` → `interpolationmethod` and `averaging*` fields (see below)
@@ -325,7 +325,7 @@ Mapped to `new-initial-conditions.ini`:
 ##### Quantity renames (legacy → new)
 
 A few quantities are spelled differently in the initial and parameter fields file than in the old external
-forcings file. The converter resolves them through the `old_to_new_quantity_names` table in
+forcings file. The converter resolves them through the `renamed_quantities` table in
 `hydrolib/tools/extforce_convert/data/data.yaml`; any quantity not listed there is written out unchanged.
 
 | Old `QUANTITY` | New `quantity` | Notes                                                                                        |
