@@ -4716,7 +4716,7 @@ Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</co
 <span class="na">VALUE</span><span class="o">=</span><span class="s">0.15</span>
 </code></pre></div>
 Mapped to <code>new-initial-conditions.ini</code>:
-- <code>QUANTITY</code> → <code>[initial].quantity</code> (renamed if the quantity is listed in <code>old_to_new_quantity_names</code>; see below)
+- <code>QUANTITY</code> → <code>[initial].quantity</code> (renamed if the quantity is listed in <code>renamed_quantities</code>; see below)
 - <code>FILENAME</code> → <code>datafile</code>
 - <code>FILETYPE=10</code> → <code>datafiletype = polygon</code>
 - <code>METHOD</code>/<code>AVERAGINGTYPE</code> → <code>interpolationmethod</code> and <code>averaging*</code> fields (see below)
@@ -4725,7 +4725,7 @@ Mapped to <code>new-initial-conditions.ini</code>:
 - Any <code>tracer*</code> keys present are copied as-is</p>
 <h5 id="quantity-renames-legacy-new">Quantity renames (legacy → new)<a class="headerlink" href="#quantity-renames-legacy-new" title="Permanent link">&para;</a></h5>
 <p>A few quantities are spelled differently in the initial and parameter fields file than in the old external
-forcings file. The converter resolves them through the <code>old_to_new_quantity_names</code> table in
+forcings file. The converter resolves them through the <code>renamed_quantities</code> table in
 <code>hydrolib/tools/extforce_convert/data/data.yaml</code>; any quantity not listed there is written out unchanged.</p>
 <table>
 <thead>
