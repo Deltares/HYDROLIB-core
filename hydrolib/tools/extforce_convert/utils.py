@@ -498,53 +498,86 @@ class ExternalForcingConfigs(BaseModel):
 
         normalized: dict[str, dict[str, str]] = {}
         for quantity_name, component_units in v.items():
-            if not isinstance(quantity_name, str):
-                raise ValueError(
-                    f"'vector_quantities' key must be a string, got {quantity_name!r}."
-                )
-
-            key = quantity_name.strip().lower()
-            if key not in KNOWN_OLD_QUANTITY_NAMES:
-                raise ValueError(
-                    f"'vector_quantities' key {quantity_name!r} is not a known quantity "
-                    "of the old external forcings file."
-                )
-
-            if not isinstance(component_units, dict) or not component_units:
-                raise ValueError(
-                    f"'vector_quantities[{quantity_name}]' must be a mapping of component names to units."
-                )
-
-            normalized_components: dict[str, str] = {}
-            for component_name, unit_name in component_units.items():
-                if not isinstance(component_name, str):
-                    raise ValueError(
-                        f"'vector_quantities[{quantity_name}]' contains a non-string component: {component_name!r}."
-                    )
-                component = component_name.strip()
-                if not component:
-                    raise ValueError(
-                        f"'vector_quantities[{quantity_name}]' contains an empty component name."
-                    )
-                if component in normalized_components:
-                    raise ValueError(
-                        f"'vector_quantities[{quantity_name}]' contains duplicate component name {component!r}."
-                    )
-
-                if not isinstance(unit_name, str):
-                    raise ValueError(
-                        f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be a string."
-                    )
-                unit = unit_name.strip()
-                if not unit:
-                    raise ValueError(
-                        f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be non-empty."
-                    )
-                normalized_components[component] = unit
-
-            normalized[key] = normalized_components
+            key = cls._normalize_vector_key(quantity_name)
+            normalized[key] = cls._normalize_component_units(
+                quantity_name, component_units
+            )
 
         return normalized
+
+    @staticmethod
+    def _normalize_vector_key(quantity_name: Any) -> str:
+        """Validate and normalize a `vector_quantities` key to a known old quantity name."""
+        if not isinstance(quantity_name, str):
+            raise ValueError(
+                f"'vector_quantities' key must be a string, got {quantity_name!r}."
+            )
+
+        key = quantity_name.strip().lower()
+        if key not in KNOWN_OLD_QUANTITY_NAMES:
+            raise ValueError(
+                f"'vector_quantities' key {quantity_name!r} is not a known quantity "
+                "of the old external forcings file."
+            )
+        return key
+
+    @staticmethod
+    def _normalize_component_units(
+        quantity_name: str, component_units: Any
+    ) -> dict[str, str]:
+        """Validate and normalize the `{component: unit}` mapping of one vector quantity."""
+        if not isinstance(component_units, dict) or not component_units:
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' must be a mapping of component names to units."
+            )
+
+        normalized_components: dict[str, str] = {}
+        for component_name, unit_name in component_units.items():
+            component = ExternalForcingConfigs._validate_component_name(
+                quantity_name, component_name, normalized_components
+            )
+            normalized_components[component] = (
+                ExternalForcingConfigs._validate_component_unit(
+                    quantity_name, component, unit_name
+                )
+            )
+        return normalized_components
+
+    @staticmethod
+    def _validate_component_name(
+        quantity_name: str, component_name: Any, seen: dict[str, str]
+    ) -> str:
+        """Validate a single component name and return its trimmed form."""
+        if not isinstance(component_name, str):
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' contains a non-string component: {component_name!r}."
+            )
+        component = component_name.strip()
+        if not component:
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' contains an empty component name."
+            )
+        if component in seen:
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' contains duplicate component name {component!r}."
+            )
+        return component
+
+    @staticmethod
+    def _validate_component_unit(
+        quantity_name: str, component: str, unit_name: Any
+    ) -> str:
+        """Validate a single component's unit and return its trimmed form."""
+        if not isinstance(unit_name, str):
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be a string."
+            )
+        unit = unit_name.strip()
+        if not unit:
+            raise ValueError(
+                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be non-empty."
+            )
+        return unit
 
     def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
         """Map an old quantity name onto the name used in the new format.
