@@ -1763,11 +1763,12 @@ class TimToForcingConverter:
     """
     def __init__(
         self,
+        *,
         tim_model: TimModel,
         time_unit: str,
         time_interpolation: str = "linear",
         user_defined_names: list[str] | None = None,
-        units: list[str] | None = None,
+        units: list[str],
     ):
         """
         Args:
@@ -1778,8 +1779,9 @@ class TimToForcingConverter:
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
+            units (list[str]):
+                A list of units corresponding to the forcing quantities. Required
+                (keyword-only): its length must match the number of TIM data columns.
             user_defined_names (List[str], optional):
                 A list of user-defined names for the forcing blocks.
         """
@@ -1787,9 +1789,12 @@ class TimToForcingConverter:
         if time_unit is None:
             raise ValueError("The 'start_time' must be provided.")
 
+        if units is None:
+            raise ValueError("'units' must be provided.")
+
         if len(units) != len(first_record):
             raise ValueError(
-                "The lengths of 'units' and columns in the first TIM row must match for vector quantities."
+                "The number of 'units' must match the number of data columns in the first TIM row."
             )
 
         self.tim_model_df = tim_model.as_dataframe()
@@ -1844,8 +1849,8 @@ class TimToForcingConverter:
 
             ```
         """
-        if self.units is None or self.user_defined_names is None:
-            raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+        if self.user_defined_names is None:
+            raise ValueError("'user_defined_names' must be provided.")
 
         if vector_quantities:
             time_series_list = self._convert_multiple_columns_quantities(
