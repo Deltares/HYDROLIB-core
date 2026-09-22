@@ -1853,15 +1853,15 @@ class TimToForcingConverter:
             raise ValueError("'user_defined_names' must be provided.")
 
         if vector_quantities:
-            time_series_list = self._convert_multiple_columns_quantities(
+            time_series_list = self._convert_vector_quantities(
                 vector_quantities,
             )
         else:
-            time_series_list = self._convert_single_column_quantities()
+            time_series_list = self._convert_scalar_quantities()
 
         return time_series_list
 
-    def _convert_single_column_quantities(
+    def _convert_scalar_quantities(
         self,
     ) -> list[TimeSeries]:
         if len(self.units) != len(self.user_defined_names):
@@ -1889,7 +1889,7 @@ class TimToForcingConverter:
 
         return time_series_list
 
-    def _convert_multiple_columns_quantities(
+    def _convert_vector_quantities(
         self,
         vector_quantities: dict[str, dict[str, str]],
     ) -> List[TimeSeries]:
