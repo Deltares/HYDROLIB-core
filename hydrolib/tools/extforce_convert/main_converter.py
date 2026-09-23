@@ -300,7 +300,7 @@ class ExternalForcingConverter:
 
     def update(
         self,
-    ) -> Union[Tuple[ExtModel, StructureModel], None]:
+    ) -> Tuple[ExtModel, StructureModel] | None:
         """Convert the old external forcing file to a new format files.
 
         Notes:
@@ -311,7 +311,7 @@ class ExternalForcingConverter:
             forcing model; the converter no longer produces an initial field file.
 
         Returns:
-            Tuple[ExtModel, StructureModel]:
+            Tuple[ExtModel, StructureModel] | None:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
