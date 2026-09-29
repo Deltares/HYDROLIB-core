@@ -83,6 +83,8 @@ ForcingDataUnion = Annotated[
 
 CrestWidthField = Annotated[float | None, Field(alias="crestWidth")]
 CrestLevelField = Annotated[ForcingDataUnion | None, Field(alias="crestLevel")]
+GateHeightField = Annotated[ForcingDataUnion | None, Field(alias="gateHeight")]
+GateLowerEdgeLevelField = Annotated[ForcingDataUnion | None, Field(alias="gateLowerEdgeLevel")]
 
 class Structure(CoordinateValidator, INIBasedModel):
     """Structure model."""
@@ -847,13 +849,16 @@ class Gate(Structure):
     comments: Comments = Comments()
 
     type: Literal["gate"] = Field("gate", alias="type")
+
     crestwidth: CrestWidthField = None
     crestlevel: CrestLevelField = None
-    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
-    gateheight: ForcingDataUnion | None = Field(None, alias="gateHeight")
-    gateopeningwidth: float | None = Field(None, alias="gateOpeningWidth")
+
+    gateloweredgelevel: GateLowerEdgeLevelField = None
+    gateheight: GateHeightField = None
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
-        None, alias="gateOpeningHorizontalDirection"
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection"
     )
 
 
@@ -957,9 +962,6 @@ class GeneralStructure(Gate):
     downstream2width: float | None = Field(10.0, alias="downstream2Width")
     downstream2level: float | None = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: ForcingDataUnion | None = Field(
-        11.0, alias="gateLowerEdgeLevel"
-    )
     posfreegateflowcoeff: float | None = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: float | None = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: float | None = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -971,12 +973,10 @@ class GeneralStructure(Gate):
     negdrownweirflowcoeff: float | None = Field(1.0, alias="negDrownWeirFlowCoeff")
     negcontrcoeffreegate: float | None = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: float | None = Field(0.0, alias="extraResistance")
-    gateheight: float | None = Field(1e10, alias="gateHeight")
-    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
-        GateOpeningHorizontalDirection.symmetric.value,
-        alias="gateOpeningHorizontalDirection",
-    )
+
+    gateloweredgelevel: GateLowerEdgeLevelField = 11.0
+    gateheight: GateHeightField = 1e10
+
     usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
 
 
