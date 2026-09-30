@@ -263,6 +263,38 @@ def test_build_quantities_names_dedups_substance_and_tracerbnd(
     ]
 
 
+def test_build_quantities_names_preserves_tracer_order_with_substance(
+    converter: SourceSinkConverter,
+):
+    """Multiple non-substance tracers keep their ext order; the substance stays last.
+
+    With two non-substance `tracerbnd*` quantities plus an active substance, the
+    deduped tracer names must keep their first-seen (ext-file) order rather than the
+    non-deterministic order of a `set`, and the active substance is appended last.
+    """
+    names = converter._build_quantities_names(
+        ext_file_quantity_list=[
+            "discharge",
+            "salinity",
+            "temperature",
+            "tracerbndA",
+            "tracerbndB",
+            "tracerbndIM1",
+        ],
+        active_substance_names=["IM1"],
+        mdu_quantities={},
+    )
+
+    assert names == [
+        "sourcesink_discharge",
+        "sourcesink_salinity",
+        "sourcesink_temperature",
+        "tracerbndA",
+        "tracerbndB",
+        "IM1",
+    ]
+
+
 @pytest.mark.parametrize(
     "tim_file, ext_file_quantity_list, mdu_quantities, expected_data",
     [
