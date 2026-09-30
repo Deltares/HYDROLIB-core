@@ -11,6 +11,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldModel,
     ExtOldQuantity,
 )
+from hydrolib.tools.extforce_convert import converters as converters_module
 from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -238,6 +239,24 @@ def test_filter_source_sink_quantities():
 def test_substance_name_from_quantity(quantity, expected):
     """The bare substance name is recovered by stripping any known source/sink prefix."""
     assert SourceSinkConverter._substance_name_from_quantity(quantity) == expected
+
+
+def test_substance_name_from_quantity_strips_longest_prefix():
+    """When prefixes overlap, the longest one is stripped, not the first in tuple order.
+
+    With an overlapping set ordered `("tracer", "tracerbnd")`, a first-match strategy
+    would strip `tracer` from `tracerbndIM1` and wrongly yield `bndIM1`. The longest
+    match yields `IM1`.
+    """
+    overlapping_prefixes = ("tracer", "tracerbnd")
+    with patch.object(
+        converters_module,
+        "SOURCE_SINKS_QUANTITIES_VALID_PREFIXES",
+        overlapping_prefixes,
+    ):
+        assert (
+            SourceSinkConverter._substance_name_from_quantity("tracerbndIM1") == "IM1"
+        )
 
 
 def test_build_quantities_names_dedups_substance_and_tracerbnd(

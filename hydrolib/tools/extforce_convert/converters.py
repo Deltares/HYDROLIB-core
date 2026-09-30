@@ -879,6 +879,11 @@ class SourceSinkConverter(BaseConverter):
         substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
         unchanged.
 
+        The longest matching prefix is stripped (not merely the first one in tuple
+        order), so the result stays correct even if the prefix set ever contains a
+        prefix of another prefix (e.g. `tracer` and `tracerbnd`). Matching is
+        case-insensitive; the suffix casing is preserved.
+
         Args:
             quantity (str): The source/sink quantity name from the external file.
 
@@ -887,10 +892,13 @@ class SourceSinkConverter(BaseConverter):
         """
         result = quantity
         lowered = quantity.lower()
-        for prefix in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES:
-            if lowered.startswith(prefix):
-                result = quantity[len(prefix) :]
-                break
+        match = max(
+            (p for p in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES if lowered.startswith(p)),
+            key=len,
+            default=None,
+        )
+        if match is not None:
+            result = quantity[len(match) :]
         return result
 
     @staticmethod
