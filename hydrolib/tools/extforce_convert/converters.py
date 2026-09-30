@@ -871,6 +871,29 @@ class SourceSinkConverter(BaseConverter):
         ]
 
     @staticmethod
+    def _substance_name_from_quantity(quantity: str) -> str:
+        """Return the substance/tracer name of a source/sink quantity, without its prefix.
+
+        A quantity such as `tracerbndIM1` or `sedfracbndMud` carries one of the
+        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES`; stripping it yields the bare
+        substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
+        unchanged.
+
+        Args:
+            quantity (str): The source/sink quantity name from the external file.
+
+        Returns:
+            str: The substance name with any leading source/sink prefix removed.
+        """
+        result = quantity
+        lowered = quantity.lower()
+        for prefix in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES:
+            if lowered.startswith(prefix):
+                result = quantity[len(prefix) :]
+                break
+        return result
+
+    @staticmethod
     def merge_mdu_and_ext_file_quantities(
         mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
     ) -> List[str]:
@@ -1011,35 +1034,11 @@ class SourceSinkConverter(BaseConverter):
             ...
             ```
         """
-        time_file = TimParser.parse(tim_file)
-        tim_model = TimModel(**time_file)
+        tim_model = TimModel(filepath=tim_file)
         time_series = tim_model.as_dict()
-        # get the required quantities from the external file
-        required_quantities_from_ext = [
-            key
-            for key in ext_file_quantity_list
-            if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
-        # Remove duplicate quantities that might be present in the list due to quantities that share names,
-        # therefore occurring multiple times in the external forcing file.
-        # TimeSeries columns are expected to be linked to unique quantity names.
-        required_quantities_from_ext = list(set(required_quantities_from_ext))
 
-        # check if the temperature and salinity are present in the external file
-        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
-            ext_file_quantity_list
-        )
-
-        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
-            mdu_quantities, temp_salinity_from_ext
-        )
-        active_substance_names = active_substance_names or []
-
-        final_quantities_list = (
-            ["sourcesink_discharge"]
-            + final_temp_salinity
-            + required_quantities_from_ext
-            + active_substance_names
+        final_quantities_list = self._build_quantities_names(
+            ext_file_quantity_list, active_substance_names, mdu_quantities
         )
 
         if len(time_series) != len(final_quantities_list):
@@ -1050,6 +1049,74 @@ class SourceSinkConverter(BaseConverter):
         # assign the quantity names to the tim model
         tim_model.quantities_names = final_quantities_list
         return tim_model
+
+    def _build_quantities_names(
+        self,
+        ext_file_quantity_list: List[str],
+        active_substance_names: Optional[List[str]],
+        mdu_quantities: Dict[str, bool],
+    ) -> List[str]:
+        """Build the ordered source/sink quantity names that label the TIM columns.
+
+        The order mirrors the TIM column order: discharge, then the temperature/salinity
+        deltas (merged from the MDU and the external file), then the tracer/sediment-fraction
+        quantities carried by the external file, then the active substances from the
+        substance file.
+
+        When a substance file is present it is authoritative for the substance columns:
+        any external tracer/sediment-fraction quantity that resolves to an active
+        substance (e.g. `tracerbndIM1` -> `IM1`) is dropped, so the same TIM column is
+        not counted twice (once via its prefix here and once via `active_substance_names`).
+
+        Args:
+            ext_file_quantity_list (List[str]): The source/sink-relevant quantities from
+                the old external forcings file.
+            active_substance_names (Optional[List[str]]): The active substance names from
+                the substance file, or None when the MDU references none.
+            mdu_quantities (Dict[str, bool]): The temperature/salinity activation flags
+                derived from the MDU file.
+
+        Returns:
+            List[str]: The quantity names, one per TIM data column, in column order.
+        """
+        active_substance_names = active_substance_names or []
+
+        # tracer/sediment-fraction quantities carried by the external file
+        required_quantities_from_ext = [
+            key
+            for key in ext_file_quantity_list
+            if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+        # TimeSeries columns are linked to unique quantity names; drop duplicates that
+        # arise when a quantity occurs multiple times in the external forcing file.
+        required_quantities_from_ext = list(set(required_quantities_from_ext))
+
+        # check if the temperature and salinity are present in the external file
+        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
+            ext_file_quantity_list
+        )
+        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
+            mdu_quantities, temp_salinity_from_ext
+        )
+
+        # The substance file is authoritative for the substance columns. Drop any ext
+        # tracer/sediment-fraction quantity (e.g. `tracerbndIM1`) that resolves to an
+        # active substance (`IM1`), so the same TIM column is not counted twice.
+        active_substance_lookup = {name.lower() for name in active_substance_names}
+        required_quantities_from_ext = [
+            quantity
+            for quantity in required_quantities_from_ext
+            if self._substance_name_from_quantity(quantity).lower()
+            not in active_substance_lookup
+        ]
+
+        final_quantities_list = (
+            ["sourcesink_discharge"]
+            + final_temp_salinity
+            + required_quantities_from_ext
+            + active_substance_names
+        )
+        return final_quantities_list
 
     @staticmethod
     def convert_tim_to_bc(
