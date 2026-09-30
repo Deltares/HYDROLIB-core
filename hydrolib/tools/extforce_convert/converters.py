@@ -1081,17 +1081,15 @@ class SourceSinkConverter(BaseConverter):
         """
         active_substance_names = active_substance_names or []
 
-        # tracer/sediment-fraction quantities carried by the external file
+        # tracer/sediment-fraction quantities from the ext file, deduplicated while
+        # preserving first-seen order to stay aligned with the TIM column order.
         required_quantities_from_ext = [
             key
             for key in ext_file_quantity_list
             if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
         ]
-        # TimeSeries columns are linked to unique quantity names; drop duplicates that
-        # arise when a quantity occurs multiple times in the external forcing file.
-        required_quantities_from_ext = list(set(required_quantities_from_ext))
+        required_quantities_from_ext = list(dict.fromkeys(required_quantities_from_ext))
 
-        # check if the temperature and salinity are present in the external file
         temp_salinity_from_ext = find_temperature_salinity_in_quantities(
             ext_file_quantity_list
         )
@@ -1099,9 +1097,8 @@ class SourceSinkConverter(BaseConverter):
             mdu_quantities, temp_salinity_from_ext
         )
 
-        # The substance file is authoritative for the substance columns. Drop any ext
-        # tracer/sediment-fraction quantity (e.g. `tracerbndIM1`) that resolves to an
-        # active substance (`IM1`), so the same TIM column is not counted twice.
+        # The substance file is authoritative: drop any ext tracer quantity that
+        # resolves to an active substance so its TIM column is not counted twice.
         active_substance_lookup = {name.lower() for name in active_substance_names}
         required_quantities_from_ext = [
             quantity
