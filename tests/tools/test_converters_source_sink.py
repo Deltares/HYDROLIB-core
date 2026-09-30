@@ -174,6 +174,20 @@ def mdu_parser_mock() -> MagicMock:
             None,
             id="active_substance_exceeds_tim_columns",
         ),
+        # Regression: an ext `tracerbnd*` quantity that names an active substance
+        # (`tracerbndsubstance_a` -> `substance_a`) must be dropped, not counted twice.
+        pytest.param(
+            tim_file,
+            ["discharge", "salinity", "temperature", "tracerbndsubstance_a"],
+            ["substance_a"],
+            {
+                "sourcesink_discharge": [1.0] * 5,
+                "sourcesink_salinity": [2.0] * 5,
+                "sourcesink_temperature": [3.0] * 5,
+                "substance_a": [4.0] * 5,
+            },
+            id="substance_and_tracerbnd_not_double_counted",
+        ),
     ],
 )
 def test_parse_tim_model(
@@ -209,6 +223,43 @@ def test_filter_source_sink_quantities():
         "sourcesink_discharge",
         "salinity",
         "temperature",
+    ]
+
+
+@pytest.mark.parametrize(
+    "quantity, expected",
+    [
+        ("tracerbndIM1", "IM1"),  # tracer boundary prefix stripped
+        ("sedfracbndMud", "Mud"),  # sediment-fraction boundary prefix stripped
+        ("TracerBndIM1", "IM1"),  # prefix match is case-insensitive
+        ("discharge", "discharge"),  # no known prefix -> returned unchanged
+    ],
+)
+def test_substance_name_from_quantity(quantity, expected):
+    """The bare substance name is recovered by stripping any known source/sink prefix."""
+    assert SourceSinkConverter._substance_name_from_quantity(quantity) == expected
+
+
+def test_build_quantities_names_dedups_substance_and_tracerbnd(
+    converter: SourceSinkConverter,
+):
+    """An ext `tracerbnd*` quantity naming an active substance is not counted twice.
+
+    `tracerbndIM1` resolves to active substance `IM1`; the substance file is
+    authoritative, so the ext quantity is dropped and `IM1` appears exactly once,
+    after discharge/salinity/temperature.
+    """
+    names = converter._build_quantities_names(
+        ext_file_quantity_list=["discharge", "salinity", "temperature", "tracerbndIM1"],
+        active_substance_names=["IM1"],
+        mdu_quantities={},
+    )
+
+    assert names == [
+        "sourcesink_discharge",
+        "sourcesink_salinity",
+        "sourcesink_temperature",
+        "IM1",
     ]
 
 
