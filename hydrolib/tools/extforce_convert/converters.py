@@ -973,8 +973,9 @@ class SourceSinkConverter(BaseConverter):
 
         Raises:
             ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
-            forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
-            `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+            forcings file that has one of the source/sink prefixes `tracerbnd`, `sedfracbnd`, plus the discharge,
+            temperature, and salinity. The initial-condition prefixes `initialtracer` / `initialsedfrac` are excluded,
+            since those are converted as initial conditions by other converters.
 
         Notes:
             - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
@@ -991,16 +992,17 @@ class SourceSinkConverter(BaseConverter):
             4.0 1.0 2.0 3.0 4.0
             ```
         and the external file contains the following quantities:
-            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracerAnyname",
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "tracerbndAnyname",
             ... "anyother-quantities"]
 
-        - The function will filter the external forcing quantities that have one of the following prefixes
-        `initialtracer`,`tracerbnd`, `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        - The function will filter the external forcing quantities that have one of the source/sink prefixes
+        `tracerbnd`, `sedfracbnd`, plus the discharge, temperature, and salinity. The initial-condition prefixes
+        `initialtracer` / `initialsedfrac` are excluded (they are converted by other converters).
         - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
         columns in the TIM file, if they don't match a `Value Error` will be raised.
-        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
+        - Here the filtered quantities are ["discharge", "temperature", "salinity", "tracerbndAnyname"] and the
         tim file contains 4 columns (excluding the time column).
             ```python
             >>> from pathlib import Path
@@ -1011,13 +1013,13 @@ class SourceSinkConverter(BaseConverter):
             >>> converter = SourceSinkConverter(mdu_parser=mdu_parser) # doctest: +SKIP
             >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list) # doctest: +SKIP
             >>> print(tim_model.quantities_names)
-            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'initialtracerAnyname']
+            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'tracerbndAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "sourcesink_salinity": [2.0, 2.0, 2.0, 2.0, 2.0],
                 "sourcesink_temperature": [3.0, 3.0, 3.0, 3.0, 3.0],
-                "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+                "tracerbndAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
             ```
@@ -1071,6 +1073,12 @@ class SourceSinkConverter(BaseConverter):
         quantities carried by the external file, then the active substances from the
         substance file.
 
+        The external tracer/sediment-fraction quantities are deduplicated while preserving
+        first-seen order, so the resulting names stay aligned with the TIM column order. The
+        `initialtracer*` / `initialsedfrac*` quantities are excluded even though they share
+        the `tracer` / `sedfrac` stem: they are initial conditions handled by other
+        converters (consistent with `filter_source_sink_quantities`).
+
         When a substance file is present it is authoritative for the substance columns:
         any external tracer/sediment-fraction quantity that resolves to an active
         substance (e.g. `tracerbndIM1` -> `IM1`) is dropped, so the same TIM column is
@@ -1089,12 +1097,11 @@ class SourceSinkConverter(BaseConverter):
         """
         active_substance_names = active_substance_names or []
 
-        # tracer/sediment-fraction quantities from the ext file, deduplicated while
-        # preserving first-seen order to stay aligned with the TIM column order.
         required_quantities_from_ext = [
             key
             for key in ext_file_quantity_list
             if key.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            and not key.lower().startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
         ]
         required_quantities_from_ext = list(dict.fromkeys(required_quantities_from_ext))
 
@@ -1105,8 +1112,6 @@ class SourceSinkConverter(BaseConverter):
             mdu_quantities, temp_salinity_from_ext
         )
 
-        # The substance file is authoritative: drop any ext tracer quantity that
-        # resolves to an active substance so its TIM column is not counted twice.
         active_substance_lookup = {name.lower() for name in active_substance_names}
         required_quantities_from_ext = [
             quantity

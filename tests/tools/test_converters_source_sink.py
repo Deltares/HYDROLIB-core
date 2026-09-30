@@ -51,14 +51,14 @@ def mdu_parser_mock() -> MagicMock:
                 "discharge",
                 "temperature",
                 "salinity",
-                "initialtracer_anyname",
+                "tracerbnd_anyname",
             ],
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="test_default_all_quantities_comes_from_ext",
         ),
@@ -73,45 +73,45 @@ def mdu_parser_mock() -> MagicMock:
         # The tim file has 3 columns (plus the time column), but the list of ext quantities has only 3 quantities.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
-            ["discharge", "salinity", "initialtracer_anyname"],
+            ["discharge", "salinity", "tracerbnd_anyname"],
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="no_temperature",
         ),
         # The tim file has 3 columns (plus the time column), and the list of ext quantities has only 3 quantities.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_or_salinity.tim"),
-            ["discharge", "temperature", "initialtracer_anyname"],
+            ["discharge", "temperature", "tracerbnd_anyname"],
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="no_salinity",
         ),
         # The tim file has 2 columns (plus the time column), and the list of ext quantities has only 2 quantities.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
-            ["discharge", "initialtracer_anyname"],
+            ["discharge", "tracerbnd_anyname"],
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="no_temperature_no_salinity",
         ),
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
-            ["sourcesink_discharge", "initialtracer_anyname", "initialtracer_anyname"],
+            ["sourcesink_discharge", "tracerbnd_anyname", "tracerbnd_anyname"],
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="2_unique_quantities_in_ext_file_list",
         ),
@@ -120,8 +120,8 @@ def mdu_parser_mock() -> MagicMock:
             [
                 "sourcesink_discharge",
                 "temperature",
-                "initialtracer_anyname",
-                "initialtracer_anyname",
+                "tracerbnd_anyname",
+                "tracerbnd_anyname",
             ],
             None,
             None,
@@ -130,11 +130,11 @@ def mdu_parser_mock() -> MagicMock:
         # An empty substance list behaves like None: no extra columns are expected.
         pytest.param(
             Path("tests/data/input/source-sink/no_temperature_no_salinity.tim"),
-            ["discharge", "initialtracer_anyname"],
+            ["discharge", "tracerbnd_anyname"],
             [],
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="empty_active_substances",
         ),
@@ -170,7 +170,7 @@ def mdu_parser_mock() -> MagicMock:
         # leftsor.tim already fills its 4 columns without the extra substance.
         pytest.param(
             tim_file,
-            ["discharge", "salinity", "temperature", "initialtracer_anyname"],
+            ["discharge", "salinity", "temperature", "tracerbnd_anyname"],
             ["substance_a"],
             None,
             id="active_substance_exceeds_tim_columns",
@@ -314,54 +314,78 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
     ]
 
 
+def test_build_quantities_names_drops_initial_condition_prefixes(
+    converter: SourceSinkConverter,
+):
+    """`initialtracer*` / `initialsedfrac*` are not source/sink columns and are dropped.
+
+    They are initial conditions converted by other converters (consistent with
+    `filter_source_sink_quantities`); only `tracerbnd*` / `sedfracbnd*` remain as
+    source/sink TIM columns.
+    """
+    names = converter._build_quantities_names(
+        ext_file_quantity_list=[
+            "discharge",
+            "initialtracerFoo",
+            "tracerbndBar",
+            "initialsedfracMud",
+            "sedfracbndSilt",
+        ],
+        active_substance_names=None,
+        mdu_quantities={},
+    )
+
+    assert names == ["sourcesink_discharge", "tracerbndBar", "sedfracbndSilt"]
+
+
 @pytest.mark.parametrize(
     "tim_file, ext_file_quantity_list, mdu_quantities, expected_data",
     [
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "initialtracer_anyname"],
+            ["sourcesink_discharge", "tracerbnd_anyname"],
             {"salinity": True, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="all_quantities_from_mdu",
         ),
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "temperature", "initialtracer_anyname"],
+            ["sourcesink_discharge", "temperature", "tracerbnd_anyname"],
             {"salinity": True, "temperature": False},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="temp_from_ext_salinity_from_mdu",
         ),
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "tracerbnd_anyname"],
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="temp_from_mdu_salinity_from_ext",
         ),
         pytest.param(
             tim_file,
-            ["sourcesink_discharge", "salinity", "initialtracer_anyname"],
+            ["sourcesink_discharge", "salinity", "tracerbnd_anyname"],
             {"salinity": True, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="temp_salinity_from_mdu",
         ),
@@ -371,14 +395,14 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
                 "sourcesink_discharge",
                 "salinity",
                 "temperature",
-                "initialtracer_anyname",
+                "tracerbnd_anyname",
             ],
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="temp_from_mdu_temp_salinity_from_ext",
         ),
@@ -388,15 +412,15 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
                 "sourcesink_discharge",
                 "salinity",
                 "temperature",
-                "initialtracer_anyname",
-                "initialtracer_anyname",
+                "tracerbnd_anyname",
+                "tracerbnd_anyname",
             ],
             {"salinity": False, "temperature": True},
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "initialtracer_anyname": [4.0] * 5,
+                "tracerbnd_anyname": [4.0] * 5,
             },
             id="duplicate_quantities_in_ext_list",
         ),
@@ -422,12 +446,12 @@ def compare_data(new_quantity_block: SourceSink):
         "discharge",
         "salinity",
         "temperature",
-        "initialtracer_anyname",
+        "tracerbnd_anyname",
     ]
 
     assert all(hasattr(new_quantity_block, quantity) for quantity in quantity_list)
     # all the quantities are stored in discharge attribute (one forcing model that has all the Forcings)
-    # and this forcingModel is duplicated in the sourcesink_salinity, sourcesink_temperature, and initialtracer_anyname
+    # and this forcingModel is duplicated in the sourcesink_salinity, sourcesink_temperature, and tracerbnd_anyname
     # to be able to save them in the same .bc file.
     quantity = "discharge"
     forcing_model = getattr(new_quantity_block, quantity)
@@ -438,7 +462,7 @@ def compare_data(new_quantity_block: SourceSink):
     assert units == ["m3/s", "1e-3", "degC", "-"]
     # check the values of the data block
     data = [forcing_model.forcing[i].as_dataframe() for i in range(len(quantity_list))]
-    # initialtracer_anyname
+    # tracerbnd_anyname
     assert data[3].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
     # temperature
     assert data[2].loc[:, 0].to_list() == [3.0, 3.0, 3.0, 3.0, 3.0]
@@ -453,7 +477,7 @@ class TestConverter:
     def test_default(self, converter: SourceSinkConverter, source_sink_dir: Path):
         """
         The test case is based on the following assumptions:
-        - temperature, salinity, and initialtracer_anyname are other quantities in the ext file.
+        - temperature, salinity, and tracerbnd_anyname are other quantities in the ext file.
         - The ext file has the following structure:
         ```
         QUANTITY=initialtemperature
@@ -470,7 +494,7 @@ class TestConverter:
         OPERAND=O
         VALUE=11.
 
-        QUANTITY=initialtracer_anyname
+        QUANTITY=tracerbnd_anyname
         FILENAME=leftsor.pliz
         FILETYPE=9
         METHOD=1
@@ -520,7 +544,7 @@ class TestConverter:
         ext_file_other_quantities = [
             "salinity",
             "temperature",
-            "initialtracer_anyname",
+            "tracerbnd_anyname",
         ]
 
         new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
@@ -551,7 +575,7 @@ class TestConverter:
         )
 
         new_quantity_block = converter.convert(
-            forcing, ["salinity", "temperature", "initialtracer_anyname"]
+            forcing, ["salinity", "temperature", "tracerbnd_anyname"]
         )
 
         assert all(
@@ -582,7 +606,7 @@ class TestConverter:
         ext_file_other_quantities = [
             "salinity",
             "temperature",
-            "initialtracer_anyname",
+            "tracerbnd_anyname",
         ]
 
         new_quantity_block = converter.convert(forcing, ext_file_other_quantities)
@@ -646,7 +670,7 @@ class TestConverter:
         ext_file_other_quantities = [
             "salinity",
             "temperature",
-            "initialtracer_anyname",
+            "tracerbnd_anyname",
         ]
         _real_with_suffix = Path.with_suffix  # Save the real method before patching
 
@@ -701,7 +725,7 @@ class TestConverter:
         )
 
         ext_file_other_quantities = [
-            "initialtracer_anyname",
+            "tracerbnd_anyname",
         ]
 
         tim_file = source_sink_dir / "no_temperature_no_salinity.tim"
@@ -711,7 +735,7 @@ class TestConverter:
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
 
-        validation_list = ["sourcesink_discharge", "initialtracer_anyname"]
+        validation_list = ["sourcesink_discharge", "tracerbnd_anyname"]
 
         # check the converted bc_forcing
         quantity = "discharge"
@@ -731,7 +755,7 @@ class TestConverter:
             forcing_model.forcing[i].as_dataframe() for i in range(len(validation_list))
         ]
         # check the values of the data block
-        # initialtracer_anyname
+        # tracerbnd_anyname
         assert data[1].loc[:, 0].to_list() == [4.0, 4.0, 4.0, 4.0, 4.0]
         # discharge
         assert data[0].loc[:, 0].to_list() == [1.0, 1.0, 1.0, 1.0, 1.0]
