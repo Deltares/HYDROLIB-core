@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Spatial,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.core.dflowfm.structure.models import (
     Structure,
@@ -155,6 +156,10 @@ class ExternalForcingConverter:
             mdu_parser.temperature_salinity_data
         )
         self._mdu_parser = mdu_parser
+
+        # Inifield model is static for the whole run; load it once so the per-forcing
+        # tracer-ordering lookups don't re-read it from disk.
+        self._inifield_model = self._load_inifield_model()
 
         self._legacy_files = []
         self.debug = debug
@@ -300,7 +305,7 @@ class ExternalForcingConverter:
 
     def update(
         self,
-    ) -> Union[Tuple[ExtModel, StructureModel], None]:
+    ) -> Tuple[ExtModel, StructureModel] | None:
         """Convert the old external forcing file to a new format files.
 
         Notes:
@@ -311,7 +316,7 @@ class ExternalForcingConverter:
             forcing model; the converter no longer produces an initial field file.
 
         Returns:
-            Tuple[ExtModel, StructureModel]:
+            Tuple[ExtModel, StructureModel] | None:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
@@ -383,6 +388,49 @@ class ExternalForcingConverter:
             self.mdu_parser,
         )
 
+    def _new_ext_tracer_quantities(self) -> list[str]:
+        """Collect tracer/sedfrac quantity names from the pre-existing new ext file.
+
+        Only `[Boundary]` and `[Spatial]` blocks whose `quantity` carries a source/sink
+        prefix are included; file order is preserved. Returns an empty list when the
+        new ext model is empty (e.g. first-time conversion without a pre-existing
+        `ExtForceFileNew`).
+
+        Returns:
+            list[str]: Tracer/sedfrac quantity names from the new ext model, in order.
+        """
+        return [
+            block.quantity
+            for block in (*self._ext_model.boundary, *self._ext_model.spatial)
+        ]
+
+    def _inifield_tracer_quantities(self) -> list[str]:
+        """Collect tracer/sedfrac quantity names from the inifield file, if present.
+
+        The inifield model is loaded once at construction (`self._inifield_model`).
+        When the MDU references no inifield file, an empty list is returned.
+
+        Returns:
+            list[str]: Tracer/sedfrac quantity names from the inifield file, in order.
+        """
+        model = self._inifield_model
+        initials = model.initial if model else []
+        parameters = model.parameter if model else []
+        return [block.quantity for block in (*initials, *parameters)]
+
+    def _load_inifield_model(self) -> IniFieldModel | None:
+        """Load the inifield file referenced by the MDU, if it exists on disk.
+
+        Returns:
+            Optional[IniFieldModel]: The parsed inifield model, or None when the MDU
+                does not reference an inifield file or the referenced path is missing.
+        """
+        model = None
+        inifield_path = self.mdu_parser.get_inifield_file(None)
+        if inifield_path is not None and Path(inifield_path).is_file():
+            model = IniFieldModel(filepath=inifield_path, recurse=False)
+        return model
+
     def _convert_forcing(
         self, forcing
     ) -> Boundary | Lateral | Meteo | SourceSink | MassBalanceArea:
@@ -401,8 +449,14 @@ class ExternalForcingConverter:
             source_sink_quantities = converter_class.filter_source_sink_quantities(
                 self.extold_model.quantities
             )
+            # Thread the tracer-ordering inputs so SourceSinkConverter can build
+            # TIM quantities_names with the kernel's precedence
+            # (inifield -> new ext -> old ext -> substance file).
             new_quantity_block = converter_class.convert(
-                forcing, source_sink_quantities
+                forcing,
+                source_sink_quantities,
+                new_ext_tracer_quantities=self._new_ext_tracer_quantities(),
+                inifield_tracer_quantities=self._inifield_tracer_quantities(),
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)
