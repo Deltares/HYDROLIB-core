@@ -894,6 +894,8 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
         upstream2width: str | None = Field("w_u2 [m]", alias="upstream2Width")
         upstream2level: str | None = Field("z_u2 [m D]", alias="upstream2Level")
 
+        crestwidth: str | None = Field("w_s [m]", alias="crestWidth")
+        crestlevel: str | None = Field("z_s [m AD]", alias="crestLevel")
         crestlength: str | None = Field(
             "The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)",
             alias="crestLength",
@@ -904,6 +906,9 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
         downstream2width: str | None = Field("w_d2 [m]", alias="downstream2Width")
         downstream2level: str | None = Field("z_d2 [m AD]", alias="downstream2Level")
 
+        gateloweredgelevel: str | None = Field(
+            "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
+        )
         posfreegateflowcoeff: str | None = Field(
             "Positive free gate flow corr.coeff. cgf [-]", alias="posFreeGateFlowCoeff"
         )
@@ -943,6 +948,7 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
         extraresistance: str | None = Field(
             "Extra resistance [-]", alias="extraResistance"
         )
+        gateheight: str | None = Field(None, alias="gateHeight")
         usevelocityheight: str | None = Field(
             "Flag indicates whether the velocity height is to be calculated or not",
             alias="useVelocityHeight",
