@@ -1092,6 +1092,165 @@ class TestConvertSourceSinkWithSubstanceFile:
         assert sub_1_forcing.quantityunitpair[1].unit == "(gC/m3)"
         assert sub_2_forcing.quantityunitpair[1].unit == "(gN/m3)"
 
+    def test_four_source_tracer_ordering_e2e(self, tmp_path: Path):
+        """End-to-end: an MDU referencing all four tracer sources yields the kernel's precedence ordering.
+
+        Builds a self-contained model whose MDU references:
+        - a substance file (`TrA, TrB, TrC, TrX, TrD` — all active)
+        - an inifield file (`initialtracerTrX`)
+        - a pre-existing new ext file (`tracerbndTrA`, `tracerbndTrB`)
+        - an old ext file (sorsin block only)
+
+        After running the full `extforce-convert` flow the resulting `SourceSink` must
+        carry its tracer columns in first-seen-wins order across the four sources
+        (inifield -> new ext -> old ext -> substance file):
+
+            TrX  (inifield wins position 1)
+            TrA  (new ext, position 2 — substance file does not reorder)
+            TrB  (new ext, position 3)
+            TrC  (substance-file-only — contributed last)
+            TrD  (substance-file-only — contributed last)
+        """
+        # Lay out the test model entirely in a temp directory so the test is idempotent.
+        model_dir = tmp_path / "four_sources"
+        model_dir.mkdir()
+        bc_dir = model_dir / "bc"
+        bc_dir.mkdir()
+
+        # Substance file: five active substances, in a deliberate order that does NOT
+        # match the inifield/new-ext order (verifies that the sub file is lowest
+        # precedence and does not reorder earlier sources).
+        (model_dir / "subs.sub").write_text(
+            "substance 'TrA' active\n"
+            "   concentration-unit '(gA/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+            "substance 'TrB' active\n"
+            "   concentration-unit '(gB/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+            "substance 'TrC' active\n"
+            "   concentration-unit '(gC/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+            "substance 'TrX' active\n"
+            "   concentration-unit '(gX/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+            "substance 'TrD' active\n"
+            "   concentration-unit '(gD/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+        )
+
+        # Inifield file: one `[Initial]` block whose quantity is the highest-precedence
+        # tracer. A placeholder data file is enough for the ext/converter plumbing;
+        # ordering only reads the quantity name.
+        (model_dir / "trx_init.xyz").write_text("0.0 0.0 1.0\n")
+        (model_dir / "ini_fields.ini").write_text(
+            "[General]\n"
+            "fileVersion = 2.00\n"
+            "fileType = iniField\n"
+            "\n"
+            "[Initial]\n"
+            "quantity = initialtracerTrX\n"
+            "dataFile = trx_init.xyz\n"
+            "dataFileType = sample\n"
+            "interpolationMethod = triangulation\n"
+        )
+
+        # Pre-existing new ext file: two tracer boundaries that will take positions 2-3.
+        # The `.bc` referenced by the boundaries only needs to exist for the file-model
+        # resolution; it is read lazily.
+        (bc_dir / "tracers.bc").write_text(
+            "[General]\nfileVersion = 1.01\nfileType = boundConds\n"
+        )
+        (model_dir / "tra_bnd.pli").write_text("TrA\n     1     2\n      0.0      0.0\n")
+        (model_dir / "trb_bnd.pli").write_text("TrB\n     1     2\n      1.0      0.0\n")
+        (model_dir / "existing_new.ext").write_text(
+            "[General]\n"
+            "fileVersion = 2.01\n"
+            "fileType    = extForce\n"
+            "\n"
+            "[Boundary]\n"
+            "quantity    = tracerbndTrA\n"
+            "locationFile = tra_bnd.pli\n"
+            "forcingFile = bc/tracers.bc\n"
+            "\n"
+            "[Boundary]\n"
+            "quantity    = tracerbndTrB\n"
+            "locationFile = trb_bnd.pli\n"
+            "forcingFile = bc/tracers.bc\n"
+        )
+
+        # Old ext file: a single sorsin block, no additional tracer QUANTITYs.
+        (model_dir / "sorsin.pli").write_text(
+            "L1\n     1     2\n      5.0      5.0\n"
+        )
+        (model_dir / "sorsin.tim").write_text(
+            "* Time Flow Salinity Temperature TrX TrA TrB TrC TrD\n"
+            "0.0 1.0 2.0 3.0 10.0 11.0 12.0 13.0 14.0\n"
+            "60.0 1.0 2.0 3.0 10.0 11.0 12.0 13.0 14.0\n"
+            "120.0 1.0 2.0 3.0 10.0 11.0 12.0 13.0 14.0\n"
+        )
+        (model_dir / "old.ext").write_text(
+            "QUANTITY     =discharge_salinity_temperature_sorsin\n"
+            "FILENAME     =sorsin.pli\n"
+            "FILETYPE     =9\n"
+            "METHOD       =1\n"
+            "OPERAND      =O\n"
+        )
+
+        # MDU wiring all four sources together.
+        (model_dir / "model.mdu").write_text(
+            "[General]\n"
+            "Program                             = D-Flow FM\n"
+            "FileVersion                         = 1.09\n"
+            "\n"
+            "[physics]\n"
+            "Salinity                            = 1\n"
+            "Temperature                         = 1\n"
+            "\n"
+            "[processes]\n"
+            "SubstanceFile                       = subs.sub\n"
+            "\n"
+            "[time]\n"
+            "RefDate                             = 20160101\n"
+            "\n"
+            "[geometry]\n"
+            "IniFieldFile                        = ini_fields.ini\n"
+            "\n"
+            "[external forcing]\n"
+            "ExtForceFile                        = old.ext\n"
+            "ExtForceFileNew                     = existing_new.ext\n"
+        )
+
+        # Run the full extforce-convert flow.
+        converter = ExternalForcingConverter.from_mdu(
+            model_dir / "model.mdu", debug=True
+        )
+        ext_model, _ = converter.update()
+
+        # The converted sorsin block should carry its tracer columns in the kernel's
+        # 4-source precedence order.
+        source_sink = ext_model.sourcesink[0]
+        column_names = [
+            f.quantityunitpair[1].quantity for f in source_sink.discharge.forcing
+        ]
+        assert column_names == [
+            "sourcesink_discharge",
+            "sourcesink_salinity",
+            "sourcesink_temperature",
+            "TrX",
+            "TrA",
+            "TrB",
+            "TrC",
+            "TrD",
+        ]
+        # Every tracer substance is reachable as a dynamic attribute on the SourceSink.
+        for tracer in ("TrX", "TrA", "TrB", "TrC", "TrD"):
+            assert hasattr(source_sink, tracer)
+
 
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""
