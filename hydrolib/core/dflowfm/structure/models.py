@@ -19,7 +19,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, BaseModel
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -44,6 +44,7 @@ _STRUCTURE_TYPE_CANONICAL_MAP = {
     "culvert": "culvert",
     "longculvert": "longCulvert",
     "pump": "pump",
+    "gate": "gate",
     "compound": "compound",
     "orifice": "orifice",
     "generalstructure": "generalStructure",
@@ -81,6 +82,7 @@ ForcingDataUnion = Annotated[
     Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
 ]
 
+CrestWidthField = Annotated[float | None, Field(alias="crestWidth")]
 
 class Structure(CoordinateValidator, INIBasedModel):
     """Structure model."""
@@ -378,7 +380,7 @@ class Weir(Structure):
     )
 
     crestlevel: ForcingDataUnion = Field(alias="crestLevel")
-    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    crestwidth: CrestWidthField = None
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -774,7 +776,7 @@ class Orifice(Structure):
     )
 
     crestlevel: ForcingDataUnion = Field(alias="crestLevel")
-    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    crestwidth: CrestWidthField = None
     gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -812,7 +814,62 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
-class GeneralStructure(Structure):
+class GeneralStructureGateMixin(INIBasedModel):
+    """Gate-opening fields shared by Gate and GeneralStructure."""
+
+    class Comments(INIBasedModel.Comments):
+        """Comments for the shared Gate and GeneralStructure section fields."""
+
+        gateopeningwidth: str | None = Field(
+            "Width of the gate opening [m].", alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
+            alias="gateOpeningHorizontalDirection",
+        )
+
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
+
+
+class Gate(GeneralStructureGateMixin, Structure):
+    """Gate structure.
+
+    Hydraulic structure with `type=gate`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the gate input as described in
+    [UM Sec.C.12.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.8).
+    """
+
+    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
+        """Comments for the Gate section fields."""
+
+        type: str | None = Field("Structure type; must read gate", alias="type")
+        crestwidth: str | None = Field("w_s [m].", alias="crestWidth")
+        crestlevel: str | None = Field("z_s [m AD].", alias="crestLevel")
+        gateloweredgelevel: str | None = Field(
+            "Position of gate door’s lower edge [m AD].", alias="gateLowerEdgeLevel"
+        )
+        gateheight: str | None = Field(
+            "Height of the gate door [m].", alias="gateHeight"
+        )
+
+    comments: Comments = Comments()
+
+    type: Literal["gate"] = Field("gate", alias="type")
+
+    crestwidth: CrestWidthField = None
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
+
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingDataUnion = Field(alias="gateHeight")
+
+
+class GeneralStructure(GeneralStructureGateMixin, Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
@@ -822,131 +879,118 @@ class GeneralStructure(Structure):
     [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
     """
 
-    class Comments(Structure.Comments):
+    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
         """Comments for the GeneralStructure section fields."""
 
         type: Optional[str] = Field(
             "Structure type; must read generalStructure", alias="type"
         )
-        allowedflowdir: Optional[str] = Field(
+        allowedflowdir: str | None = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowDir"
         )
 
-        upstream1width: Optional[str] = Field("w_u1 [m]", alias="upstream1Width")
-        upstream1level: Optional[str] = Field("z_u1 [m AD]", alias="upstream1Level")
-        upstream2width: Optional[str] = Field("w_u2 [m]", alias="upstream2Width")
-        upstream2level: Optional[str] = Field("z_u2 [m D]", alias="upstream2Level")
+        upstream1width: str | None = Field("w_u1 [m]", alias="upstream1Width")
+        upstream1level: str | None = Field("z_u1 [m AD]", alias="upstream1Level")
+        upstream2width: str | None = Field("w_u2 [m]", alias="upstream2Width")
+        upstream2level: str | None = Field("z_u2 [m D]", alias="upstream2Level")
 
-        crestwidth: Optional[str] = Field("w_s [m]", alias="crestWidth")
-        crestlevel: Optional[str] = Field("z_s [m AD]", alias="crestLevel")
-        crestlength: Optional[str] = Field(
+        crestwidth: str | None = Field("w_s [m]", alias="crestWidth")
+        crestlevel: str | None = Field("z_s [m AD]", alias="crestLevel")
+        crestlength: str | None = Field(
             "The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)",
             alias="crestLength",
         )
 
-        downstream1width: Optional[str] = Field("w_d1 [m]", alias="downstream1Width")
-        downstream1level: Optional[str] = Field("z_d1 [m AD]", alias="downstream1Level")
-        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream2Width")
-        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream2Level")
+        downstream1width: str | None = Field("w_d1 [m]", alias="downstream1Width")
+        downstream1level: str | None = Field("z_d1 [m AD]", alias="downstream1Level")
+        downstream2width: str | None = Field("w_d2 [m]", alias="downstream2Width")
+        downstream2level: str | None = Field("z_d2 [m AD]", alias="downstream2Level")
 
-        gateloweredgelevel: Optional[str] = Field(
+        gateloweredgelevel: str | None = Field(
             "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
         )
-        posfreegateflowcoeff: Optional[str] = Field(
+        posfreegateflowcoeff: str | None = Field(
             "Positive free gate flow corr.coeff. cgf [-]", alias="posFreeGateFlowCoeff"
         )
-        posdrowngateflowcoeff: Optional[str] = Field(
+        posdrowngateflowcoeff: str | None = Field(
             "Positive drowned gate flow corr.coeff. cgd [-]",
             alias="posDrownGateFlowCoeff",
         )
-        posfreeweirflowcoeff: Optional[str] = Field(
+        posfreeweirflowcoeff: str | None = Field(
             "Positive free weir flow corr.coeff. cwf [-]", alias="posFreeWeirFlowCoeff"
         )
-        posdrownweirflowcoeff: Optional[str] = Field(
+        posdrownweirflowcoeff: str | None = Field(
             "Positive drowned weir flow corr.coeff. cwd [-]",
             alias="posDrownWeirFlowCoeff",
         )
-        poscontrcoeffreegate: Optional[str] = Field(
+        poscontrcoeffreegate: str | None = Field(
             "Positive gate flow contraction coefficient µgf [-]",
             alias="posContrCoefFreeGate",
         )
-        negfreegateflowcoeff: Optional[str] = Field(
+        negfreegateflowcoeff: str | None = Field(
             "Negative free gate flow corr.coeff. cgf [-]", alias="negFreeGateFlowCoeff"
         )
-        negdrowngateflowcoeff: Optional[str] = Field(
+        negdrowngateflowcoeff: str | None = Field(
             "Negative drowned gate flow corr.coeff. cgd [-]",
             alias="negDrownGateFlowCoeff",
         )
-        negfreeweirflowcoeff: Optional[str] = Field(
+        negfreeweirflowcoeff: str | None = Field(
             "Negative free weir flow corr.coeff. cwf [-]", alias="negFreeWeirFlowCoeff"
         )
-        negdrownweirflowcoeff: Optional[str] = Field(
+        negdrownweirflowcoeff: str | None = Field(
             "Negative drowned weir flow corr.coeff. cwd [-]",
             alias="negDrownWeirFlowCoeff",
         )
-        negcontrcoeffreegate: Optional[str] = Field(
+        negcontrcoeffreegate: str | None = Field(
             "Negative gate flow contraction coefficient mu gf [-]",
             alias="negContrCoefFreeGate",
         )
-        extraresistance: Optional[str] = Field(
+        extraresistance: str | None = Field(
             "Extra resistance [-]", alias="extraResistance"
         )
-        gateheight: Optional[str] = Field(None, alias="gateHeight")
-        gateopeningwidth: Optional[str] = Field(
-            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
-            alias="gateOpeningWidth",
-        )
-        gateopeninghorizontaldirection: Optional[str] = Field(
-            "Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight",
-            alias="gateOpeningHorizontalDirection",
-        )
-        usevelocityheight: Optional[str] = Field(
+        gateheight: str | None = Field(None, alias="gateHeight")
+        usevelocityheight: str | None = Field(
             "Flag indicates whether the velocity height is to be calculated or not",
             alias="useVelocityHeight",
         )
 
-    comments: Optional[Comments] = Comments()
+    comments: Comments | None = Comments()
 
     type: Literal["generalStructure"] = Field("generalStructure", alias="type")
-    allowedflowdir: Optional[FlowDirection] = Field(
+    allowedflowdir: FlowDirection | None = Field(
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    upstream1width: Optional[float] = Field(10.0, alias="upstream1Width")
-    upstream1level: Optional[float] = Field(0.0, alias="upstream1Level")
-    upstream2width: Optional[float] = Field(10.0, alias="upstream2Width")
-    upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
+    upstream1width: float | None = Field(10.0, alias="upstream1Width")
+    upstream1level: float | None = Field(0.0, alias="upstream1Level")
+    upstream2width: float | None = Field(10.0, alias="upstream2Width")
+    upstream2level: float | None = Field(0.0, alias="upstream2Level")
 
-    crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[ForcingDataUnion] = Field(0.0, alias="crestLevel")
-    crestlength: Optional[float] = Field(0.0, alias="crestLength")
+    crestwidth: CrestWidthField = 10.0
+    crestlevel: ForcingDataUnion | None = Field(0.0, alias="crestLevel")
+    crestlength: float | None = Field(0.0, alias="crestLength")
 
-    downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
-    downstream1level: Optional[float] = Field(0.0, alias="downstream1Level")
-    downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
-    downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
+    downstream1width: float | None = Field(10.0, alias="downstream1Width")
+    downstream1level: float | None = Field(0.0, alias="downstream1Level")
+    downstream2width: float | None = Field(10.0, alias="downstream2Width")
+    downstream2level: float | None = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[ForcingDataUnion] = Field(
-        11.0, alias="gateLowerEdgeLevel"
-    )
-    posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
-    posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
-    posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
-    posdrownweirflowcoeff: Optional[float] = Field(1.0, alias="posDrownWeirFlowCoeff")
-    poscontrcoeffreegate: Optional[float] = Field(1.0, alias="posContrCoefFreeGate")
-    negfreegateflowcoeff: Optional[float] = Field(1.0, alias="negFreeGateFlowCoeff")
-    negdrowngateflowcoeff: Optional[float] = Field(1.0, alias="negDrownGateFlowCoeff")
-    negfreeweirflowcoeff: Optional[float] = Field(1.0, alias="negFreeWeirFlowCoeff")
-    negdrownweirflowcoeff: Optional[float] = Field(1.0, alias="negDrownWeirFlowCoeff")
-    negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
-    extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
-    gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[ForcingDataUnion] = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
-        GateOpeningHorizontalDirection.symmetric.value,
-        alias="gateOpeningHorizontalDirection",
-    )
-    usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+    posfreegateflowcoeff: float | None = Field(1.0, alias="posFreeGateFlowCoeff")
+    posdrowngateflowcoeff: float | None = Field(1.0, alias="posDrownGateFlowCoeff")
+    posfreeweirflowcoeff: float | None = Field(1.0, alias="posFreeWeirFlowCoeff")
+    posdrownweirflowcoeff: float | None = Field(1.0, alias="posDrownWeirFlowCoeff")
+    poscontrcoeffreegate: float | None = Field(1.0, alias="posContrCoefFreeGate")
+    negfreegateflowcoeff: float | None = Field(1.0, alias="negFreeGateFlowCoeff")
+    negdrowngateflowcoeff: float | None = Field(1.0, alias="negDrownGateFlowCoeff")
+    negfreeweirflowcoeff: float | None = Field(1.0, alias="negFreeWeirFlowCoeff")
+    negdrownweirflowcoeff: float | None = Field(1.0, alias="negDrownWeirFlowCoeff")
+    negcontrcoeffreegate: float | None = Field(1.0, alias="negContrCoefFreeGate")
+    extraresistance: float | None = Field(0.0, alias="extraResistance")
+
+    gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
+    gateheight: float | None = Field(1e10, alias="gateHeight")
+
+    usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
 
 
 class DambreakAlgorithm(int, Enum):
@@ -1258,6 +1302,7 @@ StructureUnion = Annotated[
         Culvert,
         LongCulvert,
         Pump,
+        Gate,
         Compound,
         Orifice,
         GeneralStructure,
