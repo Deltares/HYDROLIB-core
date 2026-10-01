@@ -157,6 +157,10 @@ class ExternalForcingConverter:
         )
         self._mdu_parser = mdu_parser
 
+        # Inifield model is static for the whole run; load it once so the per-forcing
+        # tracer-ordering lookups don't re-read it from disk.
+        self._inifield_model = self._load_inifield_model()
+
         self._legacy_files = []
         self.debug = debug
         self.un_supported_quantities = self.check_unsupported_quantities()
@@ -395,46 +399,26 @@ class ExternalForcingConverter:
         Returns:
             list[str]: Tracer/sedfrac quantity names from the new ext model, in order.
         """
-        quantities = []
-        boundaries = getattr(self._ext_model, "boundary", None) or []
-        for block in boundaries:
-            quantity = getattr(block, "quantity", None)
-            if isinstance(quantity, str):
-                quantities.append(quantity)
-        spatials = getattr(self._ext_model, "spatial", None) or []
-        for block in spatials:
-            quantity = getattr(block, "quantity", None)
-            if isinstance(quantity, str):
-                quantities.append(quantity)
-        return quantities
+        return [
+            block.quantity
+            for block in (*self._ext_model.boundary, *self._ext_model.spatial)
+        ]
 
     def _inifield_tracer_quantities(self) -> list[str]:
         """Collect tracer/sedfrac quantity names from the inifield file, if present.
 
-        The inifield file is read lazily and cached on the instance. When the MDU
-        references no inifield file, an empty list is returned.
+        The inifield model is loaded once at construction (`self._inifield_model`).
+        When the MDU references no inifield file, an empty list is returned.
 
         Returns:
             list[str]: Tracer/sedfrac quantity names from the inifield file, in order.
         """
-        if not hasattr(self, "_inifield_model_cache"):
-            self._inifield_model_cache = self._load_inifield_model()
-        quantities = []
-        model = self._inifield_model_cache
-        if model is not None:
-            initials = getattr(model, "initial", None) or []
-            for block in initials:
-                quantity = getattr(block, "quantity", None)
-                if isinstance(quantity, str):
-                    quantities.append(quantity)
-            parameters = getattr(model, "parameter", None) or []
-            for block in parameters:
-                quantity = getattr(block, "quantity", None)
-                if isinstance(quantity, str):
-                    quantities.append(quantity)
-        return quantities
+        model = self._inifield_model
+        initials = model.initial if model else []
+        parameters = model.parameter if model else []
+        return [block.quantity for block in (*initials, *parameters)]
 
-    def _load_inifield_model(self) -> Optional[IniFieldModel]:
+    def _load_inifield_model(self) -> IniFieldModel | None:
         """Load the inifield file referenced by the MDU, if it exists on disk.
 
         Returns:
