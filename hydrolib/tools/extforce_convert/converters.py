@@ -1114,9 +1114,9 @@ class SourceSinkConverter(BaseConverter):
         Returns:
             List[str]: The quantity names, one per TIM data column, in column order.
         """
-        active_substance_names = active_substance_names or []
-        new_ext_tracer_quantities = new_ext_tracer_quantities or []
         inifield_tracer_quantities = inifield_tracer_quantities or []
+        new_ext_tracer_quantities = new_ext_tracer_quantities or []
+        active_substance_names = active_substance_names or []
 
         temp_salinity_from_ext = find_temperature_salinity_in_quantities(
             ext_file_quantity_list
