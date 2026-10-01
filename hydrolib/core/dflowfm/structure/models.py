@@ -1039,7 +1039,7 @@ class GeneralStructure(Structure):
         """Rename the underscored coefficient keys of `data` in place.
 
         Args:
-            data (Dict[str, Any]): The keyword mapping to normalize, either the
+            data (dict[str, Any]): The keyword mapping to normalize, either the
                 structure block itself or its comments.
         """
         for key in list(data.keys()):
