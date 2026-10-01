@@ -14,7 +14,7 @@ from tests.utils import WrapperTest, create_temp_file
 class DambreakTestCases:
     """Just a wrapper so it can be referenced from other classes."""
 
-    check_location_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a Dambreak structure."
+    check_location_err = "Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a Dambreak structure."
     check_upstream_waterlevel_location_err = "Either `waterLevelUpstreamNodeId` should be specified or `waterLevelUpstreamLocationX` and `waterLevelUpstreamLocationY`."
     check_downstream_waterlevel_location_err = "Either `waterLevelDownstreamNodeId` should be specified or `waterLevelDownstreamLocationX` and `waterLevelDownstreamLocationY`."
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
@@ -159,13 +159,13 @@ class TestDambreak:
         dambreak_obj = self.parse_dambreak_from_text(structure_text)
         self.validate_valid_default_dambreak(dambreak_obj)
 
-    def test_given_structure_text_with_polylinefile_parses_structure(self):
+    def test_given_structure_text_with_locationfile_parses_structure(self):
         structure_text = inspect.cleandoc(
             """
             [structure]
             type                       = dambreak
             id                         = dambreak
-            polylinefile               = dambreak2ddrybreach.pli
+            locationfile               = dambreak2ddrybreach.pli
             startLocationX             = 1.2
             startLocationY             = 4.0
             algorithm                  = 3             # 1 VdKnaap ,2 Verheij-vdKnaap
@@ -194,7 +194,7 @@ class TestDambreak:
         assert isinstance(dambreak_obj, Structure)
         assert dambreak_obj.type == "dambreak"
         assert dambreak_obj.id == "dambreak"
-        assert dambreak_obj.polylinefile.filepath == Path("dambreak2ddrybreach.pli")
+        assert dambreak_obj.locationfile.filepath == Path("dambreak2ddrybreach.pli")
         assert dambreak_obj.startlocationx == pytest.approx(1.2)
         assert dambreak_obj.startlocationy == pytest.approx(4.0)
         assert dambreak_obj.algorithm == 3

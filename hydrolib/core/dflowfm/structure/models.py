@@ -11,6 +11,7 @@ from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
+    ConfigDict,
     Field,
     SerializeAsAny,
     ValidationInfo,
@@ -32,6 +33,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_correct_length,
     validate_forbidden_fields,
     validate_required_fields,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.validators import CoordinateValidator
@@ -90,9 +92,9 @@ class Structure(CoordinateValidator, INIBasedModel):
 
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
-        polylinefile: Optional[str] = Field(
+        locationfile: Optional[str] = Field(
             "*.pli; Polyline geometry definition for 2D structure.",
-            alias="polylinefile",
+            alias="locationfile",
         )
         branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
@@ -119,7 +121,7 @@ class Structure(CoordinateValidator, INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    polylinefile: Optional[DiskOnlyFileModel] = Field(None, alias="polylinefile")
+    locationfile: Optional[DiskOnlyFileModel] = Field(None, alias="locationFile")
 
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = Field(None, alias="chainage")
@@ -132,6 +134,7 @@ class Structure(CoordinateValidator, INIBasedModel):
     _loc_branch_fields = {"branchid", "chainage"}
     _loc_all_fields = _loc_coord_fields | _loc_branch_fields
 
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """Get the UnknownKeywordErrorManager for this model.
@@ -139,6 +142,17 @@ class Structure(CoordinateValidator, INIBasedModel):
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
+
+    @model_validator(mode="before")
+    def rename_keys(cls, values: dict) -> dict:
+        """Renames some old keywords to the currently supported keywords."""
+        rename_mapping = {"locationfile": ["polylinefile"]}
+        values = rename_keys_for_backwards_compatibility(values, rename_mapping)
+        if isinstance(values, dict) and isinstance(values.get("comments"), dict):
+            values["comments"] = rename_keys_for_backwards_compatibility(
+                values["comments"], rename_mapping
+            )
+        return values
 
     @model_validator(mode="after")
     def check_location(self):
@@ -164,7 +178,8 @@ class Structure(CoordinateValidator, INIBasedModel):
             # Compound structure does not require a location specification.
             return self
 
-        # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
+        # Backwards compatibility for old-style polylinefile input field, now
+        # called locationFile (instead of num/x/yCoordinates):
         polyline_compatible_structures = dict(
             pump="Pump",
             dambreak="Dambreak",
@@ -172,9 +187,9 @@ class Structure(CoordinateValidator, INIBasedModel):
             weir="Weir",
             generalstructure="GeneralStructure",
         )
-        polylinefile_in_model = (
+        locationfile_in_model = (
             structype in polyline_compatible_structures.keys()
-            and filtered_values.get("polylinefile") is not None
+            and filtered_values.get("locationfile") is not None
         )
 
         # No branchId+chainage for some structures:
@@ -184,9 +199,9 @@ class Structure(CoordinateValidator, INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Error: do not allow both x/y and polyline file:
-        if polylinefile_in_model and coordinates_in_model:
+        if locationfile_in_model and coordinates_in_model:
             raise ValueError(
-                "Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+                "Specify location either by `num/x/yCoordinates` or `locationFile`, but not both."
             )
 
         # Error: require x/y or polyline file:
@@ -194,14 +209,14 @@ class Structure(CoordinateValidator, INIBasedModel):
             structype in polyline_compatible_structures.keys()
             and structype in only_coordinates_structures.keys()
         ):
-            if not (coordinates_in_model or polylinefile_in_model):
+            if not (coordinates_in_model or locationfile_in_model):
                 raise ValueError(
-                    f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+                    f"Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a {polyline_compatible_structures[structype]} structure."
                 )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
-            not polylinefile_in_model
+            not locationfile_in_model
             and structype in only_coordinates_structures.keys()
         ):
             if not coordinates_in_model:
@@ -217,17 +232,17 @@ class Structure(CoordinateValidator, INIBasedModel):
         if not (
             branch_and_chainage_in_model
             or coordinates_in_model
-            or polylinefile_in_model
+            or locationfile_in_model
         ):
             raise ValueError(
-                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `locationFile` fields."
             )
 
         return self
 
-    @field_validator("polylinefile", mode="before")
+    @field_validator("locationfile", mode="before")
     @classmethod
-    def resolve_polylinefile(cls, value) -> dict:
+    def resolve_locationfile(cls, value) -> dict:
         if isinstance(value, (str, Path)):
             return DiskOnlyFileModel(filepath=Path(value))
         return value
@@ -812,6 +827,21 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
+GENERAL_STRUCTURE_COEFFICIENT_FIELDS = frozenset(
+    {
+        "posfreegateflowcoeff",
+        "posdrowngateflowcoeff",
+        "posfreeweirflowcoeff",
+        "posdrownweirflowcoeff",
+        "poscontrcoeffreegate",
+        "negfreegateflowcoeff",
+        "negdrowngateflowcoeff",
+        "negfreeweirflowcoeff",
+        "negdrownweirflowcoeff",
+        "negcontrcoeffreegate",
+    }
+)
+
 class GeneralStructure(Structure):
     """General Structure.
 
@@ -947,6 +977,80 @@ class GeneralStructure(Structure):
         alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+
+    model_config = ConfigDict(
+        extra="forbid",
+        arbitrary_types_allowed=False,
+        validate_by_name=True,
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _bypass_non_field_keys(cls, values: Any) -> Any:
+        """Drop the keys that are not model fields.
+
+        A flattened `[Structure]` section carries `_header` and `datablock` entries
+        that have no corresponding model field. Since structures forbid extra input
+        (`extra="forbid"`), these would otherwise be reported as unknown keywords.
+
+        Args:
+            values (Any): The raw input for this structure block.
+
+        Returns:
+            Any: The input without the non-field keys.
+        """
+        values = cls._convert_section_to_dict(values)
+        if isinstance(values, dict):
+            for key in ("_header", "datablock"):
+                if key not in cls.model_fields:
+                    values.pop(key, None)
+        return values
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip_underscores_from_coefficients(cls, values: Any) -> Any:
+        """Accept the legacy underscored spelling of the flow coefficient keywords.
+
+        Older structure files separate the `pos`/`neg` prefix of the general structure
+        flow coefficients with an underscore (e.g. `pos_freegateflowcoeff`,
+        `neg_contrcoeffreegate`), while the current D-Flow FM input specification
+        spells them without one (`posFreeGateFlowCoeff`, `negContrCoefFreeGate`).
+
+        Args:
+            values (Any): The raw input for this structure block, normally the
+                flattened `[Structure]` section as a dict.
+
+        Returns:
+            Any: The input with the coefficient keywords normalized.
+        """
+        values = cls._convert_section_to_dict(values)
+        if not isinstance(values, dict):
+            return values
+
+        cls._rename_coefficient_keys(values)
+
+        comments = values.get("comments")
+        if isinstance(comments, dict):
+            cls._rename_coefficient_keys(comments)
+
+        return values
+
+    @staticmethod
+    def _rename_coefficient_keys(data: dict[str, Any]) -> None:
+        """Rename the underscored coefficient keys of `data` in place.
+
+        Args:
+            data (dict[str, Any]): The keyword mapping to normalize, either the
+                structure block itself or its comments.
+        """
+        for key in list(data.keys()):
+            if not isinstance(key, str) or "_" not in key:
+                continue
+
+            stripped = key.replace("_", "").lower()
+            if stripped in GENERAL_STRUCTURE_COEFFICIENT_FIELDS:
+                value = data.pop(key)
+                data.setdefault(stripped, value)
 
 
 class DambreakAlgorithm(int, Enum):
@@ -1247,7 +1351,7 @@ class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
