@@ -781,6 +781,203 @@ class BoundaryConditionConverter(BaseConverter):
         return user_defined_names
 
 
+class SourceSinkQuantityNamesBuilder:
+    """Build the ordered quantity names that label a source/sink TIM file's columns.
+
+    An instance captures the quantity sources for **one** source/sink conversion — the
+    old ext-file quantities, the active substances, the MDU temperature/salinity flags,
+    and the tracer quantities from the new ext and inifield files. Those five values are
+    a data clump that always travels together, so they are the object's state rather than
+    arguments threaded through every helper. `build()` composes that state into the TIM
+    column order: discharge, the temperature/salinity deltas, then the tracer /
+    sediment-fraction substances ordered by the kernel's tracer-indexing precedence
+    (inifield -> new ext -> old ext -> substance file, first-seen position wins).
+
+    The leaf utilities that depend only on their arguments (`merge_mdu_and_ext_file_quantities`,
+    `_substance_names_from_quantities`, `_substance_name_from_quantity`, `_dedup_first_seen`)
+    remain static/class methods: they are pure helpers of this builder, not behavior over
+    its state.
+    """
+
+    def __init__(
+        self,
+        ext_file_quantity_list: list[str],
+        active_substance_names: list[str] | None,
+        mdu_quantities: dict[str, bool],
+        new_ext_tracer_quantities: list[str] | None = None,
+        inifield_tracer_quantities: list[str] | None = None,
+    ):
+        """Capture the quantity sources for one source/sink conversion.
+
+        Args:
+            ext_file_quantity_list (List[str]): All source/sink-related quantities from
+                the old external forcings file. Any quantity whose name starts with a
+                `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` prefix contributes to the
+                old-ext tracer slot, including the `initialtracer*` / `initialsedfrac*`
+                ones (they contribute to the kernel's tracer indexing even though they
+                are converted as initial conditions by other converters).
+            active_substance_names (Optional[List[str]]): The active substance names from
+                the substance file, or None when the MDU references none.
+            mdu_quantities (Dict[str, bool]): The temperature/salinity activation flags
+                derived from the MDU file.
+            new_ext_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
+                names from the pre-existing new external forcings file, in file order.
+            inifield_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
+                names from the inifield file, in file order.
+        """
+        self.ext_file_quantity_list = list(ext_file_quantity_list or [])
+        self.active_substance_names = list(active_substance_names or [])
+        self.mdu_quantities = mdu_quantities
+        self.new_ext_tracer_quantities = list(new_ext_tracer_quantities or [])
+        self.inifield_tracer_quantities = list(inifield_tracer_quantities or [])
+
+    def build(self) -> List[str]:
+        """Return the quantity names, one per TIM data column, in column order.
+
+        The order is discharge, then the temperature/salinity deltas (merged from the MDU
+        and the external file), then the tracer / sediment-fraction columns assembled by
+        `_ordered_tracer_names`.
+        """
+        return (
+            ["sourcesink_discharge"]
+            + self._temperature_salinity_names()
+            + self._ordered_tracer_names()
+        )
+
+    def _temperature_salinity_names(self) -> List[str]:
+        """Return the ordered temperature/salinity delta names for the TIM columns.
+
+        Combines the temperature/salinity present in the external forcings file with the
+        activation flags from the MDU file (see `merge_mdu_and_ext_file_quantities`).
+        """
+        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
+            self.ext_file_quantity_list
+        )
+        return self.merge_mdu_and_ext_file_quantities(
+            self.mdu_quantities, temp_salinity_from_ext
+        )
+
+    def _ordered_tracer_names(self) -> List[str]:
+        """Order the tracer/sediment-fraction substances by the kernel's precedence.
+
+        The four sources are concatenated in precedence order — inifield file, new
+        external forcings file, old external forcings file, substance file — then
+        de-duplicated keeping each substance's first (highest-precedence) occurrence.
+        Each ext/inifield source contributes bare substance names after prefix stripping
+        (`tracerbndIM1` -> `IM1`); the substance file contributes its names as-is.
+        Comparison is case-insensitive and the first occurrence's casing is kept.
+        """
+        candidates = (
+            self._substance_names_from_quantities(self.inifield_tracer_quantities)
+            + self._substance_names_from_quantities(self.new_ext_tracer_quantities)
+            + self._substance_names_from_quantities(self.ext_file_quantity_list)
+            + self.active_substance_names
+        )
+        return self._dedup_first_seen(candidates)
+
+    @staticmethod
+    def merge_mdu_and_ext_file_quantities(
+        mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
+    ) -> List[str]:
+        """Merge the temperature and salinity from the mdu file with the temperature and salinity from the external file.
+
+        Args:
+            mdu_quantities (Dict[str, bool]): A dictionary containing the temperature and salinity details from the
+                mdu file, with bool values indecating if the temperature/salinity is activated in the mdu file.
+            temp_salinity_from_ext (Dict[str,int]): A dictionary containing the temperature and salinity details from
+                the external file.
+
+        Returns:
+            List[str]: A list of quantities that will be used in the tim file.
+        """
+        if mdu_quantities:
+            mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
+            temp_salinity_from_mdu = find_temperature_salinity_in_quantities(
+                mdu_file_quantity_list
+            )
+            final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
+            # the kwargs will be provided only from the source and sink converter
+            # Ensure 'temperature' comes before 'salinity'
+            keys = list(final_temp_salinity.keys())
+            if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
+                keys.remove(SOURCESINK_SALINITY_IN_BC)
+                keys.insert(
+                    keys.index(SOURCESINK_TEMP_IN_BC),
+                    SOURCESINK_SALINITY_IN_BC,
+                )
+        else:
+            keys = list(temp_salinity_from_ext.keys())
+
+        return keys
+
+    @classmethod
+    def _substance_names_from_quantities(cls, quantities: List[str]) -> List[str]:
+        """Extract substance names from quantities carrying a source/sink prefix.
+
+        Quantities without one of `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` are
+        dropped. The relative order of the surviving names is preserved.
+
+        Args:
+            quantities (List[str]): The raw quantity names from an ext/inifield source.
+
+        Returns:
+            List[str]: The substance names, in input order.
+        """
+        return [
+            cls._substance_name_from_quantity(q)
+            for q in quantities
+            if isinstance(q, str)
+            and q.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+        ]
+
+    @staticmethod
+    def _substance_name_from_quantity(quantity: str) -> str:
+        """Return the substance/tracer name of a source/sink quantity, without its prefix.
+
+        A quantity such as `tracerbndIM1` or `sedfracbndMud` carries one of the
+        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES`; stripping it yields the bare
+        substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
+        unchanged.
+
+        The longest matching prefix is stripped (not merely the first one in tuple
+        order), so the result stays correct even if the prefix set ever contains a
+        prefix of another prefix (e.g. `tracer` and `tracerbnd`). Matching is
+        case-insensitive; the suffix casing is preserved.
+
+        Args:
+            quantity (str): The source/sink quantity name from the external file.
+
+        Returns:
+            str: The substance name with any leading source/sink prefix removed.
+        """
+        result = quantity
+        lowered = quantity.lower()
+        match = max(
+            (p for p in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES if lowered.startswith(p)),
+            key=len,
+            default=None,
+        )
+        if match is not None:
+            result = quantity[len(match) :]
+        return result
+
+    @staticmethod
+    def _dedup_first_seen(names: List[str]) -> List[str]:
+        """Order-preserving, case-insensitive de-duplication.
+
+        Keeps the first occurrence of each name (by casefolded key) with its original
+        casing; later duplicates are dropped.
+        """
+        seen = set()
+        result = []
+        for name in names:
+            key = name.lower()
+            if key not in seen:
+                seen.add(key)
+                result.append(name)
+        return result
+
+
 class SourceSinkConverter(BaseConverter):
     """Source and sink converter."""
 
@@ -870,79 +1067,14 @@ class SourceSinkConverter(BaseConverter):
             if not quantity.lower().startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
         ]
 
-    @staticmethod
-    def _substance_name_from_quantity(quantity: str) -> str:
-        """Return the substance/tracer name of a source/sink quantity, without its prefix.
-
-        A quantity such as `tracerbndIM1` or `sedfracbndMud` carries one of the
-        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES`; stripping it yields the bare
-        substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
-        unchanged.
-
-        The longest matching prefix is stripped (not merely the first one in tuple
-        order), so the result stays correct even if the prefix set ever contains a
-        prefix of another prefix (e.g. `tracer` and `tracerbnd`). Matching is
-        case-insensitive; the suffix casing is preserved.
-
-        Args:
-            quantity (str): The source/sink quantity name from the external file.
-
-        Returns:
-            str: The substance name with any leading source/sink prefix removed.
-        """
-        result = quantity
-        lowered = quantity.lower()
-        match = max(
-            (p for p in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES if lowered.startswith(p)),
-            key=len,
-            default=None,
-        )
-        if match is not None:
-            result = quantity[len(match) :]
-        return result
-
-    @staticmethod
-    def merge_mdu_and_ext_file_quantities(
-        mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
-    ) -> List[str]:
-        """Merge the temperature and salinity from the mdu file with the temperature and salinity from the external file.
-
-        Args:
-            mdu_quantities (Dict[str, bool]): A dictionary containing the temperature and salinity details from the
-                mdu file, with bool values indecating if the temperature/salinity is activated in the mdu file.
-            temp_salinity_from_ext (Dict[str,int]): A dictionary containing the temperature and salinity details from
-                the external file.
-
-        Returns:
-            List[str]: A list of quantities that will be used in the tim file.
-        """
-        if mdu_quantities:
-            mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
-            temp_salinity_from_mdu = find_temperature_salinity_in_quantities(
-                mdu_file_quantity_list
-            )
-            final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
-            # the kwargs will be provided only from the source and sink converter
-            # Ensure 'temperature' comes before 'salinity'
-            keys = list(final_temp_salinity.keys())
-            if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
-                keys.remove(SOURCESINK_SALINITY_IN_BC)
-                keys.insert(
-                    keys.index(SOURCESINK_TEMP_IN_BC),
-                    SOURCESINK_SALINITY_IN_BC,
-                )
-        else:
-            keys = list(temp_salinity_from_ext.keys())
-
-        return keys
 
     def parse_tim_model(
         self,
         tim_file: Path,
-        ext_file_quantity_list: List[str],
-        active_substance_names: List[str] = None,
-        new_ext_tracer_quantities: List[str] = None,
-        inifield_tracer_quantities: List[str] = None,
+        ext_file_quantity_list: list[str],
+        active_substance_names: list[str] | None = None,
+        new_ext_tracer_quantities: list[str] | None = None,
+        inifield_tracer_quantities: list[str] | None = None,
         **mdu_quantities,
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
@@ -1049,13 +1181,13 @@ class SourceSinkConverter(BaseConverter):
         tim_model = TimModel(filepath=tim_file)
         time_series = tim_model.as_dict()
 
-        final_quantities_list = self._build_quantities_names(
+        final_quantities_list = SourceSinkQuantityNamesBuilder(
             ext_file_quantity_list,
             active_substance_names,
             mdu_quantities,
             new_ext_tracer_quantities=new_ext_tracer_quantities,
             inifield_tracer_quantities=inifield_tracer_quantities,
-        )
+        ).build()
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
@@ -1066,115 +1198,6 @@ class SourceSinkConverter(BaseConverter):
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
-    def _build_quantities_names(
-        self,
-        ext_file_quantity_list: List[str],
-        active_substance_names: Optional[List[str]],
-        mdu_quantities: Dict[str, bool],
-        new_ext_tracer_quantities: Optional[List[str]] = None,
-        inifield_tracer_quantities: Optional[List[str]] = None,
-    ) -> List[str]:
-        """Build the ordered source/sink quantity names that label the TIM columns.
-
-        The order mirrors the TIM column order: discharge, then the temperature/salinity
-        deltas (merged from the MDU and the external file), then the tracer / sediment-
-        fraction columns, assembled from four input sources using the kernel's
-        tracer-indexing precedence (first-seen position wins):
-
-        1. Inifield file (`[Initial]` / `[Parameter]` blocks whose quantity starts with
-           a tracer/sediment-fraction prefix).
-        2. New external forcings file (`[Boundary]` / `[Spatial]` blocks with the same
-           prefix). Multiple files are supported — concatenate them in file order.
-        3. Old external forcings file (`QUANTITY=tracerbnd*` / `QUANTITY=initialtracer*`
-           and their `sedfrac*` counterparts).
-        4. Substance file — contributes only substances not already seen in a
-           higher-precedence source.
-
-        Each source contributes **substance names** after prefix stripping
-        (`tracerbndIM1` -> `IM1`, `initialtracerDetC` -> `DetC`). A substance seen in a
-        higher-precedence source keeps its position and casing; later occurrences of the
-        same substance are ignored. Comparison is case-insensitive.
-
-        Args:
-            ext_file_quantity_list (List[str]): All source/sink-related quantities from
-                the old external forcings file. Any quantity whose name starts with a
-                `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` prefix contributes to the
-                old-ext tracer slot, including the `initialtracer*` / `initialsedfrac*`
-                ones (they contribute to the kernel's tracer indexing even though they
-                are converted as initial conditions by other converters).
-            active_substance_names (Optional[List[str]]): The active substance names from
-                the substance file, or None when the MDU references none.
-            mdu_quantities (Dict[str, bool]): The temperature/salinity activation flags
-                derived from the MDU file.
-            new_ext_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
-                names from the pre-existing new external forcings file, in file order.
-            inifield_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
-                names from the inifield file, in file order.
-
-        Returns:
-            List[str]: The quantity names, one per TIM data column, in column order.
-        """
-        inifield_tracer_quantities = inifield_tracer_quantities or []
-        new_ext_tracer_quantities = new_ext_tracer_quantities or []
-        active_substance_names = active_substance_names or []
-
-        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
-            ext_file_quantity_list
-        )
-        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
-            mdu_quantities, temp_salinity_from_ext
-        )
-
-        # Collect tracer substance names from each source, in file order. Only entries
-        # that carry a known source/sink prefix contribute; anything else is ignored.
-        inifield_substances = self._substance_names_from_quantities(
-            inifield_tracer_quantities
-        )
-        new_ext_substances = self._substance_names_from_quantities(
-            new_ext_tracer_quantities
-        )
-        old_ext_substances = self._substance_names_from_quantities(
-            ext_file_quantity_list
-        )
-
-        # Union across the four sources with first-seen-wins precedence.
-        ordered_tracers = []
-        seen = set()
-        for name in (
-            inifield_substances
-            + new_ext_substances
-            + old_ext_substances
-            + list(active_substance_names)
-        ):
-            key = name.lower()
-            if key not in seen:
-                seen.add(key)
-                ordered_tracers.append(name)
-
-        final_quantities_list = (
-            ["sourcesink_discharge"] + final_temp_salinity + ordered_tracers
-        )
-        return final_quantities_list
-
-    @classmethod
-    def _substance_names_from_quantities(cls, quantities: List[str]) -> List[str]:
-        """Extract substance names from quantities carrying a source/sink prefix.
-
-        Quantities without one of `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` are
-        dropped. The relative order of the surviving names is preserved.
-
-        Args:
-            quantities (List[str]): The raw quantity names from an ext/inifield source.
-
-        Returns:
-            List[str]: The substance names, in input order.
-        """
-        return [
-            cls._substance_name_from_quantity(q)
-            for q in quantities
-            if isinstance(q, str)
-            and q.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
 
     @staticmethod
     def convert_tim_to_bc(
