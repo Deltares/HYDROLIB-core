@@ -266,19 +266,6 @@ class Structure(CoordinateValidator, INIBasedModel):
 
         return self
 
-    @property
-    def polylinefile(self) -> Optional[DiskOnlyFileModel]:
-        """Deprecated alias for `locationfile`.
-
-        The `polylinefile` keyword has been replaced by `locationFile`. This
-        property is kept for backwards compatibility of existing Python code.
-        """
-        return self.locationfile
-
-    @polylinefile.setter
-    def polylinefile(self, value) -> None:
-        self.locationfile = value
-
     @field_validator("locationfile", mode="before")
     @classmethod
     def resolve_locationfile(cls, value) -> dict:
