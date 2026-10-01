@@ -19,7 +19,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, BaseModel
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -814,7 +814,28 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
-class Gate(Structure):
+class GeneralStructureGateMixin(INIBasedModel):
+    """Gate-opening fields shared by Gate and GeneralStructure."""
+
+    class Comments(INIBasedModel.Comments):
+        """Comments for the shared Gate and GeneralStructure section fields."""
+
+        gateopeningwidth: str | None = Field(
+            "Width of the gate opening [m].", alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
+            alias="gateOpeningHorizontalDirection",
+        )
+
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
+
+
+class Gate(GeneralStructureGateMixin, Structure):
     """Gate structure.
 
     Hydraulic structure with `type=gate`, to be included in a structure file.
@@ -824,7 +845,7 @@ class Gate(Structure):
     [UM Sec.C.12.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.8).
     """
 
-    class Comments(Structure.Comments):
+    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
         """Comments for the Gate section fields."""
 
         type: str | None = Field("Structure type; must read gate", alias="type")
@@ -836,13 +857,6 @@ class Gate(Structure):
         gateheight: str | None = Field(
             "Height of the gate door [m].", alias="gateHeight"
         )
-        gateopeningwidth: str | None = Field(
-            "Width of the gate opening [m].", alias="gateOpeningWidth"
-        )
-        gateopeninghorizontaldirection: str | None = Field(
-            GateOpeningHorizontalDirection.allowedvaluestext,
-            alias="gateOpeningHorizontalDirection",
-        )
 
     comments: Comments = Comments()
 
@@ -853,14 +867,9 @@ class Gate(Structure):
 
     gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     gateheight: ForcingDataUnion = Field(alias="gateHeight")
-    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
-        GateOpeningHorizontalDirection.symmetric.value,
-        alias="gateOpeningHorizontalDirection"
-    )
 
 
-class GeneralStructure(Gate):
+class GeneralStructure(GeneralStructureGateMixin, Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
@@ -870,7 +879,7 @@ class GeneralStructure(Gate):
     [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
     """
 
-    class Comments(Gate.Comments):
+    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
         """Comments for the GeneralStructure section fields."""
 
         type: Optional[str] = Field(
