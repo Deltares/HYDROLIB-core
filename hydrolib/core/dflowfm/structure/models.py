@@ -1247,7 +1247,7 @@ class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
