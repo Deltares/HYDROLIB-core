@@ -33,6 +33,7 @@ from hydrolib.core.dflowfm.ini.util import (
     validate_correct_length,
     validate_forbidden_fields,
     validate_required_fields,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.validators import CoordinateValidator
@@ -91,9 +92,9 @@ class Structure(CoordinateValidator, INIBasedModel):
 
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
-        polylinefile: Optional[str] = Field(
+        locationfile: Optional[str] = Field(
             "*.pli; Polyline geometry definition for 2D structure.",
-            alias="polylinefile",
+            alias="locationfile",
         )
         branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
@@ -120,7 +121,7 @@ class Structure(CoordinateValidator, INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    polylinefile: Optional[DiskOnlyFileModel] = Field(None, alias="polylinefile")
+    locationfile: Optional[DiskOnlyFileModel] = Field(None, alias="locationFile")
 
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = Field(None, alias="chainage")
@@ -160,7 +161,7 @@ class Structure(CoordinateValidator, INIBasedModel):
             values (Any): The raw input for this structure block.
 
         Returns:
-            Any: The input without the non-field INI bookkeeping keys.
+            Any: The input without the non-field keys.
         """
         values = cls._convert_section_to_dict(values)
         if isinstance(values, dict):
@@ -168,6 +169,16 @@ class Structure(CoordinateValidator, INIBasedModel):
                 if key not in cls.model_fields:
                     values.pop(key, None)
         return values
+
+    @model_validator(mode="before")
+    def rename_keys(cls, values: dict) -> dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return rename_keys_for_backwards_compatibility(
+            values,
+            {
+                "locationfile": ["polylinefile"],
+            },
+        )
 
     @model_validator(mode="after")
     def check_location(self):
@@ -193,7 +204,8 @@ class Structure(CoordinateValidator, INIBasedModel):
             # Compound structure does not require a location specification.
             return self
 
-        # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
+        # Backwards compatibility for old-style polylinefile input field, now
+        # called locationFile (instead of num/x/yCoordinates):
         polyline_compatible_structures = dict(
             pump="Pump",
             dambreak="Dambreak",
@@ -201,9 +213,9 @@ class Structure(CoordinateValidator, INIBasedModel):
             weir="Weir",
             generalstructure="GeneralStructure",
         )
-        polylinefile_in_model = (
+        locationfile_in_model = (
             structype in polyline_compatible_structures.keys()
-            and filtered_values.get("polylinefile") is not None
+            and filtered_values.get("locationfile") is not None
         )
 
         # No branchId+chainage for some structures:
@@ -213,9 +225,9 @@ class Structure(CoordinateValidator, INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Error: do not allow both x/y and polyline file:
-        if polylinefile_in_model and coordinates_in_model:
+        if locationfile_in_model and coordinates_in_model:
             raise ValueError(
-                "Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+                "Specify location either by `num/x/yCoordinates` or `locationFile`, but not both."
             )
 
         # Error: require x/y or polyline file:
@@ -223,14 +235,14 @@ class Structure(CoordinateValidator, INIBasedModel):
             structype in polyline_compatible_structures.keys()
             and structype in only_coordinates_structures.keys()
         ):
-            if not (coordinates_in_model or polylinefile_in_model):
+            if not (coordinates_in_model or locationfile_in_model):
                 raise ValueError(
-                    f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
+                    f"Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a {polyline_compatible_structures[structype]} structure."
                 )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
-            not polylinefile_in_model
+            not locationfile_in_model
             and structype in only_coordinates_structures.keys()
         ):
             if not coordinates_in_model:
@@ -246,17 +258,30 @@ class Structure(CoordinateValidator, INIBasedModel):
         if not (
             branch_and_chainage_in_model
             or coordinates_in_model
-            or polylinefile_in_model
+            or locationfile_in_model
         ):
             raise ValueError(
-                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `locationFile` fields."
             )
 
         return self
 
-    @field_validator("polylinefile", mode="before")
+    @property
+    def polylinefile(self) -> Optional[DiskOnlyFileModel]:
+        """Deprecated alias for `locationfile`.
+
+        The `polylinefile` keyword has been replaced by `locationFile`. This
+        property is kept for backwards compatibility of existing Python code.
+        """
+        return self.locationfile
+
+    @polylinefile.setter
+    def polylinefile(self, value) -> None:
+        self.locationfile = value
+
+    @field_validator("locationfile", mode="before")
     @classmethod
-    def resolve_polylinefile(cls, value) -> dict:
+    def resolve_locationfile(cls, value) -> dict:
         if isinstance(value, (str, Path)):
             return DiskOnlyFileModel(filepath=Path(value))
         return value
