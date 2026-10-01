@@ -14,7 +14,7 @@ from tests.utils import WrapperTest, create_temp_file
 class DambreakTestCases:
     """Just a wrapper so it can be referenced from other classes."""
 
-    check_location_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a Dambreak structure."
+    check_location_err = "Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a Dambreak structure."
     check_upstream_waterlevel_location_err = "Either `waterLevelUpstreamNodeId` should be specified or `waterLevelUpstreamLocationX` and `waterLevelUpstreamLocationY`."
     check_downstream_waterlevel_location_err = "Either `waterLevelDownstreamNodeId` should be specified or `waterLevelDownstreamLocationX` and `waterLevelDownstreamLocationY`."
     too_few_coords = "Expected at least 2 coordinates, but only {} declared."
