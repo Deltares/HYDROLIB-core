@@ -14,7 +14,7 @@ from hydrolib.core.dflowfm.extold.models import (
 from hydrolib.tools.extforce_convert import converters as converters_module
 from hydrolib.tools.extforce_convert.converters import (
     SourceSinkConverter,
-    SourceSinkQuantityNamesBuilder,
+    TimQuantityNamesBuilder,
 )
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -241,7 +241,7 @@ def test_filter_source_sink_quantities():
 )
 def test_substance_name_from_quantity(quantity, expected):
     """The bare substance name is recovered by stripping any known source/sink prefix."""
-    assert SourceSinkQuantityNamesBuilder._substance_name_from_quantity(quantity) == expected
+    assert TimQuantityNamesBuilder._substance_name_from_quantity(quantity) == expected
 
 
 def test_substance_name_from_quantity_strips_longest_prefix():
@@ -258,7 +258,7 @@ def test_substance_name_from_quantity_strips_longest_prefix():
         overlapping_prefixes,
     ):
         assert (
-            SourceSinkQuantityNamesBuilder._substance_name_from_quantity("tracerbndIM1") == "IM1"
+            TimQuantityNamesBuilder._substance_name_from_quantity("tracerbndIM1") == "IM1"
         )
 
 
@@ -271,7 +271,7 @@ def test_build_quantities_names_dedups_substance_and_tracerbnd(
     authoritative, so the ext quantity is dropped and `IM1` appears exactly once,
     after discharge/salinity/temperature.
     """
-    names = SourceSinkQuantityNamesBuilder(
+    names = TimQuantityNamesBuilder(
         ext_file_quantity_list=["discharge", "salinity", "temperature", "tracerbndIM1"],
         active_substance_names=["IM1"],
         mdu_quantities={},
@@ -294,7 +294,7 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
     deduped tracer names must keep their first-seen (ext-file) order rather than the
     non-deterministic order of a `set`, and the active substance is appended last.
     """
-    names = SourceSinkQuantityNamesBuilder(
+    names = TimQuantityNamesBuilder(
         ext_file_quantity_list=[
             "discharge",
             "salinity",
@@ -329,7 +329,7 @@ def test_build_quantities_names_includes_initial_condition_prefixes(
     in the kernel's tracer indexing (confirmed with the FM team). Each quantity
     contributes its substance name after prefix stripping; relative order is preserved.
     """
-    names = SourceSinkQuantityNamesBuilder(
+    names = TimQuantityNamesBuilder(
         ext_file_quantity_list=[
             "discharge",
             "initialtracerFoo",
@@ -360,7 +360,7 @@ def test_build_quantities_names_four_source_precedence(
     sources contribute only tracers not yet seen. Precedence: inifield -> new ext ->
     old ext -> substance file.
     """
-    names = SourceSinkQuantityNamesBuilder(
+    names = TimQuantityNamesBuilder(
         ext_file_quantity_list=[
             "discharge",
             "initialtracerDetC",
@@ -415,7 +415,7 @@ def test_build_quantities_names_inifield_wins_position(
     A substance that appears first in the inifield file keeps its early position,
     even when later sources list it in a different order.
     """
-    names = SourceSinkQuantityNamesBuilder(
+    names = TimQuantityNamesBuilder(
         ext_file_quantity_list=["discharge", "tracerbndA"],
         active_substance_names=["B", "A"],
         mdu_quantities={},

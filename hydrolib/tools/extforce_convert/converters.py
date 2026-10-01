@@ -781,7 +781,7 @@ class BoundaryConditionConverter(BaseConverter):
         return user_defined_names
 
 
-class SourceSinkQuantityNamesBuilder:
+class TimQuantityNamesBuilder:
     """Build the ordered quantity names that label a source/sink TIM file's columns.
 
     An instance captures the quantity sources for **one** source/sink conversion — the
@@ -1181,7 +1181,7 @@ class SourceSinkConverter(BaseConverter):
         tim_model = TimModel(filepath=tim_file)
         time_series = tim_model.as_dict()
 
-        final_quantities_list = SourceSinkQuantityNamesBuilder(
+        final_quantities_list = TimQuantityNamesBuilder(
             ext_file_quantity_list,
             active_substance_names,
             mdu_quantities,
