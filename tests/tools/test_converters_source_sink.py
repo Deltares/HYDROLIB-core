@@ -61,7 +61,7 @@ def mdu_parser_mock() -> MagicMock:
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="test_default_all_quantities_comes_from_ext",
         ),
@@ -81,7 +81,7 @@ def mdu_parser_mock() -> MagicMock:
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="no_temperature",
         ),
@@ -93,7 +93,7 @@ def mdu_parser_mock() -> MagicMock:
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="no_salinity",
         ),
@@ -104,7 +104,7 @@ def mdu_parser_mock() -> MagicMock:
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="no_temperature_no_salinity",
         ),
@@ -114,7 +114,7 @@ def mdu_parser_mock() -> MagicMock:
             None,
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="2_unique_quantities_in_ext_file_list",
         ),
@@ -137,7 +137,7 @@ def mdu_parser_mock() -> MagicMock:
             [],
             {
                 "sourcesink_discharge": [1.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="empty_active_substances",
         ),
@@ -151,7 +151,7 @@ def mdu_parser_mock() -> MagicMock:
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "substance_a": [4.0] * 5,
+                "sourcesink_tracersubstance_a": [4.0] * 5,
             },
             id="one_active_substance",
         ),
@@ -164,8 +164,8 @@ def mdu_parser_mock() -> MagicMock:
             {
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
-                "substance_a": [3.0] * 5,
-                "substance_b": [4.0] * 5,
+                "sourcesink_tracersubstance_a": [3.0] * 5,
+                "sourcesink_tracersubstance_b": [4.0] * 5,
             },
             id="two_active_substances",
         ),
@@ -188,7 +188,7 @@ def mdu_parser_mock() -> MagicMock:
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "substance_a": [4.0] * 5,
+                "sourcesink_tracersubstance_a": [4.0] * 5,
             },
             id="substance_and_tracerbnd_not_double_counted",
         ),
@@ -281,7 +281,7 @@ def test_build_quantities_names_dedups_substance_and_tracerbnd(
         "sourcesink_discharge",
         "sourcesink_salinity",
         "sourcesink_temperature",
-        "IM1",
+        "sourcesink_tracerIM1",
     ]
 
 
@@ -314,9 +314,9 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
         "sourcesink_discharge",
         "sourcesink_salinity",
         "sourcesink_temperature",
-        "A",
-        "B",
-        "IM1",
+        "sourcesink_tracerA",
+        "sourcesink_tracerB",
+        "sourcesink_tracerIM1",
     ]
 
 
@@ -343,10 +343,10 @@ def test_build_quantities_names_includes_initial_condition_prefixes(
 
     assert names == [
         "sourcesink_discharge",
-        "Foo",
-        "Bar",
-        "Mud",
-        "Silt",
+        "sourcesink_tracerFoo",
+        "sourcesink_tracerBar",
+        "sourcesink_sedfracMud",
+        "sourcesink_sedfracSilt",
     ]
 
 
@@ -389,21 +389,21 @@ def test_build_quantities_names_four_source_precedence(
     # new ext are not re-added.
     assert names == [
         "sourcesink_discharge",
-        "IM1",
-        "IM2",
-        "OXY",
-        "NH4",
-        "NO3",
-        "PO4",
-        "Green",
-        "DetC",
-        "DetN",
-        "DetP",
-        "Si",
-        "Diat",
-        "CBOD5",
-        "AAP",
-        "DetSi",
+        "sourcesink_tracerIM1",
+        "sourcesink_tracerIM2",
+        "sourcesink_tracerOXY",
+        "sourcesink_tracerNH4",
+        "sourcesink_tracerNO3",
+        "sourcesink_tracerPO4",
+        "sourcesink_tracerGreen",
+        "sourcesink_tracerDetC",
+        "sourcesink_tracerDetN",
+        "sourcesink_tracerDetP",
+        "sourcesink_tracerSi",
+        "sourcesink_tracerDiat",
+        "sourcesink_tracerCBOD5",
+        "sourcesink_tracerAAP",
+        "sourcesink_tracerDetSi",
     ]
 
 
@@ -424,7 +424,7 @@ def test_build_quantities_names_inifield_wins_position(
     ).build()
 
     # inifield: A -> new ext: B -> old ext: (A already seen) -> sub: (B, A already seen).
-    assert names == ["sourcesink_discharge", "A", "B"]
+    assert names == ["sourcesink_discharge", "sourcesink_tracerA", "sourcesink_tracerB"]
 
 
 @pytest.mark.parametrize(
@@ -438,7 +438,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="all_quantities_from_mdu",
         ),
@@ -450,7 +450,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="temp_from_ext_salinity_from_mdu",
         ),
@@ -462,7 +462,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="temp_from_mdu_salinity_from_ext",
         ),
@@ -474,7 +474,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="temp_salinity_from_mdu",
         ),
@@ -491,7 +491,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="temp_from_mdu_temp_salinity_from_ext",
         ),
@@ -509,7 +509,7 @@ def test_build_quantities_names_inifield_wins_position(
                 "sourcesink_discharge": [1.0] * 5,
                 "sourcesink_salinity": [2.0] * 5,
                 "sourcesink_temperature": [3.0] * 5,
-                "anyname": [4.0] * 5,
+                "sourcesink_traceranyname": [4.0] * 5,
             },
             id="duplicate_quantities_in_ext_list",
         ),
@@ -535,7 +535,7 @@ def compare_data(new_quantity_block: SourceSink):
         "discharge",
         "salinity",
         "temperature",
-        "anyname",
+        "traceranyname",
     ]
 
     assert all(hasattr(new_quantity_block, quantity) for quantity in quantity_list)
@@ -824,7 +824,7 @@ class TestConverter:
         assert new_quantity_block.zsink == [-4.2]
         assert new_quantity_block.zsource == [-3]
 
-        validation_list = ["sourcesink_discharge", "anyname"]
+        validation_list = ["sourcesink_discharge", "sourcesink_traceranyname"]
 
         # check the converted bc_forcing
         quantity = "discharge"
@@ -1075,22 +1075,25 @@ class TestConvertSourceSinkWithSubstanceFile:
             ]
         )
         assert source_sink.discharge.filepath == Path(file_names).with_suffix(".bc")
-        # sub_1 and sub_2 are assigned dynamically
-        assert all([hasattr(source_sink, sub_name) for sub_name in ["sub_1", "sub_2"]])
-        forcings = source_sink.sub_1
+        # sub_1 and sub_2 are assigned dynamically, with the `tracer` role prefix the
+        # kernel expects for source/sink tracer columns (issue #1224).
+        assert all(
+            [hasattr(source_sink, sub_name) for sub_name in ["tracersub_1", "tracersub_2"]]
+        )
+        forcings = source_sink.tracersub_1
         assert len(forcings.forcing) == 5
 
         # Verify that the substance concentration units from the .sub file are
         # correctly propagated to the .bc quantity-unit pairs.
         sub_1_forcing = next(
             f
-            for f in source_sink.sub_1.forcing
-            if f.quantityunitpair[1].quantity == "sub_1"
+            for f in source_sink.tracersub_1.forcing
+            if f.quantityunitpair[1].quantity == "sourcesink_tracersub_1"
         )
         sub_2_forcing = next(
             f
-            for f in source_sink.sub_2.forcing
-            if f.quantityunitpair[1].quantity == "sub_2"
+            for f in source_sink.tracersub_2.forcing
+            if f.quantityunitpair[1].quantity == "sourcesink_tracersub_2"
         )
         assert sub_1_forcing.quantityunitpair[1].unit == "(gC/m3)"
         assert sub_2_forcing.quantityunitpair[1].unit == "(gN/m3)"
@@ -1244,14 +1247,15 @@ class TestConvertSourceSinkWithSubstanceFile:
             "sourcesink_discharge",
             "sourcesink_salinity",
             "sourcesink_temperature",
-            "TrX",
-            "TrA",
-            "TrB",
-            "TrC",
-            "TrD",
+            "sourcesink_tracerTrX",
+            "sourcesink_tracerTrA",
+            "sourcesink_tracerTrB",
+            "sourcesink_tracerTrC",
+            "sourcesink_tracerTrD",
         ]
-        # Every tracer substance is reachable as a dynamic attribute on the SourceSink.
-        for tracer in ("TrX", "TrA", "TrB", "TrC", "TrD"):
+        # Every tracer substance is reachable as a dynamic attribute on the SourceSink,
+        # carrying the `tracer` role prefix the kernel expects (issue #1224).
+        for tracer in ("tracerTrX", "tracerTrA", "tracerTrB", "tracerTrC", "tracerTrD"):
             assert hasattr(source_sink, tracer)
 
 

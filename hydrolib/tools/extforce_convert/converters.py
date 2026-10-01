@@ -791,12 +791,13 @@ class TimQuantityNamesBuilder:
     arguments threaded through every helper. `build()` composes that state into the TIM
     column order: discharge, the temperature/salinity deltas, then the tracer /
     sediment-fraction substances ordered by the kernel's tracer-indexing precedence
-    (inifield -> new ext -> old ext -> substance file, first-seen position wins).
+    (inifield -> new ext -> old ext -> substance file, first-seen position wins). Each
+    tracer column is emitted with the source/sink role prefix the kernel expects —
+    `sourcesink_tracer<name>` / `sourcesink_sedfrac<name>` (issue #1224).
 
     The leaf utilities that depend only on their arguments (`merge_mdu_and_ext_file_quantities`,
-    `_substance_names_from_quantities`, `_substance_name_from_quantity`, `_dedup_first_seen`)
-    remain static/class methods: they are pure helpers of this builder, not behavior over
-    its state.
+    `_substance_name_from_quantity`, `_role_prefix`, `_append_unique`) remain static
+    methods: they are pure helpers of this builder, not behavior over its state.
     """
 
     def __init__(
@@ -841,7 +842,7 @@ class TimQuantityNamesBuilder:
         return (
             ["sourcesink_discharge"]
             + self._temperature_salinity_names()
-            + self._ordered_tracer_names()
+            + [f"sourcesink_{name}" for name in self._ordered_tracer_names()]
         )
 
     def _temperature_salinity_names(self) -> List[str]:
@@ -858,22 +859,61 @@ class TimQuantityNamesBuilder:
         )
 
     def _ordered_tracer_names(self) -> List[str]:
-        """Order the tracer/sediment-fraction substances by the kernel's precedence.
+        """Order the tracer / sediment-fraction columns by the kernel's precedence.
 
-        The four sources are concatenated in precedence order — inifield file, new
-        external forcings file, old external forcings file, substance file — then
-        de-duplicated keeping each substance's first (highest-precedence) occurrence.
-        Each ext/inifield source contributes bare substance names after prefix stripping
-        (`tracerbndIM1` -> `IM1`); the substance file contributes its names as-is.
-        Comparison is case-insensitive and the first occurrence's casing is kept.
+        Sources are visited in precedence order — inifield file, new external forcings
+        file, old external forcings file, substance file — and de-duplicated keeping each
+        constituent's first (highest-precedence) occurrence (case-insensitive on the bare
+        substance name).
+
+        Each emitted name carries the source/sink **role prefix** the kernel expects for a
+        `[SourceSink]` column: `tracer<name>` for tracers and `sedfrac<name>` for sediment
+        fractions (D-Flow FM UM §C.5.2.4; see issue #1224). `build` later prepends
+        `sourcesink_`, yielding the `.bc` quantity `sourcesink_tracer<name>` and the block
+        field `tracer<name>`. The role is taken from the source quantity's prefix
+        (`tracerbnd`/`initialtracer` -> `tracer`, `sedfracbnd`/`initialsedfrac` ->
+        `sedfrac`); substance-file entries, which have no prefix, default to `tracer`.
         """
-        candidates = (
-            self._substance_names_from_quantities(self.inifield_tracer_quantities)
-            + self._substance_names_from_quantities(self.new_ext_tracer_quantities)
-            + self._substance_names_from_quantities(self.ext_file_quantity_list)
-            + self.active_substance_names
-        )
-        return self._dedup_first_seen(candidates)
+        ordered: list[str] = []
+        seen: set[str] = set()
+        for quantity in (
+            self.inifield_tracer_quantities
+            + self.new_ext_tracer_quantities
+            + self.ext_file_quantity_list
+        ):
+            if not (
+                isinstance(quantity, str)
+                and quantity.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            ):
+                continue
+            bare = self._substance_name_from_quantity(quantity)
+            self._append_unique(
+                ordered, seen, f"{self._role_prefix(quantity)}{bare}", bare
+            )
+        for name in self.active_substance_names:
+            self._append_unique(ordered, seen, f"tracer{name}", name)
+        return ordered
+
+    @staticmethod
+    def _append_unique(
+        ordered: list[str], seen: set[str], value: str, dedup_key: str
+    ) -> None:
+        """Append `value` to `ordered` unless `dedup_key` (casefolded) was already seen."""
+        key = dedup_key.lower()
+        if key not in seen:
+            seen.add(key)
+            ordered.append(value)
+
+    @staticmethod
+    def _role_prefix(quantity: str) -> str:
+        """Return the `[SourceSink]` role prefix for a source quantity.
+
+        `sedfracbnd*` / `initialsedfrac*` quantities are sediment fractions (`sedfrac`);
+        every other source/sink quantity is a tracer (`tracer`).
+        """
+        if quantity.lower().startswith(("sedfracbnd", "initialsedfrac")):
+            return "sedfrac"
+        return "tracer"
 
     @staticmethod
     def merge_mdu_and_ext_file_quantities(
@@ -910,25 +950,6 @@ class TimQuantityNamesBuilder:
 
         return keys
 
-    @classmethod
-    def _substance_names_from_quantities(cls, quantities: List[str]) -> List[str]:
-        """Extract substance names from quantities carrying a source/sink prefix.
-
-        Quantities without one of `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` are
-        dropped. The relative order of the surviving names is preserved.
-
-        Args:
-            quantities (List[str]): The raw quantity names from an ext/inifield source.
-
-        Returns:
-            List[str]: The substance names, in input order.
-        """
-        return [
-            cls._substance_name_from_quantity(q)
-            for q in quantities
-            if isinstance(q, str)
-            and q.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
 
     @staticmethod
     def _substance_name_from_quantity(quantity: str) -> str:
@@ -959,22 +980,6 @@ class TimQuantityNamesBuilder:
         )
         if match is not None:
             result = quantity[len(match) :]
-        return result
-
-    @staticmethod
-    def _dedup_first_seen(names: List[str]) -> List[str]:
-        """Order-preserving, case-insensitive de-duplication.
-
-        Keeps the first occurrence of each name (by casefolded key) with its original
-        casing; later duplicates are dropped.
-        """
-        seen = set()
-        result = []
-        for name in names:
-            key = name.lower()
-            if key not in seen:
-                seen.add(key)
-                result.append(name)
         return result
 
 
@@ -1273,10 +1278,29 @@ class SourceSinkConverter(BaseConverter):
         result = units
         if substance_units:
             result = [
-                substance_units.get(name.removeprefix("sourcesink_"), unit)
+                substance_units.get(
+                    SourceSinkConverter._bare_constituent_name(name), unit
+                )
                 for name, unit in zip(quantities_names, units)
             ]
         return result
+
+    @staticmethod
+    def _bare_constituent_name(quantity_name: str) -> str:
+        """Strip the `sourcesink_` and `tracer`/`sedfrac` role prefixes to the bare name.
+
+        The substance-unit map is keyed by the bare substance name (e.g. ``OXY``), but a
+        TIM column name carries the emitted role prefix (e.g. ``sourcesink_tracerOXY``).
+        This recovers the lookup key: ``sourcesink_tracerOXY`` -> ``OXY``,
+        ``sourcesink_sedfracMud`` -> ``Mud``. Names without a role prefix
+        (``sourcesink_discharge`` -> ``discharge``) are returned after only the
+        ``sourcesink_`` strip and simply miss the substance-unit lookup.
+        """
+        name = quantity_name.removeprefix("sourcesink_")
+        for role in ("tracer", "sedfrac"):
+            if name.startswith(role):
+                return name[len(role) :]
+        return name
 
     @staticmethod
     def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
