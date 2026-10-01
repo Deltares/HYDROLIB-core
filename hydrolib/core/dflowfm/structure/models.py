@@ -134,11 +134,6 @@ class Structure(CoordinateValidator, INIBasedModel):
     _loc_branch_fields = {"branchid", "chainage"}
     _loc_all_fields = _loc_coord_fields | _loc_branch_fields
 
-    model_config = ConfigDict(
-        extra="forbid",
-        arbitrary_types_allowed=False,
-        validate_by_name=True,
-    )
 
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
@@ -147,28 +142,6 @@ class Structure(CoordinateValidator, INIBasedModel):
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
-
-    @model_validator(mode="before")
-    @classmethod
-    def _bypass_non_field_keys(cls, values: Any) -> Any:
-        """Drop the keys that are not model fields.
-
-        A flattened `[Structure]` section carries `_header` and `datablock` entries
-        that have no corresponding model field. Since structures forbid extra input
-        (`extra="forbid"`), these would otherwise be reported as unknown keywords.
-
-        Args:
-            values (Any): The raw input for this structure block.
-
-        Returns:
-            Any: The input without the non-field keys.
-        """
-        values = cls._convert_section_to_dict(values)
-        if isinstance(values, dict):
-            for key in ("_header", "datablock"):
-                if key not in cls.model_fields:
-                    values.pop(key, None)
-        return values
 
     @model_validator(mode="before")
     def rename_keys(cls, values: dict) -> dict:
@@ -1003,6 +976,34 @@ class GeneralStructure(Structure):
         alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+
+    model_config = ConfigDict(
+        extra="forbid",
+        arbitrary_types_allowed=False,
+        validate_by_name=True,
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _bypass_non_field_keys(cls, values: Any) -> Any:
+        """Drop the keys that are not model fields.
+
+        A flattened `[Structure]` section carries `_header` and `datablock` entries
+        that have no corresponding model field. Since structures forbid extra input
+        (`extra="forbid"`), these would otherwise be reported as unknown keywords.
+
+        Args:
+            values (Any): The raw input for this structure block.
+
+        Returns:
+            Any: The input without the non-field keys.
+        """
+        values = cls._convert_section_to_dict(values)
+        if isinstance(values, dict):
+            for key in ("_header", "datablock"):
+                if key not in cls.model_fields:
+                    values.pop(key, None)
+        return values
 
     @model_validator(mode="before")
     @classmethod
