@@ -11,6 +11,7 @@ from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
+    ConfigDict,
     Field,
     SerializeAsAny,
     ValidationInfo,
@@ -132,6 +133,12 @@ class Structure(CoordinateValidator, INIBasedModel):
     _loc_branch_fields = {"branchid", "chainage"}
     _loc_all_fields = _loc_coord_fields | _loc_branch_fields
 
+    model_config = ConfigDict(
+        extra="forbid",
+        arbitrary_types_allowed=False,
+        validate_by_name=True,
+    )
+
     @classmethod
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """Get the UnknownKeywordErrorManager for this model.
@@ -139,6 +146,28 @@ class Structure(CoordinateValidator, INIBasedModel):
         The Structure does not currently support raising an error on unknown keywords.
         """
         return None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _bypass_non_field_keys(cls, values: Any) -> Any:
+        """Drop the keys that are not model fields.
+
+        A flattened `[Structure]` section carries `_header` and `datablock` entries
+        that have no corresponding model field. Since structures forbid extra input
+        (`extra="forbid"`), these would otherwise be reported as unknown keywords.
+
+        Args:
+            values (Any): The raw input for this structure block.
+
+        Returns:
+            Any: The input without the non-field INI bookkeeping keys.
+        """
+        values = cls._convert_section_to_dict(values)
+        if isinstance(values, dict):
+            for key in ("_header", "datablock"):
+                if key not in cls.model_fields:
+                    values.pop(key, None)
+        return values
 
     @model_validator(mode="after")
     def check_location(self):
@@ -812,6 +841,21 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
+GENERAL_STRUCTURE_COEFFICIENT_FIELDS = frozenset(
+    {
+        "posfreegateflowcoeff",
+        "posdrowngateflowcoeff",
+        "posfreeweirflowcoeff",
+        "posdrownweirflowcoeff",
+        "poscontrcoeffreegate",
+        "negfreegateflowcoeff",
+        "negdrowngateflowcoeff",
+        "negfreeweirflowcoeff",
+        "negdrownweirflowcoeff",
+        "negcontrcoeffreegate",
+    }
+)
+
 class GeneralStructure(Structure):
     """General Structure.
 
@@ -947,6 +991,52 @@ class GeneralStructure(Structure):
         alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip_underscores_from_coefficients(cls, values: Any) -> Any:
+        """Accept the legacy underscored spelling of the flow coefficient keywords.
+
+        Older structure files separate the `pos`/`neg` prefix of the general structure
+        flow coefficients with an underscore (e.g. `pos_freegateflowcoeff`,
+        `neg_contrcoeffreegate`), while the current D-Flow FM input specification
+        spells them without one (`posFreeGateFlowCoeff`, `negContrCoefFreeGate`).
+
+        Args:
+            values (Any): The raw input for this structure block, normally the
+                flattened `[Structure]` section as a dict.
+
+        Returns:
+            Any: The input with the coefficient keywords normalized.
+        """
+        values = cls._convert_section_to_dict(values)
+        if not isinstance(values, dict):
+            return values
+
+        cls._rename_coefficient_keys(values)
+
+        comments = values.get("comments")
+        if isinstance(comments, dict):
+            cls._rename_coefficient_keys(comments)
+
+        return values
+
+    @staticmethod
+    def _rename_coefficient_keys(data: dict[str, Any]) -> None:
+        """Rename the underscored coefficient keys of `data` in place.
+
+        Args:
+            data (Dict[str, Any]): The keyword mapping to normalize, either the
+                structure block itself or its comments.
+        """
+        for key in list(data.keys()):
+            if not isinstance(key, str) or "_" not in key:
+                continue
+
+            stripped = key.replace("_", "").lower()
+            if stripped in GENERAL_STRUCTURE_COEFFICIENT_FIELDS:
+                value = data.pop(key)
+                data.setdefault(stripped, value)
 
 
 class DambreakAlgorithm(int, Enum):
