@@ -1,6 +1,7 @@
 import inspect
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -283,7 +284,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_general_structure_with_unknown_parameter_is_ignored(self):
+    def test_general_structure_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -296,6 +297,31 @@ class TestGeneralStructure:
             unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            crestLevel                     = 116.0
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "unknown" in str(exc_info.value)
+
+    def test_general_structure_parses_all_fields(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id
+            name                           = extravagante_waarde
             type                           = generalStructure
             branchId                       = stump
             chainage                       = 13.53
@@ -341,6 +367,85 @@ class TestGeneralStructure:
         struct = wrapper.val
 
         assert struct.model_dump().get("unknown") is None  # type: ignore
+
+        assert struct.id == "id"
+        assert struct.name == "extravagante_waarde"
+        assert struct.branchid == "stump"
+        assert struct.chainage == pytest.approx(13.53)
+        assert struct.type == "generalStructure"
+        assert struct.allowedflowdir == FlowDirection.positive
+        assert struct.upstream1width == pytest.approx(111.0)
+        assert struct.upstream1level == pytest.approx(112.0)
+        assert struct.upstream2width == pytest.approx(113.0)
+        assert struct.upstream2level == pytest.approx(114.0)
+        assert struct.crestwidth == pytest.approx(115.0)
+        assert struct.crestlevel == pytest.approx(116.0)
+        assert struct.crestlength == pytest.approx(117.0)
+        assert struct.downstream1width == pytest.approx(118.0)
+        assert struct.downstream1level == pytest.approx(119.0)
+        assert struct.downstream2width == pytest.approx(119.1)
+        assert struct.downstream2level == pytest.approx(119.2)
+        assert struct.gateloweredgelevel == pytest.approx(119.3)
+        assert struct.posfreegateflowcoeff == pytest.approx(119.4)
+        assert struct.posdrowngateflowcoeff == pytest.approx(119.5)
+        assert struct.posfreeweirflowcoeff == pytest.approx(119.6)
+        assert struct.posdrownweirflowcoeff == pytest.approx(119.7)
+        assert struct.poscontrcoeffreegate == pytest.approx(119.8)
+        assert struct.negfreegateflowcoeff == pytest.approx(119.9)
+        assert struct.negdrowngateflowcoeff == pytest.approx(118.1)
+        assert struct.negfreeweirflowcoeff == pytest.approx(118.2)
+        assert struct.negdrownweirflowcoeff == pytest.approx(118.3)
+        assert struct.negcontrcoeffreegate == pytest.approx(118.4)
+        assert struct.extraresistance == pytest.approx(118.5)
+        assert struct.gateheight == pytest.approx(118.6)
+        assert struct.gateopeningwidth == pytest.approx(118.7)
+        assert (
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_right
+        )
+        assert struct.usevelocityheight == False
+
+    def _create_required_general_structure_values(self) -> dict:
+        general_structure_values = dict()
+        general_structure_values.update(create_structure_values("generalStructure"))
+        return general_structure_values
+
+    def _create_general_structure_values(self) -> dict:
+        general_structure_values = dict(
+            allowedflowdir=FlowDirection.positive,
+            upstream1width=1.0,
+            upstream1level=2.0,
+            upstream2width=3.0,
+            upstream2level=4.0,
+            crestwidth=5.0,
+            crestlevel=6.0,
+            crestlength=7.0,
+            downstream1width=8.0,
+            downstream1level=9.0,
+            downstream2width=9.1,
+            downstream2level=9.2,
+            gateloweredgelevel=9.3,
+            posfreegateflowcoeff=9.4,
+            posdrowngateflowcoeff=9.5,
+            posfreeweirflowcoeff=9.6,
+            posdrownweirflowcoeff=9.7,
+            poscontrcoeffreegate=9.8,
+            negfreegateflowcoeff=9.9,
+            negdrowngateflowcoeff=8.1,
+            negfreeweirflowcoeff=8.2,
+            negdrownweirflowcoeff=8.3,
+            negcontrcoeffreegate=8.4,
+            extraresistance=8.5,
+            gateheight=8.6,
+            gateopeningwidth=8.7,
+            gateopeninghorizontaldirection=GateOpeningHorizontalDirection.from_left,
+            usevelocityheight=False,
+        )
+
+        general_structure_values.update(
+            self._create_required_general_structure_values()
+        )
+        return general_structure_values
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
