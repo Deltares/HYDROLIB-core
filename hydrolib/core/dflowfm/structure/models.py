@@ -146,12 +146,13 @@ class Structure(CoordinateValidator, INIBasedModel):
     @model_validator(mode="before")
     def rename_keys(cls, values: dict) -> dict:
         """Renames some old keywords to the currently supported keywords."""
-        return rename_keys_for_backwards_compatibility(
-            values,
-            {
-                "locationfile": ["polylinefile"],
-            },
-        )
+        rename_mapping = {"locationfile": ["polylinefile"]}
+        values = rename_keys_for_backwards_compatibility(values, rename_mapping)
+        if isinstance(values, dict) and isinstance(values.get("comments"), dict):
+            values["comments"] = rename_keys_for_backwards_compatibility(
+                values["comments"], rename_mapping
+            )
+        return values
 
     @model_validator(mode="after")
     def check_location(self):
