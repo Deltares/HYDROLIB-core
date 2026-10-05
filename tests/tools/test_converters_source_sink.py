@@ -1333,6 +1333,87 @@ class TestConvertSourceSinkWithSubstanceFile:
             "initialtracerTrY"
         ]
 
+    def test_old_ext_tracers_keep_old_ext_file_order_e2e(self, tmp_path: Path):
+        """Old-ext tracers keep the old ext file order, even though they are converted before the sorsin.
+
+        Scenario: there is no pre-existing new ext file. `old.ext` lists `initialtracerX`, then
+        `tracerbndA`, then the sorsin, and `sorsin.tim` has the tracer columns `X` (10.0) and `A` (11.0).
+
+        Expected: the kernel registers the tracers of an old ext file in file order (the `readprovider` loop
+        in `findexternalboundarypoints`, `fm_external_forcings.f90`, calls `add_bndtracer` for both
+        `tracerbnd*` and `initialtracer*`), so the `.tim` columns are `X, A`.
+
+        What went wrong (review finding M1): `initialtracerX` is converted to a `[Spatial]` and `tracerbndA`
+        to a `[Boundary]` before the sorsin is reached. Reading the half-converted new ext model gave
+        `new_ext_tracer_quantities = ['tracerbndA', 'initialtracerX']` (`(*boundary, *spatial)`), although
+        there is no new ext file. The builder ranks the new ext above the old ext, so it labelled the columns
+        `A, X`: no error, but column 4 (X's data, 10.0) was named `tracerA`, swapping the two tracers' values.
+
+        The new ext tracers are now a snapshot taken before `update()` starts, so here the list is empty and
+        the old ext order `X, A` is used.
+        """
+        model_dir = tmp_path / "old_ext_file_order"
+        model_dir.mkdir()
+
+        (model_dir / "x_init.xyz").write_text("0.0 0.0 1.0\n")
+        (model_dir / "a_bnd.pli").write_text("A\n     1     2\n      0.0      0.0\n")
+        (model_dir / "a_bnd_0001.tim").write_text("0.0 5.0\n60.0 5.0\n")
+        (model_dir / "sorsin.pli").write_text(
+            "L1\n     1     2\n      5.0      5.0\n"
+        )
+        (model_dir / "sorsin.tim").write_text(
+            "* Time Flow Salinity Temperature X A\n"
+            "0.0 1.0 2.0 3.0 10.0 11.0\n"
+            "60.0 1.0 2.0 3.0 10.0 11.0\n"
+        )
+        (model_dir / "old.ext").write_text(
+            "QUANTITY     =initialtracerX\n"
+            "FILENAME     =x_init.xyz\n"
+            "FILETYPE     =7\n"
+            "METHOD       =5\n"
+            "OPERAND      =O\n"
+            "\n"
+            "QUANTITY     =tracerbndA\n"
+            "FILENAME     =a_bnd.pli\n"
+            "FILETYPE     =9\n"
+            "METHOD       =3\n"
+            "OPERAND      =O\n"
+            "\n"
+            "QUANTITY     =discharge_salinity_temperature_sorsin\n"
+            "FILENAME     =sorsin.pli\n"
+            "FILETYPE     =9\n"
+            "METHOD       =1\n"
+            "OPERAND      =O\n"
+        )
+        (model_dir / "model.mdu").write_text(
+            "[General]\n"
+            "Program                             = D-Flow FM\n"
+            "FileVersion                         = 1.09\n"
+            "\n"
+            "[physics]\n"
+            "Salinity                            = 1\n"
+            "Temperature                         = 1\n"
+            "\n"
+            "[time]\n"
+            "RefDate                             = 20160101\n"
+            "\n"
+            "[external forcing]\n"
+            "ExtForceFile                        = old.ext\n"
+        )
+
+        converter = ExternalForcingConverter.from_mdu(
+            model_dir / "model.mdu", debug=True
+        )
+        ext_model, _ = converter.update()
+
+        first_value = {
+            f.quantityunitpair[1].quantity: f.datablock[0][1]
+            for f in ext_model.sourcesink[0].discharge.forcing
+        }
+        # `.tim` columns 4 and 5 hold 10.0 (first tracer, X) and 11.0 (second tracer, A)
+        assert first_value["sourcesink_tracerX"] == 10.0
+        assert first_value["sourcesink_tracerA"] == 11.0
+
 
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""

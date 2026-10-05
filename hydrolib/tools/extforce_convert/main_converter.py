@@ -159,6 +159,8 @@ class ExternalForcingConverter:
 
         # loaded once: it is static for the whole run
         self._inifield_model = self._load_inifield_model()
+        # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
+        self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
         self._legacy_files = []
         self.debug = debug
@@ -232,6 +234,7 @@ class ExternalForcingConverter:
             path (PathOrStr, optional): Path to the new external forcing file.
         """
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
+        self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
     @property
     def structure_model(self) -> StructureModel:
@@ -387,21 +390,45 @@ class ExternalForcingConverter:
             self.mdu_parser,
         )
 
-    def _new_ext_tracer_quantities(self) -> list[str]:
-        """Collect tracer/sedfrac quantity names from the pre-existing new ext file.
+    def _read_new_ext_tracer_quantities(self) -> list[str]:
+        """Read the quantity names of the `[Boundary]` and `[Spatial]` blocks of the new ext model.
 
-        Only `[Boundary]` and `[Spatial]` blocks whose `quantity` carries a source/sink
-        prefix are included; file order is preserved. Returns an empty list when the
-        new ext model is empty (e.g. first-time conversion without a pre-existing
-        `ExtForceFileNew`).
+        The kernel registers the tracers of a new ext file boundaries first, then spatial fields, each in
+        file order, which is the order returned here.
 
         Returns:
-            list[str]: Tracer/sedfrac quantity names from the new ext model, in order.
+            list[str]: Quantity names of the new ext model, in kernel order. Empty when there is no
+                pre-existing new ext file.
         """
         return [
             block.quantity
             for block in (*self._ext_model.boundary, *self._ext_model.spatial)
         ]
+
+    def _new_ext_tracer_quantities(self) -> list[str]:
+        """Return the tracer quantities the new ext file had **before** the conversion started.
+
+        The source/sink converter needs these to order the TIM columns by the kernel's tracer precedence
+        (inifield -> new ext -> old ext -> substance file). Only the blocks that were already in the new ext
+        file count as "new ext": the kernel numbers the tracers of the old ext file after them, in old-ext
+        file order.
+
+        A snapshot is used on purpose. `update()` appends every converted block to the new ext model, and
+        those blocks come from the old ext file. Re-reading the live model would therefore list the old-ext
+        tracers converted so far as "new ext", ranking them above the old ext and, because the model lists
+        boundaries before spatial fields, reordering them.
+
+        Example:
+            The old ext file lists `initialtracerX`, `tracerbndA`, then the sorsin, and there is no new ext
+            file. The kernel numbers the tracers `X, A`. By the time the sorsin is converted, the live model
+            holds a `[Spatial]` for X and a `[Boundary]` for A, which reads as `['tracerbndA',
+            'initialtracerX']` (boundaries first) and would label the TIM columns `A, X`, swapping the two
+            tracers' data. The snapshot is empty here, so the old ext order `X, A` is used.
+
+        Returns:
+            list[str]: Quantity names of the pre-existing new ext blocks, in kernel order.
+        """
+        return self._pre_existing_new_ext_tracers
 
     def _inifield_tracer_quantities(self) -> list[str]:
         """Collect tracer/sedfrac quantity names from the inifield file, if present.
