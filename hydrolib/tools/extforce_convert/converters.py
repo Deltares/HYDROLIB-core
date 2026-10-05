@@ -1094,8 +1094,9 @@ class SourceSinkConverter(BaseConverter):
         - sourcesink_discharge
         - sourcesink_salinity (optional)
         - sourcesink_temperature (optional)
-        - tracer<anyname>delta (optional)
-        - any other quantities from the external forcings file.
+        - the tracer / sediment-fraction quantities (`sourcesink_tracer<name>` / `sourcesink_sedfrac<name>`), in the
+          kernel's precedence order: inifield file, new external forcings file, old external forcings file, substance
+          file (see `TimQuantityNamesBuilder`).
 
         Args:
             tim_file (Path): The path to the TIM file.
@@ -1103,6 +1104,9 @@ class SourceSinkConverter(BaseConverter):
             active_substance_names (List[str], default is None):
                 A list of active substance names to include in the conversion.
                 When provided, only the substances in this list will be processed.
+            new_ext_tracer_quantities (List[str], default is None): Quantity names of the pre-existing new external
+                forcings file (in file order).
+            inifield_tracer_quantities (List[str], default is None): Quantity names of the inifield file (in file order).
             **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
                 details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
                 only bool. (i.e. {"temperature", False, "salinity": True})
@@ -1113,10 +1117,12 @@ class SourceSinkConverter(BaseConverter):
             the keys of the dictionary will be the quantity names, and the values will be the time series data.
 
         Raises:
-            ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
-            forcings file that has one of the source/sink prefixes `tracerbnd`, `sedfracbnd`, plus the discharge,
-            temperature, and salinity. The initial-condition prefixes `initialtracer` / `initialsedfrac` are excluded,
-            since those are converted to `[Spatial]` blocks by `SpatialConverter`.
+            ValueError: If the number of columns in the TIM file does not match the number of quantities built by
+            `TimQuantityNamesBuilder`: the discharge, the temperature and salinity, plus the tracer / sediment-fraction
+            quantities with one of the prefixes `tracerbnd`, `sedfracbnd`, `initialtracer`, `initialsedfrac` (in the
+            inifield, new external forcings and old external forcings files) and the active substances. The
+            `initialtracer*` / `initialsedfrac*` quantities are converted to `[Spatial]` blocks by `SpatialConverter`,
+            but they still define a tracer and so still take a column.
 
         Notes:
             - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
@@ -1136,14 +1142,15 @@ class SourceSinkConverter(BaseConverter):
             >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "tracerbndAnyname",
             ... "anyother-quantities"]
 
-        - The function will filter the external forcing quantities that have one of the source/sink prefixes
-        `tracerbnd`, `sedfracbnd`, plus the discharge, temperature, and salinity. The initial-condition prefixes
-        `initialtracer` / `initialsedfrac` are excluded (they are converted to `[Spatial]` blocks by `SpatialConverter`).
+        - The function will keep the external forcing quantities that have one of the source/sink prefixes
+        `tracerbnd`, `sedfracbnd`, `initialtracer`, `initialsedfrac`, plus the discharge, temperature, and salinity.
+        The `initialtracer` / `initialsedfrac` ones are converted to `[Spatial]` blocks by `SpatialConverter`, but they
+        still define a tracer and so still take a column.
         - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
         columns in the TIM file, if they don't match a `Value Error` will be raised.
-        - Here the filtered quantities are ["discharge", "temperature", "salinity", "tracerbndAnyname"] and the
+        - Here the kept quantities are ["discharge", "temperature", "salinity", "tracerbndAnyname"] and the
         tim file contains 4 columns (excluding the time column).
             ```python
             >>> from pathlib import Path
@@ -1154,13 +1161,13 @@ class SourceSinkConverter(BaseConverter):
             >>> converter = SourceSinkConverter(mdu_parser=mdu_parser) # doctest: +SKIP
             >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list) # doctest: +SKIP
             >>> print(tim_model.quantities_names)
-            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'tracerbndAnyname']
+            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'sourcesink_tracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
                 "sourcesink_salinity": [2.0, 2.0, 2.0, 2.0, 2.0],
                 "sourcesink_temperature": [3.0, 3.0, 3.0, 3.0, 3.0],
-                "tracerbndAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+                "sourcesink_tracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
             ```
