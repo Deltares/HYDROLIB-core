@@ -1475,6 +1475,130 @@ class TestConvertSourceSinkWithSubstanceFile:
         assert converter._inifield_loaded is False
 
 
+def write_tracer_model(
+    model_dir: Path,
+    inifield_file: str | None = None,
+    inifield_content: str | None = None,
+    new_ext_content: str | None = None,
+) -> Path:
+    """Write a minimal model whose MDU optionally references an inifield file and a new ext file."""
+    model_dir.mkdir(exist_ok=True)
+    (model_dir / "x.xyz").write_text("0.0 0.0 1.0\n")
+    (model_dir / "a_bnd.pli").write_text("A\n     1     2\n      0.0      0.0\n")
+    (model_dir / "tracers.bc").write_text(
+        "[General]\nfileVersion = 1.01\nfileType = boundConds\n"
+    )
+    (model_dir / "old.ext").write_text(
+        "QUANTITY     =initialtracerX\n"
+        "FILENAME     =x.xyz\n"
+        "FILETYPE     =7\n"
+        "METHOD       =5\n"
+        "OPERAND      =O\n"
+    )
+    mdu = (
+        "[General]\nProgram = D-Flow FM\nFileVersion = 1.09\n\n"
+        "[physics]\nSalinity = 0\nTemperature = 0\n\n"
+        "[time]\nRefDate = 20160101\n\n"
+    )
+    if inifield_file is not None:
+        mdu += f"[geometry]\nIniFieldFile = {inifield_file}\n\n"
+    if inifield_content is not None:
+        (model_dir / inifield_file).write_text(inifield_content)
+    mdu += "[external forcing]\nExtForceFile = old.ext\n"
+    if new_ext_content is not None:
+        (model_dir / "existing_new.ext").write_text(new_ext_content)
+        mdu += "ExtForceFileNew = existing_new.ext\n"
+    (model_dir / "model.mdu").write_text(mdu)
+    return model_dir / "model.mdu"
+
+
+class TestExternalForcingConverterTracerQuantities:
+    """The tracer quantity collectors that feed the source/sink TIM column ordering."""
+
+    def test_inifield_quantities_list_initial_then_parameter_in_file_order(
+        self, tmp_path: Path
+    ):
+        mdu = write_tracer_model(
+            tmp_path,
+            inifield_file="ini_fields.ini",
+            inifield_content=(
+                "[General]\nfileVersion = 2.00\nfileType = iniField\n\n"
+                "[Parameter]\nquantity = frictionCoefficient\ndataFile = x.xyz\n"
+                "dataFileType = sample\ninterpolationMethod = triangulation\n\n"
+                "[Initial]\nquantity = initialtracerB\ndataFile = x.xyz\n"
+                "dataFileType = sample\ninterpolationMethod = triangulation\n\n"
+                "[Initial]\nquantity = initialtracerA\ndataFile = x.xyz\n"
+                "dataFileType = sample\ninterpolationMethod = triangulation\n"
+            ),
+        )
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+
+        assert converter._inifield_tracer_quantities() == [
+            "initialtracerB",
+            "initialtracerA",
+            "frictionCoefficient",
+        ]
+
+    def test_inifield_quantities_empty_when_mdu_has_no_inifield_file(
+        self, tmp_path: Path
+    ):
+        mdu = write_tracer_model(tmp_path)
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+
+        assert converter._inifield_tracer_quantities() == []
+
+    def test_inifield_quantities_empty_when_inifield_file_is_missing_on_disk(
+        self, tmp_path: Path
+    ):
+        mdu = write_tracer_model(tmp_path, inifield_file="missing.ini")
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+
+        assert converter._inifield_tracer_quantities() == []
+
+    def test_new_ext_quantities_list_boundaries_before_spatial(self, tmp_path: Path):
+        """The kernel registers the new ext boundaries first, then the spatial fields, each in file order."""
+        mdu = write_tracer_model(
+            tmp_path,
+            new_ext_content=(
+                "[General]\nfileVersion = 2.01\nfileType = extForce\n\n"
+                "[Spatial]\nquantity = initialtracerS\ndataFile = x.xyz\n"
+                "dataFileType = sample\ninterpolationMethod = triangulation\n\n"
+                "[Boundary]\nquantity = tracerbndB\nlocationFile = a_bnd.pli\n"
+                "forcingFile = tracers.bc\n"
+            ),
+        )
+
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+
+        assert converter._new_ext_tracer_quantities() == [
+            "tracerbndB",
+            "initialtracerS",
+        ]
+
+    def test_new_ext_quantities_snapshot_follows_the_ext_model_setter(
+        self, tmp_path: Path
+    ):
+        """Replacing the ext model refreshes the snapshot, and `update()` does not change it."""
+        mdu = write_tracer_model(tmp_path)
+        converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
+        assert converter._new_ext_tracer_quantities() == []
+
+        (tmp_path / "other_new.ext").write_text(
+            "[General]\nfileVersion = 2.01\nfileType = extForce\n\n"
+            "[Spatial]\nquantity = initialtracerZ\ndataFile = x.xyz\n"
+            "dataFileType = sample\ninterpolationMethod = triangulation\n"
+        )
+        converter.ext_model = tmp_path / "other_new.ext"
+        assert converter._new_ext_tracer_quantities() == ["initialtracerZ"]
+
+        converter.update()
+
+        assert converter._new_ext_tracer_quantities() == ["initialtracerZ"]
+
+
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""
 
