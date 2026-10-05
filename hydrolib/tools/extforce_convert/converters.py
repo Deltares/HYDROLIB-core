@@ -816,7 +816,7 @@ class TimQuantityNamesBuilder:
                 `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` prefix contributes to the
                 old-ext tracer slot, including the `initialtracer*` / `initialsedfrac*`
                 ones (they contribute to the kernel's tracer indexing even though they
-                are converted as initial conditions by other converters).
+                are converted to `[Spatial]` blocks by `SpatialConverter`).
             active_substance_names (Optional[List[str]]): The active substance names from
                 the substance file, or None when the MDU references none.
             mdu_quantities (Dict[str, bool]): The temperature/salinity activation flags
@@ -1055,7 +1055,7 @@ class SourceSinkConverter(BaseConverter):
         """Keep only the quantities relevant to the source and sink conversion.
 
         Quantities starting with a source/sink ignore prefix (e.g. `initialtracer`,
-        `initialsedfrac`) are converted as initial conditions by other converters, so
+        `initialsedfrac`) are converted to `[Spatial]` blocks by `SpatialConverter`, so
         they must not be counted as source/sink columns.
 
         Args:
@@ -1114,7 +1114,7 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
             forcings file that has one of the source/sink prefixes `tracerbnd`, `sedfracbnd`, plus the discharge,
             temperature, and salinity. The initial-condition prefixes `initialtracer` / `initialsedfrac` are excluded,
-            since those are converted as initial conditions by other converters.
+            since those are converted to `[Spatial]` blocks by `SpatialConverter`.
 
         Notes:
             - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
@@ -1136,7 +1136,7 @@ class SourceSinkConverter(BaseConverter):
 
         - The function will filter the external forcing quantities that have one of the source/sink prefixes
         `tracerbnd`, `sedfracbnd`, plus the discharge, temperature, and salinity. The initial-condition prefixes
-        `initialtracer` / `initialsedfrac` are excluded (they are converted by other converters).
+        `initialtracer` / `initialsedfrac` are excluded (they are converted to `[Spatial]` blocks by `SpatialConverter`).
         - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
