@@ -615,6 +615,7 @@ class BoundaryConditionConverter(BaseConverter):
             supported by the converter, a ValueError is raised. This ensures
             that only compatible forcing blocks are processed, maintaining
             data integrity and preventing errors in the conversion process.
+            FileNotFoundError: If no numbered tim, t3d, or cmp file is found for the location file.
 
         Notes:
             - The `root_dir` property must be set before calling this method.
@@ -622,6 +623,9 @@ class BoundaryConditionConverter(BaseConverter):
             `MDUParser` was injected at construction; the external forcing file alone is not enough.
             - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
             end of the label is taken from the file name of the tim, t3d, or cmp files.
+            - The data files are located by the numbered naming convention `<pli stem>_<NNNN>.tim|.t3d|.cmp`
+            (one per polyline point, D-Flow FM manual file-type table). When none is found, a `FileNotFoundError`
+            is raised, since the kernel cannot set up a boundary without any forcing signal.
         """
         time_unit = self._require_reference_date("Boundary conversion")
 
@@ -638,6 +642,11 @@ class BoundaryConditionConverter(BaseConverter):
             )
 
         tim_files, t3d_files, cmp_files = self.locate_files(location_file)
+        if not (tim_files or t3d_files or cmp_files):
+            raise FileNotFoundError(
+                f"No data file found for boundary '{quantity}': expected "
+                f"'{location_file.stem}_<NNNN>.tim', '.t3d' or '.cmp' next to '{location_file}'."
+            )
         forcings_list = []
 
         if len(tim_files) > 0:

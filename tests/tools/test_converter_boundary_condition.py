@@ -198,6 +198,14 @@ class TestBoundaryConverter:
         for forcing, content in zip(forcing_model.forcing, contents):
             assert forcing.datablock == content
 
+    def test_raises_when_no_data_file_is_found(
+        self, converter: BoundaryConditionConverter, forcing: ExtOldForcing
+    ):
+        """A boundary without a numbered tim/t3d/cmp file cannot be set up by the kernel, so conversion fails."""
+        with patch.object(Path, "glob", return_value=[]):
+            with pytest.raises(FileNotFoundError, match=r"tfl_01_<NNNN>\.tim"):
+                converter.convert(forcing)
+
     def test_with_tim(
         self,
         converter: BoundaryConditionConverter,
