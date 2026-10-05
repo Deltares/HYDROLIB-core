@@ -460,6 +460,64 @@ class TestSpatialUniformTimToBc:
         with pytest.raises(SpatialError, match="single data column"):
             converter.convert(forcing, forcing.filename.filepath)
 
+    def test_configured_multicolumn_meteo_quantity_converts_to_single_bc_forcing(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        tim_file = tmp_path / "meteo.tem"
+        tim_file.write_text("0.0 80.0 15.0 60.0\n60.0 82.0 16.5 62.0\n")
+        forcing = ExtOldForcing(
+            quantity="humidity_airtemperature_cloudiness",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        block = converter.convert(forcing, forcing.filename.filepath)
+
+        assert block.quantity == "humidity_airtemperature_cloudiness"
+        assert block.datafiletype == DataFileType.bcascii
+        assert isinstance(block.datafile, ForcingModel)
+        assert len(block.datafile.forcing) == 1
+
+        forcing_block = block.datafile.forcing[0]
+        assert forcing_block.name == "global"
+        assert forcing_block.timeinterpolation == TimeInterpolation.block_from
+        assert [qup.quantity for qup in forcing_block.quantityunitpair] == [
+            "time",
+            "humidity",
+            "airtemperature",
+            "cloudiness",
+        ]
+        assert [qup.unit for qup in forcing_block.quantityunitpair] == [
+            "minutes since 2001-01-01 00:00:00",
+            "-",
+            "degC",
+            "-",
+        ]
+        assert forcing_block.datablock == [
+            [0.0, 80.0, 15.0, 60.0],
+            [60.0, 82.0, 16.5, 62.0],
+        ]
+
+    def test_configured_multicolumn_meteo_quantity_with_wrong_column_count_raises_clear_error(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        tim_file = tmp_path / "meteo.tem"
+        tim_file.write_text("0.0 80.0 15.0\n60.0 82.0 16.5\n")
+        forcing = ExtOldForcing(
+            quantity="humidity_airtemperature_cloudiness",
+            filename=tim_file,
+            filetype=1,
+            method=0,
+            operand="O",
+        )
+
+        converter = SpatialConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+        with pytest.raises(SpatialError, match="expects 3 data columns"):
+            converter.convert(forcing, forcing.filename.filepath)
+
     def test_empty_tim_raises_clear_error(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
     ):

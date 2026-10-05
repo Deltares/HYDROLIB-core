@@ -405,6 +405,7 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_prefixes: list[str] = Field(default_factory=list)
     renamed_quantities: dict[str, str] = Field(default_factory=dict)
     vector_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
+    multicolumn_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantities", "unsupported_prefixes", mode="before"
@@ -480,11 +481,11 @@ class ExternalForcingConfigs(BaseModel):
 
         return normalized
 
-    @field_validator("vector_quantities", mode="before")
-    def normalize_vector_quantities(
+    @field_validator("vector_quantities", "multicolumn_quantities", mode="before")
+    def normalize_multicolumn_quantity_definitions(
         cls, v: dict[str, dict[str, str]] | None
     ) -> dict[str, dict[str, str]]:
-        """Normalize vector quantity definitions keyed by old quantity name.
+        """Normalize named multi-column quantity definitions keyed by old quantity name.
 
         Expected style is mapping only: `{component: unit}`.
         """
@@ -616,6 +617,18 @@ class ExternalForcingConfigs(BaseModel):
         """Return configured vector component/unit mapping for a multi-column quantity."""
         name = str(quantity).strip().lower()
         component_units = self.vector_quantities.get(name)
+        if component_units:
+            result = dict(component_units)
+        else:
+            result = None
+        return result
+
+    def get_multicolumn_component_units(
+        self, quantity: ExtOldQuantity | str
+    ) -> dict[str, str] | None:
+        """Return configured scalar multi-column component/unit mapping for a quantity."""
+        name = str(quantity).strip().lower()
+        component_units = self.multicolumn_quantities.get(name)
         if component_units:
             result = dict(component_units)
         else:

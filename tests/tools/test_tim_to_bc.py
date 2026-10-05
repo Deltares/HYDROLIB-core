@@ -24,7 +24,7 @@ def test_tim_to_bc_converter(input_files_dir: Path, reference_files_dir: Path):
         tim_model=tim_model,
         time_unit=time_unit,
         units=units,
-        user_defined_names=user_defined_names
+        user_defined_names=user_defined_names,
     )
     time_series_list = converter.convert()
 
@@ -80,3 +80,32 @@ def test_tim_to_bc_converter_writes_vector_block(tmp_path: Path):
     assert "0.0       1.0  2.0" in content
     assert "123456.0  3.0  4.0" in content
 
+
+def test_tim_to_bc_converter_writes_multicolumn_scalar_block(tmp_path: Path):
+    tim_path = tmp_path / "meteo.tim"
+    tim_path.write_text("0 80 15 60\n60 82 16.5 62\n")
+
+    tim_model = TimModel(tim_path)
+    tim_model.quantities_names = ["humidity", "airtemperature", "cloudiness"]
+
+    converter = TimToForcingConverter(
+        tim_model=tim_model,
+        time_unit="minutes since 2000-01-01 00:00:00 +00:00",
+        units=["-", "degC", "-"],
+        user_defined_names=["global"],
+    )
+    forcing_list = converter.convert(multicolumn_scalar_quantity=True)
+
+    forcing_model = ForcingModel(forcing=forcing_list)
+    bc_path = tmp_path / "meteo.bc"
+    forcing_model.save(bc_path)
+    content = bc_path.read_text()
+
+    assert len(forcing_list) == 1
+    assert "name              = global" in content
+    assert "quantity          = humidity" in content
+    assert "quantity          = airtemperature" in content
+    assert "unit              = degC" in content
+    assert "quantity          = cloudiness" in content
+    assert "0.0   80.0  15.0  60.0" in content
+    assert "60.0  82.0  16.5  62.0" in content

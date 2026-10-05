@@ -380,24 +380,36 @@ class SpatialConverter(BaseConverter):
         quantity = data["quantity"]
         tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
         tim_model = TimModel(filepath=tim_path)
+        multicolumn_component_units = (
+            CONVERTER_DATA.external_forcing.get_multicolumn_component_units(
+                forcing.quantity
+            )
+        )
         if not tim_model.timeseries:
             raise SpatialError(
                 f"Invalid TIM input: '{tim_path}' contains no data rows. "
                 f"Encountered for QUANTITY={forcing.quantity}."
             )
-        # A FILETYPE=1 uniform time series carries a single scalar column for the one
-        # spatial quantity (unlike a source/sink .tim, whose columns are different
-        # quantities). More than one data column has no mapping to a single [Spatial]
-        # block, so fail clearly rather than emit ambiguous forcings.
         n_columns = len(tim_model.timeseries[0].data)
-        if n_columns != 1:
+        if multicolumn_component_units:
+            component_names = list(multicolumn_component_units.keys())
+            if n_columns != len(component_names):
+                raise SpatialError(
+                    f"Configured multi-column spatial quantity '{forcing.quantity}' expects "
+                    f"{len(component_names)} data columns {component_names}, but '{tim_path}' "
+                    f"has {n_columns}."
+                )
+            tim_model.quantities_names = component_names
+            units = list(multicolumn_component_units.values())
+        elif n_columns != 1:
             raise SpatialError(
                 f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
-                f"data column, but '{tim_path}' has {n_columns}. Encountered for "
-                f"QUANTITY={forcing.quantity}."
+                f"data column, unless QUANTITY={forcing.quantity} is configured as a "
+                f"multi-column quantity. '{tim_path}' has {n_columns} data columns."
             )
-        tim_model.quantities_names = [quantity]
-        units = tim_model.get_units()
+        else:
+            tim_model.quantities_names = [quantity]
+            units = tim_model.get_units()
         tim_to_bc_converter = TimToForcingConverter(
             tim_model=tim_model,
             time_unit=time_unit,
@@ -405,7 +417,9 @@ class SpatialConverter(BaseConverter):
             units=units,
             user_defined_names=["global"],
         )
-        forcing_list = tim_to_bc_converter.convert()
+        forcing_list = tim_to_bc_converter.convert(
+            multicolumn_scalar_quantity=bool(multicolumn_component_units)
+        )
         forcing_model = ForcingModel(forcing=forcing_list)
         forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
 
@@ -1814,6 +1828,7 @@ class TimToForcingConverter:
     def convert(
         self,
         vector_quantities: dict[str, dict[str, str]] | None = None,
+        multicolumn_scalar_quantity: bool = False,
     ) -> list[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
@@ -1823,6 +1838,10 @@ class TimToForcingConverter:
                 Optional vector quantity definition. The outer key is the vector name and
                 the nested mapping defines component names to units. When provided, the
                 method emits one vector `TimeSeries` block per TIM model.
+            multicolumn_scalar_quantity (bool, optional):
+                When True, emit one scalar `TimeSeries` containing all TIM data columns as
+                separate quantity/unit pairs instead of splitting them into one forcing per
+                column.
 
         Returns:
             TimeSeries:
@@ -1860,10 +1879,17 @@ class TimToForcingConverter:
         if self.user_defined_names is None:
             raise ValueError("'user_defined_names' must be provided.")
 
+        if vector_quantities and multicolumn_scalar_quantity:
+            raise ValueError(
+                "Vector quantity conversion and scalar multi-column conversion are mutually exclusive."
+            )
+
         if vector_quantities:
             time_series_list = self._convert_vector_quantities(
                 vector_quantities,
             )
+        elif multicolumn_scalar_quantity:
+            time_series_list = self._convert_multicolumn_scalar_quantity()
         else:
             time_series_list = self._convert_scalar_quantities()
 
@@ -1942,6 +1968,33 @@ class TimToForcingConverter:
             ],
         )
 
+        return [forcing]
+
+    def _convert_multicolumn_scalar_quantity(self) -> list[TimeSeries]:
+        """Convert one multi-column TIM model into one scalar `TimeSeries` block."""
+        if len(self.user_defined_names) != 1:
+            raise ValueError(
+                "For multi-column scalar quantities, provide exactly one user-defined forcing name per TIM model."
+            )
+
+        df = self.tim_model_df
+        time_data = df.index.tolist()
+        forcing = TimeSeries(
+            name=self.user_defined_names[0],
+            function="timeseries",
+            timeinterpolation=self.time_interpolation,
+            quantityunitpair=[
+                QuantityUnitPair(quantity="time", unit=self.time_unit),
+                *[
+                    QuantityUnitPair(quantity=column, unit=unit)
+                    for column, unit in zip(df.columns, self.units)
+                ],
+            ],
+            datablock=[
+                [time_val, *row]
+                for time_val, row in zip(time_data, df.values.tolist())
+            ],
+        )
         return [forcing]
 
 
