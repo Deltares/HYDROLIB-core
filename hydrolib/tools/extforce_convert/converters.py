@@ -1390,6 +1390,9 @@ class SourceSinkConverter(BaseConverter):
             - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
             SourceSink can be only converted by reading the mdu file and the external forcing file is not
             enough.
+            - The `SourceSink` dynamic fields are the tracer / sediment-fraction column names found in the
+            forcings (keyed by name after the `sourcesink_` prefix was stripped by `separate_forcing_model`),
+            i.e. every column except `discharge`, `salinity` and `temperature`.
 
         References:
             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
@@ -1460,12 +1463,7 @@ class SourceSinkConverter(BaseConverter):
             else:
                 data = data | {"zsource": z_source, "zsink": z_sink}
 
-        # Dynamic fields are the per-tracer forcing keys we are adding beyond the
-        # fixed SourceSink fields. `forcings` is keyed by the substance / column
-        # name after the `sourcesink_` prefix was stripped by
-        # `separate_forcing_model`, so declared SourceSink fields appear as
-        # `discharge`/`salinity`/`temperature` — skip those; everything else is a
-        # tracer / sediment-fraction column that must be whitelisted.
+        # every non-fixed column (tracer / sedfrac) must be whitelisted as a dynamic field
         _fixed_sourcesink_columns = {"discharge", "salinity", "temperature"}
         dynamic_fields = [
             name

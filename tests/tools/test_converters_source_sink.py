@@ -178,8 +178,7 @@ def mdu_parser_mock() -> MagicMock:
             None,
             id="active_substance_exceeds_tim_columns",
         ),
-        # Regression: an ext `tracerbnd*` quantity that names an active substance
-        # (`tracerbndsubstance_a` -> `substance_a`) must be dropped, not counted twice.
+        # regression: `tracerbndsubstance_a` duplicates the active `substance_a`, counted once
         pytest.param(
             tim_file,
             ["discharge", "salinity", "temperature", "tracerbndsubstance_a"],
@@ -307,9 +306,7 @@ def test_build_quantities_names_preserves_tracer_order_with_substance(
         mdu_quantities={},
     ).build()
 
-    # Tracer substance names are stripped from their ext prefixes: tracerbndA -> A,
-    # tracerbndB -> B. tracerbndIM1 dedups against the active substance IM1 (sub-file
-    # authoritative name wins), keeping its ext position in the ordered list.
+    # ext prefixes are stripped, and `tracerbndIM1` dedups against the active IM1
     assert names == [
         "sourcesink_discharge",
         "sourcesink_salinity",
@@ -383,10 +380,7 @@ def test_build_quantities_names_four_source_precedence(
         inifield_tracer_quantities=None,
     ).build()
 
-    # New ext establishes the first 7 positions (IM1..Green). The old ext initial*
-    # contributes 5 new substances (DetC..Diat) that weren't in new ext. The sub file
-    # finally adds the trailing 3 (CBOD5, AAP, DetSi) — IM1/IM2 already positioned by
-    # new ext are not re-added.
+    # new ext: IM1..Green, old ext initial*: DetC..Diat, substance file: CBOD5, AAP, DetSi
     assert names == [
         "sourcesink_discharge",
         "sourcesink_tracerIM1",
@@ -1075,8 +1069,7 @@ class TestConvertSourceSinkWithSubstanceFile:
             ]
         )
         assert source_sink.discharge.filepath == Path(file_names).with_suffix(".bc")
-        # sub_1 and sub_2 are assigned dynamically, with the `tracer` role prefix the
-        # kernel expects for source/sink tracer columns (issue #1224).
+        # dynamic fields carry the `tracer` role prefix (issue #1224)
         assert all(
             [hasattr(source_sink, sub_name) for sub_name in ["tracersub_1", "tracersub_2"]]
         )
@@ -1123,9 +1116,7 @@ class TestConvertSourceSinkWithSubstanceFile:
         bc_dir = model_dir / "bc"
         bc_dir.mkdir()
 
-        # Substance file: five active substances, in a deliberate order that does NOT
-        # match the inifield/new-ext order (verifies that the sub file is lowest
-        # precedence and does not reorder earlier sources).
+        # substance order deliberately differs from the inifield/new-ext order
         (model_dir / "subs.sub").write_text(
             "substance 'TrA' active\n"
             "   concentration-unit '(gA/m3)'\n"
@@ -1149,9 +1140,7 @@ class TestConvertSourceSinkWithSubstanceFile:
             "end-substance\n"
         )
 
-        # Inifield file: one `[Initial]` block whose quantity is the highest-precedence
-        # tracer. A placeholder data file is enough for the ext/converter plumbing;
-        # ordering only reads the quantity name.
+        # only the quantity name matters for ordering, so a placeholder data file is enough
         (model_dir / "trx_init.xyz").write_text("0.0 0.0 1.0\n")
         (model_dir / "ini_fields.ini").write_text(
             "[General]\n"
@@ -1165,9 +1154,7 @@ class TestConvertSourceSinkWithSubstanceFile:
             "interpolationMethod = triangulation\n"
         )
 
-        # Pre-existing new ext file: two tracer boundaries that will take positions 2-3.
-        # The `.bc` referenced by the boundaries only needs to exist for the file-model
-        # resolution; it is read lazily.
+        # the `.bc` only needs to exist for file-model resolution
         (bc_dir / "tracers.bc").write_text(
             "[General]\nfileVersion = 1.01\nfileType = boundConds\n"
         )
@@ -1237,8 +1224,7 @@ class TestConvertSourceSinkWithSubstanceFile:
         )
         ext_model, _ = converter.update()
 
-        # The converted sorsin block should carry its tracer columns in the kernel's
-        # 4-source precedence order.
+        # tracer columns follow the 4-source precedence
         source_sink = ext_model.sourcesink[0]
         column_names = [
             f.quantityunitpair[1].quantity for f in source_sink.discharge.forcing
@@ -1253,8 +1239,7 @@ class TestConvertSourceSinkWithSubstanceFile:
             "sourcesink_tracerTrC",
             "sourcesink_tracerTrD",
         ]
-        # Every tracer substance is reachable as a dynamic attribute on the SourceSink,
-        # carrying the `tracer` role prefix the kernel expects (issue #1224).
+        # each tracer is a dynamic attribute with the `tracer` role prefix (issue #1224)
         for tracer in ("tracerTrX", "tracerTrA", "tracerTrB", "tracerTrC", "tracerTrD"):
             assert hasattr(source_sink, tracer)
 

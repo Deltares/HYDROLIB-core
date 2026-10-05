@@ -157,8 +157,7 @@ class ExternalForcingConverter:
         )
         self._mdu_parser = mdu_parser
 
-        # Inifield model is static for the whole run; load it once so the per-forcing
-        # tracer-ordering lookups don't re-read it from disk.
+        # loaded once: it is static for the whole run
         self._inifield_model = self._load_inifield_model()
 
         self._legacy_files = []
