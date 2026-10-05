@@ -431,13 +431,14 @@ class ExternalForcingConverter:
         return self._pre_existing_new_ext_tracers
 
     def _inifield_tracer_quantities(self) -> list[str]:
-        """Collect tracer/sedfrac quantity names from the inifield file, if present.
+        """Collect the quantity names of the `[Initial]` and `[Parameter]` blocks of the inifield file.
 
-        The inifield model is loaded once at construction (`self._inifield_model`).
-        When the MDU references no inifield file, an empty list is returned.
+        All quantities are returned, not only the tracer ones: the source/sink converter keeps the
+        tracer / sediment-fraction ones by prefix. The inifield model is loaded once at construction
+        (`self._inifield_model`). When the MDU references no inifield file, an empty list is returned.
 
         Returns:
-            list[str]: Tracer/sedfrac quantity names from the inifield file, in order.
+            list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
         """
         model = self._inifield_model
         initials = model.initial if model else []
