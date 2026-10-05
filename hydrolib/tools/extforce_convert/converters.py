@@ -50,7 +50,6 @@ from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     SOURCESINK_SALINITY_IN_BC,
@@ -896,19 +895,21 @@ class TimQuantityNamesBuilder:
             ):
                 continue
             bare = self._substance_name_from_quantity(quantity)
-            self._append_unique(
-                ordered, seen, f"{self._role_prefix(quantity)}{bare}", bare
-            )
+            self._append_unique(ordered, seen, f"{self._role_prefix(quantity)}{bare}")
         for name in self.active_substance_names:
-            self._append_unique(ordered, seen, f"tracer{name}", name)
+            self._append_unique(ordered, seen, f"tracer{name}")
         return ordered
 
     @staticmethod
-    def _append_unique(
-        ordered: list[str], seen: set[str], value: str, dedup_key: str
-    ) -> None:
-        """Append `value` to `ordered` unless `dedup_key` (casefolded) was already seen."""
-        key = dedup_key.lower()
+    def _append_unique(ordered: list[str], seen: set[str], value: str) -> None:
+        """Append `value` to `ordered` unless it (casefolded) was already seen.
+
+        The role prefix is part of the key, so a tracer and a sediment fraction that share a bare name
+        (`tracerbndX` and `sedfracbndX`) are different constituents and both keep their column. The
+        different spellings of one tracer (`tracerbndX`, `initialtracerX`, a substance `X`) all map to
+        `tracerX` and collapse into one.
+        """
+        key = value.lower()
         if key not in seen:
             seen.add(key)
             ordered.append(value)
@@ -920,9 +921,10 @@ class TimQuantityNamesBuilder:
         `sedfracbnd*` / `initialsedfrac*` quantities are sediment fractions (`sedfrac`);
         every other source/sink quantity is a tracer (`tracer`).
         """
+        role = "tracer"
         if quantity.lower().startswith(("sedfracbnd", "initialsedfrac")):
-            return "sedfrac"
-        return "tracer"
+            role = "sedfrac"
+        return role
 
     @staticmethod
     def merge_mdu_and_ext_file_quantities(
@@ -1308,7 +1310,8 @@ class SourceSinkConverter(BaseConverter):
         name = quantity_name.removeprefix("sourcesink_")
         for role in ("tracer", "sedfrac"):
             if name.startswith(role):
-                return name[len(role) :]
+                name = name[len(role) :]
+                break
         return name
 
     @staticmethod
