@@ -116,17 +116,17 @@ class BaseConverter(ABC):
         return self._root_dir
 
     @root_dir.setter
-    def root_dir(self, value: Union[Path, str]):
+    def root_dir(self, value: Path | str):
         if isinstance(value, str):
             value = Path(value)
         self._root_dir = value
 
     @property
-    def legacy_files(self) -> List[Path]:
+    def legacy_files(self) -> list[Path]:
         return self._legacy_files
 
     @legacy_files.setter
-    def legacy_files(self, value: Union[PathOrStr, List[PathOrStr]]):
+    def legacy_files(self, value: PathOrStr | list[PathOrStr]):
         """Set the legacy files to be cleaned up after conversion."""
         if isinstance(value, list):
             self._legacy_files += [Path(file) for file in value]
