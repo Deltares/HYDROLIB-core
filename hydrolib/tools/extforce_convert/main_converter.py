@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 from tqdm import tqdm
 
