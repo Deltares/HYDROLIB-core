@@ -157,8 +157,9 @@ class ExternalForcingConverter:
         )
         self._mdu_parser = mdu_parser
 
-        # loaded once: it is static for the whole run
-        self._inifield_model = self._load_inifield_model()
+        # loaded lazily, only a source/sink conversion needs it
+        self._inifield_model: IniFieldModel | None = None
+        self._inifield_loaded = False
         # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
         self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
@@ -434,12 +435,16 @@ class ExternalForcingConverter:
         """Collect the quantity names of the `[Initial]` and `[Parameter]` blocks of the inifield file.
 
         All quantities are returned, not only the tracer ones: the source/sink converter keeps the
-        tracer / sediment-fraction ones by prefix. The inifield model is loaded once at construction
-        (`self._inifield_model`). When the MDU references no inifield file, an empty list is returned.
+        tracer / sediment-fraction ones by prefix. The inifield model is loaded on the first call and cached
+        (`self._inifield_model`), so a run without a source/sink never reads the inifield file and is not
+        affected by it. When the MDU references no inifield file, an empty list is returned.
 
         Returns:
             list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
         """
+        if not self._inifield_loaded:
+            self._inifield_model = self._load_inifield_model()
+            self._inifield_loaded = True
         model = self._inifield_model
         initials = model.initial if model else []
         parameters = model.parameter if model else []

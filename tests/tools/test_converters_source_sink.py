@@ -1414,6 +1414,66 @@ class TestConvertSourceSinkWithSubstanceFile:
         assert first_value["sourcesink_tracerX"] == 10.0
         assert first_value["sourcesink_tracerA"] == 11.0
 
+    def test_invalid_inifield_does_not_affect_run_without_source_sink(
+        self, tmp_path: Path
+    ):
+        """The inifield file is read lazily, so an invalid one does not break a run without a source/sink.
+
+        Only the source/sink conversion needs the inifield tracer quantities for the TIM column order
+        (review finding M2). The old ext file here has no source/sink, and the inifield file the MDU
+        references is invalid (unknown `dataFileType`): the conversion must still succeed and never load it.
+        """
+        model_dir = tmp_path / "invalid_inifield"
+        model_dir.mkdir()
+
+        (model_dir / "x_init.xyz").write_text("0.0 0.0 1.0\n")
+        (model_dir / "bad_inifield.ini").write_text(
+            "[General]\n"
+            "fileVersion = 2.00\n"
+            "fileType = iniField\n"
+            "\n"
+            "[Initial]\n"
+            "quantity = initialtracerX\n"
+            "dataFile = x_init.xyz\n"
+            "dataFileType = notatype\n"
+            "interpolationMethod = triangulation\n"
+        )
+        (model_dir / "old.ext").write_text(
+            "QUANTITY     =initialtracerX\n"
+            "FILENAME     =x_init.xyz\n"
+            "FILETYPE     =7\n"
+            "METHOD       =5\n"
+            "OPERAND      =O\n"
+        )
+        (model_dir / "model.mdu").write_text(
+            "[General]\n"
+            "Program                             = D-Flow FM\n"
+            "FileVersion                         = 1.09\n"
+            "\n"
+            "[physics]\n"
+            "Salinity                            = 0\n"
+            "Temperature                         = 0\n"
+            "\n"
+            "[time]\n"
+            "RefDate                             = 20160101\n"
+            "\n"
+            "[geometry]\n"
+            "IniFieldFile                        = bad_inifield.ini\n"
+            "\n"
+            "[external forcing]\n"
+            "ExtForceFile                        = old.ext\n"
+        )
+
+        converter = ExternalForcingConverter.from_mdu(
+            model_dir / "model.mdu", debug=True
+        )
+        ext_model, _ = converter.update()
+
+        assert [spatial.quantity for spatial in ext_model.spatial] == [
+            "initialtracerX"
+        ]
+        assert converter._inifield_loaded is False
+
 
 class TestSourceSinkConverterEdgeCases:
     """Tests for SourceSinkConverter edge cases and error handling."""
