@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
@@ -1382,7 +1383,7 @@ class LateralConverter(BaseConverter):
             **location_data,
             "name": forcing.quantity,
             "locationtype": location_type,
-            "discharge": self._get_discharge(forcing, time_unit),
+            **self._get_forcing_data(forcing, time_unit),
         }
 
         try:
@@ -1394,15 +1395,72 @@ class LateralConverter(BaseConverter):
 
         return new_block
 
-    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> TimModel | None:
-        """Resolve and merge any TIM files accompanying the lateral polyline.
+    def _active_transport_quantities(self) -> List[str]:
+        """Return the transported quantities enabled in the MDU (salinity, temperature).
+
+        When salinity and/or temperature are enabled in the MDU file, the old-format
+        lateral discharge `.tim` files may carry one extra column per enabled quantity
+        after the discharge column (in the order: discharge, salinity, temperature).
+
+        Returns:
+            List[str]: The enabled transported quantities, in the order they appear
+                in the `.tim` file.
+        """
+        mdu_data = self._mdu_parser.temperature_salinity_data or {}
+        return [
+            name for name in ("salinity", "temperature") if bool(mdu_data.get(name))
+        ]
+
+    def _load_lateral_tim_model(self, tim_file: Path, quantity: str) -> TimModel:
+        """Load a lateral `.tim` file and assign its forcing quantity names.
+
+        A lateral `.tim` file contains either a single discharge column, or (when
+        salinity and/or temperature are enabled in the MDU file) the discharge column
+        followed by one column per enabled transported quantity.
+
+        Args:
+            tim_file (Path): The `.tim` file to load.
+            quantity (str): The old external forcing quantity, used in messages.
+
+        Returns:
+            TimModel: The parsed `TimModel`, with `quantities_names` set to the
+                available forcing quantities in TIM column order.
+
+        Raises:
+            LateralError: If the number of data columns is neither 1 nor
+                1 + the number of transported quantities enabled in the MDU file.
+        """
+        tim_model = TimModel(tim_file)
+        if not tim_model.timeseries:
+            raise LateralError(
+                f"Invalid TIM input: '{tim_file}' contains no data rows. "
+                f"Encountered for QUANTITY={quantity}."
+            )
+        n_columns = len(tim_model.timeseries[0].data)
+        transport_quantities = self._active_transport_quantities()
+        expected_columns = 1 + len(transport_quantities)
+
+        if n_columns != 1 and n_columns != expected_columns:
+            expected_names = ["discharge"] + transport_quantities
+            raise LateralError(
+                f"The TIM file '{tim_file}' for QUANTITY={quantity} has {n_columns} data "
+                f"columns, expected either 1 (discharge) or {expected_columns} "
+                f"({', '.join(expected_names)}) based on the Salinity/Temperature "
+                f"settings in the MDU file."
+            )
+
+        tim_model.quantities_names = ["discharge"] + transport_quantities[: n_columns - 1]
+        return tim_model
+
+    def _resolve_tim_files(
+        self, polyline: PolyFile, quantity: str
+    ) -> List[Tuple[Path, TimModel]]:
+        """Resolve and parse any TIM files accompanying the lateral polyline.
 
         Searches the directory next to the polyline file for any `.tim` files
         whose stem starts with the polyline stem (e.g. `lateral.tim`,
-        `lateral_0001.tim`, `lateral_0002.tim`, …), merges them into a
-        single `TimModel` via
-        :meth:`BoundaryConditionConverter.merge_tim_files`, and sets every
-        column's quantity name to `"discharge"`.
+        `lateral_0001.tim`, `lateral_0002.tim`, …), and parses each of them with
+        its available discharge / salinity / temperature columns.
 
         The matched file paths are also appended to :attr:`legacy_files` so they
         can be cleaned up after the conversion.
@@ -1410,50 +1468,71 @@ class LateralConverter(BaseConverter):
         Args:
             polyline (PolyFile): The lateral polyline whose filepath locates the
                 accompanying TIM file(s).
-            quantity (str): The old external forcing quantity, used only in the
-                error message raised by :meth:`BoundaryConditionConverter.merge_tim_files`
-                when a listed file is missing.
+            quantity (str): The old external forcing quantity, used in messages.
 
         Returns:
-            Optional[TimModel]: The merged `TimModel` (with `quantities_names`
-                set to `"discharge"` for every column), or `None` when no
-                `.tim` files are found next to the polyline.
+            List[Tuple[Path, TimModel]]: The parsed TIM files and their models.
+                Returns an empty list when no `.tim` files are found next to the
+                polyline.
         """
         resolved = resolve_relative_to_root(polyline.filepath, self.root_dir)
         stem = polyline.filepath.stem
         tim_files = sorted(resolved.parent.glob(f"{stem}*.tim"))
         if tim_files:
-            tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
-            n_columns = len(tim_model.get_units())
-            tim_model.quantities_names = ["discharge"] * n_columns
+            parsed_tim_files = [
+                (tim_file, self._load_lateral_tim_model(tim_file, quantity))
+                for tim_file in tim_files
+            ]
             self.legacy_files = tim_files
-            result = tim_model
+            expected_quantities = parsed_tim_files[0][1].quantities_names
+            for tim_file, tim_model in parsed_tim_files[1:]:
+                if tim_model.quantities_names != expected_quantities:
+                    raise LateralError(
+                        f"All TIM files for lateral '{polyline.filepath.stem}' must carry the same "
+                        f"forcing columns. Expected {expected_quantities} based on "
+                        f"'{parsed_tim_files[0][0].name}', but '{tim_file.name}' contains "
+                        f"{tim_model.quantities_names}."
+                    )
+            result = parsed_tim_files
         else:
-            result = None
+            result = []
         return result
 
-    def _get_discharge(
+    def _get_forcing_data(
         self, forcing: ExtOldForcing, time_unit: str | None
-    ) -> Any:
-        """Derive the discharge value from the old forcing block.
+    ) -> Dict[str, Any]:
+        """Derive the forcing fields for the new lateral block.
 
         Args:
             forcing (ExtOldForcing): The old forcing block.
             time_unit (Optional[str]): The time unit string for time series data.
 
         Returns:
-            Any: A constant float, a ForcingModel, or a file path representing the discharge.
+            Dict[str, Any]: The converted forcing fields for the `Lateral` block.
         """
-        result = forcing.value
+        result: Dict[str, Any] = {"discharge": forcing.value}
 
         if forcing.value is None:
-            location_file = forcing.filename.filepath
-            tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
+            if not isinstance(forcing.filename, PolyFile):
+                raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
 
-            if tim_model is not None:
-                result = self._convert_poly_tim_to_forcing_model(
-                    tim_model, location_file, time_unit
+            polyline = forcing.filename
+            location_file = polyline.filepath
+            tim_files_with_models = self._resolve_tim_files(
+                polyline, forcing.quantity
+            )
+
+            if tim_files_with_models:
+                forcing_model, quantities = self._convert_poly_tim_to_forcing_model(
+                    tim_files_with_models, location_file, time_unit
                 )
+                result = {"discharge": forcing_model}
+                if "salinity" in quantities:
+                    result["salinity"] = forcing_model
+                if "temperature" in quantities:
+                    result["temperature"] = forcing_model
+                if len(quantities) > 1:
+                    result["applytransport"] = 1
             else:
                 raise ValueError(
                     f"Could not determine the discharge for lateral '{location_file.stem}': "
@@ -1465,17 +1544,21 @@ class LateralConverter(BaseConverter):
         return result
 
     def _convert_poly_tim_to_forcing_model(
-        self, tim_model: TimModel, location_file: Any, time_unit: str | None
-    ) -> ForcingModel:
-        """Convert a TIM model associated with a PolyFile into a ForcingModel.
+        self,
+        tim_files_with_models: List[Tuple[Path, TimModel]],
+        location_file: Any,
+        time_unit: str | None,
+    ) -> Tuple[ForcingModel, List[str]]:
+        """Convert lateral TIM file(s) associated with a PolyFile into a ForcingModel.
 
         Args:
-            tim_model (TimModel): The resolved TIM model.
+            tim_files_with_models (List[Tuple[Path, TimModel]]): The resolved TIM files and models.
             location_file: The path of the polygon file (used to derive names and output path).
             time_unit (Optional[str]): The time unit string for time series data.
 
         Returns:
-            ForcingModel: The converted forcing model.
+            Tuple[ForcingModel, List[str]]: The converted forcing model and the
+                quantity names present in each TIM file.
 
         Raises:
             ValueError: If time_unit is None.
@@ -1487,20 +1570,40 @@ class LateralConverter(BaseConverter):
             )
 
         location_name = location_file.stem
-        units = tim_model.get_units()
-        if len(units) == 1:
-            user_defined_names = [location_name]
+        forcing_list = []
+        if len(tim_files_with_models) == 1:
+            forcing_names = [location_name]
         else:
-            user_defined_names = [f"{location_name}_{str(i + 1).zfill(4)}"
-                                  for i in range(len(units))]
+            forcing_names = BoundaryConditionConverter._get_file_labels(
+                location_name,
+                [tim_file for tim_file, _ in tim_files_with_models],
+            )
 
-        forcing_model = self.convert_tim_to_bc(
-            tim_model,
-            time_unit,
-            user_defined_names=user_defined_names,
-        )
+        quantities = tim_files_with_models[0][1].quantities_names or []
+        if not quantities:
+            raise LateralError(
+                f"Could not determine forcing columns for lateral '{location_name}'."
+            )
+        for (tim_file, tim_model), forcing_name in zip(
+            tim_files_with_models, forcing_names
+        ):
+            if tim_model.quantities_names != quantities:
+                raise LateralError(
+                    f"All TIM files for lateral '{location_name}' must carry the same forcing "
+                    f"columns. Expected {quantities}, but '{tim_file.name}' contains "
+                    f"{tim_model.quantities_names}."
+                )
+            forcing_list.extend(
+                self.convert_tim_to_bc(
+                    tim_model,
+                    time_unit,
+                    user_defined_names=[forcing_name] * len(quantities),
+                ).forcing
+            )
+
+        forcing_model = ForcingModel(forcing=forcing_list)
         forcing_model.filepath = location_file.with_suffix(".bc")
-        return forcing_model
+        return forcing_model, quantities
 
     @staticmethod
     def _get_location_data(forcing: ExtOldForcing) -> dict[str, Any]:
