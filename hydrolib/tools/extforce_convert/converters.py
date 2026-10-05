@@ -871,8 +871,8 @@ class TimQuantityNamesBuilder:
 
         Sources are visited in precedence order — inifield file, new external forcings
         file, old external forcings file, substance file — and de-duplicated keeping each
-        constituent's first (highest-precedence) occurrence (case-insensitive on the bare
-        substance name).
+        constituent's first (highest-precedence) occurrence (case-insensitive on the role-prefixed
+        name, so a tracer and a sediment fraction sharing a bare name stay separate columns).
 
         Each emitted name carries the source/sink **role prefix** the kernel expects for a
         `[SourceSink]` column: `tracer<name>` for tracers and `sedfrac<name>` for sediment

@@ -243,6 +243,52 @@ def test_substance_name_from_quantity(quantity, expected):
     assert TimQuantityNamesBuilder._substance_name_from_quantity(quantity) == expected
 
 
+@pytest.mark.parametrize(
+    "quantity, expected",
+    [
+        ("tracerbndIM1", "tracer"),
+        ("initialtracerIM1", "tracer"),
+        ("sedfracbndMud", "sedfrac"),
+        ("InitialSedFracMud", "sedfrac"),
+    ],
+)
+def test_role_prefix(quantity, expected):
+    assert TimQuantityNamesBuilder._role_prefix(quantity) == expected
+
+
+@pytest.mark.parametrize(
+    "quantity_name, expected",
+    [
+        ("sourcesink_tracerOXY", "OXY"),
+        ("sourcesink_sedfracMud", "Mud"),
+        ("sourcesink_discharge", "discharge"),
+        ("sourcesink_tracerDetC", "DetC"),
+    ],
+)
+def test_bare_constituent_name(quantity_name, expected):
+    assert SourceSinkConverter._bare_constituent_name(quantity_name) == expected
+
+
+def test_build_quantities_names_keeps_tracer_and_sedfrac_with_the_same_name():
+    """A tracer and a sediment fraction that share a bare name are different constituents.
+
+    The kernel keeps tracers and sediment fractions in separate constituent groups, so
+    `tracerbndX` and `sedfracbndX` each keep their column, while `initialtracerX` and the
+    substance `X` still collapse into the one `tracerX`.
+    """
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=["tracerbndX", "sedfracbndX", "initialtracerX"],
+        active_substance_names=["X"],
+        mdu_quantities={},
+    ).build()
+
+    assert names == [
+        "sourcesink_discharge",
+        "sourcesink_tracerX",
+        "sourcesink_sedfracX",
+    ]
+
+
 def test_substance_name_from_quantity_strips_longest_prefix():
     """When prefixes overlap, the longest one is stripped, not the first in tuple order.
 
