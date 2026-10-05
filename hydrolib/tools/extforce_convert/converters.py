@@ -24,7 +24,6 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
-    SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES,
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
@@ -1051,29 +1050,6 @@ class SourceSinkConverter(BaseConverter):
             else {}
         )
         return names, units
-
-    @staticmethod
-    def filter_source_sink_quantities(quantities: List[str]) -> List[str]:
-        """Keep only the quantities relevant to the source and sink conversion.
-
-        Quantities starting with a source/sink ignore prefix (e.g. `initialtracer`,
-        `initialsedfrac`) are converted to `[Spatial]` blocks by `SpatialConverter`, so
-        they must not be counted as source/sink columns.
-
-        Args:
-            quantities (List[str]):
-                All quantities present in the old external forcings file.
-
-        Returns:
-            List[str]:
-                The quantities that are not carrying a source/sink ignore prefix.
-        """
-        return [
-            quantity
-            for quantity in quantities
-            if not quantity.lower().startswith(SOURCE_SINKS_IGNORE_QUANTITIES_PREFIXES)
-        ]
-
 
     def parse_tim_model(
         self,

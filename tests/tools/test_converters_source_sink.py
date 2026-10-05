@@ -213,22 +213,6 @@ def test_parse_tim_model(
         assert data == expected_data
 
 
-def test_filter_source_sink_quantities():
-    """Ignore-prefixed quantities are dropped; all others keep their order."""
-    quantities = [
-        "sourcesink_discharge",
-        "initialtracer_anyname",
-        "salinity",
-        "initialsedfrac_mud",
-        "temperature",
-    ]
-    assert SourceSinkConverter.filter_source_sink_quantities(quantities) == [
-        "sourcesink_discharge",
-        "salinity",
-        "temperature",
-    ]
-
-
 @pytest.mark.parametrize(
     "quantity, expected",
     [
