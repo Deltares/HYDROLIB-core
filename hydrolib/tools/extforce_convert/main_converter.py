@@ -439,6 +439,11 @@ class ExternalForcingConverter:
         Notes:
             - The SourceSink converter needs the salinity and temperature from the FM model.
             - The BoundaryCondition converter needs the start time from the FM model.
+            - The SourceSink converter also receives the tracer quantities of the inifield file, the new
+            external forcings file and the **unfiltered** old external forcings file, so it can order the TIM
+            columns by the kernel's precedence (inifield -> new ext -> old ext -> substance file). The old-ext
+            `initialtracer*` / `initialsedfrac*` quantities are converted to `[Spatial]` blocks by
+            `SpatialConverter`, but they still define a tracer and so must not be filtered out.
         """
         converter_class = ConverterFactory.create_converter(
             forcing.quantity, root_dir=self.root_dir, mdu_parser=self.mdu_parser
@@ -446,15 +451,10 @@ class ExternalForcingConverter:
 
         # only the SourceSink converter needs the quantities' list
         if isinstance(converter_class, SourceSinkConverter):
-            source_sink_quantities = converter_class.filter_source_sink_quantities(
-                self.extold_model.quantities
-            )
-            # Thread the tracer-ordering inputs so SourceSinkConverter can build
-            # TIM quantities_names with the kernel's precedence
-            # (inifield -> new ext -> old ext -> substance file).
+            # the full (unfiltered) old-ext list is passed on purpose, see the Notes above
             new_quantity_block = converter_class.convert(
                 forcing,
-                source_sink_quantities,
+                self.extold_model.quantities,
                 new_ext_tracer_quantities=self._new_ext_tracer_quantities(),
                 inifield_tracer_quantities=self._inifield_tracer_quantities(),
             )

@@ -325,7 +325,7 @@ def test_build_quantities_names_includes_initial_condition_prefixes(
 ):
     """`initialtracer*` / `initialsedfrac*` contribute to the TIM tracer ordering.
 
-    They are initial conditions converted by other converters, but still take a slot
+    They are converted to `[Spatial]` blocks by `SpatialConverter`, but still take a slot
     in the kernel's tracer indexing (confirmed with the FM team). Each quantity
     contributes its substance name after prefix stripping; relative order is preserved.
     """
@@ -1257,6 +1257,96 @@ class TestConvertSourceSinkWithSubstanceFile:
         # carrying the `tracer` role prefix the kernel expects (issue #1224).
         for tracer in ("tracerTrX", "tracerTrA", "tracerTrB", "tracerTrC", "tracerTrD"):
             assert hasattr(source_sink, tracer)
+
+    def test_old_ext_initialtracer_takes_tracer_slot_e2e(self, tmp_path: Path):
+        """End-to-end: an old-ext `initialtracer*` quantity takes a TIM column slot.
+
+        `initialtracerTrY` appears only in the old ext file (no inifield, no new ext,
+        not in the substance file). It is converted to a `[Spatial]` block by the
+        `SpatialConverter`, but it still defines a tracer, so it must be counted when
+        ordering the source/sink TIM columns. The old ext outranks the substance file,
+        so the expected tracer order is:
+
+            TrY  (old ext)
+            TrA  (substance file)
+            TrB  (substance file)
+        """
+        model_dir = tmp_path / "old_ext_initialtracer"
+        model_dir.mkdir()
+
+        (model_dir / "subs.sub").write_text(
+            "substance 'TrA' active\n"
+            "   concentration-unit '(gA/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+            "substance 'TrB' active\n"
+            "   concentration-unit '(gB/m3)'\n"
+            "   waste-load-unit    '-'\n"
+            "end-substance\n"
+        )
+        (model_dir / "try_init.xyz").write_text("0.0 0.0 1.0\n")
+        (model_dir / "sorsin.pli").write_text(
+            "L1\n     1     2\n      5.0      5.0\n"
+        )
+        (model_dir / "sorsin.tim").write_text(
+            "* Time Flow Salinity Temperature TrY TrA TrB\n"
+            "0.0 1.0 2.0 3.0 10.0 11.0 12.0\n"
+            "60.0 1.0 2.0 3.0 10.0 11.0 12.0\n"
+            "120.0 1.0 2.0 3.0 10.0 11.0 12.0\n"
+        )
+        (model_dir / "old.ext").write_text(
+            "QUANTITY     =discharge_salinity_temperature_sorsin\n"
+            "FILENAME     =sorsin.pli\n"
+            "FILETYPE     =9\n"
+            "METHOD       =1\n"
+            "OPERAND      =O\n"
+            "\n"
+            "QUANTITY     =initialtracerTrY\n"
+            "FILENAME     =try_init.xyz\n"
+            "FILETYPE     =7\n"
+            "METHOD       =5\n"
+            "OPERAND      =O\n"
+        )
+        (model_dir / "model.mdu").write_text(
+            "[General]\n"
+            "Program                             = D-Flow FM\n"
+            "FileVersion                         = 1.09\n"
+            "\n"
+            "[physics]\n"
+            "Salinity                            = 1\n"
+            "Temperature                         = 1\n"
+            "\n"
+            "[processes]\n"
+            "SubstanceFile                       = subs.sub\n"
+            "\n"
+            "[time]\n"
+            "RefDate                             = 20160101\n"
+            "\n"
+            "[external forcing]\n"
+            "ExtForceFile                        = old.ext\n"
+        )
+
+        converter = ExternalForcingConverter.from_mdu(
+            model_dir / "model.mdu", debug=True
+        )
+        ext_model, _ = converter.update()
+
+        source_sink = ext_model.sourcesink[0]
+        column_names = [
+            f.quantityunitpair[1].quantity for f in source_sink.discharge.forcing
+        ]
+        assert column_names == [
+            "sourcesink_discharge",
+            "sourcesink_salinity",
+            "sourcesink_temperature",
+            "sourcesink_tracerTrY",
+            "sourcesink_tracerTrA",
+            "sourcesink_tracerTrB",
+        ]
+        # The initialtracer quantity itself is converted by the SpatialConverter.
+        assert [spatial.quantity for spatial in ext_model.spatial] == [
+            "initialtracerTrY"
+        ]
 
 
 class TestSourceSinkConverterEdgeCases:
