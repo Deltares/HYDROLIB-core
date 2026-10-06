@@ -80,7 +80,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(8.4)
         assert struct.extraresistance == pytest.approx(8.5)
         assert struct.gateheight == pytest.approx(8.6)
-        assert struct.gateopeningwidth == pytest.approx(8.7)
+        assert struct.gateopeningwidth == pytest.approx(2.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -143,7 +143,7 @@ class TestGeneralStructure:
             negContrCoefFreeGate           = 18.4             # Negative gate flow contraction coefficient mu gf [-]
             extraResistance                = 18.5             # Extra resistance [-]
             gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7             # Opening width between gate doors [m], should be smaller than (or equal to) crestWidth
+            gateOpeningWidth               = 2.0             # Opening width between gate doors [m], should be smaller than (or equal to) crestWidth
             gateOpeningHorizontalDirection = fromLeft         # Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight
             useVelocityHeight              = 0                # Flag indicates whether the velocity height is to be calculated or not
             """
@@ -189,7 +189,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(18.4)
         assert struct.extraresistance == pytest.approx(18.5)
         assert struct.gateheight == pytest.approx(18.6)
-        assert struct.gateopeningwidth == pytest.approx(18.7)
+        assert struct.gateopeningwidth == pytest.approx(2.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -232,7 +232,7 @@ class TestGeneralStructure:
             negContrCoefFreeGate           = 18.4
             extraResistance                = 18.5
             gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7
+            gateOpeningWidth               = 10.0
             gateOpeningHorizontalDirection = fromLeft
             useVelocityHeight              = 0    # My own special comment 2
             """
@@ -324,7 +324,7 @@ class TestGeneralStructure:
             negContrCoefFreeGate           = 118.4
             extraResistance                = 118.5
             gateHeight                     = 118.6
-            gateOpeningWidth               = 118.7
+            gateOpeningWidth               = 110.0
             gateOpeningHorizontalDirection = fromRight
             useVelocityHeight              = 0
             """
@@ -372,7 +372,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(118.4)
         assert struct.extraresistance == pytest.approx(118.5)
         assert struct.gateheight == pytest.approx(118.6)
-        assert struct.gateopeningwidth == pytest.approx(118.7)
+        assert struct.gateopeningwidth == pytest.approx(110.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_right
@@ -411,7 +411,7 @@ class TestGeneralStructure:
             negcontrcoeffreegate=8.4,
             extraresistance=8.5,
             gateheight=8.6,
-            gateopeningwidth=8.7,
+            gateopeningwidth=2.0,
             gateopeninghorizontaldirection=GateOpeningHorizontalDirection.from_left,
             usevelocityheight=False,
         )
