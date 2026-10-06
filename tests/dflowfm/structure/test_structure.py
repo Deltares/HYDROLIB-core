@@ -179,7 +179,6 @@ def test_structure_model_parses_gate_section(tmp_path):
             branchId                       = branch
             chainage                       = 12.5
             type                           = gate
-            allowedFlowDir                 = both
             crestLevel                     = 1.5
             gateLowerEdgeLevel             = 0.5
             gateHeight                     = 2.0
