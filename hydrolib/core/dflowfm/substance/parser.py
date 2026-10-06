@@ -21,16 +21,18 @@ from typing import Any, Dict, List, Tuple
 
 from hydrolib.core.base.parser import open_file_with_fallback_encoding
 
-_QUOTED_VALUE_RE = re.compile(r"'([^']*)'")
-"""re.Pattern: Compiled regex that matches single-quoted values."""
+_TOKEN_RE = re.compile(r"'[^']*'|\S+")
+"""re.Pattern: Compiled regex that matches a single-quoted value or a bare word."""
 
 
 class SubstanceParser:
     """Parser for D-WAQ substance (.sub) files.
 
-    The parser reads the file line by line, identifies block-start keywords,
-    and delegates to block-specific helpers that consume lines until the
-    corresponding `end-*` keyword is found.
+    The parser splits the file into whitespace-separated tokens (a single-quoted
+    value is one token, even if it contains spaces), identifies block-start
+    keywords, and delegates to block-specific helpers that consume tokens until
+    the corresponding `end-*` keyword is found. Line breaks carry no meaning, so
+    a block may be written over several lines or entirely on one line.
 
     All methods are static; no instance state is required.
 
@@ -66,7 +68,8 @@ class SubstanceParser:
         """Parse a .sub file into a dictionary of substance data.
 
         Reads the entire file using UTF-8 with Latin-1 fallback encoding,
-        then iterates through lines to identify and parse each block type.
+        splits it into tokens, then iterates through them to identify and parse
+        each block type.
 
         Args:
             filepath (Path): Path to the .sub file.
@@ -112,7 +115,7 @@ class SubstanceParser:
                 ```
         """
         content = open_file_with_fallback_encoding(filepath)
-        lines = content.splitlines()
+        tokens = _TOKEN_RE.findall(content)
 
         substances: List[Dict[str, str]] = []
         parameters: List[Dict[str, str]] = []
@@ -120,26 +123,20 @@ class SubstanceParser:
         active_processes: Dict[str, List[Dict[str, str]]] = {"processes": []}
 
         i = 0
-        while i < len(lines):
-            line = lines[i].strip()
+        while i < len(tokens):
+            keyword = tokens[i].lower()
 
-            if not line:
-                i += 1
-                continue
-
-            lower = line.lower()
-
-            if lower.startswith("substance "):
-                block, i = SubstanceParser._parse_substance_block(lines, i)
+            if keyword == "substance":
+                block, i = SubstanceParser._parse_substance_block(tokens, i)
                 substances.append(block)
-            elif lower.startswith("parameter "):
-                block, i = SubstanceParser._parse_parameter_block(lines, i)
+            elif keyword == "parameter":
+                block, i = SubstanceParser._parse_parameter_block(tokens, i)
                 parameters.append(block)
-            elif lower.startswith("output "):
-                block, i = SubstanceParser._parse_output_block(lines, i)
+            elif keyword == "output":
+                block, i = SubstanceParser._parse_output_block(tokens, i)
                 outputs.append(block)
-            elif lower.startswith("active-processes"):
-                block, i = SubstanceParser._parse_active_processes_block(lines, i)
+            elif keyword == "active-processes":
+                block, i = SubstanceParser._parse_active_processes_block(tokens, i)
                 active_processes = block
             else:
                 i += 1
@@ -152,292 +149,235 @@ class SubstanceParser:
         }
 
     @staticmethod
-    def _extract_quoted_values(text: str) -> List[str]:
-        """Extract all single-quoted values from a line of text.
+    def _unquote(token: str) -> str:
+        """Strip the surrounding single quotes from a token, if present.
 
         Args:
-            text (str): Input text potentially containing `'quoted'` values.
+            token (str): A token produced by the tokenizer.
 
         Returns:
-            List[str]: Ordered list of extracted values (without quotes).
-                Empty list if no quoted values are found.
+            str: The token without surrounding quotes.
 
         Examples:
-            - Extract a description value:
+            - Quoted and bare tokens:
                 ```python
                 >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._extract_quoted_values("description 'hello world'")
-                ['hello world']
-
-                ```
-            - Extract multiple values from a name line:
-                ```python
-                >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._extract_quoted_values("name  'RearOXY' 'Reaeration of oxygen'")
-                ['RearOXY', 'Reaeration of oxygen']
-
-                ```
-            - No quotes returns an empty list:
-                ```python
-                >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._extract_quoted_values("value 0.1500E+02")
-                []
+                >>> SubstanceParser._unquote("'hello world'")
+                'hello world'
+                >>> SubstanceParser._unquote("0.1500E+02")
+                '0.1500E+02'
 
                 ```
         """
-        return _QUOTED_VALUE_RE.findall(text)
+        quoted = len(token) >= 2 and token[0] == "'" and token[-1] == "'"
+        return token[1:-1] if quoted else token
+
+    @staticmethod
+    def _parse_header_name(tokens: List[str], start: int) -> str:
+        """Return the unquoted name following a block keyword, or `""` if absent.
+
+        Args:
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the block keyword (`substance`, `parameter`, ...).
+
+        Returns:
+            str: The block name.
+        """
+        name = ""
+        if start + 1 < len(tokens):
+            name = SubstanceParser._unquote(tokens[start + 1])
+        return name
+
+    @staticmethod
+    def _parse_fields(
+        tokens: List[str], start: int, end_keyword: str, fields: Dict[str, str]
+    ) -> Tuple[Dict[str, str], int]:
+        """Read `key value` pairs from `start` until `end_keyword` (or EOF).
+
+        Keys are matched case-insensitively. Each recognised key takes the next
+        token as its (unquoted) value; unrecognised tokens are skipped.
+
+        Args:
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the first token after the block header.
+            end_keyword (str): Lowercase terminator, e.g. `end-substance`.
+            fields (Dict[str, str]): Maps recognised file keys to result keys.
+
+        Returns:
+            Tuple[Dict[str, str], int]: The values found, keyed by result key, and
+                the index of the token after the terminator (or `len(tokens)` if
+                the block is unterminated).
+        """
+        values: Dict[str, str] = {}
+        i = start
+        done = False
+        while i < len(tokens) and not done:
+            key = tokens[i].lower()
+            if key == end_keyword:
+                done = True
+            elif key in fields:
+                has_value = i + 1 < len(tokens) and (
+                    tokens[i + 1].lower() != end_keyword
+                )
+                values[fields[key]] = (
+                    SubstanceParser._unquote(tokens[i + 1]) if has_value else ""
+                )
+                i += 2 if has_value else 1
+            else:
+                i += 1
+
+        return values, i + 1 if done else i
 
     @staticmethod
     def _parse_substance_block(
-        lines: List[str], start: int
+        tokens: List[str], start: int
     ) -> Tuple[Dict[str, str], int]:
         """Parse a `substance … end-substance` block.
 
-        The opening line has the form::
+        The block has the form (on one or several lines)::
 
             substance 'Name' active
-
-        Subsequent indented lines carry field values (`description`,
-        `concentration-unit`, `waste-load-unit`) until `end-substance`
-        is encountered.
+               description 'text' concentration-unit 'unit' waste-load-unit '-'
+            end-substance
 
         Args:
-            lines (List[str]): All lines in the file.
-            start (int): Index of the `substance` opening line.
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the `substance` keyword.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
                 - Parsed substance dict with keys `name`, `type`,
                   `description`, `concentration_unit`, `waste_load_unit`.
-                - Index of the next line after the block.
+                - Index of the next token after the block.
         """
-        header = lines[start].strip()
-        quoted = SubstanceParser._extract_quoted_values(header)
-        name = quoted[0] if quoted else ""
+        name = SubstanceParser._parse_header_name(tokens, start)
+        after = tokens[start + 2].lower() if start + 2 < len(tokens) else ""
 
-        # Determine active / inactive from the text after the quoted name
-        after_name = header.split("'")[-1].strip().lower()
-        substance_type = "inactive" if "inactive" in after_name else "active"
-
+        values, end = SubstanceParser._parse_fields(
+            tokens,
+            start + 2,
+            "end-substance",
+            {
+                "description": "description",
+                "concentration-unit": "concentration_unit",
+                "waste-load-unit": "waste_load_unit",
+            },
+        )
         result: Dict[str, str] = {
             "name": name,
-            "type": substance_type,
+            "type": "inactive" if after == "inactive" else "active",
             "description": "",
             "concentration_unit": "",
             "waste_load_unit": "-",
         }
+        result.update(values)
 
-        i = start + 1
-        while i < len(lines):
-            line = lines[i].strip()
-            lower = line.lower()
-
-            if lower == "end-substance":
-                return result, i + 1
-
-            key, value = SubstanceParser._parse_field_line(line)
-            if key == "description":
-                result["description"] = value
-            elif key == "concentration-unit":
-                result["concentration_unit"] = value
-            elif key == "waste-load-unit":
-                result["waste_load_unit"] = value
-
-            i += 1
-
-        return result, i
+        return result, end
 
     @staticmethod
     def _parse_parameter_block(
-        lines: List[str], start: int
+        tokens: List[str], start: int
     ) -> Tuple[Dict[str, str], int]:
         """Parse a `parameter … end-parameter` block.
 
-        The opening line has the form `parameter 'Name'`. Indented lines
-        carry `description`, `unit`, and `value` fields.
+        The block has the form `parameter 'Name' description '…' unit '…'
+        value … end-parameter`, on one or several lines.
 
         Args:
-            lines (List[str]): All lines in the file.
-            start (int): Index of the `parameter` opening line.
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the `parameter` keyword.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
                 - Parsed parameter dict with keys `name`, `description`,
                   `unit`, and `value` (kept as raw string). `value` is only
-                  included when the block contains a `value` line.
-                - Index of the next line after the block.
+                  included when the block contains a `value` entry, so that a
+                  malformed block fails model construction rather than
+                  defaulting to 0.
+                - Index of the next token after the block.
         """
-        header = lines[start].strip()
-        quoted = SubstanceParser._extract_quoted_values(header)
-        name = quoted[0] if quoted else ""
+        name = SubstanceParser._parse_header_name(tokens, start)
+        values, end = SubstanceParser._parse_fields(
+            tokens,
+            start + 2,
+            "end-parameter",
+            {"description": "description", "unit": "unit", "value": "value"},
+        )
+        result: Dict[str, str] = {"name": name, "description": "", "unit": ""}
+        result.update(values)
 
-        # A well-formed .sub file produced by the PLCT always writes a `value` line for every
-        # parameter, and D-Water Quality's own missing-value sentinel is -999.
-        result: Dict[str, str] = {
-            "name": name,
-            "description": "",
-            "unit": "",
-        }
-
-        i = start + 1
-        while i < len(lines):
-            line = lines[i].strip()
-            lower = line.lower()
-
-            if lower == "end-parameter":
-                return result, i + 1
-
-            key, value = SubstanceParser._parse_field_line(line)
-            if key == "description":
-                result["description"] = value
-            elif key == "unit":
-                result["unit"] = value
-            elif key == "value":
-                result["value"] = value
-
-            i += 1
-
-        return result, i
+        return result, end
 
     @staticmethod
-    def _parse_output_block(lines: List[str], start: int) -> Tuple[Dict[str, str], int]:
+    def _parse_output_block(
+        tokens: List[str], start: int
+    ) -> Tuple[Dict[str, str], int]:
         """Parse an `output … end-output` block.
 
-        The opening line has the form `output 'Name'`. The block
-        contains a `description` field.
-
         Args:
-            lines (List[str]): All lines in the file.
-            start (int): Index of the `output` opening line.
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the `output` keyword.
 
         Returns:
             Tuple[Dict[str, str], int]: A tuple of:
 
                 - Parsed output dict with keys `name`, `description`.
-                - Index of the next line after the block.
+                - Index of the next token after the block.
         """
-        header = lines[start].strip()
-        quoted = SubstanceParser._extract_quoted_values(header)
-        name = quoted[0] if quoted else ""
+        name = SubstanceParser._parse_header_name(tokens, start)
+        values, end = SubstanceParser._parse_fields(
+            tokens, start + 2, "end-output", {"description": "description"}
+        )
+        result: Dict[str, str] = {"name": name, "description": ""}
+        result.update(values)
 
-        result: Dict[str, str] = {
-            "name": name,
-            "description": "",
-        }
-
-        i = start + 1
-        while i < len(lines):
-            line = lines[i].strip()
-            lower = line.lower()
-
-            if lower == "end-output":
-                return result, i + 1
-
-            key, value = SubstanceParser._parse_field_line(line)
-            if key == "description":
-                result["description"] = value
-
-            i += 1
-
-        return result, i
+        return result, end
 
     @staticmethod
     def _parse_active_processes_block(
-        lines: List[str], start: int
+        tokens: List[str], start: int
     ) -> Tuple[Dict[str, List[Dict[str, str]]], int]:
         """Parse an `active-processes … end-active-processes` block.
 
-        Each `name` line inside the block has two quoted values: the process
-        identifier and its description. Lines with fewer than two quoted values
-        are skipped.
+        Each `name` entry is followed by two quoted tokens: the process
+        identifier and its description. Entries without two quoted tokens are
+        skipped.
 
         Args:
-            lines (List[str]): All lines in the file.
-            start (int): Index of the `active-processes` opening line.
+            tokens (List[str]): All tokens in the file.
+            start (int): Index of the `active-processes` keyword.
 
         Returns:
             Tuple[Dict[str, List[Dict[str, str]]], int]: A tuple of:
 
                 - Dict with key `"processes"` containing a list of dicts,
                   each with `name` and `description`.
-                - Index of the next line after the block.
+                - Index of the next token after the block.
         """
         processes: List[Dict[str, str]] = []
 
         i = start + 1
-        while i < len(lines):
-            line = lines[i].strip()
-            lower = line.lower()
+        done = False
+        while i < len(tokens) and not done:
+            keyword = tokens[i].lower()
+            if keyword == "end-active-processes":
+                done = True
+            elif (
+                keyword == "name"
+                and i + 2 < len(tokens)
+                and tokens[i + 1].startswith("'")
+                and tokens[i + 2].startswith("'")
+            ):
+                processes.append(
+                    {
+                        "name": SubstanceParser._unquote(tokens[i + 1]),
+                        "description": SubstanceParser._unquote(tokens[i + 2]),
+                    }
+                )
+                i += 3
+            else:
+                i += 1
 
-            if lower == "end-active-processes":
-                return {"processes": processes}, i + 1
-
-            if lower.startswith("name"):
-                quoted = SubstanceParser._extract_quoted_values(line)
-                if len(quoted) >= 2:
-                    processes.append({"name": quoted[0], "description": quoted[1]})
-
-            i += 1
-
-        return {"processes": processes}, i
-
-    @staticmethod
-    def _parse_field_line(line: str) -> Tuple[str, str]:
-        """Parse an indented field line into a `(key, value)` pair.
-
-        Handles two value forms:
-
-        *   **Quoted**: `description  'some text'` returns
-            `("description", "some text")`.
-        *   **Unquoted**: `value  0.1500E+02` returns
-            `("value", "0.1500E+02")`.
-
-        Keys are always lowercased. Hyphens in keys are preserved
-        (e.g. `concentration-unit`).
-
-        Args:
-            line (str): A single indented line from inside a block.
-
-        Returns:
-            Tuple[str, str]: `(key, value)` pair. If the line has no value
-                part, value is an empty string.
-
-        Examples:
-            - Parse a quoted description field:
-                ```python
-                >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._parse_field_line("   description 'some text'")
-                ('description', 'some text')
-
-                ```
-            - Parse an unquoted numeric value:
-                ```python
-                >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._parse_field_line("   value  0.1500E+02")
-                ('value', '0.1500E+02')
-
-                ```
-            - Parse a key-only line:
-                ```python
-                >>> from hydrolib.core.dflowfm.substance.parser import SubstanceParser
-                >>> SubstanceParser._parse_field_line("   keyword")
-                ('keyword', '')
-
-                ```
-        """
-        parts = line.split(None, 1)
-        if len(parts) < 2:
-            return (parts[0].lower() if parts else "", "")
-
-        key = parts[0].lower()
-        rest = parts[1].strip()
-
-        # Try quoted value first
-        quoted = SubstanceParser._extract_quoted_values(rest)
-        if quoted:
-            return key, quoted[0]
-
-        # Unquoted value (e.g. numeric)
-        return key, rest.strip()
+        return {"processes": processes}, i + 1 if done else i
