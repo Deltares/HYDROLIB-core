@@ -19,7 +19,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.models import DiskOnlyFileModel, BaseModel
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -349,7 +349,7 @@ class Weir(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the weir input as described in
-    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
+    [UM Sec.C.14.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.1).
     """
 
     class Comments(Structure.Comments):
@@ -396,8 +396,8 @@ class UniversalWeir(Structure):
     Hydraulic structure with `type=universalWeir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the universal weir input as described in
-    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
+    All lowercased attributes match with the Universal Weir input as described in
+    [UM Sec.C.14.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.2).
     """
 
     class Comments(Structure.Comments):
@@ -461,8 +461,8 @@ class Culvert(Structure):
     Hydraulic structure with `type=culvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the culvert input as described in
-    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
+    All lowercased attributes match with the Culvert input as described in
+    [UM Sec.C.14.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.3).
     """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
@@ -563,8 +563,8 @@ class LongCulvert(Structure):
     Hydraulic structure with `type=longCulvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the long culvert input as described in
-    [UM Sec.C.13.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.13.4).
+    All lowercased attributes match with the Long Culvert input as described in
+    [UM Sec.C.14.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.4).
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
@@ -613,8 +613,8 @@ class Pump(Structure):
     Hydraulic structure with `type=pump`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the pump input as described in
-    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    All lowercased attributes match with the Pump input as described in
+    [UM Sec.C.14.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.6).
     """
 
     type: Literal["pump"] = Field("pump", alias="type")
@@ -743,8 +743,8 @@ class Compound(Structure):
     Hydraulic structure with `type=compound`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the compound input as described in
-    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
+    All lowercased attributes match with the Comput Structure input as described in
+    [UM Sec.C.14.11](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.11).
     """
 
     type: Literal["compound"] = Field("compound", alias="type")
@@ -766,8 +766,8 @@ class Orifice(Structure):
     Hydraulic structure with `type=orifice`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
+    All lowercased attributes match with the Orifice input as described in
+    [UM Sec.C.14.7](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.7).
     """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
@@ -844,8 +844,8 @@ class Gate(CrestWidthValidator):
     Hydraulic structure with `type=gate`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the gate input as described in
-    [UM Sec.C.12.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.8).
+    All lowercased attributes match with the Gate input as described in
+    [UM Sec.C.14.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.8).
     """
 
     class Comments(Structure.Comments):
@@ -890,8 +890,8 @@ class GeneralStructure(CrestWidthValidator):
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
+    All lowercased attributes match with the General Structure input as described in
+    [UM Sec.C.14.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.9).
     """
 
     class Comments(Structure.Comments):
@@ -1051,8 +1051,8 @@ class Dambreak(Structure):
     Hydraulic structure with `type=dambreak`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the dambreak input as described in
-    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
+    All lowercased attributes match with the Dambreak input as described in
+    [UM Sec.C.14.10](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.10).
     """
 
     class Comments(Structure.Comments):
@@ -1259,8 +1259,8 @@ class Bridge(Structure):
     Hydraulic structure with `type=bridge`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the bridge input as described in
-    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
+    All lowercased attributes match with the Bridge input as described in
+    [UM Sec.C.14.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.5).
     """
 
     class Comments(Structure.Comments):
