@@ -8,7 +8,6 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.structure.models import (
     Gate,
     GateOpeningHorizontalDirection,
-    GeneralStructure,
     Structure,
 )
 from tests.dflowfm.structure.test_structure import (
