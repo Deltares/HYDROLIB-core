@@ -8,6 +8,7 @@ from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.core.dflowfm.structure.models import (
     Gate,
     GateOpeningHorizontalDirection,
+    StructureModel,
     Structure,
 )
 from tests.dflowfm.structure.test_structure import (
@@ -191,7 +192,7 @@ class TestGate:
     def test_gate_parses_opening_direction_correctly(self, direction_input, expected_direction):
         structure = Gate(
             **self._create_required_gate_values(),
-            gateopeninghorizontaldirection=direction_input,
+            gateopeninghorizontaldirection=direction_input,  # type: ignore[arg-type]
         )
 
         assert structure.gateopeninghorizontaldirection == expected_direction
@@ -355,3 +356,101 @@ class TestGateCrestWidthValidator:
             gateopeningwidth=bc_file,
         )
         assert isinstance(gate.gateopeningwidth, ForcingModel)
+
+
+class TestGateAdditionalCoverage:
+    @pytest.mark.parametrize(
+        "field_name",
+        [
+            pytest.param("crestlevel", id="crestlevel"),
+            pytest.param("gateloweredgelevel", id="gateloweredgelevel"),
+            pytest.param("gateheight", id="gateheight"),
+            pytest.param("gateopeningwidth", id="gateopeningwidth"),
+        ],
+    )
+    def test_gate_accepts_tim_forcing_on_forcing_capable_fields(self, field_name):
+        tim_file = test_input_dir / "tim" / "single_data_for_timeseries.tim"
+        gate_values = self._base_gate_values()
+        gate_values[field_name] = tim_file
+        gate = Gate(**gate_values)
+
+        assert isinstance(getattr(gate, field_name), TimModel)
+
+    @pytest.mark.parametrize(
+        "field_name",
+        [
+            pytest.param("crestlevel", id="crestlevel"),
+            pytest.param("gateloweredgelevel", id="gateloweredgelevel"),
+            pytest.param("gateheight", id="gateheight"),
+            pytest.param("gateopeningwidth", id="gateopeningwidth"),
+        ],
+    )
+    def test_gate_accepts_bc_forcing_on_forcing_capable_fields(self, field_name):
+        bc_file = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions2d_and_vectors.bc"
+        )
+        gate_values = self._base_gate_values()
+        gate_values[field_name] = bc_file
+        gate = Gate(**gate_values)
+
+        assert isinstance(getattr(gate, field_name), ForcingModel)
+
+    def test_gate_polylinefile_only_passes_location_validation(self, tmp_path):
+        polyline_file = tmp_path / "gate.pli"
+        polyline_file.write_text("dummy")
+
+        gate = Gate(
+            id="gate_id",
+            name="Gate 01",
+            polylinefile=polyline_file,
+            crestlevel=1.5,
+            gateloweredgelevel=0.5,
+            gateheight=2.0,
+        )
+
+        assert gate.polylinefile is not None
+        assert gate.polylinefile.filepath == polyline_file
+        assert gate.branchid is None
+        assert gate.chainage is None
+
+    def test_gate_roundtrip_through_structure_model(self, tmp_path):
+        gate = Gate(**self._base_gate_values())
+        model = StructureModel(structure=[gate])
+        path = tmp_path / "structures.ini"
+
+        model.save(filepath=path)
+
+        reloaded = StructureModel(filepath=path)
+        assert len(reloaded.structure) == 1
+        assert reloaded.structure[0].model_dump() == gate.model_dump()
+
+    def test_gate_rejects_invalid_opening_direction(self):
+        with pytest.raises(ValueError):
+            Gate(
+                id="gate_id",
+                name="Gate 01",
+                branchid="branch",
+                chainage=12.5,
+                crestlevel=1.5,
+                gateloweredgelevel=0.5,
+                gateheight=2.0,
+                crestwidth=3.0,
+                gateopeninghorizontaldirection="sideways",
+            )
+
+    def _base_gate_values(self) -> dict:
+        return dict(
+            id="gate_id",
+            name="Gate 01",
+            branchid="branch",
+            chainage=12.5,
+            crestlevel=1.5,
+            gateloweredgelevel=0.5,
+            gateheight=2.0,
+            crestwidth=3.0,
+            gateopeningwidth=1.0,
+        )
+
+
