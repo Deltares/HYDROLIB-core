@@ -859,8 +859,21 @@ class Gate(Structure):
         alias="gateOpeningHorizontalDirection",
     )
 
+    @model_validator(mode="after")
+    def _validate_crestwidth_larger_than_gateopeningwidth(self):
+        if (
+            self.gateopeningwidth is not None
+            and self.crestwidth is not None
+            and not isinstance(self.gateopeningwidth, (TimModel, ForcingModel))
+            and self.gateopeningwidth > self.crestwidth
+        ):
+            raise ValueError(
+                "`gateOpeningWidth` should be smaller than or equal to `crestWidth`."
+            )
+        return self
 
-class GeneralStructure( Structure):
+
+class GeneralStructure(Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
@@ -994,6 +1007,23 @@ class GeneralStructure( Structure):
         alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
+
+    @model_validator(mode="after")
+    def _validate_crestwidth_larger_than_gateopeningwidth(self):
+        """Validate that gateopeningwidth <= crestwidth.
+
+        Skips the check when either value is None or a time series.
+        """
+        if (
+            self.gateopeningwidth is not None
+            and self.crestwidth is not None
+            and not isinstance(self.gateopeningwidth, (TimModel, ForcingModel))
+            and self.gateopeningwidth > self.crestwidth
+        ):
+            raise ValueError(
+                "`gateOpeningWidth` should be smaller than or equal to `crestWidth`."
+            )
+        return self
 
 
 class DambreakAlgorithm(int, Enum):
