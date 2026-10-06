@@ -814,28 +814,7 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
-class GeneralStructureGateMixin(INIBasedModel):
-    """Gate-opening fields shared by Gate and GeneralStructure."""
-
-    class Comments(INIBasedModel.Comments):
-        """Comments for the shared Gate and GeneralStructure section fields."""
-
-        gateopeningwidth: str | None = Field(
-            "Width of the gate opening [m].", alias="gateOpeningWidth"
-        )
-        gateopeninghorizontaldirection: str | None = Field(
-            GateOpeningHorizontalDirection.allowedvaluestext,
-            alias="gateOpeningHorizontalDirection",
-        )
-
-    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
-        GateOpeningHorizontalDirection.symmetric.value,
-        alias="gateOpeningHorizontalDirection",
-    )
-
-
-class Gate(GeneralStructureGateMixin, Structure):
+class Gate(Structure):
     """Gate structure.
 
     Hydraulic structure with `type=gate`, to be included in a structure file.
@@ -845,7 +824,7 @@ class Gate(GeneralStructureGateMixin, Structure):
     [UM Sec.C.12.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.8).
     """
 
-    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
+    class Comments(Structure.Comments):
         """Comments for the Gate section fields."""
 
         type: str | None = Field("Structure type; must read gate", alias="type")
@@ -857,6 +836,13 @@ class Gate(GeneralStructureGateMixin, Structure):
         gateheight: str | None = Field(
             "Height of the gate door [m].", alias="gateHeight"
         )
+        gateopeningwidth: str | None = Field(
+            "Width of the gate opening [m].", alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
+            alias="gateOpeningHorizontalDirection",
+        )
 
     comments: Comments = Comments()
 
@@ -867,9 +853,14 @@ class Gate(GeneralStructureGateMixin, Structure):
 
     gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     gateheight: ForcingDataUnion = Field(alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
 
 
-class GeneralStructure(GeneralStructureGateMixin, Structure):
+class GeneralStructure( Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
@@ -879,7 +870,7 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
     [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
     """
 
-    class Comments(GeneralStructureGateMixin.Comments, Structure.Comments):
+    class Comments(Structure.Comments):
         """Comments for the GeneralStructure section fields."""
 
         type: Optional[str] = Field(
@@ -949,6 +940,14 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
             "Extra resistance [-]", alias="extraResistance"
         )
         gateheight: str | None = Field(None, alias="gateHeight")
+        gateopeningwidth: str | None = Field(
+            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
+            alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
+            alias="gateOpeningHorizontalDirection",
+        )
         usevelocityheight: str | None = Field(
             "Flag indicates whether the velocity height is to be calculated or not",
             alias="useVelocityHeight",
@@ -989,7 +988,11 @@ class GeneralStructure(GeneralStructureGateMixin, Structure):
 
     gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
     gateheight: float | None = Field(1e10, alias="gateHeight")
-
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
     usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
 
 
