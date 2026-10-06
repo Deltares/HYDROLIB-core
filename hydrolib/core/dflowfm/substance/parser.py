@@ -21,8 +21,12 @@ from typing import Any, Dict, List, Tuple
 
 from hydrolib.core.base.parser import open_file_with_fallback_encoding
 
-_TOKEN_RE = re.compile(r"'[^']*'|\S+")
-"""re.Pattern: Compiled regex that matches a single-quoted value or a bare word."""
+_TOKEN_RE = re.compile(r"#[^\n]*|'[^']*'|\S+")
+"""re.Pattern: Compiled regex that matches a `#` comment, a single-quoted value or a bare word.
+
+A `#` only starts a comment at the beginning of a token, so a `#` inside a quoted value
+(or in the middle of a bare word) is kept.
+"""
 
 
 class SubstanceParser:
@@ -115,7 +119,7 @@ class SubstanceParser:
                 ```
         """
         content = open_file_with_fallback_encoding(filepath)
-        tokens = _TOKEN_RE.findall(content)
+        tokens = [t for t in _TOKEN_RE.findall(content) if not t.startswith("#")]
 
         substances: List[Dict[str, str]] = []
         parameters: List[Dict[str, str]] = []

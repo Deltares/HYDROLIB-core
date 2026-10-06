@@ -385,3 +385,43 @@ class TestSubstanceParserUnquote:
     )
     def test_unquote(self, token: str, expected: str):
         assert SubstanceParser._unquote(token) == expected
+
+
+class TestSubstanceParserComments:
+    """Tests for `#` comments, which must never start or end a block."""
+
+    def test_comment_mentioning_block_keywords_is_ignored(self, tmp_path: Path):
+        """Test that comment text containing block keywords does not create blocks.
+
+        Test scenario:
+            Comment lines mention `substance`, `parameter` and `output` (as in
+            `wq_SGP_varPTK_202603.sub` and `03_Coliform_bacteria.sub`); only the real
+            blocks may be returned.
+        """
+        content = (
+            "# Bacteria are represented by the substance Ecoli.\n"
+            "#temporary: added parameter 'RadSurf' and output 'Dummy'\n"
+            "substance 'Salinity' active\n"
+            "   description 'Salinity'\n"
+            "end-substance\n"
+            "parameter 'P' description 'd' unit '-' value 1.0 end-parameter\n"
+        )
+        filepath = tmp_path / "comments.sub"
+        filepath.write_text(content, encoding="utf-8")
+
+        data = SubstanceParser.parse(filepath)
+        assert [s["name"] for s in data["substances"]] == ["Salinity"]
+        assert [p["name"] for p in data["parameters"]] == ["P"]
+        assert data["outputs"] == []
+
+    def test_inline_comment_and_hash_in_quoted_value(self, tmp_path: Path):
+        """Test an inline comment is dropped while a `#` inside quotes is kept."""
+        content = (
+            "output 'O' description 'item #1' # trailing note: end-output\n"
+            "end-output\n"
+        )
+        filepath = tmp_path / "inline.sub"
+        filepath.write_text(content, encoding="utf-8")
+
+        data = SubstanceParser.parse(filepath)
+        assert data["outputs"] == [{"name": "O", "description": "item #1"}]
