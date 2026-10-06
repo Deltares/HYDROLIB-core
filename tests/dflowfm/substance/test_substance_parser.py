@@ -308,97 +308,80 @@ class TestSubstanceParserActiveProcessesBlock:
         ), "Name line with < 2 quoted values should be skipped"
 
 
-class TestSubstanceParserExtractQuotedValues:
-    """Tests for SubstanceParser._extract_quoted_values."""
+class TestSubstanceParserOneLineBlocks:
+    """Tests for files whose blocks are written entirely on a single line."""
 
-    def test_single_quoted_value(self):
-        """Test extracting a single quoted value."""
-        result = SubstanceParser._extract_quoted_values("description 'hello world'")
-        assert result == ["hello world"], f"Expected ['hello world'], got {result}"
+    def test_parse_counts(self, input_files_dir: Path):
+        """Test that every one-line block is found.
 
-    def test_multiple_quoted_values(self):
-        """Test extracting multiple quoted values."""
-        result = SubstanceParser._extract_quoted_values(
-            "name  'proc1' 'description here'"
+        Test scenario:
+            Each block (and its terminator) sits on one line; none may swallow the
+            blocks that follow it.
+        """
+        data = SubstanceParser.parse(
+            input_files_dir / "substances" / "one-line-blocks.sub"
         )
-        assert result == ["proc1", "description here"], f"Got {result}"
-
-    def test_no_quotes(self):
-        """Test text with no quoted values returns empty list."""
-        result = SubstanceParser._extract_quoted_values("value 0.1500E+02")
-        assert result == [], f"Expected [], got {result}"
-
-    def test_empty_quoted_value(self):
-        """Test extracting an empty quoted value ''."""
-        result = SubstanceParser._extract_quoted_values("description ''")
-        assert result == [""], f"Expected [''], got {result}"
-
-    def test_empty_string(self):
-        """Test extracting from empty string."""
-        result = SubstanceParser._extract_quoted_values("")
-        assert result == [], f"Expected [], got {result}"
-
-
-class TestSubstanceParserParseFieldLine:
-    """Tests for SubstanceParser._parse_field_line."""
-
-    def test_quoted_value(self):
-        """Test parsing a field line with a quoted value.
-
-        Test scenario:
-            ``description 'some text'`` returns ("description", "some text").
-        """
-        key, value = SubstanceParser._parse_field_line("   description 'some text'")
-        assert key == "description", f"Expected 'description', got '{key}'"
-        assert value == "some text", f"Expected 'some text', got '{value}'"
-
-    def test_unquoted_value(self):
-        """Test parsing a field line with an unquoted numeric value.
-
-        Test scenario:
-            ``value 0.1500E+02`` returns ("value", "0.1500E+02").
-        """
-        key, value = SubstanceParser._parse_field_line("   value  0.1500E+02")
-        assert key == "value", f"Expected 'value', got '{key}'"
-        assert value == "0.1500E+02", f"Expected '0.1500E+02', got '{value}'"
-
-    def test_key_only_no_value(self):
-        """Test parsing a field line with only a key.
-
-        Test scenario:
-            A line with just a keyword and no value.
-        """
-        key, value = SubstanceParser._parse_field_line("   keyword")
-        assert key == "keyword", f"Expected 'keyword', got '{key}'"
-        assert value == "", f"Expected '', got '{value}'"
-
-    def test_case_insensitive_key(self):
-        """Test that keys are lowercased.
-
-        Test scenario:
-            ``DESCRIPTION 'text'`` should return key as ``description``.
-        """
-        key, value = SubstanceParser._parse_field_line("DESCRIPTION 'text'")
-        assert key == "description", f"Expected 'description', got '{key}'"
-
-    def test_hyphenated_key(self):
-        """Test parsing a field line with a hyphenated key.
-
-        Test scenario:
-            ``concentration-unit '(g/m3)'`` should return key as ``concentration-unit``.
-        """
-        key, value = SubstanceParser._parse_field_line("   concentration-unit '(g/m3)'")
+        assert len(data["substances"]) == 2, f"Got {data['substances']}"
+        assert len(data["parameters"]) == 2, f"Got {data['parameters']}"
+        assert len(data["outputs"]) == 2, f"Got {data['outputs']}"
         assert (
-            key == "concentration-unit"
-        ), f"Expected 'concentration-unit', got '{key}'"
-        assert value == "(g/m3)", f"Expected '(g/m3)', got '{value}'"
+            len(data["active_processes"]["processes"]) == 2
+        ), f"Got {data['active_processes']}"
 
-    def test_extra_whitespace(self):
-        """Test parsing with extra whitespace between key and value.
+    def test_parse_field_values(self, input_files_dir: Path):
+        """Test that field values on the header line are read, incl. quoted spaces and `|`/`<`."""
+        data = SubstanceParser.parse(
+            input_files_dir / "substances" / "one-line-blocks.sub"
+        )
+        assert data["substances"][0] == {
+            "name": "OXY",
+            "type": "active",
+            "description": "Oxygen",
+            "concentration_unit": "gO2/m3",
+            "waste_load_unit": "-",
+        }
+        assert data["substances"][1]["type"] == "inactive"
+        assert data["parameters"][1] == {
+            "name": "SWAdsP",
+            "description": "switch <0=Kd|1=Langmuir>",
+            "unit": "-",
+            "value": "0.000e+00",
+        }
+        assert data["outputs"][1] == {"name": "TotN", "description": "total nitrogen"}
+        assert data["active_processes"]["processes"][1] == {
+            "name": "RearOXY",
+            "description": "Reaeration of oxygen",
+        }
+
+    def test_one_line_and_multi_line_blocks_are_equivalent(self, tmp_path: Path):
+        """Test that line breaks carry no meaning.
 
         Test scenario:
-            Multiple spaces/tabs between key and value should be handled.
+            The same parameter written on one line and over several lines
+            parses to the same dictionary.
         """
-        key, value = SubstanceParser._parse_field_line("   unit          '(oC)'")
-        assert key == "unit", f"Expected 'unit', got '{key}'"
-        assert value == "(oC)", f"Expected '(oC)', got '{value}'"
+        one = tmp_path / "one.sub"
+        one.write_text(
+            "parameter 'P' description 'd' unit '-' value 1.0 end-parameter\n"
+        )
+        many = tmp_path / "many.sub"
+        many.write_text(
+            "parameter 'P'\n  description 'd'\n  unit '-'\n  value 1.0\nend-parameter\n"
+        )
+        assert SubstanceParser.parse(one) == SubstanceParser.parse(many)
+
+
+class TestSubstanceParserUnquote:
+    """Tests for SubstanceParser._unquote."""
+
+    @pytest.mark.parametrize(
+        "token, expected",
+        [
+            ("'hello world'", "hello world"),
+            ("0.1500E+02", "0.1500E+02"),
+            ("''", ""),
+            ("'", "'"),
+        ],
+    )
+    def test_unquote(self, token: str, expected: str):
+        assert SubstanceParser._unquote(token) == expected
