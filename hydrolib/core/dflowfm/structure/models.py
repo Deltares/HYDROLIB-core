@@ -823,11 +823,14 @@ class CrestWidthValidator(Structure):
 
         Skips the check when either value is None or a time series.
         """
+        gateopeningwidth = getattr(self, "gateopeningwidth", None)
+        crestwidth = getattr(self, "crestwidth", None)
+
         if (
-            self.gateopeningwidth is not None
-            and self.crestwidth is not None
-            and not isinstance(self.gateopeningwidth, (TimModel, ForcingModel))
-            and self.gateopeningwidth > self.crestwidth
+            gateopeningwidth is not None
+            and crestwidth is not None
+            and not isinstance(gateopeningwidth, (TimModel, ForcingModel))
+            and gateopeningwidth > crestwidth
         ):
             raise ValueError(
                 "`gateOpeningWidth` should be smaller than or equal to `crestWidth`."
