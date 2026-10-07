@@ -938,7 +938,7 @@ class TimQuantityNamesBuilder:
             )
             final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
             # the kwargs will be provided only from the source and sink converter
-            # Ensure 'temperature' comes before 'salinity'
+            # the kernel's TIM column order is salinity, then temperature (manual, sources and sinks)
             keys = list(final_temp_salinity.keys())
             if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
                 keys.remove(SOURCESINK_SALINITY_IN_BC)
