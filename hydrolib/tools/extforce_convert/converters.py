@@ -830,7 +830,7 @@ class TimQuantityNamesBuilder:
         self.new_ext_tracer_quantities = list(new_ext_tracer_quantities or [])
         self.inifield_tracer_quantities = list(inifield_tracer_quantities or [])
 
-    def build(self) -> List[str]:
+    def build(self) -> list[str]:
         """Return the quantity names, one per TIM data column, in column order.
 
         The order is discharge, then the temperature/salinity deltas (merged from the MDU
@@ -843,7 +843,7 @@ class TimQuantityNamesBuilder:
             + [f"sourcesink_{name}" for name in self._ordered_tracer_names()]
         )
 
-    def _temperature_salinity_names(self) -> List[str]:
+    def _temperature_salinity_names(self) -> list[str]:
         """Return the ordered temperature/salinity delta names for the TIM columns.
 
         Combines the temperature/salinity present in the external forcings file with the
