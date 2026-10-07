@@ -779,6 +779,14 @@ class BoundaryConditionConverter(BaseConverter):
         return user_defined_names
 
 
+# The names the kernel gives a tracer / sediment fraction whose quantity is only the prefix (`tracerbnd`,
+# `sedfracbnd`, ...): `DEFTRACER` in `m_transport.f90` and `get_sedfracname` in `fm_external_forcings_utils.f90`.
+DEFAULT_CONSTITUENT_NAMES = {
+    "tracer": "default_tracer",
+    "sedfrac": "unknown_sediment_fraction",
+}
+
+
 class TimQuantityNamesBuilder:
     """Build the ordered quantity names that label a source/sink TIM file's columns.
 
@@ -971,6 +979,10 @@ class TimQuantityNamesBuilder:
         substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
         unchanged.
 
+        A quantity that is only a prefix (`tracerbnd`, `sedfracbnd`, ...) has no name. The kernel
+        then uses a default name, so this method does too: `default_tracer` for tracers and
+        `unknown_sediment_fraction` for sediment fractions (`DEFAULT_CONSTITUENT_NAMES`).
+
         The longest matching prefix is stripped (not merely the first one in tuple
         order), so the result stays correct even if the prefix set ever contains a
         prefix of another prefix (e.g. `tracer` and `tracerbnd`). Matching is
@@ -991,6 +1003,10 @@ class TimQuantityNamesBuilder:
         )
         if match is not None:
             result = quantity[len(match) :]
+            if not result:
+                result = DEFAULT_CONSTITUENT_NAMES[
+                    TimQuantityNamesBuilder._role_prefix(quantity)
+                ]
         return result
 
 

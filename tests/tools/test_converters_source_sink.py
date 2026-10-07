@@ -221,6 +221,11 @@ def test_parse_tim_model(
         ("sedfracbndMud", "Mud"),  # sediment-fraction boundary prefix stripped
         ("TracerBndIM1", "IM1"),  # prefix match is case-insensitive
         ("discharge", "discharge"),  # no known prefix -> returned unchanged
+        ("tracerbnd", "default_tracer"),  # only the prefix -> the kernel's default tracer name
+        ("initialtracer", "default_tracer"),
+        ("TRACERBND", "default_tracer"),  # prefix match is case-insensitive
+        ("sedfracbnd", "unknown_sediment_fraction"),  # only the prefix -> the kernel's default name
+        ("initialsedfrac", "unknown_sediment_fraction"),
     ],
 )
 def test_substance_name_from_quantity(quantity, expected):
@@ -395,6 +400,46 @@ def test_build_quantities_names_collapses_case_variants_of_one_substance(
     ).build()
 
     assert names == ["sourcesink_discharge", expected_tracer]
+
+
+@pytest.mark.parametrize(
+    "ext_file_quantity_list, active_substance_names, expected_tracers",
+    [
+        (["tracerbnd"], None, ["sourcesink_tracerdefault_tracer"]),
+        (["initialtracer"], None, ["sourcesink_tracerdefault_tracer"]),
+        (["sedfracbnd"], None, ["sourcesink_sedfracunknown_sediment_fraction"]),
+        (
+            ["sedfracbnd", "tracerbnd"],
+            None,
+            [
+                "sourcesink_sedfracunknown_sediment_fraction",
+                "sourcesink_tracerdefault_tracer",
+            ],
+        ),
+        # the default name is the name of a real tracer, so it collapses with a substance of that name
+        (["tracerbnd"], ["default_tracer"], ["sourcesink_tracerdefault_tracer"]),
+        (["tracerbnd", "tracerbndA"], None, ["sourcesink_tracerdefault_tracer", "sourcesink_tracerA"]),
+    ],
+    ids=[
+        "tracerbnd",
+        "initialtracer",
+        "sedfracbnd",
+        "sedfracbnd_and_tracerbnd",
+        "same_as_substance",
+        "next_to_a_named_tracer",
+    ],
+)
+def test_build_quantities_names_gives_a_prefix_only_quantity_the_kernel_default_name(
+    ext_file_quantity_list, active_substance_names, expected_tracers
+):
+    """A quantity that is only a prefix is the kernel's default tracer / sediment fraction, not an empty name."""
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=ext_file_quantity_list,
+        active_substance_names=active_substance_names,
+        mdu_quantities={},
+    ).build()
+
+    assert names == ["sourcesink_discharge"] + expected_tracers
 
 
 def test_build_quantities_names_mixes_sediment_fractions_with_the_other_sources():
