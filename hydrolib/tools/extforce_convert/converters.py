@@ -809,19 +809,19 @@ class TimQuantityNamesBuilder:
         """Capture the quantity sources for one source/sink conversion.
 
         Args:
-            ext_file_quantity_list (List[str]): All source/sink-related quantities from
+            ext_file_quantity_list (list[str]): All source/sink-related quantities from
                 the old external forcings file. Any quantity whose name starts with a
                 `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` prefix contributes to the
                 old-ext tracer slot, including the `initialtracer*` / `initialsedfrac*`
                 ones (they contribute to the kernel's tracer indexing even though they
                 are converted to `[Spatial]` blocks by `SpatialConverter`).
-            active_substance_names (Optional[List[str]]): The active substance names from
+            active_substance_names (list[str] | None): The active substance names from
                 the substance file, or None when the MDU references none.
-            mdu_quantities (Dict[str, bool]): The temperature/salinity activation flags
+            mdu_quantities dict[str, bool]): The temperature/salinity activation flags
                 derived from the MDU file.
-            new_ext_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
+            new_ext_tracer_quantities (List[str] | None): Raw tracer/sedfrac quantity
                 names from the pre-existing new external forcings file, in file order.
-            inifield_tracer_quantities (Optional[List[str]]): Raw tracer/sedfrac quantity
+            inifield_tracer_quantities (list[str] | None): Raw tracer/sedfrac quantity
                 names from the inifield file, in file order.
         """
         self.ext_file_quantity_list = list(ext_file_quantity_list or [])
