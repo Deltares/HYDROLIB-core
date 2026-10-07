@@ -1,3 +1,4 @@
+from itertools import chain, combinations
 from pathlib import Path
 from typing import Dict, Optional
 from unittest.mock import MagicMock, patch
@@ -365,6 +366,85 @@ def test_build_quantities_names_does_not_change_its_inputs():
     assert active_substance_names == ["B"]
     assert new_ext_tracer_quantities == ["tracerbndC"]
     assert inifield_tracer_quantities == ["initialtracerD"]
+
+
+# The four tracer sources in the kernel's precedence order. Each source overlaps with its neighbour
+# (B, C, D are shared) so that the first-seen rule is exercised in every combination.
+TRACER_SOURCES = ("inifield", "new_ext", "old_ext", "substance")
+TRACER_SOURCE_QUANTITIES = {
+    "inifield": ["initialtracerA", "initialtracerB"],
+    "new_ext": ["tracerbndB", "tracerbndC"],
+    "old_ext": ["tracerbndC", "initialtracerD"],
+    "substance": ["D", "E"],
+}
+TRACER_SOURCE_BARE_NAMES = {
+    "inifield": ["A", "B"],
+    "new_ext": ["B", "C"],
+    "old_ext": ["C", "D"],
+    "substance": ["D", "E"],
+}
+ALL_TRACER_SOURCE_COMBINATIONS = list(
+    chain.from_iterable(
+        combinations(TRACER_SOURCES, size) for size in range(1, len(TRACER_SOURCES) + 1)
+    )
+)
+
+
+def expected_tracer_columns(sources: tuple[str, ...]) -> list[str]:
+    """Walk the given sources in precedence order and keep the first occurrence of each tracer name."""
+    seen: list[str] = []
+    for source in TRACER_SOURCES:
+        if source in sources:
+            seen.extend(
+                name for name in TRACER_SOURCE_BARE_NAMES[source] if name not in seen
+            )
+    return [f"sourcesink_tracer{name}" for name in seen]
+
+
+@pytest.mark.parametrize(
+    "sources",
+    ALL_TRACER_SOURCE_COMBINATIONS,
+    ids=["+".join(sources) for sources in ALL_TRACER_SOURCE_COMBINATIONS],
+)
+def test_build_quantities_names_for_every_combination_of_tracer_sources(sources):
+    """The tracer columns follow inifield -> new ext -> old ext -> substance file for all 15 source combinations."""
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=(
+            TRACER_SOURCE_QUANTITIES["old_ext"] if "old_ext" in sources else []
+        ),
+        active_substance_names=(
+            TRACER_SOURCE_QUANTITIES["substance"] if "substance" in sources else None
+        ),
+        mdu_quantities={},
+        new_ext_tracer_quantities=(
+            TRACER_SOURCE_QUANTITIES["new_ext"] if "new_ext" in sources else None
+        ),
+        inifield_tracer_quantities=(
+            TRACER_SOURCE_QUANTITIES["inifield"] if "inifield" in sources else None
+        ),
+    ).build()
+
+    assert names == ["sourcesink_discharge"] + expected_tracer_columns(sources)
+
+
+def test_build_quantities_names_with_all_four_tracer_sources():
+    """Anchor for the combination test: with every source the order is A, B (inifield), C, D, E."""
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=TRACER_SOURCE_QUANTITIES["old_ext"],
+        active_substance_names=TRACER_SOURCE_QUANTITIES["substance"],
+        mdu_quantities={},
+        new_ext_tracer_quantities=TRACER_SOURCE_QUANTITIES["new_ext"],
+        inifield_tracer_quantities=TRACER_SOURCE_QUANTITIES["inifield"],
+    ).build()
+
+    assert names == [
+        "sourcesink_discharge",
+        "sourcesink_tracerA",
+        "sourcesink_tracerB",
+        "sourcesink_tracerC",
+        "sourcesink_tracerD",
+        "sourcesink_tracerE",
+    ]
 
 
 def test_substance_name_from_quantity_strips_longest_prefix():
