@@ -892,12 +892,22 @@ class TimQuantityNamesBuilder:
 
     @staticmethod
     def _append_unique(ordered: list[str], seen: set[str], value: str) -> None:
-        """Append `value` to `ordered` unless it (casefolded) was already seen.
+        """Append `value` to `ordered` unless it was already seen, ignoring case.
 
-        The role prefix is part of the key, so a tracer and a sediment fraction that share a bare name
-        (`tracerbndX` and `sedfracbndX`) are different constituents and both keep their column. The
+        The first spelling seen is kept: `tracerOXY`, `tracerOxy` and `TRACEROXY` give one entry, the first
+        of them. The role prefix is part of the key, so a tracer and a sediment fraction that share a bare
+        name (`tracerX` and `sedfracX`) are different constituents and both keep their column. The
         different spellings of one tracer (`tracerbndX`, `initialtracerX`, a substance `X`) all map to
-        `tracerX` and collapse into one.
+        `tracerX` before they get here and collapse into one.
+
+        The comparison ignores case because the D-Flow FM manual compares quantity names
+        case-insensitively (C.5.2) and keywords are case-insensitive, and the tracer columns become
+        keywords of the `[SourceSink]` block.
+
+        Args:
+            ordered (list[str]): The names collected so far, in column order. Appended to in place.
+            seen (set[str]): The casefolded keys of the names in `ordered`. Updated in place.
+            value (str): The role-prefixed name to add, e.g. `tracerOXY`.
         """
         key = value.lower()
         if key not in seen:

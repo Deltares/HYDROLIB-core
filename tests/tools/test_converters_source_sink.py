@@ -328,6 +328,25 @@ class TestAppendUnique:
         assert ordered == ["tracerIm1"]
         assert seen == {"tracerim1"}
 
+    @pytest.mark.parametrize(
+        "values, expected",
+        [
+            (["tracerOXY", "tracerOxy", "TRACEROXY"], ["tracerOXY"]),
+            (["tracerOxy", "tracerOXY", "tracerOXY"], ["tracerOxy"]),
+            (["sedfracMud", "SEDFRACMUD"], ["sedfracMud"]),
+            (["tracerOXY", "tracerOxy", "tracerNH4", "TracerNh4"], ["tracerOXY", "tracerNH4"]),
+        ],
+        ids=["first_is_upper", "first_is_mixed", "sedfrac", "two_substances"],
+    )
+    def test_keeps_the_first_spelling_of_case_variants(self, values, expected):
+        """Case variants of one name give a single entry, with the spelling seen first."""
+        ordered, seen = [], set()
+
+        for value in values:
+            TimQuantityNamesBuilder._append_unique(ordered, seen, value)
+
+        assert ordered == expected
+
     def test_keeps_the_role_prefixes_apart_and_the_insertion_order(self):
         ordered, seen = [], set()
 
@@ -343,6 +362,39 @@ class TestAppendUnique:
         TimQuantityNamesBuilder._append_unique(ordered, seen, "tracerB")
 
         assert ordered == []
+
+
+@pytest.mark.parametrize(
+    "ext_file_quantity_list, active_substance_names, expected_tracer",
+    [
+        (["tracerbndOXY", "tracerbndOxy", "TracerbndOXY"], None, "sourcesink_tracerOXY"),
+        (["TracerbndOxy", "tracerbndOXY", "tracerbndoxy"], None, "sourcesink_tracerOxy"),
+        (["tracerbndOxy"], ["OXY"], "sourcesink_tracerOxy"),
+        (["TracerbndOXY"], ["Oxy", "oxy"], "sourcesink_tracerOXY"),
+        ([], ["Oxy", "OXY"], "sourcesink_tracerOxy"),
+    ],
+    ids=[
+        "prefix_and_name_case",
+        "first_spelling_wins",
+        "ext_before_substance",
+        "prefix_case_with_substances",
+        "substances_only",
+    ],
+)
+def test_build_quantities_names_collapses_case_variants_of_one_substance(
+    ext_file_quantity_list, active_substance_names, expected_tracer
+):
+    """Case variants of one substance name give a single column that keeps the first spelling seen.
+
+    Follows the manual (quantity names are compared case-insensitively).
+    """
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=ext_file_quantity_list,
+        active_substance_names=active_substance_names,
+        mdu_quantities={},
+    ).build()
+
+    assert names == ["sourcesink_discharge", expected_tracer]
 
 
 def test_build_quantities_names_mixes_sediment_fractions_with_the_other_sources():
