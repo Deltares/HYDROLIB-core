@@ -228,6 +228,26 @@ def test_substance_name_from_quantity(quantity, expected):
 
 
 @pytest.mark.parametrize(
+    "mdu_quantities, temp_salinity_from_ext",
+    [
+        ({"temperature": True, "salinity": True}, {}),
+        ({"salinity": True, "temperature": True}, {}),
+        ({"salinity": True}, {"sourcesink_temperature": 3}),
+        ({"temperature": True}, {"sourcesink_salinity": 3}),
+    ],
+)
+def test_merge_mdu_and_ext_file_quantities_puts_salinity_before_temperature(
+    mdu_quantities, temp_salinity_from_ext
+):
+    """The kernel's TIM column order is salinity, then temperature, whatever order they were found in."""
+    names = TimQuantityNamesBuilder.merge_mdu_and_ext_file_quantities(
+        mdu_quantities, temp_salinity_from_ext
+    )
+
+    assert names == ["sourcesink_salinity", "sourcesink_temperature"]
+
+
+@pytest.mark.parametrize(
     "quantity, expected",
     [
         ("tracerbndIM1", "tracer"),
@@ -271,6 +291,80 @@ def test_build_quantities_names_keeps_tracer_and_sedfrac_with_the_same_name():
         "sourcesink_tracerX",
         "sourcesink_sedfracX",
     ]
+
+
+def test_build_quantities_names_dedup_is_case_insensitive():
+    """Different spellings of the same name collapse into one column, keeping the first spelling seen."""
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=["tracerbndIm1", "TRACERBNDIM1"],
+        active_substance_names=["IM1"],
+        mdu_quantities={},
+    ).build()
+
+    assert names == ["sourcesink_discharge", "sourcesink_tracerIm1"]
+
+
+def test_build_quantities_names_mixes_sediment_fractions_with_the_other_sources():
+    """Sediment fractions take their slot in the precedence order and keep the `sedfrac` role prefix."""
+    names = TimQuantityNamesBuilder(
+        ext_file_quantity_list=["sedfracbndMud", "tracerbndA", "initialsedfracSand"],
+        active_substance_names=["B"],
+        mdu_quantities={},
+        inifield_tracer_quantities=["initialtracerC"],
+    ).build()
+
+    assert names == [
+        "sourcesink_discharge",
+        "sourcesink_tracerC",
+        "sourcesink_sedfracMud",
+        "sourcesink_tracerA",
+        "sourcesink_sedfracSand",
+        "sourcesink_tracerB",
+    ]
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"ext_file_quantity_list": [], "active_substance_names": None},
+        {"ext_file_quantity_list": None, "active_substance_names": []},
+        {
+            "ext_file_quantity_list": [],
+            "active_substance_names": [],
+            "new_ext_tracer_quantities": None,
+            "inifield_tracer_quantities": None,
+        },
+    ],
+)
+def test_build_quantities_names_with_empty_or_none_inputs(arguments):
+    """Missing or empty sources give only the discharge column."""
+    names = TimQuantityNamesBuilder(mdu_quantities={}, **arguments).build()
+
+    assert names == ["sourcesink_discharge"]
+
+
+def test_build_quantities_names_does_not_change_its_inputs():
+    """The builder copies the lists it receives, and building twice gives the same result."""
+    ext_file_quantity_list = ["tracerbndA", "temperature"]
+    active_substance_names = ["B"]
+    new_ext_tracer_quantities = ["tracerbndC"]
+    inifield_tracer_quantities = ["initialtracerD"]
+    builder = TimQuantityNamesBuilder(
+        ext_file_quantity_list,
+        active_substance_names,
+        {"salinity": True},
+        new_ext_tracer_quantities=new_ext_tracer_quantities,
+        inifield_tracer_quantities=inifield_tracer_quantities,
+    )
+
+    first = builder.build()
+    second = builder.build()
+
+    assert first == second
+    assert ext_file_quantity_list == ["tracerbndA", "temperature"]
+    assert active_substance_names == ["B"]
+    assert new_ext_tracer_quantities == ["tracerbndC"]
+    assert inifield_tracer_quantities == ["initialtracerD"]
 
 
 def test_substance_name_from_quantity_strips_longest_prefix():
