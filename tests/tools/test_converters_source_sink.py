@@ -305,6 +305,46 @@ def test_build_quantities_names_dedup_is_case_insensitive():
     assert names == ["sourcesink_discharge", "sourcesink_tracerIm1"]
 
 
+class TestAppendUnique:
+    """`TimQuantityNamesBuilder._append_unique`: first-seen, case-insensitive append."""
+
+    def test_appends_a_new_value_and_records_its_key(self):
+        ordered, seen = [], set()
+
+        result = TimQuantityNamesBuilder._append_unique(ordered, seen, "tracerA")
+
+        assert result is None
+        assert ordered == ["tracerA"]
+        assert seen == {"tracera"}
+
+    def test_skips_a_repeated_value_whatever_its_case(self):
+        """The first spelling stays in the list; a later spelling that differs only in case is dropped."""
+        ordered, seen = [], set()
+
+        TimQuantityNamesBuilder._append_unique(ordered, seen, "tracerIm1")
+        TimQuantityNamesBuilder._append_unique(ordered, seen, "tracerIm1")
+        TimQuantityNamesBuilder._append_unique(ordered, seen, "TRACERIM1")
+
+        assert ordered == ["tracerIm1"]
+        assert seen == {"tracerim1"}
+
+    def test_keeps_the_role_prefixes_apart_and_the_insertion_order(self):
+        ordered, seen = [], set()
+
+        for value in ("tracerX", "sedfracX", "tracerA", "tracerX", "sedfracX"):
+            TimQuantityNamesBuilder._append_unique(ordered, seen, value)
+
+        assert ordered == ["tracerX", "sedfracX", "tracerA"]
+
+    def test_respects_keys_already_in_seen(self):
+        """A value whose key is already in `seen` is not appended, even if `ordered` does not contain it."""
+        ordered, seen = [], {"tracerb"}
+
+        TimQuantityNamesBuilder._append_unique(ordered, seen, "tracerB")
+
+        assert ordered == []
+
+
 def test_build_quantities_names_mixes_sediment_fractions_with_the_other_sources():
     """Sediment fractions take their slot in the precedence order and keep the `sedfrac` role prefix."""
     names = TimQuantityNamesBuilder(
