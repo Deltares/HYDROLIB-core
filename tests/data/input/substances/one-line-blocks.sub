@@ -1,0 +1,9 @@
+substance 'OXY'   active   description 'Oxygen'              concentration-unit 'gO2/m3' waste-load-unit '-' end-substance
+substance 'Dead'  inactive description 'Inactive substance'  concentration-unit 'g/m3'   waste-load-unit '-' end-substance
+parameter 'RcNit'  description 'nitrification rate constant' unit '1/d' value 1.000e-01 end-parameter
+parameter 'SWAdsP' description 'switch <0=Kd|1=Langmuir>'    unit '-'   value 0.000e+00 end-parameter
+output 'Chlfa' description 'chlorofyl a concentration' end-output
+output 'TotN'  description 'total nitrogen'            end-output
+active-processes
+   name 'Nitrif_NH4' 'Nitrification of ammonium' name 'RearOXY' 'Reaeration of oxygen'
+end-active-processes
