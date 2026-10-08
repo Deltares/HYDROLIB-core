@@ -52,7 +52,7 @@ external_forcing:
         uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
         windxy: {"wx": "m s-1", "wy": "m s-1"}
 
-    multicolumn_quantities:
+    multi_column_quantities:
         airpressure_stressx_stressy: {"airpressure": "-", "stressx": "-", "stressy": "-"}
         airpressure_windx_windy: {"airpressure": "-", "windx": "-", "windy": "-"}
         airpressure_windx_windy_charnock: {"airpressure": "-", "windx": "-", "windy": "-", "charnock": "-"}
