@@ -9361,23 +9361,23 @@ present in the values and the controlside is not equal to the deliverySide.</p>
 
         <span class="c1"># Error: require x/y or polyline file:</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span>
+            <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">coordinates_in_model</span> <span class="ow">or</span> <span class="n">locationfile_in_model</span><span class="p">)</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">coordinates_in_model</span> <span class="ow">or</span> <span class="n">locationfile_in_model</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a </span><span class="si">{</span><span class="n">polyline_compatible_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
-                <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a </span><span class="si">{</span><span class="n">polyline_compatible_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Error: Some structures require coordinates_in_model, but not branchId and chainage.</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="n">locationfile_in_model</span>
-            <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">coordinates_in_model</span>
         <span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">coordinates_in_model</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Specify location by setting `num/x/yCoordinates` for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
-                <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specify location by setting `num/x/yCoordinates` for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Error: final check: at least one of x/y, branchId+chainage or polyline file must be given</span>
         <span class="n">branch_and_chainage_in_model</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">validate_branch_and_chainage_in_model</span><span class="p">(</span>
@@ -9814,23 +9814,23 @@ and ycoordinates shall be expected.</li>
 
     <span class="c1"># Error: require x/y or polyline file:</span>
     <span class="k">if</span> <span class="p">(</span>
-        <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">structype</span> <span class="ow">in</span> <span class="n">polyline_compatible_structures</span>
+        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">coordinates_in_model</span> <span class="ow">or</span> <span class="n">locationfile_in_model</span><span class="p">)</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">coordinates_in_model</span> <span class="ow">or</span> <span class="n">locationfile_in_model</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a </span><span class="si">{</span><span class="n">polyline_compatible_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
-            <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a </span><span class="si">{</span><span class="n">polyline_compatible_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Error: Some structures require coordinates_in_model, but not branchId and chainage.</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">locationfile_in_model</span>
-        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="ow">and</span> <span class="n">structype</span> <span class="ow">in</span> <span class="n">only_coordinates_structures</span>
+        <span class="ow">and</span> <span class="ow">not</span> <span class="n">coordinates_in_model</span>
     <span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">coordinates_in_model</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Specify location by setting `num/x/yCoordinates` for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
-            <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Specify location by setting `num/x/yCoordinates` for a </span><span class="si">{</span><span class="n">only_coordinates_structures</span><span class="p">[</span><span class="n">structype</span><span class="p">]</span><span class="si">}</span><span class="s2"> structure.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Error: final check: at least one of x/y, branchId+chainage or polyline file must be given</span>
     <span class="n">branch_and_chainage_in_model</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">validate_branch_and_chainage_in_model</span><span class="p">(</span>
