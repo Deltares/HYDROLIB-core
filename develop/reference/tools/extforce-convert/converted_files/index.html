@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1628,34 +1628,6 @@ You're not viewing the latest release version.
     
   
     Loading and Saving within HYDROLIB-core
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../topics/bubble-screen/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Bubble screens
   
 
     
@@ -3789,17 +3761,6 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#quantity-renames-legacy-new" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantity renames (legacy → new)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#filetype-mapping-legacy-new" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3823,17 +3784,6 @@ You're not viewing the latest release version.
         
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1.5) Mass balance area block (separate _mba.ini file)
-      
-    </span>
-  </a>
   
 </li>
         
@@ -4266,17 +4216,6 @@ You're not viewing the latest release version.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#quantity-renames-legacy-new" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quantity renames (legacy → new)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#filetype-mapping-legacy-new" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4300,17 +4239,6 @@ You're not viewing the latest release version.
         
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1.5) Mass balance area block (separate _mba.ini file)
-      
-    </span>
-  </a>
   
 </li>
         
@@ -4469,8 +4397,7 @@ You're not viewing the latest release version.
 ├─ model.mdu                      # updated to reference new files
 ├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
 ├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
-├─ new-structure.ini              # StructureModel: structures (if any)
-└─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
+└─ new-structure.ini              # StructureModel: structures (if any)
 </code></pre></div></p>
 <h3 id="example-mdu-file">Example MDU file<a class="headerlink" href="#example-mdu-file" title="Permanent link">&para;</a></h3>
 <h4 id="before-the-conversion">before the conversion<a class="headerlink" href="#before-the-conversion" title="Permanent link">&para;</a></h4>
@@ -4509,12 +4436,7 @@ You're not viewing the latest release version.
 - If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing
   file.
 - If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new
-  entries, save it, and update the MDU file to reference it.
-- <code>ExtForceFileNew</code> may list <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed
-  in double quotes; D-Flow FM 1D2D User Manual, the <code>ExtForceFileNew</code> keyword). When more than one file is listed,
-  the converted quantities are appended to the <strong>first</strong> file only; the remaining files are left unchanged and a
-  warning naming them is emitted. This is intentional: all migrated quantities are written into a single new external
-  forcings file, and the first listed file is chosen as that target.</p>
+  entries, save it, and update the MDU file to reference it.</p>
 <h3 id="before-legacy-ext-old-format">Before: legacy <code>.ext</code> (old format)<a class="headerlink" href="#before-legacy-ext-old-format" title="Permanent link">&para;</a></h3>
 <p>A minimal legacy file with two forcings (boundary water level and global rainfall). Values (e.g., <code>FILETYPE</code>, <code>METHOD</code>) may differ in your model.</p>
 <div class="highlight"><pre><span></span><code><span class="na">* Example (old-style) external forcings file</span>
@@ -4596,10 +4518,6 @@ You're not viewing the latest release version.
 <span class="k">[geometry]</span>
 <span class="na">IniFieldFile</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">new-initial-conditions.ini</span><span class="w">    </span><span class="c1">; only if inifield has entries</span>
 <span class="na">StructureFile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">new-structure.ini</span><span class="w">             </span><span class="c1">; only if structures exist</span>
-
-<span class="k">[output]</span>
-<span class="na">mbaFile</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">new_mba.ini</span><span class="w">                    </span><span class="c1">; only if mass balance areas exist</span>
-<span class="na">mbaInterval</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">300.0</span><span class="w">                          </span><span class="c1">; carried over from [processes] DtMassBalance</span>
 </code></pre></div></p>
 <h3 id="backups-and-cleanup">Backups and cleanup<a class="headerlink" href="#backups-and-cleanup" title="Permanent link">&para;</a></h3>
 <ul>
@@ -4630,7 +4548,7 @@ You're not viewing the latest release version.
 - Programmatic:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">&quot;path/to/model.mdu&quot;</span><span class="p">)</span>
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span><span class="s2">&quot;path/to/old-forcings.ext&quot;</span><span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
@@ -4656,9 +4574,7 @@ You're not viewing the latest release version.
 - Boundary quantities → <code>[boundary]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
 - Source/sink quantities → <code>[sourcesink]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
 - Initial/parameter quantities → <code>[initial]</code> / <code>[parameter]</code> block in <code>new-initial-conditions.ini</code>.
-- Structures → <code>[structure]</code> in <code>new-structure.ini</code>.
-- Mass balance area quantities (<code>waqmassbalancearea&lt;name&gt;</code>) → <code>[MassBalanceArea]</code> block in a new <code>_mba.ini</code>
-  file, plus <code>mbaFile</code>/<code>mbaInterval</code> keywords in the MDU <code>[output]</code> section.</p>
+- Structures → <code>[structure]</code> in <code>new-structure.ini</code>.</p>
 <h4 id="11-meteo-block-new-external-forcing-file">1.1) Meteo Block (new external forcing file)<a class="headerlink" href="#11-meteo-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
 <span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.tim</span>
@@ -4716,45 +4632,13 @@ Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</co
 <span class="na">VALUE</span><span class="o">=</span><span class="s">0.15</span>
 </code></pre></div>
 Mapped to <code>new-initial-conditions.ini</code>:
-- <code>QUANTITY</code> → <code>[initial].quantity</code> (renamed if the quantity is listed in <code>renamed_quantities</code>; see below)
+- <code>QUANTITY</code> → <code>[initial].quantity</code> (with special-case rename for bedrock to <code>bedrockSurfaceElevation</code>)
 - <code>FILENAME</code> → <code>datafile</code>
 - <code>FILETYPE=10</code> → <code>datafiletype = polygon</code>
 - <code>METHOD</code>/<code>AVERAGINGTYPE</code> → <code>interpolationmethod</code> and <code>averaging*</code> fields (see below)
 - <code>OPERAND</code> → <code>operand</code>
 - <code>VALUE</code> is preserved for polygon data
 - Any <code>tracer*</code> keys present are copied as-is</p>
-<h5 id="quantity-renames-legacy-new">Quantity renames (legacy → new)<a class="headerlink" href="#quantity-renames-legacy-new" title="Permanent link">&para;</a></h5>
-<p>A few quantities are spelled differently in the initial and parameter fields file than in the old external
-forcings file. The converter resolves them through the <code>renamed_quantities</code> table in
-<code>hydrolib/tools/extforce_convert/data/data.yaml</code>; any quantity not listed there is written out unchanged.</p>
-<table>
-<thead>
-<tr>
-<th>Old <code>QUANTITY</code></th>
-<th>New <code>quantity</code></th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>sea_ice_thickness</code></td>
-<td><code>seaIceThickness</code></td>
-<td>See D-Flow FM UM Sec. 16.1</td>
-</tr>
-<tr>
-<td><code>sea_ice_area_fraction</code></td>
-<td><code>seaIceAreaFraction</code></td>
-<td>See D-Flow FM UM Sec. 16.1</td>
-</tr>
-<tr>
-<td><code>bedrock_surface_elevation</code></td>
-<td><code>bedrockSurfaceElevation</code></td>
-<td>Parked — the quantity is still unsupported, so this rename is not reached by a converter run</td>
-</tr>
-</tbody>
-</table>
-<p>Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
-that exact casing.</p>
 <h5 id="filetype-mapping-legacy-new">FILETYPE mapping (legacy → new)<a class="headerlink" href="#filetype-mapping-legacy-new" title="Permanent link">&para;</a></h5>
 <ul>
 <li>1 → <code>uniform</code></li>
@@ -4765,21 +4649,9 @@ that exact casing.</p>
 <li>7 → <code>sample</code></li>
 <li>10 → <code>polygon</code> (initial/parameter)</li>
 <li>11 → <code>netcdf</code></li>
-<li>12 → <code>map</code> (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as <code>ncFlow</code>)</li>
 <li>3 (spatially varying wind/pressure) → not supported (raises error)</li>
 <li>8 (magnitude+direction timeseries on stations) → not supported (raises error)</li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title"><code>ncFlow</code> is accepted as a legacy alias of <code>map</code></p>
-<p>In a <strong>new-format</strong> <code>.ext</code> file, <code>dataFileType = ncFlow</code> is accepted on input and
-canonicalised to <code>dataFileType = map</code> on load. Reading a file that uses <code>ncFlow</code>, then
-saving it back through hydrolib-core, therefore rewrites the token to <code>map</code>. The alias is
-matched case-insensitively (<code>ncFlow</code>, <code>ncflow</code>, <code>NCFLOW</code> are all equivalent) and each match
-emits a <code>DeprecationWarning</code> steering the caller toward <code>map</code>. <code>ncFlow</code> is the wording used
-in older sections of the D-Flow FM User Manual; <code>map</code> is the wording used by the Delft3D
-kernel and by hydrolib-core (see <a href="https://github.com/Deltares/HYDROLIB-core/issues/1207">Deltares/HYDROLIB-core#1207</a> and
-<a href="https://github.com/Deltares/Delft3D/pull/1270">Deltares/Delft3D#1270</a>).</p>
-</div>
 <h5 id="method-and-averaging-mapping">METHOD and averaging mapping<a class="headerlink" href="#method-and-averaging-mapping" title="Permanent link">&para;</a></h5>
 <ul>
 <li><code>METHOD</code> → <code>interpolationmethod</code>.</li>
@@ -4792,47 +4664,6 @@ kernel and by hydrolib-core (see <a href="https://github.com/Deltares/HYDROLIB-c
 <li><code>averagingnummin</code> from <code>NUMMIN</code></li>
 <li><code>averagingpercentile</code> from <code>PERCENTILEMINMAX</code></li>
 </ul>
-<h4 id="15-mass-balance-area-block-separate-_mbaini-file">1.5) Mass balance area block (separate <code>_mba.ini</code> file)<a class="headerlink" href="#15-mass-balance-area-block-separate-_mbaini-file" title="Permanent link">&para;</a></h4>
-<p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">waqmassbalanceareaEstruaryWest</span>
-<span class="na">FILENAME</span><span class="o">=</span><span class="s">EstruaryWest.pol</span>
-<span class="na">FILETYPE</span><span class="o">=</span><span class="s">10</span>
-<span class="na">METHOD</span><span class="o">=</span><span class="s">4</span>
-<span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
-<span class="na">VALUE</span><span class="o">=</span><span class="s">1.0</span>
-</code></pre></div>
-Each <code>waqmassbalancearea&lt;name&gt;</code> (or <code>massbalancearea&lt;name&gt;</code>) block is moved out of the external forcings
-file into a single mass balance area file (<code>&lt;*_mba.ini&gt;</code>, default <code>new_mba.ini</code>):
-- The area <code>name</code> is taken from the quantity suffix (the text after the <code>waqmassbalancearea</code> prefix).
-- <code>FILENAME</code> → <code>locationFile</code> (the area polygon).
-- <code>FILETYPE</code>/<code>METHOD</code>/<code>OPERAND</code> are dropped, and <code>VALUE</code> is ignored for mass balance areas.</p>
-<p>Resulting <code>_mba.ini</code>:
-<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
-<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
-<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">massBalanceAreas</span>
-
-<span class="k">[MassBalanceArea]</span>
-<span class="na">name</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">EstruaryWest</span>
-<span class="na">locationFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">EstruaryWest.pol</span>
-</code></pre></div>
-The MDU <code>[output]</code> section is updated with <code>mbaFile</code> and the required <code>mbaInterval</code> keyword.</p>
-<p><strong>Where the converted areas are written</strong> depends on what the MDU's <code>[output] mbaFile</code> already
-references. <code>mbaFile</code> is a space-separated list of <code>&lt;*_mba.ini&gt;</code> files (Manual F.2.5), so:</p>
-<ul>
-<li><strong>No <code>mbaFile</code></strong> — a new <code>new_mba.ini</code> is created next to the old external forcing file and
-  <code>mbaFile = new_mba.ini</code> is added to <code>[output]</code>.</li>
-<li><strong>One existing <code>mbaFile</code></strong> — the converted areas are appended to that existing file (its areas are
-  kept), and the keyword is left pointing at it.</li>
-<li><strong>Multiple existing <code>mbaFile</code>s</strong> — the converted areas are appended to the <strong>first</strong> file in the list;
-  the other files and the <code>mbaFile</code> keyword are left unchanged, and a warning is emitted. Which file
-  receives the areas does not affect the model, because the kernel combines the areas of every listed
-  file into one set.</li>
-</ul>
-<p><strong><code>mbaInterval</code></strong> is carried over from the legacy <code>[processes] DtMassBalance</code> value, or from
-<code>[processes] DtProcesses</code> when <code>DtMassBalance</code> is absent. If neither is present the interval cannot be
-derived; <code>mbaInterval</code> is left unset and a warning is emitted so it can be set manually.</p>
-<blockquote>
-<p>Kernel support: the <code>_mba.ini</code> file and the <code>mbaFile</code>/<code>mbaInterval</code> keywords require DIMRset ≥ 2.31.18.</p>
-</blockquote>
 <h4 id="2-legacy-tim-new-bc-time-series">2) Legacy <code>.tim</code> → new <code>.bc</code> (time series)<a class="headerlink" href="#2-legacy-tim-new-bc-time-series" title="Permanent link">&para;</a></h4>
 <p>Minimal legacy TIM example
 <div class="highlight"><pre><span></span><code>* time  value
