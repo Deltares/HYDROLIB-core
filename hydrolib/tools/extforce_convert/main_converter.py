@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 from tqdm import tqdm
 
@@ -21,6 +21,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Spatial,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
+from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.core.dflowfm.structure.models import (
     Structure,
@@ -156,6 +157,12 @@ class ExternalForcingConverter:
         )
         self._mdu_parser = mdu_parser
 
+        # loaded lazily, only a source/sink conversion needs it
+        self._inifield_model: IniFieldModel | None = None
+        self._inifield_loaded = False
+        # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
+        self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
+
         self._legacy_files = []
         self.debug = debug
         self.un_supported_quantities = self.check_unsupported_quantities()
@@ -228,6 +235,7 @@ class ExternalForcingConverter:
             path (PathOrStr, optional): Path to the new external forcing file.
         """
         self._ext_model = construct_filemodel_new_or_existing(ExtModel, path)
+        self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
     @property
     def structure_model(self) -> StructureModel:
@@ -300,7 +308,7 @@ class ExternalForcingConverter:
 
     def update(
         self,
-    ) -> Union[Tuple[ExtModel, StructureModel], None]:
+    ) -> Tuple[ExtModel, StructureModel] | None:
         """Convert the old external forcing file to a new format files.
 
         Notes:
@@ -311,7 +319,7 @@ class ExternalForcingConverter:
             forcing model; the converter no longer produces an initial field file.
 
         Returns:
-            Tuple[ExtModel, StructureModel]:
+            Tuple[ExtModel, StructureModel] | None:
                 The updated models (already written to disk). Maybe used
                 at call site to inspect the updated models.
         """
@@ -383,6 +391,78 @@ class ExternalForcingConverter:
             self.mdu_parser,
         )
 
+    def _read_new_ext_tracer_quantities(self) -> list[str]:
+        """Read the quantity names of the `[Boundary]` and `[Spatial]` blocks of the new ext model.
+
+        The kernel registers the tracers of a new ext file boundaries first, then spatial fields, each in
+        file order, which is the order returned here.
+
+        Returns:
+            list[str]: Quantity names of the new ext model, in kernel order. Empty when there is no
+                pre-existing new ext file.
+        """
+        return [
+            block.quantity
+            for block in (*self._ext_model.boundary, *self._ext_model.spatial)
+        ]
+
+    def _new_ext_tracer_quantities(self) -> list[str]:
+        """Return the tracer quantities the new ext file had **before** the conversion started.
+
+        The source/sink converter needs these to order the TIM columns by the kernel's tracer precedence
+        (inifield -> new ext -> old ext -> substance file). Only the blocks that were already in the new ext
+        file count as "new ext": the kernel numbers the tracers of the old ext file after them, in old-ext
+        file order.
+
+        A snapshot is used on purpose. `update()` appends every converted block to the new ext model, and
+        those blocks come from the old ext file. Re-reading the live model would therefore list the old-ext
+        tracers converted so far as "new ext", ranking them above the old ext and, because the model lists
+        boundaries before spatial fields, reordering them.
+
+        Example:
+            The old ext file lists `initialtracerX`, `tracerbndA`, then the sorsin, and there is no new ext
+            file. The kernel numbers the tracers `X, A`. By the time the sorsin is converted, the live model
+            holds a `[Spatial]` for X and a `[Boundary]` for A, which reads as `['tracerbndA',
+            'initialtracerX']` (boundaries first) and would label the TIM columns `A, X`, swapping the two
+            tracers' data. The snapshot is empty here, so the old ext order `X, A` is used.
+
+        Returns:
+            list[str]: Quantity names of the pre-existing new ext blocks, in kernel order.
+        """
+        return self._pre_existing_new_ext_tracers
+
+    def _inifield_tracer_quantities(self) -> list[str]:
+        """Collect the quantity names of the `[Initial]` and `[Parameter]` blocks of the inifield file.
+
+        All quantities are returned, not only the tracer ones: the source/sink converter keeps the
+        tracer / sediment-fraction ones by prefix. The inifield model is loaded on the first call and cached
+        (`self._inifield_model`), so a run without a source/sink never reads the inifield file and is not
+        affected by it. When the MDU references no inifield file, an empty list is returned.
+
+        Returns:
+            list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
+        """
+        if not self._inifield_loaded:
+            self._inifield_model = self._load_inifield_model()
+            self._inifield_loaded = True
+        model = self._inifield_model
+        initials = model.initial if model else []
+        parameters = model.parameter if model else []
+        return [block.quantity for block in (*initials, *parameters)]
+
+    def _load_inifield_model(self) -> IniFieldModel | None:
+        """Load the inifield file referenced by the MDU, if it exists on disk.
+
+        Returns:
+            Optional[IniFieldModel]: The parsed inifield model, or None when the MDU
+                does not reference an inifield file or the referenced path is missing.
+        """
+        model = None
+        inifield_path = self.mdu_parser.get_inifield_file(None)
+        if inifield_path is not None and Path(inifield_path).is_file():
+            model = IniFieldModel(filepath=inifield_path, recurse=False)
+        return model
+
     def _convert_forcing(
         self, forcing
     ) -> Boundary | Lateral | Meteo | SourceSink | MassBalanceArea:
@@ -391,6 +471,11 @@ class ExternalForcingConverter:
         Notes:
             - The SourceSink converter needs the salinity and temperature from the FM model.
             - The BoundaryCondition converter needs the start time from the FM model.
+            - The SourceSink converter also receives the tracer quantities of the inifield file, the new
+            external forcings file and the **unfiltered** old external forcings file, so it can order the TIM
+            columns by the kernel's precedence (inifield -> new ext -> old ext -> substance file). The old-ext
+            `initialtracer*` / `initialsedfrac*` quantities are converted to `[Spatial]` blocks by
+            `SpatialConverter`, but they still define a tracer and so must not be filtered out.
         """
         converter_class = ConverterFactory.create_converter(
             forcing.quantity, root_dir=self.root_dir, mdu_parser=self.mdu_parser
@@ -398,11 +483,12 @@ class ExternalForcingConverter:
 
         # only the SourceSink converter needs the quantities' list
         if isinstance(converter_class, SourceSinkConverter):
-            source_sink_quantities = converter_class.filter_source_sink_quantities(
-                self.extold_model.quantities
-            )
+            # the full (unfiltered) old-ext list is passed on purpose, see the Notes above
             new_quantity_block = converter_class.convert(
-                forcing, source_sink_quantities
+                forcing,
+                self.extold_model.quantities,
+                new_ext_tracer_quantities=self._new_ext_tracer_quantities(),
+                inifield_tracer_quantities=self._inifield_tracer_quantities(),
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)

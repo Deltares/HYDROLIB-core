@@ -13,6 +13,7 @@ from hydrolib.core.dflowfm.structure.models import (
     Compound,
     Culvert,
     FlowDirection,
+    Gate,
     Orifice,
     Pump,
     Structure,
@@ -168,6 +169,35 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         assert val.model_dump(exclude={"datablock", "type"}) == expected.model_dump(
             exclude={"type"}
         )
+
+
+def test_structure_model_parses_gate_section(tmp_path):
+    structure_file = tmp_path / "structures.ini"
+    structure_file.write_text(
+        inspect.cleandoc(
+            """
+            [Structure]
+            id                             = gate_id
+            name                           = Gate 01
+            branchId                       = branch
+            chainage                       = 12.5
+            type                           = gate
+            crestLevel                     = 1.5
+            gateLowerEdgeLevel             = 0.5
+            gateHeight                     = 2.0
+            gateOpeningWidth               = 3.0
+            gateOpeningHorizontalDirection = symmetric
+            """
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    model = StructureModel(structure_file)
+
+    assert len(model.structure) == 1
+    assert isinstance(model.structure[0], Gate)
+    assert model.structure[0].id == "gate_id"
 
 
 def test_read_structures_missing_structure_field_raises_correct_error():
