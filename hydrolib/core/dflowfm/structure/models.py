@@ -4,6 +4,7 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 """
 
 import logging
+from abc import ABC
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
@@ -843,8 +844,19 @@ GENERAL_STRUCTURE_COEFFICIENT_FIELDS = frozenset(
     }
 )
 
-class CrestWidthValidator(Structure):
-    """Shared validator for structures with crest width and gate opening width."""
+class CrestWidthValidator(ABC):
+    """Validator mixin for structures with a crest width and a gate opening width.
+
+    A plain validator mixin (not an `INIBasedModel` itself); the concrete structures
+    bring in `Structure`. Holds the shared after-validator enforcing
+    ``gateOpeningWidth <= crestWidth``. The fields stay declared on each concrete
+    structure, so every structure keeps control of its own keyword order; the
+    validator reads them via `getattr` so it is inert on any subclass that does not
+    declare both fields.
+
+    Intended to be combined with a concrete structure model, e.g.
+    ``class Gate(CrestWidthValidator, Structure): ...``.
+    """
 
     @model_validator(mode="after")
     def _validate_crestwidth_larger_than_gateopeningwidth(self):
@@ -867,7 +879,7 @@ class CrestWidthValidator(Structure):
         return self
 
 
-class Gate(CrestWidthValidator):
+class Gate(CrestWidthValidator, Structure):
     """Gate structure.
 
     Hydraulic structure with `type=gate`, to be included in a structure file.
@@ -913,7 +925,7 @@ class Gate(CrestWidthValidator):
     )
 
 
-class GeneralStructure(CrestWidthValidator):
+class GeneralStructure(CrestWidthValidator, Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
