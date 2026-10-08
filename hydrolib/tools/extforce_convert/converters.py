@@ -336,10 +336,22 @@ class SpatialConverter(BaseConverter):
             supported by the converter, a ValueError is raised.
         """
         data = SpatialBlockBuilder(forcing, new_forcing_path).build()
+        meteorological_component_units = (
+            CONVERTER_DATA.external_forcing.get_meteorological_field_component_units(
+                forcing.quantity
+            )
+        )
+        meteorological_quantities = None
+        if meteorological_component_units:
+            meteorological_quantities = {str(forcing.quantity): meteorological_component_units}
 
         if data.get("datafiletype") == DataFileType.uniform:
-            data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
-
+            data = self._uniform_tim_to_bc(
+                forcing,
+                data,
+                new_forcing_path,
+                meteorological_quantities=meteorological_quantities
+            )
         try:
             spatial_block = Spatial(**data)
         except Exception as e:
@@ -349,7 +361,11 @@ class SpatialConverter(BaseConverter):
         return spatial_block
 
     def _uniform_tim_to_bc(
-        self, forcing: ExtOldForcing, data: dict[str, Any], new_forcing_path: Path
+        self,
+        forcing: ExtOldForcing,
+        data: dict[str, Any],
+        new_forcing_path: Path,
+        meteorological_quantities: dict[str, dict[str, str]] | None = None,
     ) -> dict[str, Any]:
         """Replace a uniform `.tim` data file with an inline `.bc` `ForcingModel`.
 
@@ -378,19 +394,16 @@ class SpatialConverter(BaseConverter):
         quantity = data["quantity"]
         tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
         tim_model = TimModel(filepath=tim_path)
-        multicolumn_component_units = (
-            CONVERTER_DATA.external_forcing.get_multicolumn_component_units(
-                forcing.quantity
-            )
-        )
         if not tim_model.timeseries:
             raise SpatialError(
                 f"Invalid TIM input: '{tim_path}' contains no data rows. "
                 f"Encountered for QUANTITY={forcing.quantity}."
             )
         n_columns = len(tim_model.timeseries[0].data)
-        if multicolumn_component_units:
-            component_names = list(multicolumn_component_units.keys())
+
+        if meteorological_quantities:
+            vector_name, component_units = next(iter(meteorological_quantities.items()))
+            component_names = list(component_units.keys())
             if n_columns != len(component_names):
                 raise SpatialError(
                     f"Configured multi-column spatial quantity '{forcing.quantity}' expects "
@@ -398,16 +411,17 @@ class SpatialConverter(BaseConverter):
                     f"has {n_columns}."
                 )
             tim_model.quantities_names = component_names
-            units = list(multicolumn_component_units.values())
-        elif n_columns != 1:
-            raise SpatialError(
-                f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
-                f"data column, unless QUANTITY={forcing.quantity} is configured as a "
-                f"multi-column quantity. '{tim_path}' has {n_columns} data columns."
-            )
+            units = list(component_units.values())
         else:
-            tim_model.quantities_names = [quantity]
-            units = tim_model.get_units()
+            if n_columns != 1:
+                raise SpatialError(
+                    f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
+                    f"data column, unless QUANTITY={forcing.quantity} is configured as a "
+                    f"multi-column quantity. '{tim_path}' has {n_columns} data columns."
+                )
+            else:
+                tim_model.quantities_names = [quantity]
+                units = tim_model.get_units()
         tim_to_bc_converter = TimToForcingConverter(
             tim_model=tim_model,
             time_unit=time_unit,
@@ -416,7 +430,7 @@ class SpatialConverter(BaseConverter):
             user_defined_names=["global"],
         )
         forcing_list = tim_to_bc_converter.convert(
-            multicolumn_scalar_quantity=bool(multicolumn_component_units)
+            meteorological_quantities=meteorological_quantities
         )
         forcing_model = ForcingModel(forcing=forcing_list)
         forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
@@ -2032,7 +2046,7 @@ class TimToForcingConverter:
     def convert(
         self,
         vector_quantities: dict[str, dict[str, str]] | None = None,
-        multicolumn_scalar_quantity: bool = False,
+        meteorological_quantities: dict[str, dict[str, str]] | None = None,
     ) -> list[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
@@ -2042,8 +2056,10 @@ class TimToForcingConverter:
                 Optional vector quantity definition. The outer key is the vector name and
                 the nested mapping defines component names to units. When provided, the
                 method emits one vector `TimeSeries` block per TIM model.
-            multicolumn_scalar_quantity (bool, optional):
-                When True, emit one scalar `TimeSeries` containing all TIM data columns as
+            meteorological_quantities (dict[str, dict[str, str]], optional):
+                Optional scalar quantity definition. The outer key is the quantity name and
+                the nested mapping defines component names to units. When provided, the
+                method emits one scalar `TimeSeries` containing all TIM data columns as
                 separate quantity/unit pairs instead of splitting them into one forcing per
                 column.
 
@@ -2083,17 +2099,19 @@ class TimToForcingConverter:
         if self.user_defined_names is None:
             raise ValueError("'user_defined_names' must be provided.")
 
-        if vector_quantities and multicolumn_scalar_quantity:
+        if vector_quantities and meteorological_quantities:
             raise ValueError(
-                "Vector quantity conversion and scalar multi-column conversion are mutually exclusive."
+                "Vector quantity conversion and scalar meterological quantity conversion are mutually exclusive."
             )
 
         if vector_quantities:
             time_series_list = self._convert_vector_quantities(
                 vector_quantities,
             )
-        elif multicolumn_scalar_quantity:
-            time_series_list = self._convert_multicolumn_scalar_quantity()
+        elif meteorological_quantities:
+            time_series_list = self._convert_meteorological_quantity(
+                meteorological_quantities,
+            )
         else:
             time_series_list = self._convert_scalar_quantities()
 
@@ -2174,7 +2192,10 @@ class TimToForcingConverter:
 
         return [forcing]
 
-    def _convert_multicolumn_scalar_quantity(self) -> list[TimeSeries]:
+    def _convert_meteorological_quantity(
+        self,
+        meteorological_quantity
+    ) -> list[TimeSeries]:
         """Convert one multi-column TIM model into one scalar `TimeSeries` block."""
         if len(self.user_defined_names) != 1:
             raise ValueError(

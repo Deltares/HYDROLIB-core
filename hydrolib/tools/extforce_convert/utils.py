@@ -611,29 +611,31 @@ class ExternalForcingConfigs(BaseModel):
         renamed = self.renamed_quantities.get(name.strip().lower(), name)
         return renamed
 
-    def get_vector_component_units(
-        self, quantity: ExtOldQuantity | str
+    @staticmethod
+    def get_element_units(
+        quantity: ExtOldQuantity | str,
+        quantity_mapping: dict[str, dict[str, str]]
     ) -> dict[str, str] | None:
         """Return configured vector component/unit mapping for a multi-column quantity."""
         name = str(quantity).strip().lower()
-        component_units = self.vector_quantities.get(name)
+        component_units = quantity_mapping.get(name)
         if component_units:
             result = dict(component_units)
         else:
             result = None
         return result
 
+    def get_vector_component_units(
+        self, quantity: ExtOldQuantity | str
+    ) -> dict[str, str] | None:
+        """Return configured vector component/unit mapping for a multi-column quantity."""
+        return self.get_element_units(quantity, self.vector_quantities)
+
     def get_meteorological_field_component_units(
         self, quantity: ExtOldQuantity | str
     ) -> dict[str, str] | None:
         """Return configured scalar multi-column component/unit mapping for a quantity."""
-        name = str(quantity).strip().lower()
-        component_units = self.meteorological_fields.get(name)
-        if component_units:
-            result = dict(component_units)
-        else:
-            result = None
-        return result
+        return self.get_element_units(quantity, self.meteorological_fields)
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""
