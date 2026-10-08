@@ -207,23 +207,23 @@ class Structure(CoordinateValidator, INIBasedModel):
 
         # Error: require x/y or polyline file:
         if (
-            structype in polyline_compatible_structures.keys()
-            and structype in only_coordinates_structures.keys()
+            structype in polyline_compatible_structures
+            and structype in only_coordinates_structures
+            and not (coordinates_in_model or locationfile_in_model)
         ):
-            if not (coordinates_in_model or locationfile_in_model):
-                raise ValueError(
-                    f"Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a {polyline_compatible_structures[structype]} structure."
-                )
+            raise ValueError(
+                f"Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a {polyline_compatible_structures[structype]} structure."
+            )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
             not locationfile_in_model
-            and structype in only_coordinates_structures.keys()
+            and structype in only_coordinates_structures
+            and not coordinates_in_model
         ):
-            if not coordinates_in_model:
-                raise ValueError(
-                    f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
-                )
+            raise ValueError(
+                f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+            )
 
         # Error: final check: at least one of x/y, branchId+chainage or polyline file must be given
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
