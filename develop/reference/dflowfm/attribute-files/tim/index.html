@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1628,6 +1628,34 @@ You're not viewing the latest release version.
     
   
     Loading and Saving within HYDROLIB-core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../topics/bubble-screen/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bubble screens
   
 
     
@@ -4938,7 +4966,10 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a tim (*.tim) file.</span>
 
 <span class="sd">    Attributes:</span>
@@ -5284,11 +5315,11 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the units for each quantity in the timeseries.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[str]: A list of units for each quantity in the timeseries.</span>
+<span class="sd">            list[str] | None : A list of units for each quantity in the timeseries.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            Create a `TimModel` object from a .tim file:</span>
@@ -5302,8 +5333,11 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">                ```</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">TimModel</span><span class="o">.</span><span class="n">_get_quantity_unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">TimModel</span><span class="o">.</span><span class="n">_get_quantity_unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6058,11 +6092,11 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
+                  <code><span title="list">list</span>[<span title="str">str</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>List[str]: A list of units for each quantity in the timeseries.</p>
+                <p>list[str] | None : A list of units for each quantity in the timeseries.</p>
               </div>
             </td>
           </tr>
@@ -6101,11 +6135,14 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the units for each quantity in the timeseries.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[str]: A list of units for each quantity in the timeseries.</span>
+<span class="sd">        list[str] | None : A list of units for each quantity in the timeseries.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        Create a `TimModel` object from a .tim file:</span>
@@ -6119,8 +6156,11 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">            ```</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">TimModel</span><span class="o">.</span><span class="n">_get_quantity_unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">TimModel</span><span class="o">.</span><span class="n">_get_quantity_unit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6397,10 +6437,10 @@ No other comments are supported.</p>
 <span class="sd">            ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">            ValueError: If the data of the timeseries is empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-            <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-            <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+        <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 
@@ -6620,10 +6660,10 @@ No other comments are supported.</p>
 <span class="sd">        ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">        ValueError: If the data of the timeseries is empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">filepath</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
-        <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-        <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
