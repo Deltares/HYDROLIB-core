@@ -405,7 +405,7 @@ class ExternalForcingConfigs(BaseModel):
     unsupported_prefixes: list[str] = Field(default_factory=list)
     renamed_quantities: dict[str, str] = Field(default_factory=dict)
     vector_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
-    multi_column_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
+    meteorological_fields: dict[str, dict[str, str]] = Field(default_factory=dict)
 
     @field_validator(
         "unsupported_quantities", "unsupported_prefixes", mode="before"
@@ -481,7 +481,7 @@ class ExternalForcingConfigs(BaseModel):
 
         return normalized
 
-    @field_validator("vector_quantities", "multi_column_quantities", mode="before")
+    @field_validator("vector_quantities", "meteorological_fields", mode="before")
     def normalize_multicolumn_quantity_definitions(
         cls, v: dict[str, dict[str, str]] | None
     ) -> dict[str, dict[str, str]]:
@@ -623,12 +623,12 @@ class ExternalForcingConfigs(BaseModel):
             result = None
         return result
 
-    def get_multicolumn_component_units(
+    def get_meteorological_field_component_units(
         self, quantity: ExtOldQuantity | str
     ) -> dict[str, str] | None:
         """Return configured scalar multi-column component/unit mapping for a quantity."""
         name = str(quantity).strip().lower()
-        component_units = self.multi_column_quantities.get(name)
+        component_units = self.meteorological_fields.get(name)
         if component_units:
             result = dict(component_units)
         else:
