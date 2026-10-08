@@ -398,7 +398,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(118.4)
         assert struct.extraresistance == pytest.approx(118.5)
         assert struct.gateheight == pytest.approx(118.6)
-        assert struct.gateopeningwidth == pytest.approx(118.7)
+        assert struct.gateopeningwidth == pytest.approx(110.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_right
@@ -444,7 +444,7 @@ class TestGeneralStructure:
             neg_contrcoeffreegate          = 118.4
             extraResistance                = 118.5
             gateHeight                     = 118.6
-            gateOpeningWidth               = 118.7
+            gateOpeningWidth               = 110.0
             gateOpeningHorizontalDirection = fromRight
             useVelocityHeight              = 0
             """

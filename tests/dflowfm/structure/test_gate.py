@@ -398,20 +398,20 @@ class TestGateAdditionalCoverage:
         assert isinstance(getattr(gate, field_name), ForcingModel)
 
     def test_gate_polylinefile_only_passes_location_validation(self, tmp_path):
-        polyline_file = tmp_path / "gate.pli"
-        polyline_file.write_text("dummy")
+        location_file = tmp_path / "gate.pli"
+        location_file.write_text("dummy")
 
         gate = Gate(
             id="gate_id",
             name="Gate 01",
-            polylinefile=polyline_file,
+            locationfile=location_file,
             crestlevel=1.5,
             gateloweredgelevel=0.5,
             gateheight=2.0,
         )
 
-        assert gate.polylinefile is not None
-        assert gate.polylinefile.filepath == polyline_file
+        assert gate.locationfile is not None
+        assert gate.locationfile.filepath == location_file
         assert gate.branchid is None
         assert gate.chainage is None
 
