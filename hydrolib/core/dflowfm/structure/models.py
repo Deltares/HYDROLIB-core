@@ -148,10 +148,20 @@ class Structure(CoordinateValidator, INIBasedModel):
         """
         return UnknownKeywordErrorManager()
 
-    @model_validator(mode="before")
-    def rename_keys(cls, values: dict) -> dict:
-        """Renames some old keywords to the currently supported keywords."""
-        rename_mapping = {"locationfile": ["polylinefile"]}
+    @classmethod
+    def _rename_legacy_keys(
+        cls, values: Any, rename_mapping: Dict[str, List[str]]
+    ) -> Any:
+        """Renames old keywords, and their comments, to the currently supported keywords.
+
+        Args:
+            values (Any): The raw input for this structure block.
+            rename_mapping (Dict[str, List[str]]): The current keyword with the old
+                keywords that are renamed to it.
+
+        Returns:
+            Any: The input with the old keywords renamed.
+        """
         values = rename_keys_for_backwards_compatibility(values, rename_mapping)
         if isinstance(values, dict):
             # The helper does not rename an unset legacy keyword, so drop it here.
@@ -165,6 +175,11 @@ class Structure(CoordinateValidator, INIBasedModel):
                 values["comments"], rename_mapping
             )
         return values
+
+    @model_validator(mode="before")
+    def rename_keys(cls, values: dict) -> dict:
+        """Renames some old keywords to the currently supported keywords."""
+        return cls._rename_legacy_keys(values, {"locationfile": ["polylinefile"]})
 
     @model_validator(mode="after")
     def check_location(self):
@@ -420,6 +435,25 @@ class Weir(Structure):
     crestwidth: CrestWidthField = None
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _rename_legacy_corrcoeff(cls, values: Any) -> Any:
+        """Read the legacy `lat_contr_coeff` keyword as `corrCoeff`.
+
+        Structure files older than version 2.01 give the weir correction coefficient as
+        `lat_contr_coeff`. The manual lists it as superseded by `corrCoeff`, and the
+        D-Flow FM kernel applies both keywords in the same way to a weir.
+
+        Args:
+            values (Any): The raw input for this structure block, normally the
+                flattened `[Structure]` section as a dict.
+
+        Returns:
+            Any: The input with the legacy keyword renamed.
+        """
+        values = cls._convert_section_to_dict(values)
+        return cls._rename_legacy_keys(values, {"corrcoeff": ["lat_contr_coeff"]})
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod

@@ -285,6 +285,9 @@ class Weir(Structure):
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 ```
 
+The legacy keyword `lat_contr_coeff` (structure files older than version 2.01) is read as `corrCoeff`. If a file has both
+keywords, the legacy one is reported as an unknown keyword.
+
 #### UniversalWeir (type = universalWeir)
 
 ```
@@ -678,7 +681,8 @@ sm.save("path/to/structures.ini")
 - `Structure._should_be_serialized()` ensures only the relevant location fields are written out, keeping INI files clean.
 - Legacy keywords: `polylinefile` (and its comment) is read as `locationFile`. For a `GeneralStructure`, the underscored
   coefficient keywords (`pos_freegateflowcoeff`, `neg_contrcoeffreegate`, ...) are read as `posFreeGateFlowCoeff`,
-  `negContrCoefFreeGate`, and so on. A legacy `polylinefile` that is explicitly `None` is ignored.
+  `negContrCoefFreeGate`, and so on. For a `Weir`, `lat_contr_coeff` is read as `corrCoeff`. A legacy keyword that is
+  explicitly `None` (for example `polylinefile`) is ignored.
 - Unknown keywords: every structure type reports keywords that it does not know with the
   `UnknownKeywordErrorManager` ("Unknown keywords are detected in section ..."), instead of silently ignoring them. This
   also catches misspelled keywords, which used to fall back to their defaults. Keywords that are valid for the kernel but
