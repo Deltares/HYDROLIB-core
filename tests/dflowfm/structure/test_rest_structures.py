@@ -491,6 +491,102 @@ class TestWeir:
         assert structure.allowedflowdir == FlowDirection.both
         assert structure.crestwidth == None
 
+    def test_weir_reads_legacy_lat_contr_coeff_as_corrcoeff(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            lat_contr_coeff=0.9,
+        )
+
+        assert weir.corrcoeff == pytest.approx(0.9)
+
+    def test_weir_parses_legacy_lat_contr_coeff_from_section(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id              = weir_id
+            type            = weir
+            polylinefile    = weir01.pli
+            crestLevel      = 10.5
+            lat_contr_coeff = 0.9    # Lateral contraction coefficient
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
+        weir = wrapper.val
+
+        assert weir.corrcoeff == pytest.approx(0.9)
+        assert weir.comments.corrcoeff == "Lateral contraction coefficient"
+
+    def test_weir_writes_legacy_lat_contr_coeff_as_corrcoeff(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            lat_contr_coeff=0.9,
+        )
+
+        section = weir._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        keys = [prop.key for prop in section.content if hasattr(prop, "key")]
+
+        assert "corrCoeff" in keys
+        assert "lat_contr_coeff" not in keys
+
+    def test_weir_accepts_legacy_lat_contr_coeff_set_to_none(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            lat_contr_coeff=None,
+        )
+
+        assert weir.corrcoeff == pytest.approx(1.0)
+
+    def test_weir_reports_legacy_lat_contr_coeff_when_corrcoeff_is_also_given(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Weir(
+                id="weir_id",
+                type="weir",
+                crestlevel=1.0,
+                branchid="branch",
+                chainage=1.0,
+                corrcoeff=0.8,
+                lat_contr_coeff=0.9,
+            )
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "lat_contr_coeff" in str(exc_info.value)
+
+    def test_weir_rejects_misspelled_lat_cont_coeff(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Weir(
+                id="weir_id",
+                type="weir",
+                crestlevel=1.0,
+                branchid="branch",
+                chainage=1.0,
+                lat_cont_coeff=1,
+            )
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "lat_cont_coeff" in str(exc_info.value)
+
     def _create_required_weir_values(self) -> dict:
         weir_values = dict(
             crestlevel="2.34",
