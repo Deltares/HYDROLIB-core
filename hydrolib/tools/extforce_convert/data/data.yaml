@@ -53,11 +53,11 @@ external_forcing:
         windxy: {"wx": "m s-1", "wy": "m s-1"}
 
     meteorological_fields:
-        airpressure_stressx_stressy: {"airpressure": "-", "stressx": "-", "stressy": "-"}
-        airpressure_windx_windy: {"airpressure": "-", "windx": "-", "windy": "-"}
-        airpressure_windx_windy_charnock: {"airpressure": "-", "windx": "-", "windy": "-", "charnock": "-"}
-        dewpoint_airtemperature_cloudiness: {"dewpoint": "-", "airtemperature": "degC", "cloudiness": "-"}
-        dewpoint_airtemperature_cloudiness_solarradiation: {"dewpoint": "-", "airtemperature": "degC", "cloudiness": "-", "solarradiation": "-"}
+        airpressure_stressx_stressy: {"airpressure": "N/m2", "stressx": "-", "stressy": "-"}
+        airpressure_windx_windy: {"airpressure": "N/m2", "windx": "m/s", "windy": "m/s"}
+        airpressure_windx_windy_charnock: {"airpressure": "N/m2", "windx": "m/s", "windy": "m/s", "charnock": "-"}
+        dewpoint_airtemperature_cloudiness: {"dewpoint": "degC", "airtemperature": "degC", "cloudiness": "-"}
+        dewpoint_airtemperature_cloudiness_solarradiation: {"dewpoint": "degC", "airtemperature": "degC", "cloudiness": "-", "solarradiation": "W/m2"}
         humidity_airtemperature_cloudiness: {"humidity": "-", "airtemperature": "degC", "cloudiness": "-"}
-        humidity_airtemperature_cloudiness_solarradiation: {"humidity": "-", "airtemperature": "degC", "cloudiness": "-", "solarradiation": "-"}
+        humidity_airtemperature_cloudiness_solarradiation: {"humidity": "-", "airtemperature": "degC", "cloudiness": "-", "solarradiation": "W/m2"}
 
