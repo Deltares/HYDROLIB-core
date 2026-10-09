@@ -25,7 +25,7 @@ classDiagram
       +id: str  (alias: id)
       +name: str  (alias: name)
       +type: str  (alias: type)
-      +polylinefile: DiskOnlyFileModel?  (alias: polylinefile)
+      +locationfile: DiskOnlyFileModel?  (alias: locationFile)
       +branchid: str?  (alias: branchId)
       +chainage: float?  (alias: chainage)
       +numcoordinates: int?  (alias: numCoordinates)
@@ -54,7 +54,7 @@ classDiagram
     }
 
     class StructureGeneral {
-      +fileversion: str = 3.00  (alias: fileVersion)
+      +fileversion: str = 3.01  (alias: fileVersion)
       +filetype: structure  (alias: fileType)
     }
 
@@ -165,7 +165,7 @@ This logic runs in `Structure.check_location` for most subclasses. `Compound` st
 flowchart TD
     A[Start root_validator check_location] --> B[type == compound?]
     B -- yes --> Z[Return OK no location needed]
-    B -- no --> C[polylinefile provided?]
+    B -- no --> C[locationFile provided?]
     C -->|yes| Cx[Ensure no x/y provided] --> H[OK]
     C -->|no| D[type in only_coordinates? longCulvert or dambreak]
     D -->|yes| E[num/x/y provided?]
@@ -184,7 +184,7 @@ flowchart TD
     K -->|no| Err3[Error: need one of: branchId+chainage OR num/x/y]
 
     subgraph Notes
-      N1[Mutual exclusion: polylinefile cannot be combined with x/y]
+      N1[Mutual exclusion: locationFile cannot be combined with x/y]
       N2[Coordinates check: numCoordinates >= 2 and lengths of x/y match num]
       N3[branchId presence requires chainage and non-empty branchId]
     end
@@ -192,9 +192,10 @@ flowchart TD
 
 Important details enforced by code:
 
-- polylinefile and x/y coordinates are mutually exclusive.
+- `locationFile` and x/y coordinates are mutually exclusive. The legacy keyword `polylinefile` is still read and is
+  renamed to `locationFile` (see the notes below).
 - For `longCulvert`, coordinates must be provided if no polyline is given. For `dambreak`, either coordinates or polyline is allowed.
-- At least one of: branchId+chainage OR num/x/y OR polylinefile must be present (except for `compound`).
+- At least one of: branchId+chainage OR num/x/y OR locationFile must be present (except for `compound`).
 - `validate_coordinates_in_model` enforces `numCoordinates >= 2` and exact length match for `xCoordinates` and `yCoordinates`.
 - `validate_branch_and_chainage_in_model` ensures that when `branchId` is provided, `chainage` is provided and `branchId` is non-empty.
 
@@ -213,7 +214,8 @@ The `StructureModel` represents an entire `structures.ini` file with:
 - `[General]` section mapping to `StructureGeneral`
 - One or more `[Structure]` sections mapping to the `Structure` subclasses
 
-On save/export, non-applicable location fields are excluded via `Structure._exclude_fields()`:
+On save/export, non-applicable location fields are left out by `Structure._should_be_serialized()`, which uses
+`Structure._inapplicable_location_fields()`:
 
 - If `type == "compound"`: branch/chainage and coordinate fields are excluded.
 - If `branchId` is set: coordinate fields are excluded.
@@ -231,8 +233,8 @@ class Structure(INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    # Location A: 2D polyline
-    polylinefile: DiskOnlyFileModel | None = Field(None, alias="polylinefile")
+    # Location A: 2D polyline (called `polylinefile` before structure file version 3.01)
+    locationfile: DiskOnlyFileModel | None = Field(None, alias="locationFile")
 
     # Location B: 1D branch reference
     branchid: str | None = Field(None, alias="branchId")
@@ -534,6 +536,8 @@ class GeneralStructure(Structure):
     negdrownweirflowcoeff: float | None = Field(1.0, alias="negDrownWeirFlowCoeff")
     negcontrcoeffreegate: float | None = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: float | None = Field(0.0, alias="extraResistance")
+    dynstructext: float | None = Field(None, alias="dynstructext")
+    gateheightintervalcntrl: float | None = Field(None, alias="gateheightintervalcntrl")
     gateheight: float | None = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
@@ -668,10 +672,19 @@ sm.save("path/to/structures.ini")
 ### Notes and edge cases
 
 - `Compound` structures do not require any location specification; the base location validator exits early for `type="compound"`.
-- The location logic forbids combining `polylinefile` with explicit `xCoordinates`/`yCoordinates`.
+- The location logic forbids combining `locationFile` with explicit `xCoordinates`/`yCoordinates`.
 - For `LongCulvert`, if you provide `zCoordinates` it must have exactly `numCoordinates` entries.
 - For `Dambreak`, upstream and downstream water level reference can be either a node id or an (X,Y) pair per side, but not both; each side is validated independently.
-- The base `Structure._exclude_fields()` ensures only the relevant location fields are written out, keeping INI files clean.
+- `Structure._should_be_serialized()` ensures only the relevant location fields are written out, keeping INI files clean.
+- Legacy keywords: `polylinefile` (and its comment) is read as `locationFile`. For a `GeneralStructure`, the underscored
+  coefficient keywords (`pos_freegateflowcoeff`, `neg_contrcoeffreegate`, ...) are read as `posFreeGateFlowCoeff`,
+  `negContrCoefFreeGate`, and so on. A legacy `polylinefile` that is explicitly `None` is ignored.
+- Unknown keywords: every structure type reports keywords that it does not know with the
+  `UnknownKeywordErrorManager` ("Unknown keywords are detected in section ..."), instead of silently ignoring them. This
+  also catches misspelled keywords, which used to fall back to their defaults. Keywords that are valid for the kernel but
+  not modelled need a field, as was done for `dynstructext` and `gateheightintervalcntrl` on `GeneralStructure`.
+- `locationFile` belongs to structure file version 3.01 (the default of `StructureGeneral.fileversion`). Older
+  versions use `polylinefile`.
 
 ### How to include this page in your docs navigation
 
