@@ -482,10 +482,13 @@ class ExternalForcingConfigs(BaseModel):
         return normalized
 
     @field_validator("vector_quantities", "meteorological_fields", mode="before")
-    def normalize_multicolumn_quantity_definitions(
+    def normalize_multi_column_quantity_definitions(
         cls, v: dict[str, dict[str, str]] | None
     ) -> dict[str, dict[str, str]]:
         """Normalize named multi-column quantity definitions keyed by old quantity name.
+
+        This applies to both `vector_quantities` and `meteorological_fields`, which are
+        both mappings of old quantity names to a mapping of component names to units.
 
         Expected style is mapping only: `{component: unit}`.
         """
