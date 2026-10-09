@@ -1026,6 +1026,10 @@ class GeneralStructure(CrestWidthValidator, Structure):
         extraresistance: str | None = Field(
             "Extra resistance [-]", alias="extraResistance"
         )
+        gateheightintervalcntrl: str | None = Field(
+            None, alias="gateheightintervalcntrl"
+        )
+        dynstructext: str | None = Field(None, alias="dynstructext")
         gateheight: str | None = Field(None, alias="gateHeight")
         gateopeningwidth: str | None = Field(
             "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
@@ -1072,8 +1076,12 @@ class GeneralStructure(CrestWidthValidator, Structure):
     negdrownweirflowcoeff: float | None = Field(1.0, alias="negDrownWeirFlowCoeff")
     negcontrcoeffreegate: float | None = Field(1.0, alias="negContrCoefFreeGate")
     extraresistance: float | None = Field(0.0, alias="extraResistance")
+    dynstructext: float | None = Field(None, alias="dynstructext")
 
     gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
+    gateheightintervalcntrl: float | None = Field(
+        None, alias="gateheightintervalcntrl"
+    )
     gateheight: float | None = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
