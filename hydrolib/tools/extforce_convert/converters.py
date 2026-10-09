@@ -2109,9 +2109,7 @@ class TimToForcingConverter:
                 vector_quantities,
             )
         elif meteorological_quantities:
-            time_series_list = self._convert_meteorological_quantity(
-                meteorological_quantities,
-            )
+            time_series_list = self._convert_meteorological_quantity()
         else:
             time_series_list = self._convert_scalar_quantities()
 

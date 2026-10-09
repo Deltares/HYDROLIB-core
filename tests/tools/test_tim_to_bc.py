@@ -81,7 +81,9 @@ def test_tim_to_bc_converter_writes_vector_block(tmp_path: Path):
     assert "123456.0  3.0  4.0" in content
 
 
-def test_tim_to_bc_converter_writes_multicolumn_scalar_block(tmp_path: Path):
+def test_tim_to_bc_converter_writes_meteorological_field_block(
+        self, tmp_path: Path
+):
     tim_path = tmp_path / "meteo.tim"
     tim_path.write_text("0 80 15 60\n60 82 16.5 62\n")
 
@@ -94,7 +96,15 @@ def test_tim_to_bc_converter_writes_multicolumn_scalar_block(tmp_path: Path):
         units=["-", "degC", "-"],
         user_defined_names=["global"],
     )
-    forcing_list = converter.convert(multicolumn_scalar_quantity=True)
+    forcing_list = converter.convert(
+        meteorological_quantities={
+            "humidity_airtemperature_cloudiness": {
+                "humidity": "-",
+                "airtemperature": "degC",
+                "cloudiness": "-",
+            }
+        },
+    )
 
     forcing_model = ForcingModel(forcing=forcing_list)
     bc_path = tmp_path / "meteo.bc"
@@ -109,3 +119,4 @@ def test_tim_to_bc_converter_writes_multicolumn_scalar_block(tmp_path: Path):
     assert "quantity          = cloudiness" in content
     assert "0.0   80.0  15.0  60.0" in content
     assert "60.0  82.0  16.5  62.0" in content
+
