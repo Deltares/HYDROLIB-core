@@ -1,3 +1,21 @@
+## 1.5.0 (2026-10-08)
+
+### BREAKING CHANGE
+
+- TimToForcingConverter.convert is no longer a static method;
+construct the converter and pass conversion config to __init__ (units is now
+required and keyword-only), then call convert(vector_quantities=...).
+
+### Feat
+
+- **models**: add Gate class with validation and comprehensive test coverage (#1229)
+- **extforce_convert**: support vector quantities in TIM to BC conversion (#1209)
+- **extforce**: support legacy FILETYPE=12 / dataFileType=map with ncFlow alias (#1212)
+
+### Fix
+
+- **extforce_convert**: name the sorsin TIM columns from the inifield, new ext, old ext and substance file (#1231)
+
 ## 1.4.0 (2026-09-16)
 
 ### Feat
