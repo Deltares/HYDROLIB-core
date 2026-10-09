@@ -688,7 +688,9 @@ sm.save("path/to/structures.ini")
   also catches misspelled keywords, which used to fall back to their defaults. Keywords that are valid for the kernel but
   not modelled need a field, as was done for `dynstructext` and `gateheightintervalcntrl` on `GeneralStructure`.
 - `locationFile` belongs to structure file version 3.01 (the default of `StructureGeneral.fileversion`). Older
-  versions use `polylinefile`.
+  versions use `polylinefile`. When a structure uses `locationFile` and the file declares an older version,
+  `StructureModel` raises the version to 3.01 (on creation and again when saving) and logs a warning. Files in which no
+  structure has a location file keep their version.
 
 ### How to include this page in your docs navigation
 

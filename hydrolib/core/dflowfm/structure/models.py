@@ -1465,6 +1465,25 @@ class Bridge(Structure):
         return enum_value_parser(v, FrictionType)
 
 
+_LOCATIONFILE_MIN_FILEVERSION = (3, 1)
+"""First structure file version with `locationFile`, which replaced `polylineFile`."""
+
+
+def _parse_fileversion(fileversion: str) -> Optional[tuple[int, int]]:
+    """Parse a structure file version such as `"3.01"` into `(major, minor)`.
+
+    Args:
+        fileversion (str): The file version as written in the `[General]` section.
+
+    Returns:
+        Optional[tuple[int, int]]: The major and minor version, or None when the
+            version does not have the form `<major>.<minor>`.
+    """
+    parts = str(fileversion).strip().split(".")
+    is_valid = len(parts) == 2 and all(part.isdigit() for part in parts)
+    return (int(parts[0]), int(parts[1])) if is_valid else None
+
+
 class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
@@ -1514,6 +1533,42 @@ class StructureModel(INIModel):
         ],
         BeforeValidator(make_list),
     ] = []
+
+    def _upgrade_fileversion_for_locationfile(self) -> None:
+        """Raise the file version to 3.01 when a structure uses `locationFile`.
+
+        `locationFile` replaced `polylineFile` in structure file version 3.01. The D-Flow
+        FM kernel reads a version 1.00 file only through its old reader, which does not
+        know `locationFile`, so a structure with a location file must not be written
+        under an older file version.
+        """
+        fileversion = _parse_fileversion(self.general.fileversion)
+        uses_locationfile = any(
+            structure.locationfile is not None for structure in self.structure
+        )
+        if (
+            uses_locationfile
+            and fileversion is not None
+            and fileversion < _LOCATIONFILE_MIN_FILEVERSION
+        ):
+            logger.warning(
+                f"Structure file version {self.general.fileversion} is raised to 3.01, "
+                "because a structure uses `locationFile` (it replaces `polylineFile` "
+                "from version 3.01)."
+            )
+            self.general.fileversion = "3.01"
+
+    @model_validator(mode="after")
+    def _check_fileversion_for_locationfile(self):
+        """Make sure the file version matches the location keyword of the structures."""
+        self._upgrade_fileversion_for_locationfile()
+        return self
+
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
+        """Check the file version again before writing, because structures can be added
+        to the list after the model was created."""
+        self._upgrade_fileversion_for_locationfile()
+        super()._serialize(data, save_settings)
 
     @classmethod
     def _ext(cls) -> str:
