@@ -12,7 +12,6 @@ from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
-    ConfigDict,
     Field,
     SerializeAsAny,
     ValidationInfo,
@@ -21,7 +20,7 @@ from pydantic import (
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, ModelSaveSettings
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -141,15 +140,26 @@ class Structure(CoordinateValidator, INIBasedModel):
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """Get the UnknownKeywordErrorManager for this model.
 
-        The Structure does not currently support raising an error on unknown keywords.
+        Unknown keywords are reported, so a misspelled keyword is not silently
+        replaced by its default value.
+
+        Returns:
+            Optional[UnknownKeywordErrorManager]: The error manager that reports unknown keywords.
         """
-        return None
+        return UnknownKeywordErrorManager()
 
     @model_validator(mode="before")
     def rename_keys(cls, values: dict) -> dict:
         """Renames some old keywords to the currently supported keywords."""
         rename_mapping = {"locationfile": ["polylinefile"]}
         values = rename_keys_for_backwards_compatibility(values, rename_mapping)
+        if isinstance(values, dict):
+            # The helper does not rename an unset legacy keyword, so drop it here.
+            # It is not a field anymore and would be reported as an unknown keyword.
+            for old_keywords in rename_mapping.values():
+                for old_keyword in old_keywords:
+                    if values.get(old_keyword, "") is None:
+                        values.pop(old_keyword)
         if isinstance(values, dict) and isinstance(values.get("comments"), dict):
             values["comments"] = rename_keys_for_backwards_compatibility(
                 values["comments"], rename_mapping
@@ -316,16 +326,28 @@ class Structure(CoordinateValidator, INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-    def _exclude_fields(self) -> Set:
-        # exclude the non-applicable, or unset props like coordinates or branches
+    def _inapplicable_location_fields(self) -> Set:
+        """The location fields that do not apply to this structure.
+
+        Returns:
+            Set: The coordinate or branch fields that are not serialized.
+        """
         if self.type == "compound":
             exclude_set = self._loc_all_fields
         elif self.branchid is not None:
             exclude_set = self._loc_coord_fields
         else:
             exclude_set = self._loc_branch_fields
-        exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
+
+    def _should_be_serialized(
+        self, key: str, value: Any, save_settings: ModelSaveSettings
+    ) -> bool:
+        """Do not serialize the non-applicable, or unset props like coordinates or branches."""
+        return (
+            key not in self._inapplicable_location_fields()
+            and super()._should_be_serialized(key, value, save_settings)
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
@@ -1059,34 +1081,6 @@ class GeneralStructure(CrestWidthValidator, Structure):
         alias="gateOpeningHorizontalDirection",
     )
     usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
-
-    model_config = ConfigDict(
-        extra="forbid",
-        arbitrary_types_allowed=False,
-        validate_by_name=True,
-    )
-
-    @model_validator(mode="before")
-    @classmethod
-    def _bypass_non_field_keys(cls, values: Any) -> Any:
-        """Drop the keys that are not model fields.
-
-        A flattened `[Structure]` section carries `_header` and `datablock` entries
-        that have no corresponding model field. Since structures forbid extra input
-        (`extra="forbid"`), these would otherwise be reported as unknown keywords.
-
-        Args:
-            values (Any): The raw input for this structure block.
-
-        Returns:
-            Any: The input without the non-field keys.
-        """
-        values = cls._convert_section_to_dict(values)
-        if isinstance(values, dict):
-            for key in ("_header", "datablock"):
-                if key not in cls.model_fields:
-                    values.pop(key, None)
-        return values
 
     @model_validator(mode="before")
     @classmethod
