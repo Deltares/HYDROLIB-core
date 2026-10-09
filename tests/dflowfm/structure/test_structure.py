@@ -314,7 +314,6 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -347,7 +346,6 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -751,3 +749,15 @@ class TestLocationFileBackwardsCompatibility:
         )
 
         assert weir.comments.locationfile == comment
+
+    def test_legacy_polylinefile_set_to_none_is_accepted(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            polylinefile=None,
+        )
+
+        assert weir.locationfile is None
