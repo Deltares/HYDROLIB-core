@@ -82,6 +82,13 @@ def test_tim_to_bc_converter_writes_vector_block(tmp_path: Path):
     assert "0.0       1.0  2.0" in content
     assert "123456.0  3.0  4.0" in content
 
+METEO_QUANTITIES = {
+    "humidity_airtemperature_cloudiness": {
+        "humidity": "-",
+        "airtemperature": "degC",
+        "cloudiness": "%",
+    }
+}
 
 def test_tim_to_bc_converter_writes_meteorological_field_block(tmp_path: Path):
     tim_path = tmp_path / "meteo.tim"
@@ -97,13 +104,7 @@ def test_tim_to_bc_converter_writes_meteorological_field_block(tmp_path: Path):
         user_defined_names=["global"],
     )
     forcing_list = converter.convert(
-        meteorological_quantities={
-            "humidity_airtemperature_cloudiness": {
-                "humidity": "-",
-                "airtemperature": "degC",
-                "cloudiness": "-",
-            }
-        },
+        meteorological_quantities=METEO_QUANTITIES
     )
 
     forcing_model = ForcingModel(forcing=forcing_list)
@@ -120,14 +121,6 @@ def test_tim_to_bc_converter_writes_meteorological_field_block(tmp_path: Path):
     assert "0.0   80.0  15.0  60.0" in content
     assert "60.0  82.0  16.5  62.0" in content
 
-
-METEO_QUANTITIES = {
-    "humidity_airtemperature_cloudiness": {
-        "humidity": "-",
-        "airtemperature": "degC",
-        "cloudiness": "%",
-    }
-}
 
 def test_meteorological_block_column_count_mismatch_raises(tmp_path: Path):
     tim_path = tmp_path / "meteo.tim"
