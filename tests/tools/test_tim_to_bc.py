@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.tim.models import TimModel
 from hydrolib.tools.extforce_convert.converters import TimToForcingConverter
@@ -117,3 +119,25 @@ def test_tim_to_bc_converter_writes_meteorological_field_block(tmp_path: Path):
     assert "quantity          = cloudiness" in content
     assert "0.0   80.0  15.0  60.0" in content
     assert "60.0  82.0  16.5  62.0" in content
+
+
+METEO_QUANTITIES = {
+    "humidity_airtemperature_cloudiness": {
+        "humidity": "-",
+        "airtemperature": "degC",
+        "cloudiness": "%",
+    }
+}
+
+def test_meteorological_block_column_count_mismatch_raises(tmp_path: Path):
+    tim_path = tmp_path / "meteo.tim"
+    tim_path.write_text("0 80 15\n60 82 16.5\n")
+
+    converter = TimToForcingConverter(
+        tim_model=TimModel(tim_path),
+        time_unit="minutes since 2000-01-01 00:00:00 +00:00",
+        units=["-", "degC"],
+        user_defined_names=["global"],
+    )
+    with pytest.raises(ValueError, match="expects 3 columns"):
+        converter.convert(meteorological_quantities=METEO_QUANTITIES)

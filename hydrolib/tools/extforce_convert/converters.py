@@ -2101,7 +2101,7 @@ class TimToForcingConverter:
 
         if vector_quantities and meteorological_quantities:
             raise ValueError(
-                "Vector quantity conversion and scalar meterological quantity conversion are mutually exclusive."
+                "Vector quantity conversion and scalar meteorological quantity conversion are mutually exclusive."
             )
 
         if vector_quantities:
@@ -2109,7 +2109,9 @@ class TimToForcingConverter:
                 vector_quantities,
             )
         elif meteorological_quantities:
-            time_series_list = self._convert_meteorological_quantity()
+            time_series_list = self._convert_meteorological_quantity(
+                meteorological_quantities,
+            )
         else:
             time_series_list = self._convert_scalar_quantities()
 
@@ -2190,14 +2192,39 @@ class TimToForcingConverter:
 
         return [forcing]
 
-    def _convert_meteorological_quantity(self) -> list[TimeSeries]:
-        """Convert one meteorological quantity into one scalar `TimeSeries` block."""
+    def _convert_meteorological_quantity(
+        self,
+        meteorological_quantities: dict[str, dict[str, str]],
+    ) -> list[TimeSeries]:
+        """Convert one meteorological quantity into one scalar `TimeSeries` block.
+
+        The component names and units are taken from the supplied
+        `meteorological_quantities` mapping (not from the TIM DataFrame columns or
+        `self.units`). If the TIM DataFrame columns already contain all configured
+        component names, the data is reordered to the configured order; otherwise the
+        columns are assigned the configured names positionally.
+
+        Raises:
+            ValueError: If not exactly one user-defined name is provided, or if the
+                number of TIM data columns does not match the configured components.
+        """
         if len(self.user_defined_names) != 1:
             raise ValueError(
                 "For multi-column scalar quantities, provide exactly one user-defined forcing name per TIM model."
             )
 
+        quantity_name, component_units = next(iter(meteorological_quantities.items()))
+        component_names = list(component_units.keys())
+
         df = self.tim_model_df
+        if len(component_names) != len(df.columns):
+            raise ValueError(
+                f"Meteorological quantity '{quantity_name}' expects {len(component_names)} "
+                f"columns {component_names}, but TIM data has {len(df.columns)} columns."
+            )
+
+        component_rows = df[component_names].values.tolist()
+
         time_data = df.index.tolist()
         forcing = TimeSeries(
             name=self.user_defined_names[0],
@@ -2206,13 +2233,13 @@ class TimToForcingConverter:
             quantityunitpair=[
                 QuantityUnitPair(quantity="time", unit=self.time_unit),
                 *[
-                    QuantityUnitPair(quantity=column, unit=unit)
-                    for column, unit in zip(df.columns, self.units)
+                    QuantityUnitPair(quantity=component, unit=component_units[component])
+                    for component in component_names
                 ],
             ],
             datablock=[
                 [time_val, *row]
-                for time_val, row in zip(time_data, df.values.tolist())
+                for time_val, row in zip(time_data, component_rows)
             ],
         )
         return [forcing]

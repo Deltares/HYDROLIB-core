@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -483,103 +483,105 @@ class ExternalForcingConfigs(BaseModel):
 
     @field_validator("vector_quantities", "meteorological_fields", mode="before")
     def normalize_multi_column_quantity_definitions(
-        cls, v: dict[str, dict[str, str]] | None
+        cls, v: dict[str, dict[str, str]] | None, info: ValidationInfo
     ) -> dict[str, dict[str, str]]:
         """Normalize named multi-column quantity definitions keyed by old quantity name.
 
         This applies to both `vector_quantities` and `meteorological_fields`, which are
         both mappings of old quantity names to a mapping of component names to units.
+        Validation errors name the field being validated.
 
         Expected style is mapping only: `{component: unit}`.
         """
+        field_name = info.field_name
         if v is None:
             return {}
 
         if not isinstance(v, dict):
             raise ValueError(
-                "'vector_quantities' must be a mapping of quantity name to component names."
+                f"'{field_name}' must be a mapping of quantity name to component names."
             )
 
         normalized: dict[str, dict[str, str]] = {}
         for quantity_name, component_units in v.items():
-            key = cls._normalize_vector_key(quantity_name)
+            key = cls._normalize_quantity_key(field_name, quantity_name)
             normalized[key] = cls._normalize_component_units(
-                quantity_name, component_units
+                field_name, quantity_name, component_units
             )
 
         return normalized
 
     @staticmethod
-    def _normalize_vector_key(quantity_name: Any) -> str:
-        """Validate and normalize a `vector_quantities` key to a known old quantity name."""
+    def _normalize_quantity_key(field_name: str, quantity_name: Any) -> str:
+        """Validate and normalize a multi-column quantity key to a known old quantity name."""
         if not isinstance(quantity_name, str):
             raise ValueError(
-                f"'vector_quantities' key must be a string, got {quantity_name!r}."
+                f"'{field_name}' key must be a string, got {quantity_name!r}."
             )
 
         key = quantity_name.strip().lower()
         if key not in KNOWN_OLD_QUANTITY_NAMES:
             raise ValueError(
-                f"'vector_quantities' key {quantity_name!r} is not a known quantity "
+                f"'{field_name}' key {quantity_name!r} is not a known quantity "
                 "of the old external forcings file."
             )
         return key
 
     @staticmethod
     def _normalize_component_units(
-        quantity_name: str, component_units: Any
+        field_name: str, quantity_name: str, component_units: Any
     ) -> dict[str, str]:
-        """Validate and normalize the `{component: unit}` mapping of one vector quantity."""
+        """Validate and normalize the `{component: unit}` mapping of one multi-column quantity."""
         if not isinstance(component_units, dict) or not component_units:
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' must be a mapping of component names to units."
+                f"'{field_name}[{quantity_name}]' must be a mapping of component names to units."
             )
 
         normalized_components: dict[str, str] = {}
         for component_name, unit_name in component_units.items():
             component = ExternalForcingConfigs._validate_component_name(
-                quantity_name, component_name, normalized_components
+                field_name, quantity_name, component_name, normalized_components
             )
             normalized_components[component] = (
                 ExternalForcingConfigs._validate_component_unit(
-                    quantity_name, component, unit_name
+                    field_name, quantity_name, component, unit_name
                 )
             )
         return normalized_components
 
     @staticmethod
     def _validate_component_name(
-        quantity_name: str, component_name: Any, seen: dict[str, str]
+        field_name: str, quantity_name: str, component_name: Any, seen: dict[str, str]
     ) -> str:
         """Validate a single component name and return its trimmed form."""
         if not isinstance(component_name, str):
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains a non-string component: {component_name!r}."
+                f"'{field_name}[{quantity_name}]' contains a non-string component: {component_name!r}."
             )
         component = component_name.strip()
         if not component:
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains an empty component name."
+                f"'{field_name}[{quantity_name}]' contains an empty component name."
             )
         if component in seen:
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains duplicate component name {component!r}."
+                f"'{field_name}[{quantity_name}]' contains duplicate component name {component!r}."
             )
         return component
 
     @staticmethod
     def _validate_component_unit(
-        quantity_name: str, component: str, unit_name: Any
+        field_name: str, quantity_name: str, component: str, unit_name: Any
     ) -> str:
         """Validate a single component's unit and return its trimmed form."""
         if not isinstance(unit_name, str):
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be a string."
+                f"'{field_name}[{quantity_name}]' unit for component {component!r} must be a string."
             )
         unit = unit_name.strip()
         if not unit:
             raise ValueError(
-                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be non-empty."
+                f"'{field_name}[{quantity_name}]' unit for component {component!r} must be non-empty."
             )
         return unit
 
