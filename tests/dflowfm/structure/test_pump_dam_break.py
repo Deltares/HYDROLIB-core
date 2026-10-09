@@ -380,7 +380,7 @@ class TestDambreak:
                 ),
                 pytest.param(
                     dict(
-                        polylinefile=Path(),
+                        locationfile=Path(),
                         waterlevelupstreamlocationx=1.2,
                         waterlevelupstreamlocationy=2.3,
                         waterleveldownstreamnodeid="aDownstreamNodeId",
@@ -389,7 +389,7 @@ class TestDambreak:
                 ),
                 pytest.param(
                     dict(
-                        polylinefile=Path("aFilePath"),
+                        locationfile=Path("aFilePath"),
                         waterlevelupstreamlocationx=1.2,
                         waterlevelupstreamlocationy=2.3,
                         waterleveldownstreamlocationx=3.4,
@@ -419,7 +419,7 @@ class TestDambreak:
                         numcoordinates=None,
                         xcoordinates=None,
                         ycoordinates=None,
-                        polylinefile=None,
+                        locationfile=None,
                         waterlevelupstreamnodeid="anUpstreamNodeId",
                         waterleveldownstreamnodeid="aDownstreamNodeId",
                     ),
