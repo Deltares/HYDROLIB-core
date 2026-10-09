@@ -621,7 +621,7 @@ class ExternalForcingConfigs(BaseModel):
         quantity: ExtOldQuantity | str,
         quantity_mapping: dict[str, dict[str, str]]
     ) -> dict[str, str] | None:
-        """Return configured vector component/unit mapping for a multi-column quantity."""
+        """Return configured component/unit mapping for a multi-column quantity."""
         name = str(quantity).strip().lower()
         component_units = quantity_mapping.get(name)
         if component_units:
