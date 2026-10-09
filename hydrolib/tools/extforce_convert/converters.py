@@ -2192,11 +2192,8 @@ class TimToForcingConverter:
 
         return [forcing]
 
-    def _convert_meteorological_quantity(
-        self,
-        meteorological_quantity
-    ) -> list[TimeSeries]:
-        """Convert one multi-column TIM model into one scalar `TimeSeries` block."""
+    def _convert_meteorological_quantity(self) -> list[TimeSeries]:
+        """Convert one meteorological quantity into one scalar `TimeSeries` block."""
         if len(self.user_defined_names) != 1:
             raise ValueError(
                 "For multi-column scalar quantities, provide exactly one user-defined forcing name per TIM model."
