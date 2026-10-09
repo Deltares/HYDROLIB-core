@@ -1,9 +1,12 @@
 import inspect
 
 import pytest
+from pydantic import ValidationError
 
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.structure.models import (
     FlowDirection,
     GateOpeningHorizontalDirection,
@@ -283,7 +286,7 @@ class TestGeneralStructure:
         assert struct.comments.gateopeningwidth is None
         assert struct.comments.usevelocityheight == "My own special comment 2"
 
-    def test_general_structure_with_unknown_parameter_is_ignored(self):
+    def test_general_structure_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -296,6 +299,117 @@ class TestGeneralStructure:
             unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            crestLevel                     = 116.0
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "unknown" in str(exc_info.value)
+
+    def test_general_structure_with_misspelled_coefficient_raises_error(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            crestLevel                     = 116.0
+            posFreeGateFlowCoef            = 1.03
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "posfreegateflowcoef" in str(exc_info.value)
+
+    def test_general_structure_parses_undocumented_kernel_keywords(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                      = id
+            type                    = generalStructure
+            branchId                = stump
+            chainage                = 13.53
+            crestLevel              = 116.0
+            gateheightintervalcntrl = 12
+            dynstructext            = 0.8
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
+        struct = wrapper.val
+
+        assert struct.gateheightintervalcntrl == pytest.approx(12.0)
+        assert struct.dynstructext == pytest.approx(0.8)
+
+    def test_general_structure_writes_undocumented_kernel_keywords_when_set(self):
+        struct = GeneralStructure(
+            **self._create_required_general_structure_values(),
+            gateheightintervalcntrl=12.0,
+            dynstructext=0.8,
+        )
+
+        section = struct._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        written = {prop.key: prop.value for prop in section.content if hasattr(prop, "key")}
+
+        assert float(written["gateheightintervalcntrl"]) == pytest.approx(12.0)
+        assert float(written["dynstructext"]) == pytest.approx(0.8)
+
+    def test_general_structure_does_not_write_undocumented_kernel_keywords_when_unset(
+        self,
+    ):
+        struct = GeneralStructure(**self._create_required_general_structure_values())
+
+        section = struct._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        keys = [prop.key for prop in section.content if hasattr(prop, "key")]
+
+        assert struct.gateheightintervalcntrl is None
+        assert struct.dynstructext is None
+        assert "gateheightintervalcntrl" not in keys
+        assert "dynstructext" not in keys
+
+    def test_general_structure_parses_all_fields(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id
+            name                           = extravagante_waarde
             type                           = generalStructure
             branchId                       = stump
             chainage                       = 13.53
@@ -341,6 +455,103 @@ class TestGeneralStructure:
         struct = wrapper.val
 
         assert struct.model_dump().get("unknown") is None  # type: ignore
+
+        assert struct.id == "id"
+        assert struct.name == "extravagante_waarde"
+        assert struct.branchid == "stump"
+        assert struct.chainage == pytest.approx(13.53)
+        assert struct.type == "generalStructure"
+        assert struct.allowedflowdir == FlowDirection.positive
+        assert struct.upstream1width == pytest.approx(111.0)
+        assert struct.upstream1level == pytest.approx(112.0)
+        assert struct.upstream2width == pytest.approx(113.0)
+        assert struct.upstream2level == pytest.approx(114.0)
+        assert struct.crestwidth == pytest.approx(115.0)
+        assert struct.crestlevel == pytest.approx(116.0)
+        assert struct.crestlength == pytest.approx(117.0)
+        assert struct.downstream1width == pytest.approx(118.0)
+        assert struct.downstream1level == pytest.approx(119.0)
+        assert struct.downstream2width == pytest.approx(119.1)
+        assert struct.downstream2level == pytest.approx(119.2)
+        assert struct.gateloweredgelevel == pytest.approx(119.3)
+        assert struct.posfreegateflowcoeff == pytest.approx(119.4)
+        assert struct.posdrowngateflowcoeff == pytest.approx(119.5)
+        assert struct.posfreeweirflowcoeff == pytest.approx(119.6)
+        assert struct.posdrownweirflowcoeff == pytest.approx(119.7)
+        assert struct.poscontrcoeffreegate == pytest.approx(119.8)
+        assert struct.negfreegateflowcoeff == pytest.approx(119.9)
+        assert struct.negdrowngateflowcoeff == pytest.approx(118.1)
+        assert struct.negfreeweirflowcoeff == pytest.approx(118.2)
+        assert struct.negdrownweirflowcoeff == pytest.approx(118.3)
+        assert struct.negcontrcoeffreegate == pytest.approx(118.4)
+        assert struct.extraresistance == pytest.approx(118.5)
+        assert struct.gateheight == pytest.approx(118.6)
+        assert struct.gateopeningwidth == pytest.approx(110.0)
+        assert (
+            struct.gateopeninghorizontaldirection
+            == GateOpeningHorizontalDirection.from_right
+        )
+        assert struct.usevelocityheight == False
+
+    def test_general_structure_parses_all_fields_with_underscored_coefficients(self):
+        """Same as `test_general_structure_parses_all_fields`, but with the legacy
+        underscored spelling of the flow coefficient keywords, which must be renamed
+        by `GeneralStructure._rename_coefficient_keys`."""
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id
+            name                           = extravagante_waarde
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            allowedFlowDir                 = positive
+            upstream1Width                 = 111.0
+            upstream1Level                 = 112.0
+            upstream2Width                 = 113.0
+            upstream2Level                 = 114.0
+            crestWidth                     = 115.0
+            crestLevel                     = 116.0
+            crestLength                    = 117.0
+            downstream1Width               = 118.0
+            downstream1Level               = 119.0
+            downstream2Width               = 119.1
+            downstream2Level               = 119.2
+            gateLowerEdgeLevel             = 119.3
+            pos_freegateflowcoeff          = 119.4
+            pos_drowngateflowcoeff         = 119.5
+            pos_freeweirflowcoeff          = 119.6
+            pos_drownweirflowcoeff         = 119.7
+            pos_contrcoeffreegate          = 119.8
+            neg_freegateflowcoeff          = 119.9
+            neg_drowngateflowcoeff         = 118.1
+            neg_freeweirflowcoeff          = 118.2
+            neg_drownweirflowcoeff         = 118.3
+            neg_contrcoeffreegate          = 118.4
+            extraResistance                = 118.5
+            gateHeight                     = 118.6
+            gateOpeningWidth               = 110.0
+            gateOpeningHorizontalDirection = fromRight
+            useVelocityHeight              = 0
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
+        struct = wrapper.val
+
+        # The underscored keys must not survive as extra attributes.
+        dumped = struct.model_dump()
+        assert "pos_freegateflowcoeff" not in dumped
+        assert "neg_contrcoeffreegate" not in dumped
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
