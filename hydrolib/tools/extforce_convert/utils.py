@@ -628,13 +628,13 @@ class ExternalForcingConfigs(BaseModel):
     def get_vector_component_units(
         self, quantity: ExtOldQuantity | str
     ) -> dict[str, str] | None:
-        """Return configured vector component/unit mapping for a multi-column quantity."""
+        """Return component/unit mapping for a vector quantity."""
         return self.get_element_units(quantity, self.vector_quantities)
 
     def get_meteorological_field_component_units(
         self, quantity: ExtOldQuantity | str
     ) -> dict[str, str] | None:
-        """Return configured scalar multi-column component/unit mapping for a quantity."""
+        """Return component/unit mapping for a metereological quantity."""
         return self.get_element_units(quantity, self.meteorological_fields)
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
