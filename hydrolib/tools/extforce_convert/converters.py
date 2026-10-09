@@ -402,7 +402,7 @@ class SpatialConverter(BaseConverter):
         n_columns = len(tim_model.timeseries[0].data)
 
         if meteorological_quantities:
-            vector_name, component_units = next(iter(meteorological_quantities.items()))
+            _, component_units = next(iter(meteorological_quantities.items()))
             component_names = list(component_units.keys())
             if n_columns != len(component_names):
                 raise SpatialError(
