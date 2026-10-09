@@ -4359,7 +4359,7 @@ Hold "Ctrl" to enable pan &amp; zoom
       +id: str  (alias: id)
       +name: str  (alias: name)
       +type: str  (alias: type)
-      +locationfile: DiskOnlyFileModel?  (alias: locationFile)
+      +polylinefile: DiskOnlyFileModel?  (alias: polylinefile)
       +branchid: str?  (alias: branchId)
       +chainage: float?  (alias: chainage)
       +numcoordinates: int?  (alias: numCoordinates)
@@ -4388,7 +4388,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     }
 
     class StructureGeneral {
-      +fileversion: str = 3.01  (alias: fileVersion)
+      +fileversion: str = 3.00  (alias: fileVersion)
       +filetype: structure  (alias: fileType)
     }
 
@@ -4536,7 +4536,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     <pre class="mermaid"><code>flowchart TD
     A[Start root_validator check_location] --&gt; B[type == compound?]
     B -- yes --&gt; Z[Return OK no location needed]
-    B -- no --&gt; C[locationFile provided?]
+    B -- no --&gt; C[polylinefile provided?]
     C --&gt;|yes| Cx[Ensure no x/y provided] --&gt; H[OK]
     C --&gt;|no| D[type in only_coordinates? longCulvert or dambreak]
     D --&gt;|yes| E[num/x/y provided?]
@@ -4555,7 +4555,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     K --&gt;|no| Err3[Error: need one of: branchId+chainage OR num/x/y]
 
     subgraph Notes
-      N1[Mutual exclusion: locationFile cannot be combined with x/y]
+      N1[Mutual exclusion: polylinefile cannot be combined with x/y]
       N2[Coordinates check: numCoordinates &gt;= 2 and lengths of x/y match num]
       N3[branchId presence requires chainage and non-empty branchId]
     end</code></pre> 
@@ -4563,10 +4563,9 @@ Hold "Ctrl" to enable pan &amp; zoom
 </div>
 <p>Important details enforced by code:</p>
 <ul>
-<li><code>locationFile</code> and x/y coordinates are mutually exclusive. The legacy keyword <code>polylinefile</code> is still read and is
-  renamed to <code>locationFile</code> (see the notes below).</li>
+<li>polylinefile and x/y coordinates are mutually exclusive.</li>
 <li>For <code>longCulvert</code>, coordinates must be provided if no polyline is given. For <code>dambreak</code>, either coordinates or polyline is allowed.</li>
-<li>At least one of: branchId+chainage OR num/x/y OR locationFile must be present (except for <code>compound</code>).</li>
+<li>At least one of: branchId+chainage OR num/x/y OR polylinefile must be present (except for <code>compound</code>).</li>
 <li><code>validate_coordinates_in_model</code> enforces <code>numCoordinates &gt;= 2</code> and exact length match for <code>xCoordinates</code> and <code>yCoordinates</code>.</li>
 <li><code>validate_branch_and_chainage_in_model</code> ensures that when <code>branchId</code> is provided, <code>chainage</code> is provided and <code>branchId</code> is non-empty.</li>
 </ul>
@@ -4606,8 +4605,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <li><code>[General]</code> section mapping to <code>StructureGeneral</code></li>
 <li>One or more <code>[Structure]</code> sections mapping to the <code>Structure</code> subclasses</li>
 </ul>
-<p>On save/export, non-applicable location fields are left out by <code>Structure._should_be_serialized()</code>, which uses
-<code>Structure._inapplicable_location_fields()</code>:</p>
+<p>On save/export, non-applicable location fields are excluded via <code>Structure._exclude_fields()</code>:</p>
 <ul>
 <li>If <code>type == "compound"</code>: branch/chainage and coordinate fields are excluded.</li>
 <li>If <code>branchId</code> is set: coordinate fields are excluded.</li>
@@ -4621,8 +4619,8 @@ Hold "Ctrl" to enable pan &amp; zoom
     name: str = Field(&quot;id&quot;, alias=&quot;name&quot;)
     type: str = Field(alias=&quot;type&quot;)
 
-    # Location A: 2D polyline (called `polylinefile` before structure file version 3.01)
-    locationfile: DiskOnlyFileModel | None = Field(None, alias=&quot;locationFile&quot;)
+    # Location A: 2D polyline
+    polylinefile: DiskOnlyFileModel | None = Field(None, alias=&quot;polylinefile&quot;)
 
     # Location B: 1D branch reference
     branchid: str | None = Field(None, alias=&quot;branchId&quot;)
@@ -4666,8 +4664,6 @@ class DambreakAlgorithm(int, Enum):
     corrcoeff: float = Field(1.0, alias=&quot;corrCoeff&quot;)
     usevelocityheight: bool = Field(True, alias=&quot;useVelocityHeight&quot;)
 </code></pre></div>
-<p>The legacy keyword <code>lat_contr_coeff</code> (structure files older than version 2.01) is read as <code>corrCoeff</code>. If a file has both
-keywords, the legacy one is reported as an unknown keyword.</p>
 <h4 id="universalweir-type-universalweir">UniversalWeir (type = universalWeir)<a class="headerlink" href="#universalweir-type-universalweir" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code>class UniversalWeir(Structure):
     type: Literal[&quot;universalWeir&quot;] = Field(&quot;universalWeir&quot;, alias=&quot;type&quot;)
@@ -4977,8 +4973,6 @@ Hold "Ctrl" to enable pan &amp; zoom
     negdrownweirflowcoeff: float | None = Field(1.0, alias=&quot;negDrownWeirFlowCoeff&quot;)
     negcontrcoeffreegate: float | None = Field(1.0, alias=&quot;negContrCoefFreeGate&quot;)
     extraresistance: float | None = Field(0.0, alias=&quot;extraResistance&quot;)
-    dynstructext: float | None = Field(None, alias=&quot;dynstructext&quot;)
-    gateheightintervalcntrl: float | None = Field(None, alias=&quot;gateheightintervalcntrl&quot;)
     gateheight: float | None = Field(1e10, alias=&quot;gateHeight&quot;)
     gateopeningwidth: ForcingData | None = Field(0.0, alias=&quot;gateOpeningWidth&quot;)
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
@@ -5120,22 +5114,10 @@ sm.save(&quot;path/to/structures.ini&quot;)
 <h3 id="notes-and-edge-cases">Notes and edge cases<a class="headerlink" href="#notes-and-edge-cases" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>Compound</code> structures do not require any location specification; the base location validator exits early for <code>type="compound"</code>.</li>
-<li>The location logic forbids combining <code>locationFile</code> with explicit <code>xCoordinates</code>/<code>yCoordinates</code>.</li>
+<li>The location logic forbids combining <code>polylinefile</code> with explicit <code>xCoordinates</code>/<code>yCoordinates</code>.</li>
 <li>For <code>LongCulvert</code>, if you provide <code>zCoordinates</code> it must have exactly <code>numCoordinates</code> entries.</li>
 <li>For <code>Dambreak</code>, upstream and downstream water level reference can be either a node id or an (X,Y) pair per side, but not both; each side is validated independently.</li>
-<li><code>Structure._should_be_serialized()</code> ensures only the relevant location fields are written out, keeping INI files clean.</li>
-<li>Legacy keywords: <code>polylinefile</code> (and its comment) is read as <code>locationFile</code>. For a <code>GeneralStructure</code>, the underscored
-  coefficient keywords (<code>pos_freegateflowcoeff</code>, <code>neg_contrcoeffreegate</code>, ...) are read as <code>posFreeGateFlowCoeff</code>,
-  <code>negContrCoefFreeGate</code>, and so on. For a <code>Weir</code>, <code>lat_contr_coeff</code> is read as <code>corrCoeff</code>. A legacy keyword that is
-  explicitly <code>None</code> (for example <code>polylinefile</code>) is ignored.</li>
-<li>Unknown keywords: every structure type reports keywords that it does not know with the
-  <code>UnknownKeywordErrorManager</code> ("Unknown keywords are detected in section ..."), instead of silently ignoring them. This
-  also catches misspelled keywords, which used to fall back to their defaults. Keywords that are valid for the kernel but
-  not modelled need a field, as was done for <code>dynstructext</code> and <code>gateheightintervalcntrl</code> on <code>GeneralStructure</code>.</li>
-<li><code>locationFile</code> belongs to structure file version 3.01 (the default of <code>StructureGeneral.fileversion</code>). Older
-  versions use <code>polylinefile</code>. When a structure uses <code>locationFile</code> and the file declares an older version,
-  <code>StructureModel</code> raises the version to 3.01 (on creation and again when saving) and logs a warning. Files in which no
-  structure has a location file keep their version.</li>
+<li>The base <code>Structure._exclude_fields()</code> ensures only the relevant location fields are written out, keeping INI files clean.</li>
 </ul>
 <h3 id="how-to-include-this-page-in-your-docs-navigation">How to include this page in your docs navigation<a class="headerlink" href="#how-to-include-this-page-in-your-docs-navigation" title="Permanent link">&para;</a></h3>
 <p>Add an entry under “D-Flow FM” in <code>mkdocs.yml</code> (or in any section you prefer):</p>
