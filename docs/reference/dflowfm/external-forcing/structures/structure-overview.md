@@ -41,6 +41,7 @@ classDiagram
     class Pump
     class Compound
     class Orifice
+    class Gate
     class GeneralStructure
     class Dambreak
     class Bridge
@@ -67,7 +68,9 @@ classDiagram
     Structure <|-- Pump
     Structure <|-- Compound
     Structure <|-- Orifice
-    Structure <|-- GeneralStructure
+    Structure <|-- CrestWidthValidator
+    CrestWidthValidator <|-- Gate
+    CrestWidthValidator <|-- GeneralStructure
     Structure <|-- Dambreak
     Structure <|-- Bridge
 
@@ -112,6 +115,7 @@ classDiagram
     Culvert --> FlowDirection
     LongCulvert --> FlowDirection
     Orifice --> FlowDirection
+    Gate --> GateOpeningHorizontalDirection
     GeneralStructure --> FlowDirection
     Pump --> Orientation
     GeneralStructure --> GateOpeningHorizontalDirection
@@ -453,6 +457,47 @@ flowchart TD
     E -- True --> F{limitFlowNeg provided?}
     F -- No --> Err2[Error]
     E -- False --> G[OK]
+```
+
+#### CrestWidthValidator (shared mixin)
+
+```
+class CrestWidthValidator(Structure):
+    # Shared validator used by Gate and GeneralStructure.
+    # Validates that gateOpeningWidth <= crestWidth when both are static values.
+```
+
+#### Gate (type = gate)
+
+```
+class Gate(Structure):
+    type: Literal["gate"] = Field("gate", alias="type")
+
+    crestwidth: float | None = Field(None, alias="crestWidth")
+    crestlevel: ForcingData = Field(alias="crestLevel")
+
+    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingData = Field(alias="gateHeight")
+    gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
+
+    # Validator: gateOpeningWidth must be <= crestWidth when both are static values
+```
+
+Validation logic for Gate width:
+
+```mermaid
+flowchart TD
+    A[Create Gate] --> B{crestWidth provided?}
+    B -- No --> D[OK]
+    B -- Yes --> C{gateOpeningWidth static value?}
+    C -- No --> D[OK]
+    C -- Yes --> E{gateOpeningWidth <= crestWidth?}
+    E -- Yes --> D[OK]
+    E -- No --> Err[Error]
 ```
 
 #### GeneralStructure (type = generalStructure)
