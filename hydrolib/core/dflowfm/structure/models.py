@@ -96,7 +96,7 @@ class Structure(CoordinateValidator, INIBasedModel):
         name: Optional[str] = "Given name in the user interface."
         locationfile: Optional[str] = Field(
             "*.pli; Polyline geometry definition for 2D structure.",
-            alias="locationfile",
+            alias="locationFile",
         )
         branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
@@ -177,8 +177,10 @@ class Structure(CoordinateValidator, INIBasedModel):
         return values
 
     @model_validator(mode="before")
-    def rename_keys(cls, values: dict) -> dict:
+    @classmethod
+    def rename_keys(cls, values: Any) -> Any:
         """Renames some old keywords to the currently supported keywords."""
+        values = cls._convert_section_to_dict(values)
         return cls._rename_legacy_keys(values, {"locationfile": ["polylinefile"]})
 
     @model_validator(mode="after")
