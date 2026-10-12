@@ -885,20 +885,19 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
-GENERAL_STRUCTURE_COEFFICIENT_FIELDS = frozenset(
-    {
-        "posfreegateflowcoeff",
-        "posdrowngateflowcoeff",
-        "posfreeweirflowcoeff",
-        "posdrownweirflowcoeff",
-        "poscontrcoeffreegate",
-        "negfreegateflowcoeff",
-        "negdrowngateflowcoeff",
-        "negfreeweirflowcoeff",
-        "negdrownweirflowcoeff",
-        "negcontrcoeffreegate",
-    }
-)
+# Current general structure coefficient keyword and its legacy underscored spelling.
+_LEGACY_COEFFICIENT_KEYWORDS = {
+    f"{side}{name}": [f"{side}_{name}"]
+    for side in ("pos", "neg")
+    for name in (
+        "freegateflowcoeff",
+        "drowngateflowcoeff",
+        "freeweirflowcoeff",
+        "drownweirflowcoeff",
+        "contrcoeffreegate",
+    )
+}
+
 
 class CrestWidthValidator(ABC):
     """Validator mixin for structures with a crest width and a gate opening width.
@@ -1126,7 +1125,7 @@ class GeneralStructure(CrestWidthValidator, Structure):
 
     @model_validator(mode="before")
     @classmethod
-    def _strip_underscores_from_coefficients(cls, values: Any) -> Any:
+    def _rename_legacy_coefficients(cls, values: Any) -> Any:
         """Accept the legacy underscored spelling of the flow coefficient keywords.
 
         Older structure files separate the `pos`/`neg` prefix of the general structure
@@ -1139,36 +1138,10 @@ class GeneralStructure(CrestWidthValidator, Structure):
                 flattened `[Structure]` section as a dict.
 
         Returns:
-            Any: The input with the coefficient keywords normalized.
+            Any: The input with the coefficient keywords, and their comments, renamed.
         """
         values = cls._convert_section_to_dict(values)
-        if not isinstance(values, dict):
-            return values
-
-        cls._rename_coefficient_keys(values)
-
-        comments = values.get("comments")
-        if isinstance(comments, dict):
-            cls._rename_coefficient_keys(comments)
-
-        return values
-
-    @staticmethod
-    def _rename_coefficient_keys(data: dict[str, Any]) -> None:
-        """Rename the underscored coefficient keys of `data` in place.
-
-        Args:
-            data (dict[str, Any]): The keyword mapping to normalize, either the
-                structure block itself or its comments.
-        """
-        for key in list(data.keys()):
-            if not isinstance(key, str) or "_" not in key:
-                continue
-
-            stripped = key.replace("_", "").lower()
-            if stripped in GENERAL_STRUCTURE_COEFFICIENT_FIELDS:
-                value = data.pop(key)
-                data.setdefault(stripped, value)
+        return cls._rename_legacy_keys(values, _LEGACY_COEFFICIENT_KEYWORDS)
 
 
 class DambreakAlgorithm(int, Enum):
@@ -1465,8 +1438,8 @@ class Bridge(Structure):
         return enum_value_parser(v, FrictionType)
 
 
+# First structure file version with `locationFile`, which replaced `polylineFile`.
 _LOCATIONFILE_MIN_FILEVERSION = (3, 1)
-"""First structure file version with `locationFile`, which replaced `polylineFile`."""
 
 
 def _parse_fileversion(fileversion: str) -> Optional[tuple[int, int]]:
