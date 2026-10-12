@@ -2,8 +2,11 @@ import inspect
 from typing import Any, Dict
 
 import pytest
+from pydantic import ValidationError
 
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.structure.models import (
     Bridge,
     Culvert,
@@ -120,7 +123,7 @@ class TestBridge:
         assert bridge.friction == 70
         assert bridge.length == pytest.approx(9.75)
 
-    def test_bridge_with_unknown_parameter_is_ignored(self):
+    def test_bridge_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -152,24 +155,11 @@ class TestBridge:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Bridge].model_validate({"val": document.sections[0]})
-        bridge = wrapper.val
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[Bridge].model_validate({"val": document.sections[0]})
 
-        assert bridge.model_dump().get("unknown") is None  # type: ignore
-
-        assert bridge.id == "RS1-KBR31"
-        assert bridge.name == "RS1-KBR31name"
-        assert bridge.branchid == "riv_RS1_264"
-        assert bridge.chainage == pytest.approx(104.184)
-        assert bridge.type == "bridge"
-        assert bridge.allowedflowdir == FlowDirection.both
-        assert bridge.csdefid == "W_980.1S_0"
-        assert bridge.shift == pytest.approx(0.0)
-        assert bridge.inletlosscoeff == 1
-        assert bridge.outletlosscoeff == 1
-        assert bridge.frictiontype == FrictionType.strickler
-        assert bridge.friction == 70
-        assert bridge.length == pytest.approx(9.75)
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "unknown" in str(exc_info.value)
 
     def test_bridge_with_missing_required_parameters(self):
         parser = Parser(ParserConfig())
@@ -430,7 +420,7 @@ class TestWeir:
         assert weir.comments.crestwidth is None
         assert weir.comments.usevelocityheight == "My own special comment 2"
 
-    def test_weir_with_unknown_parameter_is_ignored(self):
+    def test_weir_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -458,20 +448,11 @@ class TestWeir:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
-        weir = wrapper.val
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[Weir].model_validate({"val": document.sections[0]})
 
-        assert weir.model_dump().get("unknown") is None  # type: ignore
-
-        assert weir.id == "weir_id"
-        assert weir.name == "weir"
-        assert weir.branchid == "branch"
-        assert weir.chainage == pytest.approx(3.0)
-        assert weir.type == "weir"
-        assert weir.allowedflowdir == FlowDirection.positive
-        assert weir.crestlevel == pytest.approx(10.5)
-        assert weir.crestwidth is None
-        assert weir.usevelocityheight == False
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "unknown" in str(exc_info.value)
 
     @pytest.mark.parametrize(
         "input,expected",
