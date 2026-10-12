@@ -1060,9 +1060,13 @@ class GeneralStructure(CrestWidthValidator, Structure):
             "Extra resistance [-]", alias="extraResistance"
         )
         gateheightintervalcntrl: str | None = Field(
-            None, alias="gateheightintervalcntrl"
+            "Legacy general structure keyword, read and stored by the kernel but not used in the computation.",
+            alias="gateheightintervalcntrl",
         )
-        dynstructext: str | None = Field(None, alias="dynstructext")
+        dynstructext: str | None = Field(
+            "Legacy general structure keyword scaling the dynamic structure time step; kernel default is 1.0.",
+            alias="dynstructext",
+        )
         gateheight: str | None = Field(None, alias="gateHeight")
         gateopeningwidth: str | None = Field(
             "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
