@@ -4,6 +4,7 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 """
 
 import logging
+import warnings
 from abc import ABC
 from enum import Enum
 from operator import gt, ne
@@ -275,6 +276,25 @@ class Structure(CoordinateValidator, INIBasedModel):
         if isinstance(value, (str, Path)):
             return DiskOnlyFileModel(filepath=Path(value))
         return value
+
+    @property
+    def polylinefile(self) -> DiskOnlyFileModel | None:
+        """Deprecated alias of `locationfile`, renamed in structure file version 3.01."""
+        warnings.warn(
+            "`polylinefile` is renamed to `locationfile`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.locationfile
+
+    @polylinefile.setter
+    def polylinefile(self, value: DiskOnlyFileModel | None) -> None:
+        warnings.warn(
+            "`polylinefile` is renamed to `locationfile`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.locationfile = value
 
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:

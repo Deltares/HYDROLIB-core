@@ -761,3 +761,43 @@ class TestLocationFileBackwardsCompatibility:
         )
 
         assert weir.locationfile is None
+
+    def test_polylinefile_attribute_returns_locationfile_and_warns(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, locationFile="structure.pli"
+        )
+
+        with pytest.warns(DeprecationWarning, match="renamed to `locationfile`"):
+            polylinefile = weir.polylinefile
+
+        assert polylinefile is weir.locationfile
+
+    def test_polylinefile_attribute_assignment_sets_locationfile_and_warns(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, locationFile="structure.pli"
+        )
+
+        with pytest.warns(DeprecationWarning, match="renamed to `locationfile`"):
+            weir.polylinefile = "other.pli"
+
+        assert weir.locationfile.filepath == Path("other.pli")
+
+    def test_polylinefile_attribute_assignment_is_serialized_as_locationfile(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            locationFile="structure.pli",
+        )
+        with pytest.warns(DeprecationWarning):
+            weir.polylinefile = "other.pli"
+
+        section = weir._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        properties = {prop.key: prop.value for prop in section.content}
+
+        assert Path(properties["locationFile"]) == Path("other.pli")
+        assert "polylinefile" not in properties
