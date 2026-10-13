@@ -37,7 +37,7 @@ def windows_os_path(monkeypatch):
 
 
 @pytest.fixture
-def relative_to_parent_mdu() -> MagicMock:
+def mdu_mock() -> MagicMock:
     mdu_parser = MagicMock(spec=MDUParser)
     mdu_parser.is_relative_to_parent = True
     return mdu_parser
@@ -85,7 +85,7 @@ class TestPathRelativeToParentMountNormalization:
         ],
     )
     def test_mapped_drive_and_unc_paths_give_relative_path(
-        self, ext_old_path: str, inifile_path: str, relative_to_parent_mdu
+        self, ext_old_path: str, inifile_path: str, mdu_mock
     ):
         """Regression: with `pathsRelativeToParent = 1`, one path addressed through a
         mapped drive (`P:`) and the other already resolved to its UNC form (as done by
@@ -98,7 +98,7 @@ class TestPathRelativeToParentMountNormalization:
             forcing,
             _MappedDrivePath(inifile_path),
             _MappedDrivePath(ext_old_path),
-            relative_to_parent_mdu,
+            mdu_mock,
         )
 
         assert PureWindowsPath(result) == PureWindowsPath(r"..\..\initial\salinity.xyz")
