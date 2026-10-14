@@ -79,6 +79,7 @@
     drop1D                   = 1
     chkAdvd                  = 0.1
     teta0                    = 0.55
+    qhRelax                  = 0.01
     cstBnd                   = 0
     maxitVerticalForesterSal = 0
     maxitVerticalForesterTem = 0
@@ -189,6 +190,7 @@
     wrishp_obs                        = 0
     wrishp_emb                        = 0
     wrishp_dryArea                    = 0
+    wrishp_enc                        = 0
     wrishp_src                        = 0
     wrishp_pump                       = 0
     outputDir                         = output
