@@ -641,17 +641,12 @@ class ResearchWind(Wind):
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
             alias="wind_eachstep",
         )
-        research_gapres: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="gapres",
-        )
 
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     research_varyingairdensity: Optional[bool] = Field(None, alias="varyingairdensity")
     research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
-    research_gapres: Optional[str] = Field(None, alias="gapres")
 
 
 class ResearchWaves(Waves):
