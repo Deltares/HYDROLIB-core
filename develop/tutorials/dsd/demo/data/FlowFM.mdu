@@ -189,7 +189,6 @@
     wrishp_obs                        = 0
     wrishp_emb                        = 0
     wrishp_dryArea                    = 0
-    wrishp_enc                        = 0
     wrishp_src                        = 0
     wrishp_pump                       = 0
     outputDir                         = output

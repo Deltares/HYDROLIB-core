@@ -243,7 +243,6 @@ wrishp_thd                        = 0      # Writing thin dams to shape file (0=
 wrishp_obs                        = 0      # Writing observation points to shape file (0=no, 1=yes).
 wrishp_emb                        = 0      # Writing embankments file (0=no, 1=yes).
 wrishp_dryArea                    = 0      # Writing dry areas to shape file (0=no, 1=yes).
-wrishp_enc                        = 0      # Writing enclosures to shape file (0=no, 1=yes).
 wrishp_src                        = 0      # Writing sources and sinks to shape file (0=no, 1=yes).
 wrishp_pump                       = 0      # Writing pumps to shape file (0=no, 1=yes).
 outputDir                         =        # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
