@@ -236,7 +236,6 @@ classDiagram
       drop1d: bool (alias=drop1D)
       chkadvd: float (alias=chkAdvd)
       teta0: float (alias=teta0)
-      qhrelax: float (alias=qhRelax)
       cstbnd: bool (alias=cstBnd)
       maxitverticalforestersal: int (alias=maxitVerticalForesterSal)
       maxitverticalforestertem: int (alias=maxitVerticalForesterTem)

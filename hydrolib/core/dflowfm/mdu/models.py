@@ -232,7 +232,6 @@ class Numerics(INIBasedModel):
             "Theta (implicitness) of time integration, 0.5 < Theta < 1.0.",
             alias="teta0",
         )
-        qhrelax: Optional[str] = Field(None, alias="qhRelax")
         cstbnd: Optional[str] = Field(
             "Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).",
             alias="cstBnd",
@@ -419,7 +418,6 @@ class Numerics(INIBasedModel):
     drop1d: bool = Field(False, alias="drop1D")
     chkadvd: float = Field(0.1, alias="chkAdvd")
     teta0: float = Field(0.55, alias="teta0")
-    qhrelax: float = Field(0.01, alias="qhRelax")
     cstbnd: bool = Field(False, alias="cstBnd")
     maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
     maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
