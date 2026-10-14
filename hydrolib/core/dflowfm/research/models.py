@@ -888,10 +888,6 @@ class ResearchOutput(Output):
             DEPRECATED_KEYWORD,
             alias="waqfilebase",
         )
-        research_snapshotdir: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="snapshotdir",
-        )
         research_heatfluxesonoutput: Optional[str] = Field(
             DEPRECATED_KEYWORD,
             alias="heatfluxesonoutput",
@@ -934,7 +930,6 @@ class ResearchOutput(Output):
         None, alias="wrimap_trachytopes"
     )
     research_waqfilebase: Optional[str] = Field(None, alias="waqfilebase")
-    research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
     @field_validator(
