@@ -1176,9 +1176,6 @@ class Output(INIBasedModel):
         wrishp_dryarea: str | None = Field(
             "Writing dry areas to shape file (0=no, 1=yes).", alias="wrishp_dryArea"
         )
-        wrishp_enc: str | None = Field(
-            "Writing enclosures to shape file (0=no, 1=yes).", alias="wrishp_enc"
-        )
         wrishp_src: str | None = Field(
             "Writing sources and sinks to shape file (0=no, 1=yes).", alias="wrishp_src"
         )
@@ -1663,7 +1660,6 @@ class Output(INIBasedModel):
     wrishp_obs: bool = Field(False, alias="wrishp_obs")
     wrishp_emb: bool = Field(False, alias="wrishp_emb")
     wrishp_dryarea: bool = Field(False, alias="wrishp_dryArea")
-    wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
     outputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(

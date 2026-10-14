@@ -425,7 +425,6 @@ classDiagram
       wrishp_obs: bool (alias=wrishp_obs)
       wrishp_emb: bool (alias=wrishp_emb)
       wrishp_dryarea: bool (alias=wrishp_dryArea)
-      wrishp_enc: bool (alias=wrishp_enc)
       wrishp_src: bool (alias=wrishp_src)
       wrishp_pump: bool (alias=wrishp_pump)
       outputdir?: Path (alias=outputDir)
