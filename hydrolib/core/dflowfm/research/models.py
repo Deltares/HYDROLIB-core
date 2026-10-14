@@ -560,10 +560,6 @@ class ResearchPhysics(Physics):
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
             alias="uniffrictcoef1dgrlay",
         )
-        research_effectspiral: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="effectspiral",
-        )
 
     comments: Comments = Comments()
 
@@ -597,7 +593,6 @@ class ResearchPhysics(Physics):
     research_uniffrictcoef1dgrlay: Optional[float] = Field(
         None, alias="uniffrictcoef1dgrlay"
     )
-    research_effectspiral: Optional[float] = Field(None, alias="effectspiral")
 
 
 class ResearchSediment(Sediment):
