@@ -9,7 +9,10 @@ from pydantic import BaseModel
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
-from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
+from hydrolib.tools.extforce_convert.forcing_registry import (
+    ForcingFileRegistry,
+    _ForcingFileFieldRef,
+)
 
 
 pytestmark = pytest.mark.unit
@@ -227,4 +230,36 @@ class TestFieldsThatAreIgnored:
         registry.share(block)
 
         assert _quantities(block.forcingfile) == ["q1"]
+
+
+class TestForcingFileFieldRef:
+    def test_value_reads_the_current_field_of_the_block(self, tmp_path: Path):
+        block = _ThreeFieldBlock(discharge="first")
+
+        field_ref = _ForcingFileFieldRef(block, "discharge")
+
+        assert field_ref.value == "first"
+
+        block.discharge = "second"
+
+        assert field_ref.value == "second"
+
+    def test_replace_writes_the_field_of_the_block(self, tmp_path: Path):
+        block = _ThreeFieldBlock(discharge="first", salinity="other")
+        field_ref = _ForcingFileFieldRef(block, "discharge")
+
+        field_ref.replace("second")
+
+        assert block.discharge == "second"
+        assert block.salinity == "other"
+
+    def test_refs_to_the_same_field_are_equal(self, tmp_path: Path):
+        block = _ThreeFieldBlock()
+
+        assert _ForcingFileFieldRef(block, "discharge") == _ForcingFileFieldRef(
+            block, "discharge"
+        )
+        assert _ForcingFileFieldRef(block, "discharge") != _ForcingFileFieldRef(
+            block, "salinity"
+        )
 
