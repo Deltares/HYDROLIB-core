@@ -82,7 +82,6 @@ Slopedrop2D       = 0.3
 Drop1D            = 1
 Chkadvd           = 0.1
 Teta0             = 0.55
-Qhrelax           = 0.01
 cstbnd            = 0
 Maxitverticalforestersal= 0
 Maxitverticalforestertem= 0

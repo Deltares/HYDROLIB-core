@@ -93,7 +93,6 @@ slopeDrop2D               = 0.0    # Apply droplosses only if local bottom slope
 drop1D                    = 0      # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                   = 0.1    # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55   # Theta (implicitness) of time integration, 0.5 < Theta < 1.0.
-qhRelax                   = 0.01
 cstBnd                    = 0      # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
 maxitVerticalForesterSal  = 0      # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
 maxitVerticalForesterTem  = 0      # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).

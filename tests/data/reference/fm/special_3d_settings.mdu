@@ -98,7 +98,6 @@ slopeDrop2D               = 0.0     # Apply droplosses only if local bottom slop
 drop1D                    = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                   = 0.1     # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55    # Theta of time integration (0.5 < theta < 1)
-qhRelax                   = 0.01
 cstBnd                    = 0       # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
 maxitverticalforester     = 0       # Forester iterations for all constituents (0: no vertical filter, > 0: max nr of iterations)
 turbulenceModel           = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)

@@ -84,7 +84,6 @@ Slopedrop2D                       = 0.                  # Apply drop losses only
 Drop1D                            = 0                   # Limit the down stream water level in the momentum equation to the downstream invert level,
 Chkadvd                           = 0.1                 # Check advection terms if depth < chkadvdp, => less setbacks
 Teta0                             = 0.55                # Theta of time integration, 0.5 < Theta < 1d0
-Qhrelax                           = 0.01                # Relaxation qhbnd ( )
 cstbnd                            = 0                   # Delft-3D type velocity treatment near boundaries for small coastal models (1) or not (0)
 Maxitverticalforestersal          = 0                   # 0 : no vertical filter, > 0 = Max nr of iterations
 Maxitverticalforestertem          = 0                   # 0 : no vertical filter for temp, > 0 = Max nr of iterations
