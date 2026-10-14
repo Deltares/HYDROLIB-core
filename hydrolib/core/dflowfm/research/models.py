@@ -884,10 +884,6 @@ class ResearchOutput(Output):
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
             alias="wrimap_trachytopes",
         )
-        research_s1incinterval: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="s1incinterval",
-        )
         research_waqfilebase: Optional[str] = Field(
             DEPRECATED_KEYWORD,
             alias="waqfilebase",
@@ -937,7 +933,6 @@ class ResearchOutput(Output):
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
     )
-    research_s1incinterval: Optional[str] = Field(None, alias="s1incinterval")
     research_waqfilebase: Optional[str] = Field(None, alias="waqfilebase")
     research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
