@@ -698,10 +698,6 @@ class ResearchWaves(Waves):
             "Sign wave height on his output; 0: hrms wave height on his output. Default=1.",
             alias="jahissigwav",
         )
-        research_wavenikuradse: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="wavenikuradse",
-        )
 
     comments: Comments = Comments()
 
@@ -723,7 +719,6 @@ class ResearchWaves(Waves):
     research_jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
     research_hminlw: Optional[float] = Field(None, alias="hminlw")
     research_jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
-    research_wavenikuradse: Optional[str] = Field(None, alias="wavenikuradse")
 
 
 class ResearchTime(Time):
