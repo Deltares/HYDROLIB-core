@@ -10,9 +10,7 @@ from typing import Any, Dict, Optional, Tuple
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
-from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.base.utils import PathStyle
-from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtGeneral,
@@ -37,6 +35,7 @@ from hydrolib.tools.extforce_convert.converters import (
     LateralConverter,
     SourceSinkConverter,
 )
+from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -48,16 +47,6 @@ from hydrolib.tools.extforce_convert.utils import (
 
 class ExternalForcingConverter:
     """Converter for old external forcing files to the new format."""
-
-    # Names of the `ExtModel` lists whose blocks can hold a `ForcingModel`.
-    _FORCING_BLOCK_LISTS = (
-        "boundary",
-        "lateral",
-        "sourcesink",
-        "bubblescreen",
-        "meteo",
-        "spatial",
-    )
 
     def __init__(
         self,
@@ -339,6 +328,7 @@ class ExternalForcingConverter:
         num_quantities = len(self.extold_model.forcing)
 
         type_field_map = self._type_field_map()
+        forcing_files = ForcingFileRegistry(self.ext_model)
 
         with tqdm(
             total=num_quantities, desc="Converting forcings", unit="forcing"
@@ -366,7 +356,7 @@ class ExternalForcingConverter:
                         f"{self.extold_model.filepath}."
                     )
 
-                self._share_forcing_models(new_quantity_block)
+                forcing_files.share(new_quantity_block)
 
                 model, attr = model_field
                 setattr(model, attr, getattr(model, attr) + [new_quantity_block])
@@ -385,94 +375,6 @@ class ExternalForcingConverter:
             self.extold_model.forcing = forcing
 
         return self.ext_model, self.structure_model
-
-    def _share_forcing_models(self, block: Any) -> None:
-        """Make blocks that write to the same `.bc` file share one `ForcingModel`.
-
-        Several old-style quantities can resolve to the same `.bc` path: two quantities on one
-        polyline (e.g. `tracerbndIM1` and `tracerbndIM2`), two spatial quantities on one `.tim`, or
-        a boundary and a source/sink on one `.pliz`. Each `ForcingModel` is written with the file
-        opened in `"w"` mode, so the last one saved would silently replace the quantities saved
-        before it.
-
-        For every `ForcingModel` held by `block`, the forcings are added to the model that an
-        already converted block (or the existing new external forcing file) holds for the same
-        `.bc` path, and `block` is pointed at that model. The file is then written once, with the
-        forcings of all the quantities in the order they appear in the old external forcing file.
-        A forcing that is equal to one already in the shared model is not added again.
-
-        Args:
-            block (Any): The newly converted block, not yet added to the ext model.
-        """
-        shared: dict[int, ForcingModel] = {}
-        for field_name, forcing_model in self._forcing_model_fields(block).items():
-            target = shared.get(id(forcing_model))
-            if target is None:
-                target = self._find_forcing_model(forcing_model.filepath)
-                if target is not None:
-                    self._append_missing_forcings(target, forcing_model)
-                    shared[id(forcing_model)] = target
-            if target is not None:
-                setattr(block, field_name, target)
-
-    @staticmethod
-    def _forcing_model_fields(block: Any) -> Dict[str, ForcingModel]:
-        """Return the fields of `block` that hold a `ForcingModel`, by field name."""
-        fields = {}
-        for field_name in type(block).model_fields:
-            value = getattr(block, field_name, None)
-            if isinstance(value, ForcingModel) and value.filepath is not None:
-                fields[field_name] = value
-
-        return fields
-
-    def _find_forcing_model(self, filepath: Path) -> ForcingModel | None:
-        """Find the `ForcingModel` that the ext model already writes to `filepath`.
-
-        A block of the existing new external forcing file is loaded without its child files, so
-        it holds a `DiskOnlyFileModel`. When that file exists it is parsed here, and replaces the
-        placeholder, so that the quantities it already holds are kept instead of overwritten.
-
-        Args:
-            filepath (Path): The `.bc` path of the newly converted block.
-
-        Returns:
-            ForcingModel | None: The model already writing `filepath`, or None if there is none.
-        """
-        found = None
-        for list_name in self._FORCING_BLOCK_LISTS:
-            for existing in getattr(self.ext_model, list_name):
-                for field_name in type(existing).model_fields:
-                    value = getattr(existing, field_name, None)
-                    if found is None and getattr(value, "filepath", None) == filepath:
-                        if isinstance(value, ForcingModel):
-                            found = value
-                        elif isinstance(value, DiskOnlyFileModel):
-                            found = self._load_existing_forcing_model(value)
-                            if found is not None:
-                                setattr(existing, field_name, found)
-
-        return found
-
-    def _load_existing_forcing_model(self, placeholder: DiskOnlyFileModel) -> ForcingModel | None:
-        """Parse the `.bc` file of a `DiskOnlyFileModel`, keeping its (relative) path.
-
-        Returns None when the file does not exist yet, so that a new file is simply written.
-        """
-        loaded = None
-        resolved = self.ext_model.filepath.parent / placeholder.filepath
-        if resolved.is_file():
-            loaded = ForcingModel(resolved)
-            loaded.filepath = placeholder.filepath
-
-        return loaded
-
-    @staticmethod
-    def _append_missing_forcings(target: ForcingModel, source: ForcingModel) -> None:
-        """Append the forcings of `source` that `target` does not hold yet."""
-        for forcing in source.forcing:
-            if forcing not in target.forcing:
-                target.forcing.append(forcing)
 
     def _resolve_forcing_path(self, forcing, ref_path: PathOrStr) -> Path:
         """Resolve the datafile path for an initial field or parameter block.
