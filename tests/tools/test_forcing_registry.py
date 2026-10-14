@@ -10,8 +10,8 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.tools.extforce_convert.forcing_registry import (
+    FORCING_BLOCK_LIST_NAMES,
     ForcingFileRegistry,
-    _ForcingFileFieldRef,
 )
 
 
@@ -232,34 +232,24 @@ class TestFieldsThatAreIgnored:
         assert _quantities(block.forcingfile) == ["q1"]
 
 
-class TestForcingFileFieldRef:
-    def test_value_reads_the_current_field_of_the_block(self, tmp_path: Path):
-        block = _ThreeFieldBlock(discharge="first")
+class TestRegistryIndex:
+    def test_first_existing_block_wins_for_a_path(
+        self, tmp_path: Path, ext_model: ExtModel
+    ):
+        first = _boundary(tmp_path, "q1", _forcing_model(Path("A.bc"), "q1"))
+        second = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+        ext_model.boundary = [first, second]
+        registry = ForcingFileRegistry(ext_model)
+        new = _boundary(tmp_path, "q3", _forcing_model(Path("A.bc"), "q3"))
 
-        field_ref = _ForcingFileFieldRef(block, "discharge")
+        registry.share(new)
 
-        assert field_ref.value == "first"
+        assert new.forcingfile is first.forcingfile
+        assert _quantities(first.forcingfile) == ["q1", "q3"]
+        assert _quantities(second.forcingfile) == ["q2"]
 
-        block.discharge = "second"
-
-        assert field_ref.value == "second"
-
-    def test_replace_writes_the_field_of_the_block(self, tmp_path: Path):
-        block = _ThreeFieldBlock(discharge="first", salinity="other")
-        field_ref = _ForcingFileFieldRef(block, "discharge")
-
-        field_ref.replace("second")
-
-        assert block.discharge == "second"
-        assert block.salinity == "other"
-
-    def test_refs_to_the_same_field_are_equal(self, tmp_path: Path):
-        block = _ThreeFieldBlock()
-
-        assert _ForcingFileFieldRef(block, "discharge") == _ForcingFileFieldRef(
-            block, "discharge"
-        )
-        assert _ForcingFileFieldRef(block, "discharge") != _ForcingFileFieldRef(
-            block, "salinity"
-        )
+    def test_block_lists_are_attributes_of_the_ext_model(self, ext_model: ExtModel):
+        """Guards against a renamed list in `ExtModel` silently dropping blocks from the index."""
+        for list_name in FORCING_BLOCK_LIST_NAMES:
+            assert isinstance(getattr(ext_model, list_name), list)
 

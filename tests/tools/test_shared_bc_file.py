@@ -9,6 +9,8 @@ import pytest
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
+pytestmark = pytest.mark.integration
+
 SHARED_BC_MODEL = "shared-bc-file"
 
 MDU_TEXT = """[General]
@@ -179,6 +181,22 @@ class TestQuantitiesSharingPolyline:
 
         assert text.count("forcingFile  = Slib_Noord.bc") == 2
 
+    def test_updating_twice_does_not_duplicate_blocks(
+        self, converter: ExternalForcingConverter
+    ):
+        """Converting the same old ext again on one converter must not add the blocks again.
+
+        The second `update()` finds the first run's blocks already in the ext model and merges
+        into them, skipping the forcings they hold.
+        Expected: still 4 blocks in `Slib_Noord.bc`.
+        """
+        bc_file = converter.ext_model.filepath.parent / "Slib_Noord.bc"
+
+        converter.update()
+        converter.save()
+
+        assert len(_bc_quantities(bc_file)) == 4
+
     def test_saving_twice_is_idempotent(self, converter: ExternalForcingConverter):
         """A second save rewrites the `.bc` files instead of appending to them.
 
@@ -308,6 +326,26 @@ class TestBlocksSharingBcFile:
         model_dir = _convert(tmp_path / "m", old_ext, files)
 
         assert _bc_quantities(model_dir / "Slib_Noord.bc") == ["salinitybnd"]
+
+    def test_three_quantities_on_one_polyline_are_all_kept(self, tmp_path: Path):
+        """Each block merges into the one before it, so a chain of three keeps all three.
+
+        Input: `tracerbndIM1`, `tracerbndIM2` and `tracerbndIM3` on one polyline.
+        Before the fix: only the last quantity (`tracerbndIM3`) was left.
+        Expected: one block per quantity.
+        """
+        old_ext = "".join(
+            _old_block(f"tracerbndIM{i}", "Slib_Noord.pli", 9, 3) for i in (1, 2, 3)
+        )
+        files = {"Slib_Noord.pli": PLI_TEXT, "Slib_Noord_0001.tim": TIM_1_COLUMN}
+
+        model_dir = _convert(tmp_path / "m", old_ext, files)
+
+        assert _bc_quantities(model_dir / "Slib_Noord.bc") == [
+            "tracerbndIM1",
+            "tracerbndIM2",
+            "tracerbndIM3",
+        ]
 
     def test_quantity_is_added_to_a_bc_of_the_existing_new_ext(self, tmp_path: Path):
         """Case 4: appending to a `.bc` that the existing new ext already references.
