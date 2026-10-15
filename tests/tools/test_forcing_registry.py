@@ -187,6 +187,22 @@ class TestExistingPlaceholder:
         assert _quantities(first.forcingfile) == ["q2", "q3"]
 
 
+    def test_unparsable_existing_file_raises_a_clear_error(
+        self, tmp_path: Path, ext_model: ExtModel
+    ):
+        (tmp_path / "A.bc").write_text("[Forcing]\nname = X\nnot a valid bc file\n")
+        existing = _boundary(tmp_path, "q1", DiskOnlyFileModel(Path("A.bc")))
+        ext_model.boundary = [existing]
+        registry = ForcingFileRegistry(ext_model)
+        new = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        with pytest.raises(ValueError, match="could not be parsed") as error:
+            registry.share(new)
+
+        assert str(tmp_path / "A.bc") in str(error.value)
+        assert isinstance(existing.forcingfile, DiskOnlyFileModel)
+
+
 class TestFieldsThatAreIgnored:
     def test_forcing_model_without_a_path_is_not_shared(
         self, tmp_path: Path, ext_model: ExtModel

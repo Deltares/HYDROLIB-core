@@ -124,6 +124,9 @@ class ForcingFileRegistry:
         """Finds if there is a `ForcingModel` that writes to the given `bc_filepath`.
 
         Returns None when no block writes the path, or when its placeholder has no file on disk yet.
+
+        Raises:
+            ValueError: If the existing `.bc` file on disk cannot be parsed.
         """
         found_model = None
         owner = self._owner_by_bc_path.get(bc_filepath)
@@ -136,7 +139,14 @@ class ForcingFileRegistry:
                 placeholder = owner.forcing_file
                 bc_file_on_disk = self._ext_file_directory / placeholder.filepath
                 if bc_file_on_disk.is_file():
-                    found_model = ForcingModel(bc_file_on_disk)
+                    try:
+                        found_model = ForcingModel(bc_file_on_disk)
+                    except (ValueError, OSError) as error:
+                        raise ValueError(
+                            f"Cannot add the converted quantities to the existing "
+                            f"`{bc_file_on_disk}`: the file could not be parsed. Fix or "
+                            f"remove the file and convert again."
+                        ) from error
                     found_model.filepath = placeholder.filepath
                     owner.replace_forcing_file(found_model)
 
