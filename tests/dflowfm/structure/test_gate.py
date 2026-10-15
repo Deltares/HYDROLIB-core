@@ -47,7 +47,7 @@ class TestGate:
         assert gate.gateheight == pytest.approx(4.56)
         assert gate.gateopeningwidth == pytest.approx(1.23)
         assert gate.gateopeninghorizontaldirection == GateOpeningHorizontalDirection.from_left
-        assert gate.comments.name == "G stands for Gate"
+        assert gate.comments.name == "Given name in the user interface."
         assert gate.comments.id == uniqueid_str
 
     def test_gate_construction_with_parser(self):
