@@ -76,7 +76,6 @@
     Windspeedbreakpoints                = 0.0000000	100.0000000              # (m/s), e.g. 0.0      100.0
     Rhoair                              = 1.0000000                          # Air density (kg/m3)
     PavBnd                              = 0.0000000                          # Average air Pressure on open boundaries, (N/m2), only applied if value > 0
-    Gapres                              = 101325.0000000                     # Global Atmospheric Pressure, (N/m2)
 
 [time]
     RefDate                             = 20071023                           # Reference date (yyyymmdd)

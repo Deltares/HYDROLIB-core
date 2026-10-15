@@ -126,7 +126,6 @@ Windspeedbreakpoints                 = 0. 100.                               # (
 Rhoair                               = 1.20000004768372                      # Air density (kg/m3)
 PavBnd                               = 101325.0000000                        # Average air pressure on open boundaries, (N/m2), only applied if value > 0
 PavIni                               = 0.                                    # Average air pressure for initial water level correction (N/m2) (only applied if > 0)
-Gapres                               = 101325.0000000                        # Only relevant for Spiderweb:  Global Atmospheric Pressure, (N/m2)
 
 [waves]
 Wavemodelnr                          = 0                                     # Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = Delft3D-WAVE, 4=wave group forcing

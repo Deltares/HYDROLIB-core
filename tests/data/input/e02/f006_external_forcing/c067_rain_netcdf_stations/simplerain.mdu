@@ -66,7 +66,6 @@ Cdbreakpoints        = 6.3d-4 7.23d-3      # ( ),   e.g. 0.00063  0.00723
 Windspeedbreakpoints = 0. 100.             # (m/s), e.g. 0.0      100.0
 Rhoair               = 1.20000004768372    # Air density (kg/m3)
 PavBnd               = 101325.             # Average air Pressure on open boundaries, (N/m2), only applied if value > 0
-Gapres               = 101325.             # Global Atmospheric Pressure, (N/m2)
 
 [time]
 RefDate              = 20000101            # Reference date (yyyymmdd)
