@@ -45,7 +45,6 @@
     Tlfsmo                              = 0.                                 # Fourier smoothing time on waterlevel boundaries (s)
     Slopedrop2D                         = 0.0                                # Apply droplosses only if local bottom slope > Slopedrop2D
     Lincontin                           =                                    # 0 = no, 1 = yes linear continuity
-    Jaembed1D                           =                                    # 1 : use embedded 1d channels, first run: Operations: Embed 1D channels
     Chkadvd                             =                                    # Check advection terms if depth < chkadvdp, => less setbacks
     Teta0                               =                                    # Teta of time integration, 0.5 < Teta < 1d0
     Maxitverticalforester               =                                    # 0 : no vertical filter, > 0 = Max nr of iterations

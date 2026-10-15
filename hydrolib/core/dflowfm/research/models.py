@@ -386,10 +386,6 @@ class ResearchNumerics(Numerics):
             "Include density gradient in advection term (0: no(strongly advised), 1: yes, 2: Also in barotropic and baroclinic pressure term, 3,4: Also in vertical advection).",
             alias="jarhoxu",
         )
-        research_jaembed1d: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="jaembed1d",
-        )
         research_ilutype: Optional[str] = Field(
             "0: parms-default",
             alias="ilutype",
@@ -471,7 +467,6 @@ class ResearchNumerics(Numerics):
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
     research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
-    research_jaembed1d: Optional[str] = Field(None, alias="jaembed1d")
     research_ilutype: Optional[str] = Field(None, alias="ilutype")
     research_nlevel: Optional[str] = Field(None, alias="nlevel")
     research_dtol: Optional[str] = Field(None, alias="dtol")
