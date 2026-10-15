@@ -35,6 +35,7 @@ from hydrolib.tools.extforce_convert.converters import (
     LateralConverter,
     SourceSinkConverter,
 )
+from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -327,6 +328,7 @@ class ExternalForcingConverter:
         num_quantities = len(self.extold_model.forcing)
 
         type_field_map = self._type_field_map()
+        forcing_files = ForcingFileRegistry(self.ext_model)
 
         with tqdm(
             total=num_quantities, desc="Converting forcings", unit="forcing"
@@ -353,6 +355,8 @@ class ExternalForcingConverter:
                         f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
                         f"{self.extold_model.filepath}."
                     )
+
+                forcing_files.share(new_quantity_block)
 
                 model, attr = model_field
                 setattr(model, attr, getattr(model, attr) + [new_quantity_block])
