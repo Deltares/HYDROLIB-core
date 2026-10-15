@@ -849,10 +849,6 @@ class ResearchOutput(Output):
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
             alias="wrimap_trachytopes",
         )
-        research_waqfilebase: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="waqfilebase",
-        )
         research_heatfluxesonoutput: Optional[str] = Field(
             DEPRECATED_KEYWORD,
             alias="heatfluxesonoutput",
@@ -894,7 +890,6 @@ class ResearchOutput(Output):
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
     )
-    research_waqfilebase: Optional[str] = Field(None, alias="waqfilebase")
     research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
     @field_validator(

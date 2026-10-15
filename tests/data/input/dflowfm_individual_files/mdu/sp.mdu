@@ -103,7 +103,6 @@
     MapInterval                         = 1.08                               # Map file output, given as "interval" "start period" "end period" (s)
     MapFormat                           = 4                                  # Map file format, 1: netCDF and Tecplot
     RstInterval                         = 0                                  # Interval (s) between map file outputs
-    WaqFileBase                         =                                    # Basename (without extension) for all Delwaq files to be written.
     WaqInterval                         =                                    # Interval (in s) between Delwaq file outputs
     StatsInterval                       = 1.08                               # Interval (in s) between simulation statistics output.
     SnapshotDir                         =                                    # Directory where snapshots/screendumps are saved.
