@@ -2405,10 +2405,6 @@ class Processes(INIBasedModel):
             "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
-        wriwaqbot3doutput: Optional[str] = Field(
-            "Write 3D water quality bottom variables (0: no, 1: yes).",
-            alias="Wriwaqbot3Doutput",
-        )
         volumedrythreshold: Optional[str] = Field(
             "Volume [m3] below which segments are marked as dry.",
             alias="VolumeDryThreshold",
@@ -2436,7 +2432,6 @@ class Processes(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile")
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
-    wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 

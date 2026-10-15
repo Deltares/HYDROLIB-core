@@ -10,7 +10,6 @@ pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to reso
 
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
-bathymetryFile                 =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
 iniFieldFile                   =                   # Initial and parameter field file <*.ini>.
 waterLevIniFile                =                   # Initial water levels sample file <*.xyz>.
 useCaching                     = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)

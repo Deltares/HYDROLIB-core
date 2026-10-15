@@ -532,7 +532,6 @@ AdditionalHistoryOutputFile               =                     # extra history 
 StatisticsFile                            =                     # statistics file
 ThetaVertical                             = 0.                  # theta vertical for waq
 DtProcesses                               = 0.                  # waq processes time step
-Wriwaqbot3Doutput                         = 0                   # Write 3D water quality bottom variables (1: yes, 0: no)
 VolumeDryThreshold                        = 1.d-3               # Volume below which segments are marked as dry. (m3)
 DepthDryThreshold                         = 1.d-3               # Water depth below which segments are marked as dry. (m)
 SubstanceDensityCoupling                  = 0                   # Substance density coupling (1: yes, 0: no). It only functions correctly when all substances are sediments.

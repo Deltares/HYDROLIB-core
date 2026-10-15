@@ -9,7 +9,6 @@ AutoStart                            = 0                                     # A
 
 [geometry]
 NetFile                              = rainschematic_net.nc                  # *_net.nc
-BathymetryFile                       =                                       # *.xyb
 DryPointsFile                        =                                       # Dry points file *.xyz, third column dummy z values, or polygon file *.pol with 3 columns: z value specifies inside/outside: 1/-1.
 WaterLevIniFile                      =                                       # Initial water levels sample file *.xyz
 LandBoundaryFile                     =                                       # Only for plotting

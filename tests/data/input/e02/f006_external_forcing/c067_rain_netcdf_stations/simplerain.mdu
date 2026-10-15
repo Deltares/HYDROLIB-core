@@ -8,7 +8,6 @@ AutoStart            = 0                   # Autostart simulation after loading 
 
 [geometry]
 NetFile              = squareRD_net.nc     # *_net.nc
-BathymetryFile       =                     # *.xyb
 WaterLevIniFile      =                     # Initial water levels sample file *.xyz
 LandBoundaryFile     =                     # Only for plotting
 ThinDamFile          =                     # *_thd.pli, Polyline(s) for tracing thin dams.
