@@ -7,6 +7,7 @@ the one saved last would replace the others. Sharing one model writes the file o
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -127,6 +128,11 @@ class ForcingFileRegistry:
 
         Raises:
             ValueError: If the existing `.bc` file on disk cannot be parsed.
+
+        Warns:
+            UserWarning: When an existing `.bc` file is parsed to be merged into. It is written
+                back by the model, so any comments or keywords the model does not know are not
+                kept. The warning is raised whether or not the file has any.
         """
         found_model = None
         owner = self._owner_by_bc_path.get(bc_filepath)
@@ -147,6 +153,13 @@ class ForcingFileRegistry:
                             f"`{bc_file_on_disk}`: the file could not be parsed. Fix or "
                             f"remove the file and convert again."
                         ) from error
+                    warnings.warn(
+                        f"The existing `{bc_file_on_disk}` is rewritten to add the converted "
+                        f"quantities. Any comments or keywords that the model does not know "
+                        f"are not kept.",
+                        UserWarning,
+                        stacklevel=4,
+                    )
                     found_model.filepath = placeholder.filepath
                     owner.replace_forcing_file(found_model)
 

@@ -1,5 +1,6 @@
 """Unit tests of `ForcingFileRegistry`, which makes blocks that write one `.bc` share a model."""
 
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -186,6 +187,32 @@ class TestExistingPlaceholder:
         assert second.forcingfile is first.forcingfile
         assert _quantities(first.forcingfile) == ["q2", "q3"]
 
+
+    def test_merging_into_an_existing_file_warns_that_it_is_rewritten(
+        self, tmp_path: Path, ext_model: ExtModel
+    ):
+        _forcing_model(tmp_path / "A.bc", "q1").save()
+        existing = _boundary(tmp_path, "q1", DiskOnlyFileModel(Path("A.bc")))
+        ext_model.boundary = [existing]
+        registry = ForcingFileRegistry(ext_model)
+        new = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        with pytest.warns(UserWarning, match="is rewritten") as recorded:
+            registry.share(new)
+
+        assert str(tmp_path / "A.bc") in str(recorded[0].message)
+
+    def test_no_warning_when_the_file_does_not_exist_yet(
+        self, tmp_path: Path, ext_model: ExtModel
+    ):
+        existing = _boundary(tmp_path, "q1", DiskOnlyFileModel(Path("A.bc")))
+        ext_model.boundary = [existing]
+        registry = ForcingFileRegistry(ext_model)
+        new = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            registry.share(new)
 
     def test_unparsable_existing_file_raises_a_clear_error(
         self, tmp_path: Path, ext_model: ExtModel
