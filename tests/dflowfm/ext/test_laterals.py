@@ -516,3 +516,39 @@ class TestValidateForcingData:
         assert isinstance(m.lateral[3].discharge, ForcingModel)
         assert isinstance(m.lateral[3].discharge.forcing[0], Constant)
         assert m.lateral[3].discharge.forcing[0].name == "10637"
+
+    def test_lateral_accepts_transport_forcings(self):
+        lateral = Lateral(
+            id="lat_transport",
+            locationtype="1d",
+            nodeid="n1",
+            discharge=1.23,
+            salinity=4.56,
+            temperature=7.89,
+        )
+
+        assert lateral.discharge == pytest.approx(1.23)
+        assert lateral.salinity == pytest.approx(4.56)
+        assert lateral.temperature == pytest.approx(7.89)
+
+    def test_lateral_serializes_transport_fields_without_delta_suffix(self, tmp_path):
+        lateral = Lateral(
+            id="lat_transport",
+            locationtype="1d",
+            nodeid="n1",
+            discharge=1.23,
+            salinity=4.56,
+            temperature=7.89,
+            applytransport=1,
+        )
+        ext = ExtModel(lateral=[lateral])
+        ext_path = tmp_path / "laterals.ext"
+
+        ext.save(ext_path)
+
+        content = ext_path.read_text(encoding="utf-8").lower()
+        assert "salinity" in content
+        assert "temperature" in content
+        assert "salinitydelta" not in content
+        assert "temperaturedelta" not in content
+
