@@ -296,3 +296,90 @@ class TestRegistryIndex:
         for list_name in FORCING_BLOCK_LIST_NAMES:
             assert isinstance(getattr(ext_model, list_name), list)
 
+
+class TestAppendMissingForcings:
+    def test_appends_only_the_forcings_the_shared_model_lacks_in_order(self):
+        first = _forcing_model(Path("A.bc"), "q1", name="P_0001").forcing[0]
+        second = _forcing_model(Path("A.bc"), "q2", name="P_0001").forcing[0]
+        third = _forcing_model(Path("A.bc"), "q3", name="P_0001").forcing[0]
+        shared_model = ForcingModel(forcing=[first])
+        new_model = ForcingModel(forcing=[first, second, third])
+
+        ForcingFileRegistry._append_missing_forcings(shared_model, new_model)
+
+        assert shared_model.forcing == [first, second, third]
+
+    def test_nothing_is_appended_when_the_new_model_has_no_forcings(self):
+        first = _forcing_model(Path("A.bc"), "q1").forcing[0]
+        shared_model = ForcingModel(forcing=[first])
+
+        ForcingFileRegistry._append_missing_forcings(shared_model, ForcingModel())
+
+        assert shared_model.forcing == [first]
+
+    def test_the_new_model_is_left_unchanged(self):
+        first = _forcing_model(Path("A.bc"), "q1").forcing[0]
+        second = _forcing_model(Path("A.bc"), "q2").forcing[0]
+        shared_model = ForcingModel(forcing=[first])
+        new_model = ForcingModel(forcing=[first, second])
+
+        ForcingFileRegistry._append_missing_forcings(shared_model, new_model)
+
+        assert new_model.forcing == [first, second]
+
+    def test_a_forcing_repeated_in_the_new_model_is_appended_once(self):
+        first = _forcing_model(Path("A.bc"), "q1").forcing[0]
+        repeated = _forcing_model(Path("A.bc"), "q2").forcing[0]
+        shared_model = ForcingModel(forcing=[first])
+        new_model = ForcingModel(forcing=[repeated, repeated])
+
+        ForcingFileRegistry._append_missing_forcings(shared_model, new_model)
+
+        assert shared_model.forcing == [first, repeated]
+
+
+class TestGetForcingModelOrDiskOnlyFields:
+    def test_returns_the_fields_holding_a_forcing_model_or_a_placeholder(
+        self, tmp_path: Path
+    ):
+        forcing_model = _forcing_model(Path("A.bc"), "q1")
+        placeholder = DiskOnlyFileModel(Path("B.bc"))
+        block = _ThreeFieldBlock(
+            discharge=forcing_model, salinity=placeholder, temperature=1.5
+        )
+
+        fields = ForcingFileRegistry._get_forcing_model_or_disk_only_fields(block)
+
+        assert fields == [("discharge", forcing_model), ("salinity", placeholder)]
+
+    def test_skips_models_and_placeholders_without_a_path(self):
+        block = _ThreeFieldBlock(
+            discharge=ForcingModel(),
+            salinity=DiskOnlyFileModel(None),
+            temperature=_forcing_model(Path("A.bc"), "q1"),
+        )
+
+        fields = ForcingFileRegistry._get_forcing_model_or_disk_only_fields(block)
+
+        assert [field_name for field_name, _ in fields] == ["temperature"]
+
+    def test_skips_values_of_other_types(self):
+        block = _ThreeFieldBlock(discharge="text", salinity=None, temperature=3)
+
+        fields = ForcingFileRegistry._get_forcing_model_or_disk_only_fields(block)
+
+        assert fields == []
+
+    def test_returns_the_fields_in_declaration_order(self):
+        first = _forcing_model(Path("A.bc"), "q1")
+        second = _forcing_model(Path("B.bc"), "q2")
+        block = _ThreeFieldBlock(discharge=first, salinity=second, temperature=first)
+
+        fields = ForcingFileRegistry._get_forcing_model_or_disk_only_fields(block)
+
+        assert [field_name for field_name, _ in fields] == [
+            "discharge",
+            "salinity",
+            "temperature",
+        ]
+

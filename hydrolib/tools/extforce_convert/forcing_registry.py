@@ -27,24 +27,6 @@ FORCING_BLOCK_LIST_NAMES = (
 )
 
 
-def _get_forcing_model_or_disk_only_fields(block: Any) -> list[tuple[str, Any]]:
-    """Return `(field name, field value)` of the fields of `block` holding a forcing model.
-
-    A field is returned when its value is a `ForcingModel` or a `DiskOnlyFileModel` that has a path.
-    """
-    field_name_and_value_pairs = [
-        (field_name, getattr(block, field_name, None))
-        for field_name in type(block).model_fields
-    ]
-
-    return [
-        (field_name, field_value)
-        for field_name, field_value in field_name_and_value_pairs
-        if isinstance(field_value, (ForcingModel, DiskOnlyFileModel))
-        and field_value.filepath is not None
-    ]
-
-
 @dataclass
 class BCFileOwner:
     # The first block field that holds the forcing file written to a `.bc` path.
@@ -82,7 +64,7 @@ class ForcingFileRegistry:
                 for (
                     field_name,
                     forcing_model_or_placeholder,
-                ) in _get_forcing_model_or_disk_only_fields(existing_block):
+                ) in self._get_forcing_model_or_disk_only_fields(existing_block):
                     self._owner_by_bc_path.setdefault(
                         forcing_model_or_placeholder.filepath,
                         BCFileOwner(existing_block, field_name),
@@ -104,7 +86,7 @@ class ForcingFileRegistry:
         """
         # forcing file could be a ForcingModel or a DiskOnlyFileModel placeholder,
         # depending on whether the block was already added to the ext model
-        for field_name, field_value in _get_forcing_model_or_disk_only_fields(
+        for field_name, field_value in self._get_forcing_model_or_disk_only_fields(
             block
         ):
             if isinstance(field_value, ForcingModel):
@@ -116,10 +98,36 @@ class ForcingFileRegistry:
                 elif shared_model is not field_value:
                     # if the new forcing file from the current block is not the same as the shared one,
                     # append its forcings to the shared one
-                    for forcing in field_value.forcing:
-                        if forcing not in shared_model.forcing:
-                            shared_model.forcing.append(forcing)
+                    self._append_missing_forcings(shared_model, field_value)
                     setattr(block, field_name, shared_model)
+
+    @staticmethod
+    def _get_forcing_model_or_disk_only_fields(block: Any) -> list[tuple[str, Any]]:
+        """Return `(field name, field value)` of the fields of `block` holding a forcing model.
+
+        A field is returned when its value is a `ForcingModel` or a `DiskOnlyFileModel` that has a
+        path.
+        """
+        field_name_and_value_pairs = [
+            (field_name, getattr(block, field_name, None))
+            for field_name in type(block).model_fields
+        ]
+
+        return [
+            (field_name, field_value)
+            for field_name, field_value in field_name_and_value_pairs
+            if isinstance(field_value, (ForcingModel, DiskOnlyFileModel))
+            and field_value.filepath is not None
+        ]
+
+    @staticmethod
+    def _append_missing_forcings(
+        shared_model: ForcingModel, new_model: ForcingModel
+    ) -> None:
+        """Append the forcings of `new_model` that `shared_model` does not hold yet."""
+        for forcing in new_model.forcing:
+            if forcing not in shared_model.forcing:
+                shared_model.forcing.append(forcing)
 
     def _find_forcing_model(self, bc_filepath: Path) -> ForcingModel | None:
         """Finds if there is a `ForcingModel` that writes to the given `bc_filepath`.
