@@ -505,7 +505,7 @@ class TestGeneralStructure:
             branchId              = stump
             chainage              = 13.53
             crestLevel            = 116.0
-            pos_freegateflowcoeff = 1.5   # my own comment
+            pos_freegateflowcoeff = 1.5   # Positive free gate flow corr.coeff. cgf [-]
             """
         )
 
@@ -520,7 +520,7 @@ class TestGeneralStructure:
         struct = wrapper.val
 
         assert struct.posfreegateflowcoeff == pytest.approx(1.5)
-        assert struct.comments.posfreegateflowcoeff == "my own comment"
+        assert struct.comments.posfreegateflowcoeff == "Positive free gate flow corr.coeff. cgf [-]"
 
     def test_general_structure_reports_legacy_coefficient_given_next_to_the_current_one(
         self,

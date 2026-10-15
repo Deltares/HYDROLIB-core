@@ -491,7 +491,7 @@ class TestWeir:
             type            = weir
             polylinefile    = weir01.pli
             crestLevel      = 10.5
-            lat_contr_coeff = 0.9    # Lateral contraction coefficient
+            lat_contr_coeff = 0.9    # Correction coefficient (-).
             """
         )
 
@@ -504,7 +504,7 @@ class TestWeir:
         weir = wrapper.val
 
         assert weir.corrcoeff == pytest.approx(0.9)
-        assert weir.comments.corrcoeff == "Lateral contraction coefficient"
+        assert weir.comments.corrcoeff == "Correction coefficient (-)."
 
     def test_weir_writes_legacy_lat_contr_coeff_as_corrcoeff(self):
         weir = Weir(
