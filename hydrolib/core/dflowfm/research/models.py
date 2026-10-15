@@ -247,10 +247,7 @@ class ResearchNumerics(Numerics):
         research_epstke: Optional[str] = Field(
             "TKE=max(TKE, EpsTKE), default=1d-32", alias="epstke"
         )
-        research_jadrhodz: Optional[str] = Field(
-            "1:central org, 2:centralnew, 3:upw cell, 4:most stratf. cell, 5:least stratf. cell.",
-            alias="jadrhodz",
-        )
+
         research_logprofkepsbndin: Optional[str] = Field(
             "Inflow: 0=0 keps, 1 = log keps inflow, 2 = log keps in and outflow.",
             alias="logprofkepsbndin",
@@ -404,7 +401,6 @@ class ResearchNumerics(Numerics):
             DEPRECATED_VARIABLE,
             alias="jaembed1d",
         )
-
         research_ilutype: Optional[str] = Field(
             "0: parms-default",
             alias="ilutype",
@@ -436,7 +432,6 @@ class ResearchNumerics(Numerics):
     )
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
     research_epstke: Optional[float] = Field(None, alias="epstke")
-    research_jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
     research_logprofkepsbndin: Optional[int] = Field(None, alias="logprofkepsbndin")
     research_epshstem: Optional[float] = Field(None, alias="epshstem")
     research_newcorio: Optional[bool] = Field(None, alias="newcorio")
