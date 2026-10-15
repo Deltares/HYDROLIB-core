@@ -75,16 +75,26 @@ def _old_block(quantity: str, filename: str, filetype: int, method: int, extra: 
 
 
 def _convert(
-    model_dir: Path, old_ext: str, files: dict[str, str], new_ext: str | None = None
+    model_dir: Path,
+    old_ext: str,
+    files: dict[str, str],
+    new_ext: str | None = None,
+    new_ext_name: str = "new.ext",
 ) -> Path:
-    """Write a model made of `files`, convert it, and return the model directory."""
+    """Write a model made of `files`, convert it, and return the model directory.
+
+    `new_ext_name` is the path of the new external forcing file relative to the MDU.
+    """
     model_dir.mkdir(parents=True)
     for name, text in files.items():
         (model_dir / name).write_text(text)
     (model_dir / "old.ext").write_text(old_ext)
-    (model_dir / "model.mdu").write_text(MDU_TEXT)
+    (model_dir / "model.mdu").write_text(
+        MDU_TEXT.replace("ExtForceFileNew = new.ext", f"ExtForceFileNew = {new_ext_name}")
+    )
     if new_ext is not None:
-        (model_dir / "new.ext").write_text(new_ext)
+        (model_dir / new_ext_name).parent.mkdir(parents=True, exist_ok=True)
+        (model_dir / new_ext_name).write_text(new_ext)
 
     converter = ExternalForcingConverter.from_mdu(model_dir / "model.mdu")
     converter.update()
@@ -346,6 +356,33 @@ class TestBlocksSharingBcFile:
             "tracerbndIM2",
             "tracerbndIM3",
         ]
+
+    def test_new_ext_in_a_subfolder_of_the_mdu_keeps_every_quantity(
+        self, tmp_path: Path
+    ):
+        """Case 5: the new ext is not in the MDU folder (`ExtForceFileNew = sub/new.ext`).
+
+        Input: `tracerbndIM1` and `tracerbndIM2` on `Slib_Noord.pli`, which is next to the MDU.
+        The converter writes the `.bc` next to the new ext, so `sub/Slib_Noord.bc`.
+        Expected: both quantities in that file, and both `[Boundary]` blocks reference it.
+        The `locationFile` written into `sub/new.ext` is not checked here: it is the converter's
+        own path handling and does not depend on the shared `.bc`.
+        """
+        old_ext = _old_block("tracerbndIM1", "Slib_Noord.pli", 9, 3) + _old_block(
+            "tracerbndIM2", "Slib_Noord.pli", 9, 3
+        )
+        files = {"Slib_Noord.pli": PLI_TEXT, "Slib_Noord_0001.tim": TIM_1_COLUMN}
+
+        model_dir = _convert(
+            tmp_path / "m", old_ext, files, new_ext_name="sub/new.ext"
+        )
+
+        assert _bc_quantities(model_dir / "sub" / "Slib_Noord.bc") == [
+            "tracerbndIM1",
+            "tracerbndIM2",
+        ]
+        new_ext_text = (model_dir / "sub" / "new.ext").read_text()
+        assert new_ext_text.count("forcingFile  = Slib_Noord.bc") == 2
 
     def test_quantity_is_added_to_a_bc_of_the_existing_new_ext(self, tmp_path: Path):
         """Case 4: appending to a `.bc` that the existing new ext already references.
