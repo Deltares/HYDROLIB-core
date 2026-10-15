@@ -119,7 +119,7 @@ RstInterval                       = 0. 0. 0.            # Restart file output ti
 WaqInterval                       = 0. 0. 0.            # DELWAQ output times, given as "interval" "start period" "end period" (s)
 StatsInterval                     = -60.                # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 TimingsInterval                   = 0.                  # Timings statistics output interval
-MapFormat                         = 4                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                         = 4                   # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 Wrihis_balance                    = 1                   # Write mass balance totals to his file (1: yes, 0: no)
 Wrihis_sourcesink                 = 1                   # Write sources-sinks statistics to his file (1=yes, 0=no)
 Wrihis_turbulence                 = 1                   # Write k, eps and vicww to his file (1: yes, 0: no)

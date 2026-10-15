@@ -257,7 +257,7 @@ xlsInterval                       = 0.0    # Interval between XLS history [s].
 mapFile                           =        # *_map.nc Map file in netCDF format.
 mapInterval                       = 1200.0 # Map file output, given as 'interval' 'start period' 'end period' [s].
 rstInterval                       = 0.0    # Restart file output, given as 'interval' 'start period' 'end period' [s].
-mapFormat                         = 4      # Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.
+mapFormat                         = 4      # Map file format, 1: netCDF and Tecplot, 4: netCDF UGRID.
 ncFormat                          = 3      # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
 ncNoUnlimited                     = 0      # Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)
 ncNoForcedFlush                   = 0      # Do not force flushing of map-like files every output timestep (1: yes, 0: no).

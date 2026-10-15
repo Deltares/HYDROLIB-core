@@ -309,6 +309,6 @@ EulerVelocities                     = 0                                         
 #------------------------------------------------------------------------------------------------------
 # Uneditable
 #------------------------------------------------------------------------------------------------------
-MapFormat                           = 4                                                                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                           = 4                                                                   # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 NcFormat                            = 4                                                                   # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5)
 NcWriteLatLon                       = 0                                                                   # Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy).
