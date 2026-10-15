@@ -259,10 +259,6 @@ class Numerics(INIBasedModel):
         anticreep: Optional[str] = Field(
             "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
         )
-        baroczlaybed: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="barocZLayBed",
-        )
         barocponbnd: Optional[str] = Field(
             "Use baroclinic pressure correction on open boundaries (1: yes, 0: no)",
             alias="barocPOnBnd",
@@ -425,7 +421,6 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
-    baroczlaybed: bool = Field(None, alias="barocZLayBed")
     barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")

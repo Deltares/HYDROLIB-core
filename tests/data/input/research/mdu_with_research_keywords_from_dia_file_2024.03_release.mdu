@@ -184,7 +184,6 @@ EpsTKE                                    = 1.d-32              # (TKE=max(TKE,E
 EpsEPS                                    = 1.d-32              # (EPS=max(EPS,EpsEPS), default=1d-32, (or TAU))
 Eddyviscositybedfacmax                    = 0.                  # Limit eddy viscosity at bed )
 AntiCreep                                 = 0                   # Include anti-creep to suppress artifical vertical diffusion (0: no, 1: yes).
-Baroczlaybed                              = 0                   # Use fix in barocp for zlaybed 0,1, 1=default)
 Barocponbnd                               = 0                   # Use fix in barocp for zlaybed 0,1, 1=default)
 Maxitpresdens                             = 1                   # Max nr of iterations in pressure-density coupling, only used if idensform > 10 )
 Rhointerfaces                             = 0                   # Evaluate rho at interfaces, 0=org at centers, 1=at interfaces )

@@ -240,7 +240,6 @@ classDiagram
       turbulencemodel: int (alias=turbulenceModel)
       turbulenceadvection: int (alias=turbulenceAdvection)
       anticreep: bool (alias=antiCreep)
-      baroczlaybed?: bool (alias=barocZLayBed)
       barocponbnd: bool (alias=barocPOnBnd)
       maxwaterleveldiff: float (alias=maxWaterLevelDiff)
       maxvelocitydiff: float (alias=maxVelocityDiff)
