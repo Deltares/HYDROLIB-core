@@ -29,7 +29,6 @@ RoofsFile         =
 ProfdefxyzFile    =
 IniFieldFile      =
 Uniformwidth1D    = 2
-ManholeFile       =
 WaterLevIni       = 0
 Bedlevuni         = -5
 Bedslope          = 0

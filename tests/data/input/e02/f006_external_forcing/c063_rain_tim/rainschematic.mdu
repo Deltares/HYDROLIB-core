@@ -20,7 +20,6 @@ ProflocFile                          =                                       # *
 ProfdefFile                          =                                       # *_profdefinition.def) definition for all profile nrs
 ProfdefxyzFile                       =                                       # *_profdefinition.def) definition for all profile nrs
 StructureFile                        =                                       # *.ini, Structure definitions file
-ManholeFile                          =                                       # File containing manholes (e.g. *.ini)
 PartitionFile                        =                                       # *_part.pol, polyline(s) x,y
 Uniformwidth1D                       = 2.                                    # Uniform width for 1D profiles not specified bij profloc
 WaterLevIni                          = 1.0                                   # Initial water level

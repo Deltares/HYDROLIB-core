@@ -22,7 +22,6 @@ storageNodeFile                =                   # File containing the specifi
 profLocFile                    =                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                    =                   # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile                 =                   # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                    =                   # File containing manholes (e.g. <*.dat>).
 partitionFile                  =                   # <*_part.pol>, polyline(s) x, y.
 uniformWidth1D                 = 2.0               # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1

@@ -37,7 +37,6 @@ Uniformheight1D                           = 3.                  # Uniform height
 Uniformtyp1Dstreetinlets                  = -2                  # Uniform type street inlets
 Uniformtyp1Droofgutterpipes               = -2                  # Uniform type roof gutter pipes
 1D2DLinkFile                              =                     # File *.ini containing custom parameters for 1D2D links
-ManholeFile                               =                     # File *.ini containing manholes
 WaterLevIni                               = 0.                  # Initial water levels sample file *.xyz using flood fill algorithm
 BedlevUni                                 = 5.                  # Uniform bed level used at missing z values if BedlevType > 2
 BedlevType                                = 3                   # Bathymetry specification

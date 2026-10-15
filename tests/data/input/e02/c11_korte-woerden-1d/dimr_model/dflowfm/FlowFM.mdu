@@ -29,7 +29,6 @@ RoofsFile         =
 ProfdefxyzFile    =
 IniFieldFile      =
 Uniformwidth1D    = 0.1   # test
-ManholeFile       =
 WaterLevIni       = -5
 Bedlevuni         = -5
 Bedslope          = 0

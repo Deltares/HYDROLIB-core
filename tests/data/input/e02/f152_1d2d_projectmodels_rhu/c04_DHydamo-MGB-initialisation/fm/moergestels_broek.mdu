@@ -26,7 +26,6 @@ ProfdefxyzFile                    =                     # Channel profile defini
 IniFieldFile                      = initialconditions/initialFields.ini# Initial data
 Uniformwidth1D                    = 1.                  # Uniform width for channel profiles not specified by profloc
 Uniformheight1D                   = 1.                  # Uniform height for channel profiles not specified by profloc
-ManholeFile                       =                     # File *.ini containing manholes
 PipeFile                          =                     # File *.pliz containing pipe-based 'culverts'
 ShipdefFile                       =                     # File *.shd containing ship definitions
 StructureFile                     = structure.ini       # File *.ini containing structures

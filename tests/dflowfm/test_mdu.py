@@ -333,12 +333,6 @@ class TestModels:
                 id="profdefxyzfile",
             ),
             pytest.param(
-                "manholefile",
-                lambda d: Geometry(**d),
-                lambda m: m.manholefile,
-                id="manholefile",
-            ),
-            pytest.param(
                 "definitionfile",
                 lambda d: Calibration(**d),
                 lambda m: m.definitionfile,

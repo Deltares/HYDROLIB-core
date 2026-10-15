@@ -29,7 +29,6 @@
     profLocFile                =                                                                                                                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
     profDefFile                =                                                                                                                   # <*_profdefinition.def>) definition for all profile nrs.
     profDefXyzFile             =
-    manholeFile                =
     partitionFile              =
     uniformWidth1D             = 2.0
     waterLevIni                = 0.0

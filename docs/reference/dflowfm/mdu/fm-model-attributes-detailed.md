@@ -150,7 +150,6 @@ classDiagram
       proflocfile: DiskOnlyFileModel [file] (alias=profLocFile)
       profdeffile: DiskOnlyFileModel [file] (alias=profDefFile)
       profdefxyzfile: DiskOnlyFileModel [file] (alias=profDefXyzFile)
-      manholefile: DiskOnlyFileModel [file] (alias=manholeFile)
       partitionfile?: PolyFile [file] (alias=partitionFile)
       uniformwidth1d: float (alias=uniformWidth1D)
       dxwuimin2d: float (alias=dxWuiMin2D)

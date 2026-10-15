@@ -14,7 +14,6 @@ LandBoundaryFile     =                     # Only for plotting
 ThinDamFile          =                     # *_thd.pli, Polyline(s) for tracing thin dams.
 ThindykeFile         =                     # *_tdk.pli, Polyline(s) x,y,z, z = thin dyke top levels
 Uniformwidth1D       = 1.                  # Uniform width for 1D profiles not specified bij profloc
-ManholeFile          =                     # *...
 WaterLevIni          = 0.                  # Initial water level
 Bedlevuni            = -5.                 # Uniform bottom level, (only if bedlevtype>=3, used at missing z values in netfile
 BedlevType           = 3                   # 1 : Bottom levels at waterlevel cells (=flow nodes), like tiles xz, yz, bl , bob = max(bl left, bl right)

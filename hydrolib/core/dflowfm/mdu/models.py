@@ -1955,9 +1955,6 @@ class Geometry(INIBasedModel):
             "<*_profdefinition.def>) definition for all profile nrs.",
             alias="profDefXyzFile",
         )
-        manholefile: Optional[str] = Field(
-            "File containing manholes (e.g. <*.dat>).", alias="manholeFile"
-        )
         partitionfile: Optional[str] = Field(
             "<*_part.pol>, polyline(s) x, y.", alias="partitionFile"
         )
@@ -2183,9 +2180,6 @@ class Geometry(INIBasedModel):
     profdefxyzfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile")
-    manholefile: Annotated[
-        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
-    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile")
     partitionfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
         None, alias="partitionFile"
     )
