@@ -17,7 +17,6 @@ crossLocFile                   = crsloc.ini                                 # Lo
 profLocFile                    =                                            # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                    =                                            # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile                 =                                            # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                    =                                            # File containing manholes (e.g. <*.dat>).
 uniformWidth1D                 = 2.0                                        # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.0                                        # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu
 waterLevIni                    = 0.0                                        # Initial water level.
