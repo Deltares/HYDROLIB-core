@@ -497,9 +497,6 @@ class ResearchPhysics(Physics):
         research_equili: Optional[str] = Field(
             "Equilibrium spiral flow intensity (0: no, 1: yes).", alias="equili"
         )
-        research_allowcoolingbelowzero: Optional[str] = Field(
-            DEPRECATED_KEYWORD, alias="allowcoolingbelowzero"
-        )
         research_soiltempthick: Optional[str] = Field(
             "Use soil temperature buffer if > 0.", alias="soiltempthick"
         )
@@ -543,9 +540,6 @@ class ResearchPhysics(Physics):
     )
     research_uniffrictcoef1d2d: Optional[float] = Field(None, alias="uniffrictcoef1d2d")
     research_equili: Optional[bool] = Field(None, alias="equili")
-    research_allowcoolingbelowzero: Optional[bool] = Field(
-        None, alias="allowcoolingbelowzero"
-    )
     research_soiltempthick: Optional[float] = Field(None, alias="soiltempthick")
     research_selfattractionloading: Optional[int] = Field(
         None, alias="selfattractionloading"

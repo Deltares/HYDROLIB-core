@@ -257,11 +257,9 @@ Stanton                                   = -1.                 # Coefficient fo
 Dalton                                    = -1.                 # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
 Tempmax                                   = -999.               # Limit the temperature
 Tempmin                                   = 0.                  # Limit the temperature, if -999, tempmin=(-0.0575d0 - 2.154996d-4*sal)*sal
-Allowcoolingbelowzero                     = 0                   # 0 = no, 1 = yes
 Surftempsmofac                            = 0.                  # Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no
 Soiltempthick                             = 0.                  # Use soil temperature buffer if > 0, e.g. 0.2 (m)
 Heat_eachstep                             = 0                   # 1=heat each timestep, 0=heat each usertimestep
-RhoairRhowater                            = 0                   # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 Nudgetimeuni                              = 3600.               # Uniform nudge relaxation time
 IniWithNudge                              = 0                   # Initialize salinity and temperature with nudge variables
 NFEntrainmentMomentum                     = 0                   # 1: Switch on momentum transfer in NearField related entrainment

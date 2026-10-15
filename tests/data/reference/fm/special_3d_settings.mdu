@@ -179,7 +179,6 @@ salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing po
 saliMax                        = -999.0  # Limit the salinity
 saliMin                        = 0.0     # Limit the salinity
 heat_eachStep                  = 1       # 1=heat each timestep, 0=heat each usertimestep
-rhoAirRhoWater                 = 1       # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 nudgeTimeUni                   = 3600.0  # Uniform nudge relaxation time [s]
 iniWithNudge                   = 2       # Initialize salinity and temperature with nudge variables
 secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
