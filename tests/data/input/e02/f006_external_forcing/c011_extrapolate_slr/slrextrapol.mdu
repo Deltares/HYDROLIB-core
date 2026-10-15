@@ -161,7 +161,6 @@ XLSInterval                          =                                       # I
 MapFile                              =                                       # *_map.nc Map file in NetCDF format.
 MapInterval                          = 1200.                                 # Map file output, given as "interval" "start period" "end period" (s)
 RstInterval                          = -1.0                                  # Restart file output, given as "interval" "start period" "end period" (s)
-S1incinterval                        =                                       # Interval (m) in incremental file for waterlevels S1
 WaqFileBase                          =                                       # Basename (without extension) for all Delwaq files to be written.
 WaqInterval                          =                                       # Interval (in s) between Delwaq file outputs
 StatsInterval                        =                                       # Interval (in s) between simulation statistics output.
