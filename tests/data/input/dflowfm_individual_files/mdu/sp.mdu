@@ -30,7 +30,6 @@
 [numerics]
     unknown_numeric                     = 5                                   # any comment
     CFLMax                              = 0.5                                # Max. Courant nr.
-    CFLWaveFrac                         = 0.1                                # Wave velocity fraction, total courant vel = u + cflw*wavevelocity
     AdvecType                           = 3                                  # Adv type, 0=no, 1= Wenneker, qu-udzt, 2=1, q(uio-u), 3=Perot q(uio-u), 4=Perot q(ui-u), 5=Perot q(ui-u) without itself
     Icoriolistype                       =                                    # Coriolis weigthing, icorio 0, 4 or 5 (4 : v = tang. comp of total velocity at u-point, continuity weighted ucnxq, ucnyq = default so far, 5 : 4, scaling down coriolis force below trshcorio)
     Limtyphu                            =                                    # Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
