@@ -244,10 +244,6 @@ class ResearchNumerics(Numerics):
             "Cell area = max(orgcellarea*Baorgfracmin, cutcell area)",
             alias="baorgfracmin",
         )
-        research_epstke: Optional[str] = Field(
-            "TKE=max(TKE, EpsTKE), default=1d-32", alias="epstke"
-        )
-
         research_logprofkepsbndin: Optional[str] = Field(
             "Inflow: 0=0 keps, 1 = log keps inflow, 2 = log keps in and outflow.",
             alias="logprofkepsbndin",
@@ -431,7 +427,6 @@ class ResearchNumerics(Numerics):
         None, alias="corioadamsbashfordfac"
     )
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
-    research_epstke: Optional[float] = Field(None, alias="epstke")
     research_logprofkepsbndin: Optional[int] = Field(None, alias="logprofkepsbndin")
     research_epshstem: Optional[float] = Field(None, alias="epshstem")
     research_newcorio: Optional[bool] = Field(None, alias="newcorio")

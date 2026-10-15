@@ -179,7 +179,6 @@ Maxitverticalforestertem                  = 0                   # Forester itera
 Turbulencemodel                           = 3                   # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
 Turbulenceadvection                       = 0                   # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
 jaFacLaxturbtyp                           = 0                   # (Vertical distr of facLaxturb, 1=: (sigm<0.5=0.0 sigm>0.75=1.0 linear in between), 2:=1.0 for whole column)
-EpsTKE                                    = 1.d-32              # (TKE=max(TKE,EpsTKE), default=1d-32)
 EpsEPS                                    = 1.d-32              # (EPS=max(EPS,EpsEPS), default=1d-32, (or TAU))
 Eddyviscositybedfacmax                    = 0.                  # Limit eddy viscosity at bed )
 AntiCreep                                 = 0                   # Include anti-creep to suppress artifical vertical diffusion (0: no, 1: yes).
