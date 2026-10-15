@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -5145,7 +5145,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="normal">736</span>
 <span class="normal">737</span>
 <span class="normal">738</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataBlockINIBasedModel</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataBlockINIBasedModel defines the base model for ini models with datablocks.</span>
+<span class="w">    </span><span class="sd">"""DataBlockINIBasedModel defines the base model for ini models with datablocks.</span>
 
 <span class="sd">    This class extends the functionality of INIBasedModel to handle structured data blocks</span>
 <span class="sd">    commonly found in INI files. It provides validation, serialization, and conversion methods</span>
@@ -5190,7 +5190,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">    Notes:</span>
 <span class="sd">        - The class includes a validator to ensure that no NaN values are present in the data block.</span>
 <span class="sd">        - Data blocks are converted to a serialized format for writing to INI files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">datablock</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Datablock</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
@@ -5198,7 +5198,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_float</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Determines whether a value is a float.</span>
 
 <span class="sd">        Args:</span>
@@ -5206,17 +5206,17 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the value can be converted to a float; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;datablock&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"datablock"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_float</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">datablock</span><span class="p">:</span> <span class="n">Datablock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Datablock</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates that all values in the datablock are either floats or strings.</span>
 
 <span class="sd">        Args:</span>
@@ -5227,7 +5227,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If any value in the datablock is not a float or string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">datablock</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_float</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
@@ -5236,16 +5236,16 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unknown_keyword_error_manager</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnknownKeywordErrorManager</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        The DataBlockINIBasedModel does not need to raise an error on unknown keywords.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Optional[UnknownKeywordErrorManager]: Returns None as unknown keywords are ignored.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the datablock as a pandas DataFrame.</span>
+<span class="w">        </span><span class="sd">"""Convert the datablock as a pandas DataFrame.</span>
 
 <span class="sd">        - The first number from each list in the block as an index for that row.</span>
 
@@ -5260,7 +5260,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">                        0      1</span>
 <span class="sd">                0.0  10.0  100.0</span>
 <span class="sd">                1.0  20.0  200.0</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datablock</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
@@ -5271,7 +5271,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
         <span class="n">config</span><span class="p">:</span> <span class="n">DataBlockINIBasedSerializerConfig</span><span class="p">,</span>
         <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Section</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts the current model to an INI Section representation.</span>
 
 <span class="sd">        Args:</span>
@@ -5280,13 +5280,13 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Section: The INI Section containing serialized data and the data block.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">section</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_to_section</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">)</span>
         <span class="n">section</span><span class="o">.</span><span class="n">datablock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_datablock</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">section</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">DataBlockINIBasedSerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts the data block to a serialized format based on the configuration.</span>
 
 <span class="sd">        Args:</span>
@@ -5294,7 +5294,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[List]: A serialized representation of the data block.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">converted_datablock</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">datablock</span><span class="p">:</span>
@@ -5309,7 +5309,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">DataBlockINIBasedSerializerConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts a value in the data block to its serialized string representation.</span>
 
 <span class="sd">        Args:</span>
@@ -5318,16 +5318,16 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The serialized string representation of the value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format_datablock</span><span class="si">}}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format_datablock</span><span class="si">}}</span><span class="s2">"</span>
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;datablock&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"datablock"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_no_nans_are_present</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">datablock</span><span class="p">:</span> <span class="n">Datablock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Datablock</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that the datablock does not have any NaN values.</span>
+<span class="w">        </span><span class="sd">"""Validate that the datablock does not have any NaN values.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            datablock (Datablock): The datablock to validate.</span>
@@ -5337,15 +5337,15 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Datablock: The validated datablock.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_is_float_and_nan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">datablock</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;NaN is not supported in datablocks.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"NaN is not supported in datablocks."</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">datablock</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_float_and_nan</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Determines whether a value is a float and is NaN.</span>
 
 <span class="sd">        Args:</span>
@@ -5353,7 +5353,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the value is a NaN float; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5445,7 +5445,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the datablock as a pandas DataFrame.</span>
+<span class="w">    </span><span class="sd">"""Convert the datablock as a pandas DataFrame.</span>
 
 <span class="sd">    - The first number from each list in the block as an index for that row.</span>
 
@@ -5460,7 +5460,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">                    0      1</span>
 <span class="sd">            0.0  10.0  100.0</span>
 <span class="sd">            1.0  20.0  200.0</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datablock</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
@@ -5582,7 +5582,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">convert_value</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">DataBlockINIBasedSerializerConfig</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts a value in the data block to its serialized string representation.</span>
 
 <span class="sd">    Args:</span>
@@ -5591,9 +5591,9 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The serialized string representation of the value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format_datablock</span><span class="si">}}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format_datablock</span><span class="si">}}</span><span class="s2">"</span>
 
     <span class="k">return</span> <span class="n">value</span>
 </code></pre></div></td></tr></table></div>
@@ -5695,12 +5695,12 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <p>Define a custom INI block subclass:
     <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.ini.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">INIBasedModel</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="o">...</span>     <span class="n">_header</span> <span class="o">=</span> <span class="s2">&quot;MyHeader&quot;</span>
-<span class="o">...</span>     <span class="n">field_a</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default_value&quot;</span>
+<span class="o">...</span>     <span class="n">_header</span> <span class="o">=</span> <span class="s2">"MyHeader"</span>
+<span class="o">...</span>     <span class="n">field_a</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"default_value"</span>
 </code></pre></div></p>
 <p>Parse an INI section:
     <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.ini.io_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Section</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">section</span> <span class="o">=</span> <span class="n">Section</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="s2">&quot;MyHeader&quot;</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;field_a&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">section</span> <span class="o">=</span> <span class="n">Section</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="s2">"MyHeader"</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="p">[{</span><span class="s2">"key"</span><span class="p">:</span> <span class="s2">"field_a"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="s2">"value"</span><span class="p">}])</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">field_a</span><span class="p">)</span>
 <span class="n">value</span>
@@ -6193,7 +6193,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="normal">520</span>
 <span class="normal">521</span>
 <span class="normal">522</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIBasedModel</span><span class="p">(</span><span class="n">ListFieldDelimiter</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;INIBasedModel defines the base model for blocks/chapters inside an INIModel (*.ini file).</span>
+<span class="w">    </span><span class="sd">"""INIBasedModel defines the base model for blocks/chapters inside an INIModel (*.ini file).</span>
 
 <span class="sd">    - Abstract base class for representing INI-style configuration file blocks or chapters.</span>
 <span class="sd">    - This class serves as the foundational model for handling blocks within INI configuration files.</span>
@@ -6218,15 +6218,15 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.ini.models import INIBasedModel</span>
 <span class="sd">            &gt;&gt;&gt; class MyModel(INIBasedModel):</span>
-<span class="sd">            ...     _header = &quot;MyHeader&quot;</span>
-<span class="sd">            ...     field_a: str = &quot;default_value&quot;</span>
+<span class="sd">            ...     _header = "MyHeader"</span>
+<span class="sd">            ...     field_a: str = "default_value"</span>
 
 <span class="sd">            ```</span>
 
 <span class="sd">        Parse an INI section:</span>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.ini.io_models import Section</span>
-<span class="sd">            &gt;&gt;&gt; section = Section(header=&quot;MyHeader&quot;, content=[{&quot;key&quot;: &quot;field_a&quot;, &quot;value&quot;: &quot;value&quot;}])</span>
+<span class="sd">            &gt;&gt;&gt; section = Section(header="MyHeader", content=[{"key": "field_a", "value": "value"}])</span>
 <span class="sd">            &gt;&gt;&gt; model = MyModel.model_validate(section.flatten())</span>
 <span class="sd">            &gt;&gt;&gt; print(model.field_a)</span>
 <span class="sd">            value</span>
@@ -6247,12 +6247,12 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">    Notes:</span>
 <span class="sd">        - Subclasses can override the `_header` attribute to define the INI block header.</span>
 <span class="sd">        - Arbitrary fields can be added dynamically and are included during serialization.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">_file_path_style_converter</span> <span class="o">=</span> <span class="n">FilePathStyleConverter</span><span class="p">()</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span>
-        <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="s2">"ignore"</span><span class="p">,</span>
         <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">populate_by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">error_url_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -6260,53 +6260,53 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unknown_keyword_error_manager</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnknownKeywordErrorManager</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieves the error manager for handling unknown keywords in INI files.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Optional[UnknownKeywordErrorManager]:</span>
 <span class="sd">                An instance of the error manager or None if unknown keywords are allowed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">UnknownKeywordErrorManager</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_supports_comments</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Indicates whether the model supports comments for its fields.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if comments are supported; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_duplicate_keys_as_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Indicates whether duplicate keys in INI sections should be treated as lists.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if duplicate keys should be treated as lists; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Represents the comments associated with fields in an INIBasedModel.</span>
+<span class="w">        </span><span class="sd">"""Represents the comments associated with fields in an INIBasedModel.</span>
 
 <span class="sd">        Config:</span>
 <span class="sd">            extra: Extra.allow</span>
 <span class="sd">                Allows dynamic fields for comments.</span>
 <span class="sd">            arbitrary_types_allowed: bool</span>
 <span class="sd">                Indicates that only known types are allowed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span><span class="p">,</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Comments</span><span class="p">]</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_unknown_keywords</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates fields and raises errors for unknown keywords.</span>
+<span class="w">        </span><span class="sd">"""Validates fields and raises errors for unknown keywords.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            values (dict): Dictionary of field values to validate.</span>
@@ -6316,7 +6316,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If unknown keywords are found.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">unknown_keyword_error_manager</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_unknown_keyword_error_manager</span><span class="p">()</span>
         <span class="n">do_not_validate</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_exclude_from_validation</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">unknown_keyword_error_manager</span><span class="p">:</span>
@@ -6328,10 +6328,10 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_skip_nones_and_set_header</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Drop None fields for known fields.</span>
+<span class="w">        </span><span class="sd">"""Drop None fields for known fields.</span>
 
 <span class="sd">        Filters out None values and sets the model header.</span>
 
@@ -6340,7 +6340,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: Updated field values with None values removed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Convert Section to dictionary if needed</span>
         <span class="n">values</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_section_to_dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -6351,19 +6351,19 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">dropkeys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped unset keys: </span><span class="si">{</span><span class="n">dropkeys</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dropped unset keys: </span><span class="si">{</span><span class="n">dropkeys</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">dropkeys</span><span class="p">:</span>
             <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;_header&quot;</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;_header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_header</span>
+        <span class="k">if</span> <span class="s2">"_header"</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">"_header"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_header</span>
 
         <span class="k">return</span> <span class="n">values</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"comments"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">comments_matches_has_comments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates the presence of comments if supported by the model.</span>
 
 <span class="sd">        Args:</span>
@@ -6371,14 +6371,14 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Any: Validated comments field value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_supports_comments</span><span class="p">()</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped unsupported comments from </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> init.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dropped unsupported comments from </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> init."</span><span class="p">)</span>
             <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">v</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom setter to handle Fortran-style scientific notation conversion for float fields when setting attributes.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Custom setter to handle Fortran-style scientific notation conversion for float fields when setting attributes."""</span>
         <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -6391,11 +6391,11 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_input</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-process input values for the model.</span>
+<span class="w">        </span><span class="sd">"""Pre-process input values for the model.</span>
 
 <span class="sd">        The preprocess_input method is called before validation and triggers the following actions:</span>
 <span class="sd">            - Convert Fortran-style scientific notation to Python float.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">new_values</span> <span class="o">=</span> <span class="n">FortranScientificNotationConverter</span><span class="o">.</span><span class="n">convert_fields</span><span class="p">(</span>
                 <span class="n">values</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span>
@@ -6409,7 +6409,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with input preprocessing applied before validation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a Pydantic core schema with input preprocessing applied before validation."""</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">handler</span><span class="p">(</span><span class="n">source_type</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
@@ -6419,7 +6419,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_section_to_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts a Section object to a dictionary if needed.</span>
 
 <span class="sd">        Args:</span>
@@ -6427,7 +6427,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Any: The converted value (dictionary) or the original value if not a Section.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Section</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">_duplicate_keys_as_list</span><span class="p">(),</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_supports_comments</span><span class="p">()</span>
@@ -6438,7 +6438,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_extract_file_model_from_section</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_model_class</span><span class="p">:</span> <span class="n">Type</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extracts a file model from a Section object.</span>
+<span class="w">        </span><span class="sd">"""Extracts a file model from a Section object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            section (Section):</span>
@@ -6451,15 +6451,15 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 <span class="sd">        Returns:</span>
 <span class="sd">            Optional[Any]:</span>
 <span class="sd">                The file model if found, None otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">Property</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prop</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">file_model_class</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">model_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;INIBasedModel&quot;</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;INIBasedModel&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">"INIBasedModel"</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"INIBasedModel"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validates a value as an instance of INIBasedModel.</span>
 
 <span class="sd">        Args:</span>
@@ -6467,13 +6467,13 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            INIBasedModel: The validated instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_section_to_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_exclude_from_validation</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fields that should not be checked when validating existing fields as they will be dynamically added.</span>
 
 <span class="sd">        Args:</span>
@@ -6481,18 +6481,18 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Set: Set of field names to exclude from validation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_exclude_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Defines fields to exclude from serialization.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Set: Set of field names to exclude.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="s2">&quot;datablock&quot;</span><span class="p">,</span> <span class="s2">&quot;_header&quot;</span><span class="p">}</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">"comments"</span><span class="p">,</span> <span class="s2">"datablock"</span><span class="p">,</span> <span class="s2">"_header"</span><span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_convert_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -6501,7 +6501,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
         <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">,</span>
         <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts a field value to its serialized string representation.</span>
 
 <span class="sd">        Args:</span>
@@ -6512,7 +6512,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The serialized value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
@@ -6523,20 +6523,20 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">"</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">FileModel</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_path_style_converter</span><span class="o">.</span><span class="n">convert_from_os_style</span><span class="p">(</span>
                 <span class="n">v</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">save_settings</span><span class="o">.</span><span class="n">path_style</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">return</span> <span class="s2">""</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_section</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Section</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Converts the model to an INI section.</span>
 
 <span class="sd">        Args:</span>
@@ -6545,7 +6545,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Section: The INI section representation of the model.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">props</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cls_fields</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">model_fields</span>  <span class="c1"># cache the class-level dict</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
@@ -6567,7 +6567,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_should_be_serialized</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Determines if a field should be serialized.</span>
 
 <span class="sd">        Args:</span>
@@ -6577,7 +6577,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the field should be serialized; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -6600,7 +6600,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_union</span><span class="p">(</span><span class="n">field_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if a type is a Union.</span>
 
 <span class="sd">        Args:</span>
@@ -6608,14 +6608,14 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the type is a Union; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Union</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span>
             <span class="n">field_type</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">UnionType</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_union_has_filemodel</span><span class="p">(</span><span class="n">field_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if a Union type includes a FileModel subtype.</span>
 
 <span class="sd">        Args:</span>
@@ -6623,14 +6623,14 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the Union includes a FileModel; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
             <span class="n">isclass</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">FileModel</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_list</span><span class="p">(</span><span class="n">field_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if a type is a list.</span>
 
 <span class="sd">        Args:</span>
@@ -6638,12 +6638,12 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the type is a list; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span> <span class="ow">is</span> <span class="n">List</span> <span class="ow">or</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">field_type</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_value_is_not_none_or_type_is_filemodel</span><span class="p">(</span><span class="n">field_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if a value is not None or if its type is FileModel.</span>
 
 <span class="sd">        Args:</span>
@@ -6652,7 +6652,7 @@ INISerializerConfig: Provides configuration for INI serialization.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the value is valid; otherwise, False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">FileModel</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -6716,16 +6716,16 @@ arbitrary_types_allowed: bool
 <span class="normal">166</span>
 <span class="normal">167</span>
 <span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the comments associated with fields in an INIBasedModel.</span>
+<span class="w">    </span><span class="sd">"""Represents the comments associated with fields in an INIBasedModel.</span>
 
 <span class="sd">    Config:</span>
 <span class="sd">        extra: Extra.allow</span>
 <span class="sd">            Allows dynamic fields for comments.</span>
 <span class="sd">        arbitrary_types_allowed: bool</span>
 <span class="sd">            Indicates that only known types are allowed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span><span class="p">,</span> <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6785,7 +6785,7 @@ arbitrary_types_allowed: bool
 <span class="k">def</span><span class="w"> </span><span class="nf">__get_pydantic_core_schema__</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">source_type</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">handler</span><span class="p">:</span> <span class="n">GetCoreSchemaHandler</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">CoreSchema</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Pydantic core schema with input preprocessing applied before validation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a Pydantic core schema with input preprocessing applied before validation."""</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">handler</span><span class="p">(</span><span class="n">source_type</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">core_schema</span><span class="o">.</span><span class="n">no_info_before_validator_function</span><span class="p">(</span>
@@ -6825,7 +6825,7 @@ arbitrary_types_allowed: bool
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom setter to handle Fortran-style scientific notation conversion for float fields when setting attributes.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Custom setter to handle Fortran-style scientific notation conversion for float fields when setting attributes."""</span>
     <span class="n">field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">model_fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -6929,10 +6929,10 @@ arbitrary_types_allowed: bool
 <span class="normal">241</span>
 <span class="normal">242</span>
 <span class="normal">243</span>
-<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"comments"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">comments_matches_has_comments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validates the presence of comments if supported by the model.</span>
 
 <span class="sd">    Args:</span>
@@ -6940,9 +6940,9 @@ arbitrary_types_allowed: bool
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Any: Validated comments field value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_supports_comments</span><span class="p">()</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dropped unsupported comments from </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> init.&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dropped unsupported comments from </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> init."</span><span class="p">)</span>
         <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">v</span>
 </code></pre></div></td></tr></table></div>
@@ -7038,8 +7038,8 @@ arbitrary_types_allowed: bool
 <span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">model_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;INIBasedModel&quot;</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;INIBasedModel&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">model_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s2">"INIBasedModel"</span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"INIBasedModel"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validates a value as an instance of INIBasedModel.</span>
 
 <span class="sd">    Args:</span>
@@ -7047,7 +7047,7 @@ arbitrary_types_allowed: bool
 
 <span class="sd">    Returns:</span>
 <span class="sd">        INIBasedModel: The validated instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">value</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_convert_section_to_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7099,11 +7099,11 @@ arbitrary_types_allowed: bool
 <span class="normal">271</span>
 <span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_input</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pre-process input values for the model.</span>
+<span class="w">    </span><span class="sd">"""Pre-process input values for the model.</span>
 
 <span class="sd">    The preprocess_input method is called before validation and triggers the following actions:</span>
 <span class="sd">        - Convert Fortran-style scientific notation to Python float.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">new_values</span> <span class="o">=</span> <span class="n">FortranScientificNotationConverter</span><span class="o">.</span><span class="n">convert_fields</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">model_fields</span>
@@ -7164,11 +7164,11 @@ arbitrary_types_allowed: bool
 <span class="normal">748</span>
 <span class="normal">749</span>
 <span class="normal">750</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIGeneral</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the [General] section common to all INI-based model files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Represents the [General] section common to all INI-based model files."""</span>
 
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;3.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"3.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_supports_comments</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -7284,13 +7284,13 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">805</span>
 <span class="normal">806</span>
 <span class="normal">807</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INIModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;INI Model representation of a *.ini file.</span>
+<span class="w">    </span><span class="sd">"""INI Model representation of a *.ini file.</span>
 
 <span class="sd">    Typically subclasses will implement the various sorts of ini files,</span>
 <span class="sd">    specifically for their fileType/contents.</span>
 <span class="sd">    Child elements of this class associated with chapters/blocks in the</span>
 <span class="sd">    ini file will be (sub)class of INIBasedModel.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">serializer_config</span><span class="p">:</span> <span class="n">INISerializerConfig</span> <span class="o">=</span> <span class="n">INISerializerConfig</span><span class="p">()</span>
 
@@ -7298,11 +7298,11 @@ ini file will be (sub)class of INIBasedModel.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;.ini&quot;</span>
+        <span class="k">return</span> <span class="s2">".ini"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;fm&quot;</span>
+        <span class="k">return</span> <span class="s2">"fm"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -7313,7 +7313,7 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="k">return</span> <span class="n">Parser</span><span class="o">.</span><span class="n">parse_as_dict</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_to_document</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">CommentBlock</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;written by HYDROLIB-core </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">CommentBlock</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"written by HYDROLIB-core </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">])</span>
         <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">()</span> <span class="ow">or</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7332,7 +7332,7 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">header_comment</span><span class="o">=</span><span class="p">[</span><span class="n">header</span><span class="p">],</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a `Document` from the model and write it to the file.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create a `Document` from the model and write it to the file."""</span>
         <span class="n">write_ini</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_filepath</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_to_document</span><span class="p">(</span><span class="n">save_settings</span><span class="p">),</span>
@@ -7689,10 +7689,10 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parser defines a generic Parser for Deltares ini files.</span>
+<span class="w">    </span><span class="sd">"""Parser defines a generic Parser for Deltares ini files.</span>
 
 <span class="sd">    The Parser can be configured with a ParserConfig object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">_StateType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
         <span class="n">NO_SECTION_FOUND</span> <span class="o">=</span> <span class="mi">0</span>
@@ -7700,11 +7700,11 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="n">PARSING_DATABLOCK</span> <span class="o">=</span> <span class="mi">2</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new Parser configured with the provided config.</span>
+<span class="w">        </span><span class="sd">"""Creates a new Parser configured with the provided config.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            config (ParserConfig): The configuration of this Parser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_section</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_IntermediateSection</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -7740,11 +7740,11 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">feed_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the next line with this Parser.</span>
+<span class="w">        </span><span class="sd">"""Parse the next line with this Parser.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            line (str): The line to parse</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_empty_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">is_line_type</span><span class="p">,</span> <span class="n">handle_line_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">is_line_type</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
@@ -7759,12 +7759,12 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_increment_line</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finalize parsing and return the constructed Document.</span>
+<span class="w">        </span><span class="sd">"""Finalize parsing and return the constructed Document.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Document:</span>
 <span class="sd">                A Document describing the parsed ini file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># TODO handle invalid block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finish_current_header_block</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finalise_current_section</span><span class="p">()</span>
@@ -7820,10 +7820,10 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_section</span><span class="o">.</span><span class="n">add_datarow</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_retrieve_property_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve the comment and value part from the valuestring of a key-value pair.</span>
+<span class="w">        </span><span class="sd">"""Retrieve the comment and value part from the valuestring of a key-value pair.</span>
 
 <span class="sd">        The comment retrieval is complicated by the fact that in the Deltares-INI</span>
-<span class="sd">        dialect, the comment delimiter &#39;#&#39; plays a double role: it may also be used</span>
+<span class="sd">        dialect, the comment delimiter '#' plays a double role: it may also be used</span>
 <span class="sd">        to quote string values (for example if the contain spaces).</span>
 
 <span class="sd">        Example lines that are supported:</span>
@@ -7836,36 +7836,36 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 <span class="sd">        Keywords arguments:</span>
 <span class="sd">            line (str) -- the partial string of the line containing both value and</span>
-<span class="sd">                possibly a comment at the end. Note that the &quot;key =&quot; part must already</span>
+<span class="sd">                possibly a comment at the end. Note that the "key =" part must already</span>
 <span class="sd">                have been split off, for example by _retrieve_key_value</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple with the comment and string value, respectively. If no comment is</span>
 <span class="sd">            present, the first tuple element is None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">parse_comments</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="p">)</span>
             <span class="n">numhash</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">numhash</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># normal value, simple comment: &quot;key =  somevalue # and a comment &quot;</span>
+                <span class="c1"># normal value, simple comment: "key =  somevalue # and a comment "</span>
                 <span class="n">comment</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="p">):</span>
-                <span class="c1"># hashed value, possible with comment: &quot;key = #somevalue# ...&quot;</span>
+                <span class="c1"># hashed value, possible with comment: "key = #somevalue# ..."</span>
                 <span class="n">comment</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
                     <span class="k">if</span> <span class="n">numhash</span> <span class="o">&gt;=</span> <span class="mi">3</span>
-                    <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">else</span> <span class="s2">""</span>
                 <span class="p">)</span>
 
                 <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># normal value, comment with maybe more hashes: &quot;key = somevalue #This is comment #2, or two &quot;</span>
+                <span class="c1"># normal value, comment with maybe more hashes: "key = somevalue #This is comment #2, or two "</span>
                 <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">""</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">line</span>
 
         <span class="k">return</span> <span class="p">(</span>
@@ -7874,8 +7874,8 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_retrieve_key_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="k">if</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span> <span class="o">:=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># if no = exists, due to the previous check we know it will just be a</span>
@@ -7901,14 +7901,14 @@ ini file will be (sub)class of INIBasedModel.</p>
         <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_section_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="c1"># a header is defined as &quot;[ any-value ]&quot;</span>
+        <span class="c1"># a header is defined as "[ any-value ]"</span>
         <span class="n">stripped</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">stripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stripped</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"["</span><span class="p">)</span> <span class="ow">and</span> <span class="n">stripped</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"]"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="c1"># we assume that we already checked wether it is a comment or</span>
         <span class="c1"># a section header.</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_only_keywords</span> <span class="ow">or</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">line</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">allow_only_keywords</span> <span class="ow">or</span> <span class="s2">"="</span> <span class="ow">in</span> <span class="n">line</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_datarow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="c1"># we assume that we already checked whether it is either a comment,</span>
@@ -7917,7 +7917,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_as_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parses an INI file without a specific model type and returns it as a dictionary.</span>
 
 <span class="sd">        Args:</span>
@@ -7926,12 +7926,12 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: Representation of the parsed INI-file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parses an INI file without a specific model type and returns it as a Document.</span>
 
 <span class="sd">        Args:</span>
@@ -7940,7 +7940,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Document: Representation of the parsed INI-file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">ParserConfig</span><span class="p">()</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -8052,11 +8052,11 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new Parser configured with the provided config.</span>
+<span class="w">    </span><span class="sd">"""Creates a new Parser configured with the provided config.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (ParserConfig): The configuration of this Parser.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_current_section</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_IntermediateSection</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -8161,11 +8161,11 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">feed_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the next line with this Parser.</span>
+<span class="w">    </span><span class="sd">"""Parse the next line with this Parser.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        line (str): The line to parse</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_empty_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">is_line_type</span><span class="p">,</span> <span class="n">handle_line_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feed_line</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">is_line_type</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
@@ -8234,12 +8234,12 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finalize parsing and return the constructed Document.</span>
+<span class="w">    </span><span class="sd">"""Finalize parsing and return the constructed Document.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Document:</span>
 <span class="sd">            A Document describing the parsed ini file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># TODO handle invalid block</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_finish_current_header_block</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_finalise_current_section</span><span class="p">()</span>
@@ -8362,7 +8362,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">380</span>
 <span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parses an INI file without a specific model type and returns it as a Document.</span>
 
 <span class="sd">    Args:</span>
@@ -8371,7 +8371,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Document: Representation of the parsed INI-file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">ParserConfig</span><span class="p">()</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -8491,7 +8491,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 <span class="normal">358</span>
 <span class="normal">359</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_as_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ParserConfig</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parses an INI file without a specific model type and returns it as a dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -8500,7 +8500,7 @@ ini file will be (sub)class of INIBasedModel.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: Representation of the parsed INI-file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8653,7 +8653,7 @@ Defaults to '#'.</p>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ParserConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;ParserConfig defines the configuration options of the Parser.</span>
+<span class="w">    </span><span class="sd">"""ParserConfig defines the configuration options of the Parser.</span>
 
 <span class="sd">    Note that we cannot set both allow_only_keywords and parse_datablocks to True</span>
 <span class="sd">    because we cannot distinguish between datablocks and key only properties. As</span>
@@ -8661,7 +8661,7 @@ Defaults to '#'.</p>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        allow_only_keywords (bool):</span>
-<span class="sd">            Whether to allow properties with only keys (no &#39;=&#39; or value).</span>
+<span class="sd">            Whether to allow properties with only keys (no '=' or value).</span>
 <span class="sd">            Defaults to False.</span>
 <span class="sd">        parse_datablocks (bool):</span>
 <span class="sd">            Whether to allow parsing of datablocks at the bottom of sections.</span>
@@ -8671,15 +8671,15 @@ Defaults to '#'.</p>
 <span class="sd">            Defaults to True.</span>
 <span class="sd">        comment_delimiter (str):</span>
 <span class="sd">            The character or sequence of character used to define a comment.</span>
-<span class="sd">            Defaults to &#39;#&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">            Defaults to '#'.</span>
+<span class="sd">    """</span>
 
     <span class="n">allow_only_keywords</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">parse_datablocks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">parse_comments</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">comment_delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
+    <span class="n">comment_delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"#"</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;parse_datablocks&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"parse_datablocks"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">allow_only_keywods_and_parse_datablocks_leads_should_not_both_be_true</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">parse_datablocks</span><span class="p">,</span> <span class="n">info</span>
@@ -8689,11 +8689,11 @@ Defaults to '#'.</p>
         <span class="c1"># properly</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">parse_datablocks</span>
-            <span class="ow">and</span> <span class="s2">&quot;allow_only_keywords&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span>
-            <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;allow_only_keywords&quot;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="s2">"allow_only_keywords"</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span>
+            <span class="ow">and</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"allow_only_keywords"</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Both parse_datablocks and allow_only_keywords should not be both True.&quot;</span>
+                <span class="s2">"Both parse_datablocks and allow_only_keywords should not be both True."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">parse_datablocks</span>
 </code></pre></div></td></tr></table></div>
@@ -8813,32 +8813,32 @@ Defaults to '#'.</p>
 <span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DataBlockINIBasedSerializerConfig</span><span class="p">(</span><span class="n">INISerializerConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class that holds the configuration settings for INI files with data blocks serialization.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Class that holds the configuration settings for INI files with data blocks serialization."""</span>
 
-    <span class="n">float_format_datablock</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string.</span>
+    <span class="n">float_format_datablock</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="w">    </span><span class="sd">"""str: The string format that will be used for float serialization of the datablock. If empty, the original number will be serialized. Defaults to an empty string.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        Input value = 123.456</span>
 
 <span class="sd">        Format    | Output          | Description</span>
 <span class="sd">        -------------------------------------------------------------------------------------------------------------------------------------</span>
-<span class="sd">        &quot;.0f&quot;     | 123             | Format float with 0 decimal places.</span>
-<span class="sd">        &quot;f&quot;       | 123.456000      | Format float with default (=6) decimal places.</span>
-<span class="sd">        &quot;.2f&quot;     | 123.46          | Format float with 2 decimal places.</span>
-<span class="sd">        &quot;+.1f&quot;    | +123.5          | Format float with 1 decimal place with a + or  sign.</span>
-<span class="sd">        &quot;e&quot;       | 1.234560e+02    | Format scientific notation with the letter &#39;e&#39; with default (=6) decimal places.</span>
-<span class="sd">        &quot;E&quot;       | 1.234560E+02    | Format scientific notation with the letter &#39;E&#39; with default (=6) decimal places.</span>
-<span class="sd">        &quot;.3e&quot;     | 1.235e+02       | Format scientific notation with the letter &#39;e&#39; with 3 decimal places.</span>
-<span class="sd">        &quot;&lt;15&quot;     | 123.456         | Left aligned in space with width 15</span>
-<span class="sd">        &quot;^15.0f&quot;  |       123       | Center aligned in space with width 15 with 0 decimal places.</span>
-<span class="sd">        &quot;&gt;15.1e&quot;  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.</span>
-<span class="sd">        &quot;*&gt;15.1f&quot; | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *</span>
-<span class="sd">        &quot;%&quot;       | 12345.600000%   | Format percentage with default (=6) decimal places.</span>
-<span class="sd">        &quot;.3%&quot;     | 12345.600%      | Format percentage with 3 decimal places.</span>
+<span class="sd">        ".0f"     | 123             | Format float with 0 decimal places.</span>
+<span class="sd">        "f"       | 123.456000      | Format float with default (=6) decimal places.</span>
+<span class="sd">        ".2f"     | 123.46          | Format float with 2 decimal places.</span>
+<span class="sd">        "+.1f"    | +123.5          | Format float with 1 decimal place with a + or  sign.</span>
+<span class="sd">        "e"       | 1.234560e+02    | Format scientific notation with the letter 'e' with default (=6) decimal places.</span>
+<span class="sd">        "E"       | 1.234560E+02    | Format scientific notation with the letter 'E' with default (=6) decimal places.</span>
+<span class="sd">        ".3e"     | 1.235e+02       | Format scientific notation with the letter 'e' with 3 decimal places.</span>
+<span class="sd">        "&lt;15"     | 123.456         | Left aligned in space with width 15</span>
+<span class="sd">        "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.</span>
+<span class="sd">        "&gt;15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.</span>
+<span class="sd">        "*&gt;15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *</span>
+<span class="sd">        "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.</span>
+<span class="sd">        ".3%"     | 12345.600%      | Format percentage with 3 decimal places.</span>
 
 <span class="sd">        More information: https://docs.python.org/3/library/string.html#format-specification-mini-language</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -8857,7 +8857,7 @@ Defaults to '#'.</p>
 
 
 <h3 id="hydrolib.core.dflowfm.ini.serializer.DataBlockINIBasedSerializerConfig.float_format_datablock" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">float_format_datablock</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span></code>
+            <code class="highlight language-python"><span class="n">float_format_datablock</span> <span class="o">=</span> <span class="s1">''</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
@@ -8885,7 +8885,7 @@ Defaults to '#'.</p>
 "&lt;15"     | 123.456         | Left aligned in space with width 15
 "^15.0f"  |       123       | Center aligned in space with width 15 with 0 decimal places.
 "&gt;15.1e"  |         1.2e+02 | Right aligned in space with width 15 with scientific notation with 1 decimal place.
-"<em>&gt;15.1f" | </em><strong><em>*</em></strong>**123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
+"*&gt;15.1f" | **********123.5 | Right aligned in space with width 15 with 1 decimal place and fill empty space with *
 "%"       | 12345.600000%   | Format percentage with default (=6) decimal places.
 ".3%"     | 12345.600%      | Format percentage with 3 decimal places.</p>
 <p>More information: https://docs.python.org/3/library/string.html#format-specification-mini-language</p>
@@ -9059,7 +9059,7 @@ additional offset to ensure . is lined out. Defaults to 2.</p>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">INISerializerConfig</span><span class="p">(</span><span class="n">SerializerConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SerializerConfig defines the configuration options of the Serializer.</span>
+<span class="w">    </span><span class="sd">"""SerializerConfig defines the configuration options of the Serializer.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        section_indent (int):</span>
@@ -9077,26 +9077,26 @@ additional offset to ensure . is lined out. Defaults to 2.</p>
 <span class="sd">            The number of spaces between datablock columns. Note that there might be</span>
 <span class="sd">            additional offset to ensure . is lined out. Defaults to 2.</span>
 <span class="sd">        comment_delimiter (str):</span>
-<span class="sd">            The character used to delimit comments. Defaults to &#39;#&#39;.</span>
+<span class="sd">            The character used to delimit comments. Defaults to '#'.</span>
 <span class="sd">        skip_empty_properties (bool):</span>
 <span class="sd">            Whether or not to skip properties with a value that is empty or None. Defaults to True.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">section_indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">property_indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">datablock_indent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
     <span class="n">datablock_spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">comment_delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
+    <span class="n">comment_delimiter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"#"</span>
     <span class="n">skip_empty_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_property_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The combined property indentation, i.e. section_indent + property_indent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The combined property indentation, i.e. section_indent + property_indent."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_indent</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">property_indent</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">total_datablock_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The combined datablock indentation, i.e. section_indent + datablock_indent.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The combined datablock indentation, i.e. section_indent + datablock_indent."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_indent</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">datablock_indent</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -9300,7 +9300,7 @@ If no datablock is present it defaults to None.</p>
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">MaxLengths</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;MaxLengths defines the maxmimum lengths of the parts of a section.</span>
+<span class="w">    </span><span class="sd">"""MaxLengths defines the maxmimum lengths of the parts of a section.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        key (int):</span>
@@ -9313,22 +9313,22 @@ If no datablock is present it defaults to None.</p>
 <span class="sd">        datablock (Optional[Sequence[int]]):</span>
 <span class="sd">            The maximum length of the values of each column of the Datablock.</span>
 <span class="sd">            If no datablock is present it defaults to None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">key</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">datablock</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_section</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MaxLengths&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a MaxLengths instance from the given Section.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_section</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"MaxLengths"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Generate a MaxLengths instance from the given Section.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            section (Section): The section of which the MaxLengths are calculated.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            MaxLengths: The MaxLengths corresponding with the provided section.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">properties</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Property</span><span class="p">))</span>
 
         <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">)</span>
@@ -9468,15 +9468,15 @@ If no datablock is present it defaults to None.</p>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_section</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MaxLengths&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a MaxLengths instance from the given Section.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_section</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"MaxLengths"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generate a MaxLengths instance from the given Section.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        section (Section): The section of which the MaxLengths are calculated.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        MaxLengths: The MaxLengths corresponding with the provided section.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">properties</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">section</span><span class="o">.</span><span class="n">content</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Property</span><span class="p">))</span>
 
     <span class="n">keys</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">)</span>
@@ -9637,25 +9637,25 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SectionSerializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;SectionSerializer provides the serialize method to serialize a Section.</span>
+<span class="w">    </span><span class="sd">"""SectionSerializer provides the serialize method to serialize a Section.</span>
 
 <span class="sd">    The entrypoint of this method is the serialize method, which will construct</span>
 <span class="sd">    an actual instance and serializes the Section with it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLengths</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new SectionSerializer.</span>
+<span class="w">        </span><span class="sd">"""Create a new SectionSerializer.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            config (SerializerConfig): The config describing the serialization options.</span>
 <span class="sd">            max_length (MaxLengths): The max lengths of the section being serialized.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_max_length</span> <span class="o">=</span> <span class="n">max_length</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the provided section with the given config.</span>
+<span class="w">        </span><span class="sd">"""Serialize the provided section with the given config.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            section (Section): The section to serialize.</span>
@@ -9663,18 +9663,18 @@ an actual instance and serializes the Section with it.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Lines: The iterable lines of the serialized section.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">serializer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">MaxLengths</span><span class="o">.</span><span class="n">from_section</span><span class="p">(</span><span class="n">section</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">serializer</span><span class="o">.</span><span class="n">_serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">INISerializerConfig</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The SerializerConfig used while serializing the section.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The SerializerConfig used while serializing the section."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">max_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MaxLengths</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The MaxLengths of the Section being serialized by this SectionSerializer.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The MaxLengths of the Section being serialized by this SectionSerializer."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_length</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
@@ -9685,8 +9685,8 @@ an actual instance and serializes the Section with it.</p>
         <span class="k">return</span> <span class="n">chain</span><span class="p">(</span><span class="n">header_iterable</span><span class="p">,</span> <span class="n">properties</span><span class="p">,</span> <span class="n">datablock</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_section_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
-        <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">section_indent</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">section_header</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">section_indent</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">section_header</span><span class="si">}</span><span class="s2">]"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ContentElement</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialize_content_element</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">content</span><span class="p">)</span>
@@ -9704,34 +9704,34 @@ an actual instance and serializes the Section with it.</p>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">skip_empty_properties</span> <span class="ow">and</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="nb">property</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
             <span class="k">return</span>
 
-        <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">total_property_indent</span><span class="p">)</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">total_property_indent</span><span class="p">)</span>
         <span class="n">key_ws</span> <span class="o">=</span> <span class="n">_get_offset_whitespace</span><span class="p">(</span><span class="nb">property</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">key</span><span class="si">}{</span><span class="n">key_ws</span><span class="si">}</span><span class="s2"> = &quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">key</span><span class="si">}{</span><span class="n">key_ws</span><span class="si">}</span><span class="s2"> = "</span>
 
         <span class="n">value_ws</span> <span class="o">=</span> <span class="n">_get_offset_whitespace</span><span class="p">(</span><span class="nb">property</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">property</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">value</span><span class="si">}{</span><span class="n">value_ws</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">value</span><span class="si">}{</span><span class="n">value_ws</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value_ws</span>
 
         <span class="n">comment</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">" # </span><span class="si">{</span><span class="nb">property</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="nb">property</span><span class="o">.</span><span class="n">comment</span><span class="p">)</span>
-            <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">else</span> <span class="s2">""</span>
         <span class="p">)</span>
 
-        <span class="k">yield</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">key</span><span class="si">}{</span><span class="n">value</span><span class="si">}{</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">indent</span><span class="si">}{</span><span class="n">key</span><span class="si">}{</span><span class="n">value</span><span class="si">}{</span><span class="n">comment</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_datablock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datablock</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Datablock</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">datablock</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="o">.</span><span class="n">datablock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="n">indent</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">total_datablock_indent</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">total_datablock_indent</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialize_row</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">indent</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">datablock</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="n">DatablockRow</span><span class="p">,</span> <span class="n">indent</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">elem_spacing</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">datablock_spacing</span>
+        <span class="n">elem_spacing</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">datablock_spacing</span>
         <span class="n">elems</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_serialize_row_element</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">count</span><span class="p">()))</span>
 
         <span class="k">return</span> <span class="n">indent</span> <span class="o">+</span> <span class="n">elem_spacing</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elems</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
@@ -9872,12 +9872,12 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">,</span> <span class="n">max_length</span><span class="p">:</span> <span class="n">MaxLengths</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new SectionSerializer.</span>
+<span class="w">    </span><span class="sd">"""Create a new SectionSerializer.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (SerializerConfig): The config describing the serialization options.</span>
 <span class="sd">        max_length (MaxLengths): The max lengths of the section being serialized.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_max_length</span> <span class="o">=</span> <span class="n">max_length</span>
 </code></pre></div></td></tr></table></div>
@@ -9990,7 +9990,7 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">193</span>
 <span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">Section</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the provided section with the given config.</span>
+<span class="w">    </span><span class="sd">"""Serialize the provided section with the given config.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        section (Section): The section to serialize.</span>
@@ -9998,7 +9998,7 @@ an actual instance and serializes the Section with it.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Lines: The iterable lines of the serialized section.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">MaxLengths</span><span class="o">.</span><span class="n">from_section</span><span class="p">(</span><span class="n">section</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">serializer</span><span class="o">.</span><span class="n">_serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -10086,30 +10086,30 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Serializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer serializes Document to its corresponding lines.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serializer serializes Document to its corresponding lines."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a new Serializer with the provided configuration.</span>
+<span class="w">        </span><span class="sd">"""Creates a new Serializer with the provided configuration.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            config (SerializerConfig): The configuration of this Serializer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the provided document into an iterable of lines.</span>
+<span class="w">        </span><span class="sd">"""Serialize the provided document into an iterable of lines.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            document (Document): The Document to serialize.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Lines: An iterable returning each line of the serialized Document.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">header_iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serialize_document_header</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">header_comment</span><span class="p">)</span>
 
         <span class="n">serialize_section</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">SectionSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
         <span class="n">sections</span> <span class="o">=</span> <span class="p">(</span><span class="n">serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
-        <span class="n">sections_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">sections_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">[</span><span class="s2">""</span><span class="p">])</span>
         <span class="n">sections_iterable</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">sections_with_spacing</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">chain</span><span class="p">(</span><span class="n">header_iterable</span><span class="p">,</span> <span class="n">sections_iterable</span><span class="p">)</span>
@@ -10118,7 +10118,7 @@ an actual instance and serializes the Section with it.</p>
         <span class="n">delimiter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">comment_delimiter</span>
         <span class="n">serialize</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">cb</span><span class="p">:</span> <span class="n">_serialize_comment_block</span><span class="p">(</span><span class="n">cb</span><span class="p">,</span> <span class="n">delimiter</span><span class="p">)</span>
         <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">serialize</span><span class="p">(</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">header</span><span class="p">)</span>
-        <span class="n">blocks_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+        <span class="n">blocks_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">blocks</span><span class="p">,</span> <span class="p">[</span><span class="s2">""</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">blocks_with_spacing</span><span class="p">)</span>
 
@@ -10200,11 +10200,11 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">278</span>
 <span class="normal">279</span>
 <span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a new Serializer with the provided configuration.</span>
+<span class="w">    </span><span class="sd">"""Creates a new Serializer with the provided configuration.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (SerializerConfig): The configuration of this Serializer.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">config</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -10299,19 +10299,19 @@ an actual instance and serializes the Section with it.</p>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lines</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the provided document into an iterable of lines.</span>
+<span class="w">    </span><span class="sd">"""Serialize the provided document into an iterable of lines.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        document (Document): The Document to serialize.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Lines: An iterable returning each line of the serialized Document.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">header_iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_serialize_document_header</span><span class="p">(</span><span class="n">document</span><span class="o">.</span><span class="n">header_comment</span><span class="p">)</span>
 
     <span class="n">serialize_section</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">SectionSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
     <span class="n">sections</span> <span class="o">=</span> <span class="p">(</span><span class="n">serialize_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">document</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
-    <span class="n">sections_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">])</span>
+    <span class="n">sections_with_spacing</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">_interweave</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">[</span><span class="s2">""</span><span class="p">])</span>
     <span class="n">sections_iterable</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">sections_with_spacing</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">chain</span><span class="p">(</span><span class="n">header_iterable</span><span class="p">,</span> <span class="n">sections_iterable</span><span class="p">)</span>
@@ -10430,7 +10430,7 @@ do not exist, they will be created.</p>
 <span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_ini</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Document</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">INISerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write the provided document to the specified path.</span>
+<span class="w">    </span><span class="sd">"""Write the provided document to the specified path.</span>
 
 <span class="sd">    If the provided path already exists, it will be overwritten. If the parent folder</span>
 <span class="sd">    do not exist, they will be created.</span>
@@ -10439,15 +10439,15 @@ do not exist, they will be created.</p>
 <span class="sd">        path (Path): The path to which the document should be written.</span>
 <span class="sd">        document (Document): The document to serialize to the specified path.</span>
 <span class="sd">        config (INISerializerConfig): The configuration settings for the serializer.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">serializer</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">serializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">document</span><span class="p">):</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -10544,7 +10544,7 @@ do not exist, they will be created.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       
