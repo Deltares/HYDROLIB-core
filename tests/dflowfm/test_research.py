@@ -69,7 +69,6 @@ class TestResearchFMModel:
         keywords_to_check = [
             "inputspecific",
             "toplayminthick",
-            "faclaxturb",
             "surftempsmofac",
             "mbalumpsourcesinks",
         ]

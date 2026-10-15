@@ -200,10 +200,6 @@ class ResearchNumerics(Numerics):
     class Comments(Numerics.Comments):
         """Comments for the ResearchNumerics section fields."""
 
-        research_faclaxturb: Optional[str] = Field(
-            "Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty.",
-            alias="faclaxturb",
-        )
         research_jafaclaxturbtyp: Optional[str] = Field(
             "Vertical distr of facLaxturb, 1=: (sigm<0.5=0.0 sigm>0.75=1.0 linear in between), 2:=1.0 for whole column.",
             alias="jafaclaxturbtyp",
@@ -424,7 +420,6 @@ class ResearchNumerics(Numerics):
 
     comments: Comments = Comments()
 
-    research_faclaxturb: Optional[float] = Field(None, alias="faclaxturb")
     research_jafaclaxturbtyp: Optional[int] = Field(None, alias="jafaclaxturbtyp")
     research_locsaltmin: Optional[float] = Field(None, alias="locsaltmin")
     research_lincontin: Optional[int] = Field(None, alias="lincontin")
