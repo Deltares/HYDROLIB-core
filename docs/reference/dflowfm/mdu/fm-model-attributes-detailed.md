@@ -367,7 +367,6 @@ classDiagram
       statisticsfile: DiskOnlyFileModel [file] (alias=StatisticsFile)
       thetavertical?: float (alias=ThetaVertical)
       dtprocesses?: float (alias=DtProcesses)
-      processfluxintegration?: ProcessFluxIntegration (alias=ProcessFluxIntegration)
       wriwaqbot3doutput?: bool (alias=Wriwaqbot3Doutput)
       volumedrythreshold?: float (alias=VolumeDryThreshold)
       depthdrythreshold?: float (alias=DepthDryThreshold)

@@ -296,7 +296,6 @@ SubstanceFile                       = wq_SGP_varPTK_202603.sub                  
 AdditionalHistoryOutputFile         =                                                                                                                                                                                                                                                                #
 ThetaVertical                       = 0.                                                                  # theta vertical for waq
 DtProcesses                         = 3600.                                                               # waq processes time step
-ProcessFluxIntegration              = 1                                                                   # Process fluxes integration option (1: WAQ, 2: D-Flow FM)
 VolumeDryThreshold                  = 1.d-3
 DepthDryThreshold                   = 1.d-3
 #======================================================================================================

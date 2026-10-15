@@ -2373,17 +2373,6 @@ class GroundWater(INIBasedModel):
     sgrwini: Optional[float] = Field(-999, alias="sgrwini")
 
 
-class ProcessFluxIntegration(IntEnum):
-    """Enum class containing the valid values for the ProcessFluxIntegration attribute.
-
-    Contains valid values for the ProcessFluxIntegration attribute in the
-    [Processes][hydrolib.core.dflowfm.mdu.models.Processes] class.
-    """
-
-    WAQ = 1
-    DFlowFM = 2
-
-
 class Processes(INIBasedModel):
     """
     The `[Processes]` section in an MDU file.
@@ -2416,10 +2405,6 @@ class Processes(INIBasedModel):
             "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
-        processfluxintegration: Optional[str] = Field(
-            "Process fluxes integration option (1: WAQ, 2: D-Flow FM).",
-            alias="ProcessFluxIntegration",
-        )
         wriwaqbot3doutput: Optional[str] = Field(
             "Write 3D water quality bottom variables (0: no, 1: yes).",
             alias="Wriwaqbot3Doutput",
@@ -2451,9 +2436,6 @@ class Processes(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile")
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
-    processfluxintegration: Optional[ProcessFluxIntegration] = Field(
-        ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
-    )
     wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
