@@ -10,7 +10,6 @@ pathsRelativeToParent = 0             # Default: 0. Whether or not (1/0) to reso
 
 [Geometry]
 netFile                        = SEA_coarse_net.nc # Unstructured grid file *_net.nc
-bathymetryFile                 =                   # Removed since March 2022. See [geometry] keyword BedLevelFile.
 iniFieldFile                   =                   # Initial and parameter field file <*.ini>.
 waterLevIniFile                =                   # Initial water levels sample file <*.xyz>.
 useCaching                     = 0                 # Use caching for geometrical/network-related items (0: no, 1: yes)
@@ -22,7 +21,6 @@ storageNodeFile                =                   # File containing the specifi
 profLocFile                    =                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                    =                   # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile                 =                   # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                    =                   # File containing manholes (e.g. <*.dat>).
 partitionFile                  =                   # <*_part.pol>, polyline(s) x, y.
 uniformWidth1D                 = 2.0               # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.1               # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu, Default = 0.1
@@ -98,7 +96,6 @@ slopeDrop2D               = 0.0     # Apply droplosses only if local bottom slop
 drop1D                    = 0       # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                   = 0.1     # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55    # Theta of time integration (0.5 < theta < 1)
-qhRelax                   = 0.01
 cstBnd                    = 0       # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
 maxitverticalforester     = 0       # Forester iterations for all constituents (0: no vertical filter, > 0: max nr of iterations)
 turbulenceModel           = 3       # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
@@ -181,7 +178,6 @@ salinityDependentFreezingPoint = 0       # Enable salinity-dependent freezing po
 saliMax                        = -999.0  # Limit the salinity
 saliMin                        = 0.0     # Limit the salinity
 heat_eachStep                  = 1       # 1=heat each timestep, 0=heat each usertimestep
-rhoAirRhoWater                 = 1       # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 nudgeTimeUni                   = 3600.0  # Uniform nudge relaxation time [s]
 iniWithNudge                   = 2       # Initialize salinity and temperature with nudge variables
 secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
@@ -251,7 +247,6 @@ wrishp_thd                        = 0                                           
 wrishp_obs                        = 0                                                                               # observation stations
 wrishp_emb                        = 0                                                                               # Writing embankments file (0=no, 1=yes).
 wrishp_dryArea                    = 0                                                                               # dry areas
-wrishp_enc                        = 0                                                                               # Writing enclosures to shape file (0=no, 1=yes).
 wrishp_src                        = 0                                                                               # source-sinks
 wrishp_pump                       = 0                                                                               # pumps
 outputDir                         =                                                                                 # Output directory of map-, his-, rst-, dat- and timings-files, default: DFM_OUTPUT_<modelname>. Set to . for current dir.
@@ -266,7 +261,7 @@ xlsInterval                       = 0.0                                         
 mapFile                           =                                                                                 # MapFile name *_map.nc
 mapInterval                       = 3600.0                                                                          # Map file output, given as "interval" "start period" "end period" (s)
 rstInterval                       = 0.0                                                                             # Restart file output times, given as "interval" "start period" "end period" (s)
-mapFormat                         = 4                                                                               # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+mapFormat                         = 4                                                                               # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 ncFormat                          = 4                                                                               # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5)
 ncNoUnlimited                     = 0                                                                               # Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)
 ncNoForcedFlush                   = 0                                                                               # Do not force flushing of map-like files every output timestep (1: yes, 0: no).

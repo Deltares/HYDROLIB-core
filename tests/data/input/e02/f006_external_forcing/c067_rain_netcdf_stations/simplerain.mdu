@@ -8,13 +8,10 @@ AutoStart            = 0                   # Autostart simulation after loading 
 
 [geometry]
 NetFile              = squareRD_net.nc     # *_net.nc
-BathymetryFile       =                     # *.xyb
 WaterLevIniFile      =                     # Initial water levels sample file *.xyz
 LandBoundaryFile     =                     # Only for plotting
 ThinDamFile          =                     # *_thd.pli, Polyline(s) for tracing thin dams.
-ThindykeFile         =                     # *_tdk.pli, Polyline(s) x,y,z, z = thin dyke top levels
 Uniformwidth1D       = 1.                  # Uniform width for 1D profiles not specified bij profloc
-ManholeFile          =                     # *...
 WaterLevIni          = 0.                  # Initial water level
 Bedlevuni            = -5.                 # Uniform bottom level, (only if bedlevtype>=3, used at missing z values in netfile
 BedlevType           = 3                   # 1 : Bottom levels at waterlevel cells (=flow nodes), like tiles xz, yz, bl , bob = max(bl left, bl right)
@@ -31,7 +28,6 @@ Dcenterinside        = 1.                  # limit cell center; 1.0:in cell <-> 
 
 [numerics]
 CFLMax               = 1.                  # Max. Courant nr.
-CFLWaveFrac          = 0.1                 # Wave velocity fraction, total courant vel = u + cflw*wavevelocity
 AdvecType            = 5                   # Adv type, 0=no, 1= Wenneker, qu-udzt, 2=1, q(uio-u), 3=Perot q(uio-u), 4=Perot q(ui-u), 5=Perot q(ui-u) without itself
 TimeStepType         = 2                   #  0=only transport, 1=transport + velocity update, 2=full implicit step_reduce, 3=step_jacobi, 4=explicit
 Limtypmom            = 0                   # Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
@@ -69,7 +65,6 @@ Cdbreakpoints        = 6.3d-4 7.23d-3      # ( ),   e.g. 0.00063  0.00723
 Windspeedbreakpoints = 0. 100.             # (m/s), e.g. 0.0      100.0
 Rhoair               = 1.20000004768372    # Air density (kg/m3)
 PavBnd               = 101325.             # Average air Pressure on open boundaries, (N/m2), only applied if value > 0
-Gapres               = 101325.             # Global Atmospheric Pressure, (N/m2)
 
 [time]
 RefDate              = 20000101            # Reference date (yyyymmdd)
@@ -97,7 +92,7 @@ CrsFile              =                     # *_crs.pli Polyline(s) definining cr
 HisInterval          = 60.                  # History output, given as "interval" "start period" "end period" (s)
 MapInterval          = 0.                  # Map output, given as "interval" "start period" "end period" (s)
 FlowGeomFile         =                     # *_flowgeom.nc Flow geometry file in NetCDF format.
-MapFormat            = 4                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat            = 4                   # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 RstInterval          = 0.                  # Restart file output, given as "interval" "start period" "end period" (s)
 WaqInterval          = 0.                  # Interval (in s) between Delwaq file outputs
 StatsInterval        = 0.                  # Interval (in s) between simulation statistics output.

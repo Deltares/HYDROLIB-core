@@ -200,10 +200,6 @@ class ResearchNumerics(Numerics):
     class Comments(Numerics.Comments):
         """Comments for the ResearchNumerics section fields."""
 
-        research_faclaxturb: Optional[str] = Field(
-            "Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty.",
-            alias="faclaxturb",
-        )
         research_jafaclaxturbtyp: Optional[str] = Field(
             "Vertical distr of facLaxturb, 1=: (sigm<0.5=0.0 sigm>0.75=1.0 linear in between), 2:=1.0 for whole column.",
             alias="jafaclaxturbtyp",
@@ -247,13 +243,6 @@ class ResearchNumerics(Numerics):
         research_baorgfracmin: Optional[str] = Field(
             "Cell area = max(orgcellarea*Baorgfracmin, cutcell area)",
             alias="baorgfracmin",
-        )
-        research_epstke: Optional[str] = Field(
-            "TKE=max(TKE, EpsTKE), default=1d-32", alias="epstke"
-        )
-        research_jadrhodz: Optional[str] = Field(
-            "1:central org, 2:centralnew, 3:upw cell, 4:most stratf. cell, 5:least stratf. cell.",
-            alias="jadrhodz",
         )
         research_logprofkepsbndin: Optional[str] = Field(
             "Inflow: 0=0 keps, 1 = log keps inflow, 2 = log keps in and outflow.",
@@ -318,9 +307,6 @@ class ResearchNumerics(Numerics):
         research_eddyviscositybedfacmax: Optional[str] = Field(
             "Limit eddy viscosity at bed (factor 0.0-1.0 of first layer above).",
             alias="eddyviscositybedfacmax",
-        )
-        research_epseps: Optional[str] = Field(
-            "EPS=max(EPS, EpsEPS), default=1d-32, (or TAU).", alias="epseps"
         )
         research_lateral_fixedweir_umin_method: Optional[str] = Field(
             "Method for minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
@@ -400,19 +386,6 @@ class ResearchNumerics(Numerics):
             "Include density gradient in advection term (0: no(strongly advised), 1: yes, 2: Also in barotropic and baroclinic pressure term, 3,4: Also in vertical advection).",
             alias="jarhoxu",
         )
-        research_jaorgsethu: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="jaorgsethu",
-        )
-        research_cflwavefrac: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="cflwavefrac",
-        )
-        research_jaembed1d: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="jaembed1d",
-        )
-
         research_ilutype: Optional[str] = Field(
             "0: parms-default",
             alias="ilutype",
@@ -428,7 +401,6 @@ class ResearchNumerics(Numerics):
 
     comments: Comments = Comments()
 
-    research_faclaxturb: Optional[float] = Field(None, alias="faclaxturb")
     research_jafaclaxturbtyp: Optional[int] = Field(None, alias="jafaclaxturbtyp")
     research_locsaltmin: Optional[float] = Field(None, alias="locsaltmin")
     research_lincontin: Optional[int] = Field(None, alias="lincontin")
@@ -444,8 +416,6 @@ class ResearchNumerics(Numerics):
         None, alias="corioadamsbashfordfac"
     )
     research_baorgfracmin: Optional[float] = Field(None, alias="baorgfracmin")
-    research_epstke: Optional[float] = Field(None, alias="epstke")
-    research_jadrhodz: Optional[int] = Field(None, alias="jadrhodz")
     research_logprofkepsbndin: Optional[int] = Field(None, alias="logprofkepsbndin")
     research_epshstem: Optional[float] = Field(None, alias="epshstem")
     research_newcorio: Optional[bool] = Field(None, alias="newcorio")
@@ -469,7 +439,6 @@ class ResearchNumerics(Numerics):
     research_eddyviscositybedfacmax: Optional[float] = Field(
         None, alias="eddyviscositybedfacmax"
     )
-    research_epseps: Optional[float] = Field(None, alias="epseps")
     research_lateral_fixedweir_umin_method: Optional[int] = Field(
         None, alias="lateral_fixedweir_umin_method"
     )
@@ -498,9 +467,6 @@ class ResearchNumerics(Numerics):
     )
     research_noderivedtypes: Optional[int] = Field(None, alias="noderivedtypes")
     research_jarhoxu: Optional[int] = Field(None, alias="jarhoxu")
-    research_jaorgsethu: Optional[str] = Field(None, alias="jaorgsethu")
-    research_cflwavefrac: Optional[str] = Field(None, alias="cflwavefrac")
-    research_jaembed1d: Optional[str] = Field(None, alias="jaembed1d")
     research_ilutype: Optional[str] = Field(None, alias="ilutype")
     research_nlevel: Optional[str] = Field(None, alias="nlevel")
     research_dtol: Optional[str] = Field(None, alias="dtol")
@@ -530,9 +496,6 @@ class ResearchPhysics(Physics):
         )
         research_equili: Optional[str] = Field(
             "Equilibrium spiral flow intensity (0: no, 1: yes).", alias="equili"
-        )
-        research_allowcoolingbelowzero: Optional[str] = Field(
-            DEPRECATED_KEYWORD, alias="allowcoolingbelowzero"
         )
         research_soiltempthick: Optional[str] = Field(
             "Use soil temperature buffer if > 0.", alias="soiltempthick"
@@ -565,10 +528,6 @@ class ResearchPhysics(Physics):
             "Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction).",
             alias="uniffrictcoef1dgrlay",
         )
-        research_effectspiral: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="effectspiral",
-        )
 
     comments: Comments = Comments()
 
@@ -581,9 +540,6 @@ class ResearchPhysics(Physics):
     )
     research_uniffrictcoef1d2d: Optional[float] = Field(None, alias="uniffrictcoef1d2d")
     research_equili: Optional[bool] = Field(None, alias="equili")
-    research_allowcoolingbelowzero: Optional[bool] = Field(
-        None, alias="allowcoolingbelowzero"
-    )
     research_soiltempthick: Optional[float] = Field(None, alias="soiltempthick")
     research_selfattractionloading: Optional[int] = Field(
         None, alias="selfattractionloading"
@@ -602,7 +558,6 @@ class ResearchPhysics(Physics):
     research_uniffrictcoef1dgrlay: Optional[float] = Field(
         None, alias="uniffrictcoef1dgrlay"
     )
-    research_effectspiral: Optional[float] = Field(None, alias="effectspiral")
 
 
 class ResearchSediment(Sediment):
@@ -651,17 +606,12 @@ class ResearchWind(Wind):
             "1=wind (and air pressure) each computational timestep, 0=wind (and air pressure) each usertimestep.",
             alias="wind_eachstep",
         )
-        research_gapres: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="gapres",
-        )
 
     comments: Comments = Comments()
 
     research_windhuorzwsbased: Optional[int] = Field(None, alias="windhuorzwsbased")
     research_varyingairdensity: Optional[bool] = Field(None, alias="varyingairdensity")
     research_wind_eachstep: Optional[int] = Field(None, alias="wind_eachstep")
-    research_gapres: Optional[str] = Field(None, alias="gapres")
 
 
 class ResearchWaves(Waves):
@@ -713,10 +663,6 @@ class ResearchWaves(Waves):
             "Sign wave height on his output; 0: hrms wave height on his output. Default=1.",
             alias="jahissigwav",
         )
-        research_wavenikuradse: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="wavenikuradse",
-        )
 
     comments: Comments = Comments()
 
@@ -738,7 +684,6 @@ class ResearchWaves(Waves):
     research_jamapsigwav: Optional[int] = Field(None, alias="jamapsigwav")
     research_hminlw: Optional[float] = Field(None, alias="hminlw")
     research_jahissigwav: Optional[int] = Field(None, alias="jahissigwav")
-    research_wavenikuradse: Optional[str] = Field(None, alias="wavenikuradse")
 
 
 class ResearchTime(Time):
@@ -904,22 +849,6 @@ class ResearchOutput(Output):
             "Write trachytope roughnesses to map file (1: yes, 0: no).",
             alias="wrimap_trachytopes",
         )
-        research_s1incinterval: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="s1incinterval",
-        )
-        research_waqfilebase: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="waqfilebase",
-        )
-        research_snapshotdir: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="snapshotdir",
-        )
-        research_heatfluxesonoutput: Optional[str] = Field(
-            DEPRECATED_KEYWORD,
-            alias="heatfluxesonoutput",
-        )
 
     comments: Comments = Comments()
 
@@ -957,10 +886,6 @@ class ResearchOutput(Output):
     research_wrimap_trachytopes: Optional[bool] = Field(
         None, alias="wrimap_trachytopes"
     )
-    research_s1incinterval: Optional[str] = Field(None, alias="s1incinterval")
-    research_waqfilebase: Optional[str] = Field(None, alias="waqfilebase")
-    research_snapshotdir: Optional[str] = Field(None, alias="snapshotdir")
-    research_heatfluxesonoutput: Optional[str] = Field(None, alias="heatfluxesonoutput")
 
     @field_validator(
         "research_waqhoraggr",

@@ -22,19 +22,19 @@ from hydrolib.tools.extforce_convert.mdu_parser import (
     [
         (
             "dflowfm_individual_files/with_optional_sections.mdu",
-            (232, 233),
+            (230, 231),
             "ExtForceFileNew                           = test.ext\n",
             "test.ext",
         ),
         (
             "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu",
-            (149, 150),
+            (148, 149),
             "ExtForceFileNew                      = test.ext                              # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n",
             "test.ext",
         ),
         (
             "e02/f011_wind/c081_combi_uniform_curvi/windcase.mdu",
-            (149, 150),
+            (148, 149),
             "ExtForceFileNew                      = really_long_external_forcing_file_results_name.ext # New format for external forcings file *.ext, link with bc     -format boundary conditions specification\n",
             "really_long_external_forcing_file_results_name.ext",
         ),
