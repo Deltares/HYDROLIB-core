@@ -129,7 +129,6 @@ PavIni                               = 0.                                    # A
 
 [waves]
 Wavemodelnr                          = 0                                     # Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = Delft3D-WAVE, 4=wave group forcing
-WaveNikuradse                        = 1.d-2                                 # Wave friction Nikuradse ks coefficient, used in Krone Swart, e.g. 0.01 m
 Rouwav                               =                                       # Friction model for wave induced shear stress
 Gammax                               = 1.                                    # Maximum wave height/water depth ratio
 
