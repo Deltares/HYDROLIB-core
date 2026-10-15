@@ -105,7 +105,6 @@
     RstInterval                         = 0                                  # Interval (s) between map file outputs
     WaqInterval                         =                                    # Interval (in s) between Delwaq file outputs
     StatsInterval                       = 1.08                               # Interval (in s) between simulation statistics output.
-    SnapshotDir                         =                                    # Directory where snapshots/screendumps are saved.
     TimingsInterval                     =                                    # Timings output interval
     TimeSplitInterval                   = 0X                                 # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
     MapOutputTimeVector                 =                                    # File (.mpt) containing fixed map output times (s) w.r.t. RefDate

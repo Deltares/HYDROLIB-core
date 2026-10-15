@@ -193,7 +193,6 @@ Richardsononoutput                   = 0                                     # 1
 MapOutputTimeVector                  =                                       # File (.mpt) containing fixed map output times (s) w.r.t. RefDate
 FullGridOutput                       = 0                                     # 0:compact, 1:full time-varying grid data
 EulerVelocities                      = 0                                     # 0:GLM, 1:Euler velocities
-SnapshotDir                          =                                       # Directory where snapshots/screendumps are saved.
 
 [trachytopes]
 TrtRou                               = N                                     # Include alluvial and vegetation roughness (trachytopes), (N=no, Y=yes)
