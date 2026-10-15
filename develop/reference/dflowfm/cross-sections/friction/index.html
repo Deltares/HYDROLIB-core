@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4196,129 +4196,129 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrictBranch</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""A `[Branch]` block for use inside a friction file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Branch]` block for use inside a friction file.</span>
 
 <span class="sd">    Each block can define the roughness value(s) on a particular branch.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the FrictBranch section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the FrictBranch section fields.&quot;&quot;&quot;</span>
 
-        <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the branch."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
+        <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the branch.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
         <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"The roughness type to be used on this branch."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span>
+            <span class="s2">&quot;The roughness type to be used on this branch.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span>
         <span class="p">)</span>
         <span class="n">functiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Function type for the calculation of the value. "</span>
-            <span class="o">+</span> <span class="s2">"Possible values: constant, timeSeries, absDischarge, waterlevel."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"functionType"</span><span class="p">,</span>
+            <span class="s2">&quot;Function type for the calculation of the value. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Possible values: constant, timeSeries, absDischarge, waterlevel.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;functionType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">timeseriesid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Refers to a data block in the &lt;*.bc&gt; frictionValuesFile. "</span>
-            <span class="o">+</span> <span class="s2">"Only if functionType = timeSeries."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"timeSeriesId"</span><span class="p">,</span>
+            <span class="s2">&quot;Refers to a data block in the &lt;*.bc&gt; frictionValuesFile. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Only if functionType = timeSeries.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;timeSeriesId&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Number of levels in table. Only if functionType is not constant."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span><span class="p">,</span>
+            <span class="s2">&quot;Number of levels in table. Only if functionType is not constant.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Space separated list of discharge [m3/s] or water level [m AD] values. "</span>
-            <span class="o">+</span> <span class="s2">"Only if functionType is absDischarge or waterLevel."</span>
+            <span class="s2">&quot;Space separated list of discharge [m3/s] or water level [m AD] values. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Only if functionType is absDischarge or waterLevel.&quot;</span>
         <span class="p">)</span>
         <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Number of locations on branch. The default 0 implies branch uniform values."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">,</span>
+            <span class="s2">&quot;Number of locations on branch. The default 0 implies branch uniform values.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Space separated list of locations on the branch [m]. Locations sorted by "</span>
-            <span class="o">+</span> <span class="s2">"increasing chainage. The keyword must be specified if numLocations&gt;0."</span>
+            <span class="s2">&quot;Space separated list of locations on the branch [m]. Locations sorted by &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;increasing chainage. The keyword must be specified if numLocations&gt;0.&quot;</span>
         <span class="p">)</span>
         <span class="n">frictionvalues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"numLevels lines containing space separated lists of roughness values: "</span>
-            <span class="o">+</span> <span class="s2">"numLocations values per line. If the functionType is constant, then a "</span>
-            <span class="o">+</span> <span class="s2">"single line is required. For a uniform roughness per branch "</span>
-            <span class="o">+</span> <span class="s2">"(numLocations = 0) a single entry per line is required. The meaning "</span>
-            <span class="o">+</span> <span class="s2">"of the values depends on the roughness type selected (see frictionType)."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValues"</span><span class="p">,</span>
+            <span class="s2">&quot;numLevels lines containing space separated lists of roughness values: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;numLocations values per line. If the functionType is constant, then a &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;single line is required. For a uniform roughness per branch &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;(numLocations = 0) a single entry per line is required. The meaning &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;of the values depends on the roughness type selected (see frictionType).&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValues&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Branch"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Branch"</span>
-    <span class="n">branchid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
-    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">FrictionType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span><span class="p">)</span>
-    <span class="n">functiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"constant"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"functionType"</span><span class="p">)</span>
-    <span class="n">timeseriesid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"timeSeriesId"</span><span class="p">)</span>
-    <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Branch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Branch&quot;</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
+    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">FrictionType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">)</span>
+    <span class="n">functiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;functionType&quot;</span><span class="p">)</span>
+    <span class="n">timeseriesid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;timeSeriesId&quot;</span><span class="p">)</span>
+    <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span><span class="p">)</span>
     <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NonNegativeInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">)</span>
+    <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NonNegativeInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">)</span>
     <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">frictionvalues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValues"</span><span class="p">)</span>
+    <span class="n">frictionvalues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValues&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"levels"</span><span class="p">,</span> <span class="s2">"chainage"</span><span class="p">,</span> <span class="s2">"frictionvalues"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;levels&quot;</span><span class="p">,</span> <span class="s2">&quot;chainage&quot;</span><span class="p">,</span> <span class="s2">&quot;frictionvalues&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">split_field_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">split_string_on_delimiter</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"frictiontype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_frictiontype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrictionType</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">FrictionType</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"branchid"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"levels"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;levels&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_levels</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">):</span>
-        <span class="n">numlevels</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numlevels"</span><span class="p">)</span>
-        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"branchid"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">numlevels</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numlevels&quot;</span><span class="p">)</span>
+        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">numlevels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="n">numlevels</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Number of values for levels should be equal to the numLevels value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of values for levels should be equal to the numLevels value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"chainage"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;chainage&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_chainage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">):</span>
-        <span class="n">numlocations</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numlocations"</span><span class="p">)</span>
-        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"branchid"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">numlocations</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numlocations&quot;</span><span class="p">)</span>
+        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="n">numlocations</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Number of values for chainage should be equal to the numLocations value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of values for chainage should be equal to the numLocations value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"frictionvalues"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;frictionvalues&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_frictionvalues</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">):</span>
-        <span class="n">numlevels</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numlevels"</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
-        <span class="n">numlocations</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"numlocations"</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
-        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"branchid"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">numlevels</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numlevels&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span>
+        <span class="n">numlocations</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numlocations&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">branchid</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
         <span class="c1"># number of values should be equal to numlocations*numlevels</span>
         <span class="n">numvals</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">numlocations</span><span class="p">)</span> <span class="o">*</span> <span class="n">numlevels</span>
 
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="n">numvals</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId=</span><span class="si">{</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"FrictBranch"</span><span class="p">:</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FrictBranch&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">levels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numlevels</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numlevels</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Number of values for levels should be equal to the numLevels value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                    <span class="sa">f</span><span class="s2">&quot;Number of values for levels should be equal to the numLevels value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chainage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chainage</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">numlocations</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Number of values for chainage should be equal to the numLocations value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of values for chainage should be equal to the numLocations value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frictionvalues</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -4326,7 +4326,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
             <span class="n">numvals</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">numlocations</span><span class="p">)</span> <span class="o">*</span> <span class="n">numlevels</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frictionvalues</span><span class="p">)</span> <span class="o">!=</span> <span class="n">numvals</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">)."</span>
+                    <span class="sa">f</span><span class="s2">&quot;Number of values for frictionValues should be equal to the numLocations*numLevels value (branchId=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branchid</span><span class="si">}</span><span class="s2">).&quot;</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
@@ -4414,45 +4414,45 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the FrictBranch section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the FrictBranch section fields.&quot;&quot;&quot;</span>
 
-    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the branch."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the branch.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
     <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"The roughness type to be used on this branch."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span>
+        <span class="s2">&quot;The roughness type to be used on this branch.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span>
     <span class="p">)</span>
     <span class="n">functiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Function type for the calculation of the value. "</span>
-        <span class="o">+</span> <span class="s2">"Possible values: constant, timeSeries, absDischarge, waterlevel."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"functionType"</span><span class="p">,</span>
+        <span class="s2">&quot;Function type for the calculation of the value. &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;Possible values: constant, timeSeries, absDischarge, waterlevel.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;functionType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">timeseriesid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Refers to a data block in the &lt;*.bc&gt; frictionValuesFile. "</span>
-        <span class="o">+</span> <span class="s2">"Only if functionType = timeSeries."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"timeSeriesId"</span><span class="p">,</span>
+        <span class="s2">&quot;Refers to a data block in the &lt;*.bc&gt; frictionValuesFile. &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;Only if functionType = timeSeries.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;timeSeriesId&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Number of levels in table. Only if functionType is not constant."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span><span class="p">,</span>
+        <span class="s2">&quot;Number of levels in table. Only if functionType is not constant.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Space separated list of discharge [m3/s] or water level [m AD] values. "</span>
-        <span class="o">+</span> <span class="s2">"Only if functionType is absDischarge or waterLevel."</span>
+        <span class="s2">&quot;Space separated list of discharge [m3/s] or water level [m AD] values. &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;Only if functionType is absDischarge or waterLevel.&quot;</span>
     <span class="p">)</span>
     <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Number of locations on branch. The default 0 implies branch uniform values."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">,</span>
+        <span class="s2">&quot;Number of locations on branch. The default 0 implies branch uniform values.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Space separated list of locations on the branch [m]. Locations sorted by "</span>
-        <span class="o">+</span> <span class="s2">"increasing chainage. The keyword must be specified if numLocations&gt;0."</span>
+        <span class="s2">&quot;Space separated list of locations on the branch [m]. Locations sorted by &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;increasing chainage. The keyword must be specified if numLocations&gt;0.&quot;</span>
     <span class="p">)</span>
     <span class="n">frictionvalues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"numLevels lines containing space separated lists of roughness values: "</span>
-        <span class="o">+</span> <span class="s2">"numLocations values per line. If the functionType is constant, then a "</span>
-        <span class="o">+</span> <span class="s2">"single line is required. For a uniform roughness per branch "</span>
-        <span class="o">+</span> <span class="s2">"(numLocations = 0) a single entry per line is required. The meaning "</span>
-        <span class="o">+</span> <span class="s2">"of the values depends on the roughness type selected (see frictionType)."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValues"</span><span class="p">,</span>
+        <span class="s2">&quot;numLevels lines containing space separated lists of roughness values: &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;numLocations values per line. If the functionType is constant, then a &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;single line is required. For a uniform roughness per branch &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;(numLocations = 0) a single entry per line is required. The meaning &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;of the values depends on the roughness type selected (see frictionType).&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValues&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4551,38 +4551,38 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">95</span>
 <span class="normal">96</span>
 <span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrictGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The friction file's `[General]` section with file meta data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The friction file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the FrictGeneral section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the FrictGeneral section fields.&quot;&quot;&quot;</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File type. Should be 'roughness'. Do not edit this."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+            <span class="s2">&quot;File type. Should be &#39;roughness&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">frictionvaluesfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Name of &lt;*.bc&gt; file containing the timeseries with friction values. "</span>
-            <span class="o">+</span> <span class="s2">"Only needed for functionType = timeSeries."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValuesFile"</span><span class="p">,</span>
+            <span class="s2">&quot;Name of &lt;*.bc&gt; file containing the timeseries with friction values. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;Only needed for functionType = timeSeries.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValuesFile&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"3.01"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"roughness"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"roughness"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;3.01&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;roughness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;roughness&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
     <span class="n">frictionvaluesfile</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span>
         <span class="n">DiskOnlyFileModel</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">set_default_disk_only_file_model</span><span class="p">)</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValuesFile"</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValuesFile&quot;</span>
     <span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"frictionvaluesfile"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;frictionvaluesfile&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_frictionvaluesfile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DiskOnlyFileModel</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">"""Validate the frictionValuesFile field to ensure it is a DiskOnlyFileModel."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the frictionValuesFile field to ensure it is a DiskOnlyFileModel.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
             <span class="k">return</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
@@ -4644,19 +4644,19 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">77</span>
 <span class="normal">78</span>
 <span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the FrictGeneral section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the FrictGeneral section fields.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File type. Should be 'roughness'. Do not edit this."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+        <span class="s2">&quot;File type. Should be &#39;roughness&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">frictionvaluesfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Name of &lt;*.bc&gt; file containing the timeseries with friction values. "</span>
-        <span class="o">+</span> <span class="s2">"Only needed for functionType = timeSeries."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValuesFile"</span><span class="p">,</span>
+        <span class="s2">&quot;Name of &lt;*.bc&gt; file containing the timeseries with friction values. &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;Only needed for functionType = timeSeries.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValuesFile&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4755,40 +4755,40 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrictGlobal</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""A `[Global]` block for use inside a friction file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A `[Global]` block for use inside a friction file.</span>
 
 <span class="sd">    Multiple of such blocks may be present to define multiple frictionId classes.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the FrictGlobal section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the FrictGlobal section fields.&quot;&quot;&quot;</span>
 
         <span class="n">frictionid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Name of the roughness variable."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionId"</span>
+            <span class="s2">&quot;Name of the roughness variable.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionId&quot;</span>
         <span class="p">)</span>
         <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"The global roughness type for this variable, which is used "</span>
-            <span class="o">+</span> <span class="s2">"if no branch specific roughness definition is given."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span><span class="p">,</span>
+            <span class="s2">&quot;The global roughness type for this variable, which is used &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;if no branch specific roughness definition is given.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">frictionvalue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"The global default value for this roughness variable."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValue"</span><span class="p">,</span>
+            <span class="s2">&quot;The global default value for this roughness variable.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValue&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Global"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Global"</span>
-    <span class="n">frictionid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"frictionId"</span><span class="p">)</span>
-    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">FrictionType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span><span class="p">)</span>
-    <span class="n">frictionvalue</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValue"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Global&quot;</span>
+    <span class="n">frictionid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionId&quot;</span><span class="p">)</span>
+    <span class="n">frictiontype</span><span class="p">:</span> <span class="n">FrictionType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">)</span>
+    <span class="n">frictionvalue</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValue&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"frictiontype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;frictiontype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_frictiontype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrictionType</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">FrictionType</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"frictionid"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;frictionid&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4847,19 +4847,19 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the FrictGlobal section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the FrictGlobal section fields.&quot;&quot;&quot;</span>
 
     <span class="n">frictionid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Name of the roughness variable."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionId"</span>
+        <span class="s2">&quot;Name of the roughness variable.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionId&quot;</span>
     <span class="p">)</span>
     <span class="n">frictiontype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"The global roughness type for this variable, which is used "</span>
-        <span class="o">+</span> <span class="s2">"if no branch specific roughness definition is given."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionType"</span><span class="p">,</span>
+        <span class="s2">&quot;The global roughness type for this variable, which is used &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;if no branch specific roughness definition is given.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">frictionvalue</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"The global default value for this roughness variable."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"frictionValue"</span><span class="p">,</span>
+        <span class="s2">&quot;The global default value for this roughness variable.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;frictionValue&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4995,7 +4995,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">296</span>
 <span class="normal">297</span>
 <span class="normal">298</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrictionModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall friction model that contains the contents of one friction file.</span>
 
 <span class="sd">    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.frictfile[..]`.</span>
@@ -5004,21 +5004,21 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="sd">        general (FrictGeneral): `[General]` block with file metadata.</span>
 <span class="sd">        global_ (List[FrictGlobal]): Definitions of `[Global]` friction classes.</span>
 <span class="sd">        branch (List[FrictBranch]): Definitions of `[Branch]` friction values.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">FrictGeneral</span> <span class="o">=</span> <span class="n">FrictGeneral</span><span class="p">()</span>
     <span class="n">global_</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FrictGlobal</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"global"</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;global&quot;</span>
     <span class="p">)</span>  <span class="c1"># to circumvent built-in kw</span>
     <span class="n">branch</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FrictBranch</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".ini"</span>
+        <span class="k">return</span> <span class="s2">&quot;.ini&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"roughness"</span>
+        <span class="k">return</span> <span class="s2">&quot;roughness&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5230,7 +5230,7 @@ De Bos-Bijkerk γ [1/s]</p>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FrictionType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Enum class containing the valid values for the frictionType attribute.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the frictionType attribute.</span>
 
 <span class="sd">    Contains valid values for the frictionType attribute in several subclasses</span>
 <span class="sd">    of Structure/CrossSection/friction.models.</span>
@@ -5250,15 +5250,15 @@ De Bos-Bijkerk γ [1/s]</p>
 <span class="sd">            Strickler k_s [m 1/3 /s]</span>
 <span class="sd">        debosbijkerk: str</span>
 <span class="sd">            De Bos-Bijkerk γ [1/s]</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">chezy</span> <span class="o">=</span> <span class="s2">"Chezy"</span>
-    <span class="n">manning</span> <span class="o">=</span> <span class="s2">"Manning"</span>
-    <span class="n">walllawnikuradse</span> <span class="o">=</span> <span class="s2">"wallLawNikuradse"</span>
-    <span class="n">whitecolebrook</span> <span class="o">=</span> <span class="s2">"WhiteColebrook"</span>
-    <span class="n">stricklernikuradse</span> <span class="o">=</span> <span class="s2">"StricklerNikuradse"</span>
-    <span class="n">strickler</span> <span class="o">=</span> <span class="s2">"Strickler"</span>
-    <span class="n">debosbijkerk</span> <span class="o">=</span> <span class="s2">"deBosBijkerk"</span>
+    <span class="n">chezy</span> <span class="o">=</span> <span class="s2">&quot;Chezy&quot;</span>
+    <span class="n">manning</span> <span class="o">=</span> <span class="s2">&quot;Manning&quot;</span>
+    <span class="n">walllawnikuradse</span> <span class="o">=</span> <span class="s2">&quot;wallLawNikuradse&quot;</span>
+    <span class="n">whitecolebrook</span> <span class="o">=</span> <span class="s2">&quot;WhiteColebrook&quot;</span>
+    <span class="n">stricklernikuradse</span> <span class="o">=</span> <span class="s2">&quot;StricklerNikuradse&quot;</span>
+    <span class="n">strickler</span> <span class="o">=</span> <span class="s2">&quot;Strickler&quot;</span>
+    <span class="n">debosbijkerk</span> <span class="o">=</span> <span class="s2">&quot;deBosBijkerk&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5374,7 +5374,7 @@ De Bos-Bijkerk γ [1/s]</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

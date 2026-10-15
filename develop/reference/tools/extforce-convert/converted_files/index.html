@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4630,7 +4630,7 @@ You're not viewing the latest release version.
 - Programmatic:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">)</span>
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">&quot;path/to/model.mdu&quot;</span><span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
@@ -4639,7 +4639,7 @@ You're not viewing the latest release version.
 <li>Batch conversion:</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">recursive_converter</span>
-<span class="n">recursive_converter</span><span class="p">(</span><span class="n">root_dir</span><span class="o">=</span><span class="s2">"path/to/projects"</span><span class="p">,</span> <span class="n">remove_legacy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># clean() is called per MDU</span>
+<span class="n">recursive_converter</span><span class="p">(</span><span class="n">root_dir</span><span class="o">=</span><span class="s2">&quot;path/to/projects&quot;</span><span class="p">,</span> <span class="n">remove_legacy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># clean() is called per MDU</span>
 </code></pre></div>
 <p>Recommendations and cautions
 - Review <code>converter.legacy_files</code> and the console output to ensure none of the files are still needed by other workflows.
@@ -5049,7 +5049,7 @@ Resulting <code>.bc</code> astronomic snippet (named component):
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       
