@@ -308,9 +308,6 @@ class ResearchNumerics(Numerics):
             "Limit eddy viscosity at bed (factor 0.0-1.0 of first layer above).",
             alias="eddyviscositybedfacmax",
         )
-        research_epseps: Optional[str] = Field(
-            "EPS=max(EPS, EpsEPS), default=1d-32, (or TAU).", alias="epseps"
-        )
         research_lateral_fixedweir_umin_method: Optional[str] = Field(
             "Method for minimal velocity treshold for weir losses in iterative lateral 1d2d weir coupling.",
             alias="lateral_fixedweir_umin_method",
@@ -450,7 +447,6 @@ class ResearchNumerics(Numerics):
     research_eddyviscositybedfacmax: Optional[float] = Field(
         None, alias="eddyviscositybedfacmax"
     )
-    research_epseps: Optional[float] = Field(None, alias="epseps")
     research_lateral_fixedweir_umin_method: Optional[int] = Field(
         None, alias="lateral_fixedweir_umin_method"
     )
