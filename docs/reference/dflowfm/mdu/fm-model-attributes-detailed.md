@@ -132,7 +132,6 @@ classDiagram
 
     class Geometry {
       netfile?: NetworkModel [file] (alias=netFile)
-      bathymetryfile?: XYZModel [file] (alias=bathymetryFile)
       drypointsfile?: List[XYZModel|PolyFile] [file] (alias=dryPointsFile)
       structurefile?: List[StructureModel] [file] (alias=structureFile)
       inifieldfile?: IniFieldModel [file] (alias=iniFieldFile)

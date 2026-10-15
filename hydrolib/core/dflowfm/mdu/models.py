@@ -1887,10 +1887,6 @@ class Geometry(INIBasedModel):
         """Comments for the Geometry section fields."""
 
         netfile: Optional[str] = Field("The net file <*_net.nc>", alias="netFile")
-        bathymetryfile: Optional[str] = Field(
-            "Removed since March 2022. See [geometry] keyword BedLevelFile.",
-            alias="bathymetryFile",
-        )
         drypointsfile: Optional[str] = Field(
             "Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.",
             alias="dryPointsFile",
@@ -2136,9 +2132,6 @@ class Geometry(INIBasedModel):
     _header: Literal["Geometry"] = "Geometry"
     netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
-    )
-    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
-        None, alias="bathymetryFile"
     )
     drypointsfile: Optional[List[DryPointsFile]] = Field(
         None, alias="dryPointsFile"
