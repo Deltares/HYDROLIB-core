@@ -111,7 +111,6 @@ Secchidepth                          = 1.                                    # W
 Stanton                              = -1.                                   # Coefficient for convective heat flux ( ) , if negative, Cd wind*abs(Stanton)
 Dalton                               = -1.                                   # Coefficient for evaporative heat flux ( ), if negative, Cd wind*abs(Dalton)
 SecondaryFlow                        = 0                                     # Secondary flow (0=no, 1=yes)
-EffectSpiral                         = 0.                                    # Factor for weighing the effect of the spiral flow intensity on transport angle
 BetaSpiral                           = 0.                                    # Factor for weighing the effect of the spiral flow on flow dispersion stresses
 
 [grw]
