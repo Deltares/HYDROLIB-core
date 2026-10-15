@@ -1,0 +1,10 @@
+substance 'ActiveSub' active
+   description        'An active substance'
+   concentration-unit '(g/m3)'
+   waste-load-unit    '-'
+end-substance
+substance 'InactiveSub' inactive
+   description        'An inactive substance'
+   concentration-unit '(gC/m2)'
+   waste-load-unit    '-'
+end-substance

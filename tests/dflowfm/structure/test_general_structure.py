@@ -1,9 +1,12 @@
 import inspect
 
 import pytest
+from pydantic import ValidationError
 
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.structure.models import (
     FlowDirection,
     GateOpeningHorizontalDirection,
@@ -80,7 +83,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(8.4)
         assert struct.extraresistance == pytest.approx(8.5)
         assert struct.gateheight == pytest.approx(8.6)
-        assert struct.gateopeningwidth == pytest.approx(8.7)
+        assert struct.gateopeningwidth == pytest.approx(2.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -144,7 +147,7 @@ class TestGeneralStructure:
             negContrCoefFreeGate           = 18.4             # Negative gate flow contraction coefficient mu gf [-]
             extraResistance                = 18.5             # Extra resistance [-]
             gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7             # Opening width between gate doors [m], should be smaller than (or equal to) crestWidth
+            gateOpeningWidth               = 2.0             # Opening width between gate doors [m], should be smaller than (or equal to) crestWidth
             gateOpeningHorizontalDirection = fromLeft         # Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight
             useVelocityHeight              = 0                # Flag indicates whether the velocity height is to be calculated or not
             """
@@ -164,7 +167,7 @@ class TestGeneralStructure:
         assert struct.name == "structure_potato"
         assert struct.branchid == "branch"
         assert struct.chainage == pytest.approx(3.53)
-        assert struct.type == "generalstructure"
+        assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(11.0)
         assert struct.upstream1level == pytest.approx(12.0)
@@ -190,7 +193,7 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(18.4)
         assert struct.extraresistance == pytest.approx(18.5)
         assert struct.gateheight == pytest.approx(18.6)
-        assert struct.gateopeningwidth == pytest.approx(18.7)
+        assert struct.gateopeningwidth == pytest.approx(2.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_left
@@ -233,7 +236,7 @@ class TestGeneralStructure:
             negContrCoefFreeGate           = 18.4
             extraResistance                = 18.5
             gateHeight                     = 18.6
-            gateOpeningWidth               = 18.7
+            gateOpeningWidth               = 10.0
             gateOpeningHorizontalDirection = fromLeft
             useVelocityHeight              = 0    # My own special comment 2
             """
@@ -255,7 +258,7 @@ class TestGeneralStructure:
         for field_name, value in struct.comments:
             assert value == getattr(default_comments, field_name)
 
-    def test_general_structure_with_unknown_parameter_is_ignored(self):
+    def test_general_structure_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -268,6 +271,144 @@ class TestGeneralStructure:
             unknown           = 10.0        # A deliberately added unknown property
             # ----------------------------------------------------------------------
 
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            crestLevel                     = 116.0
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "unknown" in str(exc_info.value)
+
+    def test_general_structure_with_misspelled_coefficient_raises_error(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                             = id
+            type                           = generalStructure
+            branchId                       = stump
+            chainage                       = 13.53
+            crestLevel                     = 116.0
+            posFreeGateFlowCoef            = 1.03
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "posfreegateflowcoef" in str(exc_info.value)
+
+    def test_general_structure_parses_undocumented_kernel_keywords(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                      = id
+            type                    = generalStructure
+            branchId                = stump
+            chainage                = 13.53
+            crestLevel              = 116.0
+            gateheightintervalcntrl = 12
+            dynstructext            = 0.8
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
+        struct = wrapper.val
+
+        assert struct.gateheightintervalcntrl == pytest.approx(12.0)
+        assert struct.dynstructext == pytest.approx(0.8)
+
+    def test_general_structure_writes_undocumented_kernel_keywords_when_set(self):
+        struct = GeneralStructure(
+            **self._create_required_general_structure_values(),
+            gateheightintervalcntrl=12.0,
+            dynstructext=0.8,
+        )
+
+        section = struct._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        written = {prop.key: prop.value for prop in section.content if hasattr(prop, "key")}
+
+        assert float(written["gateheightintervalcntrl"]) == pytest.approx(12.0)
+        assert float(written["dynstructext"]) == pytest.approx(0.8)
+
+    def test_general_structure_does_not_write_undocumented_kernel_keywords_when_unset(
+        self,
+    ):
+        struct = GeneralStructure(**self._create_required_general_structure_values())
+
+        section = struct._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        keys = [prop.key for prop in section.content if hasattr(prop, "key")]
+
+        assert struct.gateheightintervalcntrl is None
+        assert struct.dynstructext is None
+        assert "gateheightintervalcntrl" not in keys
+        assert "dynstructext" not in keys
+
+    # current spelling of the flow coefficient keywords -> legacy underscored spelling
+    _COEFFICIENT_KEYS = {
+        "posFreeGateFlowCoeff": "pos_freegateflowcoeff",
+        "posDrownGateFlowCoeff": "pos_drowngateflowcoeff",
+        "posFreeWeirFlowCoeff": "pos_freeweirflowcoeff",
+        "posDrownWeirFlowCoeff": "pos_drownweirflowcoeff",
+        "posContrCoefFreeGate": "pos_contrcoeffreegate",
+        "negFreeGateFlowCoeff": "neg_freegateflowcoeff",
+        "negDrownGateFlowCoeff": "neg_drowngateflowcoeff",
+        "negFreeWeirFlowCoeff": "neg_freeweirflowcoeff",
+        "negDrownWeirFlowCoeff": "neg_drownweirflowcoeff",
+        "negContrCoefFreeGate": "neg_contrcoeffreegate",
+    }
+
+    @pytest.mark.parametrize(
+        "legacy_spelling",
+        [
+            pytest.param(False, id="current_coefficient_keywords"),
+            pytest.param(True, id="legacy_underscored_coefficient_keywords"),
+        ],
+    )
+    def test_general_structure_parses_all_fields(self, legacy_spelling):
+        """The legacy underscored coefficient keywords must be read like the current
+        ones (they are renamed by `GeneralStructure._rename_legacy_coefficients`)."""
+        key = {
+            current: (legacy if legacy_spelling else current)
+            for current, legacy in self._COEFFICIENT_KEYS.items()
+        }
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            f"""
+            [Structure]
+            id                             = id
+            name                           = extravagante_waarde
             type                           = generalStructure
             branchId                       = stump
             chainage                       = 13.53
@@ -284,19 +425,19 @@ class TestGeneralStructure:
             downstream2Width               = 119.1
             downstream2Level               = 119.2
             gateLowerEdgeLevel             = 119.3
-            posFreeGateFlowCoeff           = 119.4
-            posDrownGateFlowCoeff          = 119.5
-            posFreeWeirFlowCoeff           = 119.6
-            posDrownWeirFlowCoeff          = 119.7
-            posContrCoefFreeGate           = 119.8
-            negFreeGateFlowCoeff           = 119.9
-            negDrownGateFlowCoeff          = 118.1
-            negFreeWeirFlowCoeff           = 118.2
-            negDrownWeirFlowCoeff          = 118.3
-            negContrCoefFreeGate           = 118.4
+            {key["posFreeGateFlowCoeff"]} = 119.4
+            {key["posDrownGateFlowCoeff"]} = 119.5
+            {key["posFreeWeirFlowCoeff"]} = 119.6
+            {key["posDrownWeirFlowCoeff"]} = 119.7
+            {key["posContrCoefFreeGate"]} = 119.8
+            {key["negFreeGateFlowCoeff"]} = 119.9
+            {key["negDrownGateFlowCoeff"]} = 118.1
+            {key["negFreeWeirFlowCoeff"]} = 118.2
+            {key["negDrownWeirFlowCoeff"]} = 118.3
+            {key["negContrCoefFreeGate"]} = 118.4
             extraResistance                = 118.5
             gateHeight                     = 118.6
-            gateOpeningWidth               = 118.7
+            gateOpeningWidth               = 110.0
             gateOpeningHorizontalDirection = fromRight
             useVelocityHeight              = 0
             """
@@ -312,13 +453,15 @@ class TestGeneralStructure:
         )
         struct = wrapper.val
 
-        assert struct.model_dump().get("unknown") is None  # type: ignore
+        # The legacy keys must not survive as extra attributes.
+        dumped = struct.model_dump()
+        assert all(legacy not in dumped for legacy in self._COEFFICIENT_KEYS.values())
 
         assert struct.id == "id"
         assert struct.name == "extravagante_waarde"
         assert struct.branchid == "stump"
         assert struct.chainage == pytest.approx(13.53)
-        assert struct.type == "generalstructure"
+        assert struct.type == "generalStructure"
         assert struct.allowedflowdir == FlowDirection.positive
         assert struct.upstream1width == pytest.approx(111.0)
         assert struct.upstream1level == pytest.approx(112.0)
@@ -344,12 +487,69 @@ class TestGeneralStructure:
         assert struct.negcontrcoeffreegate == pytest.approx(118.4)
         assert struct.extraresistance == pytest.approx(118.5)
         assert struct.gateheight == pytest.approx(118.6)
-        assert struct.gateopeningwidth == pytest.approx(118.7)
+        assert struct.gateopeningwidth == pytest.approx(110.0)
         assert (
             struct.gateopeninghorizontaldirection
             == GateOpeningHorizontalDirection.from_right
         )
         assert struct.usevelocityheight == False
+
+    def test_general_structure_moves_the_comment_of_a_legacy_coefficient(self):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                    = id
+            type                  = generalStructure
+            branchId              = stump
+            chainage              = 13.53
+            crestLevel            = 116.0
+            pos_freegateflowcoeff = 1.5   # my own comment
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        wrapper = WrapperTest[GeneralStructure].model_validate(
+            {"val": document.sections[0]}
+        )
+        struct = wrapper.val
+
+        assert struct.posfreegateflowcoeff == pytest.approx(1.5)
+        assert struct.comments.posfreegateflowcoeff == "my own comment"
+
+    def test_general_structure_reports_legacy_coefficient_given_next_to_the_current_one(
+        self,
+    ):
+        parser = Parser(ParserConfig())
+
+        input_str = inspect.cleandoc(
+            """
+            [Structure]
+            id                    = id
+            type                  = generalStructure
+            branchId              = stump
+            chainage              = 13.53
+            crestLevel            = 116.0
+            posFreeGateFlowCoeff  = 1.5
+            pos_freegateflowcoeff = 1.6
+            """
+        )
+
+        for line in input_str.splitlines():
+            parser.feed_line(line)
+
+        document = parser.finalize()
+
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[GeneralStructure].model_validate({"val": document.sections[0]})
+
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "pos_freegateflowcoeff" in str(exc_info.value)
 
     def _create_required_general_structure_values(self) -> dict:
         general_structure_values = dict()
@@ -383,7 +583,7 @@ class TestGeneralStructure:
             negcontrcoeffreegate=8.4,
             extraresistance=8.5,
             gateheight=8.6,
-            gateopeningwidth=8.7,
+            gateopeningwidth=2.0,
             gateopeninghorizontaldirection=GateOpeningHorizontalDirection.from_left,
             usevelocityheight=False,
         )
@@ -392,3 +592,109 @@ class TestGeneralStructure:
             self._create_required_general_structure_values()
         )
         return general_structure_values
+
+
+class TestGeneralStructureCrestWidthValidator:
+    """Test the gate opening width <= crest width validator for GeneralStructure."""
+
+    def test_general_structure_with_gateopeningwidth_less_than_crestwidth_passes(self):
+        """Test that general structure with gateOpeningWidth < crestWidth passes validation."""
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=5.0,
+            gateopeningwidth=3.0,
+            crestlevel=6.0,
+        )
+        assert structure.gateopeningwidth == 3.0
+        assert structure.crestwidth == 5.0
+
+    def test_general_structure_with_gateopeningwidth_equal_to_crestwidth_passes(self):
+        """Test that general structure with gateOpeningWidth == crestWidth passes validation."""
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=5.0,
+            gateopeningwidth=5.0,
+            crestlevel=6.0,
+        )
+        assert structure.gateopeningwidth == 5.0
+        assert structure.crestwidth == 5.0
+
+    def test_general_structure_with_gateopeningwidth_greater_than_crestwidth_raises(self):
+        """Test that general structure with gateOpeningWidth > crestWidth raises validation error."""
+        with pytest.raises(ValueError) as exc_err:
+            GeneralStructure(
+                id="structure_id",
+                name="structure_name",
+                branchid="branch_id",
+                chainage=1.23,
+                crestwidth=3.0,
+                gateopeningwidth=5.0,
+                crestlevel=6.0,
+            )
+        assert "`gateOpeningWidth` should be smaller than or equal to `crestWidth`." in str(exc_err.value)
+
+    def test_general_structure_with_default_gateopeningwidth_passes(self):
+        """Test that general structure with default gateOpeningWidth (0.0) passes validation."""
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=3.0,
+            # gateopeningwidth not specified, defaults to 0.0
+            crestlevel=6.0,
+        )
+        assert structure.gateopeningwidth == 0.0
+        assert structure.crestwidth == 3.0
+
+    def test_general_structure_with_crestwidth_greater_than_gateopeningwidth_passes(self):
+        """Test that general structure with crestWidth > gateOpeningWidth passes validation."""
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=10.0,
+            gateopeningwidth=5.0,
+            crestlevel=6.0,
+        )
+        assert structure.crestwidth == 10.0
+        assert structure.gateopeningwidth == 5.0
+
+    def test_general_structure_with_timmodel_gateopeningwidth_skips_validation(self):
+        """Test that general structure with TimModel gateOpeningWidth skips validation."""
+        tim_file = test_input_dir / "tim" / "single_data_for_timeseries.tim"
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=3.0,
+            gateopeningwidth=tim_file,
+            crestlevel=6.0,
+        )
+        assert isinstance(structure.gateopeningwidth, TimModel)
+
+    def test_general_structure_with_forcingmodel_gateopeningwidth_skips_validation(self):
+        """Test that general structure with ForcingModel gateOpeningWidth skips validation."""
+        bc_file = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions2d_and_vectors.bc"
+        )
+        structure = GeneralStructure(
+            id="structure_id",
+            name="structure_name",
+            branchid="branch_id",
+            chainage=1.23,
+            crestwidth=3.0,
+            gateopeningwidth=bc_file,
+            crestlevel=6.0,
+        )
+        assert isinstance(structure.gateopeningwidth, ForcingModel)

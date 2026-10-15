@@ -1,6 +1,5 @@
 import copy
 from pathlib import Path
-from typing import List
 
 import pytest
 
@@ -220,14 +219,14 @@ class TestExtOldModel:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.012500",
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
             "FILETYPE=4",
             "METHOD=3",
-            "OPERAND=O",
+            "OPERAND=override",
         ]
 
         comments = ["This is a comment", "This is a comment", ""]
@@ -272,7 +271,7 @@ class TestParser:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.0125",
             "",
             "* This is a comment",
@@ -282,7 +281,7 @@ class TestParser:
             "FILETYPE=9",
             "METHOD=3",
             "* This is a comment",
-            "OPERAND=O",
+            "OPERAND=override",
             "* This is a comment",
         ]
 
@@ -299,7 +298,7 @@ class TestParser:
                     "FILENAME": "surroundingDomain.pol",
                     "FILETYPE": "11",
                     "METHOD": "4",
-                    "OPERAND": "+",
+                    "OPERAND": "add",
                     "VALUE": "0.0125",
                 },
                 {
@@ -307,7 +306,7 @@ class TestParser:
                     "FILENAME": "OB_001_orgsize.pli",
                     "FILETYPE": "9",
                     "METHOD": "3",
-                    "OPERAND": "O",
+                    "OPERAND": "override",
                 },
             ],
         }
@@ -319,7 +318,7 @@ class TestParser:
             "FILENAME=surroundingDomain.pol",
             "QUANTITY=internaltidesfrictioncoefficient",
             "FILETYPE=11",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.0125",
             "QUANTITY=internaltidesfrictioncoefficient",
         ]
@@ -346,14 +345,14 @@ class TestSerializer:
             "FILENAME=surroundingDomain.pol",
             "FILETYPE=11",
             "METHOD=4",
-            "OPERAND=+",
+            "OPERAND=add",
             "VALUE=0.012500",
             "",
             "QUANTITY=waterlevelbnd",
             "FILENAME=OB_001_orgsize.pli",
             "FILETYPE=9",
             "METHOD=3",
-            "OPERAND=O",
+            "OPERAND=override",
         ]
 
         comments = ["This is a comment", "This is a comment", ""]
@@ -363,7 +362,7 @@ class TestSerializer:
             "filename": DiskOnlyFileModel(Path("surroundingDomain.pol")),
             "filetype": 11,
             "method": 4,
-            "operand": "+",
+            "operand": "add",
             "value": 0.0125,
         }
 
@@ -372,7 +371,7 @@ class TestSerializer:
             "filename": DiskOnlyFileModel(Path("OB_001_orgsize.pli")),
             "filetype": 9,
             "method": 3,
-            "operand": "O",
+            "operand": "override",
         }
 
         forcing_data = {"comment": comments, "forcing": [forcing_1, forcing_2]}
@@ -418,6 +417,39 @@ def test_ext_old_source_sinks():
     )
 
 
+class TestOldParametersQuantity:
+
+    def test_the_missing_method_invalid(self):
+        """
+        Test the missing method in the ExtOldParametersQuantity enum raises ValueError for unknown quantities.
+        """
+        with pytest.raises(ValueError):
+            ExtOldParametersQuantity("not_a_valid_parameter")
+
+    @pytest.mark.parametrize(
+        "quantity_name",
+        [
+            "waqfunctionTau",
+            "waqfunctionradsurfave",
+            "waqsegmentnumber1",
+            "waqsegmentfunctionVel",
+        ],
+    )
+    def test_the_missing_method_with_waq_prefixes(self, quantity_name):
+        """
+        Test that WAQ prefix-based quantities are accepted by ExtOldParametersQuantity.
+        """
+        quantity = ExtOldParametersQuantity(quantity_name)
+        assert quantity.value == quantity_name
+
+    def test_waqparameter_exact_match(self):
+        """
+        Test that the exact quantity 'waqparameter' is accepted by ExtOldParametersQuantity.
+        """
+        quantity = ExtOldParametersQuantity("waqparameter")
+        assert quantity.value == "waqparameter"
+
+
 def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
     """
     Check if the root validator correctly chose the right type of file model.
@@ -428,7 +460,7 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         filename="xs.xyz",
         filetype=7,
         method=5,
-        operand="O",
+        operand="override",
     )
     assert isinstance(forcing.filename, DiskOnlyFileModel)
 
@@ -437,6 +469,24 @@ def test_ext_old_choose_file_model_validator(tim_files_dir: Path):
         filename=tim_files_dir / "triple_data_for_timeseries.tim",
         filetype=1,
         method=5,
-        operand="O",
+        operand="override",
     )
     assert isinstance(forcing.filename, TimModel)
+
+
+def test_ext_old_forcing_accepts_filetype_12_netcdf_flow_map():
+    """FILETYPE=12 (NetCDF D-Flow FM map file) must be accepted by ExtOldForcing.
+
+    Regression test for https://github.com/Deltares/HYDROLIB-core/issues/1207.
+    """
+    forcing = ExtOldForcing(
+        quantity="initialwaterlevel",
+        filename="flow_map.nc",
+        filetype=12,
+        method=5,
+        operand="override",
+    )
+    assert forcing.filetype == ExtOldFileType.NetCDFFlowMapFile
+    assert forcing.method == ExtOldMethod.InterpolateTime
+    assert isinstance(forcing.filename, DiskOnlyFileModel)
+

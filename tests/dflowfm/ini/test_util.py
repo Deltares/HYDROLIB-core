@@ -2,18 +2,18 @@ from typing import Dict, List, Literal, Optional
 from unittest.mock import Mock
 
 import pytest
-from pydantic import ValidationError, ValidationInfo, field_validator, model_validator
+from pydantic import ValidationError, ValidationInfo, model_validator
 from pydantic.fields import FieldInfo
 
 from hydrolib.core.base.models import BaseModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    LocationValidatorUtils,
     UnknownKeywordErrorManager,
     get_from_subclass_defaults,
     rename_keys_for_backwards_compatibility,
     validate_datetime_string,
-    validate_location_specification,
 )
 
 
@@ -25,6 +25,7 @@ class TestLocationValidationConfiguration:
         assert config.validate_branch == True
         assert config.validate_num_coordinates == True
         assert config.validate_location_type == True
+        assert config.validate_location_file == False
         assert config.minimum_num_coordinates == 0
 
 
@@ -38,6 +39,7 @@ class TestLocationValidationFieldNames:
         assert fields.y_coordinates == "yCoordinates"
         assert fields.num_coordinates == "numCoordinates"
         assert fields.location_type == "locationType"
+        assert fields.location_file == "locationFile"
 
 
 class TestLocationSpecificationValidator:
@@ -54,10 +56,10 @@ class TestLocationSpecificationValidator:
 
         @model_validator(mode="before")
         def validate_that_location_specification_is_correct(cls, values: Dict) -> Dict:
-            return validate_location_specification(
+            return LocationValidatorUtils(
                 values,
                 config=LocationValidationConfiguration(minimum_num_coordinates=3),
-            )
+            ).validate()
 
     @pytest.mark.parametrize(
         "values",
@@ -126,14 +128,23 @@ class TestLocationSpecificationValidator:
         assert expected_message in str(error.value)
 
     @pytest.mark.parametrize(
-        "values",
+        "values, expected_message",
         [
             pytest.param(
                 {
                     "nodeid": "some_nodeid",
                     "locationtype": "2d",
                 },
-                id="nodeid",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-locationtype-2d",
+            ),
+            pytest.param(
+                {
+                    "nodeid": "some_nodeid",
+                    "locationtype": "all",
+                },
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-locationtype-all",
             ),
             pytest.param(
                 {
@@ -141,16 +152,57 @@ class TestLocationSpecificationValidator:
                     "chainage": 1.23,
                     "locationtype": "2d",
                 },
-                id="branchid",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-locationtype-2d",
+            ),
+            pytest.param(
+                {
+                    "branchid": "some_branchid",
+                    "chainage": 1.23,
+                    "locationtype": "all",
+                },
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-locationtype-all",
             ),
         ],
     )
-    def test_incorrect_location_type_raises_error(self, values: dict):
+    def test_incorrect_location_type_raises_error(self, values: dict, expected_message: str):
         with pytest.raises(ValidationError) as error:
             TestLocationSpecificationValidator.DummyModel(**values)
 
-        expected_message = "locationType should be 1d but was 2d"
         assert expected_message in str(error.value)
+
+    @pytest.mark.parametrize(
+        "values, expected_locationtype",
+        [
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "1d"},
+                "1d",
+                id="coordinates-locationtype-1d",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "2d"},
+                "2d",
+                id="coordinates-locationtype-2d",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2, "locationtype": "all"},
+                "all",
+                id="coordinates-locationtype-all",
+            ),
+            pytest.param(
+                {"xcoordinates": [1.0, 2.0], "ycoordinates": [3.0, 4.0], "numcoordinates": 2},
+                None,
+                id="coordinates-locationtype-default-all",
+            ),
+        ],
+    )
+    def test_location_type_valid_with_coordinates(self, values: dict, expected_locationtype: str):
+        result = LocationValidatorUtils(
+            values,
+            config=LocationValidationConfiguration(minimum_num_coordinates=1),
+        ).validate()
+        assert result.get("locationtype") == expected_locationtype
 
     @pytest.mark.parametrize(
         "values",
@@ -179,10 +231,10 @@ class TestLocationSpecificationValidator:
         ],
     )
     def test_correct_fields_initializes(self, values: dict):
-        validated_values = validate_location_specification(
+        validated_values = LocationValidatorUtils(
             values,
             config=LocationValidationConfiguration(minimum_num_coordinates=3),
-        )
+        ).validate()
         assert validated_values == values
 
     @pytest.mark.parametrize(
@@ -235,10 +287,10 @@ class TestLocationSpecificationValidator:
         """Regression: before-validators receive raw input where users may pass
         camelCase aliases. The helper must normalize them to lowercase field
         names so subsequent Pydantic validation finds the values."""
-        validated_values = validate_location_specification(
+        validated_values = LocationValidatorUtils(
             values,
             config=LocationValidationConfiguration(minimum_num_coordinates=3),
-        )
+        ).validate()
         assert validated_values == expected
 
     @pytest.mark.parametrize(
@@ -261,10 +313,10 @@ class TestLocationSpecificationValidator:
     def test_correct_1d_fields_locationtype_is_added(
         self, values: dict, expected_values: dict
     ):
-        validated_values = validate_location_specification(
+        validated_values = LocationValidatorUtils(
             values,
             config=LocationValidationConfiguration(minimum_num_coordinates=3),
-        )
+        ).validate()
         assert validated_values == expected_values
 
     @pytest.mark.parametrize(
@@ -281,7 +333,7 @@ class TestLocationSpecificationValidator:
         self, values: dict
     ):
         config = LocationValidationConfiguration(validate_location_type=False)
-        validated_values = validate_location_specification(values, config)
+        validated_values = LocationValidatorUtils(values, config).validate()
 
         assert validated_values == values
 
@@ -301,9 +353,79 @@ class TestLocationSpecificationValidator:
         config = LocationValidationConfiguration(validate_location_type=False)
         values["locationtype"] = "This is an invalid location type..."
 
-        validated_values = validate_location_specification(values, config)
+        validated_values = LocationValidatorUtils(values, config).validate()
 
         assert validated_values == values
+
+    @pytest.mark.parametrize(
+        "values, expected",
+        [
+            pytest.param(
+                {"locationFile": "locations.pli"},
+                {"locationfile": "locations.pli"},
+                id="locationfile-alias-only",
+            ),
+            pytest.param(
+                {"locationfile": "locations.pli"},
+                {"locationfile": "locations.pli"},
+                id="locationfile-lowercase-only",
+            ),
+        ],
+    )
+    def test_validate_locationfile_enabled_accepts_supported_forms(
+        self, values: dict, expected: dict
+    ):
+        config = LocationValidationConfiguration(
+            validate_location_file=True,
+            validate_node=False,
+            validate_branch=False,
+            validate_location_type=False,
+        )
+
+        validated_values = LocationValidatorUtils(values, config).validate()
+
+        assert validated_values == expected
+
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param({}, id="missing-location-and-coordinates"),
+            pytest.param(
+                {
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                },
+                id="partial-coordinate-triplet",
+            ),
+            pytest.param(
+                {
+                    "locationfile": "locations.pli",
+                    "numcoordinates": 2,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="locationfile-and-coordinate-triplet",
+            ),
+            pytest.param(
+                {
+                    "numcoordinates": 3,
+                    "xcoordinates": [1.0, 2.0],
+                    "ycoordinates": [3.0, 4.0],
+                },
+                id="coordinate-length-mismatch",
+            ),
+        ],
+    )
+    def test_validate_locationfile_enabled_rejects_invalid_forms(self, values: dict):
+        config = LocationValidationConfiguration(
+            validate_location_file=True,
+            validate_node=False,
+            validate_branch=False,
+            validate_location_type=False,
+        )
+        location_validator = LocationValidatorUtils(values, config)
+        with pytest.raises(ValueError):
+            location_validator.validate()
 
 
 class TestGetKeyRenamingRootValidator:

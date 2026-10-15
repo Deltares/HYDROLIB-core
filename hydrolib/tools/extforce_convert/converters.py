@@ -1,13 +1,16 @@
 """External forcing converter."""
 
+from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Tuple
 
 from hydrolib.core.base.file_manager import PathOrStr, resolve_relative_to_root
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.common.models import Operand
 from hydrolib.core.dflowfm.bc.models import (
     T3D,
     Astronomic,
@@ -15,37 +18,56 @@ from hydrolib.core.dflowfm.bc.models import (
     ForcingModel,
     Harmonic,
     QuantityUnitPair,
+    TimeInterpolation,
     TimeSeries,
+    VectorQuantityUnitPairs,
 )
 from hydrolib.core.dflowfm.cmp.models import AstronomicRecord, CMPModel, HarmonicRecord
 from hydrolib.core.dflowfm.ext.models import (
     SOURCE_SINKS_QUANTITIES_VALID_PREFIXES,
     Boundary,
     BoundaryError,
-    InitialFieldError,
-    Meteo,
-    MeteoError,
+    Lateral,
+    LateralError,
     SourceSink,
     SourceSinkError,
+    Spatial,
+    SpatialError,
 )
 from hydrolib.core.dflowfm.extold.models import (
     ExtOldBoundaryQuantity,
     ExtOldForcing,
     ExtOldInitialConditionQuantity,
+    ExtOldLateralQuantity,
     ExtOldMeteoQuantity,
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import InitialField, ParameterField
+from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaError
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
+from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
 from hydrolib.core.dflowfm.t3d.models import T3DModel
 from hydrolib.core.dflowfm.tim.models import TimModel
-from hydrolib.core.dflowfm.tim.parser import TimParser
 from hydrolib.tools.extforce_convert.utils import (
+    CONVERTER_DATA,
+    SOURCESINK_SALINITY_IN_BC,
+    SOURCESINK_TEMP_IN_BC,
     convert_interpolation_data,
-    create_initial_cond_and_parameter_input_dict,
     find_temperature_salinity_in_quantities,
-    oldfiletype_to_forcing_file_type,
+    old_layer_to_target_layer,
+    convert_file_type,
+)
+
+if TYPE_CHECKING:
+    from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+
+
+FACTOR_QUANTITIES = frozenset(
+    {
+        "windspeedfactor",
+        "solarradiationfactor",
+    }
 )
 
 
@@ -59,10 +81,33 @@ class BaseConverter(ABC):
     converter, depending on the quantity of the forcing block.
     """
 
-    def __init__(self):
-        """Initializes the BaseConverter object."""
-        self._root_dir = None
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr | None = None
+    ):
+        """Initialize the BaseConverter object.
+
+        Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Only the
+                converters that read forcing files from disk (boundary conditions and
+                source/sinks) need it. Defaults to None.
+        """
+        if mdu_parser is None:
+            raise TypeError("mdu_parser is required.")
+        self._mdu_parser = mdu_parser
+        self._root_dir = Path(root_dir) if isinstance(root_dir, str) else root_dir
         self._legacy_files = []
+
+    def _require_reference_date(self, context: str) -> str:
+        """Return the MDU refdate or raise a clear conversion error."""
+        ref_date = self._mdu_parser.temperature_salinity_data.get("refdate")
+        if not ref_date:
+            raise ValueError(
+                f"{context} requires MDU 'temperature_salinity_data' with a valid 'refdate'."
+            )
+        return ref_date
 
     @property
     def root_dir(self) -> Path:
@@ -70,17 +115,17 @@ class BaseConverter(ABC):
         return self._root_dir
 
     @root_dir.setter
-    def root_dir(self, value: Union[Path, str]):
+    def root_dir(self, value: Path | str):
         if isinstance(value, str):
             value = Path(value)
         self._root_dir = value
 
     @property
-    def legacy_files(self) -> List[Path]:
+    def legacy_files(self) -> list[Path]:
         return self._legacy_files
 
     @legacy_files.setter
-    def legacy_files(self, value: Union[PathOrStr, List[PathOrStr]]):
+    def legacy_files(self, value: PathOrStr | list[PathOrStr]):
         """Set the legacy files to be cleaned up after conversion."""
         if isinstance(value, list):
             self._legacy_files += [Path(file) for file in value]
@@ -102,85 +147,297 @@ class BaseConverter(ABC):
         raise NotImplementedError("Subclasses must implement convert method")
 
 
-class MeteoConverter(BaseConverter):
-    """Meteo quantities Converter."""
+class SpatialBlockBuilder:
+    """Assemble the constructor dict for a single `Spatial` block.
 
-    def __init__(self):
-        """Meteo converter constructor."""
-        super().__init__()
+    A method object for the old-to-new spatial conversion: the source forcing and
+    its resolved data-file path are held as state so the build steps cooperate
+    through `self` (reading `self.forcing`, mutating `self.block`) instead of
+    threading them as parameters. `SpatialConverter.convert` drives it via
+    `SpatialBlockBuilder(forcing, path).build()`.
+    """
 
-    def convert(self, forcing: ExtOldForcing) -> Meteo:
-        """Meteo converter.
+    def __init__(self, forcing: ExtOldForcing, new_forcing_path: Path | None):
+        """Capture the source forcing and derive the quantity name and file type.
 
-        Convert an old external forcing block with meteo data to a Meteo
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block being converted.
+            new_forcing_path (Path | None):
+                The path to the forcing data file in the new model.
+        """
+        self.forcing = forcing
+        self.new_forcing_path = new_forcing_path
+
+        quantity_str = str(forcing.quantity).lower()
+        self._is_factor = quantity_str in FACTOR_QUANTITIES
+
+        self.quantity_name = CONVERTER_DATA.external_forcing.rename_quantity(
+            forcing.quantity
+        )
+        self.file_type = convert_file_type(forcing.filetype)
+        self.block: dict[str, Any] = {}
+
+    def build(self) -> dict[str, Any]:
+        """Assemble and return the `Spatial` constructor dict.
+
+        Returns:
+            dict[str, Any]: the keyword arguments for the `Spatial` constructor.
+        """
+        self._require_no_sourcemask()
+        self._set_representation()
+        self._set_common_fields()
+        return self.block
+
+    def _require_no_sourcemask(self):
+        """Reject the removed `SOURCEMASK` attribute, which has no new equivalent."""
+        if self.forcing.sourcemask != DiskOnlyFileModel(None):
+            raise ValueError(
+                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
+                f"convert this input. Encountered for QUANTITY="
+                f"{self.forcing.quantity} and FILENAME={self.forcing.filename}."
+            )
+
+    def _set_operand(self) -> Operand:
+        """Return the operand for the new Spatial block.
+
+        Factor quantities (``windspeedfactor``, ``solarradiationfactor``) are
+        always converted with ``operand = multiply``, regardless of the operand
+        value recorded in the old external forcings file.
+
+        Returns:
+            Operand: ``Operand.multiply`` for factor quantities, otherwise the
+                operand value as parsed from the old external forcings block.
+        """
+        if self._is_factor:
+            operand = Operand.multiply
+        else:
+            operand = self.forcing.operand
+        return operand
+
+    def _set_representation(self):
+        """Populate `self.block` with the spatial representation for this forcing.
+
+        There are three mutually exclusive representations:
+
+        - A polygon quantity (except `initialvertical*`) becomes a constant value
+          masked by the polygon: `targetMaskFile=*.pol` + `dataValue` +
+          `interpolationMethod=constant` (the idiom documented on `Spatial.dataValue`).
+        - An `initialvertical*` polygon keeps the polygon as its `dataFile`.
+        - Any other quantity is a gridded data file, carrying the interpolation /
+          averaging settings, operand, extrapolation toggle and tracer fields.
+
+        UNST-9218 / GitHub #1104: `initialvertical*` quantities must always use
+        `interpolationMethod=constant`; the old `METHOD` value (typically 3 →
+        linearSpaceTime) is meaningless for vertical profiles, since the kernel
+        always applies constant (horizontal) + linear (vertical) interpolation.
+        """
+        is_polygon = self.file_type == DataFileType.polygon
+        is_initial_vertical = self.quantity_name.startswith("initialvertical")
+        if is_polygon and not is_initial_vertical:
+            self.block = {
+                "quantity": self.quantity_name,
+                "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
+                "datavalue": self.forcing.value,
+                "operand": self._set_operand(),
+                "interpolationmethod": InterpolationMethod.constant,
+            }
+        elif is_polygon:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+                "interpolationmethod": InterpolationMethod.constant,
+                "operand": self._set_operand(),
+            }
+        else:
+            self.block = {
+                "quantity": self.quantity_name,
+                "datafile": DiskOnlyFileModel(self.new_forcing_path),
+                "datafiletype": self.file_type,
+            }
+            self.block = convert_interpolation_data(self.forcing, self.block)
+            if is_initial_vertical:
+                self.block["interpolationmethod"] = InterpolationMethod.constant
+            self.block["operand"] = self._set_operand()
+            self.block["extrapolationallowed"] = bool(
+                self.forcing.extrapolation_method
+            )
+            self._add_tracers()
+
+    def _add_tracers(self):
+        """Copy any `tracer*` fields set on the forcing into the block unchanged."""
+        for key, value in self.forcing.model_dump().items():
+            if key.lower().startswith("tracer") and value is not None:
+                self.block[key] = value
+
+    def _set_common_fields(self):
+        """Add the fields shared by every representation: variable name and layer.
+
+        `VARNAME` maps to `dataVariableName`; the old `LAYER` maps to the new
+        `targetLayer` (`-1` → bottom, `0` → all, positive kept).
+        """
+        if self.forcing.varname is not None:
+            self.block["datavariablename"] = self.forcing.varname
+        if self.forcing.layer is not None:
+            self.block["targetlayer"] = old_layer_to_target_layer(self.forcing.layer)
+
+
+class SpatialConverter(BaseConverter):
+    """Spatial quantities Converter."""
+
+    def __init__(self, mdu_parser: MDUParser, root_dir: PathOrStr = None):
+        """Spatial converter constructor.
+
+        Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model. Only needed to convert a uniform time
+                series (`.tim`, FILETYPE=1) data file to a `.bc` file, which
+                requires the reference time the parser exposes. Defaults to None.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the data file paths. Only needed for
+                the uniform-time-series `.tim` to `.bc` conversion. Defaults to None.
+        """
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
+
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
+        """Spatial converter.
+
+        Convert an old external forcing block with spatial data to a Spatial
         forcing block suitable for inclusion in a new external forcings file.
 
         This function takes a forcing block from an old external forcings
         file, represented by an instance of ExtOldForcing, and converts it
-        into a Meteo object. The Meteo object is suitable for use in new
+        into a Spatial object. The Spatial object is suitable for use in new
         external forcings files, adhering to the updated format and
         specifications.
 
+        A FILETYPE=1 data file (a uniform time series in a `.tim`) is converted to a
+        `.bc` file: the old `dataFileType=uniform` (`.tim`) is deprecated in favour of
+        `dataFileType=bcAscii` (`.bc`) per the D-Flow FM User Manual. The `.tim` is
+        converted to a `ForcingModel` attached to the block as its `dataFile`, so a
+        recursive save writes the `.bc` alongside the external forcings file.
+
         Args:
-            forcing (ExtOldForcing): The contents of a single forcing block
-            in an old external forcings file. This object contains all the
-            necessary information, such as quantity, values, and timestamps,
-            required for the conversion process.
+            forcing (ExtOldForcing):
+                The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
 
         Returns:
-            Meteo: A Meteo object that represents the converted forcing
-            block, ready to be included in a new external forcings file. The
-            Meteo object conforms to the new format specifications, ensuring
-            compatibility with updated systems and models.
+            Spatial: A Spatial object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
 
         Raises:
             ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
+            supported by the converter, a ValueError is raised.
         """
-        meteo_data = {
-            "quantity": forcing.quantity,
-            "forcingfile": forcing.filename,
-            "forcingfiletype": oldfiletype_to_forcing_file_type(forcing.filetype),
-            "forcingVariableName": forcing.varname,
-        }
-        if forcing.sourcemask != DiskOnlyFileModel(None):
-            raise ValueError(
-                f"Attribute 'SOURCEMASK' is no longer supported, cannot "
-                f"convert this input. Encountered for QUANTITY="
-                f"{forcing.quantity} and FILENAME={forcing.filename}."
-            )
-        meteo_data = convert_interpolation_data(forcing, meteo_data)
-        meteo_data["extrapolationAllowed"] = bool(forcing.extrapolation_method)
-        meteo_data["extrapolationSearchRadius"] = forcing.maxsearchradius
-        meteo_data["operand"] = forcing.operand
-        try:
-            meteo_block = Meteo(**meteo_data)
-        except Exception as e:
-            raise MeteoError(
-                f"Failed to create the Meteo object. for the following Errors: {e}"
-            )
+        data = SpatialBlockBuilder(forcing, new_forcing_path).build()
 
-        return meteo_block
+        if data.get("datafiletype") == DataFileType.uniform:
+            data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
+
+        try:
+            spatial_block = Spatial(**data)
+        except Exception as e:
+            raise SpatialError(
+                f"Failed to create the Spatial object. for the following Errors: {e}"
+            )
+        return spatial_block
+
+    def _uniform_tim_to_bc(
+        self, forcing: ExtOldForcing, data: dict[str, Any], new_forcing_path: Path
+    ) -> dict[str, Any]:
+        """Replace a uniform `.tim` data file with an inline `.bc` `ForcingModel`.
+
+        The old `dataFileType=uniform` (a space-uniform time series in a `.tim`) is
+        deprecated in favour of `dataFileType=bcAscii` (a `.bc` file) per the D-Flow FM
+        User Manual. The `.tim` is converted to a `ForcingModel` and stored as the block's
+        `dataFile` (so a recursive save writes the `.bc`), `dataFileType` is set to
+        `bcAscii`, and the `.tim` is registered as a legacy file to remove.
+
+        `METHOD=0` maps the resulting time series to `timeInterpolation=block-From`
+        (via `TimeInterpolation.from_old_method`).
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block being converted.
+            data (dict[str, Any]): The Spatial constructor dict built so far.
+            new_forcing_path (Path): The resolved data file path in the new model.
+
+        Returns:
+            dict[str, Any]: The updated Spatial constructor dict.
+
+        Raises:
+            ValueError: If no valid MDU `refdate` is available.
+        """
+        time_unit = self._require_reference_date("Spatial uniform TIM conversion")
+
+        quantity = data["quantity"]
+        tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
+        tim_model = TimModel(filepath=tim_path)
+        if not tim_model.timeseries:
+            raise SpatialError(
+                f"Invalid TIM input: '{tim_path}' contains no data rows. "
+                f"Encountered for QUANTITY={forcing.quantity}."
+            )
+        # A FILETYPE=1 uniform time series carries a single scalar column for the one
+        # spatial quantity (unlike a source/sink .tim, whose columns are different
+        # quantities). More than one data column has no mapping to a single [Spatial]
+        # block, so fail clearly rather than emit ambiguous forcings.
+        n_columns = len(tim_model.timeseries[0].data)
+        if n_columns != 1:
+            raise SpatialError(
+                f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
+                f"data column, but '{tim_path}' has {n_columns}. Encountered for "
+                f"QUANTITY={forcing.quantity}."
+            )
+        tim_model.quantities_names = [quantity]
+        units = tim_model.get_units()
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+            units=units,
+            user_defined_names=["global"],
+        )
+        forcing_list = tim_to_bc_converter.convert()
+        forcing_model = ForcingModel(forcing=forcing_list)
+        forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
+
+        data["datafile"] = forcing_model
+        data["datafiletype"] = DataFileType.bcascii
+        self.legacy_files = tim_path
+        return data
 
 
 class BoundaryConditionConverter(BaseConverter):
     """Boundary condition converter."""
 
-    def __init__(self):
-        """Boundary condition converter constructor."""
-        super().__init__()
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
+        """Boundary condition converter constructor.
+
+        Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
+        """
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
 
     @staticmethod
-    def merge_tim_files(tim_files: List[Path], quantity: str) -> TimModel:
+    def merge_tim_files(tim_files: list[Path], quantity: str) -> TimModel:
         """Parse the boundary condition related time series from the tim files.
 
         The function will merge all the tim files into one tim model and assign the quantity names to the tim model.
 
         Args:
-            tim_files (List[Path]):
-                List of TIM models paths.
+            tim_files (list[Path]):
+                list of TIM models paths.
             quantity (str):
                 name of the quantity that the tim files represent.
         Returns:
@@ -210,18 +467,19 @@ class BoundaryConditionConverter(BaseConverter):
 
     def convert_tim_to_bc(
         self,
-        tim_files: List[PathOrStr],
+        tim_files: list[PathOrStr],
         time_unit: str,
         time_interpolation: str = "linear",
-        quantity: str = None,
-        label: str = None,
-    ) -> List[TimeSeries]:
+        quantity: str | None = None,
+        label: str | None = None,
+        vector_quantities: dict[str, dict[str, str]] | None = None,
+    ) -> list[TimeSeries]:
         """Convert a TimModel into a ForcingModel.
 
         wrapper on top of the `TimToForcingConverter.convert` method. to customize it for the source and sink
 
         Args:
-            tim_files (List[Union[Path, str]]):
+            tim_files (list[Union[Path, str]]):
                 paths to the tim files to be converted.
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
@@ -232,6 +490,16 @@ class BoundaryConditionConverter(BaseConverter):
                 name of the quantity that the tim files represent.
             label (str, default is None):
                 the label from the pli file to be used to name the time series sections in the .bc model.
+            vector_quantities (dict[str, dict[str, str]], default is None):
+                Optional vector quantity definition. The outer key is the vector name and
+                the nested mapping defines component names to units. When provided, each
+                TIM file is converted into a single vector `TimeSeries` block.
+
+                Input-layout contract (differs from the scalar path): a vector quantity
+                expects **one multi-column TIM file per location**, carrying one column per
+                component in the configured order (e.g. `ux`, `uy`). Unlike the scalar path,
+                the files are NOT merged column-wise via `merge_tim_files`; supplying one
+                single-column file per component raises a `ValueError`.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -240,18 +508,53 @@ class BoundaryConditionConverter(BaseConverter):
             ValueError: If `units` and `user_defined_names` are not provided.
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
-        tim_model = self.merge_tim_files(tim_files, quantity)
+        tim_files = [Path(path) for path in tim_files]
+        labels = BoundaryConditionConverter._get_file_labels(label, tim_files)
 
-        # switch the quantity names from the Tim model (loction names) to quantity names.
-        user_defined_names = BoundaryConditionConverter._get_file_labels(
-            label, tim_files
-        )
-        tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+        if vector_quantities:
+            vector_name, component_units = next(iter(vector_quantities.items()))
+            component_names = list(component_units.keys())
+            time_series_list = []
+            for tim_file, forcing_name in zip(tim_files, labels):
+                tim_model = TimModel(tim_file)
+                n_columns = len(tim_model.timeseries[0].data)
+                if n_columns != len(component_names):
+                    raise ValueError(
+                        f"TIM file '{tim_file}' for vector quantity '{vector_name}' has {n_columns} data columns, "
+                        f"but {len(component_names)} components were configured: {component_names}. "
+                        f"A vector quantity expects a single multi-column TIM file per location, with one column "
+                        f"per component (in order), not one single-column file per component."
+                    )
 
-        units = tim_model.get_units()
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, time_interpolation, units, user_defined_names
-        )
+                tim_model.quantities_names = component_names
+                units = [component_units[component] for component in component_names]
+                tim_to_bc_converter = TimToForcingConverter(
+                    tim_model=tim_model,
+                    time_unit=time_unit,
+                    time_interpolation=time_interpolation,
+                    units=units,
+                    user_defined_names=[forcing_name]
+                )
+                time_series_list.extend(
+                    tim_to_bc_converter.convert(
+                        vector_quantities={vector_name: component_units},
+                    )
+                )
+
+        else:
+            tim_model = self.merge_tim_files(tim_files, quantity)
+
+            tim_model.quantities_names = [quantity] * len(tim_model.get_units())
+
+            units = tim_model.get_units()
+            tim_to_bc_converter = TimToForcingConverter(
+                tim_model=tim_model,
+                time_unit=time_unit,
+                time_interpolation=time_interpolation,
+                units=units,
+                user_defined_names=labels
+            )
+            time_series_list = tim_to_bc_converter.convert()
         return time_series_list
 
     def locate_files(self, location_file: Path):
@@ -262,11 +565,11 @@ class BoundaryConditionConverter(BaseConverter):
                 the pli file that contains the location of the boundary condition.
 
         Returns:
-            tim_files (List[Path]):
+            tim_files (list[Path]):
                 list of all the tim files related to the location file.
-            t3d_files (List[Path]):
+            t3d_files (list[Path]):
                 list of all the t3d files related to the location file.
-            cmp_files (List[Path]):
+            cmp_files (list[Path]):
                 list of all the cmp files related to the location file.
         """
         forcings_local_dir = resolve_relative_to_root(location_file, self.root_dir)
@@ -277,9 +580,7 @@ class BoundaryConditionConverter(BaseConverter):
         cmp_files = list(forcings_local_dir.parent.glob(f"{stem_pattern}.cmp"))
         return tim_files, t3d_files, cmp_files
 
-    def convert(
-        self, forcing: ExtOldForcing, time_unit: Optional[str] = None
-    ) -> Boundary:
+    def convert(self, forcing: ExtOldForcing) -> Boundary:
         """Boundary condition converter.
 
         Convert an old external forcing block to a boundary forcing block
@@ -296,8 +597,10 @@ class BoundaryConditionConverter(BaseConverter):
                 in an old external forcings file. This object contains all the
                 necessary information, such as quantity, values, and timestamps,
                 required for the conversion process.
-            time_unit:
-                The start date of the time series data.
+
+        Note:
+            The reference time is derived from the `MDUParser` injected at construction
+            (see `__init__`), so `convert` needs no separate `time_unit` argument.
 
         Returns:
             Boundary: A Boundary object that represents the converted forcing
@@ -313,12 +616,13 @@ class BoundaryConditionConverter(BaseConverter):
 
         Notes:
             - The `root_dir` property must be set before calling this method.
-            - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
-            boundary Condition can be only converted by reading the mdu file and the external forcing file is not
-            enough.
+            - Since the reference time is read from the mdu file, boundary conditions can only be converted when an
+            `MDUParser` was injected at construction; the external forcing file alone is not enough.
             - The new labels for all quantities in the .bc file will be taken from the pli file and the number at the
             end of the label is taken from the file name of the tim, t3d, or cmp files.
         """
+        time_unit = self._require_reference_date("Boundary conversion")
+
         quantity = forcing.quantity
         location_file = forcing.filename.filepath
         poly_line = forcing.filename
@@ -335,8 +639,20 @@ class BoundaryConditionConverter(BaseConverter):
         forcings_list = []
 
         if len(tim_files) > 0:
+            vector_component_units = CONVERTER_DATA.external_forcing.get_vector_component_units(
+                forcing.quantity
+            )
+            vector_quantities = None
+            if vector_component_units:
+                vector_quantities = {str(forcing.quantity): vector_component_units}
+
             time_series_list = self.convert_tim_to_bc(
-                tim_files, time_unit, quantity=quantity, label=label
+                tim_files,
+                time_unit,
+                time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+                quantity=quantity,
+                label=label,
+                vector_quantities=vector_quantities,
             )
             forcings_list.extend(time_series_list)
             self.legacy_files = tim_files
@@ -375,12 +691,12 @@ class BoundaryConditionConverter(BaseConverter):
 
     @staticmethod
     def _convert_t3d_files(
-        t3d_files: List[Path], quantity: str, label: str
-    ) -> List[T3D]:
+        t3d_files: list[Path], quantity: str, label: str
+    ) -> list[T3D]:
         """Convert T3D files to T3D forcing objects.
 
         Args:
-            t3d_files (List[Path]):
+            t3d_files (list[Path]):
                 t3d files to be converted.
             quantity (str):
                 quantity name that the t3d files represent.
@@ -388,7 +704,7 @@ class BoundaryConditionConverter(BaseConverter):
                 label from the pli file to be used to name the time series sections in the .bc model.
 
         Returns:
-            List[T3D]:
+            list[T3D]:
                 A list of T3D objects representing the converted T3D files.
         """
         t3d_models = [T3DModel(path) for path in t3d_files]
@@ -404,20 +720,20 @@ class BoundaryConditionConverter(BaseConverter):
 
     @staticmethod
     def _convert_cmp_files(
-        cmp_files: List[Path], quantity: str, label: str
-    ) -> List[ForcingBase]:
+        cmp_files: list[Path], quantity: str, label: str
+    ) -> list[ForcingBase]:
         """Convert CMP files to ForcingModel.
 
         Args:
-            cmp_files (List[Path]):
-                List of CMP files to be converted.
+            cmp_files (list[Path]):
+                list of CMP files to be converted.
             quantity (str):
                 quantity name that the cmp files represent.
             label (str):
                 label from the pli file names to be used to name the time series sections in the .bc model.
 
         Returns:
-            List[ForcingBase]:
+            list[ForcingBase]:
                 The converted ForcingBase object.
         """
         cmp_models = [CMPModel(path) for path in cmp_files]
@@ -431,19 +747,19 @@ class BoundaryConditionConverter(BaseConverter):
         return forcing_list
 
     @staticmethod
-    def _get_file_labels(label: str, files: List[Path]) -> List[str]:
+    def _get_file_labels(label: str, files: list[Path]) -> list[str]:
         """
         Get the labels of the files based on their filenames and a provided label.
 
         Args:
             label (str):
                 A string label to prefix the generated file labels.
-            files (List[Path]):
+            files (list[Path]):
                 A list of file paths. Each file's name is expected to end with '_<number>',
                 where <number> is an integer used to generate the labels.
 
         Returns:
-            List[str]:
+            list[str]:
                 A list of strings representing the labels for the files. Each label is
                 generated by appending '_<number>' (zero-padded to 4 digits) to the provided label.
 
@@ -463,125 +779,175 @@ class BoundaryConditionConverter(BaseConverter):
         return user_defined_names
 
 
-class InitialConditionConverter(BaseConverter):
-    """Initial condition converter."""
-
-    def __init__(self):
-        """Initial condition converter constructor."""
-        super().__init__()
-
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> InitialField:
-        """Convert the Initial condition quantities.
-
-        Convert an old external forcing block with Initial condition data to a IinitialField
-        forcing block suitable for inclusion in a new inifieldfile file.
+# The names the kernel gives a tracer / sediment fraction whose quantity is only the prefix (`tracerbnd`,
+# `sedfracbnd`, ...): `DEFTRACER` in `m_transport.f90` and `get_sedfracname` in `fm_external_forcings_utils.f90`.
+DEFAULT_CONSTITUENT_NAMES = {
+    "tracer": "default_tracer",
+    "sedfrac": "unknown_sediment_fraction",
+}
 
 
-        This function takes a forcing block from an old external forcings
-        file, represented by an instance of ExtOldForcing, and converts it
-        into a InitialField object. The InitialField object is suitable for use in new
-        iniFieldFile, adhering to the updated format and specifications.
+class TimQuantityNamesBuilder:
+    """Build the ordered quantity names that label a source/sink TIM file's columns.
 
-        Args:
-            forcing (ExtOldForcing):
-                The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
-            new_forcing_path (Path):
-                The updated path to the forcing data file.
+    An instance captures the quantity sources for **one** source/sink conversion — the
+    old ext-file quantities, the active substances, the MDU temperature/salinity flags,
+    and the tracer quantities from the new ext and inifield files. Those five values are
+    a data clump that always travels together, so they are the object's state rather than
+    arguments threaded through every helper. `build()` composes that state into the TIM
+    column order: discharge, the temperature/salinity deltas, then the tracer /
+    sediment-fraction substances ordered by the kernel's tracer-indexing precedence
+    (inifield -> new ext -> old ext -> substance file, first-seen position wins). Each
+    tracer column is emitted with the source/sink role prefix the kernel expects —
+    `sourcesink_tracer<name>` / `sourcesink_sedfrac<name>` (issue #1224).
 
-        Returns:
-            Initial condition field definition, represents an `[Initial]` block in an inifield file.
+    The leaf utilities that depend only on their arguments (`merge_mdu_and_ext_file_quantities`,
+    `_substance_name_from_quantity`, `_role_prefix`, `_append_unique`) remain static
+    methods: they are pure helpers of this builder, not behavior over its state.
+    """
 
-        Raises:
-            ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
-
-        References:
-            [Sec.D](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D)
-        """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
-        try:
-            new_block = InitialField(**data)
-        except Exception as e:
-            raise InitialFieldError(
-                f"Failed to create the InitialField object. for the following Errors: {e}"
-            )
-
-        return new_block
-
-
-class ParametersConverter(BaseConverter):
-    """Parameter converter."""
-
-    def __init__(self):
-        """Parameter converter constructor."""
-        super().__init__()
-
-    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path) -> ParameterField:
-        """Parameter converter.
-
-        Convert an old external forcing block to a parameter forcing block
-        suitable for inclusion in an initial field and parameter file.
-
-        This function takes a forcing block from an old external forcings
-        file, represented by an instance of ExtOldForcing, and converts it
-        into a ParameterField object. The ParameterField object is suitable for use in
-        an IniFieldModel, representing an initial field and parameter file, adhering
-        to the updated format and specifications.
+    def __init__(
+        self,
+        ext_file_quantity_list: list[str],
+        active_substance_names: list[str] | None,
+        mdu_quantities: dict[str, bool],
+        new_ext_tracer_quantities: list[str] | None = None,
+        inifield_tracer_quantities: list[str] | None = None,
+    ):
+        """Capture the quantity sources for one source/sink conversion.
 
         Args:
-            forcing (ExtOldForcing):
-                The contents of a single forcing block
-                in an old external forcings file. This object contains all the
-                necessary information, such as quantity, values, and timestamps,
-                required for the conversion process.
-            new_forcing_path (Path):
-                The updated path to the forcing data file.
-
-        Returns:
-            ParameterField:
-                A ParameterField object that represents the converted forcing
-                block, ready to be included in an initial field and parameter file. The
-                ParameterField object conforms to the new format specifications, ensuring
-                compatibility with updated systems and models.
-
-        Raises:
-            ValueError: If the forcing block contains a quantity that is not
-            supported by the converter, a ValueError is raised. This ensures
-            that only compatible forcing blocks are processed, maintaining
-            data integrity and preventing errors in the conversion process.
+            ext_file_quantity_list (list[str]): All source/sink-related quantities from
+                the old external forcings file. Any quantity whose name starts with a
+                `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES` prefix contributes to the
+                old-ext tracer slot, including the `initialtracer*` / `initialsedfrac*`
+                ones (they contribute to the kernel's tracer indexing even though they
+                are converted to `[Spatial]` blocks by `SpatialConverter`).
+            active_substance_names (list[str] | None): The active substance names from
+                the substance file, or None when the MDU references none.
+            mdu_quantities dict[str, bool]): The temperature/salinity activation flags
+                derived from the MDU file.
+            new_ext_tracer_quantities (list[str] | None): Raw tracer/sedfrac quantity
+                names from the pre-existing new external forcings file, in file order.
+            inifield_tracer_quantities (list[str] | None): Raw tracer/sedfrac quantity
+                names from the inifield file, in file order.
         """
-        data = create_initial_cond_and_parameter_input_dict(forcing, new_forcing_path)
-        new_block = ParameterField(**data)
+        self.ext_file_quantity_list = list(ext_file_quantity_list or [])
+        self.active_substance_names = list(active_substance_names or [])
+        self.mdu_quantities = mdu_quantities
+        self.new_ext_tracer_quantities = list(new_ext_tracer_quantities or [])
+        self.inifield_tracer_quantities = list(inifield_tracer_quantities or [])
 
-        return new_block
+    def build(self) -> list[str]:
+        """Return the quantity names, one per TIM data column, in column order.
 
+        The order is discharge, then the temperature/salinity deltas (merged from the MDU
+        and the external file), then the tracer / sediment-fraction columns assembled by
+        `_ordered_tracer_names`.
+        """
+        return (
+            ["sourcesink_discharge"]
+            + self._temperature_salinity_names()
+            + [f"sourcesink_{name}" for name in self._ordered_tracer_names()]
+        )
 
-class SourceSinkConverter(BaseConverter):
-    """Source and sink converter."""
+    def _temperature_salinity_names(self) -> list[str]:
+        """Return the ordered temperature/salinity delta names for the TIM columns.
 
-    def __init__(self):
-        """Source and sink converter Constructor."""
-        super().__init__()
+        Combines the temperature/salinity present in the external forcings file with the
+        activation flags from the MDU file (see `merge_mdu_and_ext_file_quantities`).
+        """
+        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
+            self.ext_file_quantity_list
+        )
+        return self.merge_mdu_and_ext_file_quantities(
+            self.mdu_quantities, temp_salinity_from_ext
+        )
+
+    def _ordered_tracer_names(self) -> list[str]:
+        """Order the tracer / sediment-fraction columns by the kernel's precedence.
+
+        Sources are visited in precedence order — inifield file, new external forcings
+        file, old external forcings file, substance file — and de-duplicated keeping each
+        constituent's first (highest-precedence) occurrence (case-insensitive on the role-prefixed
+        name, so a tracer and a sediment fraction sharing a bare name stay separate columns).
+
+        Each emitted name carries the source/sink **role prefix** the kernel expects for a
+        `[SourceSink]` column: `tracer<name>` for tracers and `sedfrac<name>` for sediment
+        fractions (D-Flow FM UM §C.5.2.4; see issue #1224). `build` later prepends
+        `sourcesink_`, yielding the `.bc` quantity `sourcesink_tracer<name>` and the block
+        field `tracer<name>`. The role is taken from the source quantity's prefix
+        (`tracerbnd`/`initialtracer` -> `tracer`, `sedfracbnd`/`initialsedfrac` ->
+        `sedfrac`); substance-file entries, which have no prefix, default to `tracer`.
+        """
+        ordered: list[str] = []
+        seen: set[str] = set()
+        for quantity in (
+            self.inifield_tracer_quantities
+            + self.new_ext_tracer_quantities
+            + self.ext_file_quantity_list
+        ):
+            if not (
+                isinstance(quantity, str)
+                and quantity.lower().startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+            ):
+                continue
+            bare = self._substance_name_from_quantity(quantity)
+            self._append_unique(ordered, seen, f"{self._role_prefix(quantity)}{bare}")
+        for name in self.active_substance_names:
+            self._append_unique(ordered, seen, f"tracer{name}")
+        return ordered
+
+    @staticmethod
+    def _append_unique(ordered: list[str], seen: set[str], value: str) -> None:
+        """Append `value` to `ordered` unless it was already seen, ignoring case.
+
+        The first spelling seen is kept: `tracerOXY`, `tracerOxy` and `TRACEROXY` give one entry, the first
+        of them. The role prefix is part of the key, so a tracer and a sediment fraction that share a bare
+        name (`tracerX` and `sedfracX`) are different constituents and both keep their column. The
+        different spellings of one tracer (`tracerbndX`, `initialtracerX`, a substance `X`) all map to
+        `tracerX` before they get here and collapse into one.
+
+        The comparison ignores case because the D-Flow FM manual compares quantity names
+        case-insensitively (C.5.2) and keywords are case-insensitive, and the tracer columns become
+        keywords of the `[SourceSink]` block.
+
+        Args:
+            ordered (list[str]): The names collected so far, in column order. Appended to in place.
+            seen (set[str]): The casefolded keys of the names in `ordered`. Updated in place.
+            value (str): The role-prefixed name to add, e.g. `tracerOXY`.
+        """
+        key = value.lower()
+        if key not in seen:
+            seen.add(key)
+            ordered.append(value)
+
+    @staticmethod
+    def _role_prefix(quantity: str) -> str:
+        """Return the `[SourceSink]` role prefix for a source quantity.
+
+        `sedfracbnd*` / `initialsedfrac*` quantities are sediment fractions (`sedfrac`);
+        every other source/sink quantity is a tracer (`tracer`).
+        """
+        role = "tracer"
+        if quantity.lower().startswith(("sedfracbnd", "initialsedfrac")):
+            role = "sedfrac"
+        return role
 
     @staticmethod
     def merge_mdu_and_ext_file_quantities(
-        mdu_quantities: Dict[str, bool], temp_salinity_from_ext: Dict[str, int]
-    ) -> List[str]:
+        mdu_quantities: dict[str, bool], temp_salinity_from_ext: dict[str, int]
+    ) -> list[str]:
         """Merge the temperature and salinity from the mdu file with the temperature and salinity from the external file.
 
         Args:
-            mdu_quantities (Dict[str, bool]): A dictionary containing the temperature and salinity details from the
+            mdu_quantities (dict[str, bool]): A dictionary containing the temperature and salinity details from the
                 mdu file, with bool values indecating if the temperature/salinity is activated in the mdu file.
-            temp_salinity_from_ext (Dict[str,int]): A dictionary containing the temperature and salinity details from
+            temp_salinity_from_ext (dict[str,int]): A dictionary containing the temperature and salinity details from
                 the external file.
 
         Returns:
-            List[str]: A list of quantities that will be used in the tim file.
+            list[str]: A list of quantities that will be used in the tim file.
         """
         if mdu_quantities:
             mdu_file_quantity_list = [key for key, val in mdu_quantities.items() if val]
@@ -590,24 +956,135 @@ class SourceSinkConverter(BaseConverter):
             )
             final_temp_salinity = temp_salinity_from_ext | temp_salinity_from_mdu
             # the kwargs will be provided only from the source and sink converter
-            # Ensure 'temperature' comes before 'salinity'
+            # the kernel's TIM column order is salinity, then temperature (manual, sources and sinks)
             keys = list(final_temp_salinity.keys())
-            if (
-                "sourcesink_temperaturedelta" in keys
-                and "sourcesink_salinitydelta" in keys
-            ):
-                keys.remove("sourcesink_salinitydelta")
+            if SOURCESINK_TEMP_IN_BC in keys and SOURCESINK_SALINITY_IN_BC in keys:
+                keys.remove(SOURCESINK_SALINITY_IN_BC)
                 keys.insert(
-                    keys.index("sourcesink_temperaturedelta"),
-                    "sourcesink_salinitydelta",
+                    keys.index(SOURCESINK_TEMP_IN_BC),
+                    SOURCESINK_SALINITY_IN_BC,
                 )
         else:
             keys = list(temp_salinity_from_ext.keys())
 
         return keys
 
+
+    @staticmethod
+    def _substance_name_from_quantity(quantity: str) -> str:
+        """Return the substance/tracer name of a source/sink quantity, without its prefix.
+
+        A quantity such as `tracerbndIM1` or `sedfracbndMud` carries one of the
+        `SOURCE_SINKS_QUANTITIES_VALID_PREFIXES`; stripping it yields the bare
+        substance name (`IM1`, `Mud`). A quantity without a known prefix is returned
+        unchanged.
+
+        A quantity that is only a prefix (`tracerbnd`, `sedfracbnd`, ...) has no name. The kernel
+        then uses a default name, so this method does too: `default_tracer` for tracers and
+        `unknown_sediment_fraction` for sediment fractions (`DEFAULT_CONSTITUENT_NAMES`).
+
+        The longest matching prefix is stripped (not merely the first one in tuple
+        order), so the result stays correct even if the prefix set ever contains a
+        prefix of another prefix (e.g. `tracer` and `tracerbnd`). Matching is
+        case-insensitive; the suffix casing is preserved.
+
+        Args:
+            quantity (str): The source/sink quantity name from the external file.
+
+        Returns:
+            str: The substance name with any leading source/sink prefix removed.
+        """
+        result = quantity
+        lowered = quantity.lower()
+        match = max(
+            (p for p in SOURCE_SINKS_QUANTITIES_VALID_PREFIXES if lowered.startswith(p)),
+            key=len,
+            default=None,
+        )
+        if match is not None:
+            result = quantity[len(match) :]
+            if not result:
+                result = DEFAULT_CONSTITUENT_NAMES[
+                    TimQuantityNamesBuilder._role_prefix(quantity)
+                ]
+        return result
+
+
+class SourceSinkConverter(BaseConverter):
+    """Source and sink converter."""
+
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
+        """Source and sink converter constructor.
+
+        Args:
+            mdu_parser (MDUParser):
+                Parser for the FM model.
+            root_dir (PathOrStr, optional):
+                Root directory used to resolve the forcing file paths. Defaults to None.
+        """
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
+
+    def _active_substances(self) -> list[Substance] | None:
+        """Read the active substances from the MDU's `SubstanceFile`.
+
+        Each returned `Substance` carries both its `name` and its
+        `concentration_unit`, so callers can derive the substance names as well as
+        the units to apply to the source/sink `.bc` quantities.
+
+        Returns:
+            Optional[list[Substance]]:
+                The active substance definitions, or None when the MDU file does
+                not reference a substance file.
+
+        Raises:
+            FileNotFoundError:
+                If the MDU references a substance file that does not exist.
+        """
+        substances = None
+        substance_file = self._mdu_parser.get_keyword("SubstanceFile")
+        if substance_file:
+            substance_path = (
+                self._mdu_parser.mdu_path.parent / substance_file
+            ).resolve()
+            if not substance_path.exists():
+                raise FileNotFoundError(
+                    f"Substance file {substance_path} not found, required to convert "
+                    f"SourceSink quantities."
+                )
+            substance_model = SubstanceModel(substance_path)
+            substances = substance_model.get_active_substances()
+        return substances
+
+    def _resolve_active_substances(
+        self,
+    ) -> Tuple[list[str] | None, dict[str, str]]:
+        """Read the active substances and derive the names and concentration-unit map.
+
+        Returns:
+            Tuple[Optional[list[str]], dict[str, str]]:
+                The active substance names (or None when the MDU references no substance
+                file), and a mapping of substance name to concentration unit (empty when
+                there are none).
+        """
+        active_substances = self._active_substances()
+        names = [s.name for s in active_substances] if active_substances else None
+        units = (
+            {s.name: s.concentration_unit for s in active_substances}
+            if active_substances
+            else {}
+        )
+        return names, units
+
     def parse_tim_model(
-        self, tim_file: Path, ext_file_quantity_list: List[str], **mdu_quantities
+        self,
+        tim_file: Path,
+        ext_file_quantity_list: list[str],
+        active_substance_names: list[str] | None = None,
+        new_ext_tracer_quantities: list[str] | None = None,
+        inifield_tracer_quantities: list[str] | None = None,
+        **mdu_quantities,
     ) -> TimModel:
         """Parse the source and sinks related time series from the tim file.
 
@@ -617,14 +1094,21 @@ class SourceSinkConverter(BaseConverter):
         The order of the quantities in the tim file should be as follows:
         - time
         - sourcesink_discharge
-        - sourcesink_salinitydelta (optional)
-        - sourcesink_temperatureDelta (optional)
-        - tracer<anyname>delta (optional)
-        - any other quantities from the external forcings file.
+        - sourcesink_salinity (optional)
+        - sourcesink_temperature (optional)
+        - the tracer / sediment-fraction quantities (`sourcesink_tracer<name>` / `sourcesink_sedfrac<name>`), in the
+          kernel's precedence order: inifield file, new external forcings file, old external forcings file, substance
+          file (see `TimQuantityNamesBuilder`).
 
         Args:
             tim_file (Path): The path to the TIM file.
-            ext_file_quantity_list (List[str]): A list of other quantities that are present in the external forcings file.
+            ext_file_quantity_list (list[str]): A list of other quantities that are present in the external forcings file.
+            active_substance_names (list[str] | None, default is None):
+                A list of active substance names to include in the conversion.
+                When provided, only the substances in this list will be processed.
+            new_ext_tracer_quantities (list[str] | None, default is None): Quantity names of the pre-existing new external
+                forcings file (in file order).
+            inifield_tracer_quantities (list[str] | None, default is None): Quantity names of the inifield file (in file order).
             **mdu_quantities: keyword argumens that will be provided if you want to provide the temperature and salinity
                 details from the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are
                 only bool. (i.e. {"temperature", False, "salinity": True})
@@ -635,9 +1119,12 @@ class SourceSinkConverter(BaseConverter):
             the keys of the dictionary will be the quantity names, and the values will be the time series data.
 
         Raises:
-            ValueError: If the number of columns in the TIM file does not match the number of quantities in the external
-            forcings file that has one of the following prefixes `initialtracer`,`tracerbnd`,
-            `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+            ValueError: If the number of columns in the TIM file does not match the number of quantities built by
+            `TimQuantityNamesBuilder`: the discharge, the temperature and salinity, plus the tracer / sediment-fraction
+            quantities with one of the prefixes `tracerbnd`, `sedfracbnd`, `initialtracer`, `initialsedfrac` (in the
+            inifield, new external forcings and old external forcings files) and the active substances. The
+            `initialtracer*` / `initialsedfrac*` quantities are converted to `[Spatial]` blocks by `SpatialConverter`,
+            but they still define a tracer and so still take a column.
 
         Notes:
             - The function will combine the temperature and salinity from the MDU file (value is 1) file with the
@@ -654,31 +1141,35 @@ class SourceSinkConverter(BaseConverter):
             4.0 1.0 2.0 3.0 4.0
             ```
         and the external file contains the following quantities:
-            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "initialtracerAnyname",
+            >>> ext_file_quantity_list = ["discharge", "temperature", "salinity", "tracerbndAnyname",
             ... "anyother-quantities"]
 
-        - The function will filter the external forcing quantities that have one of the following prefixes
-        `initialtracer`,`tracerbnd`, `sedfracbnd`,`initialsedfrac`, plus the discharge, temperature, and salinity.
+        - The function will keep the external forcing quantities that have one of the source/sink prefixes
+        `tracerbnd`, `sedfracbnd`, `initialtracer`, `initialsedfrac`, plus the discharge, temperature, and salinity.
+        The `initialtracer` / `initialsedfrac` ones are converted to `[Spatial]` blocks by `SpatialConverter`, but they
+        still define a tracer and so still take a column.
         - If the mdu_quantities are provided, the function will merge the temperature and salinity from the mdu file
         with the filtered quantities mentioned in the external forcing file.
         - The merged list of quantities from both the ext and mdu files will then be compared with the number of
         columns in the TIM file, if they don't match a `Value Error` will be raised.
-        - Here the filtered quantities are ["discharge", "temperature", "salinity", "initialtracerAnyname"] and the
+        - Here the kept quantities are ["discharge", "temperature", "salinity", "tracerbndAnyname"] and the
         tim file contains 4 columns (excluding the time column).
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.tools.extforce_convert.converters import SourceSinkConverter
+            >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
             >>> tim_file = Path("tests/data/input/source-sink/leftsor.tim")
-            >>> converter = SourceSinkConverter()
-            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list)
+            >>> mdu_parser = MDUParser("path/to/your/model.mdu") # doctest: +SKIP
+            >>> converter = SourceSinkConverter(mdu_parser=mdu_parser) # doctest: +SKIP
+            >>> tim_model = converter.parse_tim_model(tim_file, ext_file_quantity_list) # doctest: +SKIP
             >>> print(tim_model.quantities_names)
-            ['sourcesink_discharge', 'sourcesink_salinitydelta', 'sourcesink_temperaturedelta', 'initialtracerAnyname']
+            ['sourcesink_discharge', 'sourcesink_salinity', 'sourcesink_temperature', 'sourcesink_tracerAnyname']
             >>> print(tim_model.as_dict()) # doctest: +SKIP
             {
                 "discharge": [1.0, 1.0, 1.0, 1.0, 1.0],
-                "sourcesink_salinitydelta": [2.0, 2.0, 2.0, 2.0, 2.0],
-                "sourcesink_temperatureDelta": [3.0, 3.0, 3.0, 3.0, 3.0],
-                "initialtracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
+                "sourcesink_salinity": [2.0, 2.0, 2.0, 2.0, 2.0],
+                "sourcesink_temperature": [3.0, 3.0, 3.0, 3.0, 3.0],
+                "sourcesink_tracerAnyname": [4.0, 4.0, 4.0, 4.0, 4.0],
             }
 
             ```
@@ -703,33 +1194,16 @@ class SourceSinkConverter(BaseConverter):
             ...
             ```
         """
-        time_file = TimParser.parse(tim_file)
-        tim_model = TimModel(**time_file)
+        tim_model = TimModel(filepath=tim_file)
         time_series = tim_model.as_dict()
-        # get the required quantities from the external file
-        required_quantities_from_ext = [
-            key
-            for key in ext_file_quantity_list
-            if key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-        ]
-        # Remove duplicate quantities that might be present in the list due to quantities that share names,
-        # therefore occurring multiple times in the external forcing file.
-        # TimeSeries columns are expected to be linked to unique quantity names.
-        required_quantities_from_ext = list(set(required_quantities_from_ext))
 
-        # check if the temperature and salinity are present in the external file
-        temp_salinity_from_ext = find_temperature_salinity_in_quantities(
-            ext_file_quantity_list
-        )
-
-        final_temp_salinity = self.merge_mdu_and_ext_file_quantities(
-            mdu_quantities, temp_salinity_from_ext
-        )
-        final_quantities_list = (
-            ["sourcesink_discharge"]
-            + final_temp_salinity
-            + required_quantities_from_ext
-        )
+        final_quantities_list = TimQuantityNamesBuilder(
+            ext_file_quantity_list,
+            active_substance_names,
+            mdu_quantities,
+            new_ext_tracer_quantities=new_ext_tracer_quantities,
+            inifield_tracer_quantities=inifield_tracer_quantities,
+        ).build()
 
         if len(time_series) != len(final_quantities_list):
             raise ValueError(
@@ -740,11 +1214,14 @@ class SourceSinkConverter(BaseConverter):
         tim_model.quantities_names = final_quantities_list
         return tim_model
 
+
     @staticmethod
     def convert_tim_to_bc(
         tim_model: TimModel,
         time_unit: str,
-        user_defined_names: List[str] = None,
+        time_interpolation: str,
+        user_defined_names: list[str] = None,
+        substance_units: dict[str, str] = None,
     ) -> ForcingModel:
         """Convert a TimModel into a ForcingModel.
 
@@ -756,8 +1233,14 @@ class SourceSinkConverter(BaseConverter):
             time_unit (str):
                 Formatted string containing the units of time, including absolute datetime reference information
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
-            user_defined_names (List[str], optional):
+            time_interpolation (str, default is linear):
+                The time interpolation for the resulting `.bc` forcings (e.g. `block-From` for old METHOD=0).
+            user_defined_names (list[str], optional):
                 A list of user-defined names for the forcing blocks.
+            substance_units (dict[str, str], optional):
+                Mapping of substance name to its concentration unit. When provided, the
+                placeholder unit (``"-"``) that `TimModel.get_units` assigns to substance
+                columns is replaced with the substance's concentration unit.
 
         Returns:
             ForcingModel: The converted ForcingModel.
@@ -767,38 +1250,119 @@ class SourceSinkConverter(BaseConverter):
             ValueError: If the lengths of `units`, `user_defined_names`, and the columns in the first row of the TimModel
         """
         units = tim_model.get_units()
-        time_series_list = TimToForcingConverter.convert(
-            tim_model, time_unit, units=units, user_defined_names=user_defined_names
+        units = SourceSinkConverter._correct_substance_units(
+            units, tim_model.quantities_names, substance_units
         )
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            time_interpolation=time_interpolation,
+            units=units,
+            user_defined_names=user_defined_names,
+        )
+        time_series_list = tim_to_bc_converter.convert()
         forcing_model = ForcingModel(forcing=time_series_list)
         return forcing_model
 
     @staticmethod
-    def separate_forcing_model(forcing_model: ForcingModel) -> Dict[str, ForcingModel]:
+    def _correct_substance_units(
+        units: list[str],
+        quantities_names: list[str],
+        substance_units: dict[str, str] = None,
+    ) -> list[str]:
+        """Replace the placeholder unit of substance columns with their concentration unit.
+
+        `TimModel.get_units` maps any column that is not discharge/waterlevel/salinity/
+        temperature to the placeholder ``"-"``. Substance columns fall into that bucket,
+        so this method overrides those placeholders with the concentration unit declared
+        in the substance file. Units are aligned with `quantities_names` positionally.
+
+        Args:
+            units (list[str]): The units extracted from the TIM model, one per quantity.
+            quantities_names (list[str]): The quantity names, aligned with `units`.
+            substance_units (dict[str, str], optional): Mapping of substance name to
+                concentration unit. When falsy, `units` is returned unchanged.
+
+        Returns:
+            list[str]: The units with substance placeholders corrected.
+        """
+        result = units
+        if substance_units:
+            result = [
+                substance_units.get(
+                    SourceSinkConverter._bare_constituent_name(name), unit
+                )
+                for name, unit in zip(quantities_names, units)
+            ]
+        return result
+
+    @staticmethod
+    def _bare_constituent_name(quantity_name: str) -> str:
+        """Strip the `sourcesink_` and `tracer`/`sedfrac` role prefixes to the bare name.
+
+        The substance-unit map is keyed by the bare substance name (e.g. ``OXY``), but a
+        TIM column name carries the emitted role prefix (e.g. ``sourcesink_tracerOXY``).
+        This recovers the lookup key: ``sourcesink_tracerOXY`` -> ``OXY``,
+        ``sourcesink_sedfracMud`` -> ``Mud``. Names without a role prefix
+        (``sourcesink_discharge`` -> ``discharge``) are returned after only the
+        ``sourcesink_`` strip and simply miss the substance-unit lookup.
+        """
+        name = quantity_name.removeprefix("sourcesink_")
+        for role in ("tracer", "sedfrac"):
+            if name.startswith(role):
+                name = name[len(role) :]
+                break
+        return name
+
+    @staticmethod
+    def separate_forcing_model(forcing_model: ForcingModel) -> dict[str, ForcingModel]:
         """Separate the forcing model into a list of forcing models.
 
         each forcing model will contain only one forcing quantity.
         """
         forcing_list = [deepcopy(forcing) for forcing in forcing_model.forcing]
 
-        forcing_model_list = []
         forcings = {}
         for forcing in forcing_list:
             model = deepcopy(forcing_model)
             model.forcing = [forcing]
-            forcing_model_list.append(model)
             name = forcing.quantityunitpair[1].quantity
             # remove the prefix 'sourcesink_' from the name as the extforce file will not have this prefix.
             forcings[name.removeprefix("sourcesink_")] = model
 
         return forcings
 
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> Path:
+        """Resolve the TIM file that accompanies the source/sink polyline.
+
+        The TIM file is expected to sit next to the polyline, sharing its stem with a
+        `.tim` suffix, resolved relative to the converter's `root_dir`.
+
+        Args:
+            polyline (PolyFile): The source/sink polyline whose filepath locates the
+                accompanying TIM file.
+            quantity (str): The old external forcing quantity, used only for the error
+                message when the TIM file is missing.
+
+        Returns:
+            Path: The resolved path to the existing TIM file.
+
+        Raises:
+            ValueError: If the resolved TIM file does not exist.
+        """
+        tim_file = resolve_relative_to_root(
+            polyline.filepath, self.root_dir
+        ).with_suffix(".tim")
+        if not tim_file.exists():
+            raise ValueError(f"TIM file '{tim_file}' not found for QUANTITY={quantity}")
+        return tim_file
+
     def convert(
         self,
         forcing: ExtOldForcing,
-        ext_file_quantity_list: List[str] = None,
-        start_time: str = None,
-        **temp_salinity_mdu,
+        ext_file_quantity_list: list[str] = None,
+        new_ext_tracer_quantities: list[str] = None,
+        inifield_tracer_quantities: list[str] = None,
     ) -> SourceSink:
         """Source and sink converter.
 
@@ -809,16 +1373,18 @@ class SourceSinkConverter(BaseConverter):
             forcing (ExtOldForcing): The contents of a single forcing block in an old external forcings file. This
                 object contains all the necessary information, such as quantity, values, and timestamps, required for the
                 conversion process.
-            ext_file_quantity_list (List[str], default is None): A list of other quantities that are present in the
-                external forcings file.
-            start_time (str, default is None):
-                The start date of the time series data.
-            **temp_salinity_mdu:
-                keyword arguments that will be provided if you want to provide the temperature and salinity details from
-                the mdu file, the dictionary will have two keys `temperature`, `salinity` and the values are only bool.
-                ```python
-                {'salinity': True, 'temperature': True}
-                ```
+            ext_file_quantity_list (list[str], default is None): A list of other quantities that are present in the
+                old external forcings file. The caller may pass the unfiltered quantity list; any quantity whose name
+                starts with a source/sink prefix (`tracerbnd*`, `sedfracbnd*`, `initialtracer*`, `initialsedfrac*`)
+                contributes to the kernel's tracer indexing.
+            new_ext_tracer_quantities (list[str], default is None): Raw tracer / sedfrac quantity names from the
+                pre-existing new external forcings file (in file order).
+            inifield_tracer_quantities (list[str], default is None): Raw tracer / sedfrac quantity names from the
+                inifield file (in file order).
+
+        Note:
+            The start time, the active substance names, and the temperature/salinity settings are derived from the
+            `MDUParser` injected at construction (see `__init__`), so `convert` needs no separate arguments for them.
 
         Returns:
             SourceSink: A SourceSink object that represents the converted forcing
@@ -836,6 +1402,9 @@ class SourceSinkConverter(BaseConverter):
             - Since the `start_time` argument must be provided from the mdu file to convert the time series data,
             SourceSink can be only converted by reading the mdu file and the external forcing file is not
             enough.
+            - The `SourceSink` dynamic fields are the tracer / sediment-fraction column names found in the
+            forcings (keyed by name after the `sourcesink_` prefix was stripped by `separate_forcing_model`),
+            i.e. every column except `discharge`, `salinity` and `temperature`.
 
         References:
             - `Sources and Sinks <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C10>`_
@@ -845,29 +1414,34 @@ class SourceSinkConverter(BaseConverter):
             - `Source and sink definitions <https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C5.2.4>`_
 
         """
+        temp_salinity_mdu = self._mdu_parser.temperature_salinity_data
+        start_time = self._require_reference_date("SourceSink conversion")
+        active_substance_names, substance_units = self._resolve_active_substances()
+
         location_file = forcing.filename.filepath
         polyline = forcing.filename
         location_name = location_file.stem
         z_source, z_sink = polyline.get_z_sources_sinks()
 
-        # check the tim file
-        tim_file = resolve_relative_to_root(
-            polyline.filepath, self.root_dir
-        ).with_suffix(".tim")
-        if not tim_file.exists():
-            raise ValueError(
-                f"TIM file '{tim_file}' not found for QUANTITY={forcing.quantity}"
-            )
-
+        tim_file = self._resolve_tim_file(polyline, forcing.quantity)
         self.legacy_files = tim_file
 
         tim_model = self.parse_tim_model(
-            tim_file, ext_file_quantity_list, **temp_salinity_mdu
+            tim_file,
+            ext_file_quantity_list,
+            active_substance_names,
+            new_ext_tracer_quantities=new_ext_tracer_quantities,
+            inifield_tracer_quantities=inifield_tracer_quantities,
+            **temp_salinity_mdu,
         )
         labels = [f"{location_name}"] * len(tim_model.quantities_names)
 
         forcing_model = self.convert_tim_to_bc(
-            tim_model, start_time, user_defined_names=labels
+            tim_model,
+            start_time,
+            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+            user_defined_names=labels,
+            substance_units=substance_units,
         )
         # set the bc file names to the same names as the tim files.
         forcing_model.filepath = Path(
@@ -893,15 +1467,24 @@ class SourceSinkConverter(BaseConverter):
         data = data | forcings
 
         if None not in z_source:
-            # if the z_source and z_sink are not None, then add them to the data
-            z_source_sink_data = {
-                "zsource": z_source,
-                "zsink": z_sink,
-            }
-            data = data | z_source_sink_data
+            # A single-point polyline is a plain source (no paired sink),
+            # so only `zsource` is emitted. Multi-point polylines describe a
+            # coupled source-sink, where first=sink, last=source.
+            if len(polyline.x) == 1:
+                data = data | {"zsource": z_source}
+            else:
+                data = data | {"zsource": z_source, "zsink": z_sink}
+
+        # every non-fixed column (tracer / sedfrac) must be whitelisted as a dynamic field
+        _fixed_sourcesink_columns = {"discharge", "salinity", "temperature"}
+        dynamic_fields = [
+            name
+            for name in forcings.keys()
+            if name not in _fixed_sourcesink_columns
+        ]
 
         try:
-            new_block = SourceSink(**data)
+            new_block = SourceSink(dynamic_fields=dynamic_fields, **data)
         except Exception as e:  # pragma: no cover
             raise SourceSinkError(
                 f"Failed to create the SourceSink object. for the following Errors: {e}"
@@ -910,16 +1493,314 @@ class SourceSinkConverter(BaseConverter):
         return new_block
 
 
+class LateralConverter(BaseConverter):
+    """Lateral discharge converter."""
+
+    _QUANTITY_TO_LOCATION_TYPE = {
+        "lateraldischarge": "all",
+        "lateraldischarge1d": "1d",
+        "lateraldischarge2d": "2d",
+    }
+
+    def __init__(
+        self, *, mdu_parser: MDUParser, root_dir: PathOrStr = None
+    ):
+        """Lateral converter constructor.
+
+        Args:
+            root_dir (PathOrStr, optional): Root directory used to resolve file paths.
+            mdu_parser (MDUParser): MDU parser used to obtain the reference
+                date (time_unit) required when converting time-series discharge.
+        """
+        super().__init__(mdu_parser=mdu_parser, root_dir=root_dir)
+
+    @staticmethod
+    def convert_tim_to_bc(
+        tim_model: TimModel,
+        time_unit: str,
+        user_defined_names: list[str],
+    ) -> ForcingModel:
+        """Convert a TIM model into a BC ForcingModel for lateral discharge."""
+        units = tim_model.get_units()
+        tim_to_bc_converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            units=units,
+            user_defined_names=user_defined_names,
+        )
+        time_series_list = tim_to_bc_converter.convert()
+        return ForcingModel(forcing=time_series_list)
+
+    @staticmethod
+    def check_lateral_quantity(quantity: str) -> None:
+        """Validate that a lateral quantity is supported by the converter.
+
+        Args:
+            quantity (str): The lateral quantity to validate.
+
+        Raises:
+            LateralError: If the quantity is not supported by this converter.
+        """
+        if str(quantity).lower() not in LateralConverter._QUANTITY_TO_LOCATION_TYPE:
+            raise LateralError(f"Unsupported lateral quantity: {quantity}")
+
+
+    def convert(
+        self,
+        forcing: ExtOldForcing
+    ) -> Lateral:
+        """Lateral discharge converter.
+
+        Convert an old external forcing block with lateral discharge data to a
+        Lateral forcing block suitable for inclusion in a new external forcings file.
+
+        This function takes a forcing block from an old external forcings
+        file, represented by an instance of ExtOldForcing, and converts it
+        into a Lateral object. The Lateral object is suitable for use in new
+        external forcings files, adhering to the updated format and
+        specifications.
+
+        Args:
+            forcing (ExtOldForcing): The contents of a single forcing block
+                in an old external forcings file. This object contains all the
+                necessary information, such as quantity, values, and timestamps,
+                required for the conversion process.
+
+        Returns:
+            Lateral: A Lateral object that represents the converted forcing
+            block, ready to be included in a new external forcings file.
+
+        Raises:
+            LateralError: If the Lateral object could not be created.
+        """
+        quantity = str(forcing.quantity).lower()
+
+        self.check_lateral_quantity(quantity)
+
+        location_type = self._QUANTITY_TO_LOCATION_TYPE[quantity]
+        location_data = self._get_location_data(forcing)
+
+        time_unit = self._require_reference_date("Lateral conversion")
+
+        data = {
+            **location_data,
+            "name": forcing.quantity,
+            "locationtype": location_type,
+            "discharge": self._get_discharge(forcing, time_unit),
+        }
+
+        try:
+            new_block = Lateral(**data)
+        except Exception as e:
+            raise LateralError(
+                f"Failed to create the Lateral object for the following errors: {e}"
+            )
+
+        return new_block
+
+    def _resolve_tim_file(self, polyline: PolyFile, quantity: str) -> TimModel | None:
+        """Resolve and merge any TIM files accompanying the lateral polyline.
+
+        Searches the directory next to the polyline file for any `.tim` files
+        whose stem starts with the polyline stem (e.g. `lateral.tim`,
+        `lateral_0001.tim`, `lateral_0002.tim`, …), merges them into a
+        single `TimModel` via
+        :meth:`BoundaryConditionConverter.merge_tim_files`, and sets every
+        column's quantity name to `"discharge"`.
+
+        The matched file paths are also appended to :attr:`legacy_files` so they
+        can be cleaned up after the conversion.
+
+        Args:
+            polyline (PolyFile): The lateral polyline whose filepath locates the
+                accompanying TIM file(s).
+            quantity (str): The old external forcing quantity, used only in the
+                error message raised by :meth:`BoundaryConditionConverter.merge_tim_files`
+                when a listed file is missing.
+
+        Returns:
+            Optional[TimModel]: The merged `TimModel` (with `quantities_names`
+                set to `"discharge"` for every column), or `None` when no
+                `.tim` files are found next to the polyline.
+        """
+        resolved = resolve_relative_to_root(polyline.filepath, self.root_dir)
+        stem = polyline.filepath.stem
+        tim_files = sorted(resolved.parent.glob(f"{stem}*.tim"))
+        if tim_files:
+            tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
+            n_columns = len(tim_model.get_units())
+            tim_model.quantities_names = ["discharge"] * n_columns
+            self.legacy_files = tim_files
+            result = tim_model
+        else:
+            result = None
+        return result
+
+    def _get_discharge(
+        self, forcing: ExtOldForcing, time_unit: str | None
+    ) -> Any:
+        """Derive the discharge value from the old forcing block.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block.
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            Any: A constant float, a ForcingModel, or a file path representing the discharge.
+        """
+        result = forcing.value
+
+        if forcing.value is None:
+            location_file = forcing.filename.filepath
+            tim_model = self._resolve_tim_file(forcing.filename, forcing.quantity)
+
+            if tim_model is not None:
+                result = self._convert_poly_tim_to_forcing_model(
+                    tim_model, location_file, time_unit
+                )
+            else:
+                raise ValueError(
+                    f"Could not determine the discharge for lateral '{location_file.stem}': "
+                    f"no constant VALUE, no '{location_file.stem}.tim', and no "
+                    f"'{location_file.stem}_0001.tim' were found next to the polygon file. "
+                    "Ensure a time-series (.tim) file or a VALUE field is present in the "
+                    "old external forcings block."
+                )
+        return result
+
+    def _convert_poly_tim_to_forcing_model(
+        self, tim_model: TimModel, location_file: Any, time_unit: str | None
+    ) -> ForcingModel:
+        """Convert a TIM model associated with a PolyFile into a ForcingModel.
+
+        Args:
+            tim_model (TimModel): The resolved TIM model.
+            location_file: The path of the polygon file (used to derive names and output path).
+            time_unit (Optional[str]): The time unit string for time series data.
+
+        Returns:
+            ForcingModel: The converted forcing model.
+
+        Raises:
+            ValueError: If time_unit is None.
+        """
+        if time_unit is None:
+            raise ValueError(
+                "The 'time_unit' argument must be provided when converting a "
+                "lateral discharge from a TIM file."
+            )
+
+        location_name = location_file.stem
+        units = tim_model.get_units()
+        if len(units) == 1:
+            user_defined_names = [location_name]
+        else:
+            user_defined_names = [f"{location_name}_{str(i + 1).zfill(4)}"
+                                  for i in range(len(units))]
+
+        forcing_model = self.convert_tim_to_bc(
+            tim_model,
+            time_unit,
+            user_defined_names=user_defined_names,
+        )
+        forcing_model.filepath = location_file.with_suffix(".bc")
+        return forcing_model
+
+    @staticmethod
+    def _get_location_data(forcing: ExtOldForcing) -> dict[str, Any]:
+        """Extract location data from the old forcing block.
+
+        Args:
+            forcing (ExtOldForcing): The old forcing block.
+
+        Returns:
+            dict[str, Any]: A dict with PolyFile-based location data.
+        """
+        if not isinstance(forcing.filename, PolyFile):
+            raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
+
+        return {
+            "id": forcing.filename.get_id(),
+            "locationfile": forcing.filename.filepath,
+        }
+
+
+MASS_BALANCE_AREA_PREFIXES = ("waqmassbalancearea", "massbalancearea")
+"""tuple: Old-ext quantity prefixes for mass balance areas, longest-first."""
+
+
+class MassBalanceAreaConverter(BaseConverter):
+    """Mass balance area converter.
+
+    Converts an old external forcing block whose quantity is ``waqmassbalancearea<name>``
+    (or ``massbalancearea<name>``) into a :class:`MassBalanceArea` block for the standalone
+    mass balance area file (``<*_mba.ini>``). The area name is taken from the quantity
+    suffix and the polygon from ``FILENAME``; ``VALUE`` is ignored (Manual F.2.5, UNST-10107).
+    """
+
+    def convert(self, forcing: ExtOldForcing) -> MassBalanceArea:
+        """Convert a single old mass balance area forcing block.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old external forcing block. Its ``quantity`` carries the area name as a
+                suffix and its ``filename`` points at the polygon file.
+
+        Returns:
+            MassBalanceArea: The converted block for the mass balance area file.
+        """
+        name = MassBalanceAreaConverter._strip_prefix(str(forcing.quantity))
+        try:
+            result = MassBalanceArea(name=name, locationfile=forcing.filename.filepath)
+        except Exception as e:
+            raise MassBalanceAreaError(
+                f"Failed to create the MassBalanceArea object for QUANTITY="
+                f"{forcing.quantity} and FILENAME={forcing.filename}. "
+                f"for the following Errors: {e}"
+            ) from e
+        return result
+
+    @staticmethod
+    def _strip_prefix(quantity: str) -> str:
+        """Return the area name, i.e. the quantity with its mass-balance-area prefix removed.
+
+        Matching is case-insensitive and longest-prefix-first; the suffix casing is preserved.
+
+        Args:
+            quantity (str): The old-ext quantity, e.g. ``waqmassbalanceareaEstruaryWest``.
+
+        Returns:
+            str: The area name (the quantity unchanged if no known prefix matches).
+        """
+        lower = quantity.lower()
+        name = quantity
+        for prefix in MASS_BALANCE_AREA_PREFIXES:
+            if lower.startswith(prefix):
+                name = quantity[len(prefix) :]
+                break
+        return name
+
+
 class ConverterFactory:
     """A factory class for creating converters based on the given quantity."""
 
     @staticmethod
-    def create_converter(quantity) -> BaseConverter:
+    def create_converter(
+        quantity, root_dir: PathOrStr = None, mdu_parser: MDUParser = None
+    ) -> BaseConverter:
         """
         Create converter based on the given quantity.
 
         Args:
             quantity: The quantity for which the converter needs to be created.
+            root_dir (PathOrStr, optional): Root directory used to resolve the forcing
+                file paths, forwarded to every converter. The boundary condition and
+                source/sink converters read it, as does the spatial converter when it
+                converts a uniform `.tim` data file to `.bc`. Defaults to None.
+            mdu_parser (MDUParser, optional): Parser for the FM model, forwarded to
+                the converters that need it. The `SourceSinkConverter` and
+                `BoundaryConditionConverter` use it, as does the `SpatialConverter`
+                when converting a uniform `.tim` data file to `.bc`. Defaults to None.
 
         Returns:
             BaseConverter: An instance of a specific BaseConverter subclass
@@ -928,18 +1809,24 @@ class ConverterFactory:
         Raises:
             ValueError: If no converter is available for the given quantity.
         """
-        if ConverterFactory.contains(ExtOldMeteoQuantity, quantity):
-            return MeteoConverter()
-        elif ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity):
-            return InitialConditionConverter()
+        if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
+            converter = MassBalanceAreaConverter(mdu_parser=mdu_parser)
+        elif (
+            ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
+            or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
+            or ConverterFactory.contains(ExtOldParametersQuantity, quantity)
+        ):
+            converter = SpatialConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldBoundaryQuantity, quantity):
-            return BoundaryConditionConverter()
-        elif ConverterFactory.contains(ExtOldParametersQuantity, quantity):
-            return ParametersConverter()
+            converter = BoundaryConditionConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif ConverterFactory.contains(ExtOldSourcesSinks, quantity):
-            return SourceSinkConverter()
+            converter = SourceSinkConverter(mdu_parser=mdu_parser, root_dir=root_dir)
+        elif ConverterFactory.contains(ExtOldLateralQuantity, quantity):
+            converter = LateralConverter(root_dir=root_dir, mdu_parser=mdu_parser)
         else:
             raise ValueError(f"No converter available for QUANTITY={quantity}.")
+
+        return converter
 
     @staticmethod
     def contains(quantity_class, quantity) -> bool:
@@ -957,15 +1844,15 @@ class CMPToForcingConverter:
 
     @staticmethod
     def convert(
-        cmp_models: List[CMPModel], user_defined_names: List[str] = None
-    ) -> List[ForcingBase]:
+        cmp_models: list[CMPModel], user_defined_names: list[str] = None
+    ) -> list[ForcingBase]:
         """
         Convert a CmpModel into a ForcingModel.
 
         Args:
-            cmp_models (List[CmpModel]):
+            cmp_models (list[CmpModel]):
                 The input CmpModel to be converted.
-            user_defined_names (List[str]):
+            user_defined_names (list[str]):
                 user defined names for the quantities.Default is None.
 
         Returns:
@@ -1027,7 +1914,7 @@ class CMPToForcingConverter:
     @staticmethod
     def convert_harmonic(
         user_defined_name,
-        harmonics: List[HarmonicRecord],
+        harmonics: list[HarmonicRecord],
         quantity_name: str,
         unit: str,
     ) -> Harmonic:
@@ -1051,7 +1938,7 @@ class CMPToForcingConverter:
     @staticmethod
     def convert_astronomic(
         user_defined_name,
-        astronomics: List[AstronomicRecord],
+        astronomics: list[AstronomicRecord],
         quantity_name: str,
         unit: str,
     ) -> Astronomic:
@@ -1086,18 +1973,16 @@ class TimToForcingConverter:
     - `units`: A list of units corresponding to the forcing quantities.
     - `user_defined_names`: A list of user-defined names for the forcing blocks.
     """
-
-    @staticmethod
-    def convert(
+    def __init__(
+        self,
+        *,
         tim_model: TimModel,
         time_unit: str,
         time_interpolation: str = "linear",
-        units: List[str] = None,
-        user_defined_names: List[str] = None,
-    ) -> List[TimeSeries]:
+        user_defined_names: list[str] | None = None,
+        units: list[str],
+    ):
         """
-        Convert a TimModel into a ForcingModel.
-
         Args:
             tim_model (TimModel):
                 The input TimModel to be converted.
@@ -1106,10 +1991,42 @@ class TimToForcingConverter:
                 (according to UDunits). For example, "minutes since 1992-10-8 15:15:42.5 -6:00".
             time_interpolation (str, optional):
                 The time interpolation method for the forcing data. Defaults to "linear".
-            units (List[str], optional):
-                A list of units corresponding to the forcing quantities.
-            user_defined_names (List[str], optional):
+            units (list[str]):
+                A list of units corresponding to the forcing quantities. Required
+                (keyword-only): its length must match the number of TIM data columns.
+            user_defined_names (list[str], optional):
                 A list of user-defined names for the forcing blocks.
+        """
+        first_record = tim_model.timeseries[0].data
+        if time_unit is None:
+            raise ValueError("The 'start_time' must be provided.")
+
+        if units is None:
+            raise ValueError("'units' must be provided.")
+
+        if len(units) != len(first_record):
+            raise ValueError(
+                "The number of 'units' must match the number of data columns in the first TIM row."
+            )
+
+        self.tim_model_df = tim_model.as_dataframe()
+        self.time_unit = time_unit
+        self.time_interpolation = time_interpolation
+        self.user_defined_names = user_defined_names
+        self.units = units
+
+    def convert(
+        self,
+        vector_quantities: dict[str, dict[str, str]] | None = None,
+    ) -> list[TimeSeries]:
+        """
+        Convert a TimModel into a ForcingModel.
+
+        Args:
+            vector_quantities (dict[str, dict[str, str]], optional):
+                Optional vector quantity definition. The outer key is the vector name and
+                the nested mapping defines component names to units. When provided, the
+                method emits one vector `TimeSeries` block per TIM model.
 
         Returns:
             TimeSeries:
@@ -1129,10 +2046,14 @@ class TimToForcingConverter:
             >>> tim_model = TimModel(file_path, user_defined_names)
             >>> print(tim_model.as_dict())
             {'discharge': [0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0, 0.01, 0.0, -0.01, 0.0]}
-            >>> converter = TimToForcingConverter()
-            >>> time_series = converter.convert(
-            ...     tim_model, "minutes since 2015-01-01 00:00:00", "linear", ["m3/s"], ["discharge"]
-            ... )
+            >>> converter = TimToForcingConverter(
+            >>>     tim_model=tim_model,
+            >>>     time_unit="minutes since 2015-01-01 00:00:00",
+            >>>     time_interpolation="linear",
+            >>>     units=["m3/s"],
+            >>>     user_defined_names=["discharge"],
+            >>> )
+            >>> time_series = converter.convert()
             >>> print(time_series[0].name)
             discharge
             >>> print(time_series[0].datablock)
@@ -1140,29 +2061,37 @@ class TimToForcingConverter:
 
             ```
         """
-        if units is None or user_defined_names is None:
-            raise ValueError("Both 'units' and 'user_defined_names' must be provided.")
+        if self.user_defined_names is None:
+            raise ValueError("'user_defined_names' must be provided.")
 
-        if time_unit is None:
-            raise ValueError("The 'start_time' must be provided.")
+        if vector_quantities:
+            time_series_list = self._convert_vector_quantities(
+                vector_quantities,
+            )
+        else:
+            time_series_list = self._convert_scalar_quantities()
 
-        first_record = tim_model.timeseries[0].data
-        if len(units) != len(user_defined_names) != len(first_record):
+        return time_series_list
+
+    def _convert_scalar_quantities(
+        self,
+    ) -> list[TimeSeries]:
+        if len(self.units) != len(self.user_defined_names):
             raise ValueError(
                 "The lengths of 'units', 'user_defined_names' and length of the columns in the first row must match."
             )
 
-        df = tim_model.as_dataframe()
+        df = self.tim_model_df
         time_data = df.index.tolist()
         time_series_list = []
         for i, (column, vals) in enumerate(df.items()):
-            unit = units[i]
+            unit = self.units[i]
             forcing = TimeSeries(
-                name=user_defined_names[i],
+                name=self.user_defined_names[i],
                 function="timeseries",
-                timeinterpolation=time_interpolation,
+                timeinterpolation=self.time_interpolation,
                 quantityunitpair=[
-                    QuantityUnitPair(quantity="time", unit=time_unit),
+                    QuantityUnitPair(quantity="time", unit=self.time_unit),
                     QuantityUnitPair(quantity=column, unit=unit),
                 ],
                 datablock=[[i, j] for i, j in zip(time_data, vals.values.tolist())],
@@ -1172,16 +2101,63 @@ class TimToForcingConverter:
 
         return time_series_list
 
+    def _convert_vector_quantities(
+        self,
+        vector_quantities: dict[str, dict[str, str]],
+    ) -> list[TimeSeries]:
+        """Convert a multi-column TIM model into a vector `TimeSeries` block."""
+        if len(self.user_defined_names) != 1:
+            raise ValueError(
+                "For vector quantities, provide exactly one user-defined forcing name per TIM model."
+            )
+        df = self.tim_model_df
+        time_data = df.index.tolist()
+        vector_name, component_units = next(iter(vector_quantities.items()))
+        component_names = list(component_units.keys())
+
+        if len(component_names) != len(df.columns):
+            raise ValueError(
+                f"Vector quantity '{vector_name}' expects {len(component_names)} columns, "
+                f"but TIM data has {len(df.columns)} columns."
+            )
+
+        component_rows = df[component_names].values.tolist()
+
+        forcing = TimeSeries(
+            name=self.user_defined_names[0],
+            function="timeseries",
+            timeinterpolation=self.time_interpolation,
+            quantityunitpair=[
+                QuantityUnitPair(quantity="time", unit=self.time_unit),
+                VectorQuantityUnitPairs(
+                    vectorname=vector_name,
+                    elementname=component_names,
+                    quantityunitpair=[
+                        QuantityUnitPair(
+                            quantity=component, unit=component_units[component]
+                        )
+                        for component in component_names
+                    ],
+                ),
+            ],
+            datablock=[
+                [time_val, *row]
+                for time_val, row in zip(time_data, component_rows)
+            ],
+        )
+
+        return [forcing]
+
 
 class T3DToForcingConverter:
     """T3D to Forcing Converter."""
 
     @staticmethod
     def convert(
-        t3d_models: List[T3DModel],
-        quantities_names: List[str],
-        user_defined_names: List[str] = None,
-    ) -> List[T3D]:
+        t3d_models: list[T3DModel],
+        quantities_names: list[str],
+        user_defined_names: list[str] = None,
+    ) -> list[T3D]:
         """Convert a list of T3DModel into a list of T3D Forcing to be saved into the .bc file."""
         t3d_forcings = []
         for label, model in zip(user_defined_names, t3d_models):
@@ -1194,14 +2170,14 @@ class T3DToForcingConverter:
     @staticmethod
     def convert_t3d_model(
         t3d_model: T3DModel,
-        user_defined_name: List[str] = None,
+        user_defined_name: list[str] = None,
     ) -> T3D:
         """Convert a T3DModel into a T3D Forcing to be saved into the .bc file.
 
         Args:
             t3d_model(T3DModel):
                 T3DModel representing the .t3d file model.
-            user_defined_name (List[str], optional):
+            user_defined_name (list[str], optional):
                 user-defined name for the forcing block.
 
         Returns:

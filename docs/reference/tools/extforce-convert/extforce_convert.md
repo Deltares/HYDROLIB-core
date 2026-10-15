@@ -30,7 +30,7 @@ Key collaborators and how they’re used:
 - `hydrolib.core.dflowfm.inifield.models.IniFieldModel` (output): Destination model for initial/parameter fields.
 - `hydrolib.core.dflowfm.structure.models.StructureModel` (output): Destination model for structures.
 - `hydrolib.tools.extforce_convert.converters.ConverterFactory` (strategy selection): Creates the correct converter class for a given quantity.
-  - `BoundaryConditionConverter`, `SourceSinkConverter`, `InitialConditionConverter`, `ParametersConverter` are concrete converters used depending on the quantity.
+  - `BoundaryConditionConverter`, `SourceSinkConverter`, `SpatialConverter` are concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are all routed to `SpatialConverter` (producing `[Spatial]` blocks).
 - `hydrolib.tools.extforce_convert.mdu_parser.MDUParser` (optional): Reads MDU metadata (e.g., `refdate`, temperature/salinity flags) and updates references to new files.
 - `hydrolib.tools.extforce_convert.utils.CONVERTER_DATA` (capabilities): Reports unsupported quantities.
 - `hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing` (model builder): Ensures destination models exist (new or from existing files) with minimal recursion.
@@ -49,7 +49,6 @@ Constructor
 - `__init__(
     extold_model: Union[PathOrStr, ExtOldModel],
     ext_file: Optional[PathOrStr] = None,
-    inifield_file: Optional[PathOrStr] = None,
     structure_file: Optional[PathOrStr] = None,
     mdu_parser: MDUParser = None,
     verbose: bool = False,
@@ -59,7 +58,6 @@ Constructor
   - Parameters:
     - `extold_model`: Path to legacy `.ext` or an `ExtOldModel` instance. If a path or str, the file is loaded via `_read_old_file()`.
     - `ext_file`: Destination path for new external forcings (`ExtModel`). Defaults to `new-external-forcing.ext` in the same directory as the legacy file.
-    - `inifield_file`: Destination path for `IniFieldModel`. Defaults to `new-initial-conditions.ini`.
     - `structure_file`: Destination path for `StructureModel`. Defaults to `new-structure.ini`.
     - `mdu_parser`: Optional `MDUParser` to provide FM metadata (e.g., `refdate`, temperature/salinity) and to update the MDU file.
     - `verbose`: If `True`, prints conversion details to stdout.
@@ -78,7 +76,6 @@ Classmethod
 - `from_mdu(
     mdu_file: PathOrStr,
     ext_file_user: Optional[PathOrStr] = None,
-    inifield_file_user: Optional[PathOrStr] = None,
     structure_file_user: Optional[PathOrStr] = None,
     path_style: Optional[PathStyle] = None,
     debug: bool = False,
@@ -145,7 +142,7 @@ Public methods
     - For supported quantities: calls `_convert_forcing`, maps the resulting block type to the correct destination model (`_type_field_map`) and appends it.
     - If `mdu_parser` exists, updates the MDU file.
     - If any unsupported quantities exist, prunes `extold_model.forcing` to contain only those remaining unsupported forcings.
-  - Returns: `(ext_model, inifield_model, structure_model)` for inspection by callers.
+  - Returns: `(ext_model, structure_model)` for inspection by callers.
   - Side effects: Updates in-memory models; prints progress/logs; modifies `extold_model.forcing` contents if unsupported quantities exist.
   - Exceptions:
     - `NotImplementedError` if a converted block’s type is unknown to `_type_field_map`.
@@ -173,10 +170,9 @@ Static/Protected helpers (summarized for completeness; not typically called by c
 - `_read_old_file(ext_old_file: PathOrStr, path_style: Optional[PathStyle]) -> ExtOldModel`
 - `_type_field_map(self) -> dict[type, tuple[Any, str]]` (maps block types to destination models/attributes).
 - `_convert_forcing(self, forcing) -> Union[Boundary, Lateral, Meteo, SourceSink, InitialField, ParameterField, Structure]`
-  - Note: The annotation in code lists only `Boundary|Lateral|Meteo|SourceSink`, but actual behavior includes `InitialField`, `ParameterField`, and `Structure` via the specific converters.
+  - Note: The annotation in code lists only `Boundary|Lateral|Meteo|SourceSink`, but actual behavior also includes `Spatial` (for meteo, initial-condition and parameter quantities) and `Structure` via the specific converters.
   - Exceptions: `ValueError` if MDU info missing for `SourceSink` or boundary conversions.
 - `_update_mdu_file(self) -> None`
-- `_save_inifield_model(self, backup: bool, recursive: bool) -> None`
 - `_save_structure_model(self, backup: bool, recursive: bool) -> None`
 - `_log_conversion_details(self) -> None`
 
@@ -188,6 +184,7 @@ Example usage
 from pathlib import Path
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
 # Prepare a minimal ExtOldModel in memory
 root_dir = Path("path/to/your/root/dir")
@@ -203,17 +200,28 @@ forcing_model_data = {
     'forcing': [forcing_data]
 }
 old_model = ExtOldModel(**forcing_model_data)  
-converter = ExternalForcingConverter(extold_model=old_model, verbose=True)  
+mdu_parser = MDUParser("path/to/your/model.mdu")  
+converter = ExternalForcingConverter(  
+    extold_model=old_model,  
+    mdu_parser=mdu_parser,  
+    verbose=True,  
+)  
 ext_model, ini_model, struct_model = converter.update()  
 converter.save(backup=True)  
 ```
 
-- From legacy file path
+- From legacy file path (requires an explicit `MDUParser`)
 
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 
-converter = ExternalForcingConverter("old-external-forcing.ext", verbose=True)  
+mdu_parser = MDUParser("model.mdu")  
+converter = ExternalForcingConverter(  
+    extold_model="old-external-forcing.ext",  
+    mdu_parser=mdu_parser,  
+    verbose=True,  
+)  
 converter.update()  
 converter.save()  
 ```
@@ -294,9 +302,9 @@ graph LR
 ```mermaid
 classDiagram
     class ExternalForcingConverter {
-        + __init__(extold_model, ext_file, inifield_file, structure_file, mdu_parser, verbose, path_style, debug)
-        + from_mdu(mdu_file, ext_file_user, inifield_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
-        + update() tuple~ExtModel, IniFieldModel, StructureModel~
+        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug)
+        + from_mdu(mdu_file, ext_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
+        + update() tuple~ExtModel, StructureModel~
         + save(backup, recursive) void
         + clean() void
         + check_unsupported_quantities() list~str~
@@ -484,7 +492,6 @@ from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConver
 converter = ExternalForcingConverter(
     extold_model=".../old.ext",
     ext_file=".../new/forcings.ext",
-    inifield_file=".../new/inifields.ini",
     structure_file=".../new/structures.ini",
 )
 converter.update()
@@ -496,8 +503,8 @@ converter.save()
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-# Create a converter (example path; adjust as needed)
-converter = ExternalForcingConverter("path/to/old-forcings.ext")  
+# Create a converter from the FM model so the required MDU metadata is available.
+converter = ExternalForcingConverter.from_mdu("path/to/model.mdu")  
 
 ext_model, ini_model, struct_model = converter.update()  
 print(len(ext_model.meteo), len(ext_model.boundary))  

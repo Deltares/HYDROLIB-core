@@ -1,5 +1,6 @@
 """MDU Parser."""
 
+import warnings
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -7,6 +8,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from hydrolib.core.base.file_manager import PathOrStr
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
+from hydrolib.core.base.utils import parse_files_names
 from hydrolib.core.dflowfm.mdu.models import FMModel, Physics, Time
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -16,6 +19,8 @@ from hydrolib.tools.extforce_convert.utils import (
 
 STRUCTURE_FILE_LINE = "StructureFile"
 INIFIELD_FILE_LINE = "IniFieldFile"
+MBA_FILE_LINE = "mbaFile"
+MBA_INTERVAL_LINE = "mbaInterval"
 PATH_RELATIVE_TO_PARENT = "PathsRelativeToParent"
 
 __all__ = ["MDUParser"]
@@ -112,11 +117,11 @@ class Section:
 
 @dataclass
 class ExternalForcingBlock:
-    extforcefile: Union[Path, str]
-    extforcefilenew: Optional[Union[Path, str]] = field(default=None)
-    comments: Optional[List[str]] = field(default=None)
+    extforcefile: Path | str
+    extforcefilenew: Path | str | None = field(default=None)
+    comments: list[str] | None = field(default=None)
     _header: Optional = "[external forcing]"
-    root_dir: Optional[Path] = field(default=None)
+    root_dir: Path | str = field(default=None)
 
     def __init__(self, **kwargs):
         valid_keys = {"extforcefile", "extforcefilenew", "comments", "_header"}
@@ -136,45 +141,55 @@ class ExternalForcingBlock:
 
         return old_ext_force_file
 
-    def get_new_extforce_file(self, ext_file: Optional[Path] = None) -> Path:
+    def get_new_extforce_file(self) -> Path:
         """Get the new external forcing file path.
 
-        Notes:
-            - If the `extforcefilenew` exists in the MDU file, it will be used.
-            - If it does not exist, it will create a new file with the old extforce file name with a "-new" suffix.
-            - If an `ext_file` is provided, it will be used as the new extforce file.
+        `ExtForceFileNew` may list several files separated by a space, with any name
+        containing spaces enclosed in double quotes (D-Flow FM 1D2D User Manual, the
+        `ExtForceFileNew` keyword). When more than one file is listed, the converted
+        quantities are appended to the **first** file only; the remaining files are left
+        untouched and a `UserWarning` naming them is emitted. This is a deliberate policy:
+        the converter writes all migrated quantities into a single new external forcings
+        file, and the first listed file is chosen as that target.
 
-        Args:
-            ext_file (Path):
-                Optional path to an external forcing file to use as the new extforce file.
+        Notes:
+            - If `extforcefilenew` is present in the MDU file, the first listed file is used
+              (see above for the multiple-file behaviour).
+            - If it is absent, a new file is created from the old extforce file name with a
+              "-new" suffix.
 
         Returns:
             Path:
-                Path to the new external forcing file.
+                Path to the new external forcing file that converted quantities are written to.
         """
-        _extforce_file_new = (
-            Path(self.extforcefilenew) if self.extforcefilenew else None
-        )
+        raw_path = str(self.extforcefilenew).strip() if self.extforcefilenew else ""
+        path_list = parse_files_names(raw_path)
 
-        if _extforce_file_new:
-            # if the extforce_file_new exist in the MDU file, we use it
-            ext_file = (self.root_dir / _extforce_file_new).resolve()
-        else:
-            # if the extforce_file_new does not exist in the MDU file
-            if ext_file is None:
-                # if no ext_file is provided, we use the old extforce file name to create the new extforce file
-                ext_file = self.root_dir / self.extforce_file.with_stem(
-                    self.extforce_file.stem + "-new"
+        if path_list:
+            if len(path_list) > 1:
+                remaining_files = " ".join(path_list[1:])
+                warnings.warn(
+                    "ExtForceFileNew contains multiple filenames; using the first one "
+                    f"({path_list[0]}) and ignoring the rest: {remaining_files}",
+                    UserWarning,
+                    stacklevel=2,
                 )
-                if ext_file.exists():
-                    raise FileExistsError(
-                        "The converter detected that there is no new extforce file in the mdu file, \n"
-                        f"But there is an extforce file with the name {ext_file} that already exists. \n"
-                        "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
-                    )
-            else:
-                # if an ext_file is provided, we use it
-                ext_file = Path(ext_file).resolve()
+
+            # If ExtForceFileNew exists in the MDU file, use the first referenced file.
+            ext_file = (self.root_dir / Path(path_list[0])).resolve()
+        else:
+            # if the extforce_file_new does not exist in the MDU file, we use the old extforce file
+            # name to create the new extforce file
+            ext_file = (
+                self.root_dir
+                / self.extforce_file.with_stem(self.extforce_file.stem + "-new")
+            ).resolve()
+            if ext_file.exists():
+                raise FileExistsError(
+                    "The converter detected that there is no new extforce file in the mdu file, \n"
+                    f"But there is an extforce file with the name {ext_file} that already exists. \n"
+                    "Please either remove/rename the file or add it to the mdu file. in the section [external forcing]"
+                )
 
         return ext_file
 
@@ -714,8 +729,8 @@ class MDUParser:
         Returns:
             List of strings, one for each line in the file
         """
-        with open(self.mdu_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        content = open_file_with_fallback_encoding(Path(self.mdu_path))
+        lines = content.splitlines(keepends=True)
         return lines
 
     def save(self, backup: bool = False) -> None:
@@ -772,42 +787,139 @@ class MDUParser:
     def update_file_entry(
         self, field_name: str, file_name: str, section_name: str
     ) -> None:
-        leading_spaces = self.file_style_properties.leading_spaces
-        equal_sign_position = self.file_style_properties.equal_sign_position
+        """Add or fill a `field_name = file_name` entry in the given MDU section.
 
-        if not self.has_field(field_name):
-            # if the field does not exist, we create a new line for it and add it to the end of the section
-            line = Line.from_key_value(
-                field_name,
-                file_name,
-                leading_spaces=leading_spaces,
-                equal_sign_position=equal_sign_position,
-            )
-            section = self.get_section(section_name)
-            # put the inifield file at the end of the geometry section
-            line_number = section.last_key_value_line_index + 1
-            self.insert_line(line.content, line_number)
+        The behaviour depends on whether the field is already present:
+
+        - Field absent: a new `field_name = file_name` line is appended at the end of
+          `section_name`. If that section does not exist yet (e.g. an MDU without an
+          `[output]` section), the section is created and the entry is added right after
+          its header.
+        - Field present but empty (`field_name =` with no value): the value is filled in
+          with `file_name`.
+        - Field present with a value: it is left unchanged; an existing value is never
+          overwritten.
+
+        Args:
+            field_name (str):
+                The MDU keyword to add or fill (e.g. `"ExtForceFileNew"`), matched
+                case-insensitively.
+            file_name (str):
+                The value to write for the keyword, typically the name of the new file.
+            section_name (str):
+                The section the entry belongs to, without the surrounding brackets
+                (e.g. `"geometry"`, `"output"`, `"external forcing"`).
+
+        Notes:
+            - The line is formatted to the file's detected style (leading spaces and
+              equal-sign / comment alignment), so a newly added or filled entry lines up
+              with the surrounding keywords.
+            - The value is only ever set when the field is missing or empty; this method
+              does not repoint a keyword that already has a value, and it does not report
+              when it leaves such a keyword untouched.
+
+        See Also:
+            has_field: Whether a keyword is already present in the file.
+            add_section: Append a new empty section, used when the target is missing.
+        """
+        if self.has_field(field_name):
+            self._update_existing_entry(field_name, file_name)
         else:
-            # if the field already exists, we update it
-            # find the line number of the existing field
-            existing_field_line_num = self.find_keyword_lines(field_name)
-            line = Line(self.content[existing_field_line_num])
-            # only update the value if there was no value.
-            if not line.value:
-                line = line.update_value(file_name)
-                line.recenter_comments(self.file_style_properties.comments_position)
-                line.recenter_equal_sign(
-                    equal_sign_position=equal_sign_position,
-                    leading_spaces=leading_spaces,
-                )
+            self._add_new_entry(field_name, file_name, section_name)
 
-                if existing_field_line_num is not None:
-                    # remove the old line
-                    self.content.pop(existing_field_line_num)
+    def _add_new_entry(
+        self, field_name: str, file_name: str, section_name: str
+    ) -> None:
+        """Append a new `field_name = file_name` line to a section.
 
-                line_number = existing_field_line_num
+        The line is added after the last key-value line of `section_name`. If that
+        section does not exist yet, it is created and the entry is added right after
+        its header.
 
-                self.insert_line(line.content, line_number)
+        Args:
+            field_name (str): The MDU keyword to add.
+            file_name (str): The value to write for the keyword.
+            section_name (str): The section to append to, without the brackets.
+        """
+        # create a new line with the correct formatting for the file style
+        line = Line.from_key_value(
+            field_name,
+            file_name,
+            leading_spaces=self.file_style_properties.leading_spaces,
+            equal_sign_position=self.file_style_properties.equal_sign_position,
+        )
+        # get the section
+        section = self.get_section(section_name)
+        if section.start is None:
+            # the target section does not exist yet (e.g. an MDU without an [output]
+            # section); create it and add the entry right after its header.
+            line_number = self.add_section(section_name) + 1
+        else:
+            # add the entry at the end of the existing section
+            line_number = section.last_key_value_line_index + 1
+        self.insert_line(line.content, line_number)
+
+    def _update_existing_entry(self, field_name: str, file_name: str) -> None:
+        """Fill an existing keyword's value, only when it is currently empty.
+
+        A keyword that already has a value is left untouched; its value is never
+        overwritten.
+
+        Args:
+            field_name (str): The existing MDU keyword to fill.
+            file_name (str): The value to write when the keyword has no value.
+        """
+        line_number = self.find_keyword_lines(field_name)
+        line = Line(self.content[line_number])
+        if not line.value:
+            line = line.update_value(file_name)
+            line.recenter_comments(self.file_style_properties.comments_position)
+            line.recenter_equal_sign(
+                equal_sign_position=self.file_style_properties.equal_sign_position,
+                leading_spaces=self.file_style_properties.leading_spaces,
+            )
+            self.content.pop(line_number)
+            self.insert_line(line.content, line_number)
+
+    def has_section(self, section_name: str) -> bool:
+        """Return whether the MDU already contains a `[section_name]` section.
+
+        Args:
+            section_name (str): The section to look for, without the surrounding brackets.
+
+        Returns:
+            bool: True if the section is present, False otherwise.
+        """
+        return self.get_section(section_name).start is not None
+
+    def add_section(self, section_name: str) -> int:
+        """Append an empty `[section_name]` section at the end of the MDU content.
+
+        A blank separator line is inserted first when the file does not already end with one.
+        Section order is not significant to the kernel (Manual D.2).
+
+        Args:
+            section_name (str): The section to create, without the surrounding brackets.
+
+        Returns:
+            int: The index in `content` of the appended section-header line.
+
+        Raises:
+            ValueError: If the section already exists (use `has_section` to check first).
+        """
+        if self.has_section(section_name):
+            raise ValueError(
+                f"Cannot add section '[{section_name}]': it already exists in the MDU file."
+            )
+
+        if self.content and self.content[-1].strip() != "":
+            # if the last line is not empty, we add a blank line before the new section header
+            if not self.content[-1].endswith("\n"):
+                self.content[-1] += "\n"
+
+            self.insert_line("", len(self.content))
+        self.insert_line(f"[{section_name}]", len(self.content))
+        return len(self.content) - 1
 
     def update_inifield_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
@@ -840,6 +952,28 @@ class MDUParser:
         """
         self.update_file_entry(STRUCTURE_FILE_LINE, file_name, "geometry")
 
+    def update_mba_file(self, file_name: str) -> None:
+        """Update the mbaFile entry in the MDU `[output]` section.
+
+        Args:
+            file_name (str):
+                The name of the mass balance area file (`<*_mba.ini>`) to set.
+
+        Notes:
+            - The entry is added at the end of the output section if absent; if it exists with no
+            value, it is populated, otherwise it is left unchanged.
+        """
+        self.update_file_entry(MBA_FILE_LINE, file_name, "output")
+
+    def update_mba_interval(self, value: str) -> None:
+        """Update the mbaInterval entry in the MDU `[output]` section.
+
+        Args:
+            value (str):
+                The mass balance area output interval [s]; must be a multiple of DtUser.
+        """
+        self.update_file_entry(MBA_INTERVAL_LINE, value, "output")
+
     def update_extforce_file_new(
         self, file_name: str, num_quantities: int, remove_old_ext_file: bool = False
     ) -> None:
@@ -851,7 +985,9 @@ class MDUParser:
                 self.content.pop(ext_force_line)
 
         if remove_old_ext_file:
-            old_ext_force_line = self.find_keyword_lines("ExtForceFile")
+            old_ext_force_line = self.find_keyword_lines(
+                "ExtForceFile", exact_match=True
+            )
             if old_ext_force_line is not None:
                 self.content.pop(old_ext_force_line)
 
@@ -888,28 +1024,32 @@ class MDUParser:
         return temperature_and_salinity_info
 
     def find_keyword_lines(
-        self, keyword: str, case_sensitive: bool = False
-    ) -> Union[int, None]:
+        self, keyword: str, case_sensitive: bool = False, exact_match: bool = False
+    ) -> int | None:
         """Find line numbers in the MDU file where the keyword appears.
 
         Args:
             keyword: The keyword to search for.
             case_sensitive: Whether the search should be case-sensitive.
+            exact_match: When True, only match lines where the keyword is
+                followed by a word boundary (whitespace, `=` or end of line),
+                so searching for `ExtForceFile` does not match a line that
+                starts with `ExtForceFileNew`.
 
         Returns:
-            A list of line number where the keyword is found.
+            The 0-based line index where the keyword is found, or None if not found.
         """
-        if not case_sensitive:
-            keyword = keyword.lower()
+        needle = keyword if case_sensitive else keyword.lower()
         line_number = None
         for i, line in enumerate(self.content, start=0):
             haystack = line if case_sensitive else line.lower()
             stripped_line = haystack.lstrip()
-            if_exist = (
-                stripped_line.startswith(keyword)
-                if case_sensitive
-                else stripped_line.lower().startswith(keyword.lower())
-            )
+            if_exist = stripped_line.startswith(needle)
+            if if_exist and exact_match:
+                remainder = stripped_line[len(needle) :]
+                if_exist = remainder == "" or not (
+                    remainder[0].isalnum() or remainder[0] == "_"
+                )
             if if_exist:
                 line_number = i
                 break
@@ -1100,47 +1240,69 @@ class MDUParser:
 
     def get_inifield_file(
         self,
-        inifield_file: Optional[PathOrStr],
-    ) -> Path:
+        user_inifield_file: PathOrStr | None,
+    ) -> Path | None:
         ini_field_file = self.get_keyword(INIFIELD_FILE_LINE)
         root_dir = self.mdu_path.parent
-        if inifield_file is not None:
-            # user defined initial field file
-            inifield_file = root_dir / inifield_file
-        elif isinstance(ini_field_file, Path):
-            # from the LegacyFMModel
-            inifield_file = ini_field_file.resolve()
-        elif isinstance(ini_field_file, str):
-            # from reading the geometry section
-            inifield_file = root_dir / ini_field_file
+
+        # if given by the user use that, otherwise use the one in the mdu file
+        path = user_inifield_file if user_inifield_file is not None else ini_field_file
+
+        if path:
+            path = (root_dir / Path(path)).resolve()
         else:
             print(
                 f"The initial field file is not found in the mdu file, and not provided by the user. \n "
-                f"given: {inifield_file}."
+                f"given: {path}."
             )
-        return inifield_file
+            path = None
 
-    def get_structure_file(
-        self,
-        usr_structure_file: Optional[PathOrStr],
-    ) -> Path:
+        return path
+
+    def get_structure_file(self) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
+        root_dir = self.mdu_path.parent
 
-        if usr_structure_file is not None:
-            # user defined structure file
-            usr_structure_file = self.mdu_path / usr_structure_file
-        elif isinstance(structure_file, Path):
-            # from the LegacyFMModel
-            usr_structure_file = structure_file.resolve()
-        elif isinstance(structure_file, str):
-            # from reading the geometry section
-            usr_structure_file = self.mdu_path / structure_file
+        if structure_file:
+            path = (root_dir / Path(structure_file)).resolve()
         else:
-            print(
-                "The structure file is not found in the mdu file, and not provide by the user. \n"
-                f"given: {usr_structure_file}."
-            )
-        return usr_structure_file
+            print("The structure file is not found in the mdu file.")
+            path = None
+
+        return path
+
+    def get_mba_file(self) -> Path | None:
+        """Resolve the mass balance area file to reuse from the MDU `[output] mbaFile` keyword.
+
+        `mbaFile` is a space-separated list of `<*_mba.ini>` files (Manual F.2.5). The converter appends
+        the converted areas into a single existing file when one is referenced:
+
+        - no `mbaFile` entry -> ``None`` (the converter creates its default ``new_mba.ini``);
+        - one or more files -> the first listed file (resolved). The converted areas are appended to it.
+          Which file receives them does not affect the model, because the kernel combines the areas of
+          every listed file. When more than one is listed, a warning notes that the first is used.
+
+        Returns:
+            Path | None: The file to append the converted areas to, or ``None`` when none is referenced.
+        """
+        mba_file = self.get_keyword(MBA_FILE_LINE)
+        root_dir = self.mdu_path.parent
+        mba_files = mba_file.split() if mba_file else []
+
+        if not mba_files:
+            path = None
+        else:
+            if len(mba_files) > 1:
+                warnings.warn(
+                    "The MDU '[output] mbaFile' lists multiple mass balance area files "
+                    f"({' '.join(mba_files)}); the converted areas are appended to the first one "
+                    f"({mba_files[0]}).",
+                    UserWarning,
+                    stacklevel=2,
+                )
+            path = (root_dir / Path(mba_files[0])).resolve()
+
+        return path
 
 
 def save_mdu_file(content: List[str], output_path: PathOrStr) -> None:

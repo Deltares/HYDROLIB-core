@@ -143,6 +143,15 @@ class PolyFile(ParsableFileModel):
         """Y-coordinates of all points in the PolyFile."""
         return [point.y for obj in self.objects for point in obj.points]
 
+    def get_id(self) -> str:
+        """Return a stable identifier for this Polyfile."""
+        result = self.filepath.stem
+        if self.objects:
+            first_obj = self.objects[0]
+            if first_obj.metadata and first_obj.metadata.name:
+                result = first_obj.metadata.name
+        return result
+
     def get_z_sources_sinks(self) -> Tuple[List[float], List[float]]:
         """
         Get the z values of the source and sink points from the polyline file.

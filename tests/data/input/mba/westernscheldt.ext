@@ -1,0 +1,15 @@
+* mass balance areas
+
+QUANTITY=waqmassbalanceareaEstruaryWest
+FILENAME=EstruaryWest.pol
+FILETYPE=10
+METHOD=4
+OPERAND=O
+VALUE=1.0
+
+QUANTITY=waqmassbalanceareaRiver
+FILENAME=River.pol
+FILETYPE=10
+METHOD=4
+OPERAND=O
+VALUE=1.0

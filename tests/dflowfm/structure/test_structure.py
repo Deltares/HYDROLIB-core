@@ -1,16 +1,19 @@
 import inspect
+from pathlib import Path
 from typing import Any, Dict, List, Union
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import ValidationError
 
+from hydrolib.core.base.models import ModelSaveSettings
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.structure.models import (
     Compound,
     Culvert,
     FlowDirection,
+    Gate,
     Orifice,
     Pump,
     Structure,
@@ -168,6 +171,35 @@ def test_weir_and_universal_weir_resolve_from_parsed_document():
         )
 
 
+def test_structure_model_parses_gate_section(tmp_path):
+    structure_file = tmp_path / "structures.ini"
+    structure_file.write_text(
+        inspect.cleandoc(
+            """
+            [Structure]
+            id                             = gate_id
+            name                           = Gate 01
+            branchId                       = branch
+            chainage                       = 12.5
+            type                           = gate
+            crestLevel                     = 1.5
+            gateLowerEdgeLevel             = 0.5
+            gateHeight                     = 2.0
+            gateOpeningWidth               = 3.0
+            gateOpeningHorizontalDirection = symmetric
+            """
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    model = StructureModel(structure_file)
+
+    assert len(model.structure) == 1
+    assert isinstance(model.structure[0], Gate)
+    assert model.structure[0].id == "gate_id"
+
+
 def test_read_structures_missing_structure_field_raises_correct_error():
     file = "missing_structure_field.ini"
     identifier = "Structure2"
@@ -209,14 +241,14 @@ def test_create_structure_without_type(locfields_structure):
 @pytest.mark.parametrize(
     "structure_type,expected",
     [
-        ("WEIR", "weir"),
-        ("UniversalWeir", "universalweir"),
-        ("Culvert", "culvert"),
-        ("Pump", "pump"),
-        ("Orifice", "orifice"),
+        ("WEIR", "WEIR"),
+        ("UniversalWeir", "UniversalWeir"),
+        ("Culvert", "Culvert"),
+        ("Pump", "Pump"),
+        ("Orifice", "Orifice"),
     ],
 )
-def test_parses_structure_type_case_insensitive(
+def test_parses_structure_type_preserves_input(
     locfields_structure, structure_type, expected
 ):
     structure = Structure(type=structure_type, **locfields_structure)
@@ -227,10 +259,10 @@ def test_parses_structure_type_case_insensitive(
 @pytest.mark.parametrize(
     "input,expected",
     [
-        ("Compound", "compound"),
+        ("Compound", "Compound"),
     ],
 )
-def test_parses_compound_type_case_insensitive(input, expected):
+def test_parses_compound_type_preserves_input(input, expected):
     structure = Structure(type=input)
 
     assert structure.type == expected
@@ -282,7 +314,6 @@ def test_culvert_parses_flowdirection_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -315,7 +346,6 @@ def test_culvert_parses_subtype_case_insensitive(input, expected):
         length="1",
         inletlosscoeff="1",
         outletlosscoeff="1",
-        inletlosvalveonoffscoeff="1",
         valveonoff="1",
         valveopeningheight="1",
         numlosscoeff="1",
@@ -349,11 +379,11 @@ class TestRootValidator:
     long_culvert_err = (
         "Specify location by setting `num/x/yCoordinates` for a LongCulvert structure."
     )
-    dambreak_err = "Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a Dambreak structure."
-    structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+    dambreak_err = "Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a Dambreak structure."
+    structure_err = "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `locationFile` fields."
 
     @pytest.mark.parametrize(
-        "structure_type, error_mssg",
+        "structure_type, error_msg",
         [
             pytest.param(
                 "",
@@ -416,7 +446,7 @@ class TestRootValidator:
         ],
     )
     def test_check_location_given_no_values_raises_expectation(
-        self, structure_type, error_mssg: str
+        self, structure_type, error_msg
     ):
         input_dict = dict(
             notAValue="Not a relevant value 1",
@@ -428,13 +458,13 @@ class TestRootValidator:
             chainage=None,
         )
         mock_structure = mock_structure_check_location(input_dict)
-        if error_mssg is None:
+        if error_msg is None:
             assert mock_structure.check_location()
         else:
             with pytest.raises(ValueError) as exc_err:
                 mock_structure.check_location()
 
-            assert str(exc_err.value) == error_mssg
+            assert str(exc_err.value) == error_msg
 
     def test_check_nolocation_given_compound_structure_raises_nothing(self):
         input_dict = dict(
@@ -669,3 +699,105 @@ class TestValidateCoordinatesInModel:
             str(exc_err.value)
             == f"Expected at least 2 coordinates, but only {n_coords} declared."
         )
+
+
+class TestLocationFileBackwardsCompatibility:
+    """The legacy `polylinefile` keyword must be read as `locationFile`."""
+
+    def test_legacy_polylinefile_keyword_is_renamed_to_locationfile(self):
+        weir = Weir(
+            **{
+                "id": "weir_id",
+                "type": "weir",
+                "crestlevel": 1.0,
+                "polylinefile": "structure.pli",
+            }
+        )
+
+        assert weir.locationfile.filepath == Path("structure.pli")
+
+    def test_locationfile_keyword_is_accepted(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, locationFile="structure.pli"
+        )
+
+        assert weir.locationfile.filepath == Path("structure.pli")
+
+    def test_legacy_polylinefile_is_serialized_as_locationfile(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, polylinefile="structure.pli"
+        )
+
+        section = weir._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        keys = [prop.key for prop in section.content]
+
+        assert "locationFile" in keys
+        assert "polylinefile" not in keys
+
+    def test_legacy_polylinefile_comment_is_serialized_as_locationfile(self):
+        comment = "*.pli; Polyline geometry definition for 2D structure."
+        weir = Weir(
+            **{
+                "id": "weir_id",
+                "type": "weir",
+                "crestlevel": 1.0,
+                "polylinefile": "structure.pli",
+                "comments": {"polylinefile": comment},
+            }
+        )
+
+        assert weir.comments.locationfile == comment
+
+    def test_legacy_polylinefile_set_to_none_is_accepted(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            polylinefile=None,
+        )
+
+        assert weir.locationfile is None
+
+    def test_polylinefile_attribute_returns_locationfile_and_warns(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, locationFile="structure.pli"
+        )
+
+        with pytest.warns(DeprecationWarning, match="renamed to `locationfile`"):
+            polylinefile = weir.polylinefile
+
+        assert polylinefile is weir.locationfile
+
+    def test_polylinefile_attribute_assignment_sets_locationfile_and_warns(self):
+        weir = Weir(
+            id="weir_id", type="weir", crestlevel=1.0, locationFile="structure.pli"
+        )
+
+        with pytest.warns(DeprecationWarning, match="renamed to `locationfile`"):
+            weir.polylinefile = "other.pli"
+
+        assert weir.locationfile.filepath == Path("other.pli")
+
+    def test_polylinefile_attribute_assignment_is_serialized_as_locationfile(self):
+        weir = Weir(
+            id="weir_id",
+            type="weir",
+            crestlevel=1.0,
+            branchid="branch",
+            chainage=1.0,
+            locationFile="structure.pli",
+        )
+        with pytest.warns(DeprecationWarning):
+            weir.polylinefile = "other.pli"
+
+        section = weir._to_section(
+            INISerializerConfig(), ModelSaveSettings(path_style=None)
+        )
+        properties = {prop.key: prop.value for prop in section.content}
+
+        assert Path(properties["locationFile"]) == Path("other.pli")
+        assert "polylinefile" not in properties

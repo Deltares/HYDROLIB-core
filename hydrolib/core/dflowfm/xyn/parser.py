@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Dict
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
+
 
 class XYNParser:
     """A parser for .xyn files.
@@ -53,28 +55,28 @@ class XYNParser:
 
         points = []
 
-        with filepath.open(encoding="utf8") as f:
-            for linenr, line in enumerate(f.readlines()):
+        content = open_file_with_fallback_encoding(filepath)
+        for linenr, line in enumerate(content.splitlines(keepends=True)):
 
-                line = line.strip()
-                if line.startswith("*") or len(line) == 0:
-                    continue
+            line = line.strip()
+            if line.startswith("*") or len(line) == 0:
+                continue
 
-                try:
-                    x, y, n = line.split(maxsplit=2)
-                except ValueError:
-                    raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr + 1}."
-                    )
+            try:
+                x, y, n = line.split(maxsplit=2)
+            except ValueError:
+                raise ValueError(
+                    f"Error parsing XYN file '{filepath}', line {linenr + 1}."
+                )
 
-                if contains_whitespace_while_not_allowed(n):
-                    raise ValueError(
-                        f"Error parsing XYN file '{filepath}', line {linenr + 1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
-                    )
+            if contains_whitespace_while_not_allowed(n):
+                raise ValueError(
+                    f"Error parsing XYN file '{filepath}', line {linenr + 1}. Name `{n}` contains whitespace, so should be enclosed in quotes."
+                )
 
-                if is_surrounded_by_quotes(n):
-                    n = n[1:-1]
+            if is_surrounded_by_quotes(n):
+                n = n[1:-1]
 
-                points.append(dict(x=x, y=y, n=n))
+            points.append(dict(x=x, y=y, n=n))
 
         return dict(points=points)

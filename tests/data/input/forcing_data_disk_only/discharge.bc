@@ -1,0 +1,15 @@
+[General]
+fileVersion = 1.01
+fileType    = boundConds
+
+[Forcing]
+name     = Q_S
+function = timeseries
+timeInterpolation = linear
+quantity = time
+unit     = minutes since 2015-01-01 00:00:00
+quantity = dischargebnd
+unit     = m³/s
+0.0    1.0
+60.0   2.0
+

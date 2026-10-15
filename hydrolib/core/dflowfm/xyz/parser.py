@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import Dict
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
+
 xyzpattern = re.compile(r"\s+")
 
 
@@ -37,25 +39,25 @@ class XYZParser:
         """
         data: Dict = dict(points=[])
 
-        with filepath.open(encoding="utf8") as f:
-            for linenr, line in enumerate(f.readlines()):
+        content = open_file_with_fallback_encoding(filepath)
+        for linenr, line in enumerate(content.splitlines(keepends=True)):
 
-                line = line.strip()
-                if line.startswith("*") or len(line) == 0:
-                    continue
+            line = line.strip()
+            if line.startswith("*") or len(line) == 0:
+                continue
 
-                try:
-                    x, y, z, *c = re.split(xyzpattern, line, maxsplit=3)
-                except ValueError:
-                    raise ValueError(
-                        f"Error parsing XYZ file '{filepath}', line {linenr + 1}."
-                    )
+            try:
+                x, y, z, *c = re.split(xyzpattern, line, maxsplit=3)
+            except ValueError:
+                raise ValueError(
+                    f"Error parsing XYZ file '{filepath}', line {linenr + 1}."
+                )
 
-                c = c[0] if len(c) > 0 else ""
-                c = c.strip("#").strip()
-                if len(c) == 0:
-                    c = None
+            c = c[0] if len(c) > 0 else ""
+            c = c.strip("#").strip()
+            if len(c) == 0:
+                c = None
 
-                data["points"].append(dict(x=x, y=y, z=z, comment=c))
+            data["points"].append(dict(x=x, y=y, z=z, comment=c))
 
         return data

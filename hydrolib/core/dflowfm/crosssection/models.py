@@ -16,12 +16,11 @@ from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     LocationValidationConfiguration,
     LocationValidationFieldNames,
+    LocationValidatorUtils,
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_correct_length,
-    validate_location_specification,
 )
 
 logger = logging.getLogger(__name__)
@@ -329,7 +328,7 @@ class ZWRiverCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -420,7 +419,7 @@ class ZWCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_list_lengths(self):
@@ -535,7 +534,7 @@ class YZCrsDef(CrossSectionDefinition):
     )
     @classmethod
     def split_string_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_friction(self):
@@ -636,7 +635,7 @@ class XYZCrsDef(YZCrsDef, CrossSectionDefinition):
 
     @field_validator("xcoordinates", mode="before")
     def split_string_xcoordinates(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("xyzcount")
     @classmethod
@@ -738,7 +737,7 @@ class CrossSection(INIBasedModel):
     @model_validator(mode="after")
     def validate_that_location_specification_is_correct(self):
         """Validate that the correct location specification is given."""
-        validate_location_specification(
+        location_validator = LocationValidatorUtils(
             self.model_dump(),
             config=LocationValidationConfiguration(
                 validate_node=False,
@@ -747,6 +746,7 @@ class CrossSection(INIBasedModel):
             ),
             fields=LocationValidationFieldNames(x_coordinates="x", y_coordinates="y"),
         )
+        location_validator.validate()
         return self
 
 

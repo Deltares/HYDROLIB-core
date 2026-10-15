@@ -1,3 +1,74 @@
+## 1.5.0 (2026-10-08)
+
+### BREAKING CHANGE
+
+- TimToForcingConverter.convert is no longer a static method;
+construct the converter and pass conversion config to __init__ (units is now
+required and keyword-only), then call convert(vector_quantities=...).
+
+### Feat
+
+- **models**: add Gate class with validation and comprehensive test coverage (#1229)
+- **extforce_convert**: support vector quantities in TIM to BC conversion (#1209)
+- **extforce**: support legacy FILETYPE=12 / dataFileType=map with ncFlow alias (#1212)
+
+### Fix
+
+- **extforce_convert**: name the sorsin TIM columns from the inifield, new ext, old ext and substance file (#1231)
+
+## 1.4.0 (2026-09-16)
+
+### Feat
+
+- **extforce-convert**: support METHOD=0 (block-from), multi ExtForceFileNew entries, and spatial TIM-to-BC conversion (#1201)
+- **ext**: add BubbleScreen support and source-sink variant conversion tests (#1052)
+
+## 1.3.0 (2026-09-14)
+
+### Feat
+
+- **dflowfm**: support lateral discharge conversion and validation (#1178)
+
+## 1.2.0 (2026-09-09)
+
+### Feat
+
+- **extforce-convert**: support new WAQ quantities in spatial conversion (#1169)
+- **extforce_convert**: convert mass balance areas to a separate _mba.ini file (#1191)
+- **converters,tests**: add factor quantity base conversion and align operand handling (#1184)
+
+### Fix
+
+- **extforce-convert**: preserve [General] metadata in generated ext and structure files (#1198)
+- **extforce_convert**: create the MDU [output] section when absent (#1195)
+- **models,utils,data**: tighten filetype validation and add setup files (#1162)
+
+## 1.1.0 (2026-09-03)
+
+### Feat
+
+- **ext**: add Spatial block and extend extforce_convert to produce it (#1177)
+- **extforce_convert**: support substance files in the external forcing converter (#999)
+- **operand**: accept readable string constants alongside deprecated single-char values (#1137)
+- **extforce_convert**: add data-driven quantity rename table for sea ice and meteo quantities (#1151)
+
+### Fix
+
+- **structure**: normalize structure type to canonical camelCase for Pydantic v2 discriminator (#1186)
+- **ext**: keep existing .bc files intact when saving a non-recursively loaded ExtModel (#1187)
+- **converters**: remove delta suffix from source/sink salinity and temperature variables (#1163)
+- **ci**: standardize poetry version key, replace branch names and actions/checkout
+references with specific commit hashes
+- **bc**: guard ForcingData Union so DiskOnlyFileModel is only valid under non-recursive loads (#1172)
+- **data**: update external forcing unsupported quantities and error messages (#1147)
+- **timeseries**: add validation to ensure datablock columns match quantity unit pairs (#1135)
+- **models**: consolidate maxitverticalforestersal/tem into single maxitverticalforester field (#1132)
+- **models**: add stemheightconvention support to vegetation models (#1123)
+- **writer**: add required attributes for mesh1d topology, xy, edge, and node coordinates (#1124)
+- **tests**: remove warnings and fix warning-triggering test code (#1131)
+- **dimr**: resolve DeprecationWarning from naive creationDate default (#1120)
+- **serializer**: ensure z value is checked for None before yielding
+
 ## 1.0.1 (2026-05-19)
 
 ### Fix

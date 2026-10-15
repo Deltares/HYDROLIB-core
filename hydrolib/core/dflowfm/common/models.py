@@ -1,5 +1,7 @@
 """Common model types for D-Flow FM files, including LocationType and Operand enums."""
 
+from __future__ import annotations
+
 from strenum import StrEnum
 
 
@@ -7,33 +9,164 @@ class LocationType(StrEnum):
     """Enum class containing the valid values for the locationType attribute.
 
     Used in several classes such as Lateral and ObservationPoint.
+
+    Attributes:
+        oned: Denotes 1D locations (typically 1D pressure points) in a model.
+        twod: Denotes 2D locations (typically 2D grid cells) in a model.
+        all: Denotes that both 1D and 2D locations may be selected.
     """
 
     oned = "1d"
-    """str: Denotes 1D locations (typically 1D pressure points) in a model."""
-
     twod = "2d"
-    """str: Denotes 2D locations (typically 2D grid cells) in a model."""
-
     all = "all"
-    """str: Denotes that both 1D and 2D locations may be selected."""
 
 
 class Operand(StrEnum):
     """Enum class containing the valid values for the operand attribute.
 
     Used in several subclasses of AbstractIniField and ExtOldForcing.
+
+    Attributes:
+        override: Existing values are overwritten with the provided values. (legacy: "O")
+        override_if_missing: Provided values are used where existing values are missing. (legacy: "A", was named 'append')
+        add: Existing values are summed with the provided values. (legacy: "+")
+        multiply: Existing values are multiplied with the provided values. (legacy: "*", was named 'mult')
+        maximum: The maximum values of the existing values and provided values are used. (legacy: "X")
+        minimum: The minimum values of the existing values and provided values are used. (legacy: "N")
     """
 
-    override = "O"
-    """Existing values are overwritten with the provided values."""
-    append = "A"
-    """Provided values are used where existing values are missing."""
-    add = "+"
-    """Existing values are summed with the provided values."""
-    mult = "*"
-    """Existing values are multiplied with the provided values."""
-    max = "X"
-    """The maximum values of the existing values and provided values are used."""
-    min = "N"
-    """The minimum values of the existing values and provided values are used."""
+    override = "override"
+    override_if_missing = "overrideIfMissing"
+    add = "add"
+    multiply = "multiply"
+    maximum = "maximum"
+    minimum = "minimum"
+
+    @classmethod
+    def legacy_alternatives(cls) -> dict[str, list[str]]:
+        """Return the Operand member corresponding to a legacy single-character value.
+
+        Returns:
+            The matching Operand member.
+
+        Raises:
+            ValueError: If the legacy value is not recognised.
+        """
+        return {
+            cls.override.value: ["O"],
+            cls.override_if_missing.value: ["A"],
+            cls.add.value: ["+"],
+            cls.multiply.value: ["*"],
+            cls.maximum.value: ["X"],
+            cls.minimum.value: ["N"],
+        }
+
+
+class DataFileType(StrEnum):
+    """Enum class containing the valid values for the dataFileType attribute.
+
+    Contains valid values for the dataFileType attribute in several subclasses
+    of AbstractSpatialField (inifield) and Spatial (ext). This is the merged enum
+    combining values that were previously split between IniFieldFile and ExtForceFileNew.
+    """
+
+    arcinfo = "arcInfo"
+    geotiff = "GeoTIFF"
+    sample = "sample"
+    onedfield = "1dField"
+    polygon = "polygon"
+    uniform = "uniform"
+    netcdf = "netcdf"
+    map = "map"
+
+    bcascii = "bcAscii"
+    unimagdir = "uniMagDir"
+    spiderweb = "spiderweb"
+    curvigrid = "curviGrid"
+
+    allowedvaluestext = (
+        "Possible values: arcInfo, GeoTIFF, sample, 1dField, polygon, uniform, netcdf, map, "
+        "bcAscii, uniMagDir, spiderweb, curviGrid. The D-Flow FM user manual may also refer to "
+        "the map type as ncFlow."
+    )
+
+    @classmethod
+    def legacy_alternatives(cls) -> dict[str, list[str]]:
+        """Return the mapping of canonical `DataFileType` values to their legacy aliases.
+
+        Used by `enum_value_parser` to accept older spellings on input while steering callers
+        toward the canonical value via a `DeprecationWarning`. Currently maps `map` → `ncFlow`
+        (the D-Flow FM User Manual uses `ncFlow`, but the Delft3D kernel and issue #1207 use
+        `map`).
+
+        Returns:
+            dict[str, list[str]]: Canonical enum value → list of accepted legacy aliases.
+        """
+        return {
+            cls.map.value: ["ncFlow"],
+        }
+
+
+class InterpolationMethod(StrEnum):
+    """Enum class containing the valid values for the interpolationMethod attribute.
+
+    Contains valid values for the interpolationMethod attribute in several
+    subclasses of AbstractSpatialField (inifield) and Spatial (ext). This is the
+    merged enum combining values previously split between IniFieldFile and ExtForceFileNew.
+    """
+
+    constant = "constant"
+    triangulation = "triangulation"
+    averaging = "averaging"
+    linear_space_time = "linearSpaceTime"
+    bilinear = "bilinear"
+
+    allowedvaluestext = "Possible values: constant, triangulation, averaging, linearSpaceTime, bilinear."
+
+    @classmethod
+    def from_old_method(cls, old_method: int) -> InterpolationMethod | str:
+        """Convert an old external forcing `METHOD` to an `interpolationMethod` value.
+
+        Old `METHOD` values map onto the spatial interpolation methods as follows:
+        `0`, `1`, `2`, `3`, `11` → `linearSpaceTime`, `4` → `constant`,
+        `5` → `triangulation`, `6`-`9` → `averaging`. `METHOD=0` ("provider just
+        updates") converts like `1`/`2`/`3`/`11` (GitHub #1197).
+
+        Args:
+            old_method (int): The `METHOD` value in an old external forcings file.
+
+        Returns:
+            InterpolationMethod | str: The corresponding `interpolationMethod`
+                value, or `"unknown"` for an unsupported input.
+        """
+        if old_method in [0, 1, 2, 3, 11]:
+            interpolation_method = cls.linear_space_time
+        elif old_method == 5:
+            interpolation_method = cls.triangulation
+        elif old_method == 4:
+            interpolation_method = cls.constant
+        elif old_method in range(6, 10):
+            interpolation_method = cls.averaging
+        else:
+            interpolation_method = "unknown"
+        return interpolation_method
+
+
+class AveragingType(StrEnum):
+    """Enum class containing the valid values for the averagingType attribute.
+
+    Contains valid values for the averagingType attribute in several subclasses
+    of AbstractIniField.
+    """
+
+    mean = "mean"  # simple average
+    nearestnb = "nearestNb"  # nearest neighbour value
+    max = "max"  # highest
+    min = "min"  # lowest
+    invdist = "invDist"  # inverse-weighted distance average
+    minabs = "minAbs"  # smallest absolute value
+    median = "median"
+
+    allowedvaluestext = (
+        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
+    )

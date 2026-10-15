@@ -2,7 +2,6 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List
 
-import numpy as np
 import pytest
 from pydantic import ValidationError
 
@@ -208,7 +207,7 @@ class TestMeteo:
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is None
         assert meteo.interpolationmethod is None
-        assert meteo.operand == "O"
+        assert meteo.operand == "override"
         assert meteo.extrapolationallowed is None
         assert meteo.extrapolationsearchradius is None
         assert meteo.averagingtype is None
@@ -222,22 +221,22 @@ class TestMeteo:
             forcingfiletype=MeteoForcingFileType.uniform,
             targetmaskfile=None,
             targetmaskinvert=True,
-            interpolationmethod=MeteoInterpolationMethod.nearestnb,
-            operand="O",
+            interpolationmethod=MeteoInterpolationMethod.averaging,
+            operand="override",
             extrapolationallowed=True,
             extrapolationsearchradius=10,
             averagingtype=1,
-            averagingnummin=0.5,
+            averagingnummin=2,
             averagingpercentile=90,
         )
         assert meteo.targetmaskfile is None
         assert meteo.targetmaskinvert is True
-        assert meteo.interpolationmethod == MeteoInterpolationMethod.nearestnb
-        assert meteo.operand == "O"
+        assert meteo.interpolationmethod == MeteoInterpolationMethod.averaging
+        assert meteo.operand == "override"
         assert meteo.extrapolationallowed is True
         assert meteo.extrapolationsearchradius == 10
         assert meteo.averagingtype == 1
-        assert np.isclose(meteo.averagingnummin, 0.5)
+        assert meteo.averagingnummin == 2
         assert meteo.averagingpercentile == 90
 
     def test_invalid_forcingfiletype(self):
@@ -333,7 +332,7 @@ class TestMeteoDeprecatedAliases:
         ("extrapolationAllowed", "extrapolationallowed", True),
         ("extrapolationSearchRadius", "extrapolationsearchradius", 10.0),
         ("averagingType", "averagingtype", 1),
-        ("averagingNumMin", "averagingnummin", 0.5),
+        ("averagingNumMin", "averagingnummin", 2),
         ("averagingPercentile", "averagingpercentile", 90.0),
     ]
 
@@ -400,7 +399,7 @@ class TestMeteoModelDump:
             extrapolationallowed=True,
             extrapolationsearchradius=10.0,
             averagingtype=1,
-            averagingnummin=0.5,
+            averagingnummin=2,
             averagingpercentile=90.0,
             forcingvariablename="mer",
         )
@@ -450,7 +449,7 @@ class TestMeteoWireFormatRoundTrip:
 
     MINIMAL_INI = (
         "[General]\n"
-        "fileVersion = 2.01\n"
+        "fileVersion = 3.00\n"
         "fileType    = extForce\n"
         "\n"
         "[Meteo]\n"
@@ -523,7 +522,7 @@ forcing_base_list = [
         "name": "user_defined_name_1",
         "function": "timeseries",
         "timeinterpolation": "linear",
-        "quantity": ["time", "salinitydelta", "ux", "uy", "uz"],
+        "quantity": ["time", "salinity", "ux", "uy", "uz"],
         "unit": ["minutes since 2015-01-01 00:00:00", "ppt", "m s-1", "m s-1", "m s-1"],
         "datablock": [[1, 2, 3, 4, 5], [3.0, 5.0, 12.0, 9.0, 23.0]],
     },
@@ -531,7 +530,7 @@ forcing_base_list = [
         "name": "user_defined_name_2",
         "function": "timeseries",
         "timeinterpolation": "linear",
-        "quantity": ["time", "temperaturedelta", "ux", "uy", "uz"],
+        "quantity": ["time", "temperature", "ux", "uy", "uz"],
         "unit": ["minutes since 2015-01-01 00:00:00", "C", "m", "m", "m"],
         "datablock": [[1, 2, 3, 4, 5], [2.0, 2.0, 5.0, 8.0, 10.0]],
     },
@@ -552,7 +551,6 @@ class TestSourceSink:
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
-            "locationfile": Path("tests/data/input/source-sink/leftsor.pliz"),
             "numcoordinates": 2,
             "xcoordinates": [63.350456, 45.200344],
             "ycoordinates": [12.950216, 6.350155],
@@ -570,8 +568,12 @@ class TestSourceSink:
 
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
 
     def test_extra_tracer(self, source_sink_data: Dict[str, Any]):
         """
@@ -580,8 +582,12 @@ class TestSourceSink:
         source_sink_data["initialtracer_any_name"] = [1, 2, 3]
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
         assert source_sink.initialtracer_any_name == [1, 2, 3]
 
     def test_multiple_dynamic_fields(self, source_sink_data: Dict[str, Any]):
@@ -593,8 +599,12 @@ class TestSourceSink:
         source_sink_data["sedfracbnd_any_name"] = [1, 2, 3]
         source_sink = SourceSink(**source_sink_data)
 
-        # only the comments key is added by default here
-        assert source_sink.__dict__.keys() - source_sink_data.keys() == {"comments"}
+        # comments is added by default; locationfile defaults to an empty
+        # DiskOnlyFileModel since the inline coordinates are used here
+        assert source_sink.__dict__.keys() - source_sink_data.keys() == {
+            "comments",
+            "locationfile",
+        }
         assert source_sink.initialtracer_any_name == [1, 2, 3]
         assert source_sink.tracerbndanyname == [1, 2, 3]
         assert source_sink.sedfracbnd_any_name == [1, 2, 3]
@@ -615,15 +625,14 @@ class TestSourceSink:
         data = {
             "id": "L1",
             "name": "discharge_salinity_temperature_sorsin",
-            "locationfile": "tests/data/input/source-sink/leftsor.pliz",
             "numcoordinates": 2,
             "xcoordinates": [63.350456, 45.200344],
             "ycoordinates": [12.950216, 6.350155],
             "zsource": -3.0,
             "zsink": -4.2,
             "discharge": [1.0, 2.0, 3.0, 5.0, 8.0],
-            "temperaturedelta": [2.0, 2.0, 5.0, 8.0, 10.0],
-            "salinitydelta": [3.0, 5.0, 12.0, 9.0, 23.0],
+            "temperature": [2.0, 2.0, 5.0, 8.0, 10.0],
+            "salinity": [3.0, 5.0, 12.0, 9.0, 23.0],
         }
         data = data | forcing
 

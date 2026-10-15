@@ -22,7 +22,8 @@ project/
 ├─ model.mdu                      # updated to reference new files
 ├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
 ├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
-└─ new-structure.ini              # StructureModel: structures (if any)
+├─ new-structure.ini              # StructureModel: structures (if any)
+└─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
 ```
 
 ### Example MDU file
@@ -65,6 +66,11 @@ ExtForceFileNew                     =                                           
   file.
 - If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
+- `ExtForceFileNew` may list **several files separated by a space** (a file name containing spaces must be enclosed
+  in double quotes; D-Flow FM 1D2D User Manual, the `ExtForceFileNew` keyword). When more than one file is listed,
+  the converted quantities are appended to the **first** file only; the remaining files are left unchanged and a
+  warning naming them is emitted. This is intentional: all migrated quantities are written into a single new external
+  forcings file, and the first listed file is chosen as that target.
 
 
 ### Before: legacy `.ext` (old format)
@@ -163,6 +169,10 @@ ExtForceFileNew = new-external-forcing.ext
 [geometry]
 IniFieldFile   = new-initial-conditions.ini    ; only if inifield has entries
 StructureFile  = new-structure.ini             ; only if structures exist
+
+[output]
+mbaFile        = new_mba.ini                    ; only if mass balance areas exist
+mbaInterval    = 300.0                          ; carried over from [processes] DtMassBalance
 ```
 
 ### Backups and cleanup
@@ -201,7 +211,7 @@ How to trigger cleanup
 ```python
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
-converter = ExternalForcingConverter("path/to/old-forcings.ext")
+converter = ExternalForcingConverter.from_mdu("path/to/model.mdu")
 converter.update()
 converter.save()
 converter.clean()
@@ -237,6 +247,8 @@ A single legacy block may be routed to different destination models depending on
 - Source/sink quantities → `[sourcesink]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
 - Initial/parameter quantities → `[initial]` / `[parameter]` block in `new-initial-conditions.ini`.
 - Structures → `[structure]` in `new-structure.ini`.
+- Mass balance area quantities (`waqmassbalancearea<name>`) → `[MassBalanceArea]` block in a new `_mba.ini`
+  file, plus `mbaFile`/`mbaInterval` keywords in the MDU `[output]` section.
 
 #### 1.1) Meteo Block (new external forcing file)
 ```ini
@@ -302,13 +314,28 @@ OPERAND=O
 VALUE=0.15
 ```
 Mapped to `new-initial-conditions.ini`:
-- `QUANTITY` → `[initial].quantity` (with special-case rename for bedrock to `bedrockSurfaceElevation`)
+- `QUANTITY` → `[initial].quantity` (renamed if the quantity is listed in `renamed_quantities`; see below)
 - `FILENAME` → `datafile`
 - `FILETYPE=10` → `datafiletype = polygon`
 - `METHOD`/`AVERAGINGTYPE` → `interpolationmethod` and `averaging*` fields (see below)
 - `OPERAND` → `operand`
 - `VALUE` is preserved for polygon data
 - Any `tracer*` keys present are copied as-is
+
+##### Quantity renames (legacy → new)
+
+A few quantities are spelled differently in the initial and parameter fields file than in the old external
+forcings file. The converter resolves them through the `renamed_quantities` table in
+`hydrolib/tools/extforce_convert/data/data.yaml`; any quantity not listed there is written out unchanged.
+
+| Old `QUANTITY` | New `quantity` | Notes                                                                                        |
+|----------------|----------------|----------------------------------------------------------------------------------------------|
+| `sea_ice_thickness` | `seaIceThickness` | See D-Flow FM UM Sec. 16.1                                                                   |
+| `sea_ice_area_fraction` | `seaIceAreaFraction` | See D-Flow FM UM Sec. 16.1                                                                   |
+| `bedrock_surface_elevation` | `bedrockSurfaceElevation` | Parked — the quantity is still unsupported, so this rename is not reached by a converter run |
+
+Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
+that exact casing.
 
 ##### FILETYPE mapping (legacy → new)
 - 1 → `uniform`
@@ -319,8 +346,23 @@ Mapped to `new-initial-conditions.ini`:
 - 7 → `sample`
 - 10 → `polygon` (initial/parameter)
 - 11 → `netcdf`
+- 12 → `map` (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as `ncFlow`)
 - 3 (spatially varying wind/pressure) → not supported (raises error)
 - 8 (magnitude+direction timeseries on stations) → not supported (raises error)
+
+!!! note "`ncFlow` is accepted as a legacy alias of `map`"
+
+    In a **new-format** `.ext` file, `dataFileType = ncFlow` is accepted on input and
+    canonicalised to `dataFileType = map` on load. Reading a file that uses `ncFlow`, then
+    saving it back through hydrolib-core, therefore rewrites the token to `map`. The alias is
+    matched case-insensitively (`ncFlow`, `ncflow`, `NCFLOW` are all equivalent) and each match
+    emits a `DeprecationWarning` steering the caller toward `map`. `ncFlow` is the wording used
+    in older sections of the D-Flow FM User Manual; `map` is the wording used by the Delft3D
+    kernel and by hydrolib-core (see [Deltares/HYDROLIB-core#1207][issue-1207] and
+    [Deltares/Delft3D#1270][d3d-1270]).
+
+[issue-1207]: https://github.com/Deltares/HYDROLIB-core/issues/1207
+[d3d-1270]: https://github.com/Deltares/Delft3D/pull/1270
 
 ##### METHOD and averaging mapping
 - `METHOD` → `interpolationmethod`.
@@ -330,6 +372,51 @@ Mapped to `new-initial-conditions.ini`:
   - `averagingrelsize` from `RELATIVESEARCHCELLSIZE`
   - `averagingnummin` from `NUMMIN`
   - `averagingpercentile` from `PERCENTILEMINMAX`
+
+#### 1.5) Mass balance area block (separate `_mba.ini` file)
+```ini
+QUANTITY=waqmassbalanceareaEstruaryWest
+FILENAME=EstruaryWest.pol
+FILETYPE=10
+METHOD=4
+OPERAND=O
+VALUE=1.0
+```
+Each `waqmassbalancearea<name>` (or `massbalancearea<name>`) block is moved out of the external forcings
+file into a single mass balance area file (`<*_mba.ini>`, default `new_mba.ini`):
+- The area `name` is taken from the quantity suffix (the text after the `waqmassbalancearea` prefix).
+- `FILENAME` → `locationFile` (the area polygon).
+- `FILETYPE`/`METHOD`/`OPERAND` are dropped, and `VALUE` is ignored for mass balance areas.
+
+Resulting `_mba.ini`:
+```ini
+[General]
+fileVersion = 1.00
+fileType    = massBalanceAreas
+
+[MassBalanceArea]
+name         = EstruaryWest
+locationFile = EstruaryWest.pol
+```
+The MDU `[output]` section is updated with `mbaFile` and the required `mbaInterval` keyword.
+
+**Where the converted areas are written** depends on what the MDU's `[output] mbaFile` already
+references. `mbaFile` is a space-separated list of `<*_mba.ini>` files (Manual F.2.5), so:
+
+- **No `mbaFile`** — a new `new_mba.ini` is created next to the old external forcing file and
+  `mbaFile = new_mba.ini` is added to `[output]`.
+- **One existing `mbaFile`** — the converted areas are appended to that existing file (its areas are
+  kept), and the keyword is left pointing at it.
+- **Multiple existing `mbaFile`s** — the converted areas are appended to the **first** file in the list;
+  the other files and the `mbaFile` keyword are left unchanged, and a warning is emitted. Which file
+  receives the areas does not affect the model, because the kernel combines the areas of every listed
+  file into one set.
+
+**`mbaInterval`** is carried over from the legacy `[processes] DtMassBalance` value, or from
+`[processes] DtProcesses` when `DtMassBalance` is absent. If neither is present the interval cannot be
+derived; `mbaInterval` is left unset and a warning is emitted so it can be set manually.
+
+> Kernel support: the `_mba.ini` file and the `mbaFile`/`mbaInterval` keywords require DIMRset ≥ 2.31.18.
 
 #### 2) Legacy `.tim` → new `.bc` (time series)
 

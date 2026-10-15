@@ -15,7 +15,6 @@ from pydantic import (
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
     make_list,
-    split_string_on_delimiter,
     validate_correct_length,
 )
 
@@ -98,7 +97,7 @@ class OneDFieldBranch(INIBasedModel):
     @field_validator("chainage", "values", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @model_validator(mode="after")
     def check_list_length_values(self) -> "OneDFieldBranch":

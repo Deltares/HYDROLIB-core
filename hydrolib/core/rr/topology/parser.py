@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Iterable
 from warnings import warn
 
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.base.utils import get_substring_between
 
 
@@ -32,8 +33,8 @@ class NetworkTopologyFileParser:
             warn(f"File: `{path}` not found, skipped parsing.")
             return []
 
-        with open(path, encoding="utf8") as file:
-            lines = file.readlines()
+        content = open_file_with_fallback_encoding(path)
+        lines = content.splitlines(keepends=True)
         return lines
 
     def _parse_lines(self, lines: Iterable[str]) -> dict:

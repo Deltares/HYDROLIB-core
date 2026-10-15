@@ -1,0 +1,13 @@
+# Minimal ext file for e2e ForcingData validator test
+
+[General]
+fileVersion = 2.01
+fileType    = extForce
+
+[SourceSink]
+id             = Q_S
+numCoordinates = 1
+xCoordinates   = 104.048386
+yCoordinates   = 1.41122
+discharge      = discharge.bc
+

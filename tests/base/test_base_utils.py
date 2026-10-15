@@ -15,6 +15,7 @@ from hydrolib.core.base.utils import (
     OperatingSystem,
     PathStyle,
     PathToDictionaryConverter,
+    parse_files_names,
     get_operating_system,
     get_path_style_for_current_operating_system,
     get_str_len,
@@ -198,6 +199,63 @@ class TestGetSubstringBetween(unittest.TestCase):
         source = "This is a [] string"
         result = get_substring_between(source, "[", "]")
         self.assertEqual(result, "")
+
+
+class TestParseFilesNames(unittest.TestCase):
+    """Test cases for the parse_files_names helper."""
+
+    def test_parse_files_names_with_empty_string(self):
+        """An empty value should return an empty list."""
+        self.assertEqual(parse_files_names(""), [])
+
+    def test_parse_files_names_with_whitespace_separation(self):
+        """Whitespace-separated filenames should be split into individual tokens."""
+        result = parse_files_names("westernscheldt_new.ext westernscheldt_spatial.ext")
+        self.assertEqual(
+            result,
+            ["westernscheldt_new.ext", "westernscheldt_spatial.ext"],
+        )
+
+    def test_parse_files_names_with_comma_separation(self):
+        """Comma-separated filenames should be split into individual tokens."""
+        result = parse_files_names(
+            "westernscheldt_new.ext,westernscheldt_spatial.ext,third.ext"
+        )
+        self.assertEqual(
+            result,
+            [
+                "westernscheldt_new.ext",
+                "westernscheldt_spatial.ext",
+                "third.ext",
+            ],
+        )
+
+    def test_parse_files_names_with_mixed_separators(self):
+        """Mixed commas and whitespace should still split correctly."""
+        result = parse_files_names(
+            "westernscheldt_new.ext, westernscheldt_spatial.ext third.ext"
+        )
+        self.assertEqual(
+            result,
+            ["westernscheldt_new.ext", "westernscheldt_spatial.ext", "third.ext"],
+        )
+
+    def test_parse_files_names_preserves_quoted_filename_with_spaces(self):
+        """Quoted filenames with spaces should be preserved as a single token."""
+        self.assertEqual(
+            parse_files_names('"new extforce.ext" other.ext'),
+            ["new extforce.ext", "other.ext"],
+        )
+
+    def test_parse_files_names_ignores_empty_tokens(self):
+        """Repeated separators should not produce empty entries."""
+        result = parse_files_names(
+            "westernscheldt_new.ext,, ,westernscheldt_spatial.ext"
+        )
+        self.assertEqual(
+            result,
+            ["westernscheldt_new.ext", "westernscheldt_spatial.ext"],
+        )
 
 
 class TestOperatorStr(unittest.TestCase):

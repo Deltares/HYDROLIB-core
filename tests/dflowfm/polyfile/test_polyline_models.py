@@ -100,6 +100,19 @@ def test_scientific_notation(polylines_dir: Path):
     assert polyline["objects"][0].points[1] == Point(x=0, y=2, z=None, data=[])
 
 
+class TestGetId:
+    def test_get_id_uses_first_object_name(self, polylines_dir: Path):
+        polyfile = PolyFile(polylines_dir / "boundary-polyline-no-z-with-label.pli")
+        assert polyfile.get_id() == "tfl_01"
+
+    def test_get_id_falls_back_to_filepath_stem(self, tmp_path: Path):
+        empty_polyfile_path = tmp_path / "my-empty-location.pli"
+        empty_polyfile_path.write_text("")
+
+        polyfile = PolyFile(empty_polyfile_path)
+        assert polyfile.get_id() == "my-empty-location"
+
+
 class TestGetZSourcesSinks:
     def test_get_z_sources_sinks_single_value(self):
         """

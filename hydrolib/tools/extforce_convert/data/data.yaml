@@ -1,20 +1,17 @@
-version: 1.0
+version: 1.1
 mdu:
     deprecated_keywords: [Allowcoolingbelowzero, RhoairRhowater]
     deprecated_value: 0
 
 external_forcing:
-    unsupported_quantity_names:
+    unsupported_quantities:
         # Meteo
-        - solarradiationfactor
-        - windspeedfactor
         - windstresscoefficient
         - wind_speed
         - wind_from_direction
         # Parameters
         - floe_diameter
         - waqmonitoringarea
-        - waqparameter
         - ibotlevtype
         - friction_coefficient_time_dependent
         # structure
@@ -32,21 +29,25 @@ external_forcing:
         - erodablelayerthicknessgrainsize3
         - shiptxy
         # will be moved from the initial conditions file to the new forcing file
-        - nudge_salinity_temperature
-        - sea_ice_area_fraction
-        - sea_ice_thickness
         # do not convert for now
         - bedrock_surface_elevation
-        # Lateral quantities are supported in the kernel, but not yet in the converter
-        - lateraldischarge
-        - lateraldischarge1d
-        - lateraldischarge2d
     unsupported_prefixes:
         # initial conditions
         - initialsediment
-        # Parameters
-        - waqfunction
-        - waqsegmentfunction
-        - waqsegmentnumber
-        - massbalancearea
-        - waqmassbalancearea
+    # Quantities the kernel spells differently in the initial and parameter fields
+    # file than in the old external forcings file. Keys are matched
+    # case-insensitively; values are emitted verbatim, so their casing matters.
+    renamed_quantities:
+        sea_ice_thickness: seaIceThickness
+        sea_ice_area_fraction: seaIceAreaFraction
+        nudge_salinity_temperature: nudgeSalinityTemperature
+        # `bedrock_surface_elevation` is also in `unsupported_quantities` above, so a run of the converter
+        # rejects it.
+        bedrock_surface_elevation: bedrockSurfaceElevation
+        friction_coefficient_time_dependent: frictionCoefficientTimeDependent
+        windspeedfactor: windxy
+        solarradiationfactor: solarradiation
+
+    vector_quantities:
+        uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
+        windxy: {"wx": "m s-1", "wy": "m s-1"}

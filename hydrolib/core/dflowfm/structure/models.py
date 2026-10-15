@@ -4,21 +4,24 @@ structure namespace for storing the contents of an [FMModel][hydrolib.core.dflow
 """
 
 import logging
+import warnings
+from abc import ABC
 from enum import Enum
 from operator import gt, ne
 from pathlib import Path
-from typing import Annotated, Dict, List, Literal, Optional, Set, Union
+from typing import Any, Annotated, Dict, List, Literal, Optional, Set, Union
 
 from pydantic import (
     BeforeValidator,
     Field,
+    SerializeAsAny,
     ValidationInfo,
     field_validator,
     model_validator,
 )
 from strenum import StrEnum
 
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, ModelSaveSettings
 from hydrolib.core.base.utils import str_is_empty_or_none
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.friction.models import FrictionType
@@ -27,15 +30,44 @@ from hydrolib.core.dflowfm.ini.util import (
     UnknownKeywordErrorManager,
     enum_value_parser,
     make_list,
-    split_string_on_delimiter,
     validate_conditionally,
     validate_correct_length,
     validate_forbidden_fields,
     validate_required_fields,
+    rename_keys_for_backwards_compatibility,
 )
 from hydrolib.core.dflowfm.tim.models import TimModel
+from hydrolib.core.dflowfm.validators import CoordinateValidator
 
 logger = logging.getLogger(__name__)
+
+_STRUCTURE_TYPE_CANONICAL_MAP = {
+    "weir": "weir",
+    "universalweir": "universalWeir",
+    "culvert": "culvert",
+    "longculvert": "longCulvert",
+    "pump": "pump",
+    "gate": "gate",
+    "compound": "compound",
+    "orifice": "orifice",
+    "generalstructure": "generalStructure",
+    "dambreak": "dambreak",
+    "bridge": "bridge",
+}
+
+
+def _normalize_structure_type(data: Any) -> Any:
+    """Normalize the 'type' field in a structure dict to its canonical camelCase form.
+
+    This is necessary because the discriminated union in Pydantic v2 reads the
+    raw 'type' value before any field validators run, so case-insensitive input
+    (e.g. ``generalstructure``) must be normalized to the canonical tag
+    (e.g. ``generalStructure``) before the discriminator check.
+    """
+    if isinstance(data, dict) and "type" in data:
+        type_lower = str(data["type"]).lower()
+        data["type"] = _STRUCTURE_TYPE_CANONICAL_MAP.get(type_lower, data["type"])
+    return data
 
 
 def load_model(value):
@@ -53,8 +85,9 @@ ForcingDataUnion = Annotated[
     Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
 ]
 
+CrestWidthField = Annotated[float | None, Field(alias="crestWidth")]
 
-class Structure(INIBasedModel):
+class Structure(CoordinateValidator, INIBasedModel):
     """Structure model."""
 
     class Comments(INIBasedModel.Comments):
@@ -62,9 +95,9 @@ class Structure(INIBasedModel):
 
         id: Optional[str] = "Unique structure id (max. 256 characters)."
         name: Optional[str] = "Given name in the user interface."
-        polylinefile: Optional[str] = Field(
+        locationfile: Optional[str] = Field(
             "*.pli; Polyline geometry definition for 2D structure.",
-            alias="polylinefile",
+            alias="locationFile",
         )
         branchid: Optional[str] = Field(
             "Branch on which the structure is located.", alias="branchId"
@@ -91,7 +124,7 @@ class Structure(INIBasedModel):
     name: str = Field("id", alias="name")
     type: str = Field(alias="type")
 
-    polylinefile: Optional[DiskOnlyFileModel] = Field(None, alias="polylinefile")
+    locationfile: Optional[DiskOnlyFileModel] = Field(None, alias="locationFile")
 
     branchid: Optional[str] = Field(None, alias="branchId")
     chainage: Optional[float] = Field(None, alias="chainage")
@@ -108,21 +141,48 @@ class Structure(INIBasedModel):
     def _get_unknown_keyword_error_manager(cls) -> Optional[UnknownKeywordErrorManager]:
         """Get the UnknownKeywordErrorManager for this model.
 
-        The Structure does not currently support raising an error on unknown keywords.
+        Unknown keywords are reported, so a misspelled keyword is not silently
+        replaced by its default value.
+
+        Returns:
+            Optional[UnknownKeywordErrorManager]: The error manager that reports unknown keywords.
         """
-        return None
+        return UnknownKeywordErrorManager()
 
-    @field_validator("xcoordinates", "ycoordinates", mode="before")
     @classmethod
-    def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+    def _rename_legacy_keys(
+        cls, values: Any, rename_mapping: Dict[str, List[str]]
+    ) -> Any:
+        """Renames old keywords, and their comments, to the currently supported keywords.
 
-    @field_validator("type", mode="after")
+        Args:
+            values (Any): The raw input for this structure block.
+            rename_mapping (Dict[str, List[str]]): The current keyword with the old
+                keywords that are renamed to it.
+
+        Returns:
+            Any: The input with the old keywords renamed.
+        """
+        values = rename_keys_for_backwards_compatibility(values, rename_mapping)
+        if isinstance(values, dict):
+            # The helper does not rename an unset legacy keyword, so drop it here.
+            # It is not a field anymore and would be reported as an unknown keyword.
+            for old_keywords in rename_mapping.values():
+                for old_keyword in old_keywords:
+                    if values.get(old_keyword, "") is None:
+                        values.pop(old_keyword)
+        if isinstance(values, dict) and isinstance(values.get("comments"), dict):
+            values["comments"] = rename_keys_for_backwards_compatibility(
+                values["comments"], rename_mapping
+            )
+        return values
+
+    @model_validator(mode="before")
     @classmethod
-    def lowercase_type(cls, v: str) -> str:
-        if isinstance(v, str):
-            return v.lower()
-        return v
+    def rename_keys(cls, values: Any) -> Any:
+        """Renames some old keywords to the currently supported keywords."""
+        values = cls._convert_section_to_dict(values)
+        return cls._rename_legacy_keys(values, {"locationfile": ["polylinefile"]})
 
     @model_validator(mode="after")
     def check_location(self):
@@ -148,7 +208,8 @@ class Structure(INIBasedModel):
             # Compound structure does not require a location specification.
             return self
 
-        # Backwards compatibility for old-style polylinefile input field (instead of num/x/yCoordinates):
+        # Backwards compatibility for old-style polylinefile input field, now
+        # called locationFile (instead of num/x/yCoordinates):
         polyline_compatible_structures = dict(
             pump="Pump",
             dambreak="Dambreak",
@@ -156,9 +217,9 @@ class Structure(INIBasedModel):
             weir="Weir",
             generalstructure="GeneralStructure",
         )
-        polylinefile_in_model = (
+        locationfile_in_model = (
             structype in polyline_compatible_structures.keys()
-            and filtered_values.get("polylinefile") is not None
+            and filtered_values.get("locationfile") is not None
         )
 
         # No branchId+chainage for some structures:
@@ -168,30 +229,30 @@ class Structure(INIBasedModel):
         coordinates_in_model = Structure.validate_coordinates_in_model(filtered_values)
 
         # Error: do not allow both x/y and polyline file:
-        if polylinefile_in_model and coordinates_in_model:
+        if locationfile_in_model and coordinates_in_model:
             raise ValueError(
-                "Specify location either by `num/x/yCoordinates` or `polylinefile`, but not both."
+                "Specify location either by `num/x/yCoordinates` or `locationFile`, but not both."
             )
 
         # Error: require x/y or polyline file:
         if (
-            structype in polyline_compatible_structures.keys()
-            and structype in only_coordinates_structures.keys()
+            structype in polyline_compatible_structures
+            and structype in only_coordinates_structures
+            and not (coordinates_in_model or locationfile_in_model)
         ):
-            if not (coordinates_in_model or polylinefile_in_model):
-                raise ValueError(
-                    f"Specify location either by setting `num/x/yCoordinates` or `polylinefile` fields for a {polyline_compatible_structures[structype]} structure."
-                )
+            raise ValueError(
+                f"Specify location either by setting `num/x/yCoordinates` or `locationFile` fields for a {polyline_compatible_structures[structype]} structure."
+            )
 
         # Error: Some structures require coordinates_in_model, but not branchId and chainage.
         if (
-            not polylinefile_in_model
-            and structype in only_coordinates_structures.keys()
+            not locationfile_in_model
+            and structype in only_coordinates_structures
+            and not coordinates_in_model
         ):
-            if not coordinates_in_model:
-                raise ValueError(
-                    f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
-                )
+            raise ValueError(
+                f"Specify location by setting `num/x/yCoordinates` for a {only_coordinates_structures[structype]} structure."
+            )
 
         # Error: final check: at least one of x/y, branchId+chainage or polyline file must be given
         branch_and_chainage_in_model = Structure.validate_branch_and_chainage_in_model(
@@ -201,20 +262,39 @@ class Structure(INIBasedModel):
         if not (
             branch_and_chainage_in_model
             or coordinates_in_model
-            or polylinefile_in_model
+            or locationfile_in_model
         ):
             raise ValueError(
-                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `polylinefile` fields."
+                "Specify location either by setting `branchId` and `chainage` or `num/x/yCoordinates` or `locationFile` fields."
             )
 
         return self
 
-    @field_validator("polylinefile", mode="before")
+    @field_validator("locationfile", mode="before")
     @classmethod
-    def resolve_polylinefile(cls, value) -> dict:
+    def resolve_locationfile(cls, value) -> dict:
         if isinstance(value, (str, Path)):
             return DiskOnlyFileModel(filepath=Path(value))
         return value
+
+    @property
+    def polylinefile(self) -> DiskOnlyFileModel | None:
+        """Deprecated alias of `locationfile`, renamed in structure file version 3.01."""
+        warnings.warn(
+            "`polylinefile` is renamed to `locationfile`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.locationfile
+
+    @polylinefile.setter
+    def polylinefile(self, value: DiskOnlyFileModel | None) -> None:
+        warnings.warn(
+            "`polylinefile` is renamed to `locationfile`.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.locationfile = value
 
     @staticmethod
     def validate_branch_and_chainage_in_model(values: dict) -> bool:
@@ -283,16 +363,28 @@ class Structure(INIBasedModel):
             f"Expected {n_coords} coordinates, given {len_x_coords} for xCoordinates and {len_y_coords} for yCoordinates."
         )
 
-    def _exclude_fields(self) -> Set:
-        # exclude the non-applicable, or unset props like coordinates or branches
+    def _inapplicable_location_fields(self) -> Set:
+        """The location fields that do not apply to this structure.
+
+        Returns:
+            Set: The coordinate or branch fields that are not serialized.
+        """
         if self.type == "compound":
             exclude_set = self._loc_all_fields
         elif self.branchid is not None:
             exclude_set = self._loc_coord_fields
         else:
             exclude_set = self._loc_branch_fields
-        exclude_set = super()._exclude_fields().union(exclude_set)
         return exclude_set
+
+    def _should_be_serialized(
+        self, key: str, value: Any, save_settings: ModelSaveSettings
+    ) -> bool:
+        """Do not serialize the non-applicable, or unset props like coordinates or branches."""
+        return (
+            key not in self._inapplicable_location_fields()
+            and super()._should_be_serialized(key, value, save_settings)
+        )
 
     def _get_identifier(self, data: dict) -> Optional[str]:
         return data.get("id") or data.get("name")
@@ -331,7 +423,7 @@ class Weir(Structure):
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
     All lowercased attributes match with the weir input as described in
-    [UM Sec.C.12.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.1).
+    [UM Sec.C.14.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.1).
     """
 
     class Comments(Structure.Comments):
@@ -362,9 +454,28 @@ class Weir(Structure):
     )
 
     crestlevel: ForcingDataUnion = Field(alias="crestLevel")
-    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    crestwidth: CrestWidthField = None
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _rename_legacy_corrcoeff(cls, values: Any) -> Any:
+        """Read the legacy `lat_contr_coeff` keyword as `corrCoeff`.
+
+        Structure files older than version 2.01 give the weir correction coefficient as
+        `lat_contr_coeff`. The manual lists it as superseded by `corrCoeff`, and the
+        D-Flow FM kernel applies both keywords in the same way to a weir.
+
+        Args:
+            values (Any): The raw input for this structure block, normally the
+                flattened `[Structure]` section as a dict.
+
+        Returns:
+            Any: The input with the legacy keyword renamed.
+        """
+        values = cls._convert_section_to_dict(values)
+        return cls._rename_legacy_keys(values, {"corrcoeff": ["lat_contr_coeff"]})
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
@@ -378,8 +489,8 @@ class UniversalWeir(Structure):
     Hydraulic structure with `type=universalWeir`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the universal weir input as described in
-    [UM Sec.C.12.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.2).
+    All lowercased attributes match with the Universal Weir input as described in
+    [UM Sec.C.14.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.2).
     """
 
     class Comments(Structure.Comments):
@@ -422,7 +533,7 @@ class UniversalWeir(Structure):
     @field_validator("yvalues", "zvalues", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo):
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
@@ -443,8 +554,8 @@ class Culvert(Structure):
     Hydraulic structure with `type=culvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the culvert input as described in
-    [UM Sec.C.12.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.3).
+    All lowercased attributes match with the Culvert input as described in
+    [UM Sec.C.14.3](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.3).
     """
 
     type: Literal["culvert"] = Field("culvert", alias="type")
@@ -473,7 +584,7 @@ class Culvert(Structure):
     @field_validator("relopening", "losscoeff", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("allowedflowdir", mode="before")
     @classmethod
@@ -545,8 +656,8 @@ class LongCulvert(Structure):
     Hydraulic structure with `type=longCulvert`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the long culvert input as described in
-    [UM Sec.C.13.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.13.4).
+    All lowercased attributes match with the Long Culvert input as described in
+    [UM Sec.C.14.4](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.4).
     """
 
     type: Literal["longCulvert"] = Field("longCulvert", alias="type")
@@ -573,7 +684,7 @@ class LongCulvert(Structure):
     @field_validator("zcoordinates", mode="before")
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("zcoordinates", mode="after")
     @classmethod
@@ -595,8 +706,8 @@ class Pump(Structure):
     Hydraulic structure with `type=pump`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the pump input as described in
-    [UM Sec.C.12.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.6).
+    All lowercased attributes match with the Pump input as described in
+    [UM Sec.C.14.6](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.6).
     """
 
     type: Literal["pump"] = Field("pump", alias="type")
@@ -634,7 +745,7 @@ class Pump(Structure):
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[float]:
         """Split the string on the delimiter and return a list of floats."""
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
     @field_validator("orientation", mode="before")
     @classmethod
@@ -725,8 +836,8 @@ class Compound(Structure):
     Hydraulic structure with `type=compound`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the compound input as described in
-    [UM Sec.C.12.11](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.11).
+    All lowercased attributes match with the Comput Structure input as described in
+    [UM Sec.C.14.11](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.11).
     """
 
     type: Literal["compound"] = Field("compound", alias="type")
@@ -739,7 +850,7 @@ class Compound(Structure):
     @classmethod
     def _split_to_list(cls, v, info: ValidationInfo) -> List[str]:
         """Split the string on the delimiter and return a list of strings."""
-        return split_string_on_delimiter(cls, v, info)
+        return cls.split_string_on_delimiter(v, info)
 
 
 class Orifice(Structure):
@@ -748,8 +859,8 @@ class Orifice(Structure):
     Hydraulic structure with `type=orifice`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.7](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.7).
+    All lowercased attributes match with the Orifice input as described in
+    [UM Sec.C.14.7](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.7).
     """
 
     type: Literal["orifice"] = Field("orifice", alias="type")
@@ -758,7 +869,7 @@ class Orifice(Structure):
     )
 
     crestlevel: ForcingDataUnion = Field(alias="crestLevel")
-    crestwidth: Optional[float] = Field(None, alias="crestWidth")
+    crestwidth: CrestWidthField = None
     gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -796,14 +907,109 @@ class GateOpeningHorizontalDirection(StrEnum):
     allowedvaluestext = "Possible values: symmetric, fromLeft, fromRight."
 
 
-class GeneralStructure(Structure):
+# Current general structure coefficient keyword and its legacy underscored spelling.
+_LEGACY_COEFFICIENT_KEYWORDS = {
+    f"{side}{name}": [f"{side}_{name}"]
+    for side in ("pos", "neg")
+    for name in (
+        "freegateflowcoeff",
+        "drowngateflowcoeff",
+        "freeweirflowcoeff",
+        "drownweirflowcoeff",
+        "contrcoeffreegate",
+    )
+}
+
+
+class CrestWidthValidator(ABC):
+    """Validator mixin for structures with a crest width and a gate opening width.
+
+    A plain validator mixin (not an `INIBasedModel` itself); the concrete structures
+    bring in `Structure`. Holds the shared after-validator enforcing
+    ``gateOpeningWidth <= crestWidth``. The fields stay declared on each concrete
+    structure, so every structure keeps control of its own keyword order; the
+    validator reads them via `getattr` so it is inert on any subclass that does not
+    declare both fields.
+
+    Intended to be combined with a concrete structure model, e.g.
+    ``class Gate(CrestWidthValidator, Structure): ...``.
+    """
+
+    @model_validator(mode="after")
+    def _validate_crestwidth_larger_than_gateopeningwidth(self):
+        """Validate that gateopeningwidth <= crestwidth.
+
+        Skips the check when either value is None or a time series.
+        """
+        gateopeningwidth = getattr(self, "gateopeningwidth", None)
+        crestwidth = getattr(self, "crestwidth", None)
+
+        if (
+            gateopeningwidth is not None
+            and crestwidth is not None
+            and not isinstance(gateopeningwidth, (TimModel, ForcingModel))
+            and gateopeningwidth > crestwidth
+        ):
+            raise ValueError(
+                "`gateOpeningWidth` should be smaller than or equal to `crestWidth`."
+            )
+        return self
+
+
+class Gate(CrestWidthValidator, Structure):
+    """Gate structure.
+
+    Hydraulic structure with `type=gate`, to be included in a structure file.
+    Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
+
+    All lowercased attributes match with the Gate input as described in
+    [UM Sec.C.14.8](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.8).
+    """
+
+    class Comments(Structure.Comments):
+        """Comments for the Gate section fields."""
+
+        type: str | None = Field("Structure type; must read gate", alias="type")
+        crestwidth: str | None = Field("w_s [m].", alias="crestWidth")
+        crestlevel: str | None = Field("z_s [m AD].", alias="crestLevel")
+        gateloweredgelevel: str | None = Field(
+            "Position of gate door’s lower edge [m AD].", alias="gateLowerEdgeLevel"
+        )
+        gateheight: str | None = Field(
+            "Height of the gate door [m].", alias="gateHeight"
+        )
+        gateopeningwidth: str | None = Field(
+            "Width of the gate opening [m].", alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
+            alias="gateOpeningHorizontalDirection",
+        )
+
+    comments: Comments = Comments()
+
+    type: Literal["gate"] = Field("gate", alias="type")
+
+    crestwidth: CrestWidthField = None
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
+
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingDataUnion = Field(alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
+        GateOpeningHorizontalDirection.symmetric.value,
+        alias="gateOpeningHorizontalDirection",
+    )
+
+
+class GeneralStructure(CrestWidthValidator, Structure):
     """General Structure.
 
     Hydraulic structure with `type=generalStructure`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the orifice input as described in
-    [UM Sec.C.12.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.9).
+    All lowercased attributes match with the General Structure input as described in
+    [UM Sec.C.14.9](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.9).
     """
 
     class Comments(Structure.Comments):
@@ -812,125 +1018,156 @@ class GeneralStructure(Structure):
         type: Optional[str] = Field(
             "Structure type; must read generalStructure", alias="type"
         )
-        allowedflowdir: Optional[str] = Field(
+        allowedflowdir: str | None = Field(
             FlowDirection.allowedvaluestext, alias="allowedFlowDir"
         )
 
-        upstream1width: Optional[str] = Field("w_u1 [m]", alias="upstream1Width")
-        upstream1level: Optional[str] = Field("z_u1 [m AD]", alias="upstream1Level")
-        upstream2width: Optional[str] = Field("w_u2 [m]", alias="upstream2Width")
-        upstream2level: Optional[str] = Field("z_u2 [m D]", alias="upstream2Level")
+        upstream1width: str | None = Field("w_u1 [m]", alias="upstream1Width")
+        upstream1level: str | None = Field("z_u1 [m AD]", alias="upstream1Level")
+        upstream2width: str | None = Field("w_u2 [m]", alias="upstream2Width")
+        upstream2level: str | None = Field("z_u2 [m D]", alias="upstream2Level")
 
-        crestwidth: Optional[str] = Field("w_s [m]", alias="crestWidth")
-        crestlevel: Optional[str] = Field("z_s [m AD]", alias="crestLevel")
-        crestlength: Optional[str] = Field(
+        crestwidth: str | None = Field("w_s [m]", alias="crestWidth")
+        crestlevel: str | None = Field("z_s [m AD]", alias="crestLevel")
+        crestlength: str | None = Field(
             "The crest length across the general structure [m]. When the crest length > 0, the extra resistance for this structure will be ls * g/(C2 * waterdepth)",
             alias="crestLength",
         )
 
-        downstream1width: Optional[str] = Field("w_d1 [m]", alias="downstream1Width")
-        downstream1level: Optional[str] = Field("z_d1 [m AD]", alias="downstream1Level")
-        downstream2width: Optional[str] = Field("w_d2 [m]", alias="downstream2Width")
-        downstream2level: Optional[str] = Field("z_d2 [m AD]", alias="downstream2Level")
+        downstream1width: str | None = Field("w_d1 [m]", alias="downstream1Width")
+        downstream1level: str | None = Field("z_d1 [m AD]", alias="downstream1Level")
+        downstream2width: str | None = Field("w_d2 [m]", alias="downstream2Width")
+        downstream2level: str | None = Field("z_d2 [m AD]", alias="downstream2Level")
 
-        gateloweredgelevel: Optional[str] = Field(
+        gateloweredgelevel: str | None = Field(
             "Position of gate door’s lower edge [m AD]", alias="gateLowerEdgeLevel"
         )
-        posfreegateflowcoeff: Optional[str] = Field(
+        posfreegateflowcoeff: str | None = Field(
             "Positive free gate flow corr.coeff. cgf [-]", alias="posFreeGateFlowCoeff"
         )
-        posdrowngateflowcoeff: Optional[str] = Field(
+        posdrowngateflowcoeff: str | None = Field(
             "Positive drowned gate flow corr.coeff. cgd [-]",
             alias="posDrownGateFlowCoeff",
         )
-        posfreeweirflowcoeff: Optional[str] = Field(
+        posfreeweirflowcoeff: str | None = Field(
             "Positive free weir flow corr.coeff. cwf [-]", alias="posFreeWeirFlowCoeff"
         )
-        posdrownweirflowcoeff: Optional[str] = Field(
+        posdrownweirflowcoeff: str | None = Field(
             "Positive drowned weir flow corr.coeff. cwd [-]",
             alias="posDrownWeirFlowCoeff",
         )
-        poscontrcoeffreegate: Optional[str] = Field(
+        poscontrcoeffreegate: str | None = Field(
             "Positive gate flow contraction coefficient µgf [-]",
             alias="posContrCoefFreeGate",
         )
-        negfreegateflowcoeff: Optional[str] = Field(
+        negfreegateflowcoeff: str | None = Field(
             "Negative free gate flow corr.coeff. cgf [-]", alias="negFreeGateFlowCoeff"
         )
-        negdrowngateflowcoeff: Optional[str] = Field(
+        negdrowngateflowcoeff: str | None = Field(
             "Negative drowned gate flow corr.coeff. cgd [-]",
             alias="negDrownGateFlowCoeff",
         )
-        negfreeweirflowcoeff: Optional[str] = Field(
+        negfreeweirflowcoeff: str | None = Field(
             "Negative free weir flow corr.coeff. cwf [-]", alias="negFreeWeirFlowCoeff"
         )
-        negdrownweirflowcoeff: Optional[str] = Field(
+        negdrownweirflowcoeff: str | None = Field(
             "Negative drowned weir flow corr.coeff. cwd [-]",
             alias="negDrownWeirFlowCoeff",
         )
-        negcontrcoeffreegate: Optional[str] = Field(
+        negcontrcoeffreegate: str | None = Field(
             "Negative gate flow contraction coefficient mu gf [-]",
             alias="negContrCoefFreeGate",
         )
-        extraresistance: Optional[str] = Field(
+        extraresistance: str | None = Field(
             "Extra resistance [-]", alias="extraResistance"
         )
-        gateheight: Optional[str] = Field(None, alias="gateHeight")
-        gateopeningwidth: Optional[str] = Field(
-            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
-            alias="gateOpeningWidth",
+        gateheightintervalcntrl: str | None = Field(
+            "Legacy general structure keyword, read and stored by the kernel but not used in the computation.",
+            alias="gateheightintervalcntrl",
         )
-        gateopeninghorizontaldirection: Optional[str] = Field(
-            "Horizontal opening direction of gate door[s]. Possible values are: symmetric, fromLeft, fromRight",
+        dynstructext: str | None = Field(
+            "Legacy general structure keyword scaling the dynamic structure time step; kernel default is 1.0.",
+            alias="dynstructext",
+        )
+        gateheight: str | None = Field(None, alias="gateHeight")
+        gateopeningwidth: str | None = Field(
+            "Opening width between gate doors [m], should be smaller than (or equal to) crestWidth",
+            alias="gateOpeningWidth"
+        )
+        gateopeninghorizontaldirection: str | None = Field(
+            GateOpeningHorizontalDirection.allowedvaluestext,
             alias="gateOpeningHorizontalDirection",
         )
-        usevelocityheight: Optional[str] = Field(
+        usevelocityheight: str | None = Field(
             "Flag indicates whether the velocity height is to be calculated or not",
             alias="useVelocityHeight",
         )
 
-    comments: Optional[Comments] = Comments()
+    comments: Comments | None = Comments()
 
     type: Literal["generalStructure"] = Field("generalStructure", alias="type")
-    allowedflowdir: Optional[FlowDirection] = Field(
+    allowedflowdir: FlowDirection | None = Field(
         FlowDirection.both.value, alias="allowedFlowDir"
     )
 
-    upstream1width: Optional[float] = Field(10.0, alias="upstream1Width")
-    upstream1level: Optional[float] = Field(0.0, alias="upstream1Level")
-    upstream2width: Optional[float] = Field(10.0, alias="upstream2Width")
-    upstream2level: Optional[float] = Field(0.0, alias="upstream2Level")
+    upstream1width: float | None = Field(10.0, alias="upstream1Width")
+    upstream1level: float | None = Field(0.0, alias="upstream1Level")
+    upstream2width: float | None = Field(10.0, alias="upstream2Width")
+    upstream2level: float | None = Field(0.0, alias="upstream2Level")
 
-    crestwidth: Optional[float] = Field(10.0, alias="crestWidth")
-    crestlevel: Optional[ForcingDataUnion] = Field(0.0, alias="crestLevel")
-    crestlength: Optional[float] = Field(0.0, alias="crestLength")
+    crestwidth: CrestWidthField = 10.0
+    crestlevel: ForcingDataUnion | None = Field(0.0, alias="crestLevel")
+    crestlength: float | None = Field(0.0, alias="crestLength")
 
-    downstream1width: Optional[float] = Field(10.0, alias="downstream1Width")
-    downstream1level: Optional[float] = Field(0.0, alias="downstream1Level")
-    downstream2width: Optional[float] = Field(10.0, alias="downstream2Width")
-    downstream2level: Optional[float] = Field(0.0, alias="downstream2Level")
+    downstream1width: float | None = Field(10.0, alias="downstream1Width")
+    downstream1level: float | None = Field(0.0, alias="downstream1Level")
+    downstream2width: float | None = Field(10.0, alias="downstream2Width")
+    downstream2level: float | None = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: Optional[ForcingDataUnion] = Field(
-        11.0, alias="gateLowerEdgeLevel"
+    posfreegateflowcoeff: float | None = Field(1.0, alias="posFreeGateFlowCoeff")
+    posdrowngateflowcoeff: float | None = Field(1.0, alias="posDrownGateFlowCoeff")
+    posfreeweirflowcoeff: float | None = Field(1.0, alias="posFreeWeirFlowCoeff")
+    posdrownweirflowcoeff: float | None = Field(1.0, alias="posDrownWeirFlowCoeff")
+    poscontrcoeffreegate: float | None = Field(1.0, alias="posContrCoefFreeGate")
+    negfreegateflowcoeff: float | None = Field(1.0, alias="negFreeGateFlowCoeff")
+    negdrowngateflowcoeff: float | None = Field(1.0, alias="negDrownGateFlowCoeff")
+    negfreeweirflowcoeff: float | None = Field(1.0, alias="negFreeWeirFlowCoeff")
+    negdrownweirflowcoeff: float | None = Field(1.0, alias="negDrownWeirFlowCoeff")
+    negcontrcoeffreegate: float | None = Field(1.0, alias="negContrCoefFreeGate")
+    extraresistance: float | None = Field(0.0, alias="extraResistance")
+    dynstructext: float | None = Field(None, alias="dynstructext")
+
+    gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
+    gateheightintervalcntrl: float | None = Field(
+        None, alias="gateheightintervalcntrl"
     )
-    posfreegateflowcoeff: Optional[float] = Field(1.0, alias="posFreeGateFlowCoeff")
-    posdrowngateflowcoeff: Optional[float] = Field(1.0, alias="posDrownGateFlowCoeff")
-    posfreeweirflowcoeff: Optional[float] = Field(1.0, alias="posFreeWeirFlowCoeff")
-    posdrownweirflowcoeff: Optional[float] = Field(1.0, alias="posDrownWeirFlowCoeff")
-    poscontrcoeffreegate: Optional[float] = Field(1.0, alias="posContrCoefFreeGate")
-    negfreegateflowcoeff: Optional[float] = Field(1.0, alias="negFreeGateFlowCoeff")
-    negdrowngateflowcoeff: Optional[float] = Field(1.0, alias="negDrownGateFlowCoeff")
-    negfreeweirflowcoeff: Optional[float] = Field(1.0, alias="negFreeWeirFlowCoeff")
-    negdrownweirflowcoeff: Optional[float] = Field(1.0, alias="negDrownWeirFlowCoeff")
-    negcontrcoeffreegate: Optional[float] = Field(1.0, alias="negContrCoefFreeGate")
-    extraresistance: Optional[float] = Field(0.0, alias="extraResistance")
-    gateheight: Optional[float] = Field(1e10, alias="gateHeight")
-    gateopeningwidth: Optional[ForcingDataUnion] = Field(0.0, alias="gateOpeningWidth")
-    gateopeninghorizontaldirection: Optional[GateOpeningHorizontalDirection] = Field(
+    gateheight: float | None = Field(1e10, alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
     )
-    usevelocityheight: Optional[bool] = Field(True, alias="useVelocityHeight")
+    usevelocityheight: bool | None = Field(True, alias="useVelocityHeight")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _rename_legacy_coefficients(cls, values: Any) -> Any:
+        """Accept the legacy underscored spelling of the flow coefficient keywords.
+
+        Older structure files separate the `pos`/`neg` prefix of the general structure
+        flow coefficients with an underscore (e.g. `pos_freegateflowcoeff`,
+        `neg_contrcoeffreegate`), while the current D-Flow FM input specification
+        spells them without one (`posFreeGateFlowCoeff`, `negContrCoefFreeGate`).
+
+        Args:
+            values (Any): The raw input for this structure block, normally the
+                flattened `[Structure]` section as a dict.
+
+        Returns:
+            Any: The input with the coefficient keywords, and their comments, renamed.
+        """
+        values = cls._convert_section_to_dict(values)
+        return cls._rename_legacy_keys(values, _LEGACY_COEFFICIENT_KEYWORDS)
 
 
 class DambreakAlgorithm(int, Enum):
@@ -964,8 +1201,8 @@ class Dambreak(Structure):
     Hydraulic structure with `type=dambreak`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the dambreak input as described in
-    [UM Sec.C.12.10](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.10).
+    All lowercased attributes match with the Dambreak input as described in
+    [UM Sec.C.14.10](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.10).
     """
 
     class Comments(Structure.Comments):
@@ -1172,8 +1409,8 @@ class Bridge(Structure):
     Hydraulic structure with `type=bridge`, to be included in a structure file.
     Typically inside the structure list of a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.structurefile[0].structure[..]`
 
-    All lowercased attributes match with the bridge input as described in
-    [UM Sec.C.12.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.12.5).
+    All lowercased attributes match with the Bridge input as described in
+    [UM Sec.C.14.5](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.C.14.5).
     """
 
     class Comments(Structure.Comments):
@@ -1227,11 +1464,30 @@ class Bridge(Structure):
         return enum_value_parser(v, FrictionType)
 
 
+# First structure file version with `locationFile`, which replaced `polylineFile`.
+_LOCATIONFILE_MIN_FILEVERSION = (3, 1)
+
+
+def _parse_fileversion(fileversion: str) -> Optional[tuple[int, int]]:
+    """Parse a structure file version such as `"3.01"` into `(major, minor)`.
+
+    Args:
+        fileversion (str): The file version as written in the `[General]` section.
+
+    Returns:
+        Optional[tuple[int, int]]: The major and minor version, or None when the
+            version does not have the form `<major>.<minor>`.
+    """
+    parts = str(fileversion).strip().split(".")
+    is_valid = len(parts) == 2 and all(part.isdigit() for part in parts)
+    return (int(parts[0]), int(parts[1])) if is_valid else None
+
+
 class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.00", alias="fileVersion")
+    fileversion: str = Field("3.01", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
@@ -1242,6 +1498,7 @@ StructureUnion = Annotated[
         Culvert,
         LongCulvert,
         Pump,
+        Gate,
         Compound,
         Orifice,
         GeneralStructure,
@@ -1266,7 +1523,51 @@ class StructureModel(INIModel):
     """
 
     general: StructureGeneral = StructureGeneral()
-    structure: Annotated[List[StructureUnion], BeforeValidator(make_list)] = []
+    structure: Annotated[
+        List[
+            Annotated[
+                SerializeAsAny[StructureUnion],
+                BeforeValidator(_normalize_structure_type),
+            ]
+        ],
+        BeforeValidator(make_list),
+    ] = []
+
+    def _upgrade_fileversion_for_locationfile(self) -> None:
+        """Raise the file version to 3.01 when a structure uses `locationFile`.
+
+        `locationFile` replaced `polylineFile` in structure file version 3.01. The D-Flow
+        FM kernel reads a version 1.00 file only through its old reader, which does not
+        know `locationFile`, so a structure with a location file must not be written
+        under an older file version.
+        """
+        fileversion = _parse_fileversion(self.general.fileversion)
+        uses_locationfile = any(
+            structure.locationfile is not None for structure in self.structure
+        )
+        if (
+            uses_locationfile
+            and fileversion is not None
+            and fileversion < _LOCATIONFILE_MIN_FILEVERSION
+        ):
+            logger.warning(
+                f"Structure file version {self.general.fileversion} is raised to 3.01, "
+                "because a structure uses `locationFile` (it replaces `polylineFile` "
+                "from version 3.01)."
+            )
+            self.general.fileversion = "3.01"
+
+    @model_validator(mode="after")
+    def _check_fileversion_for_locationfile(self):
+        """Make sure the file version matches the location keyword of the structures."""
+        self._upgrade_fileversion_for_locationfile()
+        return self
+
+    def _serialize(self, data: dict, save_settings: ModelSaveSettings) -> None:
+        """Check the file version again before writing, because structures can be added
+        to the list after the model was created."""
+        self._upgrade_fileversion_for_locationfile()
+        super()._serialize(data, save_settings)
 
     @classmethod
     def _ext(cls) -> str:

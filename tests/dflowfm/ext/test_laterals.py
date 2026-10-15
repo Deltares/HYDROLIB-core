@@ -93,8 +93,8 @@ class TestValidateLocationType:
         with pytest.raises(ValueError) as exc_mssg:
             Lateral.validate_location_type(value)
         assert (
-            str(exc_mssg.value)
-            == f"Value given ({value}) not accepted, should be one of: 1d, 2d, all"
+            f"Invalid enum value: {value!r}. Expected one of: ['1d', '2d', 'all']"
+            in str(exc_mssg.value)
         )
 
     @pytest.mark.parametrize(
@@ -111,7 +111,7 @@ class TestValidateLocationType:
     )
     def test_given_correct_locationtype(self, location_type: str):
         return_value = Lateral.validate_location_type(location_type)
-        assert return_value == location_type
+        assert return_value == location_type.lower()
 
 
 class TestValidateLocationTypeDependencies:
@@ -180,25 +180,53 @@ class TestValidateLocationTypeDependencies:
         assert str(exc_err.value) == LOCATION_ERROR
 
     @pytest.mark.parametrize(
-        "dict_values",
+        "dict_values, locationtype, expected_message",
         [
-            pytest.param(dict(nodeid="42"), id="Given nodeid"),
+            pytest.param(
+                dict(nodeid="42"),
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="nodeid-wrongType",
+            ),
             pytest.param(
                 dict(branchid="aBranchId", chainage=4.2),
-                id="Given branchid and chainage",
+                "wrongType",
+                "locationType should be 1d but was wrongType",
+                id="branchid-wrongType",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-2d",
+            ),
+            pytest.param(
+                dict(nodeid="42"),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="nodeid-all",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "2d",
+                "locationType='2d' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-2d",
+            ),
+            pytest.param(
+                dict(branchid="aBranchId", chainage=4.2),
+                "all",
+                "locationType='all' is only valid when xCoordinates and yCoordinates are also specified",
+                id="branchid-all",
             ),
         ],
     )
     def test_given_1d_args_and_location_type_other_then_raises_valueerror(
-        self, dict_values: dict
+        self, dict_values: dict, locationtype: str, expected_message: str
     ):
-        test_values = dict(
-            locationtype="wrongType",
-        )
-        test_dict = {**dict_values, **test_values}
+        test_dict = {**dict_values, "locationtype": locationtype}
         with pytest.raises(ValueError) as exc_err:
             Lateral.validate_that_location_specification_is_correct(test_dict)
-        assert str(exc_err.value) == "locationType should be 1d but was wrongType"
+        assert expected_message in str(exc_err.value)
 
     @pytest.mark.parametrize(
         "dict_values",
@@ -317,7 +345,7 @@ class TestValidateFromCtor:
                 locationtype=location_type,
             )
         expected_error_mssg = (
-            f"Value given ({location_type}) not accepted, should be one of: 1d, 2d, all"
+            f"locationType has invalid value '{location_type}'. Possible values are: 1d, 2d, all"
         )
         assert expected_error_mssg in str(exc_mssg.value)
 
@@ -435,6 +463,42 @@ class TestLateralAliasInput:
         assert lateral.xcoordinates == [1.0, 2.0]
         assert lateral.ycoordinates == [3.0, 4.0]
         assert lateral.numcoordinates == 2
+
+
+class TestApplyTransport:
+    def test_applytransport_none_is_allowed(self):
+        lateral = Lateral(
+            id="lat_applytransport_none",
+            nodeid="n1",
+            locationtype="1d",
+            applytransport=None,
+            discharge=1.23,
+        )
+        assert lateral.applytransport is None
+
+
+    @pytest.mark.parametrize("value", [1, 0, "0", "1"])
+    def test_applytransport_0_or_1_are_allowed(self, value):
+        lateral = Lateral(
+            id="lat_applytransport_none",
+            nodeid="n1",
+            locationtype="1d",
+            applytransport=value,
+            discharge=1.23,
+        )
+        assert lateral.applytransport == int(value)
+
+    @pytest.mark.parametrize("value", [2, -1])
+    def test_applytransport_invalid_value_raises(self, value):
+        with pytest.raises(ValidationError) as exc:
+            Lateral(
+                id="lat_applytransport_invalid",
+                nodeid="n1",
+                locationtype="1d",
+                applytransport=value,
+                discharge=1.23,
+            )
+        assert "applyTransport must be 0 or 1" in str(exc.value)
 
 
 class TestValidateForcingData:

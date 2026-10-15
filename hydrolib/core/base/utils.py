@@ -2,6 +2,7 @@
 
 import platform
 import re
+import shlex
 from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
@@ -102,6 +103,24 @@ def get_str_len(str_field: Optional[str]) -> int:
     """
     return len(str_field) if str_field else 0
 
+def is_int(value: Any) -> bool:
+    """
+    Check if the given value can be converted to an integer.
+
+    Args:
+        value (Any): The value to check.
+
+    Returns:
+        bool: True if the value can be converted to an integer, False otherwise.
+            Boolean values are explicitly treated as non-integers.
+    """
+    result = not isinstance(value, bool)
+    if result:
+        try:
+            int(value)
+        except (ValueError, TypeError):
+            result = False
+    return result
 
 def get_substring_between(source: str, start: str, end: str) -> Optional[str]:
     """Finds the substring between two other strings.
@@ -206,7 +225,6 @@ class PathToDictionaryConverter:
             Any:
                 The converted value, which is a dictionary if the value is a file model type.
         """
-        from hydrolib.core.dflowfm.ini.util import split_string_on_delimiter
 
         fields = cls.model_fields
         key = info.field_name
@@ -223,7 +241,7 @@ class PathToDictionaryConverter:
                         if isinstance(v, (str, Path))
                         else v
                     )
-                    for v in split_string_on_delimiter(cls, value, info)
+                    for v in cls.split_string_on_delimiter(value, info)
                 ]
 
         return value
@@ -594,3 +612,26 @@ class FortranScientificNotationConverter:
             else:
                 new_values[field_name] = value
         return new_values
+
+
+def parse_files_names(raw_value: str) -> list[str]:
+    """Split `ExtForceFileNew` into file names.
+
+    Supports whitespace and comma separators while preserving quoted file names with spaces.
+    Empty tokens are ignored.
+    """
+    file_names = []
+
+    if raw_value:
+        lexer = shlex.shlex(raw_value, posix=False)
+        lexer.whitespace += ","
+        lexer.whitespace_split = True
+
+        for token in lexer:
+            token = token.strip()
+            if len(token) >= 2 and token[0] == token[-1] and token[0] in {'"', "'"}:
+                token = token[1:-1]
+            if token:
+                file_names.append(token)
+
+    return file_names

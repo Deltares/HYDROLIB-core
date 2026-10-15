@@ -1,6 +1,7 @@
 """Initial field model definitions for D-Flow FM inifield files."""
 
 import logging
+import warnings
 from abc import ABC
 from pathlib import Path
 from typing import Annotated, Dict, List, Literal, Optional
@@ -13,11 +14,15 @@ from pydantic import (
     model_validator,
 )
 from pydantic.types import NonNegativeFloat, PositiveInt
-from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.common import LocationType
-from hydrolib.core.dflowfm.common.models import Operand
+from hydrolib.core.dflowfm.common.models import (
+    AveragingType,
+    DataFileType,
+    InterpolationMethod,
+    Operand,
+)
 from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -25,61 +30,12 @@ from hydrolib.core.dflowfm.ini.util import (
     make_list,
     validate_required_fields,
 )
+from hydrolib.core.dflowfm.validators import (
+    LocationTypeDataFileTypeValidators,
+    OperandInterpolationValidators,
+)
 
 logger = logging.getLogger(__name__)
-
-
-class DataFileType(StrEnum):
-    """Enum class containing the valid values for the dataFileType attribute.
-
-    Contains valid values for the dataFileType attribute in several subclasses
-    of AbstractIniField.
-    """
-
-    arcinfo = "arcinfo"
-    geotiff = "GeoTIFF"
-    sample = "sample"
-    onedfield = "1dField"
-    polygon = "polygon"
-    uniform = "uniform"
-    netcdf = "netcdf"
-
-    allowedvaluestext = "Possible values: arcinfo, GeoTIFF, sample, 1dField, polygon."
-
-
-class InterpolationMethod(StrEnum):
-    """Enum class containing the valid values for the interpolationMethod attribute.
-
-    Contains valid values for the interpolationMethod attribute in several
-    subclasses of AbstractIniField.
-    """
-
-    constant = "constant"  # only with dataFileType=polygon .
-    triangulation = "triangulation"  # Delaunay triangulation+linear interpolation.
-    averaging = "averaging"  # grid cell averaging.
-    linear_space_time = "linearSpaceTime"  # linear interpolation in space and time.
-
-    allowedvaluestext = "Possible values: constant, triangulation, averaging."
-
-
-class AveragingType(StrEnum):
-    """Enum class containing the valid values for the averagingType attribute.
-
-    Contains valid values for the averagingType attribute in several subclasses
-    of AbstractIniField.
-    """
-
-    mean = "mean"  # simple average
-    nearestnb = "nearestNb"  # nearest neighbour value
-    max = "max"  # highest
-    min = "min"  # lowest
-    invdist = "invDist"  # inverse-weighted distance average
-    minabs = "minAbs"  # smallest absolute value
-    median = "median"
-
-    allowedvaluestext = (
-        "Possible values: mean, nearestNb, max, min, invDist, minAbs, median."
-    )
 
 
 class IniFieldGeneral(INIGeneral):
@@ -102,7 +58,9 @@ class IniFieldGeneral(INIGeneral):
     filetype: Literal["iniField"] = Field("iniField", alias="fileType")
 
 
-class AbstractSpatialField(INIBasedModel, ABC):
+class AbstractSpatialField(
+    OperandInterpolationValidators, LocationTypeDataFileTypeValidators, INIBasedModel, ABC
+):
     """Abstract base class for `[Initial]` and `[Parameter]` block data in inifield files.
 
     Defines all common fields. Used via subclasses InitialField and ParameterField.
@@ -218,12 +176,14 @@ class AbstractSpatialField(INIBasedModel, ABC):
             data_file = DiskOnlyFileModel(data_file)
             values["datafile"] = data_file
 
-        validate_required_fields(
-            values,
-            "value",
-            conditional_field_name="datafiletype",
-            conditional_value=DataFileType.polygon,
-        )
+        if (values.get("interpolationmethod") == InterpolationMethod.constant and
+                not values["quantity"].startswith("initialvertical")):
+            validate_required_fields(
+                values,
+                "value",
+                conditional_field_name="datafiletype",
+                conditional_value=DataFileType.polygon,
+            )
 
         value_field_value = values.get("value")
         datafiletype_field_value = values.get("datafiletype")
@@ -238,30 +198,10 @@ class AbstractSpatialField(INIBasedModel, ABC):
 
         return values
 
-    @field_validator("locationtype", mode="before")
-    @classmethod
-    def validate_location_type(cls, v):
-        return enum_value_parser(v, LocationType)
-
     @field_validator("averagingtype", mode="before")
     @classmethod
     def validate_average_type(cls, v):
         return enum_value_parser(v, AveragingType)
-
-    @field_validator("datafiletype", mode="before")
-    @classmethod
-    def validate_data_file_type(cls, v):
-        return enum_value_parser(v, DataFileType)
-
-    @field_validator("operand", mode="before")
-    @classmethod
-    def validate_operand(cls, v):
-        return enum_value_parser(v, Operand)
-
-    @field_validator("interpolationmethod", mode="before")
-    @classmethod
-    def validate_interpolation_method(cls, v):
-        return enum_value_parser(v, InterpolationMethod)
 
     @field_validator("datafile", mode="before")
     @classmethod
@@ -280,9 +220,29 @@ class InitialField(AbstractSpatialField):
 
     All lowercased attributes match with the initial field input as described in
     [UM Sec.D.2](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsection.D.2).
+
+    .. deprecated:: 1.1.0
+        `InitialField` and `[Initial]` blocks are deprecated. Use `Spatial` blocks
+        in the external forcings file (``.ext``) instead.
     """
 
     _header: Literal["Initial"] = "Initial"
+
+    @model_validator(mode="after")
+    def _warn_initial_field_deprecated(self) -> "InitialField":
+        """Emit a DeprecationWarning whenever an [Initial] block is instantiated.
+
+        `[Initial]` blocks in inifield files are superseded by `[Spatial]` blocks
+        in the external forcings file (``.ext``) as of version 1.1.0.
+        """
+        warnings.warn(
+            "`InitialField` (and `[Initial]` blocks in inifield files) is deprecated "
+            "since 1.1.0 and will be removed in 2.0.0; use `Spatial` (and `[Spatial]` "
+            "blocks in the external forcings file) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
 
 class ParameterField(AbstractSpatialField):
@@ -290,9 +250,29 @@ class ParameterField(AbstractSpatialField):
 
     Typically inside the definition list of a
     [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile.parameter[..]`
+
+    .. deprecated:: 1.1.0
+        `ParameterField` and `[Parameter]` blocks are deprecated. Use `Spatial` blocks
+        in the external forcings file (``.ext``) instead.
     """
 
     _header: Literal["Parameter"] = "Parameter"
+
+    @model_validator(mode="after")
+    def _warn_parameter_field_deprecated(self) -> "ParameterField":
+        """Emit a DeprecationWarning whenever a [Parameter] block is instantiated.
+
+        `[Parameter]` blocks in inifield files are superseded by `[Spatial]` blocks
+        in the external forcings file (``.ext``) as of version 1.1.0.
+        """
+        warnings.warn(
+            "`ParameterField` (and `[Parameter]` blocks in inifield files) is deprecated "
+            "since 1.1.0 and will be removed in 2.0.0; use `Spatial` (and `[Spatial]` "
+            "blocks in the external forcings file) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self
 
 
 class IniFieldModel(INIModel):

@@ -8,6 +8,7 @@ from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import Boundary
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
+from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
     FMModel,
@@ -438,6 +439,36 @@ class TestOutput:
             len(fmmodel.output.crsfile[0].observationcrosssection[3].xcoordinates) == 2
         )
 
+    def test_output_mbafile_resolves_to_mass_balance_area_model(self, tmp_path: Path):
+        """Test that Output.mbaFile resolves an `_mba.ini` to a MassBalanceAreaModel.
+
+        Test scenario:
+            An Output constructed with an mbaFile path and an mbaInterval should
+            recursively load the mass balance area file and keep the interval.
+        """
+        mba = MassBalanceAreaModel(
+            massbalancearea=[MassBalanceArea(name="A", locationFile="A.pol")]
+        )
+        mba_path = tmp_path / "model_mba.ini"
+        mba.save(filepath=mba_path)
+
+        output = Output(mbaFile=[str(mba_path)], mbaInterval=[300.0])
+
+        assert isinstance(output.mbafile[0], MassBalanceAreaModel)
+        assert output.mbafile[0].massbalancearea[0].name == "A"
+        assert output.mbainterval == [300.0]
+
+    def test_output_mbafile_accepts_disk_only_file_model(self):
+        """Test that Output.mbaFile accepts a placeholder DiskOnlyFileModel.
+
+        Test scenario:
+            Constructing Output with a DiskOnlyFileModel placeholder (an
+            unresolved file) must succeed and preserve it as a single-element list.
+        """
+        placeholder = DiskOnlyFileModel(Path("model_mba.ini"))
+        output = Output(mbaFile=[placeholder])
+        assert len(output.mbafile) == 1, f"Got {output.mbafile!r}"
+
     def _get_expected_polyobjects(self):
         """Get PolyObject list that corresponds with example test file.
 
@@ -772,9 +803,9 @@ class TestOutputDir:
         setattr(section, field_attr, "")
         result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
-        assert not isinstance(result, Path), (
-            f"Empty string should not be coerced to Path, got {type(result).__name__}"
-        )
+        assert not isinstance(
+            result, Path
+        ), f"Empty string should not be coerced to Path, got {type(result).__name__}"
 
     @pytest.mark.parametrize(
         "section_attr, field_attr",
@@ -804,9 +835,9 @@ class TestOutputDir:
         section = getattr(model, section_attr)
         result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
-        assert not isinstance(result, Path), (
-            f"Empty string should not be coerced to Path, got {type(result).__name__}"
-        )
+        assert not isinstance(
+            result, Path
+        ), f"Empty string should not be coerced to Path, got {type(result).__name__}"
 
     @pytest.mark.parametrize(
         "section_attr, field_attr",
@@ -838,9 +869,9 @@ class TestOutputDir:
         section = getattr(model, section_attr)
         result = getattr(section, field_attr)
         assert result == "", f"Expected '', got {result!r}"
-        assert not isinstance(result, Path), (
-            f"Expected str fallback, got {type(result).__name__}"
-        )
+        assert not isinstance(
+            result, Path
+        ), f"Expected str fallback, got {type(result).__name__}"
 
     @pytest.mark.parametrize(
         "section_attr, field_attr",
@@ -936,9 +967,9 @@ class TestOutputDir:
             If this ever changes in a future Python/pathlib version, the workaround
             may no longer be necessary.
         """
-        assert Path("") == Path("."), (
-            "pathlib behavior changed: Path('') no longer equals Path('.')"
-        )
+        assert Path("") == Path(
+            "."
+        ), "pathlib behavior changed: Path('') no longer equals Path('.')"
 
 
 class TestTime:
@@ -998,12 +1029,7 @@ class TestTime:
             )
 
 
-_MINIMAL_POLY_PLI = (
-    "test_poly\n"
-    "    2    2\n"
-    "0.0  0.0\n"
-    "1.0  1.0\n"
-)
+_MINIMAL_POLY_PLI = "test_poly\n" "    2    2\n" "0.0  0.0\n" "1.0  1.0\n"
 _MINIMAL_XYZ_TEXT = "0.0 0.0 0.0\n1.0 1.0 1.0\n"
 
 
@@ -1201,9 +1227,10 @@ class TestRecurseFalseDiskOnlyFileModel:
         value = self._get_attr(loaded, dotted_path)
 
         if is_list:
-            assert isinstance(value, list) and len(value) >= 1, (
-                f"{dotted_path} expected non-empty list, got {value!r}"
-            )
+            assert isinstance(
+                value, list
+            ), f"{dotted_path} expected list, got {type(value).__name__}"
+            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value
@@ -1211,9 +1238,9 @@ class TestRecurseFalseDiskOnlyFileModel:
             f"Expected {recurse_false_class.__name__} under recurse=False at"
             f" {dotted_path}, got {type(target).__name__}"
         )
-        assert target.filepath is not None, (
-            f"Reloaded placeholder must carry a filepath at {dotted_path}"
-        )
+        assert (
+            target.filepath is not None
+        ), f"Reloaded placeholder must carry a filepath at {dotted_path}"
 
     @pytest.mark.parametrize(
         (
@@ -1266,9 +1293,10 @@ class TestRecurseFalseDiskOnlyFileModel:
         value = self._get_attr(loaded, dotted_path)
 
         if is_list:
-            assert isinstance(value, list) and len(value) >= 1, (
-                f"{dotted_path} expected non-empty list, got {value!r}"
-            )
+            assert isinstance(
+                value, list
+            ), f"{dotted_path} expected list, got {type(value).__name__}"
+            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value
@@ -1277,9 +1305,7 @@ class TestRecurseFalseDiskOnlyFileModel:
             f" got {type(target).__name__} at {dotted_path}"
         )
 
-    def test_particles_particlesfile_accepts_disk_only_file_model(
-        self, tmp_path: Path
-    ):
+    def test_particles_particlesfile_accepts_disk_only_file_model(self, tmp_path: Path):
         """Direct-construction proof that `Particles.particlesfile` accepts a placeholder.
 
         Args:
@@ -1353,9 +1379,12 @@ class TestRecurseFalseDiskOnlyFileModel:
         output = Output(**{field_name: [placeholder]})
 
         value = getattr(output, field_name)
-        assert isinstance(value, list) and len(value) == 1, (
-            f"Expected single-element list at Output.{field_name}, got {value!r}"
-        )
+        assert isinstance(
+            value, list
+        ), f"Expected list at Output.{field_name}, got {type(value).__name__}"
+        assert (
+            len(value) == 1
+        ), f"Expected single-element list at Output.{field_name}, got {value!r}"
         assert isinstance(value[0], DiskOnlyFileModel), (
             f"Expected DiskOnlyFileModel placeholder after direct construction,"
             f" got {type(value[0]).__name__} at Output.{field_name}"

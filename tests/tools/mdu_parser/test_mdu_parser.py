@@ -1,4 +1,3 @@
-import os
 import types
 from copy import deepcopy
 from pathlib import Path
@@ -198,6 +197,58 @@ class TestMduParser:
         # Test with a keyword that doesn't exist
         assert parser.find_keyword_lines("NonExistentKeyword") is None
 
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "keyword, case_sensitive, exact_match, expected",
+        [
+            ("ExtForceFile", False, False, 1),
+            ("ExtForceFile", False, True, 2),
+            ("ExtForceFileNew", False, True, 1),
+            ("extforcefile", False, True, 2),
+            ("extforcefile", True, True, None),
+            ("Missing", False, True, None),
+        ],
+        ids=[
+            "prefix match returns first",
+            "exact skips longer keyword",
+            "exact matches new keyword",
+            "exact case-insensitive",
+            "exact case-sensitive no match",
+            "keyword absent",
+        ],
+    )
+    def test_find_keyword_lines_exact_match(
+        self, keyword, case_sensitive, exact_match, expected
+    ):
+        """Test find_keyword_lines honours the exact_match word boundary.
+
+        Args:
+            keyword: The keyword searched for.
+            case_sensitive: Whether the search is case-sensitive.
+            exact_match: Whether a trailing word boundary is required.
+            expected: The expected 0-based line index (or None).
+
+        Test scenario:
+            ``ExtForceFileNew`` precedes ``ExtForceFile``. A prefix search for
+            ``ExtForceFile`` returns the ``ExtForceFileNew`` line (index 1), while
+            an exact-match search requires a boundary after the keyword and returns
+            the genuine ``ExtForceFile`` line (index 2). Case handling is preserved.
+        """
+        parser = MagicMock(spec=MDUParser)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
+        parser.content = [
+            "[external forcing]\n",
+            "ExtForceFileNew = new.ext\n",
+            "ExtForceFile = old.ext\n",
+        ]
+
+        result = MDUParser.find_keyword_lines(
+            parser, keyword, case_sensitive=case_sensitive, exact_match=exact_match
+        )
+        assert result == expected, f"Expected {expected}, got {result}"
+
     def test_insert_line(self):
         parser = MDUParser(self.file_path)
         new_line = "NewLine = value\n"
@@ -337,6 +388,10 @@ class TestUpdateInifieldFile:
         parser.find_section_bounds = types.MethodType(MDUParser.get_section, parser)
         parser.has_field = types.MethodType(MDUParser.has_field, parser)
         parser.update_file_entry = types.MethodType(MDUParser.update_file_entry, parser)
+        parser._add_new_entry = types.MethodType(MDUParser._add_new_entry, parser)
+        parser._update_existing_entry = types.MethodType(
+            MDUParser._update_existing_entry, parser
+        )
         parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
         parser.content = deepcopy(content)
         # Test with a file that has an inifield file
@@ -1426,16 +1481,16 @@ class TestSection:
         assert non_existing_section.end is None
 
 
-class GetNewExtforceFile:
+class TestGetNewExtforceFile:
     """
     Unit tests for ExternalForcingBlock.get_new_extforce_file method.
     Covers:
         - extforcefilenew present
-        - extforcefilenew absent, ext_file not provided
-        - extforcefilenew absent, ext_file provided
+        - extforcefilenew absent (derives the old name with a "-new" suffix)
         - file already exists (raises FileExistsError)
         - missing extforcefile (raises ValueError)
         - root_dir not set (raises AttributeError or TypeError)
+        - integration with shared ExtForceFileNew token parsing
     """
 
     def make_block(self, **kwargs):
@@ -1451,18 +1506,45 @@ class GetNewExtforceFile:
         assert result.name == "new.ext"
         assert str(result).endswith("new.ext")
 
-    def test_extforcefilenew_absent_and_ext_file_not_provided(self):
-        """If extforcefilenew is absent and ext_file is not provided, returns old.ext-new path."""
+    def test_extforcefilenew_multiple_files_uses_first_and_warns(self, tmp_path):
+        """Multiple space-separated files should use the first entry only."""
+        block = self.make_block(
+            extforcefile="old.ext",
+            extforcefilenew="westernscheldt_new.ext westernscheldt_spatial.ext",
+        )
+        block.root_dir = tmp_path
+
+        with pytest.warns(UserWarning, match="ExtForceFileNew contains multiple filenames"):
+            result = block.get_new_extforce_file()
+
+        assert result == tmp_path / "westernscheldt_new.ext"
+
+    def test_extforcefilenew_absent(self):
+        """If extforcefilenew is absent, returns the old.ext name with a "-new" suffix."""
         block = self.make_block(extforcefile="old.ext")
         result = block.get_new_extforce_file()
         assert result.name == "old-new.ext"
 
-    def test_extforcefilenew_absent_and_ext_file_provided(self):
-        """If extforcefilenew is absent and ext_file is provided, returns its resolved path."""
-        block = self.make_block(extforcefile="old.ext")
-        custom = Path("custom.ext")
-        result = block.get_new_extforce_file(ext_file=custom)
-        assert result.name == "custom.ext"
+    @pytest.mark.parametrize(
+        "extforcefile, extforcefilenew, expected_relpath",
+        [
+            ("old.ext", "subdir/new.ext", Path("subdir/new.ext")),
+            ("subdir/old.ext", None, Path("subdir/old-new.ext")),
+        ],
+    )
+    def test_get_new_extforce_file_resolves_paths(
+        self, tmp_path, extforcefile, extforcefilenew, expected_relpath
+    ):
+        """Both branches return resolved absolute paths under root_dir."""
+        block = self.make_block(
+            extforcefile=extforcefile,
+            extforcefilenew=extforcefilenew,
+        )
+        block.root_dir = tmp_path
+
+        result = block.get_new_extforce_file()
+
+        assert result == (tmp_path / expected_relpath).resolve()
         assert result.is_absolute()
 
     def test_file_already_exists_raises(self, tmp_path):
@@ -1493,3 +1575,232 @@ class GetNewExtforceFile:
         block.root_dir = None
         with pytest.raises(Exception):
             block.get_new_extforce_file()
+
+
+class TestUpdateExtForceFileNew:
+    """Tests for MDUParser.update_extforce_file_new.
+
+    These tests focus on the ``exact_match`` behaviour used when removing the old
+    ``ExtForceFile`` entry: searching for ``ExtForceFile`` must not match an
+    ``ExtForceFileNew`` line that merely shares the same prefix.
+    """
+
+    @staticmethod
+    def _make_parser(content):
+        """Build a lightweight MDUParser mock wired for update_extforce_file_new.
+
+        Args:
+            content: The list of MDU lines the mocked parser should operate on.
+
+        Returns:
+            MagicMock: A mock configured with the real methods needed by
+            ``update_extforce_file_new`` and its collaborators.
+        """
+        parser = MagicMock(spec=MDUParser)
+        parser.update_extforce_file_new = types.MethodType(
+            MDUParser.update_extforce_file_new, parser
+        )
+        parser.update_file_entry = types.MethodType(MDUParser.update_file_entry, parser)
+        parser._add_new_entry = types.MethodType(MDUParser._add_new_entry, parser)
+        parser._update_existing_entry = types.MethodType(
+            MDUParser._update_existing_entry, parser
+        )
+        parser.has_field = types.MethodType(MDUParser.has_field, parser)
+        parser.find_keyword_lines = types.MethodType(
+            MDUParser.find_keyword_lines, parser
+        )
+        parser.get_section = types.MethodType(MDUParser.get_section, parser)
+        parser.insert_line = types.MethodType(MDUParser.insert_line, parser)
+        parser.file_style_properties = FileStyleProperties(content)
+        parser.content = deepcopy(content)
+        return parser
+
+    @pytest.mark.unit
+    def test_exact_match_preserves_new_entry_when_removing_old(self):
+        """Removing the old file must not delete ExtForceFileNew via prefix match.
+
+        Test scenario:
+            The section contains only an ``ExtForceFileNew`` entry (no plain
+            ``ExtForceFile``). With ``remove_old_ext_file=True`` and a positive
+            quantity count, the old-file removal step searches for
+            ``ExtForceFile``; without ``exact_match`` it would wrongly match and
+            delete the ``ExtForceFileNew`` line. The entry must be preserved.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFileNew = existing_new.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 1, remove_old_ext_file=True)
+
+        new_lines = [line for line in parser.content if "ExtForceFileNew" in line]
+        assert (
+            len(new_lines) == 1
+        ), f"ExtForceFileNew should be preserved, content is: {parser.content}"
+        keys = [Line(line).key for line in parser.content if "=" in line]
+        assert (
+            "ExtForceFile" not in keys
+        ), f"No plain ExtForceFile line should remain, content is: {parser.content}"
+
+    @pytest.mark.unit
+    def test_removes_old_when_new_precedes_old(self):
+        """The old ExtForceFile is removed even when it comes after ExtForceFileNew.
+
+        Test scenario:
+            ``ExtForceFileNew`` appears before ``ExtForceFile`` in the section.
+            The exact-match search must skip the ``ExtForceFileNew`` line and
+            remove the genuine ``ExtForceFile`` line, leaving the new entry intact.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFileNew = existing_new.ext\n",
+            "ExtForceFile = old.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 1, remove_old_ext_file=True)
+
+        keys = [Line(line).key for line in parser.content if "=" in line]
+        assert (
+            "ExtForceFileNew" in keys
+        ), f"ExtForceFileNew should remain, content is: {parser.content}"
+        assert (
+            "ExtForceFile" not in keys
+        ), f"Old ExtForceFile should be removed, content is: {parser.content}"
+
+    @pytest.mark.unit
+    def test_num_quantities_zero_removes_new_entry(self):
+        """A zero quantity count removes the ExtForceFileNew entry.
+
+        Test scenario:
+            With ``num_quantities == 0`` and ``remove_old_ext_file=False``, the
+            existing ``ExtForceFileNew`` line is removed and everything else is
+            left untouched.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFileNew = existing_new.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 0, remove_old_ext_file=False)
+
+        assert not any(
+            "ExtForceFileNew" in line for line in parser.content
+        ), f"ExtForceFileNew should be removed, content is: {parser.content}"
+        assert (
+            len(parser.content) == 3
+        ), f"Only the ExtForceFileNew line should be removed, content is: {parser.content}"
+
+    @pytest.mark.unit
+    def test_num_quantities_zero_removes_new_and_old(self):
+        """A zero quantity count with remove_old removes both new and old entries.
+
+        Test scenario:
+            The section contains both ``ExtForceFileNew`` and ``ExtForceFile``.
+            With ``num_quantities == 0`` and ``remove_old_ext_file=True`` both
+            entries are removed.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFile = old.ext\n",
+            "ExtForceFileNew = existing_new.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 0, remove_old_ext_file=True)
+
+        keys = [Line(line).key for line in parser.content if "=" in line]
+        assert (
+            "ExtForceFileNew" not in keys
+        ), f"ExtForceFileNew should be removed, content is: {parser.content}"
+        assert (
+            "ExtForceFile" not in keys
+        ), f"ExtForceFile should be removed, content is: {parser.content}"
+
+    @pytest.mark.unit
+    def test_remove_old_false_keeps_old(self):
+        """When remove_old_ext_file is False the old ExtForceFile is kept.
+
+        Test scenario:
+            With a positive quantity count and ``remove_old_ext_file=False`` the
+            existing ``ExtForceFile`` line remains in the content.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFile = old.ext\n",
+            "ExtForceFileNew = existing_new.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 1, remove_old_ext_file=False)
+
+        keys = [Line(line).key for line in parser.content if "=" in line]
+        assert (
+            "ExtForceFile" in keys
+        ), f"ExtForceFile should be kept, content is: {parser.content}"
+
+    @pytest.mark.unit
+    def test_positive_quantities_inserts_new_and_removes_old(self):
+        """A positive count inserts ExtForceFileNew and removes the old entry.
+
+        Test scenario:
+            The section contains only ``ExtForceFile``. With a positive quantity
+            count and ``remove_old_ext_file=True`` a new ``ExtForceFileNew`` entry
+            is inserted with the given value and the old ``ExtForceFile`` line is
+            removed.
+        """
+        content = [
+            "[external forcing]\n",
+            "ExtForceFile = old.ext\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 1, remove_old_ext_file=True)
+
+        keys = [Line(line).key for line in parser.content if "=" in line]
+        assert (
+            "ExtForceFileNew" in keys
+        ), f"ExtForceFileNew should be inserted, content is: {parser.content}"
+        assert (
+            "ExtForceFile" not in keys
+        ), f"Old ExtForceFile should be removed, content is: {parser.content}"
+        new_line = next(line for line in parser.content if "ExtForceFileNew" in line)
+        assert (
+            "new.ext" in new_line
+        ), f"Inserted line should carry the new value, got: {new_line}"
+
+    @pytest.mark.unit
+    def test_no_extforce_lines_is_noop(self):
+        """Absent extforce entries leave the content unchanged without error.
+
+        Test scenario:
+            The section has neither ``ExtForceFile`` nor ``ExtForceFileNew``.
+            With ``num_quantities == 0`` and ``remove_old_ext_file=True`` the call
+            is a no-op and raises nothing.
+        """
+        content = [
+            "[external forcing]\n",
+            "[geometry]\n",
+            "NetFile = test.nc\n",
+        ]
+        parser = self._make_parser(content)
+
+        parser.update_extforce_file_new("new.ext", 0, remove_old_ext_file=True)
+
+        assert (
+            parser.content == content
+        ), f"Content should be unchanged, got: {parser.content}"

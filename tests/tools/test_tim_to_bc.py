@@ -20,13 +20,13 @@ def test_tim_to_bc_converter(input_files_dir: Path, reference_files_dir: Path):
     units = ["m³/s", "m", "C", "ppt", "-"]
     time_unit = "minutes since 2015-01-01 00:00:00"
     df = tim_model.as_dataframe()
-    converter = TimToForcingConverter()
-    time_series_list = converter.convert(
+    converter = TimToForcingConverter(
         tim_model=tim_model,
         time_unit=time_unit,
         units=units,
-        user_defined_names=user_defined_names,
+        user_defined_names=user_defined_names
     )
+    time_series_list = converter.convert()
 
     assert len(time_series_list) == 5
     assert [time_series_list[i].name for i in range(5)] == user_defined_names
@@ -47,3 +47,36 @@ def test_tim_to_bc_converter(input_files_dir: Path, reference_files_dir: Path):
     )
     assert diff == []
     converted_bc_path.unlink()
+
+
+def test_tim_to_bc_converter_writes_vector_block(tmp_path: Path):
+    tim_path = tmp_path / "seauxuy_0001.tim"
+    tim_path.write_text("0 1 2\n123456 3 4\n")
+
+    tim_model = TimModel(tim_path)
+    tim_model.quantities_names = ["ux", "uy"]
+
+    converter = TimToForcingConverter(
+        tim_model=tim_model,
+        time_unit="minutes since 2000-01-01 00:00:00 +00:00",
+        units=["unused", "unused"],
+        user_defined_names=["seauxuy"],
+    )
+    forcing_list = converter.convert(
+        vector_quantities={"uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}},
+    )
+
+    forcing_model = ForcingModel(forcing=forcing_list)
+    bc_path = tmp_path / "seauxuy.bc"
+    forcing_model.save(bc_path)
+    content = bc_path.read_text()
+
+    assert "name              = seauxuy" in content
+    assert "function          = timeseries" in content
+    assert "vector            = uxuyadvectionvelocitybnd:ux,uy" in content
+    assert "quantity          = ux" in content
+    assert "unit              = m s-1" in content
+    assert "quantity          = uy" in content
+    assert "0.0       1.0  2.0" in content
+    assert "123456.0  3.0  4.0" in content
+

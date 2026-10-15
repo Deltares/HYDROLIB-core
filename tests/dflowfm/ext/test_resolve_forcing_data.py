@@ -108,7 +108,7 @@ class TestResolveForcingData:
         """`None` is passed through unchanged for use with `Optional[ForcingData]` fields.
 
         Test scenario:
-            Optional fields like `SourceSink.salinitydelta` rely on this
+            Optional fields like `SourceSink.salinity` rely on this
             passthrough so they can remain unset.
         """
         result = _resolve_forcing_data(None)

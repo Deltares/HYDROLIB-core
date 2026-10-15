@@ -36,13 +36,15 @@ class TestSourceSink:
                 {
                     "id": "L1",
                     "name": "L1",
-                    "locationFile": "foobar.pli",
+                    "numCoordinates": 2,
+                    "xCoordinates": [0.0, 1.0],
+                    "yCoordinates": [0.0, 1.0],
                     "zSink": 0.0,
                     "zSource": 0.0,
                     "area": 1.0,
                     "discharge": 1.23,
-                    "salinitydelta": 4.0,
-                    "temperatureDelta": 5.0,
+                    "salinity": 4.0,
+                    "temperature": 5.0,
                 }
             ]
         }
@@ -117,6 +119,101 @@ class TestSourceSinkValidator:
                 discharge=None,
             )
 
+    def test_locationfile_with_zsource_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsource=-7.5,
+                discharge=1.0,
+            )
+
+    def test_locationfile_with_zsink_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSink",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsink=-2.5,
+                discharge=1.0,
+            )
+
+    def test_pli_locationfile_with_zsource_allowed(self):
+        """Plain `.pli` (no z column) + explicit zSource is valid.
+
+        Used for coupled source-sink where the polyline only provides x,y and
+        vertical placement comes from explicit zSource/zSink fields.
+        """
+        block = SourceSink(
+            id="left",
+            locationfile=DiskOnlyFileModel(filepath=Path("left.pli")),
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
+
+    def test_locationfile_with_zsource_list_raises(self):
+        locationfile = DiskOnlyFileModel(filepath=Path("left.pliz"))
+        with pytest.raises(
+            ValueError,
+            match=r"locationFile.*\.pliz.*cannot be combined with.*zSource",
+        ):
+            SourceSink(
+                id="left",
+                locationfile=locationfile,
+                zsource=[-7.5, -3.01],
+                discharge=1.0,
+            )
+
+    def test_inline_with_zsource_list(self):
+        """Range source: zSource carries two values (zmin, zmax)."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=1,
+            xcoordinates=[25.0],
+            ycoordinates=[5.0],
+            zsource=[-7.5, -3.01],
+            discharge=1.0,
+        )
+        assert block.zsource == [-7.5, -3.01]
+        assert block.zsink is None
+
+    def test_inline_with_zsource_and_zsink_lists(self):
+        """Coupled range source-sink: both zSource and zSink are 2-value lists."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=[-2.5, -1.1],
+            zsink=[-7.5, -2.2],
+            discharge=1.0,
+        )
+        assert block.zsource == [-2.5, -1.1]
+        assert block.zsink == [-7.5, -2.2]
+
+    def test_inline_with_scalar_zsource_zsink(self):
+        """Coupled point source-sink: scalar zSource + scalar zSink."""
+        block = SourceSink(
+            id="left",
+            numcoordinates=2,
+            xcoordinates=[25.0, 175.0],
+            ycoordinates=[5.0, 5.0],
+            zsource=-2.5,
+            zsink=-7.5,
+            discharge=1.0,
+        )
+        assert block.zsource == -2.5
+        assert block.zsink == -7.5
 
 SOURCESINK_BC_BODY = """[General]
 fileVersion = 1.01
@@ -158,7 +255,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
     Args:
         tmp_path: Pytest-supplied temporary directory.
         fields: Mapping of forcing-data field names (`discharge`,
-            `salinitydelta`, `temperaturedelta`) to the `.bc` filename
+            `salinity`, `temperature`) to the `.bc` filename
             string that should appear on the wire.
 
     Returns:
@@ -182,7 +279,7 @@ def _write_ext_with_bc(tmp_path: Path, fields: dict) -> Path:
 
 
 class TestSourceSinkForcingData:
-    """Validator coverage for `discharge`, `salinitydelta`, and `temperaturedelta`.
+    """Validator coverage for `discharge`, `salinity`, and `temperature`.
 
     These three fields share a single `mode="before"` field validator that
     delegates to `_resolve_forcing_data`, so each of float / RealTime /
@@ -263,12 +360,12 @@ class TestSourceSinkForcingData:
             f"Expected empty forcing list, got {source_sink.discharge.forcing}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_defaults_to_none(self, field: str):
-        """`salinitydelta` and `temperaturedelta` default to `None` when omitted.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_default_to_none_when_omitted(self, field: str):
+        """`salinity` and `temperature` default to `None` when omitted.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Ensures the new validator does not interfere with the optional
@@ -279,12 +376,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should default to None, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_accepts_float(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept a numeric value.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_accept_float(self, field: str):
+        """`salinity` and `temperature` accept a numeric value.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Nominal use-case mirroring `discharge` numeric handling.
@@ -294,12 +391,12 @@ class TestSourceSinkForcingData:
             f"Field {field} should be 4.0, got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinitydelta", "temperaturedelta"])
-    def test_optional_delta_accepts_realtime_keyword(self, field: str):
-        """`salinitydelta` and `temperaturedelta` accept the realtime keyword.
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_accept_realtime_keyword(self, field: str):
+        """`salinity` and `temperature` accept the realtime keyword.
 
         Args:
-            field: Either `salinitydelta` or `temperaturedelta`.
+            field: Either `salinity` or `temperature`.
 
         Test scenario:
             Same union semantics as `discharge`, since all three share the
@@ -311,15 +408,15 @@ class TestSourceSinkForcingData:
             f" got {getattr(source_sink, field)!r}"
         )
 
-    @pytest.mark.parametrize("field", ["salinityDelta", "temperatureDelta"])
-    def test_optional_delta_loads_bc_file_via_extmodel(
-        self, tmp_path: Path, field: str
+    @pytest.mark.parametrize("field", ["salinity", "temperature"])
+    def test_quantities_load_bc_file_via_extmodel(
+            self, tmp_path: Path, field: str
     ):
-        """`salinityDelta` / `temperatureDelta` accept a `.bc` filename in the `.ext`.
+        """`salinity` / `temperature` accept a `.bc` filename in the `.ext`.
 
         Args:
             tmp_path: Pytest temporary directory fixture.
-            field: Wire alias (`salinityDelta` or `temperatureDelta`).
+            field: Wire alias (`salinity` or `temperature`).
 
         Test scenario:
             The fix extended `.bc`-file support to these two optional
@@ -333,6 +430,72 @@ class TestSourceSinkForcingData:
         value = getattr(model.sourcesink[0], field.lower())
         assert isinstance(value, ForcingModel), (
             f"Expected ForcingModel on {field.lower()}, got {type(value).__name__}"
+        )
+
+
+
+class TestNoDeltaSuffix:
+    """Verify that 'Delta' is not appended to salinity/temperature quantity names.
+
+    Regression tests for the fix that removed 'Delta' from the salinity and
+    temperature field names in both the generated .ext and .bc files.
+    """
+
+    @pytest.mark.parametrize(
+        "kwargs, expected_key",
+        [
+            ({"salinity": 3.5}, "salinity"),
+            ({"temperature": 20.0}, "temperature"),
+        ],
+    )
+    def test_sourcesink_serializes_without_delta(
+            self, tmp_path: Path, kwargs: dict, expected_key: str
+    ):
+        """Serialized [SourceSink] block uses `salinity`/`temperature`, not the Delta variants.
+
+        Test scenario:
+            When a SourceSink with a salinity or temperature forcing is saved to
+            an .ext file, the key written on the wire must not carry the `Delta`
+            suffix (e.g. `salinity`, not `salinityDelta`).
+        """
+        source_sink = SourceSink(**_make_sourcesink_kwargs(**kwargs))
+        ext = ExtModel(sourcesink=[source_sink])
+        ext_path = tmp_path / "out.ext"
+        ext.save(ext_path)
+
+        content = ext_path.read_text(encoding="utf-8")
+        assert expected_key in content.lower()
+        assert f"{expected_key}delta" not in content.lower()
+
+    @pytest.mark.parametrize(
+        "wire_key, python_attr",
+        [
+            ("salinity", "salinity"),
+            ("temperature", "temperature"),
+            ("salinityDelta", "salinity"),      # backward compat: old alias
+            ("temperatureDelta", "temperature"), # backward compat: old alias
+        ],
+    )
+    def test_sourcesink_reads_forcing_alias(
+            self, tmp_path: Path, wire_key: str, python_attr: str
+    ):
+        """Wire key `wire_key` in an ext file maps to the `python_attr` field.
+
+        Test scenario:
+            Both the current aliases (`salinity`, `temperature`) and the legacy
+            aliases from older HYDROLIB-core versions (`salinityDelta`,
+            `temperatureDelta`) must load into the correct model field as a
+            ForcingModel. The migration validator renames lowercased legacy keys
+            before field population.
+        """
+        ext_path = _write_ext_with_bc(
+            tmp_path, {"discharge": "1.0", wire_key: "sourcesink.bc"}
+        )
+        model = ExtModel(ext_path)
+        value = getattr(model.sourcesink[0], python_attr)
+        assert isinstance(value, ForcingModel), (
+            f"Wire key '{wire_key}' should load into '{python_attr}' as a "
+            f"ForcingModel, got {type(value).__name__}"
         )
 
 
@@ -355,7 +518,7 @@ class TestSourceSinkDynamicForcingDeltas:
         ],
     )
     def test_numeric_string_is_coerced_to_float(
-        self, field: str, raw: str, expected: float
+            self, field: str, raw: str, expected: float
     ):
         """Numeric string on a dynamic Delta-suffix field is coerced to `float`.
 
@@ -378,7 +541,7 @@ class TestSourceSinkDynamicForcingDeltas:
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_bc_file_loads_forcingmodel_via_extmodel(
-        self, tmp_path: Path, field: str
+            self, tmp_path: Path, field: str
     ):
         """Dynamic Delta-suffix field accepts a `.bc` filename in the `.ext`.
 
@@ -441,6 +604,6 @@ class TestSourceSinkDynamicForcingDeltas:
             runtime.
         """
         with pytest.raises(
-            ValidationError, match="'realtime' keyword is not supported"
+                ValidationError, match="'realtime' keyword is not supported"
         ):
             SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))

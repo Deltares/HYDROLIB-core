@@ -9,6 +9,8 @@ Most relevant classes are:
 
 """
 
+from __future__ import annotations
+
 import logging
 import re
 from pathlib import Path
@@ -27,6 +29,7 @@ from typing import (
 )
 
 from pydantic import (
+    AfterValidator,
     BeforeValidator,
     ConfigDict,
     Field,
@@ -38,6 +41,8 @@ from pydantic import (
 from pydantic_core import core_schema
 from strenum import StrEnum
 
+from hydrolib.core.base import DiskOnlyFileModel
+from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import BaseModel, ModelSaveSettings
 from hydrolib.core.base.utils import to_list
 from hydrolib.core.dflowfm.ini.io_models import Property, Section
@@ -46,13 +51,13 @@ from hydrolib.core.dflowfm.ini.models import (
     INIGeneral,
     INIModel,
 )
+from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
 from hydrolib.core.dflowfm.ini.serializer import DataBlockINIBasedSerializerConfig
 from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
     make_list,
     rename_keys_for_backwards_compatibility,
-    split_string_on_delimiter,
 )
 
 logger = logging.getLogger(__name__)
@@ -91,16 +96,36 @@ class VerticalPositionType(StrEnum):
 
 
 class TimeInterpolation(StrEnum):
-    """Enum class containing the valid values for the time interpolation."""
+    """Enum class containing the valid values for the time interpolation.
+
+    Attributes:
+        linear: Linear interpolation between times.
+        block_from: Equal to that at the start of the time interval (latest specified time value).
+        block_to: Equal to that at the end of the time interval (upcoming specified time value).
+    """
 
     linear = "linear"
-    """str: Linear interpolation between times."""
-
     block_from = "block-From"
-    """str: Equal to that at the start of the time interval (latest specified time value)."""
-
     block_to = "block-To"
-    """str: Equal to that at the end of the time interval (upcoming specified time value)."""
+
+    @classmethod
+    def from_old_method(cls, method: int) -> TimeInterpolation:
+        """Map an old external forcing `METHOD` to a time interpolation.
+
+        Old `METHOD=0` means no time interpolation: the value is held from the last
+        specified time, i.e. `block-From`. Every other method keeps the default linear
+        time interpolation.
+
+        Args:
+            method (int): The `METHOD` value of the old forcing block.
+
+        Returns:
+            TimeInterpolation: `block-From` for `METHOD=0`, otherwise `linear`.
+        """
+        result = cls.linear
+        if int(method) == 0:
+            result = cls.block_from
+        return result
 
 
 class QuantityUnitPair(BaseModel):
@@ -779,7 +804,7 @@ class T3D(VectorForcingBase):
     @field_validator("vertpositions", mode="before")
     @classmethod
     def _split_vertpositions(cls, value: Any, info: ValidationInfo) -> List[float]:
-        return split_string_on_delimiter(cls, value, info)
+        return cls.split_string_on_delimiter(value, info)
 
     @field_validator("vertinterpolation", mode="before")
     @classmethod
@@ -1205,9 +1230,9 @@ class ForcingModel(INIModel):
         # This method now only supports per model settings, not per section.
         parser = Parser(ParserConfig(parse_datablocks=True, parse_comments=False))
 
-        with filepath.open(encoding="utf8") as f:
-            for line in f:
-                parser.feed_line(line)
+        content = open_file_with_fallback_encoding(filepath)
+        for line in content.splitlines(keepends=True):
+            parser.feed_line(line)
 
         return parser.finalize().flatten(True, False)
 
@@ -1224,9 +1249,52 @@ class RealTime(StrEnum):
     """str: Realtime data source, externally provided"""
 
 
-ForcingData = Union[float, RealTime, ForcingModel]
-"""Data type that selects from three different types of forcing data:
+def _reject_disk_only_on_recursive_load(
+    v: float| RealTime | ForcingModel | DiskOnlyFileModel,
+) -> float| RealTime | ForcingModel | DiskOnlyFileModel:
+    """Reject DiskOnlyFileModel when the load context has recurse=True.
+
+    This guard ensures that a ``DiskOnlyFileModel`` can only appear as a
+    ``ForcingData`` value when the model tree is loaded with ``recurse=False``.
+    Under a recursive load the .bc file should be fully parsed into a
+    ``ForcingModel``; if a ``DiskOnlyFileModel`` slips through it indicates a
+    bug in the resolution pipeline.
+    """
+    if isinstance(v, DiskOnlyFileModel):
+
+        with file_load_context() as context:
+            if (
+                hasattr(context, "_load_settings")
+                and context._load_settings is not None
+                and context._load_settings.recurse
+            ):
+                raise ValueError(
+                    "A DiskOnlyFileModel is not valid for ForcingData when loading "
+                    "with recurse=True. Expected a fully parsed ForcingModel, a "
+                    "scalar float, or the 'realtime' keyword."
+                )
+    return v
+
+
+ForcingData = Annotated[
+    Union[float, RealTime, ForcingModel, DiskOnlyFileModel],
+    AfterValidator(_reject_disk_only_on_recursive_load),
+]
+"""Data type that selects from four different types of forcing data:
 *   a scalar float constant
 *   "realtime" keyword, indicating externally controlled.
 *   A ForcingModel coming from a .bc file.
+*   A DiskOnlyFileModel placeholder when the file is loaded non-recursively
+    (i.e. ``recurse=False``). In that mode, `resolve_file_model` returns a
+    lightweight stub instead of fully parsing the .bc file.
+
+Note:
+    Raw values never reach Pydantic's Union resolution directly — a
+    ``@field_validator(mode="before")`` calling ``_resolve_forcing_data``
+    always resolves strings/paths into the correct type *before* Pydantic
+    performs Union matching. ``DiskOnlyFileModel`` is listed here solely so
+    Pydantic accepts the already-constructed instance returned by the
+    before-validator under non-recursive loads. The ``AfterValidator``
+    rejects ``DiskOnlyFileModel`` if the load context has ``recurse=True``,
+    catching pipeline bugs early.
 """

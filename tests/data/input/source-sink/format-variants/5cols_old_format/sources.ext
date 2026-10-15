@@ -1,0 +1,13 @@
+QUANTITY=discharge_salinity_temperature_sorsin
+FILENAME=left.pliz
+FILETYPE=9
+METHOD=3
+OPERAND=O
+AREA=0.0
+
+QUANTITY=discharge_salinity_temperature_sorsin
+FILENAME=right.pliz
+FILETYPE=9
+METHOD=3
+OPERAND=O
+AREA=0.0

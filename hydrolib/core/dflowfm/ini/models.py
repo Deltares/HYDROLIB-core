@@ -1,6 +1,7 @@
 """Models for INI-based D-Flow FM file formats, including INIBasedModel and INIModel."""
 
 import logging
+import types
 from abc import ABC
 from enum import Enum
 from inspect import isclass
@@ -28,7 +29,6 @@ from pydantic import (
     field_validator,
     model_validator,
 )
-from pydantic.fields import FieldInfo
 from pydantic_core import core_schema
 
 from hydrolib.core import __version__ as version
@@ -40,6 +40,7 @@ from hydrolib.core.base.models import (
     ParsableFileModel,
 )
 from hydrolib.core.base.utils import FortranScientificNotationConverter
+from hydrolib.core.base.validators import ListFieldDelimiter
 from hydrolib.core.dflowfm.ini.io_models import (
     CommentBlock,
     Document,
@@ -57,7 +58,7 @@ from hydrolib.core.dflowfm.ini.util import UnknownKeywordErrorManager, make_list
 logger = logging.getLogger(__name__)
 
 
-class INIBasedModel(BaseModel, ABC):
+class INIBasedModel(ListFieldDelimiter, BaseModel, ABC):
     """INIBasedModel defines the base model for blocks/chapters inside an INIModel (*.ini file).
 
     - Abstract base class for representing INI-style configuration file blocks or chapters.
@@ -153,44 +154,6 @@ class INIBasedModel(BaseModel, ABC):
             bool: True if duplicate keys should be treated as lists; otherwise, False.
         """
         return False
-
-    @classmethod
-    def get_list_delimiter(cls) -> str:
-        """List delimiter string that will be used for serializing list field values for any IniBasedModel.
-
-        Only applies **if** that field has no custom list delimiter.
-        This function should be overridden by any subclass for a particular
-        filetype that needs a specific/different list separator.
-        """
-        return " "
-
-    @classmethod
-    def get_list_field_delimiter(cls, field_key: str) -> str:
-        """List delimiter string that will be used for serializing the given field's value.
-
-        The returned delimiter is either the field's custom list delimiter
-        if that was specified using Field(.., delimiter=".."), or the
-        default list delimiter for the model class that this field belongs
-        to.
-
-        Args:
-            field_key (str): the original field key (not its alias).
-
-        Returns:
-            str: the delimiter string to be used for serializing the given field.
-        """
-        delimiter = None
-        field_info = cls.model_fields.get(field_key)
-        if (
-            (field := field_info)
-            and isinstance(field, FieldInfo)
-            and field.json_schema_extra
-        ):
-            delimiter = field.json_schema_extra.get("delimiter")
-        if not delimiter:
-            delimiter = cls.get_list_delimiter()
-
-        return delimiter
 
     class Comments(BaseModel, ABC):
         """Represents the comments associated with fields in an INIBasedModel.
@@ -517,7 +480,9 @@ class INIBasedModel(BaseModel, ABC):
         Returns:
             bool: True if the type is a Union; otherwise, False.
         """
-        return get_origin(field_type) is Union
+        return get_origin(field_type) is Union or isinstance(
+            field_type, types.UnionType
+        )
 
     @staticmethod
     def _union_has_filemodel(field_type: type) -> bool:

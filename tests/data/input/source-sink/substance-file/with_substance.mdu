@@ -1,0 +1,18 @@
+[General]
+Program                             = D-Flow FM
+Version                             = 1.2.100.66357
+FileVersion                         = 1.09
+PathsRelativeToParent               = 0
+
+[physics]
+Salinity                            = 1
+Temperature                         = 5
+
+[processes]
+SubstanceFile                       = sub-file.sub
+
+[time]
+RefDate                             = 20160101  # Reference date (yyyymmdd)
+
+[external forcing]
+ExtForceFile                     = with_substance.ext

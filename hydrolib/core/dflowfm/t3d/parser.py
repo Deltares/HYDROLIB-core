@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any, Dict, List
 
-from hydrolib.core.base.parser import BaseParser
+from hydrolib.core.base.parser import BaseParser, open_file_with_fallback_encoding
 
 
 class T3DParser(BaseParser):
@@ -58,10 +58,10 @@ class T3DParser(BaseParser):
                 ]
             }
         """
-        with filepath.open(encoding="utf8") as file:
-            lines = file.readlines()
-            comments, start_timeseries_index = T3DParser._read_header_comments(lines)
-            data = T3DParser._read_data(lines, start_timeseries_index)
+        content = open_file_with_fallback_encoding(filepath)
+        lines = content.splitlines(keepends=True)
+        comments, start_timeseries_index = T3DParser._read_header_comments(lines)
+        data = T3DParser._read_data(lines, start_timeseries_index)
 
         return {"comments": comments} | data
 

@@ -111,6 +111,7 @@ nav:
       - topics/principles.md
       - topics/pydantic.md
       - topics/loadsave.md
+      - topics/bubble-screen.md
   - API Reference:
       - Introduction:
           - reference/glossary.md
