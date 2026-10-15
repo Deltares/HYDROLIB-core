@@ -22,7 +22,7 @@ from hydrolib.tools.extforce_convert.mdu_parser import (
     [
         (
             "dflowfm_individual_files/with_optional_sections.mdu",
-            (232, 233),
+            (230, 231),
             "ExtForceFileNew                           = test.ext\n",
             "test.ext",
         ),

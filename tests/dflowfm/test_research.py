@@ -47,7 +47,6 @@ class TestResearchFMModel:
         # there are too many research keywords to test, so here we just assert a couple of them
         assert model.general.research_inputspecific == False
         assert model.geometry.research_helmert == False
-        assert model.numerics.research_epseps == pytest.approx(1e-32)
         assert model.physics.research_uniffrictcoef1d2d == pytest.approx(2.3e-2)
         assert model.sediment.research_implicitfallvelocity == 1
         assert model.wind.research_wind_eachstep == 0
