@@ -10,7 +10,6 @@
 
 [Geometry]
     netFile                    = FlowFM_net.nc
-    bathymetryFile             =
     dryPointsFile              =
     structureFile              = structures.ini
     iniFieldFile               = initialFields.ini
