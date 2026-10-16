@@ -336,10 +336,22 @@ class SpatialConverter(BaseConverter):
             supported by the converter, a ValueError is raised.
         """
         data = SpatialBlockBuilder(forcing, new_forcing_path).build()
+        meteorological_component_units = (
+            CONVERTER_DATA.external_forcing.get_meteorological_field_component_units(
+                forcing.quantity
+            )
+        )
+        meteorological_quantities = None
+        if meteorological_component_units:
+            meteorological_quantities = {str(forcing.quantity): meteorological_component_units}
 
         if data.get("datafiletype") == DataFileType.uniform:
-            data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
-
+            data = self._uniform_tim_to_bc(
+                forcing,
+                data,
+                new_forcing_path,
+                meteorological_quantities=meteorological_quantities
+            )
         try:
             spatial_block = Spatial(**data)
         except Exception as e:
@@ -349,7 +361,11 @@ class SpatialConverter(BaseConverter):
         return spatial_block
 
     def _uniform_tim_to_bc(
-        self, forcing: ExtOldForcing, data: dict[str, Any], new_forcing_path: Path
+        self,
+        forcing: ExtOldForcing,
+        data: dict[str, Any],
+        new_forcing_path: Path,
+        meteorological_quantities: dict[str, dict[str, str]] | None = None,
     ) -> dict[str, Any]:
         """Replace a uniform `.tim` data file with an inline `.bc` `ForcingModel`.
 
@@ -383,19 +399,29 @@ class SpatialConverter(BaseConverter):
                 f"Invalid TIM input: '{tim_path}' contains no data rows. "
                 f"Encountered for QUANTITY={forcing.quantity}."
             )
-        # A FILETYPE=1 uniform time series carries a single scalar column for the one
-        # spatial quantity (unlike a source/sink .tim, whose columns are different
-        # quantities). More than one data column has no mapping to a single [Spatial]
-        # block, so fail clearly rather than emit ambiguous forcings.
         n_columns = len(tim_model.timeseries[0].data)
-        if n_columns != 1:
-            raise SpatialError(
-                f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
-                f"data column, but '{tim_path}' has {n_columns}. Encountered for "
-                f"QUANTITY={forcing.quantity}."
-            )
-        tim_model.quantities_names = [quantity]
-        units = tim_model.get_units()
+
+        if meteorological_quantities:
+            _, component_units = next(iter(meteorological_quantities.items()))
+            component_names = list(component_units.keys())
+            if n_columns != len(component_names):
+                raise SpatialError(
+                    f"Configured multi-column spatial quantity '{forcing.quantity}' expects "
+                    f"{len(component_names)} data columns {component_names}, but '{tim_path}' "
+                    f"has {n_columns}."
+                )
+            tim_model.quantities_names = component_names
+            units = list(component_units.values())
+        else:
+            if n_columns != 1:
+                raise SpatialError(
+                    f"A uniform time series (FILETYPE=1) spatial quantity must have a single "
+                    f"data column, unless QUANTITY={forcing.quantity} is configured as a "
+                    f"multi-column quantity. '{tim_path}' has {n_columns} data columns."
+                )
+            else:
+                tim_model.quantities_names = [quantity]
+                units = tim_model.get_units()
         tim_to_bc_converter = TimToForcingConverter(
             tim_model=tim_model,
             time_unit=time_unit,
@@ -403,7 +429,9 @@ class SpatialConverter(BaseConverter):
             units=units,
             user_defined_names=["global"],
         )
-        forcing_list = tim_to_bc_converter.convert()
+        forcing_list = tim_to_bc_converter.convert(
+            meteorological_quantities=meteorological_quantities
+        )
         forcing_model = ForcingModel(forcing=forcing_list)
         forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
 
@@ -2018,6 +2046,7 @@ class TimToForcingConverter:
     def convert(
         self,
         vector_quantities: dict[str, dict[str, str]] | None = None,
+        meteorological_quantities: dict[str, dict[str, str]] | None = None,
     ) -> list[TimeSeries]:
         """
         Convert a TimModel into a ForcingModel.
@@ -2027,6 +2056,12 @@ class TimToForcingConverter:
                 Optional vector quantity definition. The outer key is the vector name and
                 the nested mapping defines component names to units. When provided, the
                 method emits one vector `TimeSeries` block per TIM model.
+            meteorological_quantities (dict[str, dict[str, str]], optional):
+                Optional scalar quantity definition. The outer key is the quantity name and
+                the nested mapping defines component names to units. When provided, the
+                method emits one scalar `TimeSeries` containing all TIM data columns as
+                separate quantity/unit pairs instead of splitting them into one forcing per
+                column.
 
         Returns:
             TimeSeries:
@@ -2064,9 +2099,18 @@ class TimToForcingConverter:
         if self.user_defined_names is None:
             raise ValueError("'user_defined_names' must be provided.")
 
+        if vector_quantities and meteorological_quantities:
+            raise ValueError(
+                "Vector quantity conversion and scalar meteorological quantity conversion are mutually exclusive."
+            )
+
         if vector_quantities:
             time_series_list = self._convert_vector_quantities(
                 vector_quantities,
+            )
+        elif meteorological_quantities:
+            time_series_list = self._convert_meteorological_quantity(
+                meteorological_quantities,
             )
         else:
             time_series_list = self._convert_scalar_quantities()
@@ -2146,6 +2190,58 @@ class TimToForcingConverter:
             ],
         )
 
+        return [forcing]
+
+    def _convert_meteorological_quantity(
+        self,
+        meteorological_quantities: dict[str, dict[str, str]],
+    ) -> list[TimeSeries]:
+        """Convert one meteorological quantity into one scalar `TimeSeries` block.
+
+        The component names and units are taken from the supplied
+        `meteorological_quantities` mapping (not from the TIM DataFrame columns or
+        `self.units`). If the TIM DataFrame columns already contain all configured
+        component names, the data is reordered to the configured order; otherwise the
+        columns are assigned the configured names positionally.
+
+        Raises:
+            ValueError: If not exactly one user-defined name is provided, or if the
+                number of TIM data columns does not match the configured components.
+        """
+        if len(self.user_defined_names) != 1:
+            raise ValueError(
+                "For multi-column scalar quantities, provide exactly one user-defined forcing name per TIM model."
+            )
+
+        quantity_name, component_units = next(iter(meteorological_quantities.items()))
+        component_names = list(component_units.keys())
+
+        df = self.tim_model_df
+        if len(component_names) != len(df.columns):
+            raise ValueError(
+                f"Meteorological quantity '{quantity_name}' expects {len(component_names)} "
+                f"columns {component_names}, but TIM data has {len(df.columns)} columns."
+            )
+
+        component_rows = df[component_names].values.tolist()
+
+        time_data = df.index.tolist()
+        forcing = TimeSeries(
+            name=self.user_defined_names[0],
+            function="timeseries",
+            timeinterpolation=self.time_interpolation,
+            quantityunitpair=[
+                QuantityUnitPair(quantity="time", unit=self.time_unit),
+                *[
+                    QuantityUnitPair(quantity=component, unit=component_units[component])
+                    for component in component_names
+                ],
+            ],
+            datablock=[
+                [time_val, *row]
+                for time_val, row in zip(time_data, component_rows)
+            ],
+        )
         return [forcing]
 
 

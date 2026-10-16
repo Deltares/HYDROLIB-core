@@ -332,6 +332,35 @@ class TestMultipleColumnsQuantityNames:
             "uxuyadvectionvelocitybnd"
         ) == {"ux": "m s-1", "uy": "m s-1"}
 
+    @pytest.mark.parametrize(
+        "field_name", ["vector_quantities", "meteorological_fields"]
+    )
+    @pytest.mark.parametrize(
+        "value, expected",
+        [
+            ("not-a-mapping", "must be a mapping of quantity name"),
+            ({"not_a_quantity": {"a": "m"}}, "is not a known quantity"),
+            ({"humidity_airtemperature_cloudiness": {}}, "must be a mapping of component names"),
+            ({"humidity_airtemperature_cloudiness": {" ": "%"}}, "empty component name"),
+            ({"humidity_airtemperature_cloudiness": {"humidity": 1}}, "must be a string"),
+            ({"humidity_airtemperature_cloudiness": {"humidity": " "}}, "must be non-empty"),
+        ],
+    )
+    def test_validation_errors_name_the_validated_field(
+        self, field_name, value, expected
+    ):
+        other_field = (
+            "meteorological_fields"
+            if field_name == "vector_quantities"
+            else "vector_quantities"
+        )
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(**{field_name: value})
+        message = str(exc.value)
+        assert expected in message
+        assert f"'{field_name}" in message
+        assert f"'{other_field}" not in message
+
 
 class TestCheckUnsupportedQuantities:
     def test_check_no_raise_when_all_supported(self):
