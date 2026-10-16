@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 import inspect
 
 from hydrolib.core.dflowfm.ini.parser import Parser, ParserConfig
@@ -88,7 +89,7 @@ class TestGate:
         assert gate.gateopeningwidth == pytest.approx(1.5)
         assert gate.gateopeninghorizontaldirection == GateOpeningHorizontalDirection.from_left
 
-    def test_gate_with_unknown_parameter_is_ignored(self):
+    def test_gate_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
 
         input_str = inspect.cleandoc(
@@ -117,18 +118,11 @@ class TestGate:
 
         document = parser.finalize()
 
-        wrapper = WrapperTest[Gate].model_validate({"val": document.sections[0]})
-        gate = wrapper.val
+        with pytest.raises(ValidationError) as exc_info:
+            WrapperTest[Gate].model_validate({"val": document.sections[0]})
 
-        assert gate.model_dump().get("unknown") is None  # type: ignore
-        assert gate.id == "gate_001"
-        assert gate.name == "Gate_001name"
-        assert gate.branchid == "gate_branch"
-        assert gate.chainage == pytest.approx(50.5)
-        assert gate.type == "gate"
-        assert gate.crestlevel == pytest.approx(10.5)
-        assert gate.gateloweredgelevel == pytest.approx(8.5)
-        assert gate.gateheight == pytest.approx(2.0)
+        assert "Unknown keywords are detected in section" in str(exc_info.value)
+        assert "unknown" in str(exc_info.value)
 
     def test_gate_with_missing_required_parameters(self):
         parser = Parser(ParserConfig())
@@ -398,20 +392,20 @@ class TestGateAdditionalCoverage:
         assert isinstance(getattr(gate, field_name), ForcingModel)
 
     def test_gate_polylinefile_only_passes_location_validation(self, tmp_path):
-        polyline_file = tmp_path / "gate.pli"
-        polyline_file.write_text("dummy")
+        location_file = tmp_path / "gate.pli"
+        location_file.write_text("dummy")
 
         gate = Gate(
             id="gate_id",
             name="Gate 01",
-            polylinefile=polyline_file,
+            locationfile=location_file,
             crestlevel=1.5,
             gateloweredgelevel=0.5,
             gateheight=2.0,
         )
 
-        assert gate.polylinefile is not None
-        assert gate.polylinefile.filepath == polyline_file
+        assert gate.locationfile is not None
+        assert gate.locationfile.filepath == location_file
         assert gate.branchid is None
         assert gate.chainage is None
 
