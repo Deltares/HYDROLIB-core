@@ -3,10 +3,16 @@
 import os
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Set, Type, Union
+from typing import Any, ClassVar, Dict, Iterable, List, Set, Type, Union
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    RootModel,
+    field_validator,
+)
 
 from hydrolib import __path__
 from hydrolib.core.base.file_manager import PathOrStr
@@ -401,11 +407,171 @@ class MDUConfig(BaseModel):
         return set(check_unique(v))
 
 
+class MultiColumnQuantities(RootModel[dict[str, dict[str, str]]]):
+    """Multi-column quantities of `data.yaml`: `{quantity: {component: unit}}`.
+
+    A multi-column quantity is a single `QUANTITY` of the old external forcings file whose
+    time series file has one data column per component, in the order of the components.
+    Subclasses set `field_name`, the name of the `data.yaml` section, which the error
+    messages quote.
+    """
+
+    field_name: ClassVar[str]
+
+    root: dict[str, dict[str, str]] = Field(default_factory=dict)
+
+    @field_validator("root", mode="before")
+    def normalize_definitions(
+        cls, v: dict[str, dict[str, str]] | None
+    ) -> dict[str, dict[str, str]]:
+        """Normalize the definitions keyed by old quantity name.
+
+        Args:
+            v (dict[str, dict[str, str]] | None): The definitions. `None` is treated as
+                an empty mapping.
+
+        Returns:
+            dict[str, dict[str, str]]: The definitions with lowercased, trimmed quantity
+                names and trimmed component names and units.
+
+        Raises:
+            ValueError: If the definitions are malformed, a quantity is not a known
+                quantity of the old external forcings file, or a component name is
+                empty or duplicated.
+        """
+        if v is None:
+            return {}
+
+        if not isinstance(v, dict):
+            raise ValueError(
+                f"'{cls.field_name}' must be a mapping of quantity name to component names."
+            )
+
+        normalized: dict[str, dict[str, str]] = {}
+        for quantity_name, component_units in v.items():
+            key = cls._normalize_quantity_key(quantity_name)
+            normalized[key] = cls._normalize_component_units(
+                quantity_name, component_units
+            )
+
+        return normalized
+
+    @classmethod
+    def _normalize_quantity_key(cls, quantity_name: Any) -> str:
+        """Validate and normalize a quantity key to a known old quantity name."""
+        if not isinstance(quantity_name, str):
+            raise ValueError(
+                f"'{cls.field_name}' key must be a string, got {quantity_name!r}."
+            )
+
+        key = quantity_name.strip().lower()
+        if key not in KNOWN_OLD_QUANTITY_NAMES:
+            raise ValueError(
+                f"'{cls.field_name}' key {quantity_name!r} is not a known quantity "
+                "of the old external forcings file."
+            )
+        return key
+
+    @classmethod
+    def _normalize_component_units(
+        cls, quantity_name: str, component_units: Any
+    ) -> dict[str, str]:
+        """Validate and normalize the `{component: unit}` mapping of one quantity."""
+        if not isinstance(component_units, dict) or not component_units:
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' must be a mapping of component names to units."
+            )
+
+        normalized_components: dict[str, str] = {}
+        for component_name, unit_name in component_units.items():
+            component = cls._validate_component_name(
+                quantity_name, component_name, normalized_components
+            )
+            normalized_components[component] = cls._validate_component_unit(
+                quantity_name, component, unit_name
+            )
+        return normalized_components
+
+    @classmethod
+    def _validate_component_name(
+        cls, quantity_name: str, component_name: Any, seen: dict[str, str]
+    ) -> str:
+        """Validate a single component name and return its trimmed form."""
+        if not isinstance(component_name, str):
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' contains a non-string component: {component_name!r}."
+            )
+        component = component_name.strip()
+        if not component:
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' contains an empty component name."
+            )
+        if component in seen:
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' contains duplicate component name {component!r}."
+            )
+        return component
+
+    @classmethod
+    def _validate_component_unit(
+        cls, quantity_name: str, component: str, unit_name: Any
+    ) -> str:
+        """Validate a single component's unit and return its trimmed form."""
+        if not isinstance(unit_name, str):
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' unit for component {component!r} must be a string."
+            )
+        unit = unit_name.strip()
+        if not unit:
+            raise ValueError(
+                f"'{cls.field_name}[{quantity_name}]' unit for component {component!r} must be non-empty."
+            )
+        return unit
+
+    def get_component_units(self, quantity: ExtOldQuantity | str) -> dict[str, str] | None:
+        """Return the component/unit mapping of a quantity, or None if it is not configured.
+
+        Args:
+            quantity (ExtOldQuantity | str): The `QUANTITY` of an old forcing block. The
+                lookup is case-insensitive.
+
+        Returns:
+            dict[str, str] | None: A copy of the ordered `{component: unit}` mapping.
+        """
+        component_units = self.root.get(str(quantity).strip().lower())
+        if component_units:
+            result = dict(component_units)
+        else:
+            result = None
+        return result
+
+
+class VectorQuantities(MultiColumnQuantities):
+    """The vector quantities of `data.yaml`, e.g. `windxy` (`wx`, `wy`).
+
+    Their time series are written to a `.bc` file as a `vector = <quantity>:<components>`
+    block.
+    """
+
+    field_name: ClassVar[str] = "vector_quantities"
+
+
+class CombinedQuantities(MultiColumnQuantities):
+    """The combined quantities of `data.yaml`, e.g. `humidity_airtemperature_cloudiness`.
+
+    The quantity name joins several variables, and the uniform time series file has one
+    data column per variable.
+    """
+
+    field_name: ClassVar[str] = "combined_quantities"
+
+
 class ExternalForcingConfigs(BaseModel):
     unsupported_quantities: list[str] = Field(default_factory=list)
     unsupported_prefixes: list[str] = Field(default_factory=list)
     renamed_quantities: dict[str, str] = Field(default_factory=dict)
-    vector_quantities: dict[str, dict[str, str]] = Field(default_factory=dict)
+    vector_quantities: VectorQuantities = Field(default_factory=VectorQuantities)
+    combined_quantities: CombinedQuantities = Field(default_factory=CombinedQuantities)
 
     @field_validator(
         "unsupported_quantities", "unsupported_prefixes", mode="before"
@@ -481,105 +647,6 @@ class ExternalForcingConfigs(BaseModel):
 
         return normalized
 
-    @field_validator("vector_quantities", mode="before")
-    def normalize_vector_quantities(
-        cls, v: dict[str, dict[str, str]] | None
-    ) -> dict[str, dict[str, str]]:
-        """Normalize vector quantity definitions keyed by old quantity name.
-
-        Expected style is mapping only: `{component: unit}`.
-        """
-        if v is None:
-            return {}
-
-        if not isinstance(v, dict):
-            raise ValueError(
-                "'vector_quantities' must be a mapping of quantity name to component names."
-            )
-
-        normalized: dict[str, dict[str, str]] = {}
-        for quantity_name, component_units in v.items():
-            key = cls._normalize_vector_key(quantity_name)
-            normalized[key] = cls._normalize_component_units(
-                quantity_name, component_units
-            )
-
-        return normalized
-
-    @staticmethod
-    def _normalize_vector_key(quantity_name: Any) -> str:
-        """Validate and normalize a `vector_quantities` key to a known old quantity name."""
-        if not isinstance(quantity_name, str):
-            raise ValueError(
-                f"'vector_quantities' key must be a string, got {quantity_name!r}."
-            )
-
-        key = quantity_name.strip().lower()
-        if key not in KNOWN_OLD_QUANTITY_NAMES:
-            raise ValueError(
-                f"'vector_quantities' key {quantity_name!r} is not a known quantity "
-                "of the old external forcings file."
-            )
-        return key
-
-    @staticmethod
-    def _normalize_component_units(
-        quantity_name: str, component_units: Any
-    ) -> dict[str, str]:
-        """Validate and normalize the `{component: unit}` mapping of one vector quantity."""
-        if not isinstance(component_units, dict) or not component_units:
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' must be a mapping of component names to units."
-            )
-
-        normalized_components: dict[str, str] = {}
-        for component_name, unit_name in component_units.items():
-            component = ExternalForcingConfigs._validate_component_name(
-                quantity_name, component_name, normalized_components
-            )
-            normalized_components[component] = (
-                ExternalForcingConfigs._validate_component_unit(
-                    quantity_name, component, unit_name
-                )
-            )
-        return normalized_components
-
-    @staticmethod
-    def _validate_component_name(
-        quantity_name: str, component_name: Any, seen: dict[str, str]
-    ) -> str:
-        """Validate a single component name and return its trimmed form."""
-        if not isinstance(component_name, str):
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains a non-string component: {component_name!r}."
-            )
-        component = component_name.strip()
-        if not component:
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains an empty component name."
-            )
-        if component in seen:
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' contains duplicate component name {component!r}."
-            )
-        return component
-
-    @staticmethod
-    def _validate_component_unit(
-        quantity_name: str, component: str, unit_name: Any
-    ) -> str:
-        """Validate a single component's unit and return its trimmed form."""
-        if not isinstance(unit_name, str):
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be a string."
-            )
-        unit = unit_name.strip()
-        if not unit:
-            raise ValueError(
-                f"'vector_quantities[{quantity_name}]' unit for component {component!r} must be non-empty."
-            )
-        return unit
-
     def rename_quantity(self, quantity: ExtOldQuantity | str) -> str:
         """Map an old quantity name onto the name used in the new format.
 
@@ -610,18 +677,6 @@ class ExternalForcingConfigs(BaseModel):
         name = str(quantity)
         renamed = self.renamed_quantities.get(name.strip().lower(), name)
         return renamed
-
-    def get_vector_component_units(
-        self, quantity: ExtOldQuantity | str
-    ) -> dict[str, str] | None:
-        """Return configured vector component/unit mapping for a multi-column quantity."""
-        name = str(quantity).strip().lower()
-        component_units = self.vector_quantities.get(name)
-        if component_units:
-            result = dict(component_units)
-        else:
-            result = None
-        return result
 
     def find_unsupported(self, quantities: Iterable[str]) -> Set[str]:
         """Return the set of unsupported quantities present in the given iterable."""

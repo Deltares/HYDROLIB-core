@@ -311,7 +311,7 @@ class TestMultipleColumnsQuantityNames:
                 " UXUYAdvectionVelocityBnd ": {" ux ": " m s-1 ", "uy": "m s-1"},
             }
         )
-        assert configs.vector_quantities == {
+        assert configs.vector_quantities.root == {
             "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
         }
 
@@ -321,16 +321,87 @@ class TestMultipleColumnsQuantityNames:
                 "uxuyadvectionvelocitybnd": {"ux": "m s-1", "uy": "m s-1"}
             }
         )
-        assert configs.get_vector_component_units("UXUYADVECTIONVELOCITYBND") == {
+        assert configs.vector_quantities.get_component_units("UXUYADVECTIONVELOCITYBND") == {
             "ux": "m s-1",
             "uy": "m s-1",
         }
-        assert configs.get_vector_component_units("waterlevelbnd") is None
+        assert configs.vector_quantities.get_component_units("waterlevelbnd") is None
+
+    def test_vector_quantities_errors_name_their_own_field(self):
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(vector_quantities={"not_a_quantity": {"a": "-"}})
+        assert "'vector_quantities' key 'not_a_quantity'" in str(exc.value)
 
     def test_mapping_from_data_yaml_contains_uxuy(self):
-        assert CONVERTER_DATA.external_forcing.get_vector_component_units(
+        assert CONVERTER_DATA.external_forcing.vector_quantities.get_component_units(
             "uxuyadvectionvelocitybnd"
         ) == {"ux": "m s-1", "uy": "m s-1"}
+
+
+class TestCombinedQuantities:
+    def test_combined_quantities_mapping_is_normalized(self):
+        configs = ExternalForcingConfigs(
+            combined_quantities={
+                " Humidity_AirTemperature_Cloudiness ": {
+                    " humidity ": " % ",
+                    "airtemperature": "degC",
+                    "cloudiness": "%",
+                },
+            }
+        )
+        assert configs.combined_quantities.root == {
+            "humidity_airtemperature_cloudiness": {
+                "humidity": "%",
+                "airtemperature": "degC",
+                "cloudiness": "%",
+            }
+        }
+
+    def test_get_combined_quantity_component_units(self):
+        configs = ExternalForcingConfigs(
+            combined_quantities={
+                "humidity_airtemperature_cloudiness": {
+                    "humidity": "%",
+                    "airtemperature": "degC",
+                    "cloudiness": "%",
+                }
+            }
+        )
+        assert configs.combined_quantities.get_component_units(
+            "HUMIDITY_AIRTEMPERATURE_CLOUDINESS"
+        ) == {"humidity": "%", "airtemperature": "degC", "cloudiness": "%"}
+        assert configs.combined_quantities.get_component_units("windxy") is None
+
+    def test_unknown_quantity_is_rejected_and_names_the_field(self):
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(combined_quantities={"not_a_quantity": {"a": "-"}})
+        assert "'combined_quantities' key 'not_a_quantity'" in str(exc.value)
+
+    def test_duplicate_component_is_rejected_and_names_the_field(self):
+        with pytest.raises(ValidationError) as exc:
+            ExternalForcingConfigs(
+                combined_quantities={
+                    "humidity_airtemperature_cloudiness": {
+                        "humidity": "%",
+                        " humidity ": "%",
+                    }
+                }
+            )
+        assert "'combined_quantities[humidity_airtemperature_cloudiness]'" in str(
+            exc.value
+        )
+
+    def test_data_yaml_lists_the_uniform_capable_combined_quantities(self):
+        configs = CONVERTER_DATA.external_forcing
+        assert set(configs.combined_quantities.root) == {
+            "humidity_airtemperature_cloudiness",
+            "humidity_airtemperature_cloudiness_solarradiation",
+            "dewpoint_airtemperature_cloudiness",
+            "dewpoint_airtemperature_cloudiness_solarradiation",
+        }
+        assert configs.combined_quantities.get_component_units(
+            "humidity_airtemperature_cloudiness"
+        ) == {"humidity": "%", "airtemperature": "degC", "cloudiness": "%"}
 
 
 class TestCheckUnsupportedQuantities:
