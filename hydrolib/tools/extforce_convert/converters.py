@@ -340,6 +340,11 @@ class SpatialConverter(BaseConverter):
         if data.get("datafiletype") == DataFileType.uniform:
             data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
 
+        return self._create_spatial_block(data)
+
+    @staticmethod
+    def _create_spatial_block(data: dict[str, Any]) -> Spatial:
+        """Create the `Spatial` block, wrapping any validation error in a `SpatialError`."""
         try:
             spatial_block = Spatial(**data)
         except Exception as e:
@@ -386,7 +391,7 @@ class SpatialConverter(BaseConverter):
         # A FILETYPE=1 uniform time series carries a single scalar column for the one
         # spatial quantity (unlike a source/sink .tim, whose columns are different
         # quantities). More than one data column has no mapping to a single [Spatial]
-        # block, so fail clearly rather than emit ambiguous forcings.
+        # block, so fail clearly rather than emit acanmbiguous forcings.
         n_columns = len(tim_model.timeseries[0].data)
         if n_columns != 1:
             raise SpatialError(
@@ -411,6 +416,69 @@ class SpatialConverter(BaseConverter):
         data["datafiletype"] = DataFileType.bcascii
         self.legacy_files = tim_path
         return data
+
+
+class CombinedQuantityConverter(SpatialConverter):
+    """Converter for combined quantities, e.g. `humidity_airtemperature_cloudiness`.
+
+    A combined quantity is a single `QUANTITY` whose data file carries one column per
+    component (see `combined_quantities` in `data.yaml`). The converted `[Spatial]` block
+    keeps the original data file and maps the old `FILETYPE` to its new `dataFileType`,
+    exactly as the kernel's own new-style test bench cases do: a uniform `.tim`/`.tem`
+    stays `dataFileType=uniform` with the file untouched (e.g. test bench
+    `e02_dflowfm/f006_external_forcing/c176_freezing_with_background_salinity` and
+    `.../c401_katwijk_fixed`), a curvi file stays `curviGrid`, a netcdf file stays
+    `netcdf`, and so on. The kernel reads the several data columns by the quantity's known
+    layout, so no `.bc` conversion is done and the multi-column `.tim` is left as is.
+
+    The only thing that sets these quantities apart from a plain `SpatialConverter` is that
+    a multi-column uniform `.tim` is allowed (and column-count checked), instead of being
+    rejected as "must have a single data column".
+    """
+
+    def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
+        """Convert an old external forcing block of a combined quantity.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old forcing block, whose `QUANTITY` is configured in
+                `combined_quantities`.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
+
+        Returns:
+            Spatial: The converted `[Spatial]` block. The original data file is kept and
+            `dataFileType` is the mapped old `FILETYPE` (e.g. `uniform` for a `.tim`/`.tem`).
+
+        Raises:
+            SpatialError: For a uniform `.tim`, if it has no data rows or its number of
+                data columns differs from the number of configured components.
+        """
+        data = SpatialBlockBuilder(forcing, new_forcing_path).build()
+        if data.get("datafiletype") == DataFileType.uniform:
+            self._check_column_count(forcing)
+        return self._create_spatial_block(data)
+
+    def _check_column_count(self, forcing: ExtOldForcing) -> None:
+        """Raise a `SpatialError` unless the uniform `.tim` has one column per component."""
+        component_names = list(
+            CONVERTER_DATA.external_forcing.combined_quantities.get_component_units(
+                forcing.quantity
+            )
+        )
+        tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
+        tim_model = TimModel(filepath=tim_path)
+        if not tim_model.timeseries:
+            raise SpatialError(
+                f"Invalid TIM input: '{tim_path}' contains no data rows. "
+                f"Encountered for QUANTITY={forcing.quantity}."
+            )
+        n_columns = len(tim_model.timeseries[0].data)
+        if n_columns != len(component_names):
+            raise SpatialError(
+                f"QUANTITY={forcing.quantity} expects {len(component_names)} data columns "
+                f"{component_names}, but '{tim_path}' has {n_columns}."
+            )
 
 
 class BoundaryConditionConverter(BaseConverter):
@@ -639,7 +707,7 @@ class BoundaryConditionConverter(BaseConverter):
         forcings_list = []
 
         if len(tim_files) > 0:
-            vector_component_units = CONVERTER_DATA.external_forcing.get_vector_component_units(
+            vector_component_units = CONVERTER_DATA.external_forcing.vector_quantities.get_component_units(
                 forcing.quantity
             )
             vector_quantities = None
@@ -1811,6 +1879,10 @@ class ConverterFactory:
         """
         if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
             converter = MassBalanceAreaConverter(mdu_parser=mdu_parser)
+        elif CONVERTER_DATA.external_forcing.combined_quantities.get_component_units(
+            quantity
+        ):
+            converter = CombinedQuantityConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
