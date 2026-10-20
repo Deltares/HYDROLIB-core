@@ -46,6 +46,9 @@ class TestConverterFactory:
             "humidity_airtemperature_cloudiness_solarradiation",
             "dewpoint_airtemperature_cloudiness",
             "dewpoint_airtemperature_cloudiness_solarradiation",
+            "airpressure_windx_windy",
+            "airpressure_windx_windy_charnock",
+            "airpressure_stressx_stressy",
         ],
     )
     def test_combined_quantity_gets_the_combined_converter(
@@ -177,6 +180,32 @@ class TestCombinedQuantityOtherFileTypes:
 
         assert block.datafiletype == DataFileType.netcdf
         assert block.datafile.filepath == nc_file
+        assert converter.legacy_files == []
+
+    def test_airpressure_netcdf_is_passed_through(
+        self, tmp_path: Path, mdu_parser_mock: MagicMock
+    ):
+        # airpressure_* combined quantities are only ever supplied as curvi/spiderweb/netcdf
+        # (never uniform), so the converter keeps the native file type and does not build a .bc.
+        nc_file = tmp_path / "meteo.nc"
+        nc_file.write_text("")
+        forcing = ExtOldForcing(
+            quantity="airpressure_windx_windy_charnock",
+            filename=nc_file,
+            filetype=11,
+            method=3,
+            operand="O",
+        )
+
+        converter = CombinedQuantityConverter(
+            mdu_parser=mdu_parser_mock, root_dir=tmp_path
+        )
+        block = converter.convert(forcing, nc_file)
+
+        assert block.quantity == "airpressure_windx_windy_charnock"
+        assert block.datafiletype == DataFileType.netcdf
+        assert block.datafile.filepath == nc_file
+        assert not isinstance(block.datafile, ForcingModel)
         assert converter.legacy_files == []
 
 
