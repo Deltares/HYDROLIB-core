@@ -391,7 +391,7 @@ class SpatialConverter(BaseConverter):
         # A FILETYPE=1 uniform time series carries a single scalar column for the one
         # spatial quantity (unlike a source/sink .tim, whose columns are different
         # quantities). More than one data column has no mapping to a single [Spatial]
-        # block, so fail clearly rather than emit acanmbiguous forcings.
+        # block, so fail clearly rather than emit ambiguous forcings.
         n_columns = len(tim_model.timeseries[0].data)
         if n_columns != 1:
             raise SpatialError(
@@ -421,19 +421,25 @@ class SpatialConverter(BaseConverter):
 class CombinedQuantityConverter(SpatialConverter):
     """Converter for combined quantities, e.g. `humidity_airtemperature_cloudiness`.
 
-    A combined quantity is a single `QUANTITY` whose data file carries one column per
-    component (see `combined_quantities` in `data.yaml`). The converted `[Spatial]` block
-    keeps the original data file and maps the old `FILETYPE` to its new `dataFileType`,
-    exactly as the kernel's own new-style test bench cases do: a uniform `.tim`/`.tem`
-    stays `dataFileType=uniform` with the file untouched (e.g. test bench
+    A combined quantity is a single `QUANTITY` that bundles several component variables (see
+    `combined_quantities` in `data.yaml`). The converted `[Spatial]` block keeps the original
+    data file and maps the old `FILETYPE` to its new `dataFileType`, exactly as the kernel's
+    own new-style test bench cases do: a uniform `.tim`/`.tem` stays `dataFileType=uniform`
+    with the file untouched (e.g. test bench
     `e02_dflowfm/f006_external_forcing/c176_freezing_with_background_salinity` and
-    `.../c401_katwijk_fixed`), a curvi file stays `curviGrid`, a netcdf file stays
-    `netcdf`, and so on. The kernel reads the several data columns by the quantity's known
-    layout, so no `.bc` conversion is done and the multi-column `.tim` is left as is.
+    `.../c401_katwijk_fixed`), a curvi file stays `curviGrid`, a netcdf file stays `netcdf`,
+    and so on. The kernel reads the several data columns by the quantity's known layout, so no
+    `.bc` conversion is done and the data file is left as is.
 
-    The only thing that sets these quantities apart from a plain `SpatialConverter` is that
-    a multi-column uniform `.tim` is allowed (and column-count checked), instead of being
-    rejected as "must have a single data column".
+    Two kinds of combined quantity flow through here:
+
+    - The heat-flux families (`humidity_*`, `dewpoint_*`) are supplied as a uniform
+      multi-column `.tim`; for those, the multi-column `.tim` is allowed (and column-count
+      checked), instead of being rejected as "must have a single data column" like a plain
+      `SpatialConverter` would.
+    - The `airpressure_*` families are only ever supplied as curvi/spiderweb/netcdf files
+      (the kernel does not accept them as uniform), so they are a straight pass-through with
+      the mapped `dataFileType` and the column-count check never runs.
     """
 
     def convert(self, forcing: ExtOldForcing, new_forcing_path: Path = None) -> Spatial:
