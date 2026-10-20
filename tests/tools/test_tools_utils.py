@@ -391,17 +391,23 @@ class TestCombinedQuantities:
             exc.value
         )
 
-    def test_data_yaml_lists_the_uniform_capable_combined_quantities(self):
+    def test_data_yaml_lists_the_combined_quantities(self):
         configs = CONVERTER_DATA.external_forcing
         assert set(configs.combined_quantities.root) == {
             "humidity_airtemperature_cloudiness",
             "humidity_airtemperature_cloudiness_solarradiation",
             "dewpoint_airtemperature_cloudiness",
             "dewpoint_airtemperature_cloudiness_solarradiation",
+            "airpressure_windx_windy",
+            "airpressure_windx_windy_charnock",
+            "airpressure_stressx_stressy",
         }
         assert configs.combined_quantities.get_component_units(
             "humidity_airtemperature_cloudiness"
         ) == {"humidity": "%", "airtemperature": "degC", "cloudiness": "%"}
+        assert configs.combined_quantities.get_component_units(
+            "airpressure_windx_windy"
+        ) == {"airpressure": "Pa", "windx": "m/s", "windy": "m/s"}
 
 
 class TestCheckUnsupportedQuantities:
