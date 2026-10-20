@@ -177,11 +177,8 @@ def _resolve_forcing_data(
 
 def _remove_delta_suffix(values: Any) -> Any:
     """Renames any keys ending with "delta" to their base name (removing the suffix)."""
-    if not isinstance(values, dict):
-        return values
-
     lowercase_map = {k.lower(): k for k in values}
-    for lower_key, original_key in list(lowercase_map.items()):
+    for lower_key, original_key in lowercase_map.items():
         if lower_key.endswith("delta"):
             base_key = lower_key.removesuffix("delta")
             values[base_key] = values.pop(original_key)

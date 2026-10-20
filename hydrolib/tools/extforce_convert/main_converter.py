@@ -9,10 +9,8 @@ from typing import Any, Dict, Optional, Tuple
 
 from tqdm import tqdm
 
-from hydrolib.core.base import DiskOnlyFileModel
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.utils import PathStyle
-from hydrolib.core.dflowfm import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtGeneral,
@@ -42,8 +40,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
-    path_relative_to_parent, legacy_sourcesink_bc_quantity,
-    rename_legacy_sourcesink_bc_quantities,
+    path_relative_to_parent
 )
 
 
@@ -61,6 +58,7 @@ class ExternalForcingConverter:
         path_style: PathStyle | None = None,
         debug: bool | None = False,
         mba_file: PathOrStr | None = None,
+        recurse: bool = False
     ):
         r"""Initialize the converter.
 
@@ -142,7 +140,7 @@ class ExternalForcingConverter:
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
         self._ext_model = construct_filemodel_new_or_existing(
-            ExtModel, path, recurse=False
+            ExtModel, path, recurse=recurse
         )
 
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
@@ -535,8 +533,6 @@ class ExternalForcingConverter:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
 
-            self._migrate_sourcesink_bc_quantities(backup=backup)
-
             # explicitly set the [General] block to ensure its always written to the new external forcing file.
             # without it, the ext file will be saved without it as the exclude_unset=True
             self.ext_model.general = ExtGeneral(
@@ -571,44 +567,6 @@ class ExternalForcingConverter:
             backup_file(self.mba_model.filepath)
         self.mba_model.save(recurse=recursive, path_style=self.path_style)
 
-    def _migrate_sourcesink_bc_quantities(self, backup: bool) -> None:
-        """Rename all `.bc` quantities that end in *delta.
-
-        A pre-existing new external forcings file may still use the legacy `salinityDelta`/
-        `temperatureDelta` `[SourceSink]` keys. `SourceSink` renames those keys to `salinity`/
-        `temperature`, so the quantities in the referenced `.bc` files must be renamed to
-        `sourcesink_salinity`/`sourcesink_temperature` as well, otherwise the kernel cannot match
-        them.
-
-        - `.bc` files loaded as a `ForcingModel` are updated in memory (written by the recursive save).
-        - `.bc` files loaded non-recursively (`DiskOnlyFileModel`) are rewritten on disk.
-
-        Args:
-            backup (bool): Create a `.bak` copy of each `.bc` file that is rewritten on disk.
-        """
-        handled = set()
-
-        # Iterate over all `[SourceSink]` blocks in the new external forcings model
-        for block in self.ext_model.sourcesink:
-            for forcing_data in (
-                    getattr(block, "salinity", None),
-                    getattr(block, "temperature", None),
-            ):
-                if isinstance(forcing_data, ForcingModel):
-                    for forcing in forcing_data.forcing:
-                        for pair in forcing.quantityunitpair:
-                            pair.quantity = legacy_sourcesink_bc_quantity(pair.quantity)
-                elif (
-                        isinstance(forcing_data, DiskOnlyFileModel)
-                        and forcing_data.filepath is not None
-                ):
-                    bc_path = Path(forcing_data.filepath)
-                    if not bc_path.is_absolute():
-                        bc_path = (Path(self.ext_model.filepath).parent / bc_path).resolve()
-                    if bc_path not in handled:
-                        handled.add(bc_path)
-                        rename_legacy_sourcesink_bc_quantities(bc_path, backup=backup)
-
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""
         if len(self.legacy_files) > 0:
@@ -625,6 +583,7 @@ class ExternalForcingConverter:
         mdu_file: PathOrStr,
         path_style: PathStyle | None = None,
         debug: bool = False,
+        recurse: bool = False,
     ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
 
@@ -671,6 +630,7 @@ class ExternalForcingConverter:
             path_style=path_style,
             debug=debug,
             mba_file=mba_file,
+            recurse=recurse
         )
 
     def _update_mdu_file(self):

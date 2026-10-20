@@ -1,5 +1,4 @@
 """Utility functions for converting old external forcing files to new format."""
-
 import os
 from collections import OrderedDict
 from pathlib import Path
@@ -75,63 +74,6 @@ OLD_FILETYPE_TO_DATAFILETYPE = {
     ExtOldFileType.NetCDFFlowMapFile: DataFileType.map,  # 12
 }
 
-
-import re
-
-# Legacy `.bc` quantity names (written for the old `salinityDelta`/`temperatureDelta` keys) mapped to
-# the current names that belong with the `salinity`/`temperature` `[SourceSink]` keys.
-LEGACY_SOURCESINK_BC_QUANTITIES = {
-    "sourcesink_salinitydelta": SOURCESINK_SALINITY_IN_BC,
-    "sourcesink_temperaturedelta": SOURCESINK_TEMP_IN_BC,
-}
-_LEGACY_SOURCESINK_BC_QUANTITY_PATTERN = re.compile(
-    r"^(?P<prefix>[ \t]*quantity[ \t]*=[ \t]*)(?P<name>sourcesink_(?:salinity|temperature)delta)(?=\s|#|$)",
-    flags=re.IGNORECASE | re.MULTILINE,
-)
-
-def legacy_sourcesink_bc_quantity(quantity: str) -> str:
-    """Return the current `.bc` quantity name for a legacy source/sink salinity/temperature delta quantity.
-
-    `sourcesink_salinitydelta` -> `sourcesink_salinity` and `sourcesink_temperaturedelta` ->
-    `sourcesink_temperature` (case-insensitive). Any other quantity is returned unchanged.
-    """
-    return LEGACY_SOURCESINK_BC_QUANTITIES.get(str(quantity).lower(), quantity)
-
-
-def rename_legacy_sourcesink_bc_quantities(
-    bc_file: PathOrStr, backup: bool = True
-) -> bool:
-    """Rename the legacy source/sink delta quantities inside a `.bc` file on disk.
-
-    Old-format `[SourceSink]` blocks used the `salinityDelta`/`temperatureDelta` keys, whose `.bc`
-    forcings carry the quantities `sourcesink_salinitydelta`/`sourcesink_temperaturedelta`. Those
-    keys are now `salinity`/`temperature`, so the quantities in the `.bc` file are renamed to
-    `sourcesink_salinity`/`sourcesink_temperature`. The rest of the file is left untouched.
-
-    Args:
-        bc_file (PathOrStr): Path to the `.bc` file.
-        backup (bool, optional): Create a `.bak` copy of the file before it is rewritten. Defaults to True.
-
-    Returns:
-        bool: True when the file was rewritten, False when it does not exist or needed no change.
-    """
-    bc_file = Path(bc_file)
-    changed = False
-    if bc_file.is_file():
-        with bc_file.open("r", newline="") as fh:
-            content = fh.read()
-        new_content = _LEGACY_SOURCESINK_BC_QUANTITY_PATTERN.sub(
-            lambda m: m.group("prefix")
-            + legacy_sourcesink_bc_quantity(m.group("name")),
-            content,
-        )
-        if new_content != content:
-            if backup:
-                backup_file(bc_file)
-            with bc_file.open("w", newline="") as fh:
-                fh.write(new_content)
-            changed = True
-    return changed
 
 CONVERTER_DATA_PATH = Path(__path__[0]) / "tools/extforce_convert/data/data.yaml"
 with CONVERTER_DATA_PATH.open("r") as fh:
