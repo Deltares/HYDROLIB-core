@@ -106,7 +106,7 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     result = False
     if isinstance(key, str):
         lowered = key.lower()
-        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
+        result = lowered.startswith(("tracer", "sedfrac"))
     return result
 
 
@@ -174,6 +174,18 @@ def _resolve_forcing_data(
     elif isinstance(v, dict):
         result = ForcingModel(**v)
     return result
+
+def _remove_delta_suffix(values: Any) -> Any:
+    """Renames any keys ending with "delta" to their base name (removing the suffix)."""
+    if not isinstance(values, dict):
+        return values
+
+    lowercase_map = {k.lower(): k for k in values}
+    for lower_key, original_key in list(lowercase_map.items()):
+        if lower_key.endswith("delta"):
+            base_key = lower_key.removesuffix("delta")
+            values[base_key] = values.pop(original_key)
+    return values
 
 
 FILETYPE_FILEMODEL_MAPPING = {
@@ -485,17 +497,12 @@ class SourceSink(CoordinateValidator, INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
-            # Migrate legacy salinityDelta/temperatureDelta keys (any casing) from old-format ext files.
-            lowercase_map = {k.lower(): k for k in values}
-            if "salinitydelta" in lowercase_map and "salinity" not in values:
-                values["salinity"] = values.pop(lowercase_map["salinitydelta"])
-            if "temperaturedelta" in lowercase_map and "temperature" not in values:
-                values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
             for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
                     )
+            values = _remove_delta_suffix(values)
         return values
 
     @classmethod
