@@ -439,15 +439,14 @@ class MultiColumnQuantities(RootModel[dict[str, dict[str, str]]]):
                 quantity of the old external forcings file, or a component name is
                 empty or duplicated.
         """
+        normalized: dict[str, dict[str, str]] = {}
         if v is None:
-            return {}
-
+            v = {}
         if not isinstance(v, dict):
             raise ValueError(
                 f"'{cls.field_name}' must be a mapping of quantity name to component names."
             )
 
-        normalized: dict[str, dict[str, str]] = {}
         for quantity_name, component_units in v.items():
             key = cls._normalize_quantity_key(quantity_name)
             normalized[key] = cls._normalize_component_units(
