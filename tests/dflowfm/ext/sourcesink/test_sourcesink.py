@@ -511,32 +511,39 @@ class TestSourceSinkDynamicForcingDeltas:
     """
 
     @pytest.mark.parametrize(
-        "field, raw, expected",
+        "field, expected_field, raw, expected",
         [
-            ("tracerSaltDelta", "3.5", 3.5),
-            ("sedFracClayDelta", "0.25", 0.25),
+            ("tracerSaltDelta", "tracersalt", "3.5", 3.5),
+            ("sedFracClayDelta", "sedfracclay", "0.25", 0.25),
         ],
     )
     def test_numeric_string_is_coerced_to_float(
-            self, field: str, raw: str, expected: float
+            self, field: str, expected_field: str, raw: str, expected: float
     ):
-        """Numeric string on a dynamic Delta-suffix field is coerced to `float`.
+        """Numeric string on a dynamic `*Delta` field is coerced to `float` and the suffix is stripped.
 
         Args:
             field: Dynamic Delta-suffix wire key.
+            expected_field: Normalized field name after the trailing `Delta` is removed.
             raw: Numeric string as it would arrive from the INI parser.
             expected: Float value the helper should produce.
 
         Test scenario:
-            Before the validator existed, these dynamic fields received the
-            raw string from the INI parser. The new model-validator routes
-            them through `_resolve_forcing_data`, which parses numeric
-            strings as floats.
+            Before the validator existed, these dynamic fields received the raw
+            string from the INI parser. The model-validator routes them through
+            `_resolve_forcing_data`, parses numeric strings as floats, and then
+            removes the trailing `Delta` from the key so the resulting attribute is
+            stored under the canonical base name (for example, `tracersalt` not
+            `tracersaltDelta`).
         """
         source_sink = SourceSink(**_make_sourcesink_kwargs(**{field: raw}))
-        assert source_sink.model_extra[field] == expected, (
+        assert source_sink.model_extra[expected_field] == expected, (
             f"Expected {expected} on dynamic field {field},"
-            f" got {source_sink.model_extra[field]!r}"
+            f" got {source_sink.model_extra[expected_field]!r}"
+        )
+        assert expected_field not in field.lower(), (
+            f"Expected normalized field name without the trailing 'delta', "
+            f"but got {expected_field!r} from {field!r}"
         )
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
