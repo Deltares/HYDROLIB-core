@@ -145,7 +145,7 @@ class QuantityUnitPair(BaseModel):
     def _strip_delta_suffix(cls, value: Any) -> Any:
         """Normalize legacy quantities ending in 'delta' by removing the suffix."""
         if isinstance(value, str) and value.lower().endswith("delta"):
-            return value[:-5]
+            value = value.removesuffix("delta")
         return value
 
     def _to_properties(self):
