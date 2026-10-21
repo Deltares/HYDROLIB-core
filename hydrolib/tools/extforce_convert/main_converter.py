@@ -346,16 +346,24 @@ class ExternalForcingConverter:
                 )
 
                 new_quantity_block = self._convert_forcing(forcing)
-                model_field = type_field_map.get(type(new_quantity_block))
+                # A converter may return several blocks for one old quantity (e.g. a combined
+                # quantity split into one [Spatial] block per component); normalise to a list.
+                new_blocks = (
+                    new_quantity_block
+                    if isinstance(new_quantity_block, list)
+                    else [new_quantity_block]
+                )
+                for block in new_blocks:
+                    model_field = type_field_map.get(type(block))
 
-                if model_field is None:
-                    raise NotImplementedError(
-                        f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
-                        f"{self.extold_model.filepath}."
-                    )
+                    if model_field is None:
+                        raise NotImplementedError(
+                            f"Unsupported model class {type(block)} for {forcing.quantity} in "
+                            f"{self.extold_model.filepath}."
+                        )
 
-                model, attr = model_field
-                setattr(model, attr, getattr(model, attr) + [new_quantity_block])
+                    model, attr = model_field
+                    setattr(model, attr, getattr(model, attr) + [block])
 
                 progress_bar.update(1)
 

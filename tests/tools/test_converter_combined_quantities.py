@@ -69,11 +69,12 @@ class TestConverterFactory:
 
 
 class TestCombinedQuantityUniformTim:
-    def test_tim_is_kept_as_uniform(
+    def test_uniform_tim_is_split_into_component_bc_blocks(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
     ):
-        # The kernel's own new-style cases (e.g. test bench c176, c401_katwijk) keep the
-        # uniform .tim/.tem and set dataFileType=uniform -- no .bc conversion.
+        # Strategy C: the combined quantity is split into one [Spatial] block per component,
+        # each dataFileType=bcAscii, all sharing one .bc ForcingModel. Verified in D-Flow FM
+        # on the Grevelingen model.
         forcing = _write_forcing(
             tmp_path,
             "humidity_airtemperature_cloudiness",
@@ -83,18 +84,26 @@ class TestCombinedQuantityUniformTim:
         converter = CombinedQuantityConverter(
             mdu_parser=mdu_parser_mock, root_dir=tmp_path
         )
-        block = converter.convert(forcing, tmp_path / "meteo.tim")
+        blocks = converter.convert(forcing, tmp_path / "meteo.tim")
 
-        assert isinstance(block, Spatial)
-        assert block.quantity == "humidity_airtemperature_cloudiness"
-        assert block.datafiletype == DataFileType.uniform
-        # the original .tim is kept as the data file, not converted to a ForcingModel/.bc
-        assert not isinstance(block.datafile, ForcingModel)
-        assert block.datafile.filepath == tmp_path / "meteo.tim"
-        # the .tim is NOT removed, since the new ext still references it
-        assert converter.legacy_files == []
+        assert isinstance(blocks, list)
+        assert [b.quantity for b in blocks] == HUMIDITY_COMPONENTS
+        assert all(b.datafiletype == DataFileType.bcascii for b in blocks)
+        # all component blocks reference the one shared ForcingModel (.bc)
+        shared = blocks[0].datafile
+        assert isinstance(shared, ForcingModel)
+        assert all(b.datafile is shared for b in blocks)
+        assert shared.filepath == (tmp_path / "meteo.tim").with_suffix(".bc")
 
-    def test_tem_extension_is_kept(
+        # the shared .bc holds a single [Forcing] block: time + one column per component
+        assert len(shared.forcing) == 1
+        quantities = [qup.quantity for qup in shared.forcing[0].quantityunitpair]
+        assert quantities == ["time", *HUMIDITY_COMPONENTS]
+
+        # the original .tim is converted away, so it is registered for removal
+        assert (tmp_path / "meteo.tim") in converter.legacy_files
+
+    def test_tem_extension_is_converted_to_bc(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
     ):
         tem_file = tmp_path / "meteo.tem"
@@ -110,14 +119,22 @@ class TestCombinedQuantityUniformTim:
         converter = CombinedQuantityConverter(
             mdu_parser=mdu_parser_mock, root_dir=tmp_path
         )
-        block = converter.convert(forcing, tem_file)
+        blocks = converter.convert(forcing, tem_file)
 
-        assert block.datafiletype == DataFileType.uniform
-        assert block.datafile.filepath == tem_file
+        assert [b.quantity for b in blocks] == HUMIDITY_COMPONENTS
+        assert all(b.datafiletype == DataFileType.bcascii for b in blocks)
+        assert blocks[0].datafile.filepath == tem_file.with_suffix(".bc")
+        assert tem_file in converter.legacy_files
 
-    def test_four_column_tim_is_accepted(
+    def test_four_column_tim_is_split_into_four_blocks(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
     ):
+        components = [
+            "dewpoint",
+            "airtemperature",
+            "cloudiness",
+            "solarradiation",
+        ]
         forcing = _write_forcing(
             tmp_path,
             "dewpoint_airtemperature_cloudiness_solarradiation",
@@ -127,10 +144,12 @@ class TestCombinedQuantityUniformTim:
         converter = CombinedQuantityConverter(
             mdu_parser=mdu_parser_mock, root_dir=tmp_path
         )
-        block = converter.convert(forcing, tmp_path / "meteo.tim")
+        blocks = converter.convert(forcing, tmp_path / "meteo.tim")
 
-        assert block.datafiletype == DataFileType.uniform
-        assert block.datafile.filepath == tmp_path / "meteo.tim"
+        assert [b.quantity for b in blocks] == components
+        assert all(b.datafiletype == DataFileType.bcascii for b in blocks)
+        quantities = [qup.quantity for qup in blocks[0].datafile.forcing[0].quantityunitpair]
+        assert quantities == ["time", *components]
 
     def test_wrong_column_count_raises_clear_error(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
@@ -219,26 +238,31 @@ class TestCombinedQuantityEndToEnd:
         shutil.copytree(src, dst)
         return dst
 
-    def test_old_ext_is_converted_to_one_uniform_spatial_block(self, model_copy: Path):
+    def test_old_ext_is_split_into_component_bc_blocks(self, model_copy: Path):
         converter = ExternalForcingConverter.from_mdu(model_copy / "model.mdu")
         ext_model, _ = converter.update()
 
-        assert len(ext_model.spatial) == 1
-        block = ext_model.spatial[0]
-        assert block.quantity == "humidity_airtemperature_cloudiness"
-        assert block.datafiletype == DataFileType.uniform
-        assert block.datafile.filepath.name == "meteo.tim"
+        # the one combined quantity becomes one [Spatial] block per component
+        assert [b.quantity for b in ext_model.spatial] == HUMIDITY_COMPONENTS
+        assert all(b.datafiletype == DataFileType.bcascii for b in ext_model.spatial)
+        # all blocks share one .bc ForcingModel carrying time + every component column
+        shared = ext_model.spatial[0].datafile
+        assert isinstance(shared, ForcingModel)
+        assert all(b.datafile is shared for b in ext_model.spatial)
+        quantities = [qup.quantity for qup in shared.forcing[0].quantityunitpair]
+        assert quantities == ["time", *HUMIDITY_COMPONENTS]
 
-    def test_saved_new_ext_keeps_the_uniform_tim(self, model_copy: Path):
+    def test_saved_new_ext_writes_bc_and_drops_the_tim(self, model_copy: Path):
         converter = ExternalForcingConverter.from_mdu(model_copy / "model.mdu")
         converter.update()
         converter.save(backup=False)
 
         new_ext_text = (model_copy / "meteo_new.ext").read_text()
-        assert "uniform" in new_ext_text
-        assert "meteo.tim" in new_ext_text
-        assert "bcAscii" not in new_ext_text
+        assert "bcAscii" in new_ext_text
+        for component in HUMIDITY_COMPONENTS:
+            assert f"quantity             = {component}" in new_ext_text
+        # a shared .bc was written next to the ext
+        assert (model_copy / "meteo.bc").exists()
 
-        # the .tim is still referenced by the new ext, so it must not be removed
-        assert (model_copy / "meteo.tim").exists()
-        assert (model_copy / "meteo.tim") not in converter.legacy_files
+        # the .tim is converted away, so it is registered for removal
+        assert (model_copy / "meteo.tim") in converter.legacy_files
