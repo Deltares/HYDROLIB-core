@@ -99,6 +99,11 @@ class TestCombinedQuantityUniformTim:
         assert len(shared.forcing) == 1
         quantities = [qup.quantity for qup in shared.forcing[0].quantityunitpair]
         assert quantities == ["time", *HUMIDITY_COMPONENTS]
+        # each .tim row is transposed to [time, *components] in declared order
+        assert shared.forcing[0].datablock == [
+            [0.0, 80.0, 15.0, 60.0],
+            [60.0, 82.0, 16.5, 62.0],
+        ]
 
         # the original .tim is converted away, so it is registered for removal
         assert (tmp_path / "meteo.tim") in converter.legacy_files
@@ -150,6 +155,11 @@ class TestCombinedQuantityUniformTim:
         assert all(b.datafiletype == DataFileType.bcascii for b in blocks)
         quantities = [qup.quantity for qup in blocks[0].datafile.forcing[0].quantityunitpair]
         assert quantities == ["time", *components]
+        # each .tim row is transposed to [time, *components] in declared order
+        assert blocks[0].datafile.forcing[0].datablock == [
+            [0.0, 10.0, 15.0, 60.0, 300.0],
+            [60.0, 11.0, 16.5, 62.0, 310.0],
+        ]
 
     def test_wrong_column_count_raises_clear_error(
         self, tmp_path: Path, mdu_parser_mock: MagicMock
