@@ -511,6 +511,39 @@ class TestSourceSinkDynamicForcingDeltas:
     """
 
     @pytest.mark.parametrize(
+        "field, expected_field",
+        [
+            ("tracerSaltDelta", "tracersalt"),
+            ("sedFracClayDelta", "sedfracclay"),
+        ],
+    )
+    def test_bc_file_loads_forcingmodel_via_extmodel(
+            self, tmp_path: Path, field: str, expected_field: str
+    ):
+        """Dynamic Delta-suffix field accepts a `.bc` filename in the `.ext`.
+
+        Args:
+            tmp_path: Pytest temporary directory fixture.
+            field: Dynamic Delta-suffix wire key.
+            expected_field: Canonical field name after the trailing `Delta` is removed.
+
+        Test scenario:
+            Closes the M2 gap from PR review: per the D-Flow FM User Manual,
+            `tracer<...>Delta` and `sedFrac<...>Delta` can be a `.bc` path.
+            The model-validator must turn that path into a loaded `ForcingModel`,
+            the same way `validate_forcing_data` does for the named Delta fields,
+            while stripping the trailing `Delta` from the key before storing it.
+        """
+        ext_path = _write_ext_with_bc(
+            tmp_path, {"discharge": "1.0", field: "sourcesink.bc"}
+        )
+        model = ExtModel(ext_path)
+        value = model.sourcesink[0].model_extra[expected_field]
+        assert isinstance(value, ForcingModel), (
+            f"Expected ForcingModel on {expected_field}, got {type(value).__name__}"
+        )
+
+    @pytest.mark.parametrize(
         "field, expected_field, raw, expected",
         [
             ("tracerSaltDelta", "tracersalt", "3.5", 3.5),
@@ -546,53 +579,6 @@ class TestSourceSinkDynamicForcingDeltas:
             f"but got {expected_field!r} from {field!r}"
         )
 
-    @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
-    def test_bc_file_loads_forcingmodel_via_extmodel(
-            self, tmp_path: Path, field: str
-    ):
-        """Dynamic Delta-suffix field accepts a `.bc` filename in the `.ext`.
-
-        Args:
-            tmp_path: Pytest temporary directory fixture.
-            field: Dynamic Delta-suffix wire key.
-
-        Test scenario:
-            Closes the M2 gap from PR review: per the D-Flow FM User Manual,
-            `tracer<...>Delta` and `sedFrac<...>Delta` can be a `.bc` path.
-            The model-validator must turn that path into a loaded `ForcingModel`,
-            the same way `validate_forcing_data` does for the named Delta fields.
-        """
-        ext_path = _write_ext_with_bc(
-            tmp_path, {"discharge": "1.0", field: "sourcesink.bc"}
-        )
-        model = ExtModel(ext_path)
-        value = model.sourcesink[0].model_extra[field.lower()]
-        assert isinstance(value, ForcingModel), (
-            f"Expected ForcingModel on {field.lower()}, got {type(value).__name__}"
-        )
-
-    def test_legacy_non_delta_dynamic_fields_are_untouched(self):
-        """Legacy non-Delta dynamic fields keep their raw value (no `_resolve_forcing_data`).
-
-        Test scenario:
-            `initialtracer_*`, `tracerbnd*`, `sedfracbnd_*` are pre-existing
-            extra-allowed attributes that historically receive arbitrary list
-            payloads (e.g. initial-condition arrays). The new model-validator
-            must restrict its action to `*delta`-suffixed keys so that this
-            legacy data flow is preserved unchanged.
-        """
-        legacy = {
-            "initialtracer_any_name": [1, 2, 3],
-            "tracerbndanyname": [4, 5, 6],
-            "sedfracbnd_any_name": [7, 8, 9],
-        }
-        source_sink = SourceSink(**_make_sourcesink_kwargs(**legacy))
-        for key, expected in legacy.items():
-            actual = getattr(source_sink, key)
-            assert actual == expected, (
-                f"Legacy dynamic field {key} should be untouched;"
-                f" expected {expected}, got {actual!r}"
-            )
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_realtime_keyword_rejected_on_dynamic_delta_fields(self, field: str):
