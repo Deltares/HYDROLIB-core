@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4050,16 +4050,16 @@ validation error at load time.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">BubbleScreen</span><span class="p">,</span> <span class="n">ExtModel</span>
 
 <span class="n">screen</span> <span class="o">=</span> <span class="n">BubbleScreen</span><span class="p">(</span>
-    <span class="nb">id</span><span class="o">=</span><span class="s2">"bubbles1"</span><span class="p">,</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;bubbles1&quot;</span><span class="p">,</span>
     <span class="n">numcoordinates</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="n">xcoordinates</span><span class="o">=</span><span class="p">[</span><span class="mf">450.0</span><span class="p">,</span> <span class="mf">450.0</span><span class="p">,</span> <span class="mf">550.0</span><span class="p">,</span> <span class="mf">550.0</span><span class="p">],</span>
     <span class="n">ycoordinates</span><span class="o">=</span><span class="p">[</span><span class="mf">550.0</span><span class="p">,</span> <span class="mf">650.0</span><span class="p">,</span> <span class="mf">650.0</span><span class="p">,</span> <span class="mf">550.0</span><span class="p">],</span>
     <span class="n">zlevel</span><span class="o">=-</span><span class="mf">5.0</span><span class="p">,</span>
-    <span class="n">discharge</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># m3/s as a scalar; or a ForcingModel, or "realtime"</span>
+    <span class="n">discharge</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># m3/s as a scalar; or a ForcingModel, or &quot;realtime&quot;</span>
 <span class="p">)</span>
 
 <span class="n">ext</span> <span class="o">=</span> <span class="n">ExtModel</span><span class="p">(</span><span class="n">bubblescreen</span><span class="o">=</span><span class="p">[</span><span class="n">screen</span><span class="p">])</span>
-<span class="n">ext</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">"forcings.ext"</span>
+<span class="n">ext</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;forcings.ext&quot;</span>
 <span class="n">ext</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
 <p>Field names in Python are lowercased (<code>xcoordinates</code>, <code>zlevel</code>, …) but the Pydantic
@@ -4069,7 +4069,7 @@ both work when constructing a block from a dict.</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.ext</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtModel</span>
 
 <span class="c1"># read the saved forcings.ext file saved above</span>
-<span class="n">ext</span> <span class="o">=</span> <span class="n">ExtModel</span><span class="p">(</span><span class="s2">"forcings.ext"</span><span class="p">)</span>
+<span class="n">ext</span> <span class="o">=</span> <span class="n">ExtModel</span><span class="p">(</span><span class="s2">&quot;forcings.ext&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">screen</span> <span class="ow">in</span> <span class="n">ext</span><span class="o">.</span><span class="n">bubblescreen</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">screen</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">screen</span><span class="o">.</span><span class="n">zlevel</span><span class="p">,</span> <span class="n">screen</span><span class="o">.</span><span class="n">discharge</span><span class="p">)</span>
 </code></pre></div>
@@ -4234,7 +4234,7 @@ change the header to <code>[BubbleScreen]</code>.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../assets/javascripts/panzoom.min.js"></script>
       

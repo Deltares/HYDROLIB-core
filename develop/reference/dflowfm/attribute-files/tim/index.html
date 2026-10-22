@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4311,8 +4311,8 @@ You're not viewing the latest release version.
 
 
 <h1 id="timeseries-tim-files">Timeseries .tim files<a class="headerlink" href="#timeseries-tim-files" title="Permanent link">&para;</a></h1>
-<p>*.tim files contain time series data of a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.
-The support of *.tim files for boundary time series will be discontinued. Instead, these will be replaced by the <a href="../../../glossary/#bc-file">*.bc file</a>.</p>
+<p><em>.tim files contain time series data of a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.
+The support of </em>.tim files for boundary time series will be discontinued. Instead, these will be replaced by the <a href="../../../glossary/#bc-file">*.bc file</a>.</p>
 <p>They are represented by the classes below.</p>
 <h2 id="model">Model<a class="headerlink" href="#model" title="Permanent link">&para;</a></h2>
 
@@ -4536,17 +4536,17 @@ Returns the timeseries as a pandas DataFrame.</p>
     <p>Create a TimModel object from a .tim file:</p>
 <div class="highlight"><pre><span></span><code>```python
 &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord
-&gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")
+&gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;)
 &gt;&gt;&gt; print(tim_model.timeseries)
 [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]
 
 ```
 </code></pre></div>
 <p>Provide names for the quantities in the timeseries:
-    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">quantities_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"discharge"</span><span class="p">,</span> <span class="s2">"waterlevel"</span><span class="p">,</span> <span class="s2">"salinity"</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">,</span> <span class="s2">"initialtracer"</span><span class="p">]</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"tests/data/input/source-sink/tim-5-columns.tim"</span><span class="p">,</span> <span class="n">quantities_names</span><span class="o">=</span><span class="n">quantities_names</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">quantities_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">,</span> <span class="s2">&quot;salinity&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;initialtracer&quot;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;tests/data/input/source-sink/tim-5-columns.tim&quot;</span><span class="p">,</span> <span class="n">quantities_names</span><span class="o">=</span><span class="n">quantities_names</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">tim_model</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span>
-<span class="p">[</span><span class="s1">'discharge'</span><span class="p">,</span> <span class="s1">'waterlevel'</span><span class="p">,</span> <span class="s1">'salinity'</span><span class="p">,</span> <span class="s1">'temperature'</span><span class="p">,</span> <span class="s1">'initialtracer'</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;discharge&#39;</span><span class="p">,</span> <span class="s1">&#39;waterlevel&#39;</span><span class="p">,</span> <span class="s1">&#39;salinity&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="s1">&#39;initialtracer&#39;</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">tim_model</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">())</span>
        <span class="n">discharge</span>  <span class="n">waterlevel</span>  <span class="n">salinity</span>  <span class="n">temperature</span>  <span class="n">initialtracer</span>
 <span class="mf">0.0</span>          <span class="mf">1.0</span>         <span class="mf">2.0</span>       <span class="mf">3.0</span>          <span class="mf">4.0</span>            <span class="mf">5.0</span>
@@ -4557,8 +4557,8 @@ Returns the timeseries as a pandas DataFrame.</p>
 </code></pre></div></p>
 <p>Create a <code>TimModel</code> object from a dictionary:
     <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-<span class="o">...</span>     <span class="s2">"comments"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"# Example comment"</span><span class="p">],</span>
-<span class="o">...</span>     <span class="s2">"timeseries"</span><span class="p">:</span> <span class="p">[</span><span class="n">TimRecord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])]</span>
+<span class="o">...</span>     <span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;# Example comment&quot;</span><span class="p">],</span>
+<span class="o">...</span>     <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">TimRecord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])]</span>
 <span class="o">...</span> <span class="p">}</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">tim_model</span><span class="o">.</span><span class="n">timeseries</span><span class="p">)</span>
@@ -4566,11 +4566,11 @@ Returns the timeseries as a pandas DataFrame.</p>
 </code></pre></div></p>
 <p>Create <code>TimModel</code> from <code>TimRecord</code> objects:
     <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"# Example comment"</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;# Example comment&quot;</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span><span class="o">.</span><span class="n">timeseries</span> <span class="o">=</span> <span class="p">[</span><span class="n">TimRecord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])]</span>
 </code></pre></div></p>
 <p>Serialize the <code>TimModel</code> to a .tim file:
-    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"output.tim"</span><span class="p">))</span> <span class="c1"># doctest: +SKIP</span>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">new_tim</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;output.tim&quot;</span><span class="p">))</span> <span class="c1"># doctest: +SKIP</span>
 </code></pre></div></p>
 
 
@@ -4970,7 +4970,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Class representing a tim (*.tim) file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a tim (*.tim) file.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        serializer_config (TimSerializerConfig):</span>
@@ -5008,7 +5008,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel, TimRecord</span>
-<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")</span>
+<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; print(tim_model.timeseries)</span>
 <span class="sd">            [TimRecord(time=10.0, data=[1.232, 2.343, 3.454]), TimRecord(time=20.0, data=[4.565, 5.676, 6.787]), TimRecord(time=30.0, data=[1.5, 2.6, 3.7])]</span>
 
@@ -5016,10 +5016,10 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 <span class="sd">        Provide names for the quantities in the timeseries:</span>
 <span class="sd">            ```python</span>
-<span class="sd">            &gt;&gt;&gt; quantities_names = ["discharge", "waterlevel", "salinity", "temperature", "initialtracer"]</span>
-<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim", quantities_names=quantities_names)</span>
+<span class="sd">            &gt;&gt;&gt; quantities_names = [&quot;discharge&quot;, &quot;waterlevel&quot;, &quot;salinity&quot;, &quot;temperature&quot;, &quot;initialtracer&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/source-sink/tim-5-columns.tim&quot;, quantities_names=quantities_names)</span>
 <span class="sd">            &gt;&gt;&gt; print(tim_model.quantities_names)</span>
-<span class="sd">            ['discharge', 'waterlevel', 'salinity', 'temperature', 'initialtracer']</span>
+<span class="sd">            [&#39;discharge&#39;, &#39;waterlevel&#39;, &#39;salinity&#39;, &#39;temperature&#39;, &#39;initialtracer&#39;]</span>
 <span class="sd">            &gt;&gt;&gt; print(tim_model.as_dataframe())</span>
 <span class="sd">                   discharge  waterlevel  salinity  temperature  initialtracer</span>
 <span class="sd">            0.0          1.0         2.0       3.0          4.0            5.0</span>
@@ -5033,8 +5033,8 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">        Create a `TimModel` object from a dictionary:</span>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; data = {</span>
-<span class="sd">            ...     "comments": ["# Example comment"],</span>
-<span class="sd">            ...     "timeseries": [TimRecord(time=0.0, data=[1.0, 2.0])]</span>
+<span class="sd">            ...     &quot;comments&quot;: [&quot;# Example comment&quot;],</span>
+<span class="sd">            ...     &quot;timeseries&quot;: [TimRecord(time=0.0, data=[1.0, 2.0])]</span>
 <span class="sd">            ... }</span>
 <span class="sd">            &gt;&gt;&gt; tim_model = TimModel(**data)</span>
 <span class="sd">            &gt;&gt;&gt; print(tim_model.timeseries)</span>
@@ -5045,14 +5045,14 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">        Create `TimModel` from `TimRecord` objects:</span>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; new_tim = TimModel()</span>
-<span class="sd">            &gt;&gt;&gt; new_tim.comments = ["# Example comment"]</span>
+<span class="sd">            &gt;&gt;&gt; new_tim.comments = [&quot;# Example comment&quot;]</span>
 <span class="sd">            &gt;&gt;&gt; new_tim.timeseries = [TimRecord(time=0.0, data=[1.0, 2.0])]</span>
 
 <span class="sd">            ```</span>
 
 <span class="sd">        Serialize the `TimModel` to a .tim file:</span>
 <span class="sd">            ```python</span>
-<span class="sd">            &gt;&gt;&gt; new_tim.save(filepath=Path("output.tim")) # doctest: +SKIP</span>
+<span class="sd">            &gt;&gt;&gt; new_tim.save(filepath=Path(&quot;output.tim&quot;)) # doctest: +SKIP</span>
 
 <span class="sd">            ```</span>
 
@@ -5066,16 +5066,16 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 <span class="sd">    References:</span>
 <span class="sd">        - `TIM file format &lt;https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#C4&gt;`_</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">serializer_config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span> <span class="o">=</span> <span class="n">TimSerializerConfig</span><span class="p">()</span>
-<span class="w">    </span><span class="sd">"""TimSerializerConfig: The serialization configuration for the tim file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TimSerializerConfig: The serialization configuration for the tim file.&quot;&quot;&quot;</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""List[str]: A list with the header comment of the tim file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List[str]: A list with the header comment of the tim file.&quot;&quot;&quot;</span>
 
     <span class="n">timeseries</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimRecord</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""List[TimRecord]: A list containing the timeseries."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List[TimRecord]: A list containing the timeseries.&quot;&quot;&quot;</span>
 
     <span class="n">quantities_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
@@ -5085,7 +5085,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
         <span class="n">quantities_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">parsable_file_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Custom initializer to handle extra parameters specific to TimModel.</span>
 
 <span class="sd">        Args:</span>
@@ -5095,17 +5095,17 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">                Names for the quantities in the timeseries.</span>
 <span class="sd">            **parsable_file_kwargs (Any):</span>
 <span class="sd">                Other arguments for the superclass.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">parsable_file_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="o">=</span> <span class="n">quantities_names</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".tim"</span>
+        <span class="k">return</span> <span class="s2">&quot;.tim&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"timeseries"</span>
+        <span class="k">return</span> <span class="s2">&quot;timeseries&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
@@ -5117,15 +5117,15 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Path</span><span class="p">],</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">parse</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"timeseries"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">,</span> <span class="n">check_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">check_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">replace_fortran_scientific_notation_for_floats</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">record</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span>
-                    <span class="n">record</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span>
+                <span class="n">record</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span>
+                    <span class="n">record</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
                 <span class="p">)</span>
-                <span class="n">record</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]</span> <span class="o">=</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span>
-                    <span class="n">record</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]</span>
+                <span class="n">record</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span>
+                    <span class="n">record</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">TimRecord</span><span class="p">):</span>
                 <span class="n">record</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">FortranUtils</span><span class="o">.</span><span class="n">replace_fortran_scientific_notation</span><span class="p">(</span>
@@ -5137,10 +5137,10 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"timeseries"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_timeseries_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimRecord</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TimRecord</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate if the number of columns per timeseries matches and if the timeseries have no duplicate times.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            v (List[TimRecord]): Timeseries to validate.</span>
@@ -5152,7 +5152,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[TimRecord]: Validated timeseries.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">v</span>
 
@@ -5166,12 +5166,12 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
         <span class="n">n_columns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">timeseries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">n_columns</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Time series cannot be empty."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Time series cannot be empty.&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">timrecord</span> <span class="ow">in</span> <span class="n">timeseries</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">timrecord</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_columns</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Time </span><span class="si">{</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="si">}</span><span class="s2">: Expected </span><span class="si">{</span><span class="n">n_columns</span><span class="si">}</span><span class="s2"> columns, but was </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">timrecord</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="sa">f</span><span class="s2">&quot;Time </span><span class="si">{</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="si">}</span><span class="s2">: Expected </span><span class="si">{</span><span class="n">n_columns</span><span class="si">}</span><span class="s2"> columns, but was </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">timrecord</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -5180,33 +5180,33 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
         <span class="k">for</span> <span class="n">timrecord</span> <span class="ow">in</span> <span class="n">timeseries</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">timrecord</span><span class="o">.</span><span class="n">time</span> <span class="ow">in</span> <span class="n">seen_times</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Timeseries cannot contain duplicate times. Time: </span><span class="si">{</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="si">}</span><span class="s2"> is duplicate."</span>
+                    <span class="sa">f</span><span class="s2">&quot;Timeseries cannot contain duplicate times. Time: </span><span class="si">{</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="si">}</span><span class="s2"> is duplicate.&quot;</span>
                 <span class="p">)</span>
             <span class="n">seen_times</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">timrecord</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"quantities_names"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;quantities_names&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_quantities_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Validate if the number of quantities_names matches the number of columns in the timeseries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate if the number of quantities_names matches the number of columns in the timeseries.</span>
 
 <span class="sd">        The validator compared the amount of quantities_names with the number of columns in the first record of</span>
 <span class="sd">        the timeseries.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">first_records_data</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"timeseries"</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">first_records_data</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_records_data</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"The number of quantities_names (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match the number of columns in the Tim file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">first_records_data</span><span class="p">)</span><span class="si">}</span><span class="s2">)."</span>
+                    <span class="sa">f</span><span class="s2">&quot;The number of quantities_names (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">) must match the number of columns in the Tim file (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">first_records_data</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add new values to each TimRecord in the timeseries, representing a new location.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            new_values (List[float]): A list of new values to add, one for each TimRecord.</span>
 <span class="sd">            column_name (str, optional): The name of the new column. Defaults to None.</span>
-<span class="sd">                if None, the column is named as "quantity-{len(quantities_names) + 1}".</span>
+<span class="sd">                if None, the column is named as &quot;quantity-{len(quantities_names) + 1}&quot;.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the number of new values does not match the number of TimRecords.</span>
@@ -5224,10 +5224,10 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">            [TimRecord(time=0.0, data=[1.0, 2.0, 5.0]), TimRecord(time=1.0, data=[3.0, 4.0, 6.0])]</span>
 
 <span class="sd">            ```</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">)</span><span class="si">}</span><span class="s2"> values, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">)</span><span class="si">}</span><span class="s2"> values, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">record</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
@@ -5235,11 +5235,11 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">column_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">column_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"quantity-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">column_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;quantity-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return the timeseries as a pandas DataFrame.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the timeseries as a pandas DataFrame.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            columns (List[Any, str], optional, Defaults to None):</span>
@@ -5255,7 +5255,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">        Examples:</span>
 <span class="sd">            Create a `TimModel` object from a .tim file:</span>
 <span class="sd">                &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel</span>
-<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")</span>
+<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;)</span>
 <span class="sd">                &gt;&gt;&gt; df = tim_model.as_dataframe()</span>
 <span class="sd">                &gt;&gt;&gt; print(df)</span>
 <span class="sd">                          0      1      2</span>
@@ -5264,8 +5264,8 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">                30.0  1.500  2.600  3.700</span>
 
 <span class="sd">            If the `TimModel` object was created with quantities names:</span>
-<span class="sd">                &gt;&gt;&gt; quantities_names = ["Column1", "Column2", "Column3"]</span>
-<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim", quantities_names=quantities_names)</span>
+<span class="sd">                &gt;&gt;&gt; quantities_names = [&quot;Column1&quot;, &quot;Column2&quot;, &quot;Column3&quot;]</span>
+<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;, quantities_names=quantities_names)</span>
 <span class="sd">                &gt;&gt;&gt; df = tim_model.as_dataframe()</span>
 <span class="sd">                &gt;&gt;&gt; print(df)</span>
 <span class="sd">                      Column1  Column2  Column3</span>
@@ -5274,13 +5274,13 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">                30.0    1.500    2.600    3.700</span>
 
 <span class="sd">            To add column names to the DataFrame after you have created the `TimModel` object:</span>
-<span class="sd">                &gt;&gt;&gt; df = tim_model.as_dataframe(columns=["Column1", "Column2", "Column3"])</span>
+<span class="sd">                &gt;&gt;&gt; df = tim_model.as_dataframe(columns=[&quot;Column1&quot;, &quot;Column2&quot;, &quot;Column3&quot;])</span>
 <span class="sd">                &gt;&gt;&gt; print(df)</span>
 <span class="sd">                      Column1  Column2  Column3</span>
 <span class="sd">                10.0    1.232    2.343    3.454</span>
 <span class="sd">                20.0    4.565    5.676    6.787</span>
 <span class="sd">                30.0    1.500    2.600    3.700</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">]</span>
         <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
@@ -5288,7 +5288,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
         <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">time_series</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""Extract time series data from a TIM model.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract time series data from a TIM model.</span>
 
 <span class="sd">        Extract the time series data (each column) from the TimModel object</span>
 
@@ -5299,7 +5299,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            ```python</span>
-<span class="sd">            &gt;&gt;&gt; tim_file = Path("tests/data/input/source-sink/leftsor.tim")</span>
+<span class="sd">            &gt;&gt;&gt; tim_file = Path(&quot;tests/data/input/source-sink/leftsor.tim&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; time_file = TimParser.parse(tim_file)</span>
 <span class="sd">            &gt;&gt;&gt; tim_model = TimModel(**time_file)</span>
 <span class="sd">            &gt;&gt;&gt; time_series = tim_model.as_dict()</span>
@@ -5311,12 +5311,12 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">                4: [4.0, 4.0, 4.0, 4.0, 4.0]</span>
 <span class="sd">            }</span>
 <span class="sd">            ```</span>
-<span class="sd">        """</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">"list"</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return the units for each quantity in the timeseries.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the units for each quantity in the timeseries.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            list[str] | None : A list of units for each quantity in the timeseries.</span>
@@ -5325,13 +5325,13 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">            Create a `TimModel` object from a .tim file:</span>
 <span class="sd">                ```python</span>
 <span class="sd">                &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel</span>
-<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")</span>
-<span class="sd">                &gt;&gt;&gt; tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]</span>
+<span class="sd">                &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/source-sink/tim-5-columns.tim&quot;)</span>
+<span class="sd">                &gt;&gt;&gt; tim_model.quantities_names = [&quot;discharge&quot;, &quot;waterlevel&quot;, &quot;temperature&quot;, &quot;salinity&quot;, &quot;initialtracer&quot;]</span>
 <span class="sd">                &gt;&gt;&gt; print(tim_model.get_units())</span>
-<span class="sd">                ['m3/s', 'm', 'degC', '1e-3', '-']</span>
+<span class="sd">                [&#39;m3/s&#39;, &#39;m&#39;, &#39;degC&#39;, &#39;1e-3&#39;, &#39;-&#39;]</span>
 
 <span class="sd">                ```</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
@@ -5526,7 +5526,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
     <span class="n">quantities_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">parsable_file_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Custom initializer to handle extra parameters specific to TimModel.</span>
 
 <span class="sd">    Args:</span>
@@ -5536,7 +5536,7 @@ TimRecord: Represents individual time and data entries in the timeseries.</p>
 <span class="sd">            Names for the quantities in the timeseries.</span>
 <span class="sd">        **parsable_file_kwargs (Any):</span>
 <span class="sd">            Other arguments for the superclass.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">parsable_file_kwargs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="o">=</span> <span class="n">quantities_names</span>
 </code></pre></div></td></tr></table></div>
@@ -5683,13 +5683,13 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">290</span>
 <span class="normal">291</span>
 <span class="normal">292</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new values to each TimRecord in the timeseries, representing a new location.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        new_values (List[float]): A list of new values to add, one for each TimRecord.</span>
 <span class="sd">        column_name (str, optional): The name of the new column. Defaults to None.</span>
-<span class="sd">            if None, the column is named as "quantity-{len(quantities_names) + 1}".</span>
+<span class="sd">            if None, the column is named as &quot;quantity-{len(quantities_names) + 1}&quot;.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the number of new values does not match the number of TimRecords.</span>
@@ -5707,10 +5707,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">        [TimRecord(time=0.0, data=[1.0, 2.0, 5.0]), TimRecord(time=1.0, data=[3.0, 4.0, 6.0])]</span>
 
 <span class="sd">        ```</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">)</span><span class="si">}</span><span class="s2"> values, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">)</span><span class="si">}</span><span class="s2"> values, but got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">record</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">,</span> <span class="n">new_values</span><span class="p">):</span>
@@ -5718,7 +5718,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">column_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">column_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"quantity-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">column_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;quantity-</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5880,7 +5880,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Return the timeseries as a pandas DataFrame.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the timeseries as a pandas DataFrame.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        columns (List[Any, str], optional, Defaults to None):</span>
@@ -5896,7 +5896,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">    Examples:</span>
 <span class="sd">        Create a `TimModel` object from a .tim file:</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel</span>
-<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim")</span>
+<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; df = tim_model.as_dataframe()</span>
 <span class="sd">            &gt;&gt;&gt; print(df)</span>
 <span class="sd">                      0      1      2</span>
@@ -5905,8 +5905,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">            30.0  1.500  2.600  3.700</span>
 
 <span class="sd">        If the `TimModel` object was created with quantities names:</span>
-<span class="sd">            &gt;&gt;&gt; quantities_names = ["Column1", "Column2", "Column3"]</span>
-<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/tim/triple_data_for_timeseries.tim", quantities_names=quantities_names)</span>
+<span class="sd">            &gt;&gt;&gt; quantities_names = [&quot;Column1&quot;, &quot;Column2&quot;, &quot;Column3&quot;]</span>
+<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/tim/triple_data_for_timeseries.tim&quot;, quantities_names=quantities_names)</span>
 <span class="sd">            &gt;&gt;&gt; df = tim_model.as_dataframe()</span>
 <span class="sd">            &gt;&gt;&gt; print(df)</span>
 <span class="sd">                  Column1  Column2  Column3</span>
@@ -5915,13 +5915,13 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">            30.0    1.500    2.600    3.700</span>
 
 <span class="sd">        To add column names to the DataFrame after you have created the `TimModel` object:</span>
-<span class="sd">            &gt;&gt;&gt; df = tim_model.as_dataframe(columns=["Column1", "Column2", "Column3"])</span>
+<span class="sd">            &gt;&gt;&gt; df = tim_model.as_dataframe(columns=[&quot;Column1&quot;, &quot;Column2&quot;, &quot;Column3&quot;])</span>
 <span class="sd">            &gt;&gt;&gt; print(df)</span>
 <span class="sd">                  Column1  Column2  Column3</span>
 <span class="sd">            10.0    1.232    2.343    3.454</span>
 <span class="sd">            20.0    4.565    5.676    6.787</span>
 <span class="sd">            30.0    1.500    2.600    3.700</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">time_series</span> <span class="o">=</span> <span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">]</span>
     <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">record</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeseries</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
@@ -5992,7 +5992,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">tim_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"tests/data/input/source-sink/leftsor.tim"</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="n">tim_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;tests/data/input/source-sink/leftsor.tim&quot;</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">time_file</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">tim_file</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="o">**</span><span class="n">time_file</span><span class="p">)</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">time_series</span> <span class="o">=</span> <span class="n">tim_model</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
@@ -6035,7 +6035,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">"""Extract time series data from a TIM model.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract time series data from a TIM model.</span>
 
 <span class="sd">    Extract the time series data (each column) from the TimModel object</span>
 
@@ -6046,7 +6046,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        &gt;&gt;&gt; tim_file = Path("tests/data/input/source-sink/leftsor.tim")</span>
+<span class="sd">        &gt;&gt;&gt; tim_file = Path(&quot;tests/data/input/source-sink/leftsor.tim&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; time_file = TimParser.parse(tim_file)</span>
 <span class="sd">        &gt;&gt;&gt; tim_model = TimModel(**time_file)</span>
 <span class="sd">        &gt;&gt;&gt; time_series = tim_model.as_dict()</span>
@@ -6058,8 +6058,8 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">            4: [4.0, 4.0, 4.0, 4.0, 4.0]</span>
 <span class="sd">        }</span>
 <span class="sd">        ```</span>
-<span class="sd">    """</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">"list"</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">&quot;list&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6107,10 +6107,10 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <p><span class="doc-section-title">Examples:</span></p>
     <p>Create a <code>TimModel</code> object from a .tim file:
     <div class="highlight"><pre><span></span><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.tim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimModel</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">"tests/data/input/source-sink/tim-5-columns.tim"</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span><span class="o">.</span><span class="n">quantities_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"discharge"</span><span class="p">,</span> <span class="s2">"waterlevel"</span><span class="p">,</span> <span class="s2">"temperature"</span><span class="p">,</span> <span class="s2">"salinity"</span><span class="p">,</span> <span class="s2">"initialtracer"</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span> <span class="o">=</span> <span class="n">TimModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s2">&quot;tests/data/input/source-sink/tim-5-columns.tim&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">tim_model</span><span class="o">.</span><span class="n">quantities_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;discharge&quot;</span><span class="p">,</span> <span class="s2">&quot;waterlevel&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;salinity&quot;</span><span class="p">,</span> <span class="s2">&quot;initialtracer&quot;</span><span class="p">]</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="n">tim_model</span><span class="o">.</span><span class="n">get_units</span><span class="p">())</span>
-<span class="p">[</span><span class="s1">'m3/s'</span><span class="p">,</span> <span class="s1">'m'</span><span class="p">,</span> <span class="s1">'degC'</span><span class="p">,</span> <span class="s1">'1e-3'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;m3/s&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;degC&#39;</span><span class="p">,</span> <span class="s1">&#39;1e-3&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">]</span>
 </code></pre></div></p>
 
 
@@ -6139,7 +6139,7 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">391</span>
 <span class="normal">392</span>
 <span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Return the units for each quantity in the timeseries.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the units for each quantity in the timeseries.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list[str] | None : A list of units for each quantity in the timeseries.</span>
@@ -6148,13 +6148,13 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="sd">        Create a `TimModel` object from a .tim file:</span>
 <span class="sd">            ```python</span>
 <span class="sd">            &gt;&gt;&gt; from hydrolib.core.dflowfm.tim.models import TimModel</span>
-<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath="tests/data/input/source-sink/tim-5-columns.tim")</span>
-<span class="sd">            &gt;&gt;&gt; tim_model.quantities_names = ["discharge", "waterlevel", "temperature", "salinity", "initialtracer"]</span>
+<span class="sd">            &gt;&gt;&gt; tim_model = TimModel(filepath=&quot;tests/data/input/source-sink/tim-5-columns.tim&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; tim_model.quantities_names = [&quot;discharge&quot;, &quot;waterlevel&quot;, &quot;temperature&quot;, &quot;salinity&quot;, &quot;initialtracer&quot;]</span>
 <span class="sd">            &gt;&gt;&gt; print(tim_model.get_units())</span>
-<span class="sd">            ['m3/s', 'm', 'degC', '1e-3', '-']</span>
+<span class="sd">            [&#39;m3/s&#39;, &#39;m&#39;, &#39;degC&#39;, &#39;1e-3&#39;, &#39;-&#39;]</span>
 
 <span class="sd">            ```</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
@@ -6211,13 +6211,13 @@ if None, the column is named as "quantity-{len(quantities_names) + 1}".</p>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimRecord</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Single tim record, representing a time and a list of data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single tim record, representing a time and a list of data.&quot;&quot;&quot;</span>
 
     <span class="n">time</span><span class="p">:</span> <span class="nb">float</span>
-<span class="w">    </span><span class="sd">"""float: Time of the time record."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;float: Time of the time record.&quot;&quot;&quot;</span>
 
     <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""List[float]: Record of the time record."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List[float]: Record of the time record.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6413,36 +6413,36 @@ No other comments are supported.</p>
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""A parser for .tim files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for .tim files.</span>
 
 <span class="sd">    Full line comments at the start of the file are supported. Comment lines start with either a `*` or a `#`.</span>
 <span class="sd">    No other comments are supported.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""Parse a .tim file into a dictionary with comments and time series data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a .tim file into a dictionary with comments and time series data.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            filepath (Path): Path to the .tim file to be parsed.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Dict[str, List[Any]]: A dictionary with keys "comments" and "timeseries".</span>
-<span class="sd">            - "comments" represents comments found at the start of the file.</span>
-<span class="sd">            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".</span>
-<span class="sd">                - "time" is a time as a string.</span>
-<span class="sd">                - "data" is data as a list of strings.</span>
+<span class="sd">            Dict[str, List[Any]]: A dictionary with keys &quot;comments&quot; and &quot;timeseries&quot;.</span>
+<span class="sd">            - &quot;comments&quot; represents comments found at the start of the file.</span>
+<span class="sd">            - &quot;timeseries&quot; is a list of dictionaries with the key as &quot;time&quot; and values as &quot;data&quot;.</span>
+<span class="sd">                - &quot;time&quot; is a time as a string.</span>
+<span class="sd">                - &quot;data&quot; is data as a list of strings.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">            ValueError: If the data of the timeseries is empty.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
         <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="s2">"comments"</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">"timeseries"</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_time_series_data</span><span class="p">(</span>
@@ -6461,7 +6461,7 @@ No other comments are supported.</p>
 
             <span class="n">TimParser</span><span class="o">.</span><span class="n">_raise_error_if_values_empty</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">line_index</span><span class="p">)</span>
 
-            <span class="n">timrecord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">:</span> <span class="n">values</span><span class="p">}</span>
+            <span class="n">timrecord</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">values</span><span class="p">}</span>
             <span class="n">timeseries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timrecord</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">timeseries</span>
@@ -6469,7 +6469,7 @@ No other comments are supported.</p>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_raise_error_if_values_empty</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">line_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Line </span><span class="si">{</span><span class="n">line_index</span><span class="si">}</span><span class="s2">: Time series cannot be empty."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Line </span><span class="si">{</span><span class="n">line_index</span><span class="si">}</span><span class="s2">: Time series cannot be empty.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -6644,28 +6644,28 @@ No other comments are supported.</p>
 <span class="normal">40</span>
 <span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">"""Parse a .tim file into a dictionary with comments and time series data.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a .tim file into a dictionary with comments and time series data.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filepath (Path): Path to the .tim file to be parsed.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Dict[str, List[Any]]: A dictionary with keys "comments" and "timeseries".</span>
-<span class="sd">        - "comments" represents comments found at the start of the file.</span>
-<span class="sd">        - "timeseries" is a list of dictionaries with the key as "time" and values as "data".</span>
-<span class="sd">            - "time" is a time as a string.</span>
-<span class="sd">            - "data" is data as a list of strings.</span>
+<span class="sd">        Dict[str, List[Any]]: A dictionary with keys &quot;comments&quot; and &quot;timeseries&quot;.</span>
+<span class="sd">        - &quot;comments&quot; represents comments found at the start of the file.</span>
+<span class="sd">        - &quot;timeseries&quot; is a list of dictionaries with the key as &quot;time&quot; and values as &quot;data&quot;.</span>
+<span class="sd">            - &quot;time&quot; is a time as a string.</span>
+<span class="sd">            - &quot;data&quot; is data as a list of strings.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the file contains a comment that is not at the start of the file.</span>
 <span class="sd">        ValueError: If the data of the timeseries is empty.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">comments</span><span class="p">,</span> <span class="n">start_timeseries_index</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_header_comments</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
     <span class="n">timeseries</span> <span class="o">=</span> <span class="n">TimParser</span><span class="o">.</span><span class="n">_read_time_series_data</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">start_timeseries_index</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="p">{</span><span class="s2">"comments"</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">"timeseries"</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comments&quot;</span><span class="p">:</span> <span class="n">comments</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">:</span> <span class="n">timeseries</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6864,7 +6864,7 @@ No other comments are supported.</p>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Serializer for TimModel data to .tim file format."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer for TimModel data to .tim file format.&quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
@@ -6873,23 +6873,23 @@ No other comments are supported.</p>
         <span class="n">config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span><span class="p">,</span>
         <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize timeseries data to a file in .tim format.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path (Path):</span>
 <span class="sd">                The path to the destination .tim file.</span>
 <span class="sd">            data (Dict[str, List[Any]]):</span>
-<span class="sd">                A dictionary with keys "comments" and "timeseries".</span>
-<span class="sd">                - "comments" represents comments found at the start of the file.</span>
-<span class="sd">                - "timeseries" is a list of dictionaries with the key as "time" and values as "data".</span>
-<span class="sd">                    - "time" is a time as a string.</span>
-<span class="sd">                    - "data" is data as a list of strings.</span>
+<span class="sd">                A dictionary with keys &quot;comments&quot; and &quot;timeseries&quot;.</span>
+<span class="sd">                - &quot;comments&quot; represents comments found at the start of the file.</span>
+<span class="sd">                - &quot;timeseries&quot; is a list of dictionaries with the key as &quot;time&quot; and values as &quot;data&quot;.</span>
+<span class="sd">                    - &quot;time&quot; is a time as a string.</span>
+<span class="sd">                    - &quot;data&quot; is data as a list of strings.</span>
 <span class="sd">            config (TimSerializerConfig):</span>
 <span class="sd">                The serialization configuration settings.</span>
 <span class="sd">            save_settings (ModelSaveSettings):</span>
 <span class="sd">                The save settings to be used.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">commentlines</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_comment_lines</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -6898,21 +6898,21 @@ No other comments are supported.</p>
         <span class="n">file_content</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_file_content</span><span class="p">(</span>
             <span class="n">timeserieslines</span><span class="p">,</span> <span class="n">commentlines</span>
         <span class="p">)</span>
-        <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_comment_lines</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">commentlines</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">"comments"</span><span class="p">]:</span>
-            <span class="n">commentlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"#</span><span class="si">{</span><span class="n">comment</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;comments&quot;</span><span class="p">]:</span>
+            <span class="n">commentlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">commentlines</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_timeseries_lines</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">format_float</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">"</span>
+        <span class="n">format_float</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
         <span class="n">timeseriesblock</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_to_timeseries_block</span><span class="p">(</span>
             <span class="n">data</span><span class="p">,</span> <span class="n">format_float</span>
         <span class="p">)</span>
@@ -6926,9 +6926,9 @@ No other comments are supported.</p>
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">format_float</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesBlock</span><span class="p">:</span>
         <span class="n">timeseries_block</span><span class="p">:</span> <span class="n">TimeSeriesBlock</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">"timeseries"</span><span class="p">]:</span>
-            <span class="n">time</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[</span><span class="s2">"time"</span><span class="p">]</span>
-            <span class="n">row_elements</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">timeseries</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">]:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+            <span class="n">row_elements</span> <span class="o">=</span> <span class="n">timeseries</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
             <span class="n">timeseries_row</span> <span class="o">=</span> <span class="p">[</span><span class="n">format_float</span><span class="p">(</span><span class="n">time</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span>
                 <span class="n">format_float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row_elements</span>
             <span class="p">]</span>
@@ -6940,7 +6940,7 @@ No other comments are supported.</p>
         <span class="n">timeseries_block</span><span class="p">:</span> <span class="n">TimeSeriesBlock</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="c1"># Make sure the columns are aligned and have the proper spacing</span>
-        <span class="n">column_space</span> <span class="o">=</span> <span class="s2">" "</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">column_spacing</span>
+        <span class="n">column_space</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">column_spacing</span>
         <span class="n">column_lengths</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_get_column_lengths</span><span class="p">(</span><span class="n">timeseries_block</span><span class="p">)</span>
 
         <span class="n">timeserieslines</span> <span class="o">=</span> <span class="p">[]</span>
@@ -6959,14 +6959,14 @@ No other comments are supported.</p>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_offset_whitespace</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">value_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="s2">" "</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_length</span> <span class="o">-</span> <span class="n">value_length</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_length</span> <span class="o">-</span> <span class="n">value_length</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_file_content</span><span class="p">(</span><span class="n">timeserieslines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">commentlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">commentlines</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">timeserieslines</span><span class="p">)</span>
-        <span class="n">file_content</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+        <span class="n">file_content</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">file_content</span>
 
     <span class="nd">@staticmethod</span>
@@ -7142,23 +7142,23 @@ No other comments are supported.</p>
     <span class="n">config</span><span class="p">:</span> <span class="n">TimSerializerConfig</span><span class="p">,</span>
     <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Serialize timeseries data to a file in .tim format.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path):</span>
 <span class="sd">            The path to the destination .tim file.</span>
 <span class="sd">        data (Dict[str, List[Any]]):</span>
-<span class="sd">            A dictionary with keys "comments" and "timeseries".</span>
-<span class="sd">            - "comments" represents comments found at the start of the file.</span>
-<span class="sd">            - "timeseries" is a list of dictionaries with the key as "time" and values as "data".</span>
-<span class="sd">                - "time" is a time as a string.</span>
-<span class="sd">                - "data" is data as a list of strings.</span>
+<span class="sd">            A dictionary with keys &quot;comments&quot; and &quot;timeseries&quot;.</span>
+<span class="sd">            - &quot;comments&quot; represents comments found at the start of the file.</span>
+<span class="sd">            - &quot;timeseries&quot; is a list of dictionaries with the key as &quot;time&quot; and values as &quot;data&quot;.</span>
+<span class="sd">                - &quot;time&quot; is a time as a string.</span>
+<span class="sd">                - &quot;data&quot; is data as a list of strings.</span>
 <span class="sd">        config (TimSerializerConfig):</span>
 <span class="sd">            The serialization configuration settings.</span>
 <span class="sd">        save_settings (ModelSaveSettings):</span>
 <span class="sd">            The save settings to be used.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">commentlines</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_comment_lines</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -7167,7 +7167,7 @@ No other comments are supported.</p>
     <span class="n">file_content</span> <span class="o">=</span> <span class="n">TimSerializer</span><span class="o">.</span><span class="n">_serialize_file_content</span><span class="p">(</span>
         <span class="n">timeserieslines</span><span class="p">,</span> <span class="n">commentlines</span>
     <span class="p">)</span>
-    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7216,10 +7216,10 @@ No other comments are supported.</p>
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TimSerializerConfig</span><span class="p">(</span><span class="n">SerializerConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Configuration settings for the TimSerializer."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration settings for the TimSerializer.&quot;&quot;&quot;</span>
 
     <span class="n">column_spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="w">    </span><span class="sd">"""(int): The number of spaces to include between columns in the serialized .tim file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;(int): The number of spaces to include between columns in the serialized .tim file.&quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -7358,7 +7358,7 @@ No other comments are supported.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

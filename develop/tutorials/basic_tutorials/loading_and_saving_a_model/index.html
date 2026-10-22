@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3948,7 +3948,7 @@ models.</p>
 <p>We can load a model by constructing a new DIMR model by calling the <code>DIMR</code> with the
 file path to this model:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># assuming the DIMR model is stored in your current working directory.</span>
-<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"./dimr_config.xml"</span><span class="p">)</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./dimr_config.xml&quot;</span><span class="p">)</span>
 <span class="n">dimr_model</span> <span class="o">=</span> <span class="n">DIMR</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
 </code></pre></div>
 <p>It is also possible to not recursively load models:
@@ -3958,14 +3958,14 @@ file path to this model:</p>
 <h2 id="save-the-model-in-a-new-location">Save the model in a new location<a class="headerlink" href="#save-the-model-in-a-new-location" title="Permanent link">&para;</a></h2>
 <p>If we want to store the full model in a different location we can use the <code>save</code> function:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Adjust this new_path to a path convenient for you.</span>
-<span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"some/other/path/dimr_config.xml"</span><span class="p">)</span>  
+<span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
 <span class="n">dimr_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">new_path</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p>By setting <code>recurse</code> to <code>True</code> we will ensure all files (which are supported by HYDROLIB-core)
 are written to the new location, relative to the file path of the root model.
 Providing the <code>filepath</code> argument has the same result as first setting the filepath, and then
 calling save:</p>
-<div class="highlight"><pre><span></span><code><span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"some/other/path/dimr_config.xml"</span><span class="p">)</span>  
+<div class="highlight"><pre><span></span><code><span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;some/other/path/dimr_config.xml&quot;</span><span class="p">)</span>  
 <span class="n">dimr_model</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">new_path</span>
 <span class="n">dimr_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
@@ -4001,10 +4001,10 @@ To aid users in migrating their models, HYDROLIB-core offers a feature to resolv
 The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
 <p>To load the model and simultaneously repair the file references in the in-memory model:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.core.dflowfm.mdu.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMModel</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="s2">"FlowFM.mdu"</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="s2">&quot;FlowFM.mdu&quot;</span><span class="p">,</span> <span class="n">resolve_casing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># assert that file reference has been updated from Network/flowfm_net.nc to network/FlowFM_net.nc</span>
-<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"network/FlowFM_net.nc"</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">netfile</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;network/FlowFM_net.nc&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>The <code>resolve_casing</code> argument is by default <code>False</code>. Using the <code>resolve_casing</code> functionality might heavily influence the performance of model loading depending on the model size, the file tree structure and the operating system.</p>
 <h2 id="saving-and-loading-models-between-different-operating-systems">Saving and loading models between different operating systems<a class="headerlink" href="#saving-and-loading-models-between-different-operating-systems" title="Permanent link">&para;</a></h2>
@@ -4012,17 +4012,17 @@ The file on disk is actually called <code>network/FlowFM_net.nc</code>.</p>
 <p>Fortunately, HYDROLIB-core features a functionality that allows the conversion of file paths from one OS path style to another. This resolves the issue and ensures that the model functions seamlessly on both Unix and Windows systems.</p>
 <h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
 <p><strong>Loading a model with Unix file paths on Windows:</strong>
-<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"p:/model/FlowFM.mdu"</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">"unix"</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;p:/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;unix&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 <p><strong>Loading a model with Windows file paths on Linux/MacOS:</strong>
-<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/p/model/FlowFM.mdu"</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">"windows"</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">FMModel</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/p/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;windows&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 <p>In the two examples mentioned above, the <code>path_style</code> option specifies the path style that is used in the model files to be loaded. This information allows HYDROLIB-core to accurately convert the file paths to match the path style of the running operating system and interpret them correctly.</p>
 <p><strong>Saving a model with Unix file paths on Windows:</strong>
-<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"p:/model/FlowFM.mdu"</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">"unix"</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;p:/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;unix&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 <p><strong>Saving a model with Windows file paths on Linux/MacOS:</strong>
-<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/p/model/FlowFM.mdu"</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">"windows"</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/p/model/FlowFM.mdu&quot;</span><span class="p">),</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_style</span><span class="o">=</span><span class="s2">&quot;windows&quot;</span><span class="p">)</span>
 </code></pre></div></p>
 <p>In the two examples mentioned above, the <code>path_style</code> option specifies the preferred path style of the saved model files. However, if this option is not specified when initializing or saving the model, it will default to the path style of the current operating system.</p>
 <p>The <code>path_style</code> option supports these three values:
@@ -4040,7 +4040,7 @@ In order to update the save location, <code>synchronize_filepaths</code> should 
 <h3 id="synchronizing-filepaths-is-relative-to-the-model-it-is-called-upon">Synchronizing filepaths is relative to the model it is called upon<a class="headerlink" href="#synchronizing-filepaths-is-relative-to-the-model-it-is-called-upon" title="Permanent link">&para;</a></h3>
 <p><code>synchronize_filepaths</code> will only update the file paths of child models. As such it will not propagate
 changes mode in a parent model:</p>
-<div class="highlight"><pre><span></span><code>dimr_model.filepath = Path("some/other/path/dimr_config.xml")
+<div class="highlight"><pre><span></span><code>dimr_model.filepath = Path(&quot;some/other/path/dimr_config.xml&quot;)
 fm_model.synchronize_filepaths()  # This has no effect.
 </code></pre></div>
 <p>Because the <code>save_location</code> of the <code>fm_model</code> has not been changed, none of the child models will change either.</p>
@@ -4130,7 +4130,7 @@ fm_model.synchronize_filepaths()  # This has no effect.
       <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       
