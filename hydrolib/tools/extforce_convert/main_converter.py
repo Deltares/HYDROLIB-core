@@ -24,8 +24,8 @@ from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
 from hydrolib.core.dflowfm.mba.models import (
     MassBalanceArea,
+    MassBalanceAreaGeneral,
     MassBalanceAreaModel,
-    MassBalanceAreaGeneral
 )
 from hydrolib.core.dflowfm.structure.models import (
     Structure,
