@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -3813,8 +3813,8 @@ recommend migrating before the listed removal release.</p>
 <p>Python suppresses <code>DeprecationWarning</code> by default outside of test runs. To
 surface them in your own application or scripts:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-                        <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;hydrolib\..*&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"default"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                        <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">"hydrolib\..*"</span><span class="p">)</span>
 </code></pre></div>
 <p>Or run a one-off check with:</p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-W<span class="w"> </span>default::DeprecationWarning<span class="w"> </span>your_script.py
@@ -3823,7 +3823,7 @@ surface them in your own application or scripts:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># pyproject.toml or pytest.ini</span>
 <span class="k">[tool.pytest.ini_options]</span>
 <span class="na">filterwarnings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[</span>
-<span class="w">    </span><span class="na">&quot;error</span><span class="o">:</span><span class="s">:DeprecationWarning:hydrolib.*&quot;,</span>
+<span class="w">    </span><span class="na">"error</span><span class="o">:</span><span class="s">:DeprecationWarning:hydrolib.*",</span>
 <span class="na">]</span>
 </code></pre></div>
 <h2 id="quick-reference">Quick reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
@@ -3937,11 +3937,11 @@ through the unchanged Pydantic alias).</p>
 <p>If you call <code>meteo.model_dump()</code> <em>without</em> <code>by_alias=True</code>, the returned dict
 keys reflect the new lowercase attribute names:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Before:                                After:</span>
-<span class="p">{</span><span class="s2">&quot;extrapolationAllowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>     <span class="p">{</span><span class="s2">&quot;extrapolationallowed&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"extrapolationAllowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>     <span class="p">{</span><span class="s2">"extrapolationallowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <p>If you need the on-disk INI key names, pass <code>by_alias=True</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="n">meteo</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">by_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="c1"># -&gt; {&quot;extrapolationAllowed&quot;: True, ...}</span>
+<span class="c1"># -&gt; {"extrapolationAllowed": True, ...}</span>
 </code></pre></div>
 <p>The library's own INI serializer always uses <code>by_alias=True</code>, so the
 contents of <code>.ext</code> files on disk are unaffected.</p>
@@ -3953,7 +3953,7 @@ contents of <code>.ext</code> files on disk are unaffected.</p>
 <li>Constructing <code>Meteo</code> with keyword arguments using either the old or new
   name: both work via Pydantic alias resolution.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="n">Meteo</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;rainfall&quot;</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="n">Meteo</span><span class="p">(</span><span class="n">quantity</span><span class="o">=</span><span class="s2">"rainfall"</span><span class="p">,</span>
       <span class="n">forcingfile</span><span class="o">=</span><span class="n">ForcingModel</span><span class="p">(),</span>
       <span class="n">forcingfiletype</span><span class="o">=</span><span class="n">MeteoForcingFileType</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
       <span class="n">extrapolationAllowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># still works, no warning</span>
@@ -4041,7 +4041,7 @@ contents of <code>.ext</code> files on disk are unaffected.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../assets/javascripts/panzoom.min.js"></script>
       

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4534,7 +4534,7 @@ It is represented by the classes below.</p>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Model that represents the file structure of a .bui file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Model that represents the file structure of a .bui file."""</span>
 
     <span class="n">default_dataset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Default value (always)</span>
     <span class="n">number_of_stations</span><span class="p">:</span> <span class="nb">int</span>
@@ -4545,11 +4545,11 @@ It is represented by the classes below.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;bui_file&quot;</span>
+        <span class="k">return</span> <span class="s2">"bui_file"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;.bui&quot;</span>
+        <span class="k">return</span> <span class="s2">".bui"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
@@ -4562,7 +4562,7 @@ It is represented by the classes below.</p>
         <span class="k">return</span> <span class="n">BuiParser</span><span class="o">.</span><span class="n">parse</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_station_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns all the events (start time and precipitations) related to a given station.</span>
 
 <span class="sd">        Args:</span>
@@ -4573,9 +4573,9 @@ It is represented by the classes below.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[datetime, List[float]]: Dictionary with the start time and its precipitations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">station</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_of_stations</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Station </span><span class="si">{}</span><span class="s2"> not found BuiModel.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Station </span><span class="si">{}</span><span class="s2"> not found BuiModel."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
         <span class="n">station_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_of_stations</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
         <span class="n">station_events</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">precipitation_events</span><span class="p">:</span>
@@ -4712,7 +4712,7 @@ It is represented by the classes below.</p>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_station_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns all the events (start time and precipitations) related to a given station.</span>
 
 <span class="sd">    Args:</span>
@@ -4723,9 +4723,9 @@ It is represented by the classes below.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict[datetime, List[float]]: Dictionary with the start time and its precipitations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">station</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_of_stations</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Station </span><span class="si">{}</span><span class="s2"> not found BuiModel.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Station </span><span class="si">{}</span><span class="s2"> not found BuiModel."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">station</span><span class="p">))</span>
     <span class="n">station_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_of_stations</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">station</span><span class="p">)</span>
     <span class="n">station_events</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">precipitation_events</span><span class="p">:</span>
@@ -4810,7 +4810,7 @@ It is represented by the classes below.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiPrecipitationEvent</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a single precipitation event within a .bui file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Represents a single precipitation event within a .bui file."""</span>
 
     <span class="n">start_time</span><span class="p">:</span> <span class="n">datetime</span>
     <span class="n">timeseries_length</span><span class="p">:</span> <span class="n">timedelta</span>
@@ -4819,7 +4819,7 @@ It is represented by the classes below.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_station_precipitations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">station_idx</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns all the precipitations related to the given station index (column).</span>
 
 <span class="sd">        Args:</span>
@@ -4830,11 +4830,11 @@ It is represented by the classes below.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple[datetime, List[float]]: Tuple with the start time and its precipitations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">number_of_stations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">precipitation_per_timestep</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">station_idx</span> <span class="o">&gt;=</span> <span class="n">number_of_stations</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Station index not found, number of stations: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">"Station index not found, number of stations: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">number_of_stations</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -4985,7 +4985,7 @@ It is represented by the classes below.</p>
 <span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_station_precipitations</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">station_idx</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">datetime</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns all the precipitations related to the given station index (column).</span>
 
 <span class="sd">    Args:</span>
@@ -4996,11 +4996,11 @@ It is represented by the classes below.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Tuple[datetime, List[float]]: Tuple with the start time and its precipitations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">number_of_stations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">precipitation_per_timestep</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">station_idx</span> <span class="o">&gt;=</span> <span class="n">number_of_stations</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Station index not found, number of stations: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">"Station index not found, number of stations: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">number_of_stations</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -5158,7 +5158,7 @@ Example given:
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiEventListParser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for .bui events.</span>
+<span class="w">    </span><span class="sd">"""A parser for .bui events.</span>
 
 <span class="sd">    A parser for .bui events which are like this:</span>
 <span class="sd">    StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)</span>
@@ -5174,11 +5174,11 @@ Example given:
 <span class="sd">    2.4</span>
 <span class="sd">    2.4</span>
 <span class="sd">    2.4</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_events</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">timestep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a given raw text containing precipitation event text blocks.</span>
+<span class="w">        </span><span class="sd">"""Parses a given raw text containing precipitation event text blocks.</span>
 
 <span class="sd">        Parses a given raw text containing 0 to many text blocks representing a precipitation event.</span>
 
@@ -5189,11 +5189,11 @@ Example given:
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Dict]: List containing all the events represented as dictionaries.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_event_timestep_length</span><span class="p">(</span><span class="n">raw_line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">timereference</span> <span class="o">=</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse_event_time_reference</span><span class="p">(</span><span class="n">raw_line</span><span class="p">)</span>
-            <span class="n">ts_length</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timereference</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+            <span class="n">ts_length</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timereference</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">ts_length</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_multiple_events</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">BuiEventParser</span><span class="p">]:</span>
@@ -5201,7 +5201,7 @@ Example given:
             <span class="k">while</span> <span class="n">n_line</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">):</span>
                 <span class="n">ts_seconds</span> <span class="o">=</span> <span class="n">get_event_timestep_length</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">])</span>
                 <span class="n">event_lines</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts_seconds</span> <span class="o">/</span> <span class="n">timestep</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="k">yield</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">:][:</span><span class="n">event_lines</span><span class="p">]))</span>
+                <span class="k">yield</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">:][:</span><span class="n">event_lines</span><span class="p">]))</span>
                 <span class="n">n_line</span> <span class="o">+=</span> <span class="n">event_lines</span>
 
         <span class="n">event_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5372,7 +5372,7 @@ Example given:
 <span class="normal">136</span>
 <span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_events</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">timestep</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a given raw text containing precipitation event text blocks.</span>
+<span class="w">    </span><span class="sd">"""Parses a given raw text containing precipitation event text blocks.</span>
 
 <span class="sd">    Parses a given raw text containing 0 to many text blocks representing a precipitation event.</span>
 
@@ -5383,11 +5383,11 @@ Example given:
 
 <span class="sd">    Returns:</span>
 <span class="sd">        List[Dict]: List containing all the events represented as dictionaries.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_event_timestep_length</span><span class="p">(</span><span class="n">raw_line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">timereference</span> <span class="o">=</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse_event_time_reference</span><span class="p">(</span><span class="n">raw_line</span><span class="p">)</span>
-        <span class="n">ts_length</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timereference</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+        <span class="n">ts_length</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timereference</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">ts_length</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_multiple_events</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">BuiEventParser</span><span class="p">]:</span>
@@ -5395,7 +5395,7 @@ Example given:
         <span class="k">while</span> <span class="n">n_line</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">):</span>
             <span class="n">ts_seconds</span> <span class="o">=</span> <span class="n">get_event_timestep_length</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">])</span>
             <span class="n">event_lines</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts_seconds</span> <span class="o">/</span> <span class="n">timestep</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-            <span class="k">yield</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">:][:</span><span class="n">event_lines</span><span class="p">]))</span>
+            <span class="k">yield</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">raw_lines</span><span class="p">[</span><span class="n">n_line</span><span class="p">:][:</span><span class="n">event_lines</span><span class="p">]))</span>
             <span class="n">n_line</span> <span class="o">+=</span> <span class="n">event_lines</span>
 
     <span class="n">event_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5527,7 +5527,7 @@ Each column of the last three lines represents a station.</p>
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiEventParser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for the precipitation event section within a .bui file.</span>
+<span class="w">    </span><span class="sd">"""A parser for the precipitation event section within a .bui file.</span>
 
 <span class="sd">    It resembles something like this:</span>
 <span class="sd">    StartTime (YYYY mm dd HH MM SS) TimeSeriesLength (dd HH MM SS)</span>
@@ -5539,11 +5539,11 @@ Each column of the last three lines represents a station.</p>
 <span class="sd">    4.2 2.4</span>
 <span class="sd">    (it should match the timeseries length based on the seconds per timstep.)</span>
 <span class="sd">    Each column of the last three lines represents a station.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Given text representing a single BuiPrecipitationEvent parses it into a dictionary.</span>
 
 <span class="sd">        Args:</span>
@@ -5551,7 +5551,7 @@ Each column of the last three lines represents a station.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Mapped contents of the text.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_precipitations_per_ts</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">prec</span> <span class="k">for</span> <span class="n">prec</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
@@ -5559,8 +5559,8 @@ Each column of the last three lines represents a station.</p>
         <span class="n">event_lines</span> <span class="o">=</span> <span class="n">raw_text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">time_reference</span> <span class="o">=</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse_event_time_reference</span><span class="p">(</span><span class="n">event_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">start_time</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">],</span>
-            <span class="n">timeseries_length</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">],</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">],</span>
+            <span class="n">timeseries_length</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">],</span>
             <span class="n">precipitation_per_timestep</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span>
                 <span class="nb">map</span><span class="p">(</span><span class="n">get_precipitations_per_ts</span><span class="p">,</span> <span class="n">event_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
             <span class="p">),</span>
@@ -5568,7 +5568,7 @@ Each column of the last three lines represents a station.</p>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_event_time_reference</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a single event time reference line into a dictionary.</span>
+<span class="w">        </span><span class="sd">"""Parses a single event time reference line into a dictionary.</span>
 
 <span class="sd">        Parses a single event time reference line containing both the start time</span>
 <span class="sd">        and the timeseries length into a dictionary.</span>
@@ -5578,10 +5578,10 @@ Each column of the last three lines represents a station.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Resulting dictionary with keys start_time and timeseries_length.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;%Y %m </span><span class="si">%d</span><span class="s2"> %H %M %S&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">"%Y %m </span><span class="si">%d</span><span class="s2"> %H %M %S"</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_timeseries_length</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">timedelta</span><span class="p">:</span>
             <span class="n">time_fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -5594,8 +5594,8 @@ Each column of the last three lines represents a station.</p>
 
         <span class="n">timeref</span> <span class="o">=</span> <span class="n">raw_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">start_time</span><span class="o">=</span><span class="n">get_start_time</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
-            <span class="n">timeseries_length</span><span class="o">=</span><span class="n">get_timeseries_length</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[</span><span class="mi">6</span><span class="p">:])),</span>
+            <span class="n">start_time</span><span class="o">=</span><span class="n">get_start_time</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
+            <span class="n">timeseries_length</span><span class="o">=</span><span class="n">get_timeseries_length</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[</span><span class="mi">6</span><span class="p">:])),</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5712,7 +5712,7 @@ Each column of the last three lines represents a station.</p>
 <span class="normal">47</span>
 <span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Given text representing a single BuiPrecipitationEvent parses it into a dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -5720,7 +5720,7 @@ Each column of the last three lines represents a station.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Mapped contents of the text.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_precipitations_per_ts</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">prec</span> <span class="k">for</span> <span class="n">prec</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
@@ -5728,8 +5728,8 @@ Each column of the last three lines represents a station.</p>
     <span class="n">event_lines</span> <span class="o">=</span> <span class="n">raw_text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">time_reference</span> <span class="o">=</span> <span class="n">BuiEventParser</span><span class="o">.</span><span class="n">parse_event_time_reference</span><span class="p">(</span><span class="n">event_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">start_time</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">],</span>
-        <span class="n">timeseries_length</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">],</span>
+        <span class="n">start_time</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">],</span>
+        <span class="n">timeseries_length</span><span class="o">=</span><span class="n">time_reference</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">],</span>
         <span class="n">precipitation_per_timestep</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span>
             <span class="nb">map</span><span class="p">(</span><span class="n">get_precipitations_per_ts</span><span class="p">,</span> <span class="n">event_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
         <span class="p">),</span>
@@ -5848,7 +5848,7 @@ and the timeseries length into a dictionary.</p>
 <span class="normal">79</span>
 <span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_event_time_reference</span><span class="p">(</span><span class="n">raw_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a single event time reference line into a dictionary.</span>
+<span class="w">    </span><span class="sd">"""Parses a single event time reference line into a dictionary.</span>
 
 <span class="sd">    Parses a single event time reference line containing both the start time</span>
 <span class="sd">    and the timeseries length into a dictionary.</span>
@@ -5858,10 +5858,10 @@ and the timeseries length into a dictionary.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Resulting dictionary with keys start_time and timeseries_length.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_start_time</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">&quot;%Y %m </span><span class="si">%d</span><span class="s2"> %H %M %S&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s2">"%Y %m </span><span class="si">%d</span><span class="s2"> %H %M %S"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_timeseries_length</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">timedelta</span><span class="p">:</span>
         <span class="n">time_fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -5874,8 +5874,8 @@ and the timeseries length into a dictionary.</p>
 
     <span class="n">timeref</span> <span class="o">=</span> <span class="n">raw_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">start_time</span><span class="o">=</span><span class="n">get_start_time</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
-        <span class="n">timeseries_length</span><span class="o">=</span><span class="n">get_timeseries_length</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[</span><span class="mi">6</span><span class="p">:])),</span>
+        <span class="n">start_time</span><span class="o">=</span><span class="n">get_start_time</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[:</span><span class="mi">6</span><span class="p">])),</span>
+        <span class="n">timeseries_length</span><span class="o">=</span><span class="n">get_timeseries_length</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeref</span><span class="p">[</span><span class="mi">6</span><span class="p">:])),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -5987,7 +5987,7 @@ Precipitation per timestep per station.</p>
 <span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiParser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for .bui files.</span>
+<span class="w">    </span><span class="sd">"""A parser for .bui files.</span>
 
 <span class="sd">    A parser for .bui files which are like this:</span>
 <span class="sd">    * comments</span>
@@ -6001,11 +6001,11 @@ Precipitation per timestep per station.</p>
 <span class="sd">    * comments</span>
 <span class="sd">    First datetime reference.</span>
 <span class="sd">    Precipitation per timestep per station.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a given file into a dictionary mappable to BuiModel.</span>
+<span class="w">        </span><span class="sd">"""Parses a given file into a dictionary mappable to BuiModel.</span>
 
 <span class="sd">        Parses a given file, in case valid, into a dictionary which can later be mapped</span>
 <span class="sd">        to the BuiModel.</span>
@@ -6015,10 +6015,10 @@ Precipitation per timestep per station.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Parsed values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_station_ids</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"'</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">parse_events_and_timestep</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
             <span class="n">n_events_timestep</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -6027,7 +6027,7 @@ Precipitation per timestep per station.</p>
         <span class="n">bui_lines</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">line</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"*"</span><span class="p">)</span>
         <span class="p">]</span>
         <span class="n">number_of_stations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">last_station_line</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">number_of_stations</span>
@@ -6041,7 +6041,7 @@ Precipitation per timestep per station.</p>
             <span class="n">number_of_events</span><span class="o">=</span><span class="n">n_events</span><span class="p">,</span>
             <span class="n">seconds_per_timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">,</span>
             <span class="n">precipitation_events</span><span class="o">=</span><span class="n">BuiEventListParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
+                <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
             <span class="p">),</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6178,7 +6178,7 @@ to the BuiModel.</p>
 <span class="normal">196</span>
 <span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a given file into a dictionary mappable to BuiModel.</span>
+<span class="w">    </span><span class="sd">"""Parses a given file into a dictionary mappable to BuiModel.</span>
 
 <span class="sd">    Parses a given file, in case valid, into a dictionary which can later be mapped</span>
 <span class="sd">    to the BuiModel.</span>
@@ -6188,10 +6188,10 @@ to the BuiModel.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Parsed values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_station_ids</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s_id</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"'</span><span class="se">\"</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_id</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_events_and_timestep</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">n_events_timestep</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -6200,7 +6200,7 @@ to the BuiModel.</p>
     <span class="n">bui_lines</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">line</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"*"</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">number_of_stations</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">last_station_line</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">number_of_stations</span>
@@ -6214,7 +6214,7 @@ to the BuiModel.</p>
         <span class="n">number_of_events</span><span class="o">=</span><span class="n">n_events</span><span class="p">,</span>
         <span class="n">seconds_per_timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">,</span>
         <span class="n">precipitation_events</span><span class="o">=</span><span class="n">BuiEventListParser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
+            <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bui_lines</span><span class="p">[</span><span class="n">last_station_line</span> <span class="o">+</span> <span class="mi">2</span> <span class="p">:]),</span> <span class="n">n_events</span><span class="p">,</span> <span class="n">timestep</span>
         <span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6427,22 +6427,22 @@ to the BuiModel.</p>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiEventSerializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer class to transform a bui event into a text block.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serializer class to transform a bui event into a text block."""</span>
 
     <span class="n">bui_event_template</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">cleandoc</span><span class="p">(</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        * Event {event_idx} duration days:{d_days} hours:{d_hours} minutes:{d_minutes} seconds:{d_seconds}</span>
 <span class="sd">        * Start date and time of the event: yyyy mm dd hh mm ss</span>
 <span class="sd">        * Duration of the event           : dd hh mm ss</span>
 <span class="sd">        * Rainfall value per time step [mm/time step]</span>
 <span class="sd">        {start_time} {timeseries_length}</span>
 <span class="sd">        {precipitation_per_timestep}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Serializes a dictionary representing an event into a text block.</span>
 
 <span class="sd">        Args:</span>
@@ -6451,32 +6451,32 @@ to the BuiModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Formatted string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_start_time</span><span class="p">(</span>
-            <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_start_time</span><span class="p">(</span>
+            <span class="n">event_data</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">ts_duration</span> <span class="o">=</span> <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+        <span class="n">ts_duration</span> <span class="o">=</span> <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
         <span class="n">event_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="o">**</span><span class="n">event_data</span><span class="p">,</span>
             <span class="o">**</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">get_timedelta_fields</span><span class="p">(</span><span class="n">ts_duration</span><span class="p">),</span>
         <span class="p">}</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_timeseries_length</span><span class="p">(</span>
-                <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+                <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">"precipitation_per_timestep"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_precipitation_per_timestep</span><span class="p">(</span>
-                <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">],</span> <span class="n">config</span>
+                <span class="n">event_data</span><span class="p">[</span><span class="s2">"precipitation_per_timestep"</span><span class="p">],</span> <span class="n">config</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;event_idx&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="s2">"event_idx"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">event_data</span><span class="p">[</span><span class="s2">"event_idx"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">bui_event_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">event_data</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_timedelta_fields</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets a dictionary containing the time delta in days, hours, minutes and seconds.</span>
+<span class="w">        </span><span class="sd">"""Gets a dictionary containing the time delta in days, hours, minutes and seconds.</span>
 
 <span class="sd">        This means that the seconds field does not contain the accumulative value of days</span>
 <span class="sd">        hours and minutes.</span>
@@ -6486,7 +6486,7 @@ to the BuiModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict: Dictionary containing all fields.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">total_hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
         <span class="n">total_minutes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_hours</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
         <span class="n">total_seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
@@ -6501,7 +6501,7 @@ to the BuiModel.</p>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_start_time</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Serializes a datetime into the expected .bui format.</span>
 
 <span class="sd">        Args:</span>
@@ -6509,16 +6509,16 @@ to the BuiModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Converted datetime into string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Not using the following format because we only want one digit instead of</span>
         <span class="c1"># double (day 1 -&gt; 1, instead of 01).</span>
-        <span class="c1"># data_to_serialize.strftime(&quot;%Y %m %d %H %M %S&quot;)</span>
+        <span class="c1"># data_to_serialize.strftime("%Y %m %d %H %M %S")</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">data_to_serialize</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_timeseries_length</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Serializes a given timedelta into the .bui format.</span>
 
 <span class="sd">        Args:</span>
@@ -6526,18 +6526,18 @@ to the BuiModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Converted timedelta in string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">fields_dict</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">get_timedelta_fields</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">)</span>
-        <span class="n">total_hours</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_hours&quot;</span><span class="p">]</span>
-        <span class="n">total_minutes</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_minutes&quot;</span><span class="p">]</span>
-        <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_seconds&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_to_serialize</span><span class="o">.</span><span class="n">days</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_minutes</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_seconds</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">total_hours</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_hours"</span><span class="p">]</span>
+        <span class="n">total_minutes</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_minutes"</span><span class="p">]</span>
+        <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_seconds"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">data_to_serialize</span><span class="o">.</span><span class="n">days</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_minutes</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_seconds</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_precipitation_per_timestep</span><span class="p">(</span>
         <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize all precipitation data per timestep into a single string.</span>
+<span class="w">        </span><span class="sd">"""Serialize all precipitation data per timestep into a single string.</span>
 
 <span class="sd">        Serialized the data containing all the precipitations per timestep (and station)</span>
 <span class="sd">        into a single string ready to be mapped.</span>
@@ -6548,12 +6548,12 @@ to the BuiModel.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Serialized string in .bui format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">float_format</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">float_format</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">"</span>
         <span class="n">serialized_data</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
             <span class="p">[</span>
-                <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">float_format</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span>
+                <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">float_format</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">listed_data</span> <span class="ow">in</span> <span class="n">data_to_serialize</span>
             <span class="p">],</span>
         <span class="p">)</span>
@@ -6675,7 +6675,7 @@ hours and minutes.</p>
 <span class="normal">81</span>
 <span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_timedelta_fields</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets a dictionary containing the time delta in days, hours, minutes and seconds.</span>
+<span class="w">    </span><span class="sd">"""Gets a dictionary containing the time delta in days, hours, minutes and seconds.</span>
 
 <span class="sd">    This means that the seconds field does not contain the accumulative value of days</span>
 <span class="sd">    hours and minutes.</span>
@@ -6685,7 +6685,7 @@ hours and minutes.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: Dictionary containing all fields.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">total_hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
     <span class="n">total_minutes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">duration</span><span class="o">.</span><span class="n">seconds</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_hours</span> <span class="o">*</span> <span class="mi">60</span><span class="p">))</span>
     <span class="n">total_seconds</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
@@ -6827,7 +6827,7 @@ hours and minutes.</p>
 <span class="normal">56</span>
 <span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="n">event_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Serializes a dictionary representing an event into a text block.</span>
 
 <span class="sd">    Args:</span>
@@ -6836,27 +6836,27 @@ hours and minutes.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Formatted string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_start_time</span><span class="p">(</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;start_time&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">event_data</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_start_time</span><span class="p">(</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">"start_time"</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">ts_duration</span> <span class="o">=</span> <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+    <span class="n">ts_duration</span> <span class="o">=</span> <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
     <span class="n">event_data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="o">**</span><span class="n">event_data</span><span class="p">,</span>
         <span class="o">**</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">get_timedelta_fields</span><span class="p">(</span><span class="n">ts_duration</span><span class="p">),</span>
     <span class="p">}</span>
-    <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_timeseries_length</span><span class="p">(</span>
-            <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;timeseries_length&quot;</span><span class="p">]</span>
+            <span class="n">event_data</span><span class="p">[</span><span class="s2">"timeseries_length"</span><span class="p">]</span>
         <span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">event_data</span><span class="p">[</span><span class="s2">"precipitation_per_timestep"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize_precipitation_per_timestep</span><span class="p">(</span>
-            <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;precipitation_per_timestep&quot;</span><span class="p">],</span> <span class="n">config</span>
+            <span class="n">event_data</span><span class="p">[</span><span class="s2">"precipitation_per_timestep"</span><span class="p">],</span> <span class="n">config</span>
         <span class="p">)</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;event_idx&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">event_data</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="s2">"event_idx"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">event_data</span><span class="p">[</span><span class="s2">"event_idx"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">bui_event_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">event_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6984,7 +6984,7 @@ into a single string ready to be mapped.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize_precipitation_per_timestep</span><span class="p">(</span>
     <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize all precipitation data per timestep into a single string.</span>
+<span class="w">    </span><span class="sd">"""Serialize all precipitation data per timestep into a single string.</span>
 
 <span class="sd">    Serialized the data containing all the precipitations per timestep (and station)</span>
 <span class="sd">    into a single string ready to be mapped.</span>
@@ -6995,12 +6995,12 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Serialized string in .bui format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">float_format</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">float_format</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">"</span>
     <span class="n">serialized_data</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
         <span class="p">[</span>
-            <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">float_format</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span>
+            <span class="nb">str</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">float_format</span><span class="p">,</span> <span class="n">listed_data</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">listed_data</span> <span class="ow">in</span> <span class="n">data_to_serialize</span>
         <span class="p">],</span>
     <span class="p">)</span>
@@ -7102,7 +7102,7 @@ into a single string ready to be mapped.</p>
 <span class="normal">98</span>
 <span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize_start_time</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Serializes a datetime into the expected .bui format.</span>
 
 <span class="sd">    Args:</span>
@@ -7110,12 +7110,12 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Converted datetime into string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Not using the following format because we only want one digit instead of</span>
     <span class="c1"># double (day 1 -&gt; 1, instead of 01).</span>
-    <span class="c1"># data_to_serialize.strftime(&quot;%Y %m %d %H %M %S&quot;)</span>
+    <span class="c1"># data_to_serialize.strftime("%Y %m %d %H %M %S")</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">data_to_serialize</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">minute</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dt</span><span class="o">.</span><span class="n">second</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7213,7 +7213,7 @@ into a single string ready to be mapped.</p>
 <span class="normal">115</span>
 <span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize_timeseries_length</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">timedelta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Serializes a given timedelta into the .bui format.</span>
 
 <span class="sd">    Args:</span>
@@ -7221,12 +7221,12 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Converted timedelta in string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">fields_dict</span> <span class="o">=</span> <span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">get_timedelta_fields</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">)</span>
-    <span class="n">total_hours</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_hours&quot;</span><span class="p">]</span>
-    <span class="n">total_minutes</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_minutes&quot;</span><span class="p">]</span>
-    <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">&quot;d_seconds&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_to_serialize</span><span class="o">.</span><span class="n">days</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_minutes</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_seconds</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">total_hours</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_hours"</span><span class="p">]</span>
+    <span class="n">total_minutes</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_minutes"</span><span class="p">]</span>
+    <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">fields_dict</span><span class="p">[</span><span class="s2">"d_seconds"</span><span class="p">]</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">data_to_serialize</span><span class="o">.</span><span class="n">days</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_hours</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_minutes</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">total_seconds</span><span class="si">}</span><span class="s2">"</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7340,10 +7340,10 @@ into a single string ready to be mapped.</p>
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BuiSerializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializer class to transform an object into a .bui file text format.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serializer class to transform an object into a .bui file text format."""</span>
 
     <span class="n">bui_template</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">cleandoc</span><span class="p">(</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        *Name of this file: {filepath}</span>
 <span class="sd">        *Date and time of construction: {datetime_now}</span>
 <span class="sd">        *Comments are following an * (asterisk) and written above variables</span>
@@ -7355,12 +7355,12 @@ into a single string ready to be mapped.</p>
 <span class="sd">        *Number_of_events seconds_per_timestamp</span>
 <span class="sd">        {number_of_events} {seconds_per_timestep}</span>
 <span class="sd">        {precipitation_events}</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
     <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format the bui_template with the content of the given data.</span>
+<span class="w">        </span><span class="sd">"""Format the bui_template with the content of the given data.</span>
 
 <span class="sd">        NOTE: It requires that caller injects file_path into bui_data prior to this call.</span>
 <span class="sd">        Otherwise it will crash.</span>
@@ -7371,13 +7371,13 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The serialized data.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;datetime_now&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%y %H:%M:%S&quot;</span><span class="p">)</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_stations_ids</span><span class="p">(</span>
-            <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span>
+<span class="sd">        """</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">"datetime_now"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"</span><span class="si">%d</span><span class="s2">-%m-%y %H:%M:%S"</span><span class="p">)</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">"name_of_stations"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_stations_ids</span><span class="p">(</span>
+            <span class="n">bui_data</span><span class="p">[</span><span class="s2">"name_of_stations"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_event_list</span><span class="p">(</span>
-            <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">],</span> <span class="n">config</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">"precipitation_events"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_event_list</span><span class="p">(</span>
+            <span class="n">bui_data</span><span class="p">[</span><span class="s2">"precipitation_events"</span><span class="p">],</span> <span class="n">config</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">bui_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bui_data</span><span class="p">)</span>
 
@@ -7385,7 +7385,7 @@ into a single string ready to be mapped.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_event_list</span><span class="p">(</span>
         <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes an event list dictionary into a single text block.</span>
+<span class="w">        </span><span class="sd">"""Serializes an event list dictionary into a single text block.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data_to_serialize (Dict): Dictionary containing list of events.</span>
@@ -7393,16 +7393,16 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Text block representing all precipitation events.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">serialized_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">):</span>
-            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_event</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">"event_idx"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_event</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">serialized_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_list</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize_stations_ids</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Serializes the stations ids into a single string as expected in a .bui file.</span>
 
 <span class="sd">        Args:</span>
@@ -7410,8 +7410,8 @@ into a single string ready to be mapped.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: Serialized string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">station_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">station_id</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -7543,7 +7543,7 @@ Otherwise it will crash.</p>
 <span class="normal">184</span>
 <span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="n">bui_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format the bui_template with the content of the given data.</span>
+<span class="w">    </span><span class="sd">"""Format the bui_template with the content of the given data.</span>
 
 <span class="sd">    NOTE: It requires that caller injects file_path into bui_data prior to this call.</span>
 <span class="sd">    Otherwise it will crash.</span>
@@ -7554,13 +7554,13 @@ Otherwise it will crash.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: The serialized data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;datetime_now&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%y %H:%M:%S&quot;</span><span class="p">)</span>
-    <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_stations_ids</span><span class="p">(</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;name_of_stations&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">bui_data</span><span class="p">[</span><span class="s2">"datetime_now"</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"</span><span class="si">%d</span><span class="s2">-%m-%y %H:%M:%S"</span><span class="p">)</span>
+    <span class="n">bui_data</span><span class="p">[</span><span class="s2">"name_of_stations"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_stations_ids</span><span class="p">(</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">"name_of_stations"</span><span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_event_list</span><span class="p">(</span>
-        <span class="n">bui_data</span><span class="p">[</span><span class="s2">&quot;precipitation_events&quot;</span><span class="p">],</span> <span class="n">config</span>
+    <span class="n">bui_data</span><span class="p">[</span><span class="s2">"precipitation_events"</span><span class="p">]</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize_event_list</span><span class="p">(</span>
+        <span class="n">bui_data</span><span class="p">[</span><span class="s2">"precipitation_events"</span><span class="p">],</span> <span class="n">config</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">bui_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">bui_data</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7680,7 +7680,7 @@ Otherwise it will crash.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize_event_list</span><span class="p">(</span>
     <span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializes an event list dictionary into a single text block.</span>
+<span class="w">    </span><span class="sd">"""Serializes an event list dictionary into a single text block.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data_to_serialize (Dict): Dictionary containing list of events.</span>
@@ -7688,12 +7688,12 @@ Otherwise it will crash.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Text block representing all precipitation events.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">serialized_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">n_event</span><span class="p">,</span> <span class="n">event</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">):</span>
-        <span class="n">event</span><span class="p">[</span><span class="s2">&quot;event_idx&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_event</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">event</span><span class="p">[</span><span class="s2">"event_idx"</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_event</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">serialized_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuiEventSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">serialized_list</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7787,7 +7787,7 @@ Otherwise it will crash.</p>
 <span class="normal">216</span>
 <span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">serialize_stations_ids</span><span class="p">(</span><span class="n">data_to_serialize</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Serializes the stations ids into a single string as expected in a .bui file.</span>
 
 <span class="sd">    Args:</span>
@@ -7795,8 +7795,8 @@ Otherwise it will crash.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: Serialized string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">station_id</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">station_id</span><span class="si">}</span><span class="s2">'"</span> <span class="k">for</span> <span class="n">station_id</span> <span class="ow">in</span> <span class="n">data_to_serialize</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7926,7 +7926,7 @@ Otherwise it will crash.</p>
 <span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_bui_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Writes a .bui file in the given path based on the data given in a dictionary.</span>
 
 <span class="sd">    Args:</span>
@@ -7934,12 +7934,12 @@ Otherwise it will crash.</p>
 <span class="sd">        data (Dict): Data to serialize into the file.</span>
 <span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 <span class="sd">        save_settings (ModelSaveSettings): The model save settings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;filepath&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># This is redundant as already exists in the data.</span>
+<span class="sd">    """</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">"filepath"</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># This is redundant as already exists in the data.</span>
     <span class="n">serialized_bui_data</span> <span class="o">=</span> <span class="n">BuiSerializer</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">serialized_bui_data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">serialized_bui_data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8036,7 +8036,7 @@ Otherwise it will crash.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       
