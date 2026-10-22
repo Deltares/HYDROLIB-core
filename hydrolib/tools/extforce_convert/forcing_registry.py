@@ -103,8 +103,6 @@ class ForcingFileRegistry:
         Args:
             block (Any): The newly converted block, not yet added to the ext model.
         """
-        # forcing file could be a ForcingModel or a DiskOnlyFileModel placeholder,
-        # depending on whether the block was already added to the ext model
         for field_name, field_value in self._get_forcing_model_or_disk_only_fields(
             block
         ):
