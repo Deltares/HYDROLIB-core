@@ -181,7 +181,16 @@ def _remove_delta_suffix(values: Any) -> Any:
     for lower_key, original_key in lowercase_map.items():
         if lower_key.endswith("delta"):
             base_key = lower_key.removesuffix("delta")
-            values[base_key] = values.pop(original_key)
+            if base_key not in values:
+                warnings.warn(
+                    f"Legacy keywords with suffix `delta` will soon be deprecated:"
+                    f" {original_key!r} has been converted to {base_key!r}.",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                values[base_key] = values.pop(original_key)
+            else:
+                values.pop(original_key)
     return values
 
 

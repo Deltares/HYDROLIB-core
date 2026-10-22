@@ -433,7 +433,6 @@ class TestSourceSinkForcingData:
         )
 
 
-
 class TestNoDeltaSuffix:
     """Verify that 'Delta' is not appended to salinity/temperature quantity names.
 
@@ -600,3 +599,16 @@ class TestSourceSinkDynamicForcingDeltas:
                 ValidationError, match="'realtime' keyword is not supported"
         ):
             SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))
+
+    def test_source_sink_legacy_delta_keyword_warns(self):
+        with pytest.warns(DeprecationWarning, match="salinitydelta.*salinity"):
+            block = SourceSink(
+                id="legacy_delta",
+                numcoordinates=1,
+                xcoordinates=[0.0],
+                ycoordinates=[0.0],
+                discharge=1.0,
+                salinitydelta=0.1,
+            )
+        assert block.salinity == pytest.approx(0.1)
+
