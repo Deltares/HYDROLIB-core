@@ -16,6 +16,7 @@ from typing import Any
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.tools.extforce_convert.utils import backup_file
 
 # Names of the `ExtModel` lists whose blocks can hold a forcing file.
 FORCING_BLOCK_LIST_NAMES = (
@@ -158,7 +159,8 @@ class ForcingFileRegistry:
         Warns:
             UserWarning: When an existing `.bc` file is parsed to be merged into. It is written
                 back by the model, so any comments or keywords the model does not know are not
-                kept. The warning is raised whether or not the file has any.
+                kept; the original file is backed up to `<name>.bc.bak` first. The warning is
+                raised whether or not the file has any.
         """
         found_model = None
         owner = self._owner_by_bc_path.get(self._normalize(bc_filepath))
@@ -179,10 +181,14 @@ class ForcingFileRegistry:
                             f"`{bc_file_on_disk}`: the file could not be parsed. Fix or "
                             f"remove the file and convert again."
                         ) from error
+                    # the original file is moved to `<name>.bc.bak` before the merged model
+                    # rewrites it, so its original content is never lost
+                    backup_file(bc_file_on_disk)
                     warnings.warn(
                         f"The existing `{bc_file_on_disk}` is rewritten to add the converted "
                         f"quantities. Any comments or keywords that the model does not know "
-                        f"are not kept.",
+                        f"are not kept; the original file is backed up to "
+                        f"`{bc_file_on_disk.name}.bak`.",
                         UserWarning,
                         stacklevel=4,
                     )

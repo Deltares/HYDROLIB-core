@@ -203,6 +203,24 @@ class TestExistingPlaceholder:
 
         assert str(tmp_path / "A.bc") in str(recorded[0].message)
 
+    def test_merging_backs_up_the_original_file_with_its_original_content(
+        self, tmp_path: Path, ext_model: ExtModel
+    ):
+        _forcing_model(tmp_path / "A.bc", "q1").save()
+        existing = _boundary(tmp_path, "q1", DiskOnlyFileModel(Path("A.bc")))
+        ext_model.boundary = [existing]
+        registry = ForcingFileRegistry(ext_model)
+        new = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        with pytest.warns(UserWarning, match="backed up"):
+            registry.share(new)
+
+        backup = tmp_path / "A.bc.bak"
+        # the original is moved to `.bak` before the merged model rewrites `A.bc` on save,
+        # so it holds only the pre-merge quantity
+        assert backup.is_file()
+        assert _quantities(ForcingModel(backup)) == ["q1"]
+
     def test_no_warning_when_the_file_does_not_exist_yet(
         self, tmp_path: Path, ext_model: ExtModel
     ):
