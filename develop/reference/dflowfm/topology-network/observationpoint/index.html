@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -3810,66 +3810,66 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">96</span>
 <span class="normal">97</span>
 <span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPoint</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An observation point that is included in the observation point file.</span>
 
 <span class="sd">    All lowercased attributes match with the observation point input as described in</span>
 <span class="sd">    [UM Sec.F.2.2.1](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.2.1).</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the ObservationPoint section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationPoint section fields.&quot;&quot;&quot;</span>
 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Name of the observation point (max. 255 characters)."</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Name of the observation point (max. 255 characters).&quot;</span>
         <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">"Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point."</span>
+            <span class="s2">&quot;Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point.&quot;</span>
         <span class="p">)</span>
         <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Branch on which the observation point is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span>
+            <span class="s2">&quot;Branch on which the observation point is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span>
         <span class="p">)</span>
-        <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Chainage on the branch (m)."</span>
+        <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Chainage on the branch (m).&quot;</span>
 
         <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"x-coordinate of the location of the observation point."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span>
+            <span class="s2">&quot;x-coordinate of the location of the observation point.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"y-coordinate of the location of the observation point."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span>
+            <span class="s2">&quot;y-coordinate of the location of the observation point.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
 
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"ObservationPoint"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"ObservationPoint"</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ObservationPoint&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ObservationPoint&quot;</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
-    <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LocationType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"locationType"</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">LocationType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;locationType&quot;</span><span class="p">)</span>
 
-    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"chainage"</span><span class="p">)</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
+    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;chainage&quot;</span><span class="p">)</span>
 
-    <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"x"</span><span class="p">)</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"y"</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"locationtype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;locationtype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_type_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LocationType</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="n">LocationType</span><span class="p">)</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the correct location specification is given."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
         <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
             <span class="n">values</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
                 <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">),</span>
-            <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">"y"</span><span class="p">),</span>
+            <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">location_validator</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3933,24 +3933,24 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the ObservationPoint section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationPoint section fields.&quot;&quot;&quot;</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Name of the observation point (max. 255 characters)."</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Name of the observation point (max. 255 characters).&quot;</span>
     <span class="n">locationtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">"Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point."</span>
+        <span class="s2">&quot;Only when x and y are also specified. 1d: snap to closest 1D grid point, 2d: snap to closest 2D grid cell centre, all: snap to closest 1D or 2D point.&quot;</span>
     <span class="p">)</span>
     <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Branch on which the observation point is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span>
+        <span class="s2">&quot;Branch on which the observation point is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span>
     <span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Chainage on the branch (m)."</span>
+    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Chainage on the branch (m).&quot;</span>
 
     <span class="n">x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"x-coordinate of the location of the observation point."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span>
+        <span class="s2">&quot;x-coordinate of the location of the observation point.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"y-coordinate of the location of the observation point."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span>
+        <span class="s2">&quot;y-coordinate of the location of the observation point.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4003,15 +4003,15 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">92</span>
 <span class="normal">93</span>
 <span class="normal">94</span>
-<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+<span class="normal">95</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the correct location specification is given."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
     <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
             <span class="n">validate_node</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">validate_num_coordinates</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">),</span>
-        <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">"y"</span><span class="p">),</span>
+        <span class="n">fields</span><span class="o">=</span><span class="n">LocationValidationFieldNames</span><span class="p">(</span><span class="n">x_coordinates</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y_coordinates</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">location_validator</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
@@ -4074,23 +4074,23 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPointGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The observation point file's `[General]` section with file meta data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The observation point file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the ObservationPointGeneral section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationPointGeneral section fields.&quot;&quot;&quot;</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File type. Should be 'obsPoints'. Do not edit this."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+            <span class="s2">&quot;File type. Should be &#39;obsPoints&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"2.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"obsPoints"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"obsPoints"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;2.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;obsPoints&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;obsPoints&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4144,14 +4144,14 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the ObservationPointGeneral section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationPointGeneral section fields.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File type. Should be 'obsPoints'. Do not edit this."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+        <span class="s2">&quot;File type. Should be &#39;obsPoints&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4268,7 +4268,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationPointModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall observation point model that contains the contents of one observation point file.</span>
 
 <span class="sd">    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.output.obsfile[..]`.</span>
@@ -4276,14 +4276,14 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="sd">    Attributes:</span>
 <span class="sd">        general (ObservationPointGeneral): `[General]` block with file metadata.</span>
 <span class="sd">        observationpoint (List[ObservationPoint]): List of `[ObservationPoint]` blocks for all observation points.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">ObservationPointGeneral</span> <span class="o">=</span> <span class="n">ObservationPointGeneral</span><span class="p">()</span>
     <span class="n">observationpoint</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ObservationPoint</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"obsFile"</span>
+        <span class="k">return</span> <span class="s2">&quot;obsFile&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4401,18 +4401,18 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">71</span>
 <span class="normal">72</span>
 <span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XYNModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Observation station (.xyn) file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Observation station (.xyn) file.&quot;&quot;&quot;</span>
 
     <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">XYNPoint</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="w">    </span><span class="sd">"""List[`XYNPoint`]: List of XYN points."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List[`XYNPoint`]: List of XYN points.&quot;&quot;&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"stations_obs"</span>
+        <span class="k">return</span> <span class="s2">&quot;stations_obs&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".xyn"</span>
+        <span class="k">return</span> <span class="s2">&quot;.xyn&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
@@ -4527,31 +4527,31 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">XYNPoint</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Single XYN point, representing a named station location."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Single XYN point, representing a named station location.&quot;&quot;&quot;</span>
 
     <span class="n">x</span><span class="p">:</span> <span class="nb">float</span>
-<span class="w">    </span><span class="sd">"""float: The x or λ coordinate."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;float: The x or λ coordinate.&quot;&quot;&quot;</span>
 
     <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
-<span class="w">    </span><span class="sd">"""float: The y or φ coordinate."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;float: The y or φ coordinate.&quot;&quot;&quot;</span>
 
     <span class="n">n</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">"""float: The name of the point."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;float: The name of the point.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"x"</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"y"</span><span class="p">)</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"n"</span><span class="p">)</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">"x:</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> y:</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2"> n:</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;x:</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> y:</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2"> n:</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"n"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">str_is_empty_or_none</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Name cannot be empty."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Name cannot be empty.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">"'"</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">or</span> <span class="s1">'"'</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">or</span> <span class="s1">&#39;&quot;&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Name cannot contain single or double quotes except at the start and end."</span>
+                <span class="s2">&quot;Name cannot contain single or double quotes except at the start and end.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">value</span>
@@ -4736,7 +4736,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

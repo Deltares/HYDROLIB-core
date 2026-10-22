@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4236,20 +4236,20 @@ You're not viewing the latest release version.
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
 <span class="c1"># Prepare a minimal ExtOldModel in memory</span>
-<span class="n">root_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"path/to/your/root/dir"</span><span class="p">)</span>
+<span class="n">root_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;path/to/your/root/dir&quot;</span><span class="p">)</span>
 <span class="n">forcing_data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'QUANTITY'</span><span class="p">:</span> <span class="s1">'windspeedfactor'</span><span class="p">,</span>
-    <span class="s1">'FILENAME'</span><span class="p">:</span> <span class="sa">rf</span><span class="s1">'</span><span class="si">{</span><span class="n">root_dir</span><span class="si">}</span><span class="s1">/my-poly-file.pol'</span><span class="p">,</span>
-    <span class="s1">'FILETYPE'</span><span class="p">:</span> <span class="s1">'11'</span><span class="p">,</span>
-    <span class="s1">'METHOD'</span><span class="p">:</span> <span class="s1">'4'</span><span class="p">,</span>
-    <span class="s1">'OPERAND'</span><span class="p">:</span> <span class="s1">'O'</span><span class="p">,</span>
+    <span class="s1">&#39;QUANTITY&#39;</span><span class="p">:</span> <span class="s1">&#39;windspeedfactor&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FILENAME&#39;</span><span class="p">:</span> <span class="sa">rf</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">root_dir</span><span class="si">}</span><span class="s1">/my-poly-file.pol&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FILETYPE&#39;</span><span class="p">:</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;METHOD&#39;</span><span class="p">:</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;OPERAND&#39;</span><span class="p">:</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">forcing_model_data</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'comment'</span><span class="p">:</span> <span class="p">[</span><span class="s1">' Example (old-style) external forcings file'</span><span class="p">],</span>
-    <span class="s1">'forcing'</span><span class="p">:</span> <span class="p">[</span><span class="n">forcing_data</span><span class="p">]</span>
+    <span class="s1">&#39;comment&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39; Example (old-style) external forcings file&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;forcing&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">forcing_data</span><span class="p">]</span>
 <span class="p">}</span>
 <span class="n">old_model</span> <span class="o">=</span> <span class="n">ExtOldModel</span><span class="p">(</span><span class="o">**</span><span class="n">forcing_model_data</span><span class="p">)</span>  
-<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">"path/to/your/model.mdu"</span><span class="p">)</span>  
+<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">&quot;path/to/your/model.mdu&quot;</span><span class="p">)</span>  
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>  
     <span class="n">extold_model</span><span class="o">=</span><span class="n">old_model</span><span class="p">,</span>  
     <span class="n">mdu_parser</span><span class="o">=</span><span class="n">mdu_parser</span><span class="p">,</span>  
@@ -4264,9 +4264,9 @@ You're not viewing the latest release version.
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
-<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">"model.mdu"</span><span class="p">)</span>  
+<span class="n">mdu_parser</span> <span class="o">=</span> <span class="n">MDUParser</span><span class="p">(</span><span class="s2">&quot;model.mdu&quot;</span><span class="p">)</span>  
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>  
-    <span class="n">extold_model</span><span class="o">=</span><span class="s2">"old-external-forcing.ext"</span><span class="p">,</span>  
+    <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;old-external-forcing.ext&quot;</span><span class="p">,</span>  
     <span class="n">mdu_parser</span><span class="o">=</span><span class="n">mdu_parser</span><span class="p">,</span>  
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  
 <span class="p">)</span>  
@@ -4278,7 +4278,7 @@ You're not viewing the latest release version.
 </ul>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"model.mdu"</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">&quot;model.mdu&quot;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
 <span class="c1"># Optional: remove legacy artifacts if nothing left unsupported</span>
@@ -4586,7 +4586,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
-    <span class="n">extold_model</span><span class="o">=</span><span class="s2">"path/to/old-forcings.ext"</span><span class="p">,</span>
+    <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;path/to/old-forcings.ext&quot;</span><span class="p">,</span>
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># skip unsupported quantities without raising</span>
 <span class="p">)</span>
@@ -4599,8 +4599,8 @@ Hold "Ctrl" to enable pan &amp; zoom
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span>
-    <span class="n">mdu_file</span><span class="o">=</span><span class="s2">"path/to/model.mdu"</span><span class="p">,</span>
-    <span class="n">ext_file_user</span><span class="o">=</span><span class="s2">"path/to/output/forcings.ext"</span><span class="p">,</span>  <span class="c1"># optional override</span>
+    <span class="n">mdu_file</span><span class="o">=</span><span class="s2">&quot;path/to/model.mdu&quot;</span><span class="p">,</span>
+    <span class="n">ext_file_user</span><span class="o">=</span><span class="s2">&quot;path/to/output/forcings.ext&quot;</span><span class="p">,</span>  <span class="c1"># optional override</span>
 <span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>     <span class="c1"># performs conversion and updates MDU references</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>       <span class="c1"># writes new models and MDU; may back up existing files</span>
@@ -4609,9 +4609,9 @@ Hold "Ctrl" to enable pan &amp; zoom
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
-    <span class="n">extold_model</span><span class="o">=</span><span class="s2">".../old.ext"</span><span class="p">,</span>
-    <span class="n">ext_file</span><span class="o">=</span><span class="s2">".../new/forcings.ext"</span><span class="p">,</span>
-    <span class="n">structure_file</span><span class="o">=</span><span class="s2">".../new/structures.ini"</span><span class="p">,</span>
+    <span class="n">extold_model</span><span class="o">=</span><span class="s2">&quot;.../old.ext&quot;</span><span class="p">,</span>
+    <span class="n">ext_file</span><span class="o">=</span><span class="s2">&quot;.../new/forcings.ext&quot;</span><span class="p">,</span>
+    <span class="n">structure_file</span><span class="o">=</span><span class="s2">&quot;.../new/structures.ini&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -4620,7 +4620,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
 <span class="c1"># Create a converter from the FM model so the required MDU metadata is available.</span>
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">)</span>  
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">&quot;path/to/model.mdu&quot;</span><span class="p">)</span>  
 
 <span class="n">ext_model</span><span class="p">,</span> <span class="n">ini_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">meteo</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">boundary</span><span class="p">))</span>  
@@ -4718,7 +4718,7 @@ Hold "Ctrl" to enable pan &amp; zoom
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       
