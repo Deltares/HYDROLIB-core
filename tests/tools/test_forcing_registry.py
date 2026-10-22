@@ -1,5 +1,6 @@
 """Unit tests of `ForcingFileRegistry`, which makes blocks that write one `.bc` share a model."""
 
+import os
 import warnings
 from pathlib import Path
 from typing import Any
@@ -382,4 +383,65 @@ class TestGetForcingModelOrDiskOnlyFields:
             "salinity",
             "temperature",
         ]
+
+
+class TestFilenameNormalization:
+    """Comment 1 of PR #1262: `a.bc` and `A.bc` are the same file on a case-insensitive FS."""
+
+    def test_normalize_matches_os_path_normcase(self):
+        assert ForcingFileRegistry._normalize(Path("Sub/A.bc")) == os.path.normcase(
+            "Sub/A.bc"
+        )
+
+    def test_same_path_in_different_casing_shares_one_model(
+        self, tmp_path: Path, ext_model: ExtModel, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Force the case-insensitive behaviour (as on Windows) on any platform.
+        monkeypatch.setattr(
+            "hydrolib.tools.extforce_convert.forcing_registry.os.path.normcase",
+            str.lower,
+        )
+        registry = ForcingFileRegistry(ext_model)
+        lower = _boundary(tmp_path, "q1", _forcing_model(Path("a.bc"), "q1"))
+        upper = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        registry.share(lower)
+        registry.share(upper)
+
+        assert upper.forcingfile is lower.forcingfile
+        assert _quantities(lower.forcingfile) == ["q1", "q2"]
+
+    def test_the_written_filename_keeps_its_original_casing(
+        self, tmp_path: Path, ext_model: ExtModel, monkeypatch: pytest.MonkeyPatch
+    ):
+        monkeypatch.setattr(
+            "hydrolib.tools.extforce_convert.forcing_registry.os.path.normcase",
+            str.lower,
+        )
+        registry = ForcingFileRegistry(ext_model)
+        lower = _boundary(tmp_path, "q1", _forcing_model(Path("a.bc"), "q1"))
+        upper = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        registry.share(lower)
+        registry.share(upper)
+
+        # Both share the first model, whose path is the original `a.bc`, not a normalized form.
+        assert lower.forcingfile.filepath == Path("a.bc")
+
+    def test_case_sensitive_fs_keeps_the_paths_separate(
+        self, tmp_path: Path, ext_model: ExtModel, monkeypatch: pytest.MonkeyPatch
+    ):
+        # Force the case-sensitive behaviour (as on Linux) on any platform.
+        monkeypatch.setattr(
+            "hydrolib.tools.extforce_convert.forcing_registry.os.path.normcase",
+            lambda path: path,
+        )
+        registry = ForcingFileRegistry(ext_model)
+        lower = _boundary(tmp_path, "q1", _forcing_model(Path("a.bc"), "q1"))
+        upper = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
+
+        registry.share(lower)
+        registry.share(upper)
+
+        assert upper.forcingfile is not lower.forcingfile
 

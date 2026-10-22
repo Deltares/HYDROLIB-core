@@ -7,6 +7,7 @@ the one saved last would replace the others. Sharing one model writes the file o
 
 from __future__ import annotations
 
+import os
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,14 +52,21 @@ class ForcingFileRegistry:
     the parsed file. It is parsed only when a converted block writes the same path and the file
     exists, so the quantities it holds are kept instead of overwritten.
 
+    Two blocks write the same file when their `.bc` paths compare equal after `os.path.normcase`.
+    On Windows that lower-cases, so `a.bc` and `A.bc` collapse to one entry and are merged into a
+    single file; on Linux it does nothing, so they stay separate (matching the manual, which treats
+    filenames as case-sensitive). Only the lookup is normalized: the filename stored and written to
+    disk keeps its original casing, so nothing about the output changes except that the Windows
+    overwrite is prevented.
+
     Args:
         ext_model (ExtModel): The new external forcing model the converted blocks are added to.
     """
 
     def __init__(self, ext_model: ExtModel) -> None:
         self._ext_file_directory: Path = ext_model.filepath.parent
-        # `.bc` path -> the first block field that holds its forcing file.
-        self._owner_by_bc_path: dict[Path, BCFileOwner] = {}
+        # Normalized `.bc` path -> the first block field that holds its forcing file.
+        self._owner_by_bc_path: dict[str, BCFileOwner] = {}
         for block_list_name in FORCING_BLOCK_LIST_NAMES:
             for existing_block in getattr(ext_model, block_list_name):
                 for (
@@ -66,14 +74,24 @@ class ForcingFileRegistry:
                     forcing_model_or_placeholder,
                 ) in self._get_forcing_model_or_disk_only_fields(existing_block):
                     self._owner_by_bc_path.setdefault(
-                        forcing_model_or_placeholder.filepath,
+                        self._normalize(forcing_model_or_placeholder.filepath),
                         BCFileOwner(existing_block, field_name),
                     )
 
     @property
-    def owner_by_bc_path(self) -> dict[Path, BCFileOwner]:
-        """The first block field that holds the forcing file written to each `.bc` path."""
+    def owner_by_bc_path(self) -> dict[str, BCFileOwner]:
+        """The first block field that holds the forcing file written to each normalized `.bc` path."""
         return self._owner_by_bc_path
+
+    @staticmethod
+    def _normalize(bc_filepath: Path) -> str:
+        """Return the dedup key for a `.bc` path.
+
+        `os.path.normcase` lower-cases on case-insensitive file systems (Windows) and is a no-op on
+        case-sensitive ones (Linux), so two names that are the same file on disk share one key while
+        the stored filename, and what is written, keeps its original casing.
+        """
+        return os.path.normcase(str(bc_filepath))
 
     def share(self, block: Any) -> None:
         """Point the forcing models of `converted_block` at the ones already writing the same path.
@@ -92,8 +110,8 @@ class ForcingFileRegistry:
             if isinstance(field_value, ForcingModel):
                 shared_model = self._find_forcing_model(field_value.filepath)
                 if shared_model is None:
-                    self._owner_by_bc_path[field_value.filepath] = BCFileOwner(
-                        block, field_name
+                    self._owner_by_bc_path[self._normalize(field_value.filepath)] = (
+                        BCFileOwner(block, field_name)
                     )
                 elif shared_model is not field_value:
                     # if the new forcing file from the current block is not the same as the shared one,
@@ -143,7 +161,7 @@ class ForcingFileRegistry:
                 kept. The warning is raised whether or not the file has any.
         """
         found_model = None
-        owner = self._owner_by_bc_path.get(bc_filepath)
+        owner = self._owner_by_bc_path.get(self._normalize(bc_filepath))
         if owner is not None:
             # the forcing file could be a ForcingModel or a DiskOnlyFileModel placeholder,
             # depending on whether the block was already added to the ext model
