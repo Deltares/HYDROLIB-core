@@ -259,7 +259,8 @@ def path_relative_to_parent(
         forcing.filename.filepath
         if update_path_condition
         else os.path.relpath(
-            ext_old_path.parent / forcing.filename.filepath, inifile_path.parent
+            (ext_old_path.parent / forcing.filename.filepath).resolve(),
+            inifile_path.parent.resolve()
         )
     )
     return forcing_path
