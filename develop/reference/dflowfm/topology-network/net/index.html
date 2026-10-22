@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4913,7 +4913,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Represents a 1D network branch with geometry and mesh node positions."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a 1D network branch with geometry and mesh node positions.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4921,13 +4921,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">branch_offsets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Initialize a Branch with geometry and optional node offsets and mask.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a Branch with geometry and optional node offsets and mask.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            geometry (np.ndarray): Array of (x, y) coordinates defining the branch shape.</span>
 <span class="sd">            branch_offsets (np.ndarray): Chainage offsets along the branch for mesh nodes.</span>
 <span class="sd">            mask (np.ndarray): Boolean mask indicating which nodes to exclude.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check that the array has two collumns (x and y)</span>
         <span class="k">assert</span> <span class="n">geometry</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
 
@@ -4949,7 +4949,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="ow">and</span> <span class="n">branch_offsets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="n">branch_offsets</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Mask and branch offset have different shape."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mask and branch offset have different shape.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Set branch offsets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span> <span class="o">=</span> <span class="n">branch_offsets</span>
@@ -4969,7 +4969,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Generate the branch offsets and the nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the branch offsets and the nodes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            mesh1d_edge_length (float): The edge length of the 1d mesh.</span>
@@ -4979,7 +4979,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.</span>
 <span class="sd">            ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Generate offsets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_offsets</span><span class="p">(</span>
             <span class="n">mesh1d_edge_length</span><span class="p">,</span> <span class="n">structure_chainage</span><span class="p">,</span> <span class="n">max_dist_to_struc</span>
@@ -4995,7 +4995,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">structure_offsets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Generate the branch offsets.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the branch offsets.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            mesh1d_edge_length (float): The edge length of the 1d mesh.</span>
@@ -5008,7 +5008,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: The generated branch offsets.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Generate initial offsets</span>
         <span class="n">anchor_pts</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">]</span>
         <span class="n">offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_1d_spacing</span><span class="p">(</span><span class="n">anchor_pts</span><span class="p">,</span> <span class="n">mesh1d_edge_length</span><span class="p">)</span>
@@ -5021,7 +5021,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="n">excess</span> <span class="o">:=</span> <span class="nb">max</span><span class="p">(</span><span class="n">structure_offsets</span><span class="p">)</span>
         <span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Distance </span><span class="si">{</span><span class="n">excess</span><span class="si">}</span><span class="s2"> is outside the branch range (0.0 - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2">)."</span>
+                <span class="sa">f</span><span class="s2">&quot;Distance </span><span class="si">{</span><span class="n">excess</span><span class="si">}</span><span class="s2"> is outside the branch range (0.0 - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="si">}</span><span class="s2">).&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Merge limits with start and end of branch</span>
@@ -5040,7 +5040,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_extended_limits</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">limits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Generate extended limits by taking into account the maximum distance to a structure.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate extended limits by taking into account the maximum distance to a structure.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            max_dist_to_struc (float): The maximum distance from a node to a structure.</span>
@@ -5048,7 +5048,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[float]: A list with the updated limits.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">additional</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Skip the first and the last, these are no structures</span>
@@ -5080,7 +5080,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">limits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
         <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Add nodes to segments that are missing a mesh node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add nodes to segments that are missing a mesh node.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            offsets (np.ndarray): The branch offsets.</span>
@@ -5090,7 +5090,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray: The array with branch offsets.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get upper and lower limits</span>
         <span class="n">upper_limits</span> <span class="o">=</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">lower_limits</span> <span class="o">=</span> <span class="n">limits</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -5121,7 +5121,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">anchor_pts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Added 1d mesh nodes on branch at: </span><span class="si">{</span><span class="n">anchor_pts</span><span class="si">}</span><span class="s2">, due to the structures at </span><span class="si">{</span><span class="n">limits</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">&quot;Added 1d mesh nodes on branch at: </span><span class="si">{</span><span class="n">anchor_pts</span><span class="si">}</span><span class="s2">, due to the structures at </span><span class="si">{</span><span class="n">limits</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">offsets</span>
@@ -5130,14 +5130,14 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_1d_spacing</span><span class="p">(</span>
         <span class="n">anchor_pts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">mesh1d_edge_length</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Generates 1d distances, called by function generate offsets."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates 1d distances, called by function generate offsets.&quot;&quot;&quot;</span>
         <span class="n">offsets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Loop through anchor point pairs</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anchor_pts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="c1"># Determine section length between anchor point</span>
             <span class="n">section_length</span> <span class="o">=</span> <span class="n">anchor_pts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">anchor_pts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">section_length</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Section length must be larger than 0.0"</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Section length must be larger than 0.0&quot;</span><span class="p">)</span>
             <span class="c1"># Determine number of nodes</span>
             <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">section_length</span> <span class="o">/</span> <span class="n">mesh1d_edge_length</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="c1"># Add nodes</span>
@@ -5152,11 +5152,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Interpolate coordinates along branch by length.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            distance (npt.ArrayLike): Length</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">intpcoords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x_coordinates</span><span class="p">),</span>
@@ -5313,13 +5313,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="n">branch_offsets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Initialize a Branch with geometry and optional node offsets and mask.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a Branch with geometry and optional node offsets and mask.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometry (np.ndarray): Array of (x, y) coordinates defining the branch shape.</span>
 <span class="sd">        branch_offsets (np.ndarray): Chainage offsets along the branch for mesh nodes.</span>
 <span class="sd">        mask (np.ndarray): Boolean mask indicating which nodes to exclude.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check that the array has two collumns (x and y)</span>
     <span class="k">assert</span> <span class="n">geometry</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
 
@@ -5341,7 +5341,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="ow">and</span> <span class="n">branch_offsets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="ow">and</span> <span class="n">branch_offsets</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span>
     <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Mask and branch offset have different shape."</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mask and branch offset have different shape.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Set branch offsets</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span> <span class="o">=</span> <span class="n">branch_offsets</span>
@@ -5502,7 +5502,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="n">structure_chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_dist_to_struc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Generate the branch offsets and the nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the branch offsets and the nodes.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        mesh1d_edge_length (float): The edge length of the 1d mesh.</span>
@@ -5512,7 +5512,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: Raised when any of the structure offsets, if specified, is smaller than zero.</span>
 <span class="sd">        ValueError: Raised when any of the structure offsets, if specified, is greater than the branch length.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Generate offsets</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">branch_offsets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_offsets</span><span class="p">(</span>
         <span class="n">mesh1d_edge_length</span><span class="p">,</span> <span class="n">structure_chainage</span><span class="p">,</span> <span class="n">max_dist_to_struc</span>
@@ -5589,11 +5589,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">567</span>
 <span class="normal">568</span>
 <span class="normal">569</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Interpolate coordinates along branch by length.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate coordinates along branch by length.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        distance (npt.ArrayLike): Length</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">intpcoords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x_coordinates</span><span class="p">),</span>
@@ -5829,7 +5829,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">684</span>
 <span class="normal">685</span>
 <span class="normal">686</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Link1d2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Link1d2d defines the 1D2D Links of a model network.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Link1d2d defines the 1D2D Links of a model network.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        meshkernel (Optional[mk.MeshKernel]):</span>
@@ -5842,7 +5842,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="sd">            The contact type of this Link1d2d</span>
 <span class="sd">        link1d2d (np.ndarray):</span>
 <span class="sd">            The underlying data object of this Link1d2d</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">meshkernel</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span><span class="p">)</span>
 
@@ -5862,33 +5862,33 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">link1d2d_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-        <span class="n">link1d2d_id_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n1d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f2d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">n1d</span><span class="p">,</span> <span class="n">f2d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">])</span>
+        <span class="n">link1d2d_id_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n1d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f2d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n1d</span><span class="p">,</span> <span class="n">f2d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">link1d2d_id_arr</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">link1d2d_long_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">object</span><span class="p">]:</span>
-        <span class="n">link1d2d_id_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">n1d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f2d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">n1d</span><span class="p">,</span> <span class="n">f2d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">])</span>
+        <span class="n">link1d2d_id_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n1d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f2d</span><span class="si">:</span><span class="s2">d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n1d</span><span class="p">,</span> <span class="n">f2d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">link1d2d_id_arr</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Whether this Link1d2d is currently empty.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if the Link1d2d is currently empty; False otherwise.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Read the Link1d2d data from the specified netCDF file at file_path into this.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_path (Path): Path to the netCDF file.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">reader</span> <span class="o">=</span> <span class="n">UgridReader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">reader</span><span class="o">.</span><span class="n">read_link1d2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Remove all saved links from the links administration."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
@@ -5901,31 +5901,31 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">_link_from_1d_to_2d</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">node_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Connect 1d nodes to 2d face circumcenters.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect 1d nodes to 2d face circumcenters.</span>
 
-<span class="sd">        A list of branchid's can be given to indicate where the 1d-side of the</span>
+<span class="sd">        A list of branchid&#39;s can be given to indicate where the 1d-side of the</span>
 <span class="sd">        connections should be made. A polygon can be given to indicate where the</span>
 <span class="sd">        2d-side of the connections should be made.</span>
 
-<span class="sd">        Note that the links are added to the already existing links. To remove these, use the method "clear".</span>
+<span class="sd">        Note that the links are added to the already existing links. To remove these, use the method &quot;clear&quot;.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            node_mask (np.ndarray): Array indicating what 1d nodes should be connected. Defaults to None.</span>
 <span class="sd">            polygon (mk.GeometryList): Coordinates of the area within which the 2d side of the links are connected.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Computes Mesh1d-Mesh2d contacts, where each single Mesh1d node is connected to one Mesh2d face circumcenter.</span>
         <span class="c1"># The boundary nodes of Mesh1d (those sharing only one Mesh1d edge) are not connected to any Mesh2d face.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_single</span><span class="p">(</span>
             <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">polygon</span><span class="p">,</span> <span class="n">projection_factor</span><span class="o">=</span><span class="mf">1.0</span>
         <span class="p">)</span>
 
-        <span class="c1"># Note that the function "contacts_compute_multiple" also computes the connections, but does not take into account</span>
+        <span class="c1"># Note that the function &quot;contacts_compute_multiple&quot; also computes the connections, but does not take into account</span>
         <span class="c1"># a bounding polygon or the end points of the 1d mesh.</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_link_from_2d_to_1d_embedded</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">node_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">polygons</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Connect 2d faces to embedded 1d nodes using point-based contact computation."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect 2d faces to embedded 1d nodes using point-based contact computation.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_compute_with_points</span><span class="p">(</span>
             <span class="n">node_mask</span><span class="o">=</span><span class="n">node_mask</span><span class="p">,</span> <span class="n">polygons</span><span class="o">=</span><span class="n">polygons</span>
         <span class="p">)</span>
@@ -5985,7 +5985,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Remove all saved links from the links administration."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove all saved links from the links administration.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d_contact_type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
@@ -6046,11 +6046,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Whether this Link1d2d is currently empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether this Link1d2d is currently empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if the Link1d2d is currently empty; False otherwise.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">link1d2d</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6113,11 +6113,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Read the Link1d2d data from the specified netCDF file at file_path into this.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Link1d2d data from the specified netCDF file at file_path into this.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): Path to the netCDF file.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">UgridReader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">reader</span><span class="o">.</span><span class="n">read_link1d2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -6563,7 +6563,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1087</span>
 <span class="normal">1088</span>
 <span class="normal">1089</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh1d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Represents a 1D mesh network with branches, nodes, and edge connectivity."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a 1D mesh network with branches, nodes, and edge connectivity.&quot;&quot;&quot;</span>
 
     <span class="n">meshkernel</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span><span class="p">)</span>
 
@@ -6624,11 +6624,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_mesh1d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh1d</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return mesh1d from meshkernel.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mesh1d from meshkernel.</span>
 
 <span class="sd">        Note that the meshkernel.Mesh1d instance does not contain all mesh attributes</span>
 <span class="sd">        that are contained in this class.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh1d_get</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_mesh1d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -6641,7 +6641,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_network1d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Determine x, y locations of mesh1d nodes based on the network1d."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine x, y locations of mesh1d nodes based on the network1d.&quot;&quot;&quot;</span>
         <span class="c1"># Create a list of coordinates to create the branches from</span>
         <span class="n">ngeom</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_geom_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network1d_geom_y</span><span class="p">))</span>
 
@@ -6698,7 +6698,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_edge_y</span> <span class="o">=</span> <span class="n">edge_y</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_network1d_node_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Determine the position (index) of a x, y coordinate in the network nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the position (index) of a x, y coordinate in the network nodes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x (float): x-coordinate</span>
@@ -6706,11 +6706,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Union[np.int32, None]: The index of the coordinate. None if not found</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_mesh1d_node_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Determine the position (index) of a x, y coordinate in the mesh nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the position (index) of a x, y coordinate in the mesh nodes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x (float): x-coordinate</span>
@@ -6718,13 +6718,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Union[np.int32, None]: The index of the coordinate. None if not found</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_node_position</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">arrx</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">arry</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Determine the position (index) of a x, y coordinate in a given x and y array.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the position (index) of a x, y coordinate in a given x and y array.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            arrx (np.ndarray): x-coordinates in which the position is sought</span>
@@ -6737,7 +6737,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Union[np.int32, None]: The index of the coordinate. None if not found</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">arrx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -6747,7 +6747,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="c1"># Find the nearest</span>
             <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">arrx</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">,</span> <span class="n">arry</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Multiple nodes were found at the same position."</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multiple nodes were found at the same position.&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">distance</span><span class="p">)])</span>
 
@@ -6759,7 +6759,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">long_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">force_midpoint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Add the branch to mesh1d.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add the branch to mesh1d.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            branch (Branch): branch to add to the mesh1d</span>
@@ -6770,21 +6770,21 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Str: name of the branch.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if branch had coordinate discretization</span>
         <span class="k">if</span> <span class="n">branch</span><span class="o">.</span><span class="n">branch_offsets</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">'Branch has no mesh discretization. Use the function "generate_nodes" solve generate a 1d mesh on the branch.'</span>
+                <span class="s1">&#39;Branch has no mesh discretization. Use the function &quot;generate_nodes&quot; solve generate a 1d mesh on the branch.&#39;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network1d_branch_id</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The branch name "</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">" is already used.'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The branch name &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; is already used.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">long_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">network1d_branch_long_name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The branch long name "</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s1">" is already used.'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The branch long name &quot;</span><span class="si">{</span><span class="n">long_name</span><span class="si">}</span><span class="s1">&quot; is already used.&#39;</span><span class="p">)</span>
 
         <span class="n">branch_nr</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_branch_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"br</span><span class="si">{</span><span class="n">branch_nr</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">"</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;br</span><span class="si">{</span><span class="n">branch_nr</span><span class="si">:</span><span class="s2">05d</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">long_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">long_name</span> <span class="o">=</span> <span class="n">name</span>
 
@@ -6832,10 +6832,10 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_y</span><span class="p">,</span> <span class="n">first_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span><span class="p">,</span> <span class="s2">"</span><span class="si">{:.6f}</span><span class="s2">_</span><span class="si">{:.6f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">first_point</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:.6f}</span><span class="s2">_</span><span class="si">{:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">first_point</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span><span class="p">,</span> <span class="s2">"x=</span><span class="si">{:.6f}</span><span class="s2">_y=</span><span class="si">{:.6f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">first_point</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span><span class="p">,</span> <span class="s2">&quot;x=</span><span class="si">{:.6f}</span><span class="s2">_y=</span><span class="si">{:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">first_point</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="n">last_present</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network1d_node_position</span><span class="p">(</span><span class="o">*</span><span class="n">last_point</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -6849,10 +6849,10 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_y</span><span class="p">,</span> <span class="n">last_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span><span class="p">,</span> <span class="s2">"</span><span class="si">{:.6f}</span><span class="s2">_</span><span class="si">{:.6f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">last_point</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_id</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{:.6f}</span><span class="s2">_</span><span class="si">{:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">last_point</span><span class="p">)</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span><span class="p">,</span> <span class="s2">"x=</span><span class="si">{:.6f}</span><span class="s2">_y=</span><span class="si">{:.6f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">last_point</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">network1d_node_long_name</span><span class="p">,</span> <span class="s2">&quot;x=</span><span class="si">{:.6f}</span><span class="s2">_y=</span><span class="si">{:.6f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">last_point</span><span class="p">)</span>
             <span class="p">)</span>
 
         <span class="c1"># If no points remain, add an extra halfway: each branch should have at least 1 node</span>
@@ -6874,7 +6874,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">i_to</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network1d_node_position</span><span class="p">(</span><span class="n">last_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">last_point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">i_from</span> <span class="o">==</span> <span class="n">i_to</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"Start and end node are the same. Ring geometries are not accepted."</span>
+                <span class="s2">&quot;Start and end node are the same. Ring geometries are not accepted.&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">network1d_edge_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -6932,7 +6932,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
         <span class="c1"># Update names of nodes</span>
         <span class="n">mesh_point_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">offset</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="n">offsets</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="p">,</span> <span class="n">mesh_point_names</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_long_name</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -6949,7 +6949,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Get node mask, give a mask with True for each node that is in the given branchid list."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list.&quot;&quot;&quot;</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">branchids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">mask</span><span class="p">[:]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -6958,7 +6958,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="c1"># Get number (index) of given branches</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_branch_id</span><span class="p">,</span> <span class="n">branchids</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">"No branches corresponding to the given keys were found."</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No branches corresponding to the given keys were found.&quot;</span><span class="p">)</span>
 
         <span class="n">mask</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_branch_id</span><span class="p">,</span> <span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -7010,7 +7010,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1087</span>
 <span class="normal">1088</span>
 <span class="normal">1089</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_node_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branchids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Get node mask, give a mask with True for each node that is in the given branchid list."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get node mask, give a mask with True for each node that is in the given branchid list.&quot;&quot;&quot;</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_id</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">branchids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">mask</span><span class="p">[:]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -7019,7 +7019,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="c1"># Get number (index) of given branches</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network1d_branch_id</span><span class="p">,</span> <span class="n">branchids</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">"No branches corresponding to the given keys were found."</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No branches corresponding to the given keys were found.&quot;</span><span class="p">)</span>
 
     <span class="n">mask</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mesh1d_node_branch_id</span><span class="p">,</span> <span class="n">idx</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -7379,7 +7379,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Mesh2d</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Mesh2d defines a single two dimensional grid.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Mesh2d defines a single two dimensional grid.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        meshkernel (mk.MeshKernel):</span>
@@ -7388,7 +7388,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="sd">            The node positions on the z-axis. Defaults to np.empty(0, dtype=np.double).</span>
 <span class="sd">        mesh2d_face_z (np.ndarray):</span>
 <span class="sd">            The face positions on the z-axis. Defaults to np.empty(0, dtype=np.double).</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">meshkernel</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">mk</span><span class="o">.</span><span class="n">MeshKernel</span><span class="p">)</span>
 
@@ -7402,76 +7402,76 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_node_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The x-coordinates of the nodes in the mesh.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The x-coordinates of the nodes in the mesh.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ndarray[float]: A 1D double array describing the x-coordinates of the nodes.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">node_x</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_node_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The y-coordinates of the nodes in the mesh.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The y-coordinates of the nodes in the mesh.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ndarray[float]: A 1D double array describing the y-coordinates of the nodes.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">node_y</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_edge_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The x-coordinates of the mesh edges' middle points.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The x-coordinates of the mesh edges&#39; middle points.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ndarray[float]: A 1D double array describing x-coordinates of the mesh edges' middle points.</span>
-<span class="sd">        """</span>
+<span class="sd">            ndarray[float]: A 1D double array describing x-coordinates of the mesh edges&#39; middle points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">edge_x</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_edge_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The y-coordinates of the mesh edges' middle points.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The y-coordinates of the mesh edges&#39; middle points.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ndarray[float]: A 1D double array describing y-coordinates of the mesh edges' middle points.</span>
-<span class="sd">        """</span>
+<span class="sd">            ndarray[float]: A 1D double array describing y-coordinates of the mesh edges&#39; middle points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">edge_y</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_edge_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The node indices of the mesh edges.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The node indices of the mesh edges.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray[int, int]: A 2D integer array (nEdges, 2) containg the two node indices for each edge.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mesh2d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
         <span class="n">edge_nodes</span> <span class="o">=</span> <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">edge_nodes</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">edge_nodes</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_face_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The x-coordinates of the mesh faces' mass centers.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The x-coordinates of the mesh faces&#39; mass centers.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ndarray[float]: A 1D double array describing x-coordinates of the mesh faces' mass centers.</span>
-<span class="sd">        """</span>
+<span class="sd">            ndarray[float]: A 1D double array describing x-coordinates of the mesh faces&#39; mass centers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">face_x</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_face_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The y-coordinates of the mesh faces' mass centers.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The y-coordinates of the mesh faces&#39; mass centers.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ndarray[float]: A 1D double array describing y-coordinates of the mesh faces' mass centers.</span>
-<span class="sd">        """</span>
+<span class="sd">            ndarray[float]: A 1D double array describing y-coordinates of the mesh faces&#39; mass centers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span><span class="o">.</span><span class="n">face_y</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_face_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The node indices of the mesh faces.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The node indices of the mesh faces.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            np.ndarray[int, int]: A 2D integer array describing the nodes composing each mesh 2d face. A 2D integer array (nFaces, maxNodesPerFace) containg the node indices for each face.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mesh2d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
         <span class="n">npf</span> <span class="o">=</span> <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">nodes_per_face</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
@@ -7486,19 +7486,19 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="n">face_node_connectivity</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Determine whether this Mesh2d is empty.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine whether this Mesh2d is empty.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (bool): Whether this Mesh2d is empty.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Read the Mesh2d from the file at file_path.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the Mesh2d from the file at file_path.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_path (Path): Path to the file to be read.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">reader</span> <span class="o">=</span> <span class="n">UgridReader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">reader</span><span class="o">.</span><span class="n">read_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -7512,15 +7512,15 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_set</span><span class="p">(</span><span class="n">mesh2d</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2d</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Get the mesh2d as represented in the MeshKernel.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the mesh2d as represented in the MeshKernel.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (mk.Mesh2d): The mesh2d as represented in the MeshKernel</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            extent (tuple): Bounding box of mesh (left, bottom, right, top)</span>
@@ -7529,7 +7529,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NotImplementedError: MultiPolygons</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent</span>
 
         <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="n">dy</span><span class="p">)</span>
@@ -7549,11 +7549,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">mesh2d_input</span><span class="o">.</span><span class="n">curvilinear_convert_to_mesh2d</span><span class="p">()</span>  <span class="c1"># convert to ugrid/mesh2d</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Create triangular grid within GeometryList object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Call meshkernel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_make_triangular_mesh_from_polygon</span><span class="p">(</span><span class="n">geometry_list</span><span class="p">)</span>
 
@@ -7563,18 +7563,18 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">deletemeshoption</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="o">.</span><span class="n">INSIDE_NOT_INTERSECTED</span><span class="p">,</span>
         <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            geometrylist (GeometryList): Polygon stored as GeometryList</span>
 <span class="sd">            deletemeshoption (int, optional): [description]. Defaults to 1.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># For clipping outside</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inside</span><span class="p">:</span>
             <span class="c1"># Check if a multipolygon was provided when clipping outside</span>
             <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">"Deleting outside more than a single exterior (MultiPolygon) is not implemented."</span>
+                    <span class="s2">&quot;Deleting outside more than a single exterior (MultiPolygon) is not implemented.&quot;</span>
                 <span class="p">)</span>
 
             <span class="c1"># Get exterior and interiors</span>
@@ -7590,7 +7590,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
                     <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                 <span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"First and last coordinate of each GeometryList part should match."</span>
+                        <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
                     <span class="p">)</span>
 
         <span class="c1"># Inside</span>
@@ -7622,13 +7622,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Refine the mesh within a polygon, by a number of steps (level).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            polygon (GeometryList): Polygon in which to refine</span>
 <span class="sd">            level (int): Number of refinement steps</span>
 <span class="sd">            parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
                 <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -8146,18 +8146,18 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="n">deletemeshoption</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">DeleteMeshOption</span><span class="o">.</span><span class="n">INSIDE_NOT_INTERSECTED</span><span class="p">,</span>
     <span class="n">inside</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clip the 2D mesh by a polygon. Both outside the exterior and inside the interiors is clipped. It is also possible to clip inside a polygon with holes.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometrylist (GeometryList): Polygon stored as GeometryList</span>
 <span class="sd">        deletemeshoption (int, optional): [description]. Defaults to 1.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># For clipping outside</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">inside</span><span class="p">:</span>
         <span class="c1"># Check if a multipolygon was provided when clipping outside</span>
         <span class="k">if</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">geometry_separator</span> <span class="ow">in</span> <span class="n">geometrylist</span><span class="o">.</span><span class="n">x_coordinates</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">"Deleting outside more than a single exterior (MultiPolygon) is not implemented."</span>
+                <span class="s2">&quot;Deleting outside more than a single exterior (MultiPolygon) is not implemented.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># Get exterior and interiors</span>
@@ -8173,7 +8173,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
                 <span class="n">part</span><span class="o">.</span><span class="n">y_coordinates</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">"First and last coordinate of each GeometryList part should match."</span>
+                    <span class="s2">&quot;First and last coordinate of each GeometryList part should match.&quot;</span>
                 <span class="p">)</span>
 
     <span class="c1"># Inside</span>
@@ -8334,7 +8334,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a rectilinear mesh within a polygon. A rectangular grid is generated within the polygon bounds.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        extent (tuple): Bounding box of mesh (left, bottom, right, top)</span>
@@ -8343,7 +8343,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        NotImplementedError: MultiPolygons</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="n">extent</span>
 
     <span class="n">rows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span> <span class="o">/</span> <span class="n">dy</span><span class="p">)</span>
@@ -8422,11 +8422,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">create_triangular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry_list</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Create triangular grid within GeometryList object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        geometry_list (mk.GeometryList): GeometryList represeting a polygon within which the mesh is generated.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Call meshkernel</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_make_triangular_mesh_from_polygon</span><span class="p">(</span><span class="n">geometry_list</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -8481,11 +8481,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mk</span><span class="o">.</span><span class="n">Mesh2d</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Get the mesh2d as represented in the MeshKernel.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mesh2d as represented in the MeshKernel.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (mk.Mesh2d): The mesh2d as represented in the MeshKernel</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">mesh2d_get</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8539,11 +8539,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Determine whether this Mesh2d is empty.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether this Mesh2d is empty.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (bool): Whether this Mesh2d is empty.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mesh2d_node_x</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8606,11 +8606,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Read the Mesh2d from the file at file_path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read the Mesh2d from the file at file_path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path): Path to the file to be read.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">UgridReader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">reader</span><span class="o">.</span><span class="n">read_mesh2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -8731,13 +8731,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
     <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">parameters</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Refine the mesh within a polygon, by a number of steps (level).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Refine the mesh within a polygon, by a number of steps (level).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        polygon (GeometryList): Polygon in which to refine</span>
 <span class="sd">        level (int): Number of refinement steps</span>
 <span class="sd">        parameters (MeshRefinementParameters): object containing the Meshkernel refinement parameters. Default values are taken from meskernel documentation.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">MeshRefinementParameters</span><span class="p">(</span>
             <span class="n">refine_intersected</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -8945,14 +8945,14 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1241</span>
 <span class="normal">1242</span>
 <span class="normal">1243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Network</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Represents a D-Flow FM network combining 1D, 2D mesh and 1D2D links."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a D-Flow FM network combining 1D, 2D mesh and 1D2D links.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_geographic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Initialize a Network with optional geographic projection.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a Network with optional geographic projection.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            is_geographic (bool): If True, uses spherical projection. Defaults to False (Cartesian).</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_geographic</span><span class="p">:</span>
             <span class="n">projection</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">ProjectionType</span><span class="o">.</span><span class="n">CARTESIAN</span>
         <span class="k">else</span><span class="p">:</span>
@@ -8968,7 +8968,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Network</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Read network from file.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read network from file.</span>
 
 <span class="sd">        This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
 <span class="sd">        present, and loads them one by one.</span>
@@ -8978,7 +8978,7 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Network: The instance of the class itself that is returned</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># type: ignore[import]</span>
 
@@ -8993,21 +8993,21 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="n">network</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Write network to file.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write network to file.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file (Path): File where _net.nc is written to.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">writer</span> <span class="o">=</span> <span class="n">UgridWriter</span><span class="p">()</span>
         <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_geographic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Whether or not this network has a geographic projection.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether or not this network has a geographic projection.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: True if this network is geographic; otherwise, False.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">projection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">get_projection</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">projection</span> <span class="o">==</span> <span class="n">mk</span><span class="o">.</span><span class="n">ProjectionType</span><span class="o">.</span><span class="n">CARTESIAN</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -9031,13 +9031,13 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">create_rectilinear</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="n">dy</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Create triangular grid within GeometryList object.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object.</span>
 
 <span class="sd">        Calls _mesh2d.create_triangular directly, but is easier accessible for users.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            polygon (mk.GeometryList): GeometryList representing a polygon within which the mesh is generated.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">create_triangular</span><span class="p">(</span><span class="n">geometry_list</span><span class="o">=</span><span class="n">polygon</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_clip_mesh</span><span class="p">(</span>
@@ -9079,11 +9079,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="k">return</span> <span class="n">name</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Create a plot of the 1d2d links and edges within this network.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a plot of the 1d2d links and edges within this network.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            ax (matplotlib.pyplot.Axes, optional): The axes where to plot the edges. Defaults to None.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -9091,10 +9091,10 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
         <span class="n">mesh2d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">get_mesh2d</span><span class="p">()</span>
         <span class="n">mesh1d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_get_mesh1d</span><span class="p">()</span>
         <span class="n">links_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_get</span><span class="p">()</span>
-        <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
-        <span class="n">mesh1d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"g"</span><span class="p">)</span>
+        <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">mesh1d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
         <span class="n">links_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span>
-            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">mesh1d</span><span class="o">=</span><span class="n">mesh1d_output</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">=</span><span class="n">mesh2d_output</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">mesh1d</span><span class="o">=</span><span class="n">mesh1d_output</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">=</span><span class="n">mesh2d_output</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -9219,11 +9219,11 @@ and <a href="../glossary.md#deltares-conventions">Deltares</a>-conventions.</p>
 <span class="normal">1107</span>
 <span class="normal">1108</span>
 <span class="normal">1109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_geographic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Initialize a Network with optional geographic projection.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a Network with optional geographic projection.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        is_geographic (bool): If True, uses spherical projection. Defaults to False (Cartesian).</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_geographic</span><span class="p">:</span>
         <span class="n">projection</span> <span class="o">=</span> <span class="n">mk</span><span class="o">.</span><span class="n">ProjectionType</span><span class="o">.</span><span class="n">CARTESIAN</span>
     <span class="k">else</span><span class="p">:</span>
@@ -9341,7 +9341,7 @@ present, and loads them one by one.</p>
 <span class="normal">1137</span>
 <span class="normal">1138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Network</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Read network from file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read network from file.</span>
 
 <span class="sd">    This classmethod checks what mesh components (mesh1d &amp; network1d, mesh2d, link1d2d) are</span>
 <span class="sd">    present, and loads them one by one.</span>
@@ -9351,7 +9351,7 @@ present, and loads them one by one.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Network: The instance of the class itself that is returned</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">nc</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># type: ignore[import]</span>
 
@@ -9427,13 +9427,13 @@ present, and loads them one by one.</p>
 <span class="normal">1184</span>
 <span class="normal">1185</span>
 <span class="normal">1186</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mesh2d_create_triangular_within_polygon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polygon</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Create triangular grid within GeometryList object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create triangular grid within GeometryList object.</span>
 
 <span class="sd">    Calls _mesh2d.create_triangular directly, but is easier accessible for users.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        polygon (mk.GeometryList): GeometryList representing a polygon within which the mesh is generated.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">create_triangular</span><span class="p">(</span><span class="n">geometry_list</span><span class="o">=</span><span class="n">polygon</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -9506,11 +9506,11 @@ present, and loads them one by one.</p>
 <span class="normal">1241</span>
 <span class="normal">1242</span>
 <span class="normal">1243</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Create a plot of the 1d2d links and edges within this network.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a plot of the 1d2d links and edges within this network.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        ax (matplotlib.pyplot.Axes, optional): The axes where to plot the edges. Defaults to None.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -9518,10 +9518,10 @@ present, and loads them one by one.</p>
     <span class="n">mesh2d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh2d</span><span class="o">.</span><span class="n">get_mesh2d</span><span class="p">()</span>
     <span class="n">mesh1d_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh1d</span><span class="o">.</span><span class="n">_get_mesh1d</span><span class="p">()</span>
     <span class="n">links_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_link1d2d</span><span class="o">.</span><span class="n">meshkernel</span><span class="o">.</span><span class="n">contacts_get</span><span class="p">()</span>
-    <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
-    <span class="n">mesh1d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"g"</span><span class="p">)</span>
+    <span class="n">mesh2d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">mesh1d_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
     <span class="n">links_output</span><span class="o">.</span><span class="n">plot_edges</span><span class="p">(</span>
-        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">mesh1d</span><span class="o">=</span><span class="n">mesh1d_output</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">=</span><span class="n">mesh2d_output</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">mesh1d</span><span class="o">=</span><span class="n">mesh1d_output</span><span class="p">,</span> <span class="n">mesh2d</span><span class="o">=</span><span class="n">mesh2d_output</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -9584,11 +9584,11 @@ present, and loads them one by one.</p>
 <span class="normal">1145</span>
 <span class="normal">1146</span>
 <span class="normal">1147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Write network to file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write network to file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file (Path): File where _net.nc is written to.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">writer</span> <span class="o">=</span> <span class="n">UgridWriter</span><span class="p">()</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -9700,12 +9700,12 @@ present, and loads them one by one.</p>
 <span class="normal">1310</span>
 <span class="normal">1311</span>
 <span class="normal">1312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NetworkModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Network model representation."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Network model representation.&quot;&quot;&quot;</span>
 
     <span class="n">network</span><span class="p">:</span> <span class="n">Network</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">Network</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Load the network file if the filepath exists relative to the current FileLoadContext."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the network file if the filepath exists relative to the current FileLoadContext.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_post_init_load</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -9731,11 +9731,11 @@ present, and loads them one by one.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".nc"</span>
+        <span class="k">return</span> <span class="s2">&quot;.nc&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"network"</span>
+        <span class="k">return</span> <span class="s2">&quot;network&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">file_load_context</span><span class="p">()</span> <span class="k">as</span> <span class="n">context</span><span class="p">:</span>
@@ -9899,7 +9899,7 @@ present, and loads them one by one.</p>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">split_by</span><span class="p">(</span><span class="n">gl</span><span class="p">:</span> <span class="n">mk</span><span class="o">.</span><span class="n">GeometryList</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Function to split mk.GeometryList by seperator.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to split mk.GeometryList by seperator.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        gl (mk.GeometryList): The geometry list to split.</span>
@@ -9907,7 +9907,7 @@ present, and loads them one by one.</p>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list: The split lists.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">x_coordinates</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">gl</span><span class="o">.</span><span class="n">y_coordinates</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">by</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -10016,7 +10016,7 @@ present, and loads them one by one.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4708,7 +4708,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldForcing</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Class holding the external forcing values.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class holding the external forcing values.</span>
 
 <span class="sd">    This class is used to represent the external forcing values in the D-Flow FM model.</span>
 
@@ -4756,12 +4756,12 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="sd">            The operand to use for adding the provided values.</span>
 
 <span class="sd">            Options:</span>
-<span class="sd">                'O' Existing values are overwritten with the provided values.</span>
-<span class="sd">                'A' Provided values are used where existing values are missing.</span>
-<span class="sd">                '+' Existing values are summed with the provided values.</span>
-<span class="sd">                '*' Existing values are multiplied with the provided values.</span>
-<span class="sd">                'X' The maximum values of the existing values and provided values are used.</span>
-<span class="sd">                'N' The minimum values of the existing values and provided values are used.</span>
+<span class="sd">                &#39;O&#39; Existing values are overwritten with the provided values.</span>
+<span class="sd">                &#39;A&#39; Provided values are used where existing values are missing.</span>
+<span class="sd">                &#39;+&#39; Existing values are summed with the provided values.</span>
+<span class="sd">                &#39;*&#39; Existing values are multiplied with the provided values.</span>
+<span class="sd">                &#39;X&#39; The maximum values of the existing values and provided values are used.</span>
+<span class="sd">                &#39;N&#39; The minimum values of the existing values and provided values are used.</span>
 <span class="sd">        value (Optional[float]):</span>
 <span class="sd">            Custom coefficients for transformation.</span>
 <span class="sd">        factor (Optional[float]):</span>
@@ -4784,52 +4784,52 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="sd">        layer (Optional[Union[Layer, PositiveInt]]):</span>
 <span class="sd">            The target layer for the data: -1 (bottom), 0 (all), or a positive layer</span>
 <span class="sd">            number. Converts to the new Spatial `targetLayer` field.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">quantity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtOldQuantity</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"QUANTITY"</span><span class="p">)</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExtOldQuantity</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;QUANTITY&quot;</span><span class="p">)</span>
     <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PolyFile</span><span class="p">,</span> <span class="n">TimModel</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"FILENAME"</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FILENAME&quot;</span>
     <span class="p">)</span>
-    <span class="n">varname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"VARNAME"</span><span class="p">)</span>
+    <span class="n">varname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VARNAME&quot;</span><span class="p">)</span>
     <span class="n">sourcemask</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"SOURCEMASK"</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;SOURCEMASK&quot;</span>
     <span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">ExtOldFileType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"FILETYPE"</span><span class="p">)</span>
-    <span class="n">method</span><span class="p">:</span> <span class="n">ExtOldMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"METHOD"</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">ExtOldFileType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FILETYPE&quot;</span><span class="p">)</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">ExtOldMethod</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;METHOD&quot;</span><span class="p">)</span>
     <span class="n">extrapolation_method</span><span class="p">:</span> <span class="n">ExtOldExtrapolationMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"EXTRAPOLATION_METHOD"</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;EXTRAPOLATION_METHOD&quot;</span>
     <span class="p">)</span>
 
-    <span class="n">maxsearchradius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"MAXSEARCHRADIUS"</span><span class="p">)</span>
-    <span class="n">operand</span><span class="p">:</span> <span class="n">Operand</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"OPERAND"</span><span class="p">)</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"VALUE"</span><span class="p">)</span>
-    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"FACTOR"</span><span class="p">)</span>
-    <span class="n">ifrctyp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"IFRCTYP"</span><span class="p">)</span>
-    <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"AVERAGINGTYPE"</span><span class="p">)</span>
+    <span class="n">maxsearchradius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;MAXSEARCHRADIUS&quot;</span><span class="p">)</span>
+    <span class="n">operand</span><span class="p">:</span> <span class="n">Operand</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;OPERAND&quot;</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;VALUE&quot;</span><span class="p">)</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;FACTOR&quot;</span><span class="p">)</span>
+    <span class="n">ifrctyp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;IFRCTYP&quot;</span><span class="p">)</span>
+    <span class="n">averagingtype</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AVERAGINGTYPE&quot;</span><span class="p">)</span>
 
-    <span class="n">relativesearchcellsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"RELATIVESEARCHCELLSIZE"</span><span class="p">)</span>
-    <span class="n">extrapoltol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"EXTRAPOLTOL"</span><span class="p">)</span>
-    <span class="n">percentileminmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"PERCENTILEMINMAX"</span><span class="p">)</span>
-    <span class="n">area</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"AREA"</span><span class="p">)</span>
-    <span class="n">nummin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"NUMMIN"</span><span class="p">)</span>
-    <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span> <span class="o">|</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"LAYER"</span><span class="p">)</span>
+    <span class="n">relativesearchcellsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;RELATIVESEARCHCELLSIZE&quot;</span><span class="p">)</span>
+    <span class="n">extrapoltol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;EXTRAPOLTOL&quot;</span><span class="p">)</span>
+    <span class="n">percentileminmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;PERCENTILEMINMAX&quot;</span><span class="p">)</span>
+    <span class="n">area</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;AREA&quot;</span><span class="p">)</span>
+    <span class="n">nummin</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;NUMMIN&quot;</span><span class="p">)</span>
+    <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span> <span class="o">|</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;LAYER&quot;</span><span class="p">)</span>
 
-    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"TRACERFALLVELOCITY"</span><span class="p">)</span>
-    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"TRACERDECAYTIME"</span><span class="p">)</span>
+    <span class="n">tracerfallvelocity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERFALLVELOCITY&quot;</span><span class="p">)</span>
+    <span class="n">tracerdecaytime</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;TRACERDECAYTIME&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_intermediate_link</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
 
 
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Handle case-insensitive matching for tracer fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
         <span class="n">values_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
         <span class="c1"># Define the field names and their aliases</span>
-        <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"tracerfallvelocity"</span><span class="p">,</span> <span class="s2">"tracerdecaytime"</span><span class="p">]</span>
+        <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tracerfallvelocity&quot;</span><span class="p">,</span> <span class="s2">&quot;tracerdecaytime&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">field_i</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">tracer_fields</span><span class="p">:</span>
@@ -4837,7 +4837,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
                 <span class="k">if</span> <span class="n">field_i</span> <span class="o">!=</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                     <span class="c1"># If the key is not in the expected lowercase format, add it with the correct format</span>
                     <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="p">]</span>
-                    <span class="c1"># Remove the original key to avoid "extra fields not permitted" error</span>
+                    <span class="c1"># Remove the original key to avoid &quot;extra fields not permitted&quot; error</span>
                     <span class="n">values_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field_i</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">values_copy</span>
@@ -4846,7 +4846,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity_prefix</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">lower_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Checks if the provided quantity string starts with any known valid prefix.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the provided quantity string starts with any known valid prefix.</span>
 
 <span class="sd">        If the quantity matches a prefix, ensures it is followed by a name.</span>
 <span class="sd">        Returns the full quantity string if valid, otherwise None.</span>
@@ -4857,21 +4857,21 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the quantity is only the prefix without a name.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">ALL_PREFIXES</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">lower_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">value_str</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"QUANTITY '</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">' should be appended with a valid name."</span>
+                        <span class="sa">f</span><span class="s2">&quot;QUANTITY &#39;</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">&#39; should be appended with a valid name.&quot;</span>
                     <span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">value_str</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
                 <span class="k">break</span>
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"quantity"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;quantity&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ExtOldQuantity</span><span class="p">):</span>
@@ -4891,18 +4891,18 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
                 <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-                <span class="n">supported_value_str</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(([</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ExtOldQuantity</span><span class="p">]))</span>
+                <span class="n">supported_value_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(([</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ExtOldQuantity</span><span class="p">]))</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"QUANTITY '</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">' not supported. Supported values: </span><span class="si">{</span><span class="n">supported_value_str</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">"</span>
-                    <span class="sa">f</span><span class="s2">"Please refer to the D-Flow FM User Manual for a more detailed list of supported quantities: "</span>
-                    <span class="sa">f</span><span class="s2">"https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D#subsection.C.6.3"</span>
+                    <span class="sa">f</span><span class="s2">&quot;QUANTITY &#39;</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">&#39; not supported. Supported values: </span><span class="si">{</span><span class="n">supported_value_str</span><span class="si">}</span><span class="s2">. </span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Please refer to the D-Flow FM User Manual for a more detailed list of supported quantities: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual_1D2D#subsection.C.6.3&quot;</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"filetype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;filetype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_filetype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtOldFileType</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validate that the filetype value is a valid ExtOldFileType member.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that the filetype value is a valid ExtOldFileType member.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            value: The raw filetype value to validate.</span>
@@ -4913,7 +4913,7 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: If the value cannot be converted to an integer or is not a</span>
 <span class="sd">                valid ExtOldFileType value.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ExtOldFileType</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4925,31 +4925,31 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
                     <span class="n">result</span> <span class="o">=</span> <span class="n">int_value</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"FILETYPE '</span><span class="si">{</span><span class="n">int_value</span><span class="si">}</span><span class="s2">' is not a valid filetype. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">."</span>
+                        <span class="sa">f</span><span class="s2">&quot;FILETYPE &#39;</span><span class="si">{</span><span class="n">int_value</span><span class="si">}</span><span class="s2">&#39; is not a valid filetype. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">.&quot;</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"FILETYPE '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' is not a valid integer. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">."</span>
+                    <span class="sa">f</span><span class="s2">&quot;FILETYPE &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; is not a valid integer. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"operand"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;operand&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_operand</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Operand</span><span class="p">,</span> <span class="n">Operand</span><span class="o">.</span><span class="n">legacy_alternatives</span><span class="p">())</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_varname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filetype</span> <span class="o">!=</span> <span class="n">ExtOldFileType</span><span class="o">.</span><span class="n">NetCDFGridData</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"VARNAME only allowed when FILETYPE is 11 (NetCDFGridData)"</span>
+                <span class="s2">&quot;VARNAME only allowed when FILETYPE is 11 (NetCDFGridData)&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"extrapolation_method"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;extrapolation_method&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_extrapolation_method</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">)</span>
         <span class="n">valid_extrapolation_method</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">ExtOldExtrapolationMethod</span><span class="o">.</span><span class="n">SpatialExtrapolationOutsideOfSourceDataBoundingBox</span>
         <span class="p">)</span>
@@ -4962,117 +4962,117 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
             <span class="ow">and</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available_extrapolation_methods</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"EXTRAPOLATION_METHOD only allowed to be </span><span class="si">{</span><span class="n">valid_extrapolation_method</span><span class="si">}</span><span class="s2"> when METHOD is "</span>
-                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">available_extrapolation_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">available_extrapolation_methods</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;EXTRAPOLATION_METHOD only allowed to be </span><span class="si">{</span><span class="n">valid_extrapolation_method</span><span class="si">}</span><span class="s2"> when METHOD is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">available_extrapolation_methods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> or </span><span class="si">{</span><span class="n">available_extrapolation_methods</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">quantity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">quantity</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">INITIALTRACER</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"FACTOR only allowed when QUANTITY starts with </span><span class="si">{</span><span class="n">INITIALTRACER</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;FACTOR only allowed when QUANTITY starts with </span><span class="si">{</span><span class="n">INITIALTRACER</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_ifrctyp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ifrctyp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">!=</span> <span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">FrictionCoefficient</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"IFRCTYP only allowed when QUANTITY is </span><span class="si">{</span><span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">FrictionCoefficient</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;IFRCTYP only allowed when QUANTITY is </span><span class="si">{</span><span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">FrictionCoefficient</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_averagingtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">averagingtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"AVERAGINGTYPE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;AVERAGINGTYPE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_relativesearchcellsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">relativesearchcellsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"RELATIVESEARCHCELLSIZE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;RELATIVESEARCHCELLSIZE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_extrapoltol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extrapoltol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">InterpolateTime</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"EXTRAPOLTOL only allowed when METHOD is 5"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;EXTRAPOLTOL only allowed when METHOD is 5&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_percentileminmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">percentileminmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"PERCENTILEMINMAX only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;PERCENTILEMINMAX only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantity</span> <span class="o">!=</span> <span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">DischargeSalinityTemperatureSorSin</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"AREA only allowed when QUANTITY is </span><span class="si">{</span><span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">DischargeSalinityTemperatureSorSin</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;AREA only allowed when QUANTITY is </span><span class="si">{</span><span class="n">ExtOldQuantity</span><span class="o">.</span><span class="n">DischargeSalinityTemperatureSorSin</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_nummin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nummin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"NUMMIN only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">&quot;NUMMIN only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">AveragingSpace</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"maxsearchradius"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;maxsearchradius&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_maxsearchradius</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">extrap</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"extrapolation_method"</span><span class="p">)</span>
+            <span class="n">extrap</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;extrapolation_method&quot;</span><span class="p">)</span>
             <span class="n">extrapolation_method_value</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">ExtOldExtrapolationMethod</span><span class="o">.</span><span class="n">SpatialExtrapolationOutsideOfSourceDataBoundingBox</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">extrap</span> <span class="o">!=</span> <span class="n">extrapolation_method_value</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is </span><span class="si">{</span><span class="n">extrapolation_method_value</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="sa">f</span><span class="s2">&quot;MAXSEARCHRADIUS only allowed when EXTRAPOLATION_METHOD is </span><span class="si">{</span><span class="n">extrapolation_method_value</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"value"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_value</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">method</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"method"</span><span class="p">)</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">InterpolateSpace</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"VALUE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">InterpolateSpace</span><span class="si">}</span><span class="s2"> (InterpolateSpace)"</span>
+                    <span class="sa">f</span><span class="s2">&quot;VALUE only allowed when METHOD is </span><span class="si">{</span><span class="n">ExtOldMethod</span><span class="o">.</span><span class="n">InterpolateSpace</span><span class="si">}</span><span class="s2"> (InterpolateSpace)&quot;</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Root-level validator to the right class for the filename parameter based on the filetype.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
 
 <span class="sd">        The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping</span>
 <span class="sd">        dictionary.</span>
@@ -5091,15 +5091,15 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 <span class="sd">            11: DiskOnlyFileModel,</span>
 <span class="sd">            12: DiskOnlyFileModel,</span>
 <span class="sd">        }</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">values</span>
 
         <span class="c1"># if the filetype and the filename are present in the values</span>
-        <span class="n">has_filetype</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"filetype"</span><span class="p">,</span> <span class="s2">"FILETYPE"</span><span class="p">])</span>
-        <span class="n">has_filename</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"filename"</span><span class="p">,</span> <span class="s2">"FILENAME"</span><span class="p">])</span>
+        <span class="n">has_filetype</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;filetype&quot;</span><span class="p">,</span> <span class="s2">&quot;FILETYPE&quot;</span><span class="p">])</span>
+        <span class="n">has_filename</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;FILENAME&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">has_filetype</span> <span class="ow">and</span> <span class="n">has_filename</span><span class="p">:</span>
-            <span class="n">file_type_var_name</span> <span class="o">=</span> <span class="s2">"filetype"</span> <span class="k">if</span> <span class="s2">"filetype"</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">"FILETYPE"</span>
-            <span class="n">filename_var_name</span> <span class="o">=</span> <span class="s2">"filename"</span> <span class="k">if</span> <span class="s2">"filename"</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">"FILENAME"</span>
+            <span class="n">file_type_var_name</span> <span class="o">=</span> <span class="s2">&quot;filetype&quot;</span> <span class="k">if</span> <span class="s2">&quot;filetype&quot;</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">&quot;FILETYPE&quot;</span>
+            <span class="n">filename_var_name</span> <span class="o">=</span> <span class="s2">&quot;filename&quot;</span> <span class="k">if</span> <span class="s2">&quot;filename&quot;</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">&quot;FILENAME&quot;</span>
             <span class="n">file_type</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_type_var_name</span><span class="p">)</span>
             <span class="n">raw_path</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename_var_name</span><span class="p">)</span>
 
@@ -5111,22 +5111,22 @@ number. Converts to the new Spatial <code>targetLayer</code> field.</p>
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_sourcemask</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="n">filetype</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"filetype"</span><span class="p">)</span>
-        <span class="n">sourcemask</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"sourcemask"</span><span class="p">)</span>
+        <span class="n">filetype</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filetype&quot;</span><span class="p">)</span>
+        <span class="n">sourcemask</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sourcemask&quot;</span><span class="p">)</span>
 
         <span class="c1"># Convert string to DiskOnlyFileModel if needed</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sourcemask</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">"sourcemask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">sourcemask</span><span class="p">)</span>
-            <span class="n">sourcemask</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"sourcemask"</span><span class="p">]</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sourcemask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DiskOnlyFileModel</span><span class="p">(</span><span class="n">sourcemask</span><span class="p">)</span>
+            <span class="n">sourcemask</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sourcemask&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">sourcemask</span> <span class="ow">and</span> <span class="n">filetype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
             <span class="n">ExtOldFileType</span><span class="o">.</span><span class="n">ArcInfo</span><span class="p">,</span>
             <span class="n">ExtOldFileType</span><span class="o">.</span><span class="n">CurvilinearData</span><span class="p">,</span>
         <span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"SOURCEMASK only allowed when FILETYPE is 4 or 6"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SOURCEMASK only allowed when FILETYPE is 4 or 6&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5220,10 +5220,10 @@ dictionary.</p>
 <span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
-<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">choose_file_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Root-level validator to the right class for the filename parameter based on the filetype.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Root-level validator to the right class for the filename parameter based on the filetype.</span>
 
 <span class="sd">    The validator chooses the right class for the filename parameter based on the FileType_FileModel_mapping</span>
 <span class="sd">    dictionary.</span>
@@ -5242,15 +5242,15 @@ dictionary.</p>
 <span class="sd">        11: DiskOnlyFileModel,</span>
 <span class="sd">        12: DiskOnlyFileModel,</span>
 <span class="sd">    }</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">values</span>
 
     <span class="c1"># if the filetype and the filename are present in the values</span>
-    <span class="n">has_filetype</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"filetype"</span><span class="p">,</span> <span class="s2">"FILETYPE"</span><span class="p">])</span>
-    <span class="n">has_filename</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"filename"</span><span class="p">,</span> <span class="s2">"FILENAME"</span><span class="p">])</span>
+    <span class="n">has_filetype</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;filetype&quot;</span><span class="p">,</span> <span class="s2">&quot;FILETYPE&quot;</span><span class="p">])</span>
+    <span class="n">has_filename</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">par</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">for</span> <span class="n">par</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;FILENAME&quot;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">has_filetype</span> <span class="ow">and</span> <span class="n">has_filename</span><span class="p">:</span>
-        <span class="n">file_type_var_name</span> <span class="o">=</span> <span class="s2">"filetype"</span> <span class="k">if</span> <span class="s2">"filetype"</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">"FILETYPE"</span>
-        <span class="n">filename_var_name</span> <span class="o">=</span> <span class="s2">"filename"</span> <span class="k">if</span> <span class="s2">"filename"</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">"FILENAME"</span>
+        <span class="n">file_type_var_name</span> <span class="o">=</span> <span class="s2">&quot;filetype&quot;</span> <span class="k">if</span> <span class="s2">&quot;filetype&quot;</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">&quot;FILETYPE&quot;</span>
+        <span class="n">filename_var_name</span> <span class="o">=</span> <span class="s2">&quot;filename&quot;</span> <span class="k">if</span> <span class="s2">&quot;filename&quot;</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">else</span> <span class="s2">&quot;FILENAME&quot;</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">file_type_var_name</span><span class="p">)</span>
         <span class="n">raw_path</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename_var_name</span><span class="p">)</span>
 
@@ -5305,14 +5305,14 @@ dictionary.</p>
 <span class="normal">350</span>
 <span class="normal">351</span>
 <span class="normal">352</span>
-<span class="normal">353</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+<span class="normal">353</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">handle_case_insensitive_tracer_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Handle case-insensitive matching for tracer fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle case-insensitive matching for tracer fields.&quot;&quot;&quot;</span>
     <span class="n">values_copy</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
 
     <span class="c1"># Define the field names and their aliases</span>
-    <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"tracerfallvelocity"</span><span class="p">,</span> <span class="s2">"tracerdecaytime"</span><span class="p">]</span>
+    <span class="n">tracer_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tracerfallvelocity&quot;</span><span class="p">,</span> <span class="s2">&quot;tracerdecaytime&quot;</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">field_i</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">tracer_fields</span><span class="p">:</span>
@@ -5320,7 +5320,7 @@ dictionary.</p>
             <span class="k">if</span> <span class="n">field_i</span> <span class="o">!=</span> <span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="c1"># If the key is not in the expected lowercase format, add it with the correct format</span>
                 <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">values_copy</span><span class="p">[</span><span class="n">field_i</span><span class="p">]</span>
-                <span class="c1"># Remove the original key to avoid "extra fields not permitted" error</span>
+                <span class="c1"># Remove the original key to avoid &quot;extra fields not permitted&quot; error</span>
                 <span class="n">values_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">field_i</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">values_copy</span>
@@ -5459,10 +5459,10 @@ valid ExtOldFileType value.</p>
 <span class="normal">441</span>
 <span class="normal">442</span>
 <span class="normal">443</span>
-<span class="normal">444</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"filetype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+<span class="normal">444</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;filetype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
 <span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_filetype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtOldFileType</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validate that the filetype value is a valid ExtOldFileType member.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate that the filetype value is a valid ExtOldFileType member.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        value: The raw filetype value to validate.</span>
@@ -5473,7 +5473,7 @@ valid ExtOldFileType value.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the value cannot be converted to an integer or is not a</span>
 <span class="sd">            valid ExtOldFileType value.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ExtOldFileType</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">else</span><span class="p">:</span>
@@ -5485,11 +5485,11 @@ valid ExtOldFileType value.</p>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">int_value</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"FILETYPE '</span><span class="si">{</span><span class="n">int_value</span><span class="si">}</span><span class="s2">' is not a valid filetype. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">."</span>
+                    <span class="sa">f</span><span class="s2">&quot;FILETYPE &#39;</span><span class="si">{</span><span class="n">int_value</span><span class="si">}</span><span class="s2">&#39; is not a valid filetype. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"FILETYPE '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' is not a valid integer. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">&quot;FILETYPE &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; is not a valid integer. Supported values: </span><span class="si">{</span><span class="n">valid_values</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span>
 </code></pre></div></td></tr></table></div>
@@ -5621,7 +5621,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_quantity_prefix</span><span class="p">(</span>
     <span class="bp">cls</span><span class="p">,</span> <span class="n">lower_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Checks if the provided quantity string starts with any known valid prefix.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the provided quantity string starts with any known valid prefix.</span>
 
 <span class="sd">    If the quantity matches a prefix, ensures it is followed by a name.</span>
 <span class="sd">    Returns the full quantity string if valid, otherwise None.</span>
@@ -5632,14 +5632,14 @@ Returns the full quantity string if valid, otherwise None.</p>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError: If the quantity is only the prefix without a name.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">ALL_PREFIXES</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">lower_value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
             <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">value_str</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"QUANTITY '</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">' should be appended with a valid name."</span>
+                    <span class="sa">f</span><span class="s2">&quot;QUANTITY &#39;</span><span class="si">{</span><span class="n">value_str</span><span class="si">}</span><span class="s2">&#39; should be appended with a valid name.&quot;</span>
                 <span class="p">)</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">value_str</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
             <span class="k">break</span>
@@ -5762,7 +5762,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="normal">678</span>
 <span class="normal">679</span>
 <span class="normal">680</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExtOldModel</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall external forcings model that contains the contents of one external forcings file (old format).</span>
 
 <span class="sd">    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.external_forcing.extforcefile`.</span>
@@ -5772,18 +5772,18 @@ Returns the full quantity string if valid, otherwise None.</p>
 <span class="sd">            The comments in the header of the external forcing file.</span>
 <span class="sd">        forcing (List[ExtOldForcing]):</span>
 <span class="sd">            The external forcing/QUANTITY blocks in the external forcing file.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">comment</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">HEADER</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">1</span><span class="p">:])</span>
     <span class="n">forcing</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExtOldForcing</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".ext"</span>
+        <span class="k">return</span> <span class="s2">&quot;.ext&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"externalforcings"</span>
+        <span class="k">return</span> <span class="s2">&quot;externalforcings&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
@@ -5797,7 +5797,7 @@ Returns the full quantity string if valid, otherwise None.</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""List all the quantities in the external forcings file."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all the quantities in the external forcings file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">forcing</span><span class="o">.</span><span class="n">quantity</span> <span class="k">for</span> <span class="n">forcing</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">forcing</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5884,11 +5884,11 @@ A positive layer number is also allowed; see <code>ExtOldForcing.layer</code>.</
 <span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Non-numeric values for the `LAYER` attribute of an old external forcing block.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Non-numeric values for the `LAYER` attribute of an old external forcing block.</span>
 
 <span class="sd">    Corresponds to the new Spatial `targetLayer`: `bottom` (-1) and `all` (0).</span>
 <span class="sd">    A positive layer number is also allowed; see `ExtOldForcing.layer`.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">bottom</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="nb">all</span> <span class="o">=</span> <span class="mi">0</span>
@@ -6007,7 +6007,7 @@ A positive layer number is also allowed; see <code>ExtOldForcing.layer</code>.</
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

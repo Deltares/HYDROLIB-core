@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4127,67 +4127,67 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneDFieldBranch</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A `[Branch]` block for use inside a 1D field file.</span>
 
 <span class="sd">    Each block can define value(s) on a particular branch.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the OneDFieldBranch section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldBranch section fields.&quot;&quot;&quot;</span>
 
-        <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the branch"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
+        <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the branch&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
         <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Number of locations on branch. The default 0 value implies branch uniform values."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">,</span>
+            <span class="s2">&quot;Number of locations on branch. The default 0 value implies branch uniform values.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Space separated list of locations on the branch (m). Locations sorted by increasing chainage. The keyword must be specified if numLocations &gt;0."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"chainage"</span><span class="p">,</span>
+            <span class="s2">&quot;Space separated list of locations on the branch (m). Locations sorted by increasing chainage. The keyword must be specified if numLocations &gt;0.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;chainage&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Space separated list of numLocations values; one for each chainage specified. One value required if numLocations =0"</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"values"</span><span class="p">,</span>
+            <span class="s2">&quot;Space separated list of numLocations values; one for each chainage specified. One value required if numLocations =0&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Branch"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Branch"</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Branch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Branch&quot;</span>
 
-    <span class="n">branchid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
-    <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NonNegativeInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"chainage"</span><span class="p">)</span>
-    <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"values"</span><span class="p">)</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
+    <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NonNegativeInt</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">)</span>
+    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;chainage&quot;</span><span class="p">)</span>
+    <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"chainage"</span><span class="p">,</span> <span class="s2">"values"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;chainage&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_split_to_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">split_string_on_delimiter</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"OneDFieldBranch"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the length of the values field is as expected."""</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OneDFieldBranch&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the length of the values field is as expected.&quot;&quot;&quot;</span>
         <span class="n">validate_correct_length</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-            <span class="s2">"values"</span><span class="p">,</span>
-            <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlocations"</span><span class="p">,</span>
+            <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+            <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
             <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_chainage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"OneDFieldBranch"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the length of the chainage field is as expected."""</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_chainage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OneDFieldBranch&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the length of the chainage field is as expected.&quot;&quot;&quot;</span>
         <span class="n">validate_correct_length</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-            <span class="s2">"chainage"</span><span class="p">,</span>
-            <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlocations"</span><span class="p">,</span>
+            <span class="s2">&quot;chainage&quot;</span><span class="p">,</span>
+            <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
             <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"branchid"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;branchid&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4247,20 +4247,20 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the OneDFieldBranch section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldBranch section fields.&quot;&quot;&quot;</span>
 
-    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the branch"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the branch&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
     <span class="n">numlocations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Number of locations on branch. The default 0 value implies branch uniform values."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"numLocations"</span><span class="p">,</span>
+        <span class="s2">&quot;Number of locations on branch. The default 0 value implies branch uniform values.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLocations&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Space separated list of locations on the branch (m). Locations sorted by increasing chainage. The keyword must be specified if numLocations &gt;0."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"chainage"</span><span class="p">,</span>
+        <span class="s2">&quot;Space separated list of locations on the branch (m). Locations sorted by increasing chainage. The keyword must be specified if numLocations &gt;0.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;chainage&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Space separated list of numLocations values; one for each chainage specified. One value required if numLocations =0"</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"values"</span><span class="p">,</span>
+        <span class="s2">&quot;Space separated list of numLocations values; one for each chainage specified. One value required if numLocations =0&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4312,13 +4312,13 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
-<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_chainage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"OneDFieldBranch"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the length of the chainage field is as expected."""</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_chainage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OneDFieldBranch&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the length of the chainage field is as expected.&quot;&quot;&quot;</span>
     <span class="n">validate_correct_length</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-        <span class="s2">"chainage"</span><span class="p">,</span>
-        <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlocations"</span><span class="p">,</span>
+        <span class="s2">&quot;chainage&quot;</span><span class="p">,</span>
+        <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
         <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
@@ -4354,13 +4354,13 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"OneDFieldBranch"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the length of the values field is as expected."""</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OneDFieldBranch&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the length of the values field is as expected.&quot;&quot;&quot;</span>
     <span class="n">validate_correct_length</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-        <span class="s2">"values"</span><span class="p">,</span>
-        <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlocations"</span><span class="p">,</span>
+        <span class="s2">&quot;values&quot;</span><span class="p">,</span>
+        <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlocations&quot;</span><span class="p">,</span>
         <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
@@ -4426,24 +4426,24 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneDFieldGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The 1D field file's `[General]` section with file meta data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The 1D field file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the OneDFieldGeneral section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldGeneral section fields.&quot;&quot;&quot;</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File type. Should be '1dField'. Do not edit this."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+            <span class="s2">&quot;File type. Should be &#39;1dField&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
 
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"2.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"1dField"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"1dField"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;2.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;1dField&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;1dField&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4497,14 +4497,14 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the OneDFieldGeneral section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldGeneral section fields.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File type. Should be '1dField'. Do not edit this."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+        <span class="s2">&quot;File type. Should be &#39;1dField&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4585,23 +4585,23 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneDFieldGlobal</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The `[Global]` block with a uniform value for use inside a 1D field file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The `[Global]` block with a uniform value for use inside a 1D field file.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the OneDFieldGlobal section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldGlobal section fields.&quot;&quot;&quot;</span>
 
-        <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"quantity"</span><span class="p">)</span>
-        <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The unit of the quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"unit"</span><span class="p">)</span>
+        <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+        <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The unit of the quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
         <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"The global default value for this quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"value"</span>
+            <span class="s2">&quot;The global default value for this quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;value&quot;</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Global"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Global"</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Global&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Global&quot;</span>
 
-    <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"quantity"</span><span class="p">)</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"unit"</span><span class="p">)</span>
-    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"value"</span><span class="p">)</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4653,12 +4653,12 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the OneDFieldGlobal section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the OneDFieldGlobal section fields.&quot;&quot;&quot;</span>
 
-    <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The name of the quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"quantity"</span><span class="p">)</span>
-    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"The unit of the quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"unit"</span><span class="p">)</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The name of the quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;quantity&quot;</span><span class="p">)</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;The unit of the quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"The global default value for this quantity"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"value"</span>
+        <span class="s2">&quot;The global default value for this quantity&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;value&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4794,7 +4794,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">151</span>
 <span class="normal">152</span>
 <span class="normal">153</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneDFieldModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall 1D field model that contains the contents of a 1D field file.</span>
 
 <span class="sd">    This model is typically used when a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.inifieldfile[..].initial[..].datafiletype==DataFileType.onedfield`.</span>
@@ -4803,21 +4803,21 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="sd">        general (OneDFieldGeneral): `[General]` block with file metadata.</span>
 <span class="sd">        global_ (Optional[OneDFieldGlobal]): Optional `[Global]` block with uniform value.</span>
 <span class="sd">        branch (List[OneDFieldBranch]): Definitions of `[Branch]` field values.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">OneDFieldGeneral</span> <span class="o">=</span> <span class="n">OneDFieldGeneral</span><span class="p">()</span>
     <span class="n">global_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OneDFieldGlobal</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"global"</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;global&quot;</span>
     <span class="p">)</span>  <span class="c1"># to circumvent built-in kw</span>
     <span class="n">branch</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">OneDFieldBranch</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">".ini"</span>
+        <span class="k">return</span> <span class="s2">&quot;.ini&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"1dfield"</span>
+        <span class="k">return</span> <span class="s2">&quot;1dfield&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4933,7 +4933,7 @@ for a <a href="../../../glossary/#d-flow-fm">D-Flow FM</a> model.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

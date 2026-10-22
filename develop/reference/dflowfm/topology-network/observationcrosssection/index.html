@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -3809,51 +3809,51 @@ in [UM Sec.F2.4.1]
 <span class="normal">89</span>
 <span class="normal">90</span>
 <span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationCrossSection</span><span class="p">(</span><span class="n">CoordinateValidator</span><span class="p">,</span> <span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The observation cross section that is included in the observation cross section file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The observation cross section that is included in the observation cross section file.</span>
 
 <span class="sd">    All lowercased attributes match with the observation cross section output as described</span>
 <span class="sd">    in [UM Sec.F2.4.1]</span>
 <span class="sd">    (https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#subsubsection.F.2.4.1)</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the ObservationCrossSection section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationCrossSection section fields.&quot;&quot;&quot;</span>
 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Name of the cross section (max. 255 characters)."</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Name of the cross section (max. 255 characters).&quot;</span>
         <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) Branch on which the cross section is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span>
+            <span class="s2">&quot;(optional) Branch on which the cross section is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span>
         <span class="p">)</span>
-        <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"(optional) Location on the branch (m)."</span>
+        <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;(optional) Location on the branch (m).&quot;</span>
         <span class="n">numcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) Number of values in xCoordinates and yCoordinates. "</span>
-            <span class="s2">"This value should be greater than or equal to 2."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"numCoordinates"</span><span class="p">,</span>
+            <span class="s2">&quot;(optional) Number of values in xCoordinates and yCoordinates. &quot;</span>
+            <span class="s2">&quot;This value should be greater than or equal to 2.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numCoordinates&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">xcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) x-coordinates of the cross section line. "</span>
-            <span class="s2">"(number of values = numCoordinates)"</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"xCoordinates"</span><span class="p">,</span>
+            <span class="s2">&quot;(optional) x-coordinates of the cross section line. &quot;</span>
+            <span class="s2">&quot;(number of values = numCoordinates)&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;xCoordinates&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ycoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) y-coordinates of the cross section line. "</span>
-            <span class="s2">"(number of values = numCoordinates)"</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"yCoordinates"</span><span class="p">,</span>
+            <span class="s2">&quot;(optional) y-coordinates of the cross section line. &quot;</span>
+            <span class="s2">&quot;(number of values = numCoordinates)&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;yCoordinates&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"ObservationCrossSection"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"ObservationCrossSection"</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
-    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span><span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"chainage"</span><span class="p">)</span>
-    <span class="n">numcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numCoordinates"</span><span class="p">)</span>
-    <span class="n">xcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"xCoordinates"</span><span class="p">)</span>
-    <span class="n">ycoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"yCoordinates"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ObservationCrossSection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ObservationCrossSection&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span><span class="p">)</span>
+    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;chainage&quot;</span><span class="p">)</span>
+    <span class="n">numcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numCoordinates&quot;</span><span class="p">)</span>
+    <span class="n">xcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;xCoordinates&quot;</span><span class="p">)</span>
+    <span class="n">ycoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;yCoordinates&quot;</span><span class="p">)</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ObservationCrossSection"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the correct location specification is given."""</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObservationCrossSection&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
         <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
             <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
@@ -3866,7 +3866,7 @@ in [UM Sec.F2.4.1]
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3933,27 +3933,27 @@ in [UM Sec.F2.4.1]
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the ObservationCrossSection section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationCrossSection section fields.&quot;&quot;&quot;</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Name of the cross section (max. 255 characters)."</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Name of the cross section (max. 255 characters).&quot;</span>
     <span class="n">branchid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) Branch on which the cross section is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchId"</span>
+        <span class="s2">&quot;(optional) Branch on which the cross section is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchId&quot;</span>
     <span class="p">)</span>
-    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"(optional) Location on the branch (m)."</span>
+    <span class="n">chainage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;(optional) Location on the branch (m).&quot;</span>
     <span class="n">numcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) Number of values in xCoordinates and yCoordinates. "</span>
-        <span class="s2">"This value should be greater than or equal to 2."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"numCoordinates"</span><span class="p">,</span>
+        <span class="s2">&quot;(optional) Number of values in xCoordinates and yCoordinates. &quot;</span>
+        <span class="s2">&quot;This value should be greater than or equal to 2.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numCoordinates&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">xcoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) x-coordinates of the cross section line. "</span>
-        <span class="s2">"(number of values = numCoordinates)"</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"xCoordinates"</span><span class="p">,</span>
+        <span class="s2">&quot;(optional) x-coordinates of the cross section line. &quot;</span>
+        <span class="s2">&quot;(number of values = numCoordinates)&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;xCoordinates&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">ycoordinates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) y-coordinates of the cross section line. "</span>
-        <span class="s2">"(number of values = numCoordinates)"</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"yCoordinates"</span><span class="p">,</span>
+        <span class="s2">&quot;(optional) y-coordinates of the cross section line. &quot;</span>
+        <span class="s2">&quot;(number of values = numCoordinates)&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;yCoordinates&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4010,11 +4010,11 @@ in [UM Sec.F2.4.1]
 <span class="normal">85</span>
 <span class="normal">86</span>
 <span class="normal">87</span>
-<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_location_specification_is_correct</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"ObservationCrossSection"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the correct location specification is given."""</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObservationCrossSection&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the correct location specification is given.&quot;&quot;&quot;</span>
     <span class="n">location_validator</span> <span class="o">=</span> <span class="n">LocationValidatorUtils</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
         <span class="n">config</span><span class="o">=</span><span class="n">LocationValidationConfiguration</span><span class="p">(</span>
@@ -4083,21 +4083,21 @@ in [UM Sec.F2.4.1]
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationCrossSectionGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The observation cross section file's `[General]` section with file meta data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The observation cross section file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the ObservationCrossSectionGeneral section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationCrossSectionGeneral section fields.&quot;&quot;&quot;</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File type. Should be 'obsCross'. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span>
+            <span class="s2">&quot;File type. Should be &#39;obsCross&#39;. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"2.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"obsCross"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"obsCross"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;2.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;obsCross&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;obsCross&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4150,13 +4150,13 @@ in [UM Sec.F2.4.1]
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the ObservationCrossSectionGeneral section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the ObservationCrossSectionGeneral section fields.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File type. Should be 'obsCross'. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span>
+        <span class="s2">&quot;File type. Should be &#39;obsCross&#39;. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4224,7 +4224,7 @@ in [UM Sec.F2.4.1]
 <span class="normal">96</span>
 <span class="normal">97</span>
 <span class="normal">98</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObservationCrossSectionModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The overall observation cross section model that contains the contents of one observation cross section file."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The overall observation cross section model that contains the contents of one observation cross section file.&quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">ObservationCrossSectionGeneral</span> <span class="o">=</span> <span class="n">ObservationCrossSectionGeneral</span><span class="p">()</span>
     <span class="n">observationcrosssection</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ObservationCrossSection</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -4346,7 +4346,7 @@ see the <a href="polyfile.md">Polyfile documentation</a>.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       

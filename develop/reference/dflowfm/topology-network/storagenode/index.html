@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4101,10 +4101,10 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">42</span>
 <span class="normal">43</span>
 <span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Interpolation</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Enum class containing the valid values for the interpolation type as used for a storage area table in StorageNode."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the interpolation type as used for a storage area table in StorageNode.&quot;&quot;&quot;</span>
 
-    <span class="n">linear</span> <span class="o">=</span> <span class="s2">"linear"</span>
-    <span class="n">block</span> <span class="o">=</span> <span class="s2">"block"</span>
+    <span class="n">linear</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="s2">&quot;block&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4164,12 +4164,12 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NodeType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Enum class containing the valid values for the node type as used in StorageNode."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the node type as used in StorageNode.&quot;&quot;&quot;</span>
 
-    <span class="n">inspection</span> <span class="o">=</span> <span class="s2">"inspection"</span>
-    <span class="n">soakawaydrain</span> <span class="o">=</span> <span class="s2">"soakawayDrain"</span>
-    <span class="n">compartment</span> <span class="o">=</span> <span class="s2">"compartment"</span>
-    <span class="n">unspecified</span> <span class="o">=</span> <span class="s2">"unspecified"</span>
+    <span class="n">inspection</span> <span class="o">=</span> <span class="s2">&quot;inspection&quot;</span>
+    <span class="n">soakawaydrain</span> <span class="o">=</span> <span class="s2">&quot;soakawayDrain&quot;</span>
+    <span class="n">compartment</span> <span class="o">=</span> <span class="s2">&quot;compartment&quot;</span>
+    <span class="n">unspecified</span> <span class="o">=</span> <span class="s2">&quot;unspecified&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4386,167 +4386,167 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StorageNode</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A storage node that is included in the storage node file.</span>
 
 <span class="sd">    All lowercased attributes match with the storage node input as described in</span>
 <span class="sd">    [UM Sec.C.17](https://content.oss.deltares.nl/delft3dfm1d2d/D-Flow_FM_User_Manual_1D2D.pdf#section.C.17).</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the StorageNode section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the StorageNode section fields.&quot;&quot;&quot;</span>
 
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"Unique id of the storage node."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"Long name in the user interface."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;Unique id of the storage node.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;Long name in the user interface.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
         <span class="n">manholeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) Unique id of manhole that this (compartment) node is part of."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"manholeId"</span><span class="p">,</span>
+            <span class="s2">&quot;(optional) Unique id of manhole that this (compartment) node is part of.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;manholeId&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">nodetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"(optional) Type of the node. Possible values are: "</span>
-            <span class="o">+</span> <span class="s2">"inspection: inspection chamber, "</span>
-            <span class="o">+</span> <span class="s2">"soakawayDrain: soakaway drain (infiltration), "</span>
-            <span class="o">+</span> <span class="s2">"compartment: manhole compartment, "</span>
-            <span class="o">+</span> <span class="s2">"unspecified: general storage node of unspecified type"</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"nodeType"</span><span class="p">,</span>
+            <span class="s2">&quot;(optional) Type of the node. Possible values are: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;inspection: inspection chamber, &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;soakawayDrain: soakaway drain (infiltration), &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;compartment: manhole compartment, &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;unspecified: general storage node of unspecified type&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">nodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Connection node on which the storage node is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"nodeId"</span>
+            <span class="s2">&quot;Connection node on which the storage node is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeId&quot;</span>
         <span class="p">)</span>
         <span class="n">usetable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Switch to select a simple (false) or tabulated (true) storage area."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"useTable"</span><span class="p">,</span>
+            <span class="s2">&quot;Switch to select a simple (false) or tabulated (true) storage area.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useTable&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">bedlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Bed level of the storage area [m AD]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"bedLevel"</span>
+            <span class="s2">&quot;Bed level of the storage area [m AD].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;bedLevel&quot;</span>
         <span class="p">)</span>
         <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Storage area from bedLevel up to streetLevel (and beyond if useStreetStorage = false) [m2]."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"area"</span><span class="p">,</span>
+            <span class="s2">&quot;Storage area from bedLevel up to streetLevel (and beyond if useStreetStorage = false) [m2].&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">streetlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Street level of the storage area [m AD]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"streetLevel"</span>
+            <span class="s2">&quot;Street level of the storage area [m AD].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetLevel&quot;</span>
         <span class="p">)</span>
         <span class="n">streetstoragearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Storage area from streetLevel upwards if useStreetStorage = true [m2]."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"streetStorageArea"</span><span class="p">,</span>
+            <span class="s2">&quot;Storage area from streetLevel upwards if useStreetStorage = true [m2].&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetStorageArea&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">storagetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Possible values: "</span>
-            <span class="o">+</span> <span class="s2">"reservoir: Above streetLevel the storage area of this node is also taken into account. "</span>
-            <span class="o">+</span> <span class="s2">"closed: Above streetLevel this storage node has no storage area."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"storageType"</span><span class="p">,</span>
+            <span class="s2">&quot;Possible values: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;reservoir: Above streetLevel the storage area of this node is also taken into account. &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;closed: Above streetLevel this storage node has no storage area.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Number of levels in storage area table."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span>
+            <span class="s2">&quot;Number of levels in storage area table.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span>
         <span class="p">)</span>
         <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Levels in storage area table [m]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"levels"</span>
+            <span class="s2">&quot;Levels in storage area table [m].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;levels&quot;</span>
         <span class="p">)</span>
         <span class="n">storagearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Areas in storage area table [m2]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"storageArea"</span>
+            <span class="s2">&quot;Areas in storage area table [m2].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageArea&quot;</span>
         <span class="p">)</span>
         <span class="n">interpolate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Interpolation type for storage area table. Possible values: linear or block."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"interpolate"</span><span class="p">,</span>
+            <span class="s2">&quot;Interpolation type for storage area table. Possible values: linear or block.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"StorageNode"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"StorageNode"</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
-    <span class="n">manholeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"manholeId"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;StorageNode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;StorageNode&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+    <span class="n">manholeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;manholeId&quot;</span><span class="p">)</span>
 
-    <span class="n">nodetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NodeType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">NodeType</span><span class="o">.</span><span class="n">unspecified</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"nodeType"</span><span class="p">)</span>
-    <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"nodeId"</span><span class="p">)</span>
-    <span class="n">usetable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">"useTable"</span><span class="p">)</span>
+    <span class="n">nodetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">NodeType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">NodeType</span><span class="o">.</span><span class="n">unspecified</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeType&quot;</span><span class="p">)</span>
+    <span class="n">nodeid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeId&quot;</span><span class="p">)</span>
+    <span class="n">usetable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useTable&quot;</span><span class="p">)</span>
 
     <span class="c1"># useTable is True</span>
-    <span class="n">bedlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"bedLevel"</span><span class="p">)</span>
-    <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"area"</span><span class="p">)</span>
-    <span class="n">streetlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"streetLevel"</span><span class="p">)</span>
-    <span class="n">streetstoragearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"streetStorageArea"</span><span class="p">)</span>
+    <span class="n">bedlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;bedLevel&quot;</span><span class="p">)</span>
+    <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">)</span>
+    <span class="n">streetlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetLevel&quot;</span><span class="p">)</span>
+    <span class="n">streetstoragearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetStorageArea&quot;</span><span class="p">)</span>
     <span class="n">storagetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StorageType</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">StorageType</span><span class="o">.</span><span class="n">reservoir</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"storageType"</span>
+        <span class="n">StorageType</span><span class="o">.</span><span class="n">reservoir</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageType&quot;</span>
     <span class="p">)</span>
 
     <span class="c1"># useTable is False</span>
-    <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span><span class="p">)</span>
-    <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"levels"</span><span class="p">)</span>
-    <span class="n">storagearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"storageArea"</span><span class="p">)</span>
+    <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span><span class="p">)</span>
+    <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;levels&quot;</span><span class="p">)</span>
+    <span class="n">storagearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageArea&quot;</span><span class="p">)</span>
     <span class="n">interpolate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Interpolation</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">Interpolation</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"interpolate"</span>
+        <span class="n">Interpolation</span><span class="o">.</span><span class="n">linear</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span>
     <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_unknown_keyword_error_manager</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UnknownKeywordErrorManager</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""The StorageNode does not currently support raising an error on unknown keywords."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The StorageNode does not currently support raising an error on unknown keywords.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"interpolate"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_interpolate_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Interpolation</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Interpolation</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"nodetype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;nodetype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_nodetype_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeType</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">NodeType</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"storagetype"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;storagetype&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_storagetype_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StorageType</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">enum_value_parser</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">StorageType</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"levels"</span><span class="p">,</span> <span class="s2">"storagearea"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;levels&quot;</span><span class="p">,</span> <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_split_to_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">split_string_on_delimiter</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the length of the levels field is as expected."""</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the length of the levels field is as expected.&quot;&quot;&quot;</span>
         <span class="n">validate_correct_length</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-            <span class="s2">"levels"</span><span class="p">,</span>
-            <span class="s2">"storagearea"</span><span class="p">,</span>
-            <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlevels"</span><span class="p">,</span>
+            <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span>
+            <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
             <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_required_fields_are_present_when_using_tables</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the specified fields are present when the usetable field is also present."""</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the specified fields are present when the usetable field is also present.&quot;&quot;&quot;</span>
         <span class="n">validate_required_fields</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-            <span class="s2">"numlevels"</span><span class="p">,</span>
-            <span class="s2">"levels"</span><span class="p">,</span>
-            <span class="s2">"storagearea"</span><span class="p">,</span>
-            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">"usetable"</span><span class="p">,</span>
+            <span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span>
+            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;usetable&quot;</span><span class="p">,</span>
             <span class="n">conditional_value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_required_fields_are_present_when_not_using_tables</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Validates that the specified fields are present."""</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validates that the specified fields are present.&quot;&quot;&quot;</span>
         <span class="n">validate_required_fields</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-            <span class="s2">"bedlevel"</span><span class="p">,</span>
-            <span class="s2">"area"</span><span class="p">,</span>
-            <span class="s2">"streetlevel"</span><span class="p">,</span>
-            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">"usetable"</span><span class="p">,</span>
+            <span class="s2">&quot;bedlevel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;area&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;streetlevel&quot;</span><span class="p">,</span>
+            <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;usetable&quot;</span><span class="p">,</span>
             <span class="n">conditional_value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4647,61 +4647,61 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">136</span>
 <span class="normal">137</span>
 <span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the StorageNode section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the StorageNode section fields.&quot;&quot;&quot;</span>
 
-    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"Unique id of the storage node."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"id"</span><span class="p">)</span>
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"Long name in the user interface."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;Unique id of the storage node.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;Long name in the user interface.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
     <span class="n">manholeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) Unique id of manhole that this (compartment) node is part of."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"manholeId"</span><span class="p">,</span>
+        <span class="s2">&quot;(optional) Unique id of manhole that this (compartment) node is part of.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;manholeId&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">nodetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"(optional) Type of the node. Possible values are: "</span>
-        <span class="o">+</span> <span class="s2">"inspection: inspection chamber, "</span>
-        <span class="o">+</span> <span class="s2">"soakawayDrain: soakaway drain (infiltration), "</span>
-        <span class="o">+</span> <span class="s2">"compartment: manhole compartment, "</span>
-        <span class="o">+</span> <span class="s2">"unspecified: general storage node of unspecified type"</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"nodeType"</span><span class="p">,</span>
+        <span class="s2">&quot;(optional) Type of the node. Possible values are: &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;inspection: inspection chamber, &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;soakawayDrain: soakaway drain (infiltration), &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;compartment: manhole compartment, &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;unspecified: general storage node of unspecified type&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">nodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Connection node on which the storage node is located."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"nodeId"</span>
+        <span class="s2">&quot;Connection node on which the storage node is located.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;nodeId&quot;</span>
     <span class="p">)</span>
     <span class="n">usetable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Switch to select a simple (false) or tabulated (true) storage area."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"useTable"</span><span class="p">,</span>
+        <span class="s2">&quot;Switch to select a simple (false) or tabulated (true) storage area.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useTable&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">bedlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Bed level of the storage area [m AD]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"bedLevel"</span>
+        <span class="s2">&quot;Bed level of the storage area [m AD].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;bedLevel&quot;</span>
     <span class="p">)</span>
     <span class="n">area</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Storage area from bedLevel up to streetLevel (and beyond if useStreetStorage = false) [m2]."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"area"</span><span class="p">,</span>
+        <span class="s2">&quot;Storage area from bedLevel up to streetLevel (and beyond if useStreetStorage = false) [m2].&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;area&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">streetlevel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Street level of the storage area [m AD]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"streetLevel"</span>
+        <span class="s2">&quot;Street level of the storage area [m AD].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetLevel&quot;</span>
     <span class="p">)</span>
     <span class="n">streetstoragearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Storage area from streetLevel upwards if useStreetStorage = true [m2]."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"streetStorageArea"</span><span class="p">,</span>
+        <span class="s2">&quot;Storage area from streetLevel upwards if useStreetStorage = true [m2].&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;streetStorageArea&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">storagetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Possible values: "</span>
-        <span class="o">+</span> <span class="s2">"reservoir: Above streetLevel the storage area of this node is also taken into account. "</span>
-        <span class="o">+</span> <span class="s2">"closed: Above streetLevel this storage node has no storage area."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"storageType"</span><span class="p">,</span>
+        <span class="s2">&quot;Possible values: &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;reservoir: Above streetLevel the storage area of this node is also taken into account. &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;closed: Above streetLevel this storage node has no storage area.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">numlevels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Number of levels in storage area table."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"numLevels"</span>
+        <span class="s2">&quot;Number of levels in storage area table.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;numLevels&quot;</span>
     <span class="p">)</span>
     <span class="n">levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Levels in storage area table [m]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"levels"</span>
+        <span class="s2">&quot;Levels in storage area table [m].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;levels&quot;</span>
     <span class="p">)</span>
     <span class="n">storagearea</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Areas in storage area table [m2]."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"storageArea"</span>
+        <span class="s2">&quot;Areas in storage area table [m2].&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;storageArea&quot;</span>
     <span class="p">)</span>
     <span class="n">interpolate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Interpolation type for storage area table. Possible values: linear or block."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"interpolate"</span><span class="p">,</span>
+        <span class="s2">&quot;Interpolation type for storage area table. Possible values: linear or block.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4754,14 +4754,14 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">199</span>
 <span class="normal">200</span>
 <span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the length of the levels field is as expected."""</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_list_length_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the length of the levels field is as expected.&quot;&quot;&quot;</span>
     <span class="n">validate_correct_length</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-        <span class="s2">"levels"</span><span class="p">,</span>
-        <span class="s2">"storagearea"</span><span class="p">,</span>
-        <span class="n">length_name</span><span class="o">=</span><span class="s2">"numlevels"</span><span class="p">,</span>
+        <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span>
+        <span class="n">length_name</span><span class="o">=</span><span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
         <span class="n">list_required_with_length</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
@@ -4800,17 +4800,17 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">229</span>
 <span class="normal">230</span>
 <span class="normal">231</span>
-<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_required_fields_are_present_when_not_using_tables</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the specified fields are present."""</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the specified fields are present.&quot;&quot;&quot;</span>
     <span class="n">validate_required_fields</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-        <span class="s2">"bedlevel"</span><span class="p">,</span>
-        <span class="s2">"area"</span><span class="p">,</span>
-        <span class="s2">"streetlevel"</span><span class="p">,</span>
-        <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">"usetable"</span><span class="p">,</span>
+        <span class="s2">&quot;bedlevel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;area&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;streetlevel&quot;</span><span class="p">,</span>
+        <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;usetable&quot;</span><span class="p">,</span>
         <span class="n">conditional_value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
@@ -4849,17 +4849,17 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">214</span>
 <span class="normal">215</span>
 <span class="normal">216</span>
-<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_that_required_fields_are_present_when_using_tables</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"StorageNode"</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Validates that the specified fields are present when the usetable field is also present."""</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StorageNode&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates that the specified fields are present when the usetable field is also present.&quot;&quot;&quot;</span>
     <span class="n">validate_required_fields</span><span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
-        <span class="s2">"numlevels"</span><span class="p">,</span>
-        <span class="s2">"levels"</span><span class="p">,</span>
-        <span class="s2">"storagearea"</span><span class="p">,</span>
-        <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">"usetable"</span><span class="p">,</span>
+        <span class="s2">&quot;numlevels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;levels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;storagearea&quot;</span><span class="p">,</span>
+        <span class="n">conditional_field_name</span><span class="o">=</span><span class="s2">&quot;usetable&quot;</span><span class="p">,</span>
         <span class="n">conditional_value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="bp">self</span>
@@ -4930,30 +4930,30 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StorageNodeGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""The storage node file's `[General]` section with file meta data."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The storage node file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Comments for the StorageNodeGeneral section fields."""</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the StorageNodeGeneral section fields.&quot;&quot;&quot;</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"File type. Should be 'storageNodes'. Do not edit this."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+            <span class="s2">&quot;File type. Should be &#39;storageNodes&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">usestreetstorage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">"Indicates whether above streetLevel the streetStorageArea must be used (true) "</span>
-            <span class="o">+</span> <span class="s2">"or the regular storage area continues (false). This option is only applicable "</span>
-            <span class="o">+</span> <span class="s2">"for storage nodes with useTable = false."</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">"useStreetStorage"</span><span class="p">,</span>
+            <span class="s2">&quot;Indicates whether above streetLevel the streetStorageArea must be used (true) &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;or the regular storage area continues (false). This option is only applicable &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot;for storage nodes with useTable = false.&quot;</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useStreetStorage&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"2.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"storageNodes"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"storageNodes"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
-    <span class="n">usestreetstorage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"useStreetStorage"</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;2.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;storageNodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;storageNodes&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
+    <span class="n">usestreetstorage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useStreetStorage&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5013,20 +5013,20 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Comments for the StorageNodeGeneral section fields."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the StorageNodeGeneral section fields.&quot;&quot;&quot;</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
+        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"File type. Should be 'storageNodes'. Do not edit this."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
+        <span class="s2">&quot;File type. Should be &#39;storageNodes&#39;. Do not edit this.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">usestreetstorage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">"Indicates whether above streetLevel the streetStorageArea must be used (true) "</span>
-        <span class="o">+</span> <span class="s2">"or the regular storage area continues (false). This option is only applicable "</span>
-        <span class="o">+</span> <span class="s2">"for storage nodes with useTable = false."</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">"useStreetStorage"</span><span class="p">,</span>
+        <span class="s2">&quot;Indicates whether above streetLevel the streetStorageArea must be used (true) &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;or the regular storage area continues (false). This option is only applicable &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;for storage nodes with useTable = false.&quot;</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;useStreetStorage&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5164,7 +5164,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StorageNodeModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The overall storage node model that contains the contents of one storage node file.</span>
 
 <span class="sd">    This model is typically referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel]`.geometry.storagenodefile[..]`.</span>
@@ -5172,23 +5172,23 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="sd">    Attributes:</span>
 <span class="sd">        general (StorageNodeGeneral): `[General]` block with file metadata.</span>
 <span class="sd">        storagenode (List[StorageNode]): List of `[StorageNode]` blocks for all storage nodes.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">StorageNodeGeneral</span> <span class="o">=</span> <span class="n">StorageNodeGeneral</span><span class="p">()</span>
     <span class="n">storagenode</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">StorageNode</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">make_list</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">"nodeFile"</span>
+        <span class="k">return</span> <span class="s2">&quot;nodeFile&quot;</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"storagenode"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;storagenode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">storagenodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StorageNode</span><span class="p">],</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Validate the streetStorageArea for each storage node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate the streetStorageArea for each storage node.</span>
 
 <span class="sd">        Validates for each storage node whether the streetStorageArea value is provided</span>
 <span class="sd">        when the general useStreetStorage is True and the storage node useTable is False.</span>
-<span class="sd">        """</span>
-        <span class="n">usestreetstorage</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"general"</span><span class="p">]</span><span class="o">.</span><span class="n">usestreetstorage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">usestreetstorage</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;general&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">usestreetstorage</span>
 
         <span class="k">for</span> <span class="n">storagenode</span> <span class="ow">in</span> <span class="n">storagenodes</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
@@ -5197,7 +5197,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
                 <span class="ow">and</span> <span class="n">storagenode</span><span class="o">.</span><span class="n">streetstoragearea</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id </span><span class="si">{</span><span class="n">storagenode</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="sa">f</span><span class="s2">&quot;streetStorageArea should be provided when useStreetStorage is True and useTable is False for storage node with id </span><span class="si">{</span><span class="n">storagenode</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">storagenodes</span>
@@ -5258,10 +5258,10 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StorageType</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Enum class containing the valid values for the storage type as used in StorageNode."""</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum class containing the valid values for the storage type as used in StorageNode.&quot;&quot;&quot;</span>
 
-    <span class="n">reservoir</span> <span class="o">=</span> <span class="s2">"reservoir"</span>
-    <span class="n">closed</span> <span class="o">=</span> <span class="s2">"closed"</span>
+    <span class="n">reservoir</span> <span class="o">=</span> <span class="s2">&quot;reservoir&quot;</span>
+    <span class="n">closed</span> <span class="o">=</span> <span class="s2">&quot;closed&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5377,7 +5377,7 @@ for a <a href="../glossary.md#d-flow-fm">D-Flow FM</a> model.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../../../assets/javascripts/panzoom.min.js"></script>
       
