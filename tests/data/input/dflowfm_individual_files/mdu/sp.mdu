@@ -30,7 +30,6 @@
 [numerics]
     unknown_numeric                     = 5                                   # any comment
     CFLMax                              = 0.5                                # Max. Courant nr.
-    CFLWaveFrac                         = 0.1                                # Wave velocity fraction, total courant vel = u + cflw*wavevelocity
     AdvecType                           = 3                                  # Adv type, 0=no, 1= Wenneker, qu-udzt, 2=1, q(uio-u), 3=Perot q(uio-u), 4=Perot q(ui-u), 5=Perot q(ui-u) without itself
     Icoriolistype                       =                                    # Coriolis weigthing, icorio 0, 4 or 5 (4 : v = tang. comp of total velocity at u-point, continuity weighted ucnxq, ucnyq = default so far, 5 : 4, scaling down coriolis force below trshcorio)
     Limtyphu                            =                                    # Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
@@ -46,7 +45,6 @@
     Tlfsmo                              = 0.                                 # Fourier smoothing time on waterlevel boundaries (s)
     Slopedrop2D                         = 0.0                                # Apply droplosses only if local bottom slope > Slopedrop2D
     Lincontin                           =                                    # 0 = no, 1 = yes linear continuity
-    Jaembed1D                           =                                    # 1 : use embedded 1d channels, first run: Operations: Embed 1D channels
     Chkadvd                             =                                    # Check advection terms if depth < chkadvdp, => less setbacks
     Teta0                               =                                    # Teta of time integration, 0.5 < Teta < 1d0
     Maxitverticalforester               =                                    # 0 : no vertical filter, > 0 = Max nr of iterations
@@ -78,7 +76,6 @@
     Windspeedbreakpoints                = 0.0000000	100.0000000              # (m/s), e.g. 0.0      100.0
     Rhoair                              = 1.0000000                          # Air density (kg/m3)
     PavBnd                              = 0.0000000                          # Average air Pressure on open boundaries, (N/m2), only applied if value > 0
-    Gapres                              = 101325.0000000                     # Global Atmospheric Pressure, (N/m2)
 
 [time]
     RefDate                             = 20071023                           # Reference date (yyyymmdd)
@@ -104,13 +101,10 @@
     FlowGeomFile                        =                                    # *_flowgeom.nc Flow geometry file in NetCDF format.
     MapFile                             = sp_map.nc                          # *_map.nc Map file in NetCDF format.
     MapInterval                         = 1.08                               # Map file output, given as "interval" "start period" "end period" (s)
-    MapFormat                           = 4                                  # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot
+    MapFormat                           = 4                                  # Map file format, 1: netCDF and Tecplot
     RstInterval                         = 0                                  # Interval (s) between map file outputs
-    S1incinterval                       =                                    # Interval (m) in incremental file for waterlevels S1
-    WaqFileBase                         =                                    # Basename (without extension) for all Delwaq files to be written.
     WaqInterval                         =                                    # Interval (in s) between Delwaq file outputs
     StatsInterval                       = 1.08                               # Interval (in s) between simulation statistics output.
-    SnapshotDir                         =                                    # Directory where snapshots/screendumps are saved.
     TimingsInterval                     =                                    # Timings output interval
     TimeSplitInterval                   = 0X                                 # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
     MapOutputTimeVector                 =                                    # File (.mpt) containing fixed map output times (s) w.r.t. RefDate

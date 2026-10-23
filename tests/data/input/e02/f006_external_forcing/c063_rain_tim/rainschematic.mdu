@@ -9,7 +9,6 @@ AutoStart                            = 0                                     # A
 
 [geometry]
 NetFile                              = rainschematic_net.nc                  # *_net.nc
-BathymetryFile                       =                                       # *.xyb
 DryPointsFile                        =                                       # Dry points file *.xyz, third column dummy z values, or polygon file *.pol with 3 columns: z value specifies inside/outside: 1/-1.
 WaterLevIniFile                      =                                       # Initial water levels sample file *.xyz
 LandBoundaryFile                     =                                       # Only for plotting
@@ -20,7 +19,6 @@ ProflocFile                          =                                       # *
 ProfdefFile                          =                                       # *_profdefinition.def) definition for all profile nrs
 ProfdefxyzFile                       =                                       # *_profdefinition.def) definition for all profile nrs
 StructureFile                        =                                       # *.ini, Structure definitions file
-ManholeFile                          =                                       # File containing manholes (e.g. *.ini)
 PartitionFile                        =                                       # *_part.pol, polyline(s) x,y
 Uniformwidth1D                       = 2.                                    # Uniform width for 1D profiles not specified bij profloc
 WaterLevIni                          = 1.0                                   # Initial water level
@@ -52,7 +50,6 @@ TimeStepType                         = 2                                     #  
 Limtyphu                             = 0                                     # Limiter type for waterdepth in continuity eq., 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
 Limtypmom                            = 4                                     # Limiter type for cell center advection velocity, 0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
 Limtypsa                             = 4                                     # Limiter type for salinity transport,           0=no, 1=minmod,2=vanLeer,3=Kooren,4=Monotone Central
-TransportMethod                      = 1                                     # Transport method, 0=Herman method, 1=Sander method
 Vertadvtypsal                        = 5                                     # Vertical advection type for salinity, 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=4 but 3 for neg. stratif., 6=higher order expl, no forester
 Horadvtypzlayer                      = 0                                     # Horizontal advection treatment zlayer, 1=default, 2 = Sigma like
 Icgsolver                            = 4                                     # Solver type , 1 = sobekGS_OMP, 2 = sobekGS_OMPthreadsafe, 3 = sobekGS, 4 = sobekGS + Saadilud, 5 = parallel/global Saad, 6 = parallel/Petsc, 7 = parallel/GS
@@ -69,7 +66,6 @@ Slopedrop2D                          = 0.3                                   # A
 Drop3D                               = 0.                                    # Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D
 Chkadvd                              = 0.1                                   # Check advection terms if depth < chkadvdp, => less setbacks
 Teta0                                = 0.55                                  # Teta of time integration, 0.5 < Teta < 1d0
-Qhrelax                              = 1.d-2                                 # Relaxation qhbnd ( )
 Jbasqbnddownwindhs                   = 0                                     # 0 : original hu on qbnd, 1 = downwind hs on qbnd
 cstbnd                               = 0                                     # Delft-3D type velocity treatment near boundaries for small coastal models (1) or not (0)
 Maxitverticalforestersal             = 100                                   # 0 : no vertical filter, > 0 = Max nr of iterations
@@ -128,7 +124,6 @@ Windspeedbreakpoints                 = 0. 100.                               # (
 Rhoair                               = 1.20000004768372                      # Air density (kg/m3)
 PavBnd                               = 101325.0000000                        # Average air pressure on open boundaries, (N/m2), only applied if value > 0
 PavIni                               = 0.                                    # Average air pressure for initial water level correction (N/m2) (only applied if > 0)
-Gapres                               = 101325.0000000                        # Only relevant for Spiderweb:  Global Atmospheric Pressure, (N/m2)
 
 [waves]
 Wavemodelnr                          = 0                                     # Wave model nr, 0=no, 1=fetch/depth limited hurdlestive, 2=youngverhagen, 3 = Delft3D-WAVE, 4=wave group forcing
@@ -165,12 +160,11 @@ XLSInterval                          =                                       # I
 MapFile                              =                                       # *_map.nc Map file in NetCDF format.
 MapInterval                          = 0.0                                   # Map file output, given as "interval" "start period" "end period" (s)
 RstInterval                          = 0.0                                   # Restart file output, given as "interval" "start period" "end period" (s)
-WaqFileBase                          =                                       # Basename (without extension) for all Delwaq files to be written.
 WaqInterval                          =                                       # Interval (in s) between Delwaq file outputs
 StatsInterval                        =                                       # Interval (in s) between simulation statistics output.
 TimingsInterval                      =                                       # Timings output interval
 TimeSplitInterval                    = 0X                                    # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
-MapFormat                            = 4                                     # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                            = 4                                     # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 Wrihis_balance                       = 1                                     # Write mass balance totals to his file (1=yes, 0=no)
 Wrihis_structure_gen                 = 1                                     # Write general structure parameters to his file (1=yes, 0=no)
 Wrihis_structure_dam                 = 1                                     # Write dam parameters to his file (1=yes, 0=no)
@@ -197,7 +191,6 @@ Richardsononoutput                   = 0                                     # 1
 MapOutputTimeVector                  =                                       # File (.mpt) containing fixed map output times (s) w.r.t. RefDate
 FullGridOutput                       = 0                                     # 0:compact, 1:full time-varying grid data
 EulerVelocities                      = 0                                     # 0:GLM, 1:Euler velocities
-SnapshotDir                          =                                       # Directory where snapshots/screendumps are saved.
 
 [trachytopes]
 TrtRou                               = N                                     # Include alluvial and vegetation roughness (trachytopes), (N=no, Y=yes)
