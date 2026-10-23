@@ -286,6 +286,11 @@ class SpatialBlockBuilder:
 class SpatialConverter(BaseConverter):
     """Spatial quantities Converter."""
 
+    # The location name the kernel's bcAscii spatial reader matches a uniform forcing on
+    # (a domain-uniform forcing). Both the single-column `.tim` -> `.bc` conversion and the
+    # combined-quantity split name their `.bc` [Forcing] block this.
+    BC_LOCATION_NAME = "global"
+
     def __init__(self, mdu_parser: MDUParser, root_dir: PathOrStr = None):
         """Spatial converter constructor.
 
@@ -340,6 +345,11 @@ class SpatialConverter(BaseConverter):
         if data.get("datafiletype") == DataFileType.uniform:
             data = self._uniform_tim_to_bc(forcing, data, new_forcing_path)
 
+        return self._create_spatial_block(data)
+
+    @staticmethod
+    def _create_spatial_block(data: dict[str, Any]) -> Spatial:
+        """Create the `Spatial` block, wrapping any validation error in a `SpatialError`."""
         try:
             spatial_block = Spatial(**data)
         except Exception as e:
@@ -347,6 +357,47 @@ class SpatialConverter(BaseConverter):
                 f"Failed to create the Spatial object. for the following Errors: {e}"
             )
         return spatial_block
+
+    def _read_tim(self, forcing: ExtOldForcing) -> tuple[TimModel, Path]:
+        """Resolve and read a uniform `.tim`, raising if it has no data rows.
+
+        Shared by the single-column spatial conversion and the combined-quantity split.
+        """
+        tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
+        tim_model = TimModel(filepath=tim_path)
+        if not tim_model.timeseries:
+            raise SpatialError(
+                f"Invalid TIM input: '{tim_path}' contains no data rows. "
+                f"Encountered for QUANTITY={forcing.quantity}."
+            )
+        return tim_model, tim_path
+
+    def _tim_to_bc_converter(
+        self, tim_model: TimModel, forcing: ExtOldForcing, units: list[str], context: str
+    ) -> TimToForcingConverter:
+        """Build the `TimToForcingConverter` shared by the uniform `.tim` -> `.bc` paths.
+
+        It carries the reference time, the old `METHOD`-derived time interpolation, and the
+        single `BC_LOCATION_NAME` block name the kernel matches on.
+        """
+        time_unit = self._require_reference_date(context)
+        converter = TimToForcingConverter(
+            tim_model=tim_model,
+            time_unit=time_unit,
+            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
+            units=units,
+            user_defined_names=[self.BC_LOCATION_NAME],
+        )
+        return converter
+
+    @staticmethod
+    def _bc_forcing_model(
+        forcing_list: list, new_forcing_path: Path
+    ) -> ForcingModel:
+        """Wrap the converted forcings in a `ForcingModel` whose file is the `.bc` sibling."""
+        forcing_model = ForcingModel(forcing=forcing_list)
+        forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
+        return forcing_model
 
     def _uniform_tim_to_bc(
         self, forcing: ExtOldForcing, data: dict[str, Any], new_forcing_path: Path
@@ -373,16 +424,8 @@ class SpatialConverter(BaseConverter):
         Raises:
             ValueError: If no valid MDU `refdate` is available.
         """
-        time_unit = self._require_reference_date("Spatial uniform TIM conversion")
-
         quantity = data["quantity"]
-        tim_path = resolve_relative_to_root(forcing.filename.filepath, self.root_dir)
-        tim_model = TimModel(filepath=tim_path)
-        if not tim_model.timeseries:
-            raise SpatialError(
-                f"Invalid TIM input: '{tim_path}' contains no data rows. "
-                f"Encountered for QUANTITY={forcing.quantity}."
-            )
+        tim_model, tim_path = self._read_tim(forcing)
         # A FILETYPE=1 uniform time series carries a single scalar column for the one
         # spatial quantity (unlike a source/sink .tim, whose columns are different
         # quantities). More than one data column has no mapping to a single [Spatial]
@@ -395,22 +438,136 @@ class SpatialConverter(BaseConverter):
                 f"QUANTITY={forcing.quantity}."
             )
         tim_model.quantities_names = [quantity]
-        units = tim_model.get_units()
-        tim_to_bc_converter = TimToForcingConverter(
-            tim_model=tim_model,
-            time_unit=time_unit,
-            time_interpolation=TimeInterpolation.from_old_method(forcing.method),
-            units=units,
-            user_defined_names=["global"],
+        converter = self._tim_to_bc_converter(
+            tim_model, forcing, tim_model.get_units(), "Spatial uniform TIM conversion"
         )
-        forcing_list = tim_to_bc_converter.convert()
-        forcing_model = ForcingModel(forcing=forcing_list)
-        forcing_model.filepath = Path(new_forcing_path).with_suffix(".bc")
+        forcing_model = self._bc_forcing_model(converter.convert(), new_forcing_path)
 
         data["datafile"] = forcing_model
         data["datafiletype"] = DataFileType.bcascii
         self.legacy_files = tim_path
         return data
+
+
+class CombinedQuantityConverter(SpatialConverter):
+    """Converter for combined quantities, e.g. `humidity_airtemperature_cloudiness`.
+
+    A combined quantity is a single `QUANTITY` that bundles several component variables (see
+    `combined_quantities` in `data.yaml`), with one data column per component.
+
+    A **uniform** combined quantity (`.tim`/`.tem`, FILETYPE=1) is split into one `[Spatial]`
+    block per component, all pointing at a single shared `.bc` `ForcingModel`: the `.bc` holds
+    one `timeseries` `[Forcing]` block carrying `time` plus every component column, and each
+    `[Spatial]` block (`dataFileType=bcAscii`) resolves to its own column by quantity name.
+    This split is required because the D-Flow FM kernel has no `bcAscii` branch for the
+    *combined* quantity name, but does accept each *component* (`humidity`, `airtemperature`,
+    ...) as a scalar `bcAscii` quantity. Verified end-to-end in D-Flow FM on the Grevelingen
+    model.
+
+    A **non-uniform** combined quantity (curvi/spiderweb/netcdf, e.g. the `airpressure_*`
+    families) is a straight pass-through: a single `[Spatial]` block keeping the native file
+    and the mapped `dataFileType`, since the kernel reads those as one combined quantity.
+    """
+
+    def convert(
+        self, forcing: ExtOldForcing, new_forcing_path: Path = None
+    ) -> Spatial | list[Spatial]:
+        """Convert an old external forcing block of a combined quantity.
+
+        Args:
+            forcing (ExtOldForcing):
+                The old forcing block, whose `QUANTITY` is configured in
+                `combined_quantities`.
+            new_forcing_path (Path):
+                The updated path to the forcing data file.
+
+        Returns:
+            Spatial | list[Spatial]: For a uniform `.tim`/`.tem`, a list of one `[Spatial]`
+            block per component (`dataFileType=bcAscii`), all sharing one `.bc` `ForcingModel`.
+            For any other file type, a single pass-through `[Spatial]` block keeping the native
+            file and the mapped `dataFileType`.
+
+        Raises:
+            SpatialError: For a uniform `.tim`, if it has no data rows or its number of
+                data columns differs from the number of configured components.
+        """
+        data = SpatialBlockBuilder(forcing, new_forcing_path).build()
+        if data.get("datafiletype") == DataFileType.uniform:
+            result = self._split_uniform_to_bc(forcing, data, new_forcing_path)
+        else:
+            result = self._create_spatial_block(data)
+        return result
+
+    def _split_uniform_to_bc(
+        self, forcing: ExtOldForcing, data: dict[str, Any], new_forcing_path: Path
+    ) -> list[Spatial]:
+        """Split a uniform combined quantity into one `bcAscii` `[Spatial]` block per component.
+
+        All blocks reference one shared `.bc` `ForcingModel` (a single `timeseries` block with
+        `time` + every component column). The original `.tim` is registered as a legacy file to
+        remove, since the new blocks reference the `.bc` instead.
+        """
+        component_units = (
+            CONVERTER_DATA.external_forcing.combined_quantities.get_component_units(
+                forcing.quantity
+            )
+        )
+        tim_model, tim_path = self._read_checked_tim(forcing, list(component_units))
+        forcing_model = self._build_shared_forcing_model(
+            forcing, tim_model, component_units, new_forcing_path
+        )
+        self.legacy_files = tim_path
+        return [
+            self._component_block(data, component, forcing_model)
+            for component in component_units
+        ]
+
+    def _read_checked_tim(
+        self, forcing: ExtOldForcing, component_names: list[str]
+    ) -> tuple[TimModel, Path]:
+        """Read the uniform `.tim` and verify it has one data column per component."""
+        tim_model, tim_path = self._read_tim(forcing)
+        n_columns = len(tim_model.timeseries[0].data)
+        if n_columns != len(component_names):
+            raise SpatialError(
+                f"QUANTITY={forcing.quantity} expects {len(component_names)} data columns "
+                f"{component_names}, but '{tim_path}' has {n_columns}."
+            )
+        return tim_model, tim_path
+
+    def _build_shared_forcing_model(
+        self,
+        forcing: ExtOldForcing,
+        tim_model: TimModel,
+        component_units: dict[str, str],
+        new_forcing_path: Path,
+    ) -> ForcingModel:
+        """Build the single shared `.bc` `ForcingModel` carrying time + all component columns.
+
+        The one `[Forcing]` block is named `BC_LOCATION_NAME`; the kernel then finds each
+        component within it by quantity name.
+        """
+        converter = self._tim_to_bc_converter(
+            tim_model,
+            forcing,
+            list(component_units.values()),
+            "Combined quantity uniform TIM conversion",
+        )
+        forcing_list = converter.convert_as_single_block(
+            self.BC_LOCATION_NAME, list(component_units)
+        )
+        forcing_model = self._bc_forcing_model(forcing_list, new_forcing_path)
+        return forcing_model
+
+    def _component_block(
+        self, data: dict[str, Any], component: str, forcing_model: ForcingModel
+    ) -> Spatial:
+        """Build one component `[Spatial]` block referencing the shared `.bc` as `bcAscii`."""
+        block_data = dict(data)
+        block_data["quantity"] = component
+        block_data["datafile"] = forcing_model
+        block_data["datafiletype"] = DataFileType.bcascii
+        return self._create_spatial_block(block_data)
 
 
 class BoundaryConditionConverter(BaseConverter):
@@ -639,7 +796,7 @@ class BoundaryConditionConverter(BaseConverter):
         forcings_list = []
 
         if len(tim_files) > 0:
-            vector_component_units = CONVERTER_DATA.external_forcing.get_vector_component_units(
+            vector_component_units = CONVERTER_DATA.external_forcing.vector_quantities.get_component_units(
                 forcing.quantity
             )
             vector_quantities = None
@@ -1811,6 +1968,10 @@ class ConverterFactory:
         """
         if str(quantity).lower().startswith(MASS_BALANCE_AREA_PREFIXES):
             converter = MassBalanceAreaConverter(mdu_parser=mdu_parser)
+        elif CONVERTER_DATA.external_forcing.combined_quantities.get_component_units(
+            quantity
+        ):
+            converter = CombinedQuantityConverter(mdu_parser=mdu_parser, root_dir=root_dir)
         elif (
             ConverterFactory.contains(ExtOldMeteoQuantity, quantity)
             or ConverterFactory.contains(ExtOldInitialConditionQuantity, quantity)
@@ -2146,6 +2307,43 @@ class TimToForcingConverter:
             ],
         )
 
+        return [forcing]
+
+    def convert_as_single_block(
+        self, name: str, quantity_names: list[str]
+    ) -> list[TimeSeries]:
+        """Convert the TIM into one `timeseries` block carrying time + every data column.
+
+        Unlike `_convert_scalar_quantities` (one block per column) and
+        `_convert_vector_quantities` (a `vector = ...` block), this emits a single `[Forcing]`
+        block whose `quantityUnitPair`s are `time` plus one plain scalar per column. It is used
+        for a combined quantity: the per-component `[Spatial]` blocks each resolve to their own
+        column in this one block by quantity name.
+
+        Args:
+            name (str): The `[Forcing]` block name.
+            quantity_names (list[str]): The component quantity names, in TIM column order.
+
+        Returns:
+            list[TimeSeries]: A single-element list with the combined `timeseries` block.
+        """
+        df = self.tim_model_df
+        time_data = df.index.tolist()
+        quantity_unit_pairs = [QuantityUnitPair(quantity="time", unit=self.time_unit)]
+        quantity_unit_pairs = quantity_unit_pairs + [
+            QuantityUnitPair(quantity=quantity, unit=unit)
+            for quantity, unit in zip(quantity_names, self.units)
+        ]
+        forcing = TimeSeries(
+            name=name,
+            function="timeseries",
+            timeinterpolation=self.time_interpolation,
+            quantityunitpair=quantity_unit_pairs,
+            datablock=[
+                [time_val, *row]
+                for time_val, row in zip(time_data, df.values.tolist())
+            ],
+        )
         return [forcing]
 
 
