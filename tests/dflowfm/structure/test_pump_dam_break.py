@@ -568,9 +568,10 @@ class TestPump:
         assert pump.numreductionlevels == 2
         assert pump.head == [0, 2]
         assert pump.reductionfactor == [0, 0.1]
+
+        default_comments = Pump.Comments()
         assert (
-            pump.comments.name
-            == "P stands for pump, 003 because we expect to have at most 999 pumps"
+            pump.comments.name == getattr(default_comments, "name")
         )
 
         assert pump.comments.id == uniqueid_str

@@ -1464,7 +1464,7 @@ class Output(INIBasedModel):
             "Write winds to map file, (1: yes, 0: no).", alias="wrimap_wind"
         )
         wrimap_windstress: str | None = Field(
-            "Write wind stress to map file (1: yes, 0: no)", alias="wrimap_windstress"
+            "Write wind stress to map file (1: yes, 0: no).", alias="wrimap_windstress"
         )
         wrimap_airdensity: str | None = Field(
             "Write air density to map file, (1:yes, 0:no).",

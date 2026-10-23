@@ -8,8 +8,9 @@ from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocMod
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
+from hydrolib.core.dflowfm.mdu.models import FMModel, Geometry, Numerics, Physics, Time, Output
 from hydrolib.core.dflowfm.structure.models import StructureModel, Weir
-from tests.utils import error_occurs_only_once
+from tests.utils import error_occurs_only_once, test_input_dir
 
 
 class TestDataBlockINIBasedModel:
@@ -211,3 +212,92 @@ class TestINIBasedModelEquality:
         a = StructureModel(structure=[Weir(id="w1", **base)])
         b = StructureModel(structure=[Weir(id="w2", **base)])
         assert a != b
+
+
+class TestINIBasedModelCommentsReset:
+    """Tests that comments are always reset to their default values on
+    initialization (via _skip_nones_and_set_header validator), regardless
+    of what comment values are passed in during construction."""
+
+    class ModelWithComments(INIBasedModel):
+        class Comments(INIBasedModel.Comments):
+            field_a: str | None = "Default comment for field_a."
+            field_b: str | None = "Default comment for field_b."
+
+        comments: Comments = Comments()
+        field_a: str = "value_a"
+        field_b: str = "value_b"
+
+    def test_comments_with_all_fields_overridden_are_reset_to_defaults(self):
+        custom_comments = self.ModelWithComments.Comments(
+            field_a="Overridden A", field_b="Overridden B"
+        )
+        model = self.ModelWithComments(comments=custom_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_all_fields_set_to_none_are_reset_to_defaults(self):
+        empty_comments = self.ModelWithComments.Comments(field_a=None, field_b=None)
+        model = self.ModelWithComments(comments=empty_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_partial_override_are_reset_to_defaults(self):
+        partial_comments = self.ModelWithComments.Comments(field_a="Only A changed")
+        model = self.ModelWithComments(comments=partial_comments)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_with_extra_fields_are_reset_to_defaults(self):
+        # Comments allows extra fields (extra="allow"); they must still be discarded.
+        comments_with_extra = self.ModelWithComments.Comments(
+            field_a="Overridden A", unknown_extra="some extra comment"
+        )
+        model = self.ModelWithComments(comments=comments_with_extra)
+        assert model.comments == self.ModelWithComments.Comments()
+
+    def test_comments_default_values_are_preserved_when_no_comments_provided(self):
+        model = self.ModelWithComments()
+        assert model.comments == self.ModelWithComments.Comments()
+
+
+class TestCommentsResetE2E:
+    """End-to-end test verifying that custom/outdated comments in an MDU file
+    are reset to their default values after a load-save-load round trip."""
+
+    _mdu_with_custom_comments = (
+        test_input_dir / "comments_reset_tests" / "mdu_file_with_custom_comments.mdu"
+    )
+
+    def test_geometry_comments_are_reset_to_defaults_after_save(
+        self, tmp_path
+    ):
+        model = FMModel(self._mdu_with_custom_comments)
+
+        output_path = tmp_path / "output.mdu"
+        model.filepath = output_path
+        model.save()
+
+        reloaded = FMModel(output_path)
+
+        assert reloaded.geometry.comments == Geometry.Comments()
+        assert reloaded.geometry.usecaching == model.geometry.usecaching
+
+        assert reloaded.numerics.comments == Numerics.Comments()
+        assert reloaded.numerics.cflmax == pytest.approx(model.numerics.cflmax)
+        assert reloaded.numerics.advectype == model.numerics.advectype
+        assert reloaded.numerics.icgsolver == model.numerics.icgsolver
+
+        assert reloaded.physics.comments == Physics.Comments()
+        assert reloaded.physics.uniffrictcoef == pytest.approx(model.physics.uniffrictcoef)
+        assert reloaded.physics.rhomean == pytest.approx(model.physics.rhomean)
+        assert reloaded.physics.ag == pytest.approx(model.physics.ag)
+
+        assert reloaded.time.comments == Time.Comments()
+        assert reloaded.time.refdate == model.time.refdate
+        assert reloaded.time.tunit == model.time.tunit
+        assert reloaded.time.dtuser == pytest.approx(model.time.dtuser)
+        assert reloaded.time.tstart == pytest.approx(model.time.tstart)
+        assert reloaded.time.tstop == pytest.approx(model.time.tstop)
+
+        assert reloaded.output.comments == Output.Comments()
+        assert reloaded.output.hisinterval == model.output.hisinterval
+        assert reloaded.output.mapinterval == model.output.mapinterval
+

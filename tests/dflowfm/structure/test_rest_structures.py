@@ -68,9 +68,10 @@ class TestBridge:
         assert bridge.frictiontype == FrictionType.strickler
         assert bridge.friction == 70
         assert bridge.length == 100
+
+        default_comments = Bridge.Comments()
         assert (
-            bridge.comments.name
-            == "B stands for Bridge, 003 because we expect to have at most 999 weirs"
+            bridge.comments.name == getattr(default_comments, "name")
         )
 
         assert bridge.comments.id == uniqueid_str
@@ -330,9 +331,10 @@ class TestWeir:
         assert weir.crestlevel == pytest.approx(2.34)
         assert weir.crestwidth == pytest.approx(3.45)
         assert weir.usevelocityheight == True
+
+        default_comments = Weir.Comments()
         assert (
-            weir.comments.name
-            == "W stands for weir, 003 because we expect to have at most 999 weirs"
+            weir.comments.name == getattr(default_comments, "name")
         )
 
         assert weir.comments.id == uniqueid_str
@@ -410,15 +412,10 @@ class TestWeir:
         wrapper = WrapperTest[Weir].model_validate({"val": document.sections[0]})
         weir = wrapper.val
 
-        assert weir.comments.id is None
-        assert weir.comments.name is None
-        assert weir.comments.branchid is None
-        assert weir.comments.chainage == "My own special comment 1"
-        assert weir.comments.type is None
-        assert weir.comments.allowedflowdir is None
-        assert weir.comments.crestlevel is None
-        assert weir.comments.crestwidth is None
-        assert weir.comments.usevelocityheight == "My own special comment 2"
+
+        default_comments = Weir.Comments()
+        for field_name, value in weir.comments:
+            assert value == getattr(default_comments, field_name)
 
     def test_weir_with_unknown_parameter_raises_error(self):
         parser = Parser(ParserConfig())
@@ -494,7 +491,7 @@ class TestWeir:
             type            = weir
             polylinefile    = weir01.pli
             crestLevel      = 10.5
-            lat_contr_coeff = 0.9    # Lateral contraction coefficient
+            lat_contr_coeff = 0.9    # Correction coefficient (-).
             """
         )
 
@@ -507,7 +504,7 @@ class TestWeir:
         weir = wrapper.val
 
         assert weir.corrcoeff == pytest.approx(0.9)
-        assert weir.comments.corrcoeff == "Lateral contraction coefficient"
+        assert weir.comments.corrcoeff == "Correction coefficient (-)."
 
     def test_weir_writes_legacy_lat_contr_coeff_as_corrcoeff(self):
         weir = Weir(
