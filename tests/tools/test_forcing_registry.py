@@ -1,7 +1,6 @@
 """Unit tests of `ForcingFileRegistry`, which makes blocks that write one `.bc` share a model."""
 
 import os
-import warnings
 from pathlib import Path
 from typing import Any
 
@@ -218,7 +217,7 @@ class TestExistingPlaceholder:
         assert backup.is_file()
         assert _quantities(ForcingModel(backup)) == ["q1"]
 
-    def test_no_warning_when_the_file_does_not_exist_yet(
+    def test_warns_when_the_referenced_file_does_not_exist(
         self, tmp_path: Path, ext_model: ExtModel
     ):
         existing = _boundary(tmp_path, "q1", DiskOnlyFileModel(Path("A.bc")))
@@ -226,9 +225,10 @@ class TestExistingPlaceholder:
         registry = ForcingFileRegistry(ext_model)
         new = _boundary(tmp_path, "q2", _forcing_model(Path("A.bc"), "q2"))
 
-        with warnings.catch_warnings():
-            warnings.simplefilter("error")
+        with pytest.warns(UserWarning, match="which is not on disk") as recorded:
             registry.share(new)
+
+        assert str(tmp_path / "A.bc") in str(recorded[0].message)
 
     def test_unparsable_existing_file_raises_a_clear_error(
         self, tmp_path: Path, ext_model: ExtModel

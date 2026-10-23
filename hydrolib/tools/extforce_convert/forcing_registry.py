@@ -162,6 +162,8 @@ class ForcingFileRegistry:
                 back by the model, so any comments or keywords the model does not know are not
                 kept; the original file is backed up to `<name>.bc.bak` first. The warning is
                 raised whether or not the file has any.
+            UserWarning: When the existing ext references a `.bc` that is not on disk. There is
+                nothing to merge, so the converted block creates it.
         """
         found_model = None
         owner = self._owner_by_bc_path.get(self._normalize(bc_filepath))
@@ -195,5 +197,14 @@ class ForcingFileRegistry:
                     )
                     found_model.filepath = placeholder.filepath
                     owner.replace_forcing_file(found_model)
+                else:
+                    # the existing ext references a `.bc` that is not on disk; there is nothing
+                    # to merge, so the converted block creates it from its own quantities
+                    warnings.warn(
+                        f"The existing external forcing file references `{bc_file_on_disk}`, "
+                        f"which is not on disk. It is created from the converted quantities.",
+                        UserWarning,
+                        stacklevel=4,
+                    )
 
         return found_model
