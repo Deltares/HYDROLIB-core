@@ -151,6 +151,13 @@ def _get_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--recurse",
+        action="store_true",
+        default=False,
+        help="Recursively resolve and load referenced files when converting.",
+    )
+
+    parser.add_argument(
         "--no-backup",
         dest="backup",
         action="store_false",
@@ -240,6 +247,7 @@ def main(args=None):
             backup=args.backup,
             remove_legacy=args.remove_legacy,
             debug=args.debug_mode,
+            recurse=args.recurse,
         )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
@@ -259,6 +267,7 @@ def convert_with_mdu_file(args: Namespace):
         args.mdufile,
         path_style=args.path_style,
         debug=args.debug_mode,
+        recurse=args.recurse,
     )
     convert(converter, args)
 
