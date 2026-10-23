@@ -11,10 +11,7 @@ from pydantic import BaseModel
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel, TimeSeries
 from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
-from hydrolib.tools.extforce_convert.forcing_registry import (
-    FORCING_BLOCK_LIST_NAMES,
-    ForcingFileRegistry,
-)
+from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
 
 
 pytestmark = pytest.mark.unit
@@ -310,9 +307,21 @@ class TestRegistryIndex:
         assert _quantities(first.forcingfile) == ["q1", "q3"]
         assert _quantities(second.forcingfile) == ["q2"]
 
-    def test_block_lists_are_attributes_of_the_ext_model(self, ext_model: ExtModel):
-        """Guards against a renamed list in `ExtModel` silently dropping blocks from the index."""
-        for list_name in FORCING_BLOCK_LIST_NAMES:
+    def test_block_list_field_names_are_the_ext_model_block_lists(
+        self, ext_model: ExtModel
+    ):
+        """The derived names are exactly `ExtModel`'s list fields; scalar fields are excluded."""
+        names = ForcingFileRegistry._block_list_field_names(ext_model)
+
+        assert names == [
+            "boundary",
+            "lateral",
+            "sourcesink",
+            "bubblescreen",
+            "meteo",
+            "spatial",
+        ]
+        for list_name in names:
             assert isinstance(getattr(ext_model, list_name), list)
 
 

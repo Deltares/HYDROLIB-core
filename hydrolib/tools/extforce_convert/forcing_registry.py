@@ -11,23 +11,12 @@ import os
 import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, get_origin
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.tools.extforce_convert.utils import backup_file
-
-# Names of the `ExtModel` lists whose blocks can hold a forcing file.
-FORCING_BLOCK_LIST_NAMES = (
-    "boundary",
-    "lateral",
-    "sourcesink",
-    "bubblescreen",
-    "meteo",
-    "spatial",
-)
-
 
 @dataclass
 class BCFileOwner:
@@ -68,7 +57,7 @@ class ForcingFileRegistry:
         self._ext_file_directory: Path = ext_model.filepath.parent
         # Normalized `.bc` path -> the first block field that holds its forcing file.
         self._owner_by_bc_path: dict[str, BCFileOwner] = {}
-        for block_list_name in FORCING_BLOCK_LIST_NAMES:
+        for block_list_name in self._block_list_field_names(ext_model):
             for existing_block in getattr(ext_model, block_list_name):
                 for (
                     field_name,
@@ -78,6 +67,20 @@ class ForcingFileRegistry:
                         self._normalize(forcing_model_or_placeholder.filepath),
                         BCFileOwner(existing_block, field_name),
                     )
+
+    @staticmethod
+    def _block_list_field_names(ext_model: ExtModel) -> list[str]:
+        """Return the names of the `ExtModel` fields that are lists of blocks.
+
+        Derived from `ExtModel.model_fields`, so a block list added later (e.g. a new quantity
+        type) is picked up without editing this class. Which fields of a block can hold a forcing
+        file is decided per block by `_get_forcing_model_or_disk_only_fields`.
+        """
+        return [
+            field_name
+            for field_name, field in type(ext_model).model_fields.items()
+            if get_origin(field.annotation) is list
+        ]
 
     @property
     def owner_by_bc_path(self) -> dict[str, BCFileOwner]:
