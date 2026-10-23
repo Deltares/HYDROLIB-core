@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4589,7 +4589,7 @@ represented by the classes below.</p>
 <span class="normal">84</span>
 <span class="normal">85</span>
 <span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Component</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specification of a BMI-compliant model component instance that will be executed by DIMR.</span>
 
 <span class="sd">    Attributes:</span>
@@ -4602,7 +4602,7 @@ represented by the classes below.</p>
 <span class="sd">        parameter: A list of variables that are provided to the BMI model after initialization.</span>
 <span class="sd">        mpiCommunicator: The MPI communicator value.</span>
 <span class="sd">        model: The model represented by this component.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">library</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
@@ -4622,9 +4622,9 @@ represented by the classes below.</p>
     <span class="nd">@classmethod</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">FileModel</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Model not implemented yet.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Model not implemented yet."</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;setting&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"setting"</span><span class="p">,</span> <span class="s2">"parameter"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_setting</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
@@ -4632,11 +4632,11 @@ represented by the classes below.</p>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Exclude the FileModel from any DIMR serialization.</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">}</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"exclude"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"model"</span><span class="p">}</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4727,17 +4727,17 @@ represented by the classes below.</p>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ComponentOrCouplerRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Reference to a BMI-compliant model component instance.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name: Name of the reference to a BMI-compliant model component instance.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4804,15 +4804,15 @@ represented by the classes below.</p>
 <span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ControlModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Control Model.</span>
+<span class="w">    </span><span class="sd">"""Control Model.</span>
 
 <span class="sd">    Overrides to make sure that the control elements in the DIMR are parsed and serialized correctly.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_type</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add control element prefixes for serialized data.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add control element prefixes for serialized data."""</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
         <span class="p">}</span>
@@ -4853,7 +4853,7 @@ represented by the classes below.</p>
 <span class="normal">277</span>
 <span class="normal">278</span>
 <span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add control element prefixes for serialized data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Add control element prefixes for serialized data."""</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">):</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
     <span class="p">}</span>
@@ -4950,13 +4950,13 @@ represented by the classes below.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">CoupledItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specification of an item that has to be exchanged.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        sourceName: Name of the item at the source component.</span>
 <span class="sd">        targetName: Name of the item at the target component.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">sourceName</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">targetName</span><span class="p">:</span> <span class="nb">str</span>
@@ -5113,7 +5113,7 @@ represented by the classes below.</p>
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Coupler</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specification of the coupling actions to be performed between two BMI-compliant model components.</span>
 
 <span class="sd">    Attributes:</span>
@@ -5122,7 +5122,7 @@ represented by the classes below.</p>
 <span class="sd">        targetComponent: The component that consumes the data to has to be exchanged.</span>
 <span class="sd">        item: A list of items that have to be exchanged.</span>
 <span class="sd">        logger: Logger for logging the values that get exchanged.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">sourceComponent</span><span class="p">:</span> <span class="nb">str</span>
@@ -5130,7 +5130,7 @@ represented by the classes below.</p>
     <span class="n">item</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CoupledItem</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"item"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_item</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
@@ -5139,7 +5139,7 @@ represented by the classes below.</p>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -5501,7 +5501,7 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">531</span>
 <span class="normal">532</span>
 <span class="normal">533</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMR</span><span class="p">(</span><span class="n">ParsableFileModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;DIMR model representation.</span>
+<span class="w">    </span><span class="sd">"""DIMR model representation.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        documentation (Documentation): File metadata.</span>
@@ -5520,7 +5520,7 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="sd">            elements under `&lt;control&gt;`.</span>
 <span class="sd">        waitFile (str | None): Optional waitfile name for debugging.</span>
 <span class="sd">        global_settings (Optional[GlobalSettings]): Optional global DIMR settings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Documentation</span> <span class="o">=</span> <span class="n">Documentation</span><span class="p">()</span>
     <span class="n">control</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Start</span> <span class="o">|</span> <span class="n">Parallel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
@@ -5529,36 +5529,36 @@ elements under <code>&lt;control&gt;</code>.</p>
     <span class="n">waitFile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">global_settings</span><span class="p">:</span> <span class="n">GlobalSettings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="s2">&quot;coupler&quot;</span><span class="p">,</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"component"</span><span class="p">,</span> <span class="s2">"coupler"</span><span class="p">,</span> <span class="s2">"control"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;control&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"control"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_control</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="p">(</span>
-                    <span class="n">Start</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span>
-                    <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">item</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span>
-                    <span class="k">else</span> <span class="n">Parallel</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;parallel&quot;</span><span class="p">])</span>
+                    <span class="n">Start</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="s2">"start"</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">item</span><span class="p">))</span> <span class="o">==</span> <span class="s2">"start"</span>
+                    <span class="k">else</span> <span class="n">Parallel</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="s2">"parallel"</span><span class="p">])</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">v</span>
             <span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">Start</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">])</span>
-                <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span>
-                <span class="k">else</span> <span class="n">Parallel</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;parallel&quot;</span><span class="p">])</span>
+                <span class="n">Start</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">[</span><span class="s2">"start"</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">==</span> <span class="s2">"start"</span>
+                <span class="k">else</span> <span class="n">Parallel</span><span class="p">(</span><span class="o">**</span><span class="n">v</span><span class="p">[</span><span class="s2">"parallel"</span><span class="p">])</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">val</span>
         <span class="k">return</span> <span class="n">v</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model_dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;exclude_none&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"exclude_none"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Manually apply custom model_dump for control items</span>
-        <span class="k">if</span> <span class="s2">&quot;control&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;control&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="k">if</span> <span class="s2">"control"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">"control"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ControlModel</span><span class="p">)</span>
@@ -5566,8 +5566,8 @@ elements under <code>&lt;control&gt;</code>.</p>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span>
             <span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;component&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;component&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="k">if</span> <span class="s2">"component"</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s2">"component"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Component</span><span class="p">)</span>
@@ -5578,7 +5578,7 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_post_init_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the component models of this DIMR model.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Load the component models of this DIMR model."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_post_init_load</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">component</span><span class="p">:</span>
@@ -5603,7 +5603,7 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dimr_as_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">components_as_dict</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">components_as_dict</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">dimr_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">components_as_dict</span><span class="p">})</span>
+            <span class="n">dimr_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"component"</span><span class="p">:</span> <span class="n">components_as_dict</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="n">dimr_as_dict</span>
 
@@ -5616,7 +5616,7 @@ elements under <code>&lt;control&gt;</code>.</p>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">FMComponent</span><span class="p">)</span> <span class="ow">and</span> <span class="n">component</span><span class="o">.</span><span class="n">process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">process_value</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">process</span><span class="p">))</span>
+                <span class="n">process_value</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">process</span><span class="p">))</span>
                 <span class="n">component_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_component_dictionary</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">process_value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">component_dict</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -5629,16 +5629,16 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fmcomponent</span><span class="p">:</span> <span class="n">FMComponent</span><span class="p">,</span> <span class="n">fmcomponent_process_value</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">fmcomponent_as_dict</span> <span class="o">=</span> <span class="n">fmcomponent</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="n">fmcomponent_process_value</span><span class="p">})</span>
+        <span class="n">fmcomponent_as_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"process"</span><span class="p">:</span> <span class="n">fmcomponent_process_value</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">fmcomponent_as_dict</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;.xml&quot;</span>
+        <span class="k">return</span> <span class="s2">".xml"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;dimr_config&quot;</span>
+        <span class="k">return</span> <span class="s2">"dimr_config"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_serializer</span><span class="p">(</span>
@@ -5657,27 +5657,27 @@ elements under <code>&lt;control&gt;</code>.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_component</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">component</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"component"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span>
 
-        <span class="n">process_value</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">process_value</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"process"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">process_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">data</span>
 
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_valid_process_string</span><span class="p">(</span><span class="n">process_value</span><span class="p">):</span>
             <span class="n">value_as_int</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_parse_process</span><span class="p">(</span><span class="n">process_value</span><span class="p">)</span>
-            <span class="n">component</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="n">value_as_int</span><span class="p">})</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;component&quot;</span><span class="p">:</span> <span class="n">component</span><span class="p">})</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"process"</span><span class="p">:</span> <span class="n">value_as_int</span><span class="p">})</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"component"</span><span class="p">:</span> <span class="n">component</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">process_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">process_value</span><span class="p">:</span>
-            <span class="n">semicolon_split_values</span> <span class="o">=</span> <span class="n">process_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">":"</span> <span class="ow">in</span> <span class="n">process_value</span><span class="p">:</span>
+            <span class="n">semicolon_split_values</span> <span class="o">=</span> <span class="n">process_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
             <span class="n">start_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">semicolon_split_values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">end_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">semicolon_split_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">end_value</span> <span class="o">-</span> <span class="n">start_value</span> <span class="o">+</span> <span class="mi">1</span>
@@ -5686,14 +5686,14 @@ elements under <code>&lt;control&gt;</code>.</p>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_valid_process_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">process_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">process_value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">":"</span> <span class="ow">in</span> <span class="n">process_value</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_valid_process_with_semicolon_string</span><span class="p">(</span><span class="n">process_value</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_valid_process_list_string</span><span class="p">(</span><span class="n">process_value</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_valid_process_with_semicolon_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">process_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">semicolon_split_values</span> <span class="o">=</span> <span class="n">process_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">semicolon_split_values</span> <span class="o">=</span> <span class="n">process_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">semicolon_split_values</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -5711,7 +5711,7 @@ elements under <code>&lt;control&gt;</code>.</p>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="n">split_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">split_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"0"</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">split_values</span><span class="p">:</span>
@@ -5831,17 +5831,17 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Documentation</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Information on the present DIMR configuration file.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        fileVersion: The DIMR file version.</span>
 <span class="sd">        createdBy: Creators of the DIMR file.</span>
 <span class="sd">        creationDate: The creation date of the DIMR file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">fileVersion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.3&quot;</span>
-    <span class="n">createdBy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;hydrolib-core </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">fileVersion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"1.3"</span>
+    <span class="n">createdBy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"hydrolib-core </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span>
     <span class="n">creationDate</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -5940,13 +5940,13 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FMComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Component to include the D-Flow FM program in a DIMR control flow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Component to include the D-Flow FM program in a DIMR control flow."""</span>
 
-    <span class="n">library</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;dflowfm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dflowfm&quot;</span>
+    <span class="n">library</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"dflowfm"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"dflowfm"</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"process"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Validation for the process Attribute.</span>
 
 <span class="sd">        args:</span>
@@ -5959,17 +5959,17 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError : When value is set to 0 or negative.</span>
 <span class="sd">            ValueError : When value is not int or None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_valid_process_int</span><span class="p">(</span>
-            <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;In component &#39;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, the keyword process &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;, is incorrect.&quot;</span>
+            <span class="sa">f</span><span class="s2">"In component '</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span><span class="si">}</span><span class="s2">', the keyword process '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">', is incorrect."</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -5978,7 +5978,7 @@ elements under <code>&lt;control&gt;</code>.</p>
             <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;In component &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, the keyword process can not be 0 or negative, please specify value of 1 or greater.&quot;</span>
+            <span class="sa">f</span><span class="s2">"In component '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">', the keyword process can not be 0 or negative, please specify value of 1 or greater."</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -6143,9 +6143,9 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;process&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"process"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">validate_process</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">ValidationInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Validation for the process Attribute.</span>
 
 <span class="sd">    args:</span>
@@ -6158,17 +6158,17 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="sd">    Raises:</span>
 <span class="sd">        ValueError : When value is set to 0 or negative.</span>
 <span class="sd">        ValueError : When value is not int or None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_valid_process_int</span><span class="p">(</span>
-        <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;In component &#39;</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;, the keyword process &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;, is incorrect.&quot;</span>
+        <span class="sa">f</span><span class="s2">"In component '</span><span class="si">{</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span><span class="si">}</span><span class="s2">', the keyword process '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">', is incorrect."</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -6246,12 +6246,12 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">GlobalSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Global settings for the DIMR configuration.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        logger_ncFormat: NetCDF format type for logging.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger_ncFormat</span><span class="p">:</span> <span class="nb">int</span>
 </code></pre></div></td></tr></table></div>
@@ -6352,12 +6352,12 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">KeyValuePair</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Key value pair to specify settings and parameters.</span>
+<span class="w">    </span><span class="sd">"""Key value pair to specify settings and parameters.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        key: The key.</span>
 <span class="sd">        value: The value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
@@ -6462,14 +6462,14 @@ elements under <code>&lt;control&gt;</code>.</p>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger.</span>
+<span class="w">    </span><span class="sd">"""Logger.</span>
 
 <span class="sd">    Used to log values to the specified file in workingdir for each timestep</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        workingDir: Directory where the log file is written.</span>
 <span class="sd">        outputFile: Name of the log file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">workingDir</span><span class="p">:</span> <span class="n">Path</span>
     <span class="n">outputFile</span><span class="p">:</span> <span class="n">Path</span>
@@ -6577,7 +6577,7 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parallel</span><span class="p">(</span><span class="n">ControlModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parallel control flow.</span>
+<span class="w">    </span><span class="sd">"""Parallel control flow.</span>
 
 <span class="sd">    Specification of a parallel control flow: one main component and a group of related components and couplers.</span>
 <span class="sd">    Step wise execution order according to order in parallel control flow.</span>
@@ -6585,9 +6585,9 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="sd">    Attributes:</span>
 <span class="sd">        startGroup: Group of components and couplers to be executed.</span>
 <span class="sd">        start: Main component to be executed step wise (provides start time, end time and time step).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;parallel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;parallel&quot;</span>
+    <span class="n">_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"parallel"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"parallel"</span>
     <span class="n">startGroup</span><span class="p">:</span> <span class="n">StartGroup</span>
     <span class="n">start</span><span class="p">:</span> <span class="n">ComponentOrCouplerRef</span>
 </code></pre></div></td></tr></table></div>
@@ -6650,9 +6650,9 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RRComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Component to include the RainfallRunoff program in a DIMR control flow.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Component to include the RainfallRunoff program in a DIMR control flow."""</span>
 
-    <span class="n">library</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;rr_dll&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rr_dll&quot;</span>
+    <span class="n">library</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"rr_dll"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"rr_dll"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -6744,14 +6744,14 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Start</span><span class="p">(</span><span class="n">ControlModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specification of a serial control flow: one main component.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        name: Name of the reference to a BMI-compliant model component instance</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
+    <span class="n">_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"start"</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -6871,7 +6871,7 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StartGroup</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Specification of model components and couplers to be executed with a certain frequency.</span>
 
 <span class="sd">    Attributes:</span>
@@ -6879,13 +6879,13 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="sd">              Expressed in terms of the time frame of the main component.</span>
 <span class="sd">        start: Ordered list of components to be executed.</span>
 <span class="sd">        coupler: Oredered list of couplers to be executed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">time</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">coupler</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ComponentOrCouplerRef</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;coupler&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;before&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"start"</span><span class="p">,</span> <span class="s2">"coupler"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_start</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -7032,17 +7032,17 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMRParser</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parser for DIMR xml files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A parser for DIMR xml files."""</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses a DIMR file to a dictionary.</span>
+<span class="w">        </span><span class="sd">"""Parses a DIMR file to a dictionary.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path (Path): Path to the DIMR configuration file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File: `</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">` not found, skipped parsing.&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File: `</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">` not found, skipped parsing."</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{}</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">XMLParser</span><span class="p">(</span>
@@ -7054,22 +7054,22 @@ Step wise execution order according to order in parallel control flow.</p>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_node_to_dictionary</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">etree</span><span class="p">,</span> <span class="n">ignore_attributes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a node to a dictionary.</span>
+<span class="w">        </span><span class="sd">"""Convert a node to a dictionary.</span>
 
 <span class="sd">        Convert an lxml.etree node tree recursively into a nested dictionary.</span>
-<span class="sd">        The node&#39;s attributes and child items will be added to it&#39;s dictionary.</span>
+<span class="sd">        The node's attributes and child items will be added to it's dictionary.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            node (etree):</span>
 <span class="sd">                The etree node</span>
 <span class="sd">            ignore_attributes (bool, Optional):</span>
-<span class="sd">                parameter; whether or not to skip the node&#39;s attributes. Default is False.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">                parameter; whether or not to skip the node's attributes. Default is False.</span>
+<span class="sd">        """</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">ignore_attributes</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">child_node</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">iterchildren</span><span class="p">():</span>
 
-            <span class="n">key</span> <span class="o">=</span> <span class="n">child_node</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">child_node</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"}"</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">child_node</span><span class="o">.</span><span class="n">text</span> <span class="ow">and</span> <span class="n">child_node</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">child_node</span><span class="o">.</span><span class="n">text</span>
@@ -7172,13 +7172,13 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">27</span>
 <span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a DIMR file to a dictionary.</span>
+<span class="w">    </span><span class="sd">"""Parses a DIMR file to a dictionary.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path (Path): Path to the DIMR configuration file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File: `</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">` not found, skipped parsing.&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">"File: `</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">` not found, skipped parsing."</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{}</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">XMLParser</span><span class="p">(</span>
@@ -7362,7 +7362,7 @@ Step wise execution order according to order in parallel control flow.</p>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DIMRSerializer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A serializer for DIMR files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A serializer for DIMR files."""</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
@@ -7371,25 +7371,25 @@ Step wise execution order according to order in parallel control flow.</p>
         <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span>
         <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes the DIMR data to the file at the specified path.</span>
+<span class="w">        </span><span class="sd">"""Serializes the DIMR data to the file at the specified path.</span>
 
 <span class="sd">        Attributes:</span>
 <span class="sd">            path (Path): The path to the destination file.</span>
 <span class="sd">            data (Dict): The data to be serialized.</span>
 <span class="sd">            config (SerializerConfig): The serialization configuration.</span>
 <span class="sd">            save_settings (ModelSaveSettings): The model save settings.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">xmlns</span> <span class="o">=</span> <span class="s2">&quot;http://schemas.deltares.nl/dimr&quot;</span>
-        <span class="n">xsi</span> <span class="o">=</span> <span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-        <span class="n">schema_location</span> <span class="o">=</span> <span class="s2">&quot;http://content.oss.deltares.nl/schemas/dimr-1.3.xsd&quot;</span>
+        <span class="n">xmlns</span> <span class="o">=</span> <span class="s2">"http://schemas.deltares.nl/dimr"</span>
+        <span class="n">xsi</span> <span class="o">=</span> <span class="s2">"http://www.w3.org/2001/XMLSchema-instance"</span>
+        <span class="n">schema_location</span> <span class="o">=</span> <span class="s2">"http://content.oss.deltares.nl/schemas/dimr-1.3.xsd"</span>
 
-        <span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">QName</span><span class="p">(</span><span class="n">xsi</span><span class="p">,</span> <span class="s2">&quot;schemaLocation&quot;</span><span class="p">):</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xmlns</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">schema_location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
-        <span class="n">namespaces</span> <span class="o">=</span> <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">xmlns</span><span class="p">,</span> <span class="s2">&quot;xsi&quot;</span><span class="p">:</span> <span class="n">xsi</span><span class="p">}</span>
+        <span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">QName</span><span class="p">(</span><span class="n">xsi</span><span class="p">,</span> <span class="s2">"schemaLocation"</span><span class="p">):</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">xmlns</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">schema_location</span><span class="si">}</span><span class="s2">"</span><span class="p">}</span>
+        <span class="n">namespaces</span> <span class="o">=</span> <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">xmlns</span><span class="p">,</span> <span class="s2">"xsi"</span><span class="p">:</span> <span class="n">xsi</span><span class="p">}</span>
 
         <span class="n">root</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span>
-            <span class="s2">&quot;dimrConfig&quot;</span><span class="p">,</span>
+            <span class="s2">"dimrConfig"</span><span class="p">,</span>
             <span class="n">attrib</span><span class="o">=</span><span class="n">attrib</span><span class="p">,</span>
             <span class="n">nsmap</span><span class="o">=</span><span class="n">namespaces</span><span class="p">,</span>
         <span class="p">)</span>
@@ -7401,22 +7401,22 @@ Step wise execution order according to order in parallel control flow.</p>
 
         <span class="n">xml</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span>
             <span class="n">root</span><span class="p">,</span>
-            <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span>
             <span class="n">pretty_print</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Replace single quotes with double quotes in the XML declaration</span>
         <span class="c1"># The following regex matches the XML declaration at the start of the file.</span>
-        <span class="c1"># It captures two groups: (1) everything from &#39;&lt;?xml&#39; up to the closing &#39;?&gt;&#39;, and (2) the closing &#39;?&gt;&#39;.</span>
+        <span class="c1"># It captures two groups: (1) everything from '&lt;?xml' up to the closing '?&gt;', and (2) the closing '?&gt;'.</span>
         <span class="c1"># This allows us to replace single quotes with double quotes only within the declaration.</span>
         <span class="n">xml</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-            <span class="sa">rb</span><span class="s2">&quot;^(&lt;\?xml[^&gt;]+)(\?&gt;)&quot;</span><span class="p">,</span>
-            <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+            <span class="sa">rb</span><span class="s2">"^(&lt;\?xml[^&gt;]+)(\?&gt;)"</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">"'"</span><span class="p">,</span> <span class="sa">b</span><span class="s1">'"'</span><span class="p">)</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
             <span class="n">xml</span><span class="p">,</span>
             <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
@@ -7427,9 +7427,9 @@ Step wise execution order according to order in parallel control flow.</p>
         <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
         <span class="n">path_style_converter</span><span class="p">:</span> <span class="n">FilePathStyleConverter</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-            <span class="n">root</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -7448,9 +7448,9 @@ Step wise execution order according to order in parallel control flow.</p>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">c</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
-                    <span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">timespec</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="n">sep</span><span class="o">=</span><span class="s2">"T"</span><span class="p">,</span> <span class="n">timespec</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-                    <span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">val</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">&quot;</span>
+                    <span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">val</span><span class="si">:{</span><span class="n">config</span><span class="o">.</span><span class="n">float_format</span><span class="si">}}</span><span class="s2">"</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
                     <span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">path_style_converter</span><span class="o">.</span><span class="n">convert_from_os_style</span><span class="p">(</span>
                         <span class="n">val</span><span class="p">,</span> <span class="n">save_settings</span><span class="o">.</span><span class="n">path_style</span>
@@ -7612,25 +7612,25 @@ Step wise execution order according to order in parallel control flow.</p>
     <span class="n">config</span><span class="p">:</span> <span class="n">SerializerConfig</span><span class="p">,</span>
     <span class="n">save_settings</span><span class="p">:</span> <span class="n">ModelSaveSettings</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serializes the DIMR data to the file at the specified path.</span>
+<span class="w">    </span><span class="sd">"""Serializes the DIMR data to the file at the specified path.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        path (Path): The path to the destination file.</span>
 <span class="sd">        data (Dict): The data to be serialized.</span>
 <span class="sd">        config (SerializerConfig): The serialization configuration.</span>
 <span class="sd">        save_settings (ModelSaveSettings): The model save settings.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">xmlns</span> <span class="o">=</span> <span class="s2">&quot;http://schemas.deltares.nl/dimr&quot;</span>
-    <span class="n">xsi</span> <span class="o">=</span> <span class="s2">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
-    <span class="n">schema_location</span> <span class="o">=</span> <span class="s2">&quot;http://content.oss.deltares.nl/schemas/dimr-1.3.xsd&quot;</span>
+    <span class="n">xmlns</span> <span class="o">=</span> <span class="s2">"http://schemas.deltares.nl/dimr"</span>
+    <span class="n">xsi</span> <span class="o">=</span> <span class="s2">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="n">schema_location</span> <span class="o">=</span> <span class="s2">"http://content.oss.deltares.nl/schemas/dimr-1.3.xsd"</span>
 
-    <span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">QName</span><span class="p">(</span><span class="n">xsi</span><span class="p">,</span> <span class="s2">&quot;schemaLocation&quot;</span><span class="p">):</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xmlns</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">schema_location</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
-    <span class="n">namespaces</span> <span class="o">=</span> <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">xmlns</span><span class="p">,</span> <span class="s2">&quot;xsi&quot;</span><span class="p">:</span> <span class="n">xsi</span><span class="p">}</span>
+    <span class="n">attrib</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="o">.</span><span class="n">QName</span><span class="p">(</span><span class="n">xsi</span><span class="p">,</span> <span class="s2">"schemaLocation"</span><span class="p">):</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">xmlns</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">schema_location</span><span class="si">}</span><span class="s2">"</span><span class="p">}</span>
+    <span class="n">namespaces</span> <span class="o">=</span> <span class="p">{</span><span class="kc">None</span><span class="p">:</span> <span class="n">xmlns</span><span class="p">,</span> <span class="s2">"xsi"</span><span class="p">:</span> <span class="n">xsi</span><span class="p">}</span>
 
     <span class="n">root</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span>
-        <span class="s2">&quot;dimrConfig&quot;</span><span class="p">,</span>
+        <span class="s2">"dimrConfig"</span><span class="p">,</span>
         <span class="n">attrib</span><span class="o">=</span><span class="n">attrib</span><span class="p">,</span>
         <span class="n">nsmap</span><span class="o">=</span><span class="n">namespaces</span><span class="p">,</span>
     <span class="p">)</span>
@@ -7642,22 +7642,22 @@ Step wise execution order according to order in parallel control flow.</p>
 
     <span class="n">xml</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span>
         <span class="n">root</span><span class="p">,</span>
-        <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">,</span>
         <span class="n">pretty_print</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="c1"># Replace single quotes with double quotes in the XML declaration</span>
     <span class="c1"># The following regex matches the XML declaration at the start of the file.</span>
-    <span class="c1"># It captures two groups: (1) everything from &#39;&lt;?xml&#39; up to the closing &#39;?&gt;&#39;, and (2) the closing &#39;?&gt;&#39;.</span>
+    <span class="c1"># It captures two groups: (1) everything from '&lt;?xml' up to the closing '?&gt;', and (2) the closing '?&gt;'.</span>
     <span class="c1"># This allows us to replace single quotes with double quotes only within the declaration.</span>
     <span class="n">xml</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
-        <span class="sa">rb</span><span class="s2">&quot;^(&lt;\?xml[^&gt;]+)(\?&gt;)&quot;</span><span class="p">,</span>
-        <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+        <span class="sa">rb</span><span class="s2">"^(&lt;\?xml[^&gt;]+)(\?&gt;)"</span><span class="p">,</span>
+        <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s2">"'"</span><span class="p">,</span> <span class="sa">b</span><span class="s1">'"'</span><span class="p">)</span> <span class="o">+</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
         <span class="n">xml</span><span class="p">,</span>
         <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -7764,7 +7764,7 @@ Step wise execution order according to order in parallel control flow.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../../assets/javascripts/panzoom.min.js"></script>
       
