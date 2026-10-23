@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -4035,74 +4035,74 @@ You're not viewing the latest release version.
 <span class="normal">103</span>
 <span class="normal">104</span>
 <span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A branch that is included in the branches.gui file.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A branch that is included in the branches.gui file."""</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the Branch section.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Comments for the Branch section."""</span>
 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unique branch id.&quot;</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Unique branch id."</span>
         <span class="n">branchtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;Channel = 0, SewerConnection = 1, Pipe = 2.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchType&quot;</span>
+            <span class="s2">"Channel = 0, SewerConnection = 1, Pipe = 2."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchType"</span>
         <span class="p">)</span>
         <span class="n">islengthcustom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;branch length specified by user.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;isLengthCustom&quot;</span>
+            <span class="s2">"branch length specified by user."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"isLengthCustom"</span>
         <span class="p">)</span>
         <span class="n">sourcecompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sourceCompartmentName&quot;</span><span class="p">,</span>
+            <span class="s2">"Source compartment name this sewer connection is beginning."</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">"sourceCompartmentName"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">targetcompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetCompartmentName&quot;</span><span class="p">,</span>
+            <span class="s2">"Source compartment name this sewer connection is beginning."</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">"targetCompartmentName"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, &quot;</span>
-            <span class="s2">&quot;5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel&quot;</span>
+            <span class="s2">"0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, "</span>
+            <span class="s2">"5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel"</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
 
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;Branch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Branch&quot;</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"Branch"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Branch"</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
-    <span class="n">branchtype</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchType&quot;</span><span class="p">)</span>
-    <span class="n">islengthcustom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;isLengthCustom&quot;</span><span class="p">)</span>
-    <span class="n">sourcecompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sourceCompartmentName&quot;</span><span class="p">)</span>
-    <span class="n">targetcompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetCompartmentName&quot;</span><span class="p">)</span>
-    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;material&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"name"</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"name"</span><span class="p">)</span>
+    <span class="n">branchtype</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchType"</span><span class="p">)</span>
+    <span class="n">islengthcustom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"isLengthCustom"</span><span class="p">)</span>
+    <span class="n">sourcecompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"sourceCompartmentName"</span><span class="p">)</span>
+    <span class="n">targetcompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"targetCompartmentName"</span><span class="p">)</span>
+    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"material"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span>
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Branch&quot;</span><span class="p">:</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Branch"</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">branchtype</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sourcecompartmentname</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">targetcompartmentname</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2.&quot;</span>
+                <span class="s2">"Either sourceCompartmentName or targetCompartmentName should be provided when branchType is 2."</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;branchtype&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"branchtype"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_branchtype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">branchtype</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">allowed_branchtypes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">branchtype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_branchtypes</span><span class="p">:</span>
             <span class="n">str_allowed_branchtypes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">allowed_branchtypes</span><span class="p">]</span>
-            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;branchType (</span><span class="si">{</span><span class="n">branchtype</span><span class="si">}</span><span class="s2">) is not allowed. Allowed values: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_allowed_branchtypes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"branchType (</span><span class="si">{</span><span class="n">branchtype</span><span class="si">}</span><span class="s2">) is not allowed. Allowed values: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_allowed_branchtypes</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">branchtype</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;material&quot;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"material"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_material</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">material</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">allowed_materials</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">material</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_materials</span><span class="p">:</span>
             <span class="n">str_allowed_materials</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">allowed_materials</span><span class="p">]</span>
-            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;material (</span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s2">) is not allowed. Allowed values: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_allowed_materials</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"material (</span><span class="si">{</span><span class="n">material</span><span class="si">}</span><span class="s2">) is not allowed. Allowed values: </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_allowed_materials</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">material</span>
@@ -4171,26 +4171,26 @@ You're not viewing the latest release version.
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the Branch section.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Comments for the Branch section."""</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Unique branch id.&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"Unique branch id."</span>
     <span class="n">branchtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;Channel = 0, SewerConnection = 1, Pipe = 2.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;branchType&quot;</span>
+        <span class="s2">"Channel = 0, SewerConnection = 1, Pipe = 2."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"branchType"</span>
     <span class="p">)</span>
     <span class="n">islengthcustom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;branch length specified by user.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;isLengthCustom&quot;</span>
+        <span class="s2">"branch length specified by user."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"isLengthCustom"</span>
     <span class="p">)</span>
     <span class="n">sourcecompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;sourceCompartmentName&quot;</span><span class="p">,</span>
+        <span class="s2">"Source compartment name this sewer connection is beginning."</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">"sourceCompartmentName"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">targetcompartmentname</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;Source compartment name this sewer connection is beginning.&quot;</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;targetCompartmentName&quot;</span><span class="p">,</span>
+        <span class="s2">"Source compartment name this sewer connection is beginning."</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">"targetCompartmentName"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, &quot;</span>
-        <span class="s2">&quot;5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel&quot;</span>
+        <span class="s2">"0 = Unknown, 1 = Concrete, 2 = CastIron, 3 = StoneWare, 4 = Hdpe, "</span>
+        <span class="s2">"5 = Masonry, 6 = SheetMetal, 7 = Polyester, 8 = Polyvinylchlorid, 9 = Steel"</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4271,23 +4271,23 @@ You're not viewing the latest release version.
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchGeneral</span><span class="p">(</span><span class="n">INIGeneral</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The branches.gui file&#39;s `[General]` section with file meta data.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The branches.gui file's `[General]` section with file meta data."""</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comments for the BranchGeneral section.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Comments for the BranchGeneral section."""</span>
 
         <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
+            <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
         <span class="p">)</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-            <span class="s2">&quot;File type. Should be &#39;branches&#39;. Do not edit this.&quot;</span><span class="p">,</span>
-            <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
+            <span class="s2">"File type. Should be 'branches'. Do not edit this."</span><span class="p">,</span>
+            <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">comments</span><span class="p">:</span> <span class="n">Comments</span> <span class="o">=</span> <span class="n">Comments</span><span class="p">()</span>
-    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;General&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;General&quot;</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;2.00&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span><span class="p">)</span>
-    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;branches&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">)</span>
+    <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"2.00"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
+    <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"branches"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"branches"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4341,14 +4341,14 @@ You're not viewing the latest release version.
 <span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Comments</span><span class="p">(</span><span class="n">INIBasedModel</span><span class="o">.</span><span class="n">Comments</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comments for the BranchGeneral section.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Comments for the BranchGeneral section."""</span>
 
     <span class="n">fileversion</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;File version. Do not edit this.&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileVersion&quot;</span>
+        <span class="s2">"File version. Do not edit this."</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span>
     <span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;File type. Should be &#39;branches&#39;. Do not edit this.&quot;</span><span class="p">,</span>
-        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;fileType&quot;</span><span class="p">,</span>
+        <span class="s2">"File type. Should be 'branches'. Do not edit this."</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
@@ -4471,7 +4471,7 @@ You're not viewing the latest release version.
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BranchModel</span><span class="p">(</span><span class="n">INIModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The overall branch model that contains the contents of one branches.gui file.</span>
 
 <span class="sd">    This model is not referenced under a [FMModel][hydrolib.core.dflowfm.mdu.models.FMModel].</span>
@@ -4479,7 +4479,7 @@ You're not viewing the latest release version.
 <span class="sd">    Attributes:</span>
 <span class="sd">        general (BranchGeneral): `[General]` block with file metadata.</span>
 <span class="sd">        branch(List[Branch]): List of `[Branch]` blocks for all branches.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">general</span><span class="p">:</span> <span class="n">BranchGeneral</span> <span class="o">=</span> <span class="n">BranchGeneral</span><span class="p">()</span>
     <span class="n">branch</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Branch</span><span class="p">],</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">ensure_list</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -4488,11 +4488,11 @@ You're not viewing the latest release version.
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_ext</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;.gui&quot;</span>
+        <span class="k">return</span> <span class="s2">".gui"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_filename</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;branches&quot;</span>
+        <span class="k">return</span> <span class="s2">"branches"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -4608,7 +4608,7 @@ You're not viewing the latest release version.
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../assets/javascripts/panzoom.min.js"></script>
       
