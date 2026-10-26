@@ -188,9 +188,15 @@ secondaryFlow                  = 0       # Secondary flow (0: no, 1: yes)
 betaSpiral                     = 0.0     # Weight factor of the spiral flow intensity on flow dispersion stresses (0d0 = disabled).
 
 [Sediment]
-Sedimentmodelnr = 0 # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
-MorFile         =   # Morphology settings file (*.mor)
-SedFile         =   # Sediment characteristics file (*.sed)
+Sedimentmodelnr = 0     # Sediment model nr, (0=no, 1=Krone, 2=SvR2007, 3=E-H, 4=MorphologyModule).
+MorFile         =       # Morphology settings file (*.mor)
+SedFile         =       # Sediment characteristics file (*.sed)
+dredgeFile      =       # Dredging/dumping settings file (*.dad)
+morCFL          = 1     # Use CFL-like condition for morphologic updating (0=no, 1=yes) (default yes)
+DzbDtMax        = 0.1   # Maximum bed level change (m) per time step for the case MorCFL=1 (default=0.1 m)
+morphoPol       =       # Only apply bed updating within specified polygon (*.pol)
+inMorphoPol     = 1     # Value of the update inside MorphoPol (0=inside polygon no update, 1=inside polygon yes update)
+upperLimitSSC   = 1e-06 # Upper limit of cell centre SSC concentration after transport timestep.
 
 [Wind]
 iCdTyp               = 4         # Wind drag coefficient type (1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Hwang 2005, 6=Wuest 2005, 7=Hersbach 2010 (2 pts)

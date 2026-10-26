@@ -736,6 +736,29 @@ class Sediment(INIBasedModel):
         sedfile: Optional[str] = Field(
             "Sediment characteristics file (*.sed)", alias="SedFile"
         )
+        dredgefile: Optional[str] = Field(
+            "Dredging/dumping settings file (*.dad)", alias="dredgeFile"
+        )
+        morcfl: Optional[str] = Field(
+            "Use CFL-like condition for morphologic updating (0=no, 1=yes) (default yes)",
+            alias="morCFL",
+        )
+        dzbdtmax: Optional[str] = Field(
+            "Maximum bed level change (m) per time step for the case MorCFL=1 (default=0.1 m)",
+            alias="DzbDtMax",
+        )
+        morphopol: Optional[str] = Field(
+            "Only apply bed updating within specified polygon (*.pol)",
+            alias="morphoPol",
+        )
+        inmorphopol: Optional[str] = Field(
+            "Value of the update inside MorphoPol (0=inside polygon no update, 1=inside polygon yes update)",
+            alias="inMorphoPol",
+        )
+        upperlimitssc: Optional[str] = Field(
+            "Upper limit of cell centre SSC concentration after transport timestep.",
+            alias="upperLimitSSC",
+        )
 
     comments: Comments = Comments()
 
@@ -747,6 +770,28 @@ class Sediment(INIBasedModel):
     sedfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="SedFile")
+    dredgefile: Annotated[
+        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
+    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="dredgeFile")
+    morcfl: bool = Field(True, alias="morCFL")
+    dzbdtmax: float = Field(0.1, alias="DzbDtMax")
+    morphopol: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
+        None, alias="morphoPol"
+    )
+    inmorphopol: int = Field(1, alias="inMorphoPol")
+    upperlimitssc: float = Field(1e-6, alias="upperLimitSSC")
+
+    @field_validator("inmorphopol")
+    @classmethod
+    def validate_inmorphopol(cls, value: int) -> int:
+        if value not in (0, 1):
+            raise ValueError("inMorphoPol must be 0 or 1.")
+        return value
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def parse_file_model_paths(cls, value, info: ValidationInfo):
+        return PathToDictionaryConverter.convert(cls, value, info)
 
 
 class Wind(INIBasedModel):
@@ -2152,7 +2197,9 @@ class Geometry(INIBasedModel):
     structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", json_schema_extra={"delimiter": ";"}
     )
-    inifieldfile: Optional[IniFieldModel] = Field(None, alias="iniFieldFile")
+    inifieldfile: Optional[Union[IniFieldModel, DiskOnlyFileModel]] = Field(
+        None, alias="iniFieldFile"
+    )
     waterlevinifile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="waterLevIniFile")

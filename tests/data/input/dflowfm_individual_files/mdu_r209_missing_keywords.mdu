@@ -1,0 +1,18 @@
+[General]
+fileType = modelDef
+fileVersion = 1.09
+program = D-Flow FM
+version = 1.2.60.64623M
+autoStart = 0
+pathsRelativeToParent = 0
+
+[Geometry]
+circumcenterMethod = internalNetlinksEdge
+circumcenterTolerance = 1e-12
+
+[Sediment]
+dredgeFile = dredging.dad
+morCFL = 0
+DzbDtMax = 0.4
+morphoPol = morphology.pol
+inMorphoPol = 0

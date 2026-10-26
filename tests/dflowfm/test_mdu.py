@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm.bc.models import ForcingModel
@@ -410,6 +411,74 @@ class TestModels:
 class PyTestMatchAny:
     def __eq__(self, other):
         return True
+
+
+class TestSedimentMorphologyKeywords:
+    def test_loads_morphology_keywords_case_insensitively(self):
+        input_mdu = (
+            test_input_dir / "dflowfm_individual_files" / "mdu_morphology_keywords.mdu"
+        )
+        model = FMModel(filepath=input_mdu, recurse=False)
+        sediment = model.sediment
+
+        assert isinstance(sediment.dredgefile, DiskOnlyFileModel)
+        assert sediment.dredgefile.filepath == Path("dredging.dad")
+        assert sediment.morcfl is False
+        assert sediment.dzbdtmax == pytest.approx(0.25)
+        assert isinstance(sediment.morphopol, DiskOnlyFileModel)
+        assert sediment.morphopol.filepath == Path("morphology.pol")
+        assert sediment.inmorphopol == 0
+        assert sediment.upperlimitssc == pytest.approx(2.5e-6)
+
+        recursive_model = FMModel(filepath=input_mdu, recurse=True)
+        assert isinstance(recursive_model.sediment.morphopol, PolyFile)
+        assert len(recursive_model.sediment.morphopol.objects) == 1
+
+    def test_morphology_keyword_defaults_match_the_specification(self):
+        sediment = FMModel().sediment
+
+        assert isinstance(sediment.dredgefile, DiskOnlyFileModel)
+        assert sediment.dredgefile.filepath is None
+        assert sediment.morcfl is True
+        assert sediment.dzbdtmax == pytest.approx(0.1)
+        assert sediment.morphopol is None
+        assert sediment.inmorphopol == 1
+        assert sediment.upperlimitssc == pytest.approx(1e-6)
+
+    def test_inmorphopol_rejects_values_outside_zero_and_one(self, tmp_path):
+        invalid_mdu = tmp_path / "invalid_in_morpho_pol.mdu"
+        invalid_mdu.write_text(
+            "[Sediment]\ninMorphoPol = 2\n",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(ValidationError):
+            FMModel(filepath=invalid_mdu, recurse=False)
+
+    def test_morphology_keywords_round_trip(self, tmp_path):
+        input_mdu = (
+            test_input_dir / "dflowfm_individual_files" / "mdu_morphology_keywords.mdu"
+        )
+        copied_mdu = tmp_path / input_mdu.name
+        shutil.copy2(input_mdu, copied_mdu)
+        shutil.copy2(input_mdu.with_name("morphology.pol"), tmp_path)
+
+        model = FMModel(filepath=copied_mdu, recurse=False)
+        round_trip_mdu = tmp_path / "round_trip.mdu"
+        model.save(filepath=round_trip_mdu)
+
+        reloaded = FMModel(filepath=round_trip_mdu, recurse=False)
+        assert reloaded.sediment == model.sediment
+
+    def test_unknown_sediment_keyword_still_raises(self, tmp_path):
+        unknown_mdu = tmp_path / "unknown_sediment_keyword.mdu"
+        unknown_mdu.write_text(
+            "[Sediment]\nunknownMorphologyOption = 1\n",
+            encoding="utf-8",
+        )
+
+        with pytest.raises(ValidationError):
+            FMModel(filepath=unknown_mdu, recurse=False)
 
 
 class TestOutput:
@@ -1108,7 +1177,7 @@ _RECURSE_FALSE_CASES = [
 
 
 class TestRecurseFalseDiskOnlyFileModel:
-    """Verify the five MDU sub-file fields support `recurse=False` without raising.
+    """Verify MDU sub-file fields support `recurse=False` without raising.
 
     Bug context: before the fix, `FMModel(mdu_path, recurse=False)` raised
     `ValidationError` because the loader inserted a `DiskOnlyFileModel`
@@ -1227,7 +1296,9 @@ class TestRecurseFalseDiskOnlyFileModel:
             assert isinstance(
                 value, list
             ), f"{dotted_path} expected list, got {type(value).__name__}"
-            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
+            assert (
+                len(value) >= 1
+            ), f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value
@@ -1238,6 +1309,24 @@ class TestRecurseFalseDiskOnlyFileModel:
         assert (
             target.filepath is not None
         ), f"Reloaded placeholder must carry a filepath at {dotted_path}"
+
+    def test_recurse_false_accepts_inifieldfile(self, tmp_path: Path):
+        mdu_path = tmp_path / "model.mdu"
+        mdu_path.write_text(
+            "[General]\n"
+            "fileType = modelDef\n"
+            "fileVersion = 1.09\n"
+            "program = D-Flow FM\n"
+            "version = 1.2.60.64623M\n"
+            "[Geometry]\n"
+            "iniFieldFile = initialFields.ini\n",
+            encoding="utf-8",
+        )
+
+        model = FMModel(filepath=mdu_path, recurse=False)
+
+        assert isinstance(model.geometry.inifieldfile, DiskOnlyFileModel)
+        assert model.geometry.inifieldfile.filepath == Path("initialFields.ini")
 
     @pytest.mark.parametrize(
         (
@@ -1293,7 +1382,9 @@ class TestRecurseFalseDiskOnlyFileModel:
             assert isinstance(
                 value, list
             ), f"{dotted_path} expected list, got {type(value).__name__}"
-            assert len(value) >= 1, f"{dotted_path} expected non-empty list, got {value!r}"
+            assert (
+                len(value) >= 1
+            ), f"{dotted_path} expected non-empty list, got {value!r}"
             target = value[0]
         else:
             target = value

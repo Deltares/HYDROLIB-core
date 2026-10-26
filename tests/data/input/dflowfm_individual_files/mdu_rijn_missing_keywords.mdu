@@ -1,0 +1,12 @@
+[General]
+fileType = modelDef
+fileVersion = 1.09
+program = D-Flow FM
+version = 1.2.60.64623M
+autoStart = 0
+pathsRelativeToParent = 0
+
+[Geometry]
+circumcenterMethod = internalNetlinksLoop
+circumcenterTolerance = 1e-8
+calculateBedLevelOverNonActiveLinks = 1
