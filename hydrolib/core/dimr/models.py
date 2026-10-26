@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Annotated, Callable, Literal, Type
+from typing import Annotated, Callable, Literal,  Type
 
 from pydantic import Field, ValidationInfo, field_validator
 
@@ -155,9 +155,7 @@ class Documentation(BaseModel):
 
     fileVersion: str = "1.3"
     createdBy: str = f"hydrolib-core {__version__}"
-    creationDate: datetime = Field(
-        default_factory=lambda: datetime.now(tz=timezone.utc)
-    )
+    creationDate: datetime = Field(default_factory=lambda: datetime.now(tz=timezone.utc))
 
 
 class GlobalSettings(BaseModel):
@@ -309,7 +307,9 @@ class Start(ControlModel):
     name: str
 
 
-ComponentUnion = Annotated[RRComponent | FMComponent, Field(discriminator="library")]
+ComponentUnion = Annotated[
+    RRComponent | FMComponent, Field(discriminator="library")
+]
 
 
 class DIMR(ParsableFileModel):
@@ -419,7 +419,9 @@ class DIMR(ParsableFileModel):
 
         return dimr_as_dict
 
-    def _get_components_with_expanded_process(self, components: list) -> list[dict]:
+    def _get_components_with_expanded_process(
+        self, components: list
+    ) -> list[dict]:
         components_dict: list[dict] = []
         for component in components:
             if component is None:
@@ -427,9 +429,7 @@ class DIMR(ParsableFileModel):
 
             if isinstance(component, FMComponent) and component.process is not None:
                 process_value = " ".join(str(i) for i in range(component.process))
-                component_dict = self._update_component_dictionary(
-                    component, process_value
-                )
+                component_dict = self._update_component_dictionary(component, process_value)
             else:
                 component_dict = component.model_dump(exclude_none=True)
 
