@@ -13,6 +13,7 @@ from hydrolib.core.dimr.models import (
     Coupler,
     Documentation,
     FMComponent,
+    GenericComponent,
     Logger,
     Parallel,
     RRComponent,
@@ -198,6 +199,36 @@ def test_dimr_parallel_with_only_main_component_requires_no_start_group(
     saved_dimr = DIMR(filepath=saved_path, recurse=False)
     assert isinstance(saved_dimr.control[0], Parallel)
     assert saved_dimr.control[0].startGroup is None
+
+
+def test_dimr_accepts_external_component_library_and_roundtrips(tmp_path: Path):
+    source = tmp_path / "dimr_config.xml"
+    source.write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<dimrConfig xmlns="http://schemas.deltares.nl/dimr">\n'
+        "  <documentation><fileVersion>1.2</fileVersion></documentation>\n"
+        '  <control><start name="FlowFM" /></control>\n'
+        '  <component name="RTC"><library>FBCTools_BMI</library>'
+        "<workingDir>.</workingDir><inputFile>rtc.xml</inputFile></component>\n"
+        '  <component name="FlowFM"><library>dflowfm</library>'
+        "<workingDir>flow</workingDir><inputFile>FlowFM.mdu</inputFile></component>\n"
+        "</dimrConfig>\n",
+        encoding="utf-8",
+    )
+
+    dimr = DIMR(filepath=source, recurse=False)
+
+    assert isinstance(dimr.component[0], GenericComponent)
+    assert dimr.component[0].library == "FBCTools_BMI"
+    assert isinstance(dimr.component[1], FMComponent)
+
+    output = tmp_path / "roundtrip" / "dimr_config.xml"
+    dimr.save(filepath=output, recurse=False)
+    roundtrip = DIMR(filepath=output, recurse=False)
+
+    assert isinstance(roundtrip.component[0], GenericComponent)
+    assert roundtrip.component[0].library == "FBCTools_BMI"
+    assert isinstance(roundtrip.component[1], FMComponent)
 
 
 def test_read_dimr_missing_component_field_raises_correct_error():
