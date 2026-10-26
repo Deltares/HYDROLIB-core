@@ -51,3 +51,20 @@ external_forcing:
     vector_quantities:
         uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
         windxy: {"wx": "m s-1", "wy": "m s-1"}
+
+    # Combined quantities: a single old-style QUANTITY that bundles several component variables, in the
+    # column order the kernel reads them. Units follow the User Manual (heat flux model 5: humidity and
+    # cloudiness in %).
+    #
+    # The heat-flux families (humidity_*/dewpoint_*) are supplied as a uniform multi-column time series, so
+    # the component units below are used when their data column count is checked. The airpressure_* families
+    # are only ever supplied as curvi, spiderweb or netcdf files (never uniform), so the converter passes
+    # their file through unchanged with the mapped dataFileType and the component units below are not used.
+    combined_quantities:
+        humidity_airtemperature_cloudiness: {"humidity": "%", "airtemperature": "degC", "cloudiness": "%"}
+        humidity_airtemperature_cloudiness_solarradiation: {"humidity": "%", "airtemperature": "degC", "cloudiness": "%", "solarradiation": "W/m2"}
+        dewpoint_airtemperature_cloudiness: {"dewpoint": "degC", "airtemperature": "degC", "cloudiness": "%"}
+        dewpoint_airtemperature_cloudiness_solarradiation: {"dewpoint": "degC", "airtemperature": "degC", "cloudiness": "%", "solarradiation": "W/m2"}
+        airpressure_windx_windy: {"airpressure": "Pa", "windx": "m/s", "windy": "m/s"}
+        airpressure_windx_windy_charnock: {"airpressure": "Pa", "windx": "m/s", "windy": "m/s", "charnock": "-"}
+        airpressure_stressx_stressy: {"airpressure": "Pa", "stressx": "N/m2", "stressy": "N/m2"}
