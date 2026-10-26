@@ -106,9 +106,11 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     result = False
     if isinstance(key, str):
         lowered = key.lower()
-        result = lowered.startswith(("tracer", "sedfrac"))
+        result = (
+                lowered.startswith(("tracer", "sedfrac"))
+                and not lowered.startswith(("tracerbnd", "sedfracbnd"))
+        )
     return result
-
 
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
