@@ -156,7 +156,6 @@ def _get_parser() -> argparse.ArgumentParser:
         default=False,
         help="Recursively resolve and load referenced files when converting.",
     )
-
     parser.add_argument(
         "--no-backup",
         dest="backup",

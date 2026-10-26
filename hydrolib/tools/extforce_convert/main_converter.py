@@ -702,6 +702,7 @@ def recursive_converter(
     suppress_errors: bool = False,
     remove_legacy: bool = False,
     debug: bool = False,
+    recurse: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -725,7 +726,9 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(path, debug=debug)
+                converter = ExternalForcingConverter.from_mdu(
+                    path, debug=debug, recurse=recurse
+                )
                 _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:
