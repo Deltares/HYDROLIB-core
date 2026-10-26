@@ -178,19 +178,25 @@ def _resolve_forcing_data(
 def _remove_delta_suffix(values: Any) -> Any:
     """Renames any keys ending with "delta" to their base name (removing the suffix)."""
     lowercase_map = {k.lower(): k for k in values}
+    list_of_altered_quantities = set()
     for lower_key, original_key in lowercase_map.items():
         if lower_key.endswith("delta"):
             base_key = lower_key.removesuffix("delta")
             if base_key not in values:
-                warnings.warn(
-                    f"Legacy keywords with suffix `delta` will soon be deprecated:"
-                    f" {original_key!r} has been converted to {base_key!r}.",
-                    DeprecationWarning,
-                    stacklevel=2,
-                )
+                list_of_altered_quantities.add(original_key)
                 values[base_key] = values.pop(original_key)
             else:
                 values.pop(original_key)
+    if list_of_altered_quantities:
+        warnings.warn(
+            f"Legacy keywords with suffix `delta` will soon be deprecated:"
+            f" {list_of_altered_quantities!r} have been converted to their base names."
+            f" If there are .bc files associated with these keywords, please either edit "
+            f"the .ext file to use the base names instead or re-run the conversion with `recurse=True` "
+            f"to automatically update the .ext file.",
+            UserWarning,
+            stacklevel=2,
+        )
     return values
 
 
