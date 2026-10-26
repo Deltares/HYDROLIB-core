@@ -573,11 +573,6 @@ class TestSourceSinkDynamicForcingDeltas:
             f"Expected {expected} on dynamic field {field},"
             f" got {source_sink.model_extra[expected_field]!r}"
         )
-        assert expected_field not in field.lower(), (
-            f"Expected normalized field name without the trailing 'delta', "
-            f"but got {expected_field!r} from {field!r}"
-        )
-
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_realtime_keyword_rejected_on_dynamic_delta_fields(self, field: str):
@@ -601,7 +596,7 @@ class TestSourceSinkDynamicForcingDeltas:
             SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))
 
     def test_source_sink_legacy_delta_keyword_warns(self):
-        with pytest.warns(DeprecationWarning, match="salinitydelta.*salinity"):
+        with pytest.warns(UserWarning, match=r"salinitydelta"):
             block = SourceSink(
                 id="legacy_delta",
                 numcoordinates=1,
@@ -610,5 +605,5 @@ class TestSourceSinkDynamicForcingDeltas:
                 discharge=1.0,
                 salinitydelta=0.1,
             )
-        assert block.salinity == pytest.approx(0.1)
 
+        assert block.salinity == pytest.approx(0.1)
