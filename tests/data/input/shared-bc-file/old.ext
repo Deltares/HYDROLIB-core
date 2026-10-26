@@ -1,0 +1,20 @@
+* Two quantities (tracerbndIM1, tracerbndIM2) share Slib_Noord.pli: they must end up in
+* the same Slib_Noord.bc. Slib_Oost.pli is used by tracerbndIM1 only (control case).
+
+QUANTITY     =tracerbndIM1
+FILENAME     =Slib_Noord.pli
+FILETYPE     =9
+METHOD       =3
+OPERAND      =O
+
+QUANTITY     =tracerbndIM1
+FILENAME     =Slib_Oost.pli
+FILETYPE     =9
+METHOD       =3
+OPERAND      =O
+
+QUANTITY     =tracerbndIM2
+FILENAME     =Slib_Noord.pli
+FILETYPE     =9
+METHOD       =3
+OPERAND      =O

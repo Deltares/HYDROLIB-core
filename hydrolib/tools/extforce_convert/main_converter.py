@@ -35,6 +35,7 @@ from hydrolib.tools.extforce_convert.converters import (
     LateralConverter,
     SourceSinkConverter,
 )
+from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
@@ -327,6 +328,7 @@ class ExternalForcingConverter:
         num_quantities = len(self.extold_model.forcing)
 
         type_field_map = self._type_field_map()
+        forcing_files = ForcingFileRegistry(self.ext_model)
 
         with tqdm(
             total=num_quantities, desc="Converting forcings", unit="forcing"
@@ -346,16 +348,26 @@ class ExternalForcingConverter:
                 )
 
                 new_quantity_block = self._convert_forcing(forcing)
-                model_field = type_field_map.get(type(new_quantity_block))
+                # A converter may return several blocks for one old quantity (e.g. a combined
+                # quantity split into one [Spatial] block per component); normalise to a list.
+                new_blocks = (
+                    new_quantity_block
+                    if isinstance(new_quantity_block, list)
+                    else [new_quantity_block]
+                )
+                for block in new_blocks:
+                    model_field = type_field_map.get(type(block))
 
-                if model_field is None:
-                    raise NotImplementedError(
-                        f"Unsupported model class {type(new_quantity_block)} for {forcing.quantity} in "
-                        f"{self.extold_model.filepath}."
-                    )
+                    if model_field is None:
+                        raise NotImplementedError(
+                            f"Unsupported model class {type(block)} for {forcing.quantity} in "
+                            f"{self.extold_model.filepath}."
+                        )
 
-                model, attr = model_field
-                setattr(model, attr, getattr(model, attr) + [new_quantity_block])
+                    forcing_files.share(block)
+
+                    model, attr = model_field
+                    setattr(model, attr, getattr(model, attr) + [block])
 
                 progress_bar.update(1)
 
