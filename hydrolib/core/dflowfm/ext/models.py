@@ -193,9 +193,9 @@ def _remove_delta_suffix(values: Any) -> Any:
         warnings.warn(
             f"Legacy keywords with suffix `delta` will soon be deprecated:"
             f" {', '.join(sorted(list_of_altered_quantities))} have been converted to their base names."
-            f" If there are .bc files associated with these keywords, please either edit "
-            f"the .ext file to use the base names instead or re-run the conversion with `recurse=True` "
-            f"to automatically update the .ext file.",
+            f" If there are .bc files associated with these keywords, please either "
+            f"manually remove the `delta` suffixes from those .bc files or re-run the "
+            f"conversion with `recurse=True` to update them.",
             UserWarning,
             stacklevel=2,
         )
