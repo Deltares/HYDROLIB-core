@@ -162,6 +162,44 @@ def test_dimr_model():
     assert d.component[1].model.save_location.is_file()
 
 
+def test_dimr_parallel_with_only_main_component_requires_no_start_group(
+    tmp_path: Path,
+):
+    dimr_path = tmp_path / "dimr_config.xml"
+    dimr_path.write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<dimrConfig xmlns="http://schemas.deltares.nl/dimr">\n'
+        "  <documentation>\n"
+        "    <fileVersion>1.2</fileVersion>\n"
+        "    <createdBy>test</createdBy>\n"
+        "    <creationDate>2026-01-01T00:00:00</creationDate>\n"
+        "  </documentation>\n"
+        '  <control><parallel><start name="FlowFM" /></parallel></control>\n'
+        '  <component name="FlowFM">\n'
+        "    <library>dflowfm</library>\n"
+        "    <workingDir>.</workingDir>\n"
+        "    <inputFile>FlowFM.mdu</inputFile>\n"
+        "  </component>\n"
+        "</dimrConfig>\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "FlowFM.mdu").write_text("", encoding="utf-8")
+
+    dimr = DIMR(filepath=dimr_path, recurse=False)
+
+    assert len(dimr.control) == 1
+    parallel = dimr.control[0]
+    assert isinstance(parallel, Parallel)
+    assert parallel.start.name == "FlowFM"
+    assert parallel.startGroup is None
+
+    saved_path = tmp_path / "dimr_config_saved.xml"
+    dimr.save(filepath=saved_path)
+    saved_dimr = DIMR(filepath=saved_path, recurse=False)
+    assert isinstance(saved_dimr.control[0], Parallel)
+    assert saved_dimr.control[0].startGroup is None
+
+
 def test_read_dimr_missing_component_field_raises_correct_error():
     file = "missing_dimr_component_field.xml"
 
