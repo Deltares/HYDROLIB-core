@@ -45,6 +45,7 @@ filterwarnings = [
 | `Meteo.averagingType`             | 1.1.0         | 2.0.0          | `Meteo.averagingtype`             |
 | `Meteo.averagingNumMin`           | 1.1.0         | 2.0.0          | `Meteo.averagingnummin`           |
 | `Meteo.averagingPercentile`       | 1.1.0         | 2.0.0          | `Meteo.averagingpercentile`       |
+| `ProcessFluxIntegration`          | after 1.5.0   | 2.0.0          | none (always done by WAQ)         |
 
 ---
 
@@ -123,3 +124,19 @@ contents of `.ext` files on disk are unaffected.
         extrapolationAllowed=True)        # still works, no warning
   ```
 
+## 1.5.0
+
+### `ProcessFluxIntegration` enum deprecated, MDU keyword removed
+
+The `[Processes] ProcessFluxIntegration` keyword is obsolete in D-Flow FM: process fluxes integration is always
+done by WAQ, and the kernel rejects the keyword. It was removed from the `Processes` model together with the other
+obsolete MDU keywords (issue #1189), so an MDU file that contains it no longer loads.
+
+The enum `ProcessFluxIntegration` in `hydrolib.core.dflowfm.mdu` stays importable until 2.0.0. Importing it is
+silent; using it (`ProcessFluxIntegration.WAQ`, `ProcessFluxIntegration(1)`, `ProcessFluxIntegration["WAQ"]`,
+iterating it) emits a `DeprecationWarning`.
+
+**Migration**
+
+- Remove `ProcessFluxIntegration` from your MDU files.
+- Remove uses of the enum and of `FMModel.processes.processfluxintegration`; there is no replacement.

@@ -1,4 +1,5 @@
 import shutil
+import warnings
 from pathlib import Path
 from typing import Callable
 
@@ -18,6 +19,7 @@ from hydrolib.core.dflowfm.mdu.models import (
     Particles,
     ParticlesThreeDType,
     Processes,
+    ProcessFluxIntegration,
     Restart,
     Sediment,
     Time,
@@ -1381,3 +1383,35 @@ class TestRecurseFalseDiskOnlyFileModel:
             f"Filepath was not preserved at Output.{field_name}: expected"
             f" {placeholder_path}, got {value[0].filepath}"
         )
+
+
+class TestDeprecatedProcessFluxIntegration:
+    """The obsolete ProcessFluxIntegration enum stays importable and warns when it is used."""
+
+    def test_import_is_silent(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            from hydrolib.core.dflowfm.mdu import ProcessFluxIntegration as imported
+
+        assert imported is ProcessFluxIntegration
+
+    @pytest.mark.parametrize(
+        "use",
+        [
+            pytest.param(lambda enum: enum.WAQ, id="member-access"),
+            pytest.param(lambda enum: enum(2), id="call-by-value"),
+            pytest.param(lambda enum: enum["DFlowFM"], id="lookup-by-name"),
+            pytest.param(lambda enum: list(enum), id="iteration"),
+        ],
+    )
+    def test_use_warns(self, use: Callable):
+        with pytest.warns(DeprecationWarning, match="removed in 2.0.0"):
+            use(ProcessFluxIntegration)
+
+    def test_values_are_unchanged(self):
+        with pytest.warns(DeprecationWarning):
+            assert ProcessFluxIntegration.WAQ == 1
+            assert ProcessFluxIntegration.DFlowFM == 2
+
+    def test_processes_has_no_processfluxintegration_field(self):
+        assert "processfluxintegration" not in Processes.model_fields

@@ -12,6 +12,7 @@ from pydantic import (
     field_validator,
 )
 
+from hydrolib.core.base._deprecation import DeprecatedEnumMeta
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
@@ -2371,6 +2372,28 @@ class GroundWater(INIBasedModel):
     bgrwuni: Optional[float] = Field(-999, alias="bgrwuni")
     h_unsatini: Optional[float] = Field(0.2, alias="h_unsatini")
     sgrwini: Optional[float] = Field(-999, alias="sgrwini")
+
+
+class _ProcessFluxIntegrationMeta(DeprecatedEnumMeta):
+    deprecation_message = (
+        "`ProcessFluxIntegration` is deprecated and will be removed in 2.0.0. The "
+        "`[Processes] ProcessFluxIntegration` keyword is obsolete in D-Flow FM (process "
+        "fluxes integration is always done by WAQ) and is no longer part of the "
+        "`Processes` model."
+    )
+
+
+class ProcessFluxIntegration(IntEnum, metaclass=_ProcessFluxIntegrationMeta):
+    """Enum class containing the valid values for the ProcessFluxIntegration attribute.
+
+    Deprecated: the `[Processes] ProcessFluxIntegration` keyword is obsolete in D-Flow FM
+    and is no longer a field of the [Processes][hydrolib.core.dflowfm.mdu.models.Processes]
+    class. This enum only remains so that existing imports keep working; using it emits a
+    `DeprecationWarning` and it will be removed in 2.0.0.
+    """
+
+    WAQ = 1
+    DFlowFM = 2
 
 
 class Processes(INIBasedModel):
