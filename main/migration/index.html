@@ -3671,6 +3671,45 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProcessFluxIntegration enum deprecated, MDU keyword removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#obsolete-mdu-keywords-removed-from-the-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obsolete MDU keywords removed from the models
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3782,6 +3821,45 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProcessFluxIntegration enum deprecated, MDU keyword removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#obsolete-mdu-keywords-removed-from-the-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Obsolete MDU keywords removed from the models
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3813,6 +3891,8 @@ recommend migrating before the listed removal release.</p>
 <p>Python suppresses <code>DeprecationWarning</code> by default outside of test runs. To
 surface them in your own application or scripts:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"default"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
                         <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">"hydrolib\..*"</span><span class="p">)</span>
 </code></pre></div>
@@ -3823,7 +3903,7 @@ surface them in your own application or scripts:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># pyproject.toml or pytest.ini</span>
 <span class="k">[tool.pytest.ini_options]</span>
 <span class="na">filterwarnings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[</span>
-<span class="w">    </span><span class="na">"error</span><span class="o">:</span><span class="s">:DeprecationWarning:hydrolib.*",</span>
+<span class="w">                 </span><span class="na">"error</span><span class="o">:</span><span class="s">:DeprecationWarning:hydrolib.*",</span>
 <span class="na">]</span>
 </code></pre></div>
 <h2 id="quick-reference">Quick reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
@@ -3873,6 +3953,12 @@ surface them in your own application or scripts:</p>
 <td>2.0.0</td>
 <td><code>Meteo.averagingpercentile</code></td>
 </tr>
+<tr>
+<td><code>ProcessFluxIntegration</code></td>
+<td>after 1.5.0</td>
+<td>2.0.0</td>
+<td>none (always done by WAQ)</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3880,8 +3966,8 @@ surface them in your own application or scripts:</p>
 <h3 id="meteo-attribute-names-lowercased"><code>Meteo</code> attribute names lowercased<a class="headerlink" href="#meteo-attribute-names-lowercased" title="Permanent link">&para;</a></h3>
 <p>The Python attribute names on
 <a class="autorefs autorefs-internal" title="Meteo" href="../reference/dflowfm/external-forcing/ext/#hydrolib.core.dflowfm.ext.models.Meteo"><code>hydrolib.core.dflowfm.ext.models.Meteo</code></a>
-were inconsistent: most fields used lowercase identifiers
-(<code>forcingfile</code>, <code>targetmaskfile</code>, <code>interpolationmethod</code>, …) while six fields
+were inconsistent: most fields used lowercase identifiers (<code>forcingfile</code>, <code>targetmaskfile</code>, <code>interpolationmethod</code>, …)
+while six fields
 used camelCase. These six have been renamed to match the convention.</p>
 <p>The on-disk INI key names (e.g. <code>forcingVariableName = …</code> in <code>.ext</code> files)
 <strong>are unchanged</strong> — only Python attribute access changes. Construction by
@@ -3937,7 +4023,8 @@ through the unchanged Pydantic alias).</p>
 <p>If you call <code>meteo.model_dump()</code> <em>without</em> <code>by_alias=True</code>, the returned dict
 keys reflect the new lowercase attribute names:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Before:                                After:</span>
-<span class="p">{</span><span class="s2">"extrapolationAllowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>     <span class="p">{</span><span class="s2">"extrapolationallowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"extrapolationAllowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="p">{</span><span class="s2">"extrapolationallowed"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </code></pre></div>
 <p>If you need the on-disk INI key names, pass <code>by_alias=True</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="n">meteo</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">by_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -3958,6 +4045,26 @@ contents of <code>.ext</code> files on disk are unaffected.</p>
       <span class="n">forcingfiletype</span><span class="o">=</span><span class="n">MeteoForcingFileType</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
       <span class="n">extrapolationAllowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># still works, no warning</span>
 </code></pre></div>
+<h2 id="150">1.5.0<a class="headerlink" href="#150" title="Permanent link">&para;</a></h2>
+<h3 id="processfluxintegration-enum-deprecated-mdu-keyword-removed"><code>ProcessFluxIntegration</code> enum deprecated, MDU keyword removed<a class="headerlink" href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" title="Permanent link">&para;</a></h3>
+<p>The <code>[Processes] ProcessFluxIntegration</code> keyword is obsolete in D-Flow FM: process fluxes integration is always
+done by WAQ, and the kernel rejects the keyword. It was removed from the <code>Processes</code> model together with the other
+obsolete MDU keywords (issue #1189), so an MDU file that contains it no longer loads.</p>
+<p>The enum <code>ProcessFluxIntegration</code> in <code>hydrolib.core.dflowfm.mdu</code> stays importable until 2.0.0. Importing it is
+silent; using it (<code>ProcessFluxIntegration.WAQ</code>, <code>ProcessFluxIntegration(1)</code>, <code>ProcessFluxIntegration["WAQ"]</code>,
+iterating it) emits a <code>DeprecationWarning</code>.</p>
+<p><strong>Migration</strong></p>
+<ul>
+<li>Remove <code>ProcessFluxIntegration</code> from your MDU files.</li>
+<li>Remove uses of the enum and of <code>FMModel.processes.processfluxintegration</code>; there is no replacement.</li>
+</ul>
+<h3 id="obsolete-mdu-keywords-removed-from-the-models">Obsolete MDU keywords removed from the models<a class="headerlink" href="#obsolete-mdu-keywords-removed-from-the-models" title="Permanent link">&para;</a></h3>
+<p>Keywords that are obsolete in D-Flow FM were removed from the <code>FMModel</code> sections (and from the <code>Research*</code> sections,
+where applicable) in issue #1189. The kernel rejects an MDU file that contains them, and <code>FMModel</code> now raises a
+<code>ValidationError</code> ("Unknown keywords are detected") when one is present. Remove them from your MDU files and use the
+replacement where there is one.</p>
+<p>The list of deprecated and removed MDU keywords, with the keyword to use instead, is in the D-Flow FM User Manual,
+Appendix A (MDU file), section "Overview of deprecated and removed keywords" (table <code>tab:oldkeys</code>).</p>
 
 
 
