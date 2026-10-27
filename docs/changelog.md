@@ -1,3 +1,30 @@
+## 1.6.0 (2026-10-27)
+
+- MDU files containing an obsolete keyword no longer
+load (FMModel raises "Unknown keywords are detected"), matching the
+D-Flow FM kernel. The matching model fields are removed, and
+ProcessFluxIntegration is deprecated.
+- structure files with keywords that the models do not
+know now fail to load with "Unknotead of
+dropping them silently. Structure files that use `locationFile` are
+written as structure file version
+
+### Feat
+
+- **models**: remove obsolete keywords (#1259)
+- **mdu**: remove obsolete MDU keywords from the models
+- **extforce-convert**: split combined meteo quantities into per-component bcAscii blocks (#1268)
+- **structure**: support locationFile and reject unknown keywords (#1234)
+
+### Fix
+
+- **extforce-convert**: write one .bc file when quantities share a path (#1262)
+- **utils**: resolve forcing file paths to prevent mount errors (#1256)
+
+### Refactor
+
+- **mba**: write the [General] block explicitly when saving mass balance area files (#1271)
+
 ## 1.5.0 (2026-10-08)
 
 ### BREAKING CHANGE
