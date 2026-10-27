@@ -17,7 +17,6 @@ crossLocFile                   = crsloc.ini                                 # Lo
 profLocFile                    =                                            # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
 profDefFile                    =                                            # <*_profdefinition.def>) definition for all profile nrs.
 profDefXyzFile                 =                                            # <*_profdefinition.def>) definition for all profile nrs.
-manholeFile                    =                                            # File containing manholes (e.g. <*.dat>).
 uniformWidth1D                 = 2.0                                        # Uniform width for channel profiles not specified by profloc
 dxWuiMin2D                     = 0.0                                        # Smallest fraction dx/wu , set dx > Dxwuimin2D*wu
 waterLevIni                    = 0.0                                        # Initial water level.
@@ -93,7 +92,6 @@ slopeDrop2D               = 0.0    # Apply droplosses only if local bottom slope
 drop1D                    = 0      # Limit the downstream water level in the momentum equation to the downstream invert level, BOBdown (ζ*down = max(BOBdown, ζdown)).
 chkAdvd                   = 0.1    # Check advection terms if depth < chkadvdp.
 teta0                     = 0.55   # Theta (implicitness) of time integration, 0.5 < Theta < 1.0.
-qhRelax                   = 0.01
 cstBnd                    = 0      # Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).
 maxitVerticalForesterSal  = 0      # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations).
 maxitVerticalForesterTem  = 0      # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations).
@@ -244,7 +242,6 @@ wrishp_thd                        = 0      # Writing thin dams to shape file (0=
 wrishp_obs                        = 0      # Writing observation points to shape file (0=no, 1=yes).
 wrishp_emb                        = 0      # Writing embankments file (0=no, 1=yes).
 wrishp_dryArea                    = 0      # Writing dry areas to shape file (0=no, 1=yes).
-wrishp_enc                        = 0      # Writing enclosures to shape file (0=no, 1=yes).
 wrishp_src                        = 0      # Writing sources and sinks to shape file (0=no, 1=yes).
 wrishp_pump                       = 0      # Writing pumps to shape file (0=no, 1=yes).
 outputDir                         =        # Output directory of map-, his-, rst-, dat- and timingsfiles, default: DFM_OUTPUT_<modelname>. Set to . for no dir/current dir.
@@ -260,7 +257,7 @@ xlsInterval                       = 0.0    # Interval between XLS history [s].
 mapFile                           =        # *_map.nc Map file in netCDF format.
 mapInterval                       = 1200.0 # Map file output, given as 'interval' 'start period' 'end period' [s].
 rstInterval                       = 0.0    # Restart file output, given as 'interval' 'start period' 'end period' [s].
-mapFormat                         = 4      # Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.
+mapFormat                         = 4      # Map file format, 1: netCDF and Tecplot, 4: netCDF UGRID.
 ncFormat                          = 3      # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5).
 ncNoUnlimited                     = 0      # Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)
 ncNoForcedFlush                   = 0      # Do not force flushing of map-like files every output timestep (1: yes, 0: no).

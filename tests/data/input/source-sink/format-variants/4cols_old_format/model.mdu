@@ -24,7 +24,6 @@ ProfdefxyzFile                    =                     # Channel profile defini
 UseCaching                                = 0                   # Use caching for geometrical/network-related items (0: no, 1: yes)
 Uniformwidth1D                    = 2.                  # Uniform width for channel profiles not specified by profloc
 Uniformheight1D                   = 3.                  # Uniform height for channel profiles not specified by profloc
-ManholeFile                       =                     # File *.ini containing manholes
 PipeFile                          =                     # File *.pliz containing pipe-based 'culverts'
 ShipdefFile                       =                     # File *.shd containing ship definitions
 WaterLevIni                       = 0.                  # Initial water level at missing s0 values
@@ -145,7 +144,7 @@ WaqInterval                       = 0. 0. 3600.         # DELWAQ output times, g
 StatsInterval                     = 0.                  # Interval (in s) between simulation statistics output.
 TimingsInterval                   = 0.                  # Timings statistics output interval
 TimeSplitInterval                 = 0X                  # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
-MapFormat                         = 1                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                         = 1                   # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 Wrihis_balance                    = 1                   # Write mass balance totals to his file (1: yes, 0: no)
 Wrihis_sourcesink                 = 1                   # Write sources-sinks statistics to his file (1=yes, 0=no)
 Wrihis_structure_gen              = 1                   # Write general structure parameters to his file (1: yes, 0: no)

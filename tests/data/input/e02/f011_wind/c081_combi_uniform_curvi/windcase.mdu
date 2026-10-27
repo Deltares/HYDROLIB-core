@@ -66,7 +66,6 @@ Slopedrop2D                          = 0.3                                   # A
 Drop3D                               = 0.                                    # Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D
 Chkadvd                              = 0.1                                   # Check advection terms if depth < chkadvdp, => less setbacks
 Teta0                                = 0.55                                  # Teta of time integration, 0.5 < Teta < 1d0
-Qhrelax                              = 1.d-2                                 # Relaxation qhbnd ( )
 Jbasqbnddownwindhs                   = 0                                     # 0 : original hu on qbnd, 1 = downwind hs on qbnd
 cstbnd                               = 0                                     # Delft-3D type velocity treatment near boundaries for small coastal models (1) or not (0)
 Maxitverticalforestersal             = 100                                   # 0 : no vertical filter, > 0 = Max nr of iterations
@@ -166,7 +165,7 @@ WaqInterval                          =                                       # I
 StatsInterval                        =                                       # Interval (in s) between simulation statistics output.
 TimingsInterval                      =                                       # Timings output interval
 TimeSplitInterval                    = 0X                                    # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
-MapFormat                            = 4                                     # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                            = 4                                     # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 Wrihis_balance                       = 1                                     # Write mass balance totals to his file (1=yes, 0=no)
 Wrihis_structure_gen                 = 1                                     # Write general structure parameters to his file (1=yes, 0=no)
 Wrihis_structure_dam                 = 1                                     # Write dam parameters to his file (1=yes, 0=no)
