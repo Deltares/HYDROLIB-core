@@ -178,14 +178,9 @@ Maxitverticalforestersal                  = 100                 # Forester itera
 Maxitverticalforestertem                  = 0                   # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations)
 Turbulencemodel                           = 3                   # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
 Turbulenceadvection                       = 0                   # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
-Jadrhodz                                  = 1                   # (1:central org, 2:centralnew, 3:upw cell, 4:most stratf. cell, 5:least stratf. cell)
-FacLaxturb                                = 0.                  # (Default: 0=TurKin0 from links, 1.0=from nodes. 0.5=fityfifty)
 jaFacLaxturbtyp                           = 0                   # (Vertical distr of facLaxturb, 1=: (sigm<0.5=0.0 sigm>0.75=1.0 linear in between), 2:=1.0 for whole column)
-EpsTKE                                    = 1.d-32              # (TKE=max(TKE,EpsTKE), default=1d-32)
-EpsEPS                                    = 1.d-32              # (EPS=max(EPS,EpsEPS), default=1d-32, (or TAU))
 Eddyviscositybedfacmax                    = 0.                  # Limit eddy viscosity at bed )
 AntiCreep                                 = 0                   # Include anti-creep to suppress artifical vertical diffusion (0: no, 1: yes).
-Baroczlaybed                              = 0                   # Use fix in barocp for zlaybed 0,1, 1=default)
 Barocponbnd                               = 0                   # Use fix in barocp for zlaybed 0,1, 1=default)
 Maxitpresdens                             = 1                   # Max nr of iterations in pressure-density coupling, only used if idensform > 10 )
 Rhointerfaces                             = 0                   # Evaluate rho at interfaces, 0=org at centers, 1=at interfaces )
@@ -262,11 +257,9 @@ Stanton                                   = -1.                 # Coefficient fo
 Dalton                                    = -1.                 # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
 Tempmax                                   = -999.               # Limit the temperature
 Tempmin                                   = 0.                  # Limit the temperature, if -999, tempmin=(-0.0575d0 - 2.154996d-4*sal)*sal
-Allowcoolingbelowzero                     = 0                   # 0 = no, 1 = yes
 Surftempsmofac                            = 0.                  # Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no
 Soiltempthick                             = 0.                  # Use soil temperature buffer if > 0, e.g. 0.2 (m)
 Heat_eachstep                             = 0                   # 1=heat each timestep, 0=heat each usertimestep
-RhoairRhowater                            = 0                   # windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()
 Nudgetimeuni                              = 3600.               # Uniform nudge relaxation time
 IniWithNudge                              = 0                   # Initialize salinity and temperature with nudge variables
 NFEntrainmentMomentum                     = 0                   # 1: Switch on momentum transfer in NearField related entrainment
@@ -419,7 +412,7 @@ VelocityDirectionClassesInterval          =                     # Class map's st
 StatsInterval                             = -60.                # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
 TimingsInterval                           = 0.                  # Timings statistics output interval
 TimeSplitInterval                         = 0 s                 # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
-MapFormat                                 = 1                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+MapFormat                                 = 1                   # Map file format, 1: netCDF and Tecplot, 4: NetCDF-UGRID
 NcFormat                                  = 3                   # Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5)
 NcMapDataPrecision                        = double              # Precision for NetCDF data in map files (double or single)
 NcHisDataPrecision                        = double              # Precision for NetCDF data in his files (double or single)
@@ -539,8 +532,6 @@ AdditionalHistoryOutputFile               =                     # extra history 
 StatisticsFile                            =                     # statistics file
 ThetaVertical                             = 0.                  # theta vertical for waq
 DtProcesses                               = 0.                  # waq processes time step
-ProcessFluxIntegration                    = 1                   # Process fluxes integration option (1: WAQ, 2: D-Flow FM)
-Wriwaqbot3Doutput                         = 0                   # Write 3D water quality bottom variables (1: yes, 0: no)
 VolumeDryThreshold                        = 1.d-3               # Volume below which segments are marked as dry. (m3)
 DepthDryThreshold                         = 1.d-3               # Water depth below which segments are marked as dry. (m)
 SubstanceDensityCoupling                  = 0                   # Substance density coupling (1: yes, 0: no). It only functions correctly when all substances are sediments.

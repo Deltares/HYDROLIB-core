@@ -22,7 +22,11 @@ from hydrolib.core.dflowfm.ext.models import (
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
 from hydrolib.core.dflowfm.inifield.models import IniFieldModel
-from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
+from hydrolib.core.dflowfm.mba.models import (
+    MassBalanceArea,
+    MassBalanceAreaGeneral,
+    MassBalanceAreaModel,
+)
 from hydrolib.core.dflowfm.structure.models import (
     Structure,
     StructureGeneral,
@@ -545,7 +549,7 @@ class ExternalForcingConverter:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
 
-            # explicitly set the [General] block to ensure its always written to the new external forcing file.
+            # explicitly set the [General] block to ensure it's always written to the new external forcing file.
             # without it, the ext file will be saved without it as the exclude_unset=True
             self.ext_model.general = ExtGeneral(
                 fileVersion=self.ext_model.general.fileversion,
@@ -562,7 +566,7 @@ class ExternalForcingConverter:
         if backup and self.structure_model.filepath.exists():
             backup_file(self.structure_model.filepath)
 
-        # explicitly set the [General] block to ensure its always written to the new structure file.
+        # explicitly set the [General] block to ensure it's always written to the new structure file.
         # without it, the structure file will be saved without it as the exclude_unset=True
         self.structure_model.general = StructureGeneral(
             fileVersion=self.structure_model.general.fileversion,
@@ -573,11 +577,18 @@ class ExternalForcingConverter:
         )
 
     def _save_mba_model(self, backup: bool, recursive: bool):
-        # Not saved with exclude_unset: the [General] block (fileVersion/fileType) uses
-        # default values that identify the file to the kernel and must always be written.
         if backup and self.mba_model.filepath.exists():
             backup_file(self.mba_model.filepath)
-        self.mba_model.save(recurse=recursive, path_style=self.path_style)
+
+        # explicitly set the [General] block to ensure it's always written to the new mba file.
+        # without it, the mba file will be saved without it as the exclude_unset=True
+        self.mba_model.general = MassBalanceAreaGeneral(
+            fileVersion=self.mba_model.general.fileversion,
+            fileType=self.mba_model.general.filetype,
+        )
+        self.mba_model.save(
+            recurse=recursive, exclude_unset=True, path_style=self.path_style
+        )
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""

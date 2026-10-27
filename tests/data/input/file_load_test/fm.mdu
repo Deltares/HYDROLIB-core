@@ -11,7 +11,6 @@
 
 [geometry]
     NetFile           = FlowFM_net.nc
-    BathymetryFile    =
     DryPointsFile     =
     GridEnclosureFile =
     WaterLevIniFile   =
@@ -29,7 +28,6 @@
     ProfdefxyzFile    =
     IniFieldFile      = initialFields.ini
     Uniformwidth1D    = 2
-    ManholeFile       =
     WaterLevIni       = 0
     Bedlevuni         = -5
     Bedslope          = 0
@@ -82,7 +80,6 @@
     Drop1D            = 1
     Chkadvd           = 0.1
     Teta0             = 0.55
-    Qhrelax           = 0.01
     cstbnd            = 0
     Maxitverticalforestersal= 0
     Maxitverticalforestertem= 0
@@ -184,7 +181,6 @@
     Wrishp_obs        = 0
     Wrishp_emb        = 0
     Wrishp_dryarea    = 0
-    Wrishp_enc        = 0
     Wrishp_src        = 0
     Wrishp_pump       = 0
     OutputDir         = output

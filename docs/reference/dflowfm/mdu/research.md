@@ -21,7 +21,6 @@ classDiagram
 
     class ResearchNumerics {
         +Comments comments
-        +Optional faclaxturb
         +Optional jafaclaxturbtyp
         +Optional locsaltmin
         +Optional lincontin
@@ -171,7 +170,6 @@ classDiagram
 
     class ResearchNumerics {
         +Comments comments
-        +Optional faclaxturb
         +Optional jafaclaxturbtyp
         +Optional locsaltmin
         +Optional lincontin

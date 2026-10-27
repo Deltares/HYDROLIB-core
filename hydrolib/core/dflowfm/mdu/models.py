@@ -12,6 +12,7 @@ from pydantic import (
     field_validator,
 )
 
+from hydrolib.core.base._deprecation import DeprecatedEnumMeta
 from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
@@ -232,7 +233,6 @@ class Numerics(INIBasedModel):
             "Theta (implicitness) of time integration, 0.5 < Theta < 1.0.",
             alias="teta0",
         )
-        qhrelax: Optional[str] = Field(None, alias="qhRelax")
         cstbnd: Optional[str] = Field(
             "Delft3D-FLOW type velocity treatment near boundaries for small coastal models (1) or not (0).",
             alias="cstBnd",
@@ -259,10 +259,6 @@ class Numerics(INIBasedModel):
         )
         anticreep: Optional[str] = Field(
             "Include anti-creep calculation (0: no, 1: yes).", alias="antiCreep"
-        )
-        baroczlaybed: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="barocZLayBed",
         )
         barocponbnd: Optional[str] = Field(
             "Use baroclinic pressure correction on open boundaries (1: yes, 0: no)",
@@ -419,7 +415,6 @@ class Numerics(INIBasedModel):
     drop1d: bool = Field(False, alias="drop1D")
     chkadvd: float = Field(0.1, alias="chkAdvd")
     teta0: float = Field(0.55, alias="teta0")
-    qhrelax: float = Field(0.01, alias="qhRelax")
     cstbnd: bool = Field(False, alias="cstBnd")
     maxitverticalforestersal: int = Field(None, alias="maxitVerticalForesterSal")
     maxitverticalforestertem: int = Field(None, alias="maxitVerticalForesterTem")
@@ -427,7 +422,6 @@ class Numerics(INIBasedModel):
     turbulencemodel: int = Field(3, alias="turbulenceModel")
     turbulenceadvection: int = Field(3, alias="turbulenceAdvection")
     anticreep: bool = Field(False, alias="antiCreep")
-    baroczlaybed: bool = Field(None, alias="barocZLayBed")
     barocponbnd: bool = Field(False, alias="barocPOnBnd")
     maxwaterleveldiff: float = Field(0.0, alias="maxWaterLevelDiff")
     maxvelocitydiff: float = Field(0.0, alias="maxVelocityDiff")
@@ -648,10 +642,6 @@ class Physics(INIBasedModel):
         heat_eachstep: Optional[str] = Field(
             "'1=heat each timestep, 0=heat each usertimestep", alias="heat_eachStep"
         )
-        rhoairrhowater: Optional[str] = Field(
-            DEPRECATED_VARIABLE,
-            alias="rhoAirRhoWater",
-        )
         nudgetimeuni: Optional[str] = Field(
             "Uniform nudge relaxation time [s]", alias="nudgeTimeUni"
         )
@@ -713,7 +703,6 @@ class Physics(INIBasedModel):
     salimax: float = Field(-999.0, alias="saliMax")
     salimin: float = Field(0.0, alias="saliMin")
     heat_eachstep: bool = Field(False, alias="heat_eachStep")
-    rhoairrhowater: int = Field(None, alias="rhoAirRhoWater")
     nudgetimeuni: float = Field(3600.0, alias="nudgeTimeUni")
     iniwithnudge: int = Field(0, alias="iniWithNudge")
     secondaryflow: bool = Field(False, alias="secondaryFlow")
@@ -1178,9 +1167,6 @@ class Output(INIBasedModel):
         wrishp_dryarea: str | None = Field(
             "Writing dry areas to shape file (0=no, 1=yes).", alias="wrishp_dryArea"
         )
-        wrishp_enc: str | None = Field(
-            "Writing enclosures to shape file (0=no, 1=yes).", alias="wrishp_enc"
-        )
         wrishp_src: str | None = Field(
             "Writing sources and sinks to shape file (0=no, 1=yes).", alias="wrishp_src"
         )
@@ -1242,7 +1228,7 @@ class Output(INIBasedModel):
             alias="rstInterval",
         )
         mapformat: str | None = Field(
-            "Map file format, 1: netCDF, 2: Tecplot, 3: NetCFD and Tecplot, 4: netCDF UGRID.",
+            "Map file format, 1: NetCDF, 4: NetCDF-UGRID.",
             alias="mapFormat",
         )
         ncformat: str | None = Field(
@@ -1665,7 +1651,6 @@ class Output(INIBasedModel):
     wrishp_obs: bool = Field(False, alias="wrishp_obs")
     wrishp_emb: bool = Field(False, alias="wrishp_emb")
     wrishp_dryarea: bool = Field(False, alias="wrishp_dryArea")
-    wrishp_enc: bool = Field(False, alias="wrishp_enc")
     wrishp_src: bool = Field(False, alias="wrishp_src")
     wrishp_pump: bool = Field(False, alias="wrishp_pump")
     outputdir: Annotated[Path | None, WrapValidator(_preserve_empty_string)] = Field(
@@ -1893,10 +1878,6 @@ class Geometry(INIBasedModel):
         """Comments for the Geometry section fields."""
 
         netfile: Optional[str] = Field("The net file <*_net.nc>", alias="netFile")
-        bathymetryfile: Optional[str] = Field(
-            "Removed since March 2022. See [geometry] keyword BedLevelFile.",
-            alias="bathymetryFile",
-        )
         drypointsfile: Optional[str] = Field(
             "Dry points file <*.xyz>, third column dummy z values, or polygon file <*.pol>.",
             alias="dryPointsFile",
@@ -1964,9 +1945,6 @@ class Geometry(INIBasedModel):
         profdefxyzfile: Optional[str] = Field(
             "<*_profdefinition.def>) definition for all profile nrs.",
             alias="profDefXyzFile",
-        )
-        manholefile: Optional[str] = Field(
-            "File containing manholes (e.g. <*.dat>).", alias="manholeFile"
         )
         partitionfile: Optional[str] = Field(
             "<*_part.pol>, polyline(s) x, y.", alias="partitionFile"
@@ -2143,9 +2121,6 @@ class Geometry(INIBasedModel):
     netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
     )
-    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
-        None, alias="bathymetryFile"
-    )
     drypointsfile: Optional[List[DryPointsFile]] = Field(
         None, alias="dryPointsFile"
     )  # TODO Fix, this will always try XYZ first, alias="]")
@@ -2196,9 +2171,6 @@ class Geometry(INIBasedModel):
     profdefxyzfile: Annotated[
         DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="profDefXyzFile")
-    manholefile: Annotated[
-        DiskOnlyFileModel, BeforeValidator(set_default_disk_only_file_model)
-    ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="manholeFile")
     partitionfile: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
         None, alias="partitionFile"
     )
@@ -2402,11 +2374,22 @@ class GroundWater(INIBasedModel):
     sgrwini: Optional[float] = Field(-999, alias="sgrwini")
 
 
-class ProcessFluxIntegration(IntEnum):
+class _ProcessFluxIntegrationMeta(DeprecatedEnumMeta):
+    deprecation_message = (
+        "`ProcessFluxIntegration` is deprecated and will be removed in 2.0.0. The "
+        "`[Processes] ProcessFluxIntegration` keyword is obsolete in D-Flow FM (process "
+        "fluxes integration is always done by WAQ) and is no longer part of the "
+        "`Processes` model."
+    )
+
+
+class ProcessFluxIntegration(IntEnum, metaclass=_ProcessFluxIntegrationMeta):
     """Enum class containing the valid values for the ProcessFluxIntegration attribute.
 
-    Contains valid values for the ProcessFluxIntegration attribute in the
-    [Processes][hydrolib.core.dflowfm.mdu.models.Processes] class.
+    Deprecated: the `[Processes] ProcessFluxIntegration` keyword is obsolete in D-Flow FM
+    and is no longer a field of the [Processes][hydrolib.core.dflowfm.mdu.models.Processes]
+    class. This enum only remains so that existing imports keep working; using it emits a
+    `DeprecationWarning` and it will be removed in 2.0.0.
     """
 
     WAQ = 1
@@ -2445,14 +2428,6 @@ class Processes(INIBasedModel):
             "Waq processes time step [s]. Must be a multiple of DtUser. If DtProcesses is negative, water quality processes are calculated with every hydrodynamic time step.",
             alias="DtProcesses",
         )
-        processfluxintegration: Optional[str] = Field(
-            "Process fluxes integration option (1: WAQ, 2: D-Flow FM).",
-            alias="ProcessFluxIntegration",
-        )
-        wriwaqbot3doutput: Optional[str] = Field(
-            "Write 3D water quality bottom variables (0: no, 1: yes).",
-            alias="Wriwaqbot3Doutput",
-        )
         volumedrythreshold: Optional[str] = Field(
             "Volume [m3] below which segments are marked as dry.",
             alias="VolumeDryThreshold",
@@ -2480,10 +2455,6 @@ class Processes(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="StatisticsFile")
     thetavertical: Optional[float] = Field(0.0, alias="ThetaVertical")
     dtprocesses: Optional[float] = Field(0.0, alias="DtProcesses")
-    processfluxintegration: Optional[ProcessFluxIntegration] = Field(
-        ProcessFluxIntegration.WAQ, alias="ProcessFluxIntegration"
-    )
-    wriwaqbot3doutput: Optional[bool] = Field(False, alias="Wriwaqbot3Doutput")
     volumedrythreshold: Optional[float] = Field(1e-3, alias="VolumeDryThreshold")
     depthdrythreshold: Optional[float] = Field(1e-3, alias="DepthDryThreshold")
 
