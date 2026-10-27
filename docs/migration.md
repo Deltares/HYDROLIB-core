@@ -15,6 +15,8 @@ surface them in your own application or scripts:
 
 ```python
 import warnings
+
+
 warnings.filterwarnings("default", category=DeprecationWarning,
                         module=r"hydrolib\..*")
 ```
@@ -31,7 +33,7 @@ To fail your test suite on any HYDROLIB-core deprecation, configure pytest:
 # pyproject.toml or pytest.ini
 [tool.pytest.ini_options]
 filterwarnings = [
-    "error::DeprecationWarning:hydrolib.*",
+                 "error::DeprecationWarning:hydrolib.*",
 ]
 ```
 
@@ -55,8 +57,8 @@ filterwarnings = [
 
 The Python attribute names on
 [`hydrolib.core.dflowfm.ext.models.Meteo`][hydrolib.core.dflowfm.ext.models.Meteo]
-were inconsistent: most fields used lowercase identifiers
-(`forcingfile`, `targetmaskfile`, `interpolationmethod`, …) while six fields
+were inconsistent: most fields used lowercase identifiers (`forcingfile`, `targetmaskfile`, `interpolationmethod`, …)
+while six fields
 used camelCase. These six have been renamed to match the convention.
 
 The on-disk INI key names (e.g. `forcingVariableName = …` in `.ext` files)
@@ -96,7 +98,8 @@ keys reflect the new lowercase attribute names:
 
 ```python
 # Before:                                After:
-{"extrapolationAllowed": True, ...}     {"extrapolationallowed": True, ...}
+{"extrapolationAllowed": True, ...}
+{"extrapolationallowed": True, ...}
 ```
 
 If you need the on-disk INI key names, pass `by_alias=True`:
@@ -140,3 +143,13 @@ iterating it) emits a `DeprecationWarning`.
 
 - Remove `ProcessFluxIntegration` from your MDU files.
 - Remove uses of the enum and of `FMModel.processes.processfluxintegration`; there is no replacement.
+
+### Obsolete MDU keywords removed from the models
+
+Keywords that are obsolete in D-Flow FM were removed from the `FMModel` sections (and from the `Research*` sections,
+where applicable) in issue #1189. The kernel rejects an MDU file that contains them, and `FMModel` now raises a
+`ValidationError` ("Unknown keywords are detected") when one is present. Remove them from your MDU files and use the
+replacement where there is one.
+
+The list of deprecated and removed MDU keywords, with the keyword to use instead, is in the D-Flow FM User Manual,
+Appendix A (MDU file), section "Overview of deprecated and removed keywords" (table `tab:oldkeys`).
