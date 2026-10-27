@@ -3671,6 +3671,34 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProcessFluxIntegration enum deprecated, MDU keyword removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3782,6 +3810,34 @@ You're not viewing the latest release version.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5.0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1.5.0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ProcessFluxIntegration enum deprecated, MDU keyword removed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3873,6 +3929,12 @@ surface them in your own application or scripts:</p>
 <td>2.0.0</td>
 <td><code>Meteo.averagingpercentile</code></td>
 </tr>
+<tr>
+<td><code>ProcessFluxIntegration</code></td>
+<td>after 1.5.0</td>
+<td>2.0.0</td>
+<td>none (always done by WAQ)</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -3958,6 +4020,19 @@ contents of <code>.ext</code> files on disk are unaffected.</p>
       <span class="n">forcingfiletype</span><span class="o">=</span><span class="n">MeteoForcingFileType</span><span class="o">.</span><span class="n">uniform</span><span class="p">,</span>
       <span class="n">extrapolationAllowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        <span class="c1"># still works, no warning</span>
 </code></pre></div>
+<h2 id="150">1.5.0<a class="headerlink" href="#150" title="Permanent link">&para;</a></h2>
+<h3 id="processfluxintegration-enum-deprecated-mdu-keyword-removed"><code>ProcessFluxIntegration</code> enum deprecated, MDU keyword removed<a class="headerlink" href="#processfluxintegration-enum-deprecated-mdu-keyword-removed" title="Permanent link">&para;</a></h3>
+<p>The <code>[Processes] ProcessFluxIntegration</code> keyword is obsolete in D-Flow FM: process fluxes integration is always
+done by WAQ, and the kernel rejects the keyword. It was removed from the <code>Processes</code> model together with the other
+obsolete MDU keywords (issue #1189), so an MDU file that contains it no longer loads.</p>
+<p>The enum <code>ProcessFluxIntegration</code> in <code>hydrolib.core.dflowfm.mdu</code> stays importable until 2.0.0. Importing it is
+silent; using it (<code>ProcessFluxIntegration.WAQ</code>, <code>ProcessFluxIntegration(1)</code>, <code>ProcessFluxIntegration["WAQ"]</code>,
+iterating it) emits a <code>DeprecationWarning</code>.</p>
+<p><strong>Migration</strong></p>
+<ul>
+<li>Remove <code>ProcessFluxIntegration</code> from your MDU files.</li>
+<li>Remove uses of the enum and of <code>FMModel.processes.processfluxintegration</code>; there is no replacement.</li>
+</ul>
 
 
 
