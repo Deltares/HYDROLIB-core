@@ -1228,7 +1228,7 @@ class Output(INIBasedModel):
             alias="rstInterval",
         )
         mapformat: str | None = Field(
-            "Map file format, 1: netCDF and Tecplot, 4: netCDF UGRID.",
+            "Map file format, 1: NetCDF, 4: NetCDF-UGRID.",
             alias="mapFormat",
         )
         ncformat: str | None = Field(
