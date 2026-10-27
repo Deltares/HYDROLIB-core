@@ -1,7 +1,5 @@
 ## 1.6.0 (2026-10-27)
 
-### BREAKING CHANGE
-
 - MDU files containing an obsolete keyword no longer
 load (FMModel raises "Unknown keywords are detected"), matching the
 D-Flow FM kernel. The matching model fields are removed, and
