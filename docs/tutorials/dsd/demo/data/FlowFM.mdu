@@ -10,7 +10,6 @@
 
 [Geometry]
     netFile                    = FlowFM_net.nc
-    bathymetryFile             =
     dryPointsFile              =
     structureFile              = structures.ini
     iniFieldFile               = initialFields.ini
@@ -29,7 +28,6 @@
     profLocFile                =                                                                                                                   # <*_proflocation.xyz>) x, y, z, z = profile refnumber.
     profDefFile                =                                                                                                                   # <*_profdefinition.def>) definition for all profile nrs.
     profDefXyzFile             =
-    manholeFile                =
     partitionFile              =
     uniformWidth1D             = 2.0
     waterLevIni                = 0.0
@@ -79,7 +77,6 @@
     drop1D                   = 1
     chkAdvd                  = 0.1
     teta0                    = 0.55
-    qhRelax                  = 0.01
     cstBnd                   = 0
     maxitVerticalForesterSal = 0
     maxitVerticalForesterTem = 0
@@ -190,7 +187,6 @@
     wrishp_obs                        = 0
     wrishp_emb                        = 0
     wrishp_dryArea                    = 0
-    wrishp_enc                        = 0
     wrishp_src                        = 0
     wrishp_pump                       = 0
     outputDir                         = output

@@ -1,0 +1,18 @@
+[General]
+fileVersion = 1.09
+fileType    = modelDef
+
+[time]
+RefDate       = 20111222
+Tunit         = M
+DtUser        = 600.
+Startdatetime = 20161222000000
+Stopdatetime  = 20180101000000
+
+[external forcing]
+ExtForceFile    = old.ext
+ExtForceFileNew = new.ext
+
+[physics]
+Salinity    = 0
+Temperature = 0

@@ -20,6 +20,8 @@ dependencies = [
     "pandas>=2.0.0",
     "pyyaml>=6.0.2,<7",
     "pydantic-settings>=2.11.0,<3",
+    # emSign CA incident: earlier versions still trust the compromised eMudhra intermediates
+    "certifi>=2026.10.19",
 ]
 
 [project.optional-dependencies]
@@ -48,6 +50,8 @@ dev = [
     "pyfakefs>=6.0,<7",
     "geopandas>=1.0.0,<2",
     "pytest-env>=1.1,<2",
+    # emSign CA incident: earlier pip vendors a certifi that trusts the compromised eMudhra intermediates
+    "pip>=26.2.2",
 ]
 docs = [
     "openpyxl>=3.1.5,<4",
@@ -65,6 +69,8 @@ docs = [
     "mkdocstrings-python>=2.0,<3",
     "mkdocs-mermaid2-plugin>=1.2.1,<2",
     "mkdocs-panzoom-plugin>=0.4.2,<0.5",
+    # emSign CA incident: earlier pip vendors a certifi that trusts the compromised eMudhra intermediates
+    "pip>=26.2.2",
 ]
 
 [project.urls]

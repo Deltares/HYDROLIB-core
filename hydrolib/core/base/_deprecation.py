@@ -12,12 +12,16 @@ Currently exposes:
 
 - :class:`DeprecatedAttributeAlias` — a property subclass that proxies
   attribute reads and writes to a renamed attribute on the same instance.
+- :class:`DeprecatedEnumMeta` — an enum metaclass that emits a
+  `DeprecationWarning` whenever a deprecated enum is used (member access,
+  call by value, lookup by name, iteration).
 
 Add new helpers here rather than re-implementing deprecation plumbing in each
 module, and document the user-facing implications in `docs/migration.md`.
 """
 
 import warnings
+from enum import EnumMeta
 from typing import Any
 
 
@@ -434,3 +438,63 @@ class DeprecatedAttributeAlias(property):
         """
         warnings.warn(self._build_message(), DeprecationWarning, stacklevel=3)
         setattr(obj, self._new_name, value)
+
+
+class DeprecatedEnumMeta(EnumMeta):
+    """Enum metaclass that warns whenever the enum is used.
+
+    The enum stays a normal, importable class. Importing it is silent; using it
+    (`Color.RED`, `Color(1)`, `Color["RED"]`, `list(Color)`) emits a
+    `DeprecationWarning` at the caller's line. Subclass this metaclass and set
+    `deprecation_message` to describe the deprecation, then use the subclass as
+    the `metaclass` of the enum.
+
+    Examples:
+        - Define a deprecated enum and use a member:
+            ```python
+            >>> import warnings
+            >>> from enum import IntEnum
+            >>> from hydrolib.core.base._deprecation import DeprecatedEnumMeta
+            >>> class _ColorMeta(DeprecatedEnumMeta):
+            ...     deprecation_message = "Color is deprecated."
+            ...
+            >>> class Color(IntEnum, metaclass=_ColorMeta):
+            ...     RED = 1
+            ...
+            >>> with warnings.catch_warnings(record=True) as captured:
+            ...     warnings.simplefilter("always")
+            ...     value = Color.RED
+            >>> len(captured)
+            1
+            >>> str(captured[0].message)
+            'Color is deprecated.'
+
+            ```
+    """
+
+    deprecation_message: str = (
+        "This enum is deprecated and will be removed in a future release."
+    )
+
+    def _warn_deprecated(cls) -> None:
+        # stacklevel=3: this helper -> the metaclass hook -> the code using the enum
+        warnings.warn(type(cls).deprecation_message, DeprecationWarning, stacklevel=3)
+
+    def __getattribute__(cls, name: str) -> Any:
+        # Only lookups of member names warn; internal and dunder names stay silent.
+        members = type.__getattribute__(cls, "__dict__").get("_member_map_", ())
+        if name in members:
+            cls._warn_deprecated()
+        return super().__getattribute__(name)
+
+    def __call__(cls, *args: Any, **kwargs: Any) -> Any:
+        cls._warn_deprecated()
+        return super().__call__(*args, **kwargs)
+
+    def __getitem__(cls, name: str) -> Any:
+        cls._warn_deprecated()
+        return super().__getitem__(name)
+
+    def __iter__(cls):
+        cls._warn_deprecated()
+        return super().__iter__()
