@@ -136,11 +136,11 @@ class TestResearchFMModel:
 
 
 class TestResearchGeometryMorphologyKeywords:
-    def test_loads_r209_missing_keyword_set(self):
+    def test_loads_morphology_and_research_geometry_keywords(self):
         input_mdu = (
             test_input_dir
             / "dflowfm_individual_files"
-            / "mdu_r209_missing_keywords.mdu"
+            / "mdu_morphology_and_research_geometry_keywords.mdu"
         )
 
         model = ResearchFMModel(filepath=input_mdu, recurse=False)
@@ -153,11 +153,11 @@ class TestResearchGeometryMorphologyKeywords:
         assert model.sediment.morphopol.filepath == Path("morphology.pol")
         assert model.sediment.inmorphopol == 0
 
-    def test_loads_rijn_missing_keyword_set(self):
+    def test_loads_research_geometry_keywords(self):
         input_mdu = (
             test_input_dir
             / "dflowfm_individual_files"
-            / "mdu_rijn_missing_keywords.mdu"
+            / "mdu_research_geometry_keywords.mdu"
         )
 
         model = ResearchFMModel(filepath=input_mdu, recurse=False)
@@ -170,7 +170,7 @@ class TestResearchGeometryMorphologyKeywords:
         input_mdu = (
             test_input_dir
             / "dflowfm_individual_files"
-            / "mdu_rijn_missing_keywords.mdu"
+            / "mdu_research_geometry_keywords.mdu"
         )
 
         with pytest.raises(ValidationError):
