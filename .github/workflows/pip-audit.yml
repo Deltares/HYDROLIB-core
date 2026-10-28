@@ -1,0 +1,43 @@
+name: pip-audit
+
+# Dependency-vulnerability scan. CVEs are disclosed over time against packages we already
+# ship, so besides every PR the weekly schedule re-audits the unchanged tree and catches a
+# freshly disclosed vulnerability without needing a code change.
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  schedule:
+    # Weekly, Monday 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  pip-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - name: Set up Python with Poetry
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@1115dc52374f2f83cb6aff2a62a3db6cc607f1c0
+        with:
+          python-version: "3.12"
+          version: 2.3.3
+
+      - name: Audit dependencies with pip-audit
+        # pip-audit checks the pinned packages of the locked environment against the
+        # PyPI/OSV advisory DB. It is run via pipx so it is never added to the project's
+        # own dependency graph. The job fails only when a real vulnerability is reported
+        # (pip-audit exits non-zero).
+        run: |
+          poetry run python -m pip freeze --exclude-editable \
+            | grep -E '^[A-Za-z0-9_.-]+==' > "${RUNNER_TEMP}/pip-audit-reqs.txt"
+          echo "Auditing $(wc -l < "${RUNNER_TEMP}/pip-audit-reqs.txt") pinned packages against the advisory DB"
+          pipx run pip-audit --requirement "${RUNNER_TEMP}/pip-audit-reqs.txt" --desc
