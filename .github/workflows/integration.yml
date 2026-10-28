@@ -17,18 +17,18 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@35542e0d629396ac64162d8a5df6110484009147 # poetry/v1.1.2
         with:
           python-version: ${{ matrix.python-version }}
           version: 2.3.3
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}

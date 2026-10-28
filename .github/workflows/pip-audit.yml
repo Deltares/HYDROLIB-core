@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python with Poetry
-        uses: Deltares-research/github-actions/actions/python-setup/poetry@1115dc52374f2f83cb6aff2a62a3db6cc607f1c0
+        uses: Deltares-research/github-actions/actions/python-setup/poetry@35542e0d629396ac64162d8a5df6110484009147 # poetry/v1.1.2
         with:
           python-version: "3.12"
           version: 2.3.3

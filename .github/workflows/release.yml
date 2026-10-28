@@ -39,14 +39,14 @@ jobs:
       contents: write
     steps:
       - name: Check out the code
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.release_branch }}
 
       - name: Create release with version bump
         id: release
-        uses: Deltares-research/github-actions/actions/release/github@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
+        uses: Deltares-research/github-actions/actions/release/github@2362f622737db2d19ef48f8bc972a1cb268166b5 # github-release/v1.2.1
         with:
           release-branch: ${{ github.event.inputs.release_branch }}
           increment: ${{ github.event.inputs.increment }}
@@ -58,6 +58,6 @@ jobs:
           build-wheel: 'true'
 
       - name: Publish package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
