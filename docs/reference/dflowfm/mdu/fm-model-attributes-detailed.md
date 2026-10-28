@@ -41,6 +41,12 @@ classDiagram
       sedimentmodelnr?: int (alias=Sedimentmodelnr)
       morfile: DiskOnlyFileModel [file] (alias=MorFile)
       sedfile: DiskOnlyFileModel [file] (alias=SedFile)
+      dredgefile: DiskOnlyFileModel [file] (alias=dredgeFile)
+      morcfl: bool (alias=morCFL)
+      dzbdtmax: float (alias=DzbDtMax)
+      morphopol?: Union[PolyFile, DiskOnlyFileModel] [file] (alias=morphoPol)
+      inmorphopol: int (0 or 1) (alias=inMorphoPol)
+      upperlimitssc: float (alias=upperLimitSSC)
     }
 
     class Wind {
@@ -134,7 +140,7 @@ classDiagram
       netfile?: NetworkModel [file] (alias=netFile)
       drypointsfile?: List[XYZModel|PolyFile] [file] (alias=dryPointsFile)
       structurefile?: List[StructureModel] [file] (alias=structureFile)
-      inifieldfile?: IniFieldModel [file] (alias=iniFieldFile)
+      inifieldfile?: IniFieldModel|DiskOnlyFileModel [file] (alias=iniFieldFile)
       waterlevinifile: DiskOnlyFileModel [file] (alias=waterLevIniFile)
       landboundaryfile?: List[DiskOnlyFileModel] [file] (alias=landBoundaryFile)
       thindamfile?: List[PolyFile] [file] (alias=thinDamFile)

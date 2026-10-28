@@ -17,6 +17,9 @@ classDiagram
         +Optional waterdepthini1d
         +Optional zlayeratubybob
         +Optional shipdeffile
+        +Optional circumcentermethod
+        +Optional circumcentertolerance
+        +Optional calculatebedlevelovernonactivelinks
     }
 
     class ResearchNumerics {
@@ -166,6 +169,9 @@ classDiagram
         +Optional waterdepthini1d
         +Optional zlayeratubybob
         +Optional shipdeffile
+        +Optional circumcentermethod
+        +Optional circumcentertolerance
+        +Optional calculatebedlevelovernonactivelinks
     }
 
     class ResearchNumerics {

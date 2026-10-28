@@ -76,6 +76,18 @@ class ResearchGeometry(Geometry):
             "File *.shd containing ship definitions.",
             alias="shipdeffile",
         )
+        research_circumcentermethod: Optional[str] = Field(
+            DEPRECATED_KEYWORD,
+            alias="circumcentermethod",
+        )
+        research_circumcentertolerance: Optional[str] = Field(
+            DEPRECATED_KEYWORD,
+            alias="circumcentertolerance",
+        )
+        research_calculatebedlevelovernonactivelinks: Optional[str] = Field(
+            "Specifies whether the bed levels must be computed over all links of a cell including the closed boundaries, thin dams and dry points (= 0), or only the flow links. (= 1)",
+            alias="calculatebedlevelovernonactivelinks",
+        )
         research_stripmesh: Optional[str] = Field(
             "Strip unused nodes and links from the mesh after clipping (1: strip, 0: do not strip).",
             alias="stripmesh",
@@ -164,6 +176,19 @@ class ResearchGeometry(Geometry):
     research_waterdepthini1d: Optional[float] = Field(None, alias="waterdepthini1d")
     research_zlayeratubybob: Optional[int] = Field(None, alias="zlayeratubybob")
     research_shipdeffile: Optional[DiskOnlyFileModel] = Field(None, alias="shipdeffile")
+    research_circumcentermethod: Optional[
+        Literal[
+            "internalNetlinksEdge",
+            "internalNetlinksLoop",
+            "allNetlinksLoop",
+        ]
+    ] = Field(None, alias="circumcentermethod")
+    research_circumcentertolerance: Optional[float] = Field(
+        None, alias="circumcentertolerance"
+    )
+    research_calculatebedlevelovernonactivelinks: Optional[bool] = Field(
+        None, alias="calculatebedlevelovernonactivelinks"
+    )
     research_stripmesh: Optional[bool] = Field(None, alias="stripmesh")
     research_bedwavelength: Optional[float] = Field(None, alias="bedwavelength")
     research_removesmalllinkstrsh: Optional[float] = Field(
@@ -923,7 +948,7 @@ class ResearchVegetation(Vegetation):
 
         research_stemheightconvention: Optional[str] = Field(
             "Stem height convention: 'upward_from_bed' or 'downward_from_surface'.",
-            alias="stemheightconvention"
+            alias="stemheightconvention",
         )
 
     comments: Comments = Comments()

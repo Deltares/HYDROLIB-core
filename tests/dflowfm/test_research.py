@@ -1,9 +1,10 @@
 from pathlib import Path
 
 import pytest
-
 from pydantic import ValidationError
 
+from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.dflowfm.mdu.models import FMModel
 from hydrolib.core.dflowfm.research.models import (
     ResearchFMModel,
     ResearchGeneral,
@@ -130,3 +131,79 @@ class TestResearchFMModel:
         model = ResearchFMModel(filepath=input_mdu)
 
         assert model.veg.research_stemheightconvention == "downward_from_surface"
+
+
+class TestResearchGeometryMorphologyKeywords:
+    def test_loads_morphology_and_research_geometry_keywords(self):
+        input_mdu = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "mdu_morphology_and_research_geometry_keywords.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu, recurse=False)
+
+        assert model.geometry.research_circumcentermethod == "internalNetlinksEdge"
+        assert model.geometry.research_circumcentertolerance == pytest.approx(1e-12)
+        assert model.sediment.dredgefile.filepath == Path("dredging.dad")
+        assert model.sediment.morcfl is False
+        assert model.sediment.dzbdtmax == pytest.approx(0.4)
+        assert model.sediment.morphopol.filepath == Path("morphology.pol")
+        assert model.sediment.inmorphopol == 0
+
+    def test_loads_research_geometry_keywords(self):
+        input_mdu = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "mdu_research_geometry_keywords.mdu"
+        )
+
+        model = ResearchFMModel(filepath=input_mdu, recurse=False)
+
+        assert model.geometry.research_circumcentermethod == "internalNetlinksLoop"
+        assert model.geometry.research_circumcentertolerance == pytest.approx(1e-8)
+        assert model.geometry.research_calculatebedlevelovernonactivelinks is True
+
+    def test_standard_fmmodel_still_rejects_research_geometry_keywords(self):
+        input_mdu = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "mdu_research_geometry_keywords.mdu"
+        )
+
+        with pytest.raises(ValidationError):
+            FMModel(filepath=input_mdu, recurse=False)
+
+    def test_none_research_geometry_keywords_are_not_saved(self, tmp_path):
+        output_mdu = tmp_path / "research_geometry.mdu"
+        ResearchFMModel().save(filepath=output_mdu)
+
+        content = output_mdu.read_text(encoding="utf-8").lower()
+        for keyword in (
+            "circumcentermethod",
+            "circumcentertolerance",
+            "calculatebedlevelovernonactivelinks",
+        ):
+            assert keyword not in content
+
+    def test_circumcenter_method_rejects_values_outside_spec_enum(self):
+        with pytest.raises(ValidationError):
+            ResearchGeometry(research_circumcentermethod="invalid")
+
+    def test_recurse_false_accepts_inifieldfile(self, tmp_path: Path):
+        input_mdu = tmp_path / "research_model.mdu"
+        input_mdu.write_text(
+            "[General]\n"
+            "fileType = modelDef\n"
+            "fileVersion = 1.09\n"
+            "program = D-Flow FM\n"
+            "version = 1.2.60.64623M\n"
+            "[Geometry]\n"
+            "iniFieldFile = initialFields.ini\n",
+            encoding="utf-8",
+        )
+
+        model = ResearchFMModel(filepath=input_mdu, recurse=False)
+
+        assert isinstance(model.geometry.inifieldfile, DiskOnlyFileModel)
+        assert model.geometry.inifieldfile.filepath == Path("initialFields.ini")

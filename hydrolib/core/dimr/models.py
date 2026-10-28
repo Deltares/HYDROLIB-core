@@ -1,11 +1,12 @@
 """Dimr models."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Annotated, Callable, Literal,  Type
+from typing import Annotated, Callable, Literal, Type
 
-from pydantic import Field, ValidationInfo, field_validator
+from pydantic import Discriminator, Field, Tag, ValidationInfo, field_validator
 
 from hydrolib.core import __version__
 from hydrolib.core.base.models import (
@@ -141,6 +142,16 @@ class RRComponent(Component):
     @classmethod
     def get_model(cls):
         return RainfallRunoffModel
+
+
+class GenericComponent(Component):
+    """Component whose BMI library is not modeled by HYDROLIB-core."""
+
+    @classmethod
+    def get_model(cls) -> Type[FileModel]:
+        raise NotImplementedError(
+            "HYDROLIB-core does not provide a model for this component library."
+        )
 
 
 class Documentation(BaseModel):
@@ -291,7 +302,7 @@ class Parallel(ControlModel):
     """
 
     _type: Literal["parallel"] = "parallel"
-    startGroup: StartGroup
+    startGroup: StartGroup | None = None
     start: ComponentOrCouplerRef
 
 
@@ -307,8 +318,28 @@ class Start(ControlModel):
     name: str
 
 
+def _component_discriminator(value: object) -> str | None:
+    if isinstance(value, Mapping):
+        library = value.get("library")
+    elif isinstance(value, Component):
+        library = value.library
+    else:
+        return None
+
+    if library == "rr_dll":
+        return "rr_dll"
+    if library == "dflowfm":
+        return "dflowfm"
+    if isinstance(library, str):
+        return "generic"
+    return None
+
+
 ComponentUnion = Annotated[
-    RRComponent | FMComponent, Field(discriminator="library")
+    Annotated[RRComponent, Tag("rr_dll")]
+    | Annotated[FMComponent, Tag("dflowfm")]
+    | Annotated[GenericComponent, Tag("generic")],
+    Discriminator(_component_discriminator),
 ]
 
 
@@ -324,7 +355,7 @@ class DIMR(ParsableFileModel):
             May be empty while constructing, but must be non-empty when saving!
             Also, all referenced components must be present in `component` when
             saving. Similarly, all referenced couplers must be present in `coupler`.
-        component (list[RRComponent | FMComponent | Component]): list of
+        component (list[RRComponent | FMComponent | GenericComponent]): list of
             `<component>` elements that defines which programs can be used inside
             the `<control>` subelements. Must be non-empty when saving!
         coupler (list[Coupler] | None): optional list of `<coupler>` elements

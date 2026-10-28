@@ -1,0 +1,15 @@
+[General]
+fileType = modelDef
+fileVersion = 1.09
+program = D-Flow FM
+version = 1.2.60.64623M
+autoStart = 0
+pathsRelativeToParent = 0
+
+[Sediment]
+dredgeFile = dredging.dad
+MORCFL = 0
+dzbdtmax = 0.25
+MorphoPol = morphology.pol
+inMorphoPol = 0
+upperlimitssc = 2.5e-6

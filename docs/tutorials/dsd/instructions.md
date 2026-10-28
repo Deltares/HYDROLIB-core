@@ -91,7 +91,7 @@ The table below contains the models relevant for today's exercises.
 | New external forcing file (*_bnd.ext)       	| ExtModel         	| Model definition file > external forcing > extForceFileNew 	|
 | Boundary conditions file (*.bc)             	| ForcingModel     	| New external forcing file > boundary > forcingFile         	|
 | 1D initial conditions field file (*.ini)    	| OneDFieldModel   	| Initial field file > initial > dataFile                    	|
-| Initial field file (*.ini)                  	| IniFieldModel    	| Model definition file > geometry > iniFieldFile            	|
+| Initial field file (*.ini)                  	| IniFieldModel (recursive) / DiskOnlyFileModel (recurse=False) | Model definition file > geometry > iniFieldFile            	|
 | Structures file (structures.ini)            	| StructureModel   	| Model definition file > geometry > structureFile           	|
 
 ### Commonly used functions of a FileModel
