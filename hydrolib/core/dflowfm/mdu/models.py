@@ -775,9 +775,7 @@ class Sediment(INIBasedModel):
     ] = Field(default_factory=lambda: DiskOnlyFileModel(None), alias="dredgeFile")
     morcfl: bool = Field(True, alias="morCFL")
     dzbdtmax: float = Field(0.1, alias="DzbDtMax")
-    morphopol: Optional[Union[PolyFile, DiskOnlyFileModel]] = Field(
-        None, alias="morphoPol"
-    )
+    morphopol: PolyFile | DiskOnlyFileModel | None = Field(None, alias="morphoPol")
     inmorphopol: int = Field(1, alias="inMorphoPol")
     upperlimitssc: float = Field(1e-6, alias="upperLimitSSC")
 
@@ -2188,7 +2186,7 @@ class Geometry(INIBasedModel):
     netfile: Optional[Union[NetworkModel, DiskOnlyFileModel]] = Field(
         default_factory=NetworkModel, alias="netFile"
     )
-    bathymetryfile: Optional[Union[XYZModel, DiskOnlyFileModel]] = Field(
+    bathymetryfile: XYZModel | DiskOnlyFileModel | None = Field(
         None, alias="bathymetryFile"
     )
     drypointsfile: Optional[List[DryPointsFile]] = Field(
@@ -2197,7 +2195,7 @@ class Geometry(INIBasedModel):
     structurefile: Optional[List[Union[StructureModel, DiskOnlyFileModel]]] = Field(
         None, alias="structureFile", json_schema_extra={"delimiter": ";"}
     )
-    inifieldfile: Optional[Union[IniFieldModel, DiskOnlyFileModel]] = Field(
+    inifieldfile: IniFieldModel | DiskOnlyFileModel | None = Field(
         None, alias="iniFieldFile"
     )
     waterlevinifile: Annotated[

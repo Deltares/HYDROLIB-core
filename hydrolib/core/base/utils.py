@@ -7,6 +7,7 @@ from enum import Enum, auto
 from hashlib import md5
 from operator import eq, ge, gt, le, lt, ne
 from pathlib import Path
+from types import UnionType
 from typing import Annotated, Any, Callable, List, Optional, Union, get_args, get_origin
 
 from pydantic import ValidationInfo
@@ -290,7 +291,7 @@ class PathToDictionaryConverter:
         while stack:
             current = stack.pop()
             origin = get_origin(current)
-            if origin is Union:
+            if origin in (Union, UnionType):
                 stack.append(get_args(current)[0])
                 continue
             if origin is Annotated:
@@ -315,7 +316,7 @@ class PathToDictionaryConverter:
         while stack:
             current = stack.pop()
             origin = get_origin(current)
-            if origin is Union:
+            if origin in (Union, UnionType):
                 stack.append(get_args(current)[0])
                 continue
             if origin is Annotated:

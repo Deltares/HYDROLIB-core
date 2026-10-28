@@ -682,6 +682,9 @@ class TestPathToDictionaryConverter:
             (str, False),
             (Optional[FileModel], True),
             (Optional[DiskOnlyFileModel], True),
+            (FileModel | None, True),
+            (DiskOnlyFileModel | None, True),
+            (FileModel | DiskOnlyFileModel | None, True),
             (Optional[List[FileModel]], False),
             (dict[str, int], False),
         ],
@@ -702,6 +705,8 @@ class TestPathToDictionaryConverter:
             (List[DiskOnlyFileModel], True),
             (Optional[List[FileModel]], True),
             (Optional[List[DiskOnlyFileModel]], True),
+            (list[FileModel] | None, True),
+            (list[DiskOnlyFileModel] | None, True),
             (dict[str, int], False),
         ],
     )
