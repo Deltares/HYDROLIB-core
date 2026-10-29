@@ -29,7 +29,7 @@ jobs:
         uses: Deltares-research/github-actions/actions/python-setup/poetry@35542e0d629396ac64162d8a5df6110484009147 # poetry/v1.1.2
         with:
           python-version: "3.12"
-          version: 2.3.3
+          version: 2.5.1
 
       - name: Audit dependencies with pip-audit
         # pip-audit checks the pinned packages of the locked environment against the
