@@ -20,11 +20,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@2362f622737db2d19ef48f8bc972a1cb268166b5 # mkdocs-deploy/v1.1.1
         with:
           trigger: pr
           package-manager: poetry
@@ -38,11 +38,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@2362f622737db2d19ef48f8bc972a1cb268166b5 # mkdocs-deploy/v1.1.1
         with:
           trigger: main
           package-manager: poetry
@@ -59,7 +59,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ github.event.workflow_run.head_branch || github.ref }}
@@ -88,7 +88,7 @@ jobs:
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
           echo "prerelease=${IS_PRERELEASE}" >> "$GITHUB_OUTPUT"
 
-      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@e40b79ba9ee2e6d8d16dde4610f02c3a5af9de5a
+      - uses: Deltares-research/github-actions/actions/mkdocs-deploy@2362f622737db2d19ef48f8bc972a1cb268166b5 # mkdocs-deploy/v1.1.1
         with:
           trigger: release
           package-manager: poetry
