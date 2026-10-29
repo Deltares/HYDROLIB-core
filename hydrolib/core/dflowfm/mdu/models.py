@@ -19,7 +19,7 @@ from hydrolib.core.base.models import (
     FileModel,
     set_default_disk_only_file_model,
 )
-from hydrolib.core.base.utils import PathToDictionaryConverter
+from hydrolib.core.base.utils import PathToDictionaryConverter, parse_files_names
 from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
@@ -1022,7 +1022,7 @@ class ExternalForcing(INIBasedModel):
     extforcefile: Optional[Union[ExtOldModel, DiskOnlyFileModel]] = Field(
         None, alias="extForceFile"
     )
-    extforcefilenew: Optional[Union[ExtModel, DiskOnlyFileModel]] = Field(
+    extforcefilenew: Optional[List[Union[ExtModel, DiskOnlyFileModel]]] = Field(
         None, alias="extForceFileNew"
     )
     rainfall: Optional[bool] = Field(None, alias="rainfall")
@@ -1038,6 +1038,13 @@ class ExternalForcing(INIBasedModel):
     def _validate_ext_force_file(cls, value, info: ValidationInfo):
         return PathToDictionaryConverter.convert(cls, value, info)
 
+    @field_validator("extforcefilenew", mode="before")
+    @classmethod
+    def _split_extforcefilenew(cls, v: Any) -> Any:
+        """Split a string into file names; quote-aware so quoted names keep spaces."""
+        if isinstance(v, str):
+            v = parse_files_names(v)
+        return v
 
 class Hydrology(INIBasedModel):
     """
