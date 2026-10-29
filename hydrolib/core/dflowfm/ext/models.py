@@ -351,13 +351,15 @@ class Lateral(CoordinateValidator, INIBasedModel):
     ] | None = Field(None, alias="locationFile")
     applytransport: int | None = Field(None, alias="applyTransport")
     discharge: ForcingData = Field(alias="discharge")
+    salinity: ForcingData | None = Field(None, alias="salinity")
+    temperature: ForcingData | None = Field(None, alias="temperature")
 
     def is_intermediate_link(self) -> bool:
         return True
 
-    @field_validator("discharge", mode="before")
+    @field_validator("discharge", "salinity", "temperature", mode="before")
     @classmethod
-    def validate_discharge(cls, v):
+    def validate_forcing_data(cls, v):
         return _resolve_forcing_data(v)
 
     @model_validator(mode="before")
@@ -377,6 +379,12 @@ class Lateral(CoordinateValidator, INIBasedModel):
         The helper applies the detailed consistency checks for each alternative
         (including coordinate-length checks and `locationType` validation).
         """
+        lowercase_map = {k.lower(): k for k in values}
+        if "salinitydelta" in lowercase_map and "salinity" not in values:
+            values["salinity"] = values.pop(lowercase_map["salinitydelta"])
+        if "temperaturedelta" in lowercase_map and "temperature" not in values:
+            values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
+
         location_validator = LocationValidatorUtils(
             values,
             config=LocationValidationConfiguration(
