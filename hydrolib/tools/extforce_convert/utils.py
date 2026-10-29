@@ -15,6 +15,7 @@ from pydantic import (
 )
 
 from hydrolib import __path__
+from hydrolib.core.base import DiskOnlyFileModel
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.models import FileModel
 from hydrolib.core.dflowfm.common import DataFileType, InterpolationMethod
@@ -91,7 +92,7 @@ with CONVERTER_DATA_PATH.open("r") as fh:
 
 
 def construct_filemodel_new_or_existing(
-    model_class: Type[FileModel], filepath: PathOrStr, *args, **kwargs
+    model_class: Type[FileModel], filepath: PathOrStr | DiskOnlyFileModel, *args, **kwargs
 ) -> FileModel:
     """Construct a new instance of a FileModel subclass, either loading an existing model file, or starting a blank one.
 

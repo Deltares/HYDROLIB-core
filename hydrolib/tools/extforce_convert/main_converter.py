@@ -59,6 +59,7 @@ class ExternalForcingConverter:
         path_style: PathStyle | None = None,
         debug: bool | None = False,
         mba_file: PathOrStr | None = None,
+        recurse: bool = False
     ):
         r"""Initialize the converter.
 
@@ -145,7 +146,7 @@ class ExternalForcingConverter:
 
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
         self._structure_model = construct_filemodel_new_or_existing(
-            StructureModel, path, recurse=False
+            StructureModel, path, recurse=recurse
         )
 
         path = rdir / "new_mba.ini" if mba_file is None else mba_file
@@ -594,6 +595,7 @@ class ExternalForcingConverter:
         mdu_file: PathOrStr,
         path_style: PathStyle | None = None,
         debug: bool = False,
+        recurse: bool = False
     ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
 
@@ -613,6 +615,8 @@ class ExternalForcingConverter:
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+            recurse (bool, Optional):
+                Whether to recursively save the models. Defaults to False.
 
         Returns:
             ExternalForcingConverter: The converter object.
@@ -629,7 +633,7 @@ class ExternalForcingConverter:
         )
 
         ext_file = mdu_parser.extforce_block.get_new_extforce_file()
-        structure_file = mdu_parser.get_structure_file()
+        structure_file = mdu_parser.get_structure_file(recurse=recurse)
         mba_file = mdu_parser.get_mba_file()
 
         return cls(
@@ -640,6 +644,7 @@ class ExternalForcingConverter:
             path_style=path_style,
             debug=debug,
             mba_file=mba_file,
+            recurse=recurse,
         )
 
     def _update_mdu_file(self):
@@ -699,6 +704,7 @@ def recursive_converter(
     suppress_errors: bool = False,
     remove_legacy: bool = False,
     debug: bool = False,
+    recurse: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -722,7 +728,9 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(path, debug=debug)
+                converter = ExternalForcingConverter.from_mdu(
+                    path, debug=debug, recurse=recurse
+                )
                 _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:

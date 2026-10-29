@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from hydrolib.core.base import DiskOnlyFileModel
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.parser import open_file_with_fallback_encoding
 from hydrolib.core.base.utils import parse_files_names
@@ -1259,12 +1260,15 @@ class MDUParser:
 
         return path
 
-    def get_structure_file(self) -> Path | None:
+    def get_structure_file(self, recurse: bool) -> Path | None:
         structure_file = self.get_keyword(STRUCTURE_FILE_LINE)
         root_dir = self.mdu_path.parent
 
         if structure_file:
-            path = (root_dir / Path(structure_file)).resolve()
+            if recurse:
+                path = (root_dir / Path(structure_file)).resolve()
+            else:
+                path = DiskOnlyFileModel(filepath=root_dir / Path(structure_file))
         else:
             print("The structure file is not found in the mdu file.")
             path = None

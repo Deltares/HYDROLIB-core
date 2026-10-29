@@ -151,6 +151,12 @@ def _get_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--recurse",
+        action="store_true",
+        default=False,
+        help="Recursively resolve and load referenced files when converting.",
+    )
+    parser.add_argument(
         "--no-backup",
         dest="backup",
         action="store_false",
@@ -240,6 +246,7 @@ def main(args=None):
             backup=args.backup,
             remove_legacy=args.remove_legacy,
             debug=args.debug_mode,
+            recurse=args.recurse,
         )
     else:
         print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
@@ -259,6 +266,7 @@ def convert_with_mdu_file(args: Namespace):
         args.mdufile,
         path_style=args.path_style,
         debug=args.debug_mode,
+        recurse=args.recurse,
     )
     convert(converter, args)
 
@@ -289,7 +297,7 @@ def convert(converter: ExternalForcingConverter, args: Namespace):
     converter.update()
     print("Converting the old external forcing file to the new format files is done.")
     print("Saving the new files ...")
-    converter.save(backup=args.backup, recursive=True)
+    converter.save(backup=args.backup, recursive=args.recurse)
     print("The new files are saved.")
     if args.remove_legacy:
         print("Cleaning legacy tim files ...")
