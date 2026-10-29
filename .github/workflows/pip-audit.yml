@@ -21,12 +21,13 @@ concurrency:
 jobs:
   pip-audit:
     # poetry.lock can resolve different package versions per python version, so every python version of the test
-    # matrix in tests.yml is audited, except 3.10: its locked pillow and tornado have known advisories whose fixed
-    # releases require python >= 3.11, so that leg could only ever fail. Keep this list in sync with tests.yml.
+    # matrix in tests.yml is audited. Keep this list in sync with tests.yml.
+    # The python 3.10 leg is report-only: its locked pillow and tornado have known advisories whose fixed releases
+    # require python >= 3.11, so no upgrade exists. Findings there show up as a warning but do not fail the workflow.
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -39,12 +40,19 @@ jobs:
           version: 2.5.1
 
       - name: Audit dependencies with pip-audit
+        id: audit
         # pip-audit checks the pinned packages of the locked environment against the
         # PyPI/OSV advisory DB. It is run via pipx so it is never added to the project's
-        # own dependency graph. The job fails only when a real vulnerability is reported
-        # (pip-audit exits non-zero).
+        # own dependency graph. The step fails only when a real vulnerability is reported
+        # (pip-audit exits non-zero); on the report-only python 3.10 leg that failure does not fail the job.
+        continue-on-error: ${{ matrix.python-version == '3.10' }}
         run: |
           poetry run python -m pip freeze --exclude-editable \
             | grep -E '^[A-Za-z0-9_.-]+==' > "${RUNNER_TEMP}/pip-audit-reqs.txt"
           echo "Auditing $(wc -l < "${RUNNER_TEMP}/pip-audit-reqs.txt") pinned packages against the advisory DB"
           pipx run pip-audit --requirement "${RUNNER_TEMP}/pip-audit-reqs.txt" --desc
+
+      - name: Report advisories on the report-only python version
+        if: steps.audit.outcome == 'failure'
+        run: |
+          echo "::warning::pip-audit found advisories on python ${{ matrix.python-version }} (report-only, not failing the workflow)."
