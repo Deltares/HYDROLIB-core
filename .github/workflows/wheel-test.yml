@@ -36,7 +36,7 @@ jobs:
       - name: Install poetry
         uses: abatilo/actions-poetry@3765cf608f2d4a72178a9fc5b918668e542b89b1 # v4.0.0
         with:
-          poetry-version: 2.3.3
+          poetry-version: 2.5.1
 
       - name: install libomp for macos (required by meshkernel)
         if: matrix.os == 'macos-latest'
