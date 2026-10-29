@@ -4,7 +4,7 @@
 #
 #   For more information about dev-containers in general, please refer to
 #       https://aka.ms/vscode-docker-python
-FROM python:3.9-buster as python-base
+FROM python:3.11-buster as python-base
 
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
