@@ -55,6 +55,20 @@ class TestCrossSectionDefinition:
         assert m.definition[3].frictionids == m2.definition[3].frictionids
         assert m.definition[3].ycoordinates == m2.definition[3].ycoordinates
 
+    def test_reassign_frictionids_on_parsed_definition(self):
+        data = {
+            "id": "Prof1",
+            "yzcount": 3,
+            "ycoordinates": [0.0, 1.0, 2.0],
+            "zcoordinates": [0.0, -1.0, 0.0],
+            "frictionids": ["channels"],
+        }
+        definition = YZCrsDef(**data)
+
+        definition.frictionids = ["dique"]
+
+        assert definition.frictionids == ["dique"]
+
     circledef = {
         "id": "Prof1",
         "diameter": 3.14,
