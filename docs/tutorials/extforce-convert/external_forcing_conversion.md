@@ -26,24 +26,24 @@ This document provides detailed usage instructions, argument descriptions, and e
 ## Introduction
 
 `extforce-convert` is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. This tool can handle:
-- Conversions of a single `mdu` file.
-- Conversions of a standalone legacy external forcing file.
+- Conversions of a single `mdu` file, also converting all model files that are linked to it.
 - Recursively converting all `.mdu` files within a specified directory.
-
-Note: Depending on your installation, the executable may be named `extforce-convert` or `extforce_convert`. You can always run it as a module: `python -m hydrolib.tools.extforce_convert.cli`.
 
 ---
 
 ## Installation
 
-To use the CLI directly from your terminal, ensure that:
-1. The `hydrolib` Python package is installed in your environment.
+To use the `extforce-convert` CLI directly from your terminal, make sure that the `hydrolib-core` Python package is installed in your environment.
 
-If `extforce-convert` is distributed as part of `hydrolib`, simply install or update `hydrolib`:
+Simply install or update `hydrolib-core` in your environment:
 ```bash
-pip install hydrolib
+pip install hydrolib-core
 ```
-Once installed, the `extforce-convert` command should be available in your PATH if your Python script folder is accessible. Alternatively, you may run it using:
+Once installed, the `extforce-convert` command should be available in your PATH:
+```bash
+extforce-convert [options]
+```
+This will not work if your Python script folder is not acceccible. Alternatively, you may run it using (note the underscore):
 ```bash
 python -m hydrolib.tools.extforce_convert.cli [options]
 ```
@@ -56,7 +56,7 @@ The basic usage pattern is:
 ```bash
 extforce-convert [options]
 ```
-Where exactly one of `--mdufile`, `--extoldfile`, or `--dir` is required.
+Where exactly one of `--mdufile` or `--dir` is required.
 
 ---
 
@@ -66,7 +66,7 @@ Below is a complete list of arguments supported by the CLI:
 
 ### `--version`
 **Syntax**: `--version`  
-Displays the version of the `hydrolib` package currently installed, then exits.
+Displays the version of the `hydrolib-core` package currently installed, then exits.
 
 ### `--verbose` / `-v`
 **Syntax**: `--verbose` or `-v`  
@@ -86,11 +86,6 @@ You must choose **one** of these three arguments to specify your source of legac
 **Syntax**: `--mdufile MDUFILE` or `-m MDUFILE`  
 Specifies an `mdu` file from which input and output filenames for the conversion are automatically inferred.
 - **Example**: `-m path/to/project.mdu`
-
-#### `--extoldfile` / `-e`
-**Syntax**: `--extoldfile EXTOLDFILE` or `-e EXTOLDFILE`  
-Specifies a single legacy external forcing file (e.g., `.ext` format) to be converted.
-- **Example**: `-e path/to/old_external_forcing.ext`
 
 #### `--dir` / `-d`
 **Syntax**: `--dir DIRECTORY` or `-d DIRECTORY`  
