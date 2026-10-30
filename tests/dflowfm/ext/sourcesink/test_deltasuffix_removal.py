@@ -46,10 +46,10 @@ class TestRecurseBase:
     @staticmethod
     def _create_model(model_dir: Path) -> Tuple[Path, Path, Path]:
         model_dir.mkdir(parents=True, exist_ok=True)
-        old_file = model_dir / "old_ext.txt"
+        old_file = model_dir / "old_ext.ext"
         old_file.write_text(_OLD_EXT_CONTENT)
 
-        ext_file = model_dir / "new_ext.txt"
+        ext_file = model_dir / "new_ext.ext"
         ext_file.write_text(_NEW_EXT_CONTENT)
 
         bc_file = model_dir / "pt_discharge.bc"
