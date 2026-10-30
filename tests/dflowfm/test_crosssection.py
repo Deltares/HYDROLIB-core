@@ -55,6 +55,78 @@ class TestCrossSectionDefinition:
         assert m.definition[3].frictionids == m2.definition[3].frictionids
         assert m.definition[3].ycoordinates == m2.definition[3].ycoordinates
 
+    @pytest.mark.parametrize(
+        "definition_cls, data, attribute, old_value, new_value",
+        [
+            pytest.param(
+                CircleCrsDef,
+                {"diameter": 1.0},
+                "frictionid",
+                "channels",
+                "dique",
+                id="circle",
+            ),
+            pytest.param(
+                RectangleCrsDef,
+                {"width": 1.0, "height": 1.0},
+                "frictionid",
+                "channels",
+                "dique",
+                id="rectangle",
+            ),
+            pytest.param(
+                YZCrsDef,
+                {
+                    "yzcount": 3,
+                    "ycoordinates": [0.0, 1.0, 2.0],
+                    "zcoordinates": [0.0, -1.0, 0.0],
+                },
+                "frictionids",
+                ["channels"],
+                ["dique"],
+                id="yz",
+            ),
+            pytest.param(
+                XYZCrsDef,
+                {
+                    "xyzcount": 3,
+                    "xcoordinates": [0.0, 1.0, 2.0],
+                    "ycoordinates": [0.0, 1.0, 2.0],
+                    "zcoordinates": [0.0, -1.0, 0.0],
+                },
+                "frictionids",
+                ["channels"],
+                ["dique"],
+                id="xyz",
+            ),
+        ],
+    )
+    def test_reassign_friction_on_definition(
+        self, definition_cls, data, attribute, old_value, new_value
+    ):
+        definition = definition_cls(id="Prof1", **data, **{attribute: old_value})
+
+        setattr(definition, attribute, new_value)
+
+        assert getattr(definition, attribute) == new_value
+
+    def test_none_fields_are_dropped_on_construction_but_kept_on_assignment(self):
+        # Guards the pydantic behavior INIBasedModel relies on: ValidationInfo.field_name
+        # is None while constructing and set while assigning (pydantic >= 2.12).
+        definition = YZCrsDef(
+            id="Prof1",
+            yzcount=3,
+            ycoordinates=[0.0, 1.0, 2.0],
+            zcoordinates=[0.0, -1.0, 0.0],
+            frictionids=None,
+        )
+        assert "frictionids" not in definition.model_fields_set
+
+        definition.frictionids = ["dique"]
+
+        assert "frictionids" in definition.model_fields_set
+        assert definition.frictiontypes is None
+
     circledef = {
         "id": "Prof1",
         "diameter": 3.14,

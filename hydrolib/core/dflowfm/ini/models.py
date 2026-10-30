@@ -26,6 +26,7 @@ from pydantic import (
     ConfigDict,
     Field,
     GetCoreSchemaHandler,
+    ValidationInfo,
     field_validator,
     model_validator,
 )
@@ -196,33 +197,34 @@ class INIBasedModel(ListFieldDelimiter, BaseModel, ABC):
 
     @model_validator(mode="before")
     @classmethod
-    def _skip_nones_and_set_header(cls, values):
+    def _skip_nones_and_set_header(cls, values, info: ValidationInfo):
         """Drop None fields for known fields.
 
-        Filters out None values and sets the model header.
+        Filters out None values and sets the model header. The None values are kept when
+        validating an attribute assignment (`info.field_name` is set), because the
+        remaining validators expect every field to still be present on the model.
 
         Args:
             values (dict): Dictionary of field values.
+            info (ValidationInfo): Validation info; `field_name` is set on assignment.
 
         Returns:
             dict: Updated field values with None values removed.
         """
         # Convert Section to dictionary if needed
         values = cls._convert_section_to_dict(values)
-        if not isinstance(values, dict):
-            return values
+        if isinstance(values, dict):
+            # field_name is None on construction/parsing and set on attribute assignment
+            if info.field_name is None:
+                dropkeys = [
+                    k for k, v in values.items() if v is None and k in cls.model_fields
+                ]
+                logger.info(f"Dropped unset keys: {dropkeys}")
+                for k in dropkeys:
+                    values.pop(k)
 
-        dropkeys = []
-        for k, v in values.items():
-            if v is None and k in cls.model_fields.keys():
-                dropkeys.append(k)
-
-        logger.info(f"Dropped unset keys: {dropkeys}")
-        for k in dropkeys:
-            values.pop(k)
-
-        if "_header" in values:
-            values["_header"] = cls._header
+            if "_header" in values:
+                values["_header"] = cls._header
 
         return values
 
