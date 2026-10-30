@@ -214,8 +214,7 @@ class INIBasedModel(ListFieldDelimiter, BaseModel, ABC):
         # Convert Section to dictionary if needed
         values = cls._convert_section_to_dict(values)
         if isinstance(values, dict):
-            # for attribute assignment, we want to keep the None values, because the remaining validators expect every
-            # field to still be present on the model (the info.field_name is None for the initial model validation, but is set for attribute assignment)
+            # field_name is None on construction/parsing and set on attribute assignment
             if info.field_name is None:
                 dropkeys = [
                     k for k, v in values.items() if v is None and k in cls.model_fields
