@@ -1623,17 +1623,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#-extoldfile-e" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        --extoldfile / -e
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#-dir-d" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4025,17 +4014,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#-extoldfile-e" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        --extoldfile / -e
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#-dir-d" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4179,18 +4157,18 @@ You're not viewing the latest release version.
 <hr />
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p><code>extforce-convert</code> is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. This tool can handle:
-- Conversions of a single <code>mdu</code> file.
-- Conversions of a standalone legacy external forcing file.
+- Conversions of a single <code>mdu</code> file, also converting all model files that are linked to it.
 - Recursively converting all <code>.mdu</code> files within a specified directory.</p>
-<p>Note: Depending on your installation, the executable may be named <code>extforce-convert</code> or <code>extforce_convert</code>. You can always run it as a module: <code>python -m hydrolib.tools.extforce_convert.cli</code>.</p>
 <hr />
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>To use the CLI directly from your terminal, ensure that:
-1. The <code>hydrolib</code> Python package is installed in your environment.</p>
-<p>If <code>extforce-convert</code> is distributed as part of <code>hydrolib</code>, simply install or update <code>hydrolib</code>:
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>hydrolib
+<p>To use the <code>extforce-convert</code> CLI directly from your terminal, make sure that the <code>hydrolib-core</code> Python package is installed in your environment.</p>
+<p>Simply install or update <code>hydrolib-core</code> in your environment:
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>hydrolib-core
 </code></pre></div>
-Once installed, the <code>extforce-convert</code> command should be available in your PATH if your Python script folder is accessible. Alternatively, you may run it using:
+Once installed, the <code>extforce-convert</code> command should be available in your PATH:
+<div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+This will not work if your Python script folder is not acceccible. Alternatively, you may run it using (note the underscore):
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>hydrolib.tools.extforce_convert.cli<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 </code></pre></div></p>
 <hr />
@@ -4198,13 +4176,13 @@ Once installed, the <code>extforce-convert</code> command should be available in
 <p>The basic usage pattern is:
 <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 </code></pre></div>
-Where exactly one of <code>--mdufile</code>, <code>--extoldfile</code>, or <code>--dir</code> is required.</p>
+Where exactly one of <code>--mdufile</code> or <code>--dir</code> is required.</p>
 <hr />
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p>Below is a complete list of arguments supported by the CLI:</p>
 <h3 id="-version"><code>--version</code><a class="headerlink" href="#-version" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--version</code><br />
-Displays the version of the <code>hydrolib</code> package currently installed, then exits.</p>
+Displays the version of the <code>hydrolib-core</code> package currently installed, then exits.</p>
 <h3 id="-verbose-v"><code>--verbose</code> / <code>-v</code><a class="headerlink" href="#-verbose-v" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--verbose</code> or <code>-v</code><br />
 Enables additional diagnostic information during the conversion process. Use this option if you need more insight into what the tool is doing.</p>
@@ -4218,10 +4196,6 @@ Convert the supported quantities only and leave unsupported quantities in the ol
 <p><strong>Syntax</strong>: <code>--mdufile MDUFILE</code> or <code>-m MDUFILE</code><br />
 Specifies an <code>mdu</code> file from which input and output filenames for the conversion are automatically inferred.
 - <strong>Example</strong>: <code>-m path/to/project.mdu</code></p>
-<h4 id="-extoldfile-e"><code>--extoldfile</code> / <code>-e</code><a class="headerlink" href="#-extoldfile-e" title="Permanent link">&para;</a></h4>
-<p><strong>Syntax</strong>: <code>--extoldfile EXTOLDFILE</code> or <code>-e EXTOLDFILE</code><br />
-Specifies a single legacy external forcing file (e.g., <code>.ext</code> format) to be converted.
-- <strong>Example</strong>: <code>-e path/to/old_external_forcing.ext</code></p>
 <h4 id="-dir-d"><code>--dir</code> / <code>-d</code><a class="headerlink" href="#-dir-d" title="Permanent link">&para;</a></h4>
 <p><strong>Syntax</strong>: <code>--dir DIRECTORY</code> or <code>-d DIRECTORY</code><br />
 Specifies a directory path; the tool will search recursively for <code>.mdu</code> files and convert them.
