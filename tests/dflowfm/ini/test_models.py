@@ -1,10 +1,15 @@
 from math import nan
+from types import SimpleNamespace
 from typing import List
 
 import pytest
 from pydantic import ValidationError
 
-from hydrolib.core.dflowfm.crosssection.models import CrossDefModel, CrossLocModel
+from hydrolib.core.dflowfm.crosssection.models import (
+    CircleCrsDef,
+    CrossDefModel,
+    CrossLocModel,
+)
 from hydrolib.core.dflowfm.ext.models import ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictionModel
 from hydrolib.core.dflowfm.ini.models import DataBlockINIBasedModel, INIBasedModel
@@ -159,6 +164,40 @@ class TestINIBasedModel:
         test_model.float_values = ["1d1", "2d-1"]
 
         assert test_model.float_values == pytest.approx([1e1, 2e-1])
+
+
+class TestSkipNonesAndSetHeader:
+    """Tests for INIBasedModel._skip_nones_and_set_header."""
+
+    def test_known_none_fields_are_dropped_on_construction(self):
+        info = SimpleNamespace(field_name=None)
+
+        result = CircleCrsDef._skip_nones_and_set_header(
+            {"diameter": None, "unknown": None}, info
+        )
+
+        assert result == {"unknown": None}, f"Unexpected values: {result}"
+
+    def test_none_fields_are_kept_on_attribute_assignment(self):
+        info = SimpleNamespace(field_name="diameter")
+
+        result = CircleCrsDef._skip_nones_and_set_header({"diameter": None}, info)
+
+        assert result == {"diameter": None}, f"Unexpected values: {result}"
+
+    def test_non_dict_values_are_returned_unchanged(self):
+        info = SimpleNamespace(field_name=None)
+
+        result = CircleCrsDef._skip_nones_and_set_header("not a dict", info)
+
+        assert result == "not a dict", f"Unexpected values: {result}"
+
+    def test_header_is_set_when_present(self):
+        info = SimpleNamespace(field_name=None)
+
+        result = CircleCrsDef._skip_nones_and_set_header({"_header": "x"}, info)
+
+        assert result["_header"] != "x", f"Header was not replaced: {result}"
 
 
 class TestINIBasedModelEquality:

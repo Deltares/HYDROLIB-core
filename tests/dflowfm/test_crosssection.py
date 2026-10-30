@@ -69,6 +69,23 @@ class TestCrossSectionDefinition:
 
         assert definition.frictionids == ["dique"]
 
+    def test_none_fields_are_dropped_on_construction_but_kept_on_assignment(self):
+        # Guards the pydantic behavior INIBasedModel relies on: ValidationInfo.field_name
+        # is None while constructing and set while assigning (pydantic >= 2.12).
+        definition = YZCrsDef(
+            id="Prof1",
+            yzcount=3,
+            ycoordinates=[0.0, 1.0, 2.0],
+            zcoordinates=[0.0, -1.0, 0.0],
+            frictionids=None,
+        )
+        assert "frictionids" not in definition.model_fields_set
+
+        definition.frictionids = ["dique"]
+
+        assert "frictionids" in definition.model_fields_set
+        assert definition.frictiontypes is None
+
     circledef = {
         "id": "Prof1",
         "diameter": 3.14,
