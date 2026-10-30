@@ -45,7 +45,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
-    path_relative_to_parent,
+    path_relative_to_parent
 )
 
 
@@ -63,6 +63,7 @@ class ExternalForcingConverter:
         path_style: PathStyle | None = None,
         debug: bool | None = False,
         mba_file: PathOrStr | None = None,
+        recurse: bool = False
     ):
         r"""Initialize the converter.
 
@@ -144,7 +145,7 @@ class ExternalForcingConverter:
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
         self._ext_model = construct_filemodel_new_or_existing(
-            ExtModel, path, recurse=False
+            ExtModel, path, recurse=recurse
         )
 
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
@@ -605,6 +606,7 @@ class ExternalForcingConverter:
         mdu_file: PathOrStr,
         path_style: PathStyle | None = None,
         debug: bool = False,
+        recurse: bool = False,
     ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
 
@@ -651,6 +653,7 @@ class ExternalForcingConverter:
             path_style=path_style,
             debug=debug,
             mba_file=mba_file,
+            recurse=recurse
         )
 
     def _update_mdu_file(self):
@@ -710,6 +713,7 @@ def recursive_converter(
     suppress_errors: bool = False,
     remove_legacy: bool = False,
     debug: bool = False,
+    recurse: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -733,7 +737,9 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(path, debug=debug)
+                converter = ExternalForcingConverter.from_mdu(
+                    path, debug=debug, recurse=recurse
+                )
                 _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:

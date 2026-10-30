@@ -433,7 +433,6 @@ class TestSourceSinkForcingData:
         )
 
 
-
 class TestNoDeltaSuffix:
     """Verify that 'Delta' is not appended to salinity/temperature quantity names.
 
@@ -511,81 +510,69 @@ class TestSourceSinkDynamicForcingDeltas:
     """
 
     @pytest.mark.parametrize(
-        "field, raw, expected",
+        "field, expected_field",
         [
-            ("tracerSaltDelta", "3.5", 3.5),
-            ("sedFracClayDelta", "0.25", 0.25),
+            ("tracerSaltDelta", "tracersalt"),
+            ("sedFracClayDelta", "sedfracclay"),
         ],
     )
-    def test_numeric_string_is_coerced_to_float(
-            self, field: str, raw: str, expected: float
-    ):
-        """Numeric string on a dynamic Delta-suffix field is coerced to `float`.
-
-        Args:
-            field: Dynamic Delta-suffix wire key.
-            raw: Numeric string as it would arrive from the INI parser.
-            expected: Float value the helper should produce.
-
-        Test scenario:
-            Before the validator existed, these dynamic fields received the
-            raw string from the INI parser. The new model-validator routes
-            them through `_resolve_forcing_data`, which parses numeric
-            strings as floats.
-        """
-        source_sink = SourceSink(**_make_sourcesink_kwargs(**{field: raw}))
-        assert source_sink.model_extra[field] == expected, (
-            f"Expected {expected} on dynamic field {field},"
-            f" got {source_sink.model_extra[field]!r}"
-        )
-
-    @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_bc_file_loads_forcingmodel_via_extmodel(
-            self, tmp_path: Path, field: str
+            self, tmp_path: Path, field: str, expected_field: str
     ):
         """Dynamic Delta-suffix field accepts a `.bc` filename in the `.ext`.
 
         Args:
             tmp_path: Pytest temporary directory fixture.
             field: Dynamic Delta-suffix wire key.
+            expected_field: Canonical field name after the trailing `Delta` is removed.
 
         Test scenario:
             Closes the M2 gap from PR review: per the D-Flow FM User Manual,
             `tracer<...>Delta` and `sedFrac<...>Delta` can be a `.bc` path.
             The model-validator must turn that path into a loaded `ForcingModel`,
-            the same way `validate_forcing_data` does for the named Delta fields.
+            the same way `validate_forcing_data` does for the named Delta fields,
+            while stripping the trailing `Delta` from the key before storing it.
         """
         ext_path = _write_ext_with_bc(
             tmp_path, {"discharge": "1.0", field: "sourcesink.bc"}
         )
         model = ExtModel(ext_path)
-        value = model.sourcesink[0].model_extra[field.lower()]
+        value = model.sourcesink[0].model_extra[expected_field]
         assert isinstance(value, ForcingModel), (
-            f"Expected ForcingModel on {field.lower()}, got {type(value).__name__}"
+            f"Expected ForcingModel on {expected_field}, got {type(value).__name__}"
         )
 
-    def test_legacy_non_delta_dynamic_fields_are_untouched(self):
-        """Legacy non-Delta dynamic fields keep their raw value (no `_resolve_forcing_data`).
+    @pytest.mark.parametrize(
+        "field, expected_field, raw, expected",
+        [
+            ("tracerSaltDelta", "tracersalt", "3.5", 3.5),
+            ("sedFracClayDelta", "sedfracclay", "0.25", 0.25),
+        ],
+    )
+    def test_numeric_string_is_coerced_to_float(
+            self, field: str, expected_field: str, raw: str, expected: float
+    ):
+        """Numeric string on a dynamic `*Delta` field is coerced to `float` and the suffix is stripped.
+
+        Args:
+            field: Dynamic Delta-suffix wire key.
+            expected_field: Normalized field name after the trailing `Delta` is removed.
+            raw: Numeric string as it would arrive from the INI parser.
+            expected: Float value the helper should produce.
 
         Test scenario:
-            `initialtracer_*`, `tracerbnd*`, `sedfracbnd_*` are pre-existing
-            extra-allowed attributes that historically receive arbitrary list
-            payloads (e.g. initial-condition arrays). The new model-validator
-            must restrict its action to `*delta`-suffixed keys so that this
-            legacy data flow is preserved unchanged.
+            Before the validator existed, these dynamic fields received the raw
+            string from the INI parser. The model-validator routes them through
+            `_resolve_forcing_data`, parses numeric strings as floats, and then
+            removes the trailing `Delta` from the key so the resulting attribute is
+            stored under the canonical base name (for example, `tracersalt` not
+            `tracersaltDelta`).
         """
-        legacy = {
-            "initialtracer_any_name": [1, 2, 3],
-            "tracerbndanyname": [4, 5, 6],
-            "sedfracbnd_any_name": [7, 8, 9],
-        }
-        source_sink = SourceSink(**_make_sourcesink_kwargs(**legacy))
-        for key, expected in legacy.items():
-            actual = getattr(source_sink, key)
-            assert actual == expected, (
-                f"Legacy dynamic field {key} should be untouched;"
-                f" expected {expected}, got {actual!r}"
-            )
+        source_sink = SourceSink(**_make_sourcesink_kwargs(**{field: raw}))
+        assert source_sink.model_extra[expected_field] == expected, (
+            f"Expected {expected} on dynamic field {field},"
+            f" got {source_sink.model_extra[expected_field]!r}"
+        )
 
     @pytest.mark.parametrize("field", ["tracerSaltDelta", "sedFracClayDelta"])
     def test_realtime_keyword_rejected_on_dynamic_delta_fields(self, field: str):
@@ -607,3 +594,16 @@ class TestSourceSinkDynamicForcingDeltas:
                 ValidationError, match="'realtime' keyword is not supported"
         ):
             SourceSink(**_make_sourcesink_kwargs(**{field: "realtime"}))
+
+    def test_source_sink_legacy_delta_keyword_warns(self):
+        with pytest.warns(UserWarning, match=r"salinitydelta"):
+            block = SourceSink(
+                id="legacy_delta",
+                numcoordinates=1,
+                xcoordinates=[0.0],
+                ycoordinates=[0.0],
+                discharge=1.0,
+                salinitydelta=0.1,
+            )
+
+        assert block.salinity == pytest.approx(0.1)

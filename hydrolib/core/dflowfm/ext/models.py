@@ -16,6 +16,7 @@ from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
+from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
@@ -106,9 +107,11 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     result = False
     if isinstance(key, str):
         lowered = key.lower()
-        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
+        result = (
+                lowered.startswith(("tracer", "sedfrac"))
+                and not lowered.startswith(("tracerbnd", "sedfracbnd"))
+        )
     return result
-
 
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
@@ -174,6 +177,44 @@ def _resolve_forcing_data(
     elif isinstance(v, dict):
         result = ForcingModel(**v)
     return result
+
+def _get_recurse_setting() -> bool | None:
+    """Return the `recurse` setting of the active file-load context.
+
+    Returns:
+        bool | None: The `recurse` value, or `None` when no load settings have been
+            initialised (e.g. the model is built directly in Python).
+    """
+    with file_load_context() as context:
+        settings = getattr(context, "_load_settings", None)
+        result = None if settings is None else settings.recurse
+    return result
+
+
+def _remove_delta_suffix(values: Any) -> Any:
+    """Renames any keys ending with "delta" to their base name (removing the suffix)."""
+    recurse = _get_recurse_setting()
+    lowercase_map = {k.lower(): k for k in values}
+    list_of_altered_quantities = set()
+    for lower_key, original_key in lowercase_map.items():
+        if lower_key.endswith("delta"):
+            base_key = lower_key.removesuffix("delta")
+            if base_key not in values:
+                list_of_altered_quantities.add(original_key)
+                values[base_key] = values.pop(original_key)
+            else:
+                values.pop(original_key)
+    if list_of_altered_quantities and not recurse:
+        warnings.warn(
+            f"Legacy keywords with suffix `delta` will soon be deprecated:"
+            f" {', '.join(sorted(list_of_altered_quantities))} have been converted to their base names."
+            f" If there are .bc files associated with these keywords, please either "
+            f"manually remove the `delta` suffixes from those .bc files or re-run the "
+            f"conversion with `recurse=True` to update them.",
+            UserWarning,
+            stacklevel=2,
+        )
+    return values
 
 
 FILETYPE_FILEMODEL_MAPPING = {
@@ -485,17 +526,12 @@ class SourceSink(CoordinateValidator, INIBasedModel):
         `initialsedfrac_*`) do not end with `delta` and are left untouched.
         """
         if isinstance(values, dict):
-            # Migrate legacy salinityDelta/temperatureDelta keys (any casing) from old-format ext files.
-            lowercase_map = {k.lower(): k for k in values}
-            if "salinitydelta" in lowercase_map and "salinity" not in values:
-                values["salinity"] = values.pop(lowercase_map["salinitydelta"])
-            if "temperaturedelta" in lowercase_map and "temperature" not in values:
-                values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
             for key in values:
                 if _is_dynamic_forcing_delta_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
                     )
+            values = _remove_delta_suffix(values)
         return values
 
     @classmethod
