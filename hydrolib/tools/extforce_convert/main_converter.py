@@ -641,6 +641,8 @@ class ExternalForcingConverter:
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+            recurse (bool, optional):
+                Recursively load files referenced by the existing external forcing model. Defaults to False.
 
         Returns:
             ExternalForcingConverter: The converter object.
@@ -740,6 +742,7 @@ def recursive_converter(
         debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+        recurse (bool, optional): Recursively load files referenced by the existing external forcing model. Defaults to False.
     """
     mdu_files = [
         path for path in Path(root_dir).rglob("*.mdu") if "_ext" not in path.name

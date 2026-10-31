@@ -201,6 +201,7 @@ def main(args=None):
       --debug-mode                 Convert only supported quantities; leave unsupported quantities in the legacy external forcing file (default: False).
       --verbose, -v                Print diagnostic information.
       --version                    Print version and exit.
+      --recurse                    Recursively resolve and load referenced files when converting.
       --path-style {unix,windows}
                                  Handle absolute paths in input/output files according to the specified style (unix/windows).
                                  Use this when converting models that use unix paths but you are running the converter
