@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.utils import PathStyle
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtGeneral,
@@ -548,6 +549,8 @@ class ExternalForcingConverter:
         if self.ext_model.n_forcing_blocks:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
+            if backup and recursive:
+                self._backup_bc_files()
 
             # explicitly set the [General] block to ensure it's always written to the new external forcing file.
             # without it, the ext file will be saved without it as the exclude_unset=True
@@ -589,6 +592,18 @@ class ExternalForcingConverter:
         self.mba_model.save(
             recurse=recursive, exclude_unset=True, path_style=self.path_style
         )
+
+    def _backup_bc_files(self):
+        """Backup the .bc files referenced by the new external forcing model."""
+        filepaths_to_back_up = set()
+        for block in self.ext_model.get_forcing_files():
+            for _, value in block:
+                if isinstance(value, ForcingModel) and value.filepath is not None:
+                    filepaths_to_back_up.add(value.filepath)
+        for file in filepaths_to_back_up:
+            path = self.ext_model.filepath.parent / file
+            if path.is_file():
+                backup_file(path)
 
     def clean(self):
         """Clean the directory from the old external forcing file and the time file."""

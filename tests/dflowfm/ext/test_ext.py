@@ -14,11 +14,14 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
+    BubbleScreen,
     ExtModel,
+    Lateral,
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
     SourceSink,
+    Spatial,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -29,6 +32,63 @@ from tests.utils import invalid_test_data_dir, test_data_dir
 class TestExtModel:
     """Class to test all methods contained in the
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
+
+    def test_get_forcing_files_empty(self):
+        assert ExtModel().get_forcing_files() == []
+
+    @pytest.mark.parametrize(
+        "field, block_type, forcing_field",
+        [
+            ("boundary", Boundary, "forcingfile"),
+            ("lateral", Lateral, "discharge"),
+            ("sourcesink", SourceSink, "salinity"),
+            ("bubblescreen", BubbleScreen, "discharge"),
+            ("meteo", Meteo, "forcingfile"),
+            ("spatial", Spatial, "datafile"),
+        ],
+    )
+    @pytest.mark.parametrize("file_type", [ForcingModel, DiskOnlyFileModel])
+    def test_get_forcing_files_each_type(
+        self, field, block_type, forcing_field, file_type
+    ):
+        forcing = file_type.model_construct(filepath=Path("forcing.bc"))
+        block = block_type.model_construct(**{forcing_field: forcing})
+        model = ExtModel.model_construct(**{field: [block]})
+
+        files = model.get_forcing_files()
+
+        assert len(files) == 1
+        assert files[0] is forcing
+
+    def test_get_forcing_files_includes_extras_and_deduplicates(self):
+        forcing = ForcingModel.model_construct(filepath=Path("shared.bc"))
+        temperature = ForcingModel.model_construct(filepath=Path("temperature.bc"))
+        tracer = ForcingModel.model_construct(filepath=Path("tracer.BC"))
+        placeholder = DiskOnlyFileModel.model_construct(filepath=Path("unloaded.bc"))
+        model = ExtModel.model_construct(
+            boundary=[Boundary.model_construct(forcingfile=forcing)],
+            lateral=[Lateral.model_construct(discharge=forcing)],
+            sourcesink=[
+                SourceSink.model_construct(
+                    discharge=1.0,
+                    salinity=ForcingModel.model_construct(filepath=Path("shared.bc")),
+                    temperature=temperature,
+                    tracer_dye=tracer,
+                )
+            ],
+            bubblescreen=[BubbleScreen.model_construct(discharge=placeholder)],
+            meteo=[
+                Meteo.model_construct(
+                    forcingfile=TimModel.model_construct(filepath=Path("rain.tim"))
+                )
+            ],
+            spatial=[Spatial.model_construct(datafile=ForcingModel())],
+        )
+
+        files = model.get_forcing_files()
+        expected = [forcing, temperature, tracer, placeholder]
+        assert len(files) == len(expected)
+        assert all(actual is original for actual, original in zip(files, expected))
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
         input_ext = (
