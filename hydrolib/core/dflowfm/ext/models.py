@@ -94,7 +94,7 @@ def _coordinate_length(v) -> int:
     return result
 
 
-def _is_dynamic_forcing_delta_key(key: Any) -> bool:
+def _is_dynamic_forcing_key(key: Any) -> bool:
     """Return True if `key` names a dynamic `tracer<...>Delta`/`sedFrac<...>Delta` field.
 
     Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `[SourceSink]` blocks
@@ -108,8 +108,8 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     if isinstance(key, str):
         lowered = key.lower()
         result = (
-                lowered.startswith(("tracer", "sedfrac"))
-                and not lowered.startswith(("tracerbnd", "sedfracbnd"))
+            lowered.startswith(("tracer", "sedfrac"))
+            and not lowered.startswith(("tracerbnd", "sedfracbnd"))
         )
     return result
 
@@ -522,12 +522,11 @@ class SourceSink(CoordinateValidator, INIBasedModel):
         this validator extends the same coercion to the dynamic Delta-suffix
         fields that arrive via `extra="allow"`.
 
-        Legacy dynamic fields (`initialtracer_*`, `tracerbnd*`, `sedfracbnd_*`,
-        `initialsedfrac_*`) do not end with `delta` and are left untouched.
+        Also removes the Delta-suffix from the keys.
         """
         if isinstance(values, dict):
             for key in values:
-                if _is_dynamic_forcing_delta_key(key):
+                if _is_dynamic_forcing_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
                     )
@@ -544,10 +543,10 @@ class SourceSink(CoordinateValidator, INIBasedModel):
             for key in input_data.keys()
             if key not in fields
             and (
-                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-                or _is_dynamic_forcing_delta_key(key)
-                or key in dynamic_fields
-                or key == _DYNAMIC_FIELDS_KEY
+                       key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+                       or _is_dynamic_forcing_key(key)
+                       or key in dynamic_fields
+                       or key == _DYNAMIC_FIELDS_KEY
             )
         ]
         return set(unknown_keywords)
