@@ -271,3 +271,29 @@ class TestTracerOrderWarning:
         with warnings.catch_warnings():
             warnings.simplefilter("error", UserWarning)
             converter.update()
+
+
+class TestEmptyOrMissingInifieldEntry:
+    """An `IniFieldFile` entry that gives nothing to convert counts as no inifield file."""
+
+    @pytest.mark.parametrize("entry", ["IniFieldFile =", "IniFieldFile = nothere.ini"])
+    def test_without_an_old_ext_file_the_missing_old_ext_error_is_kept(
+        self, tmp_path, entry
+    ):
+        mdu = tmp_path / "model.mdu"
+        mdu.write_text(MDU_TEMPLATE.format(inifield=entry + "\n", extforce=""))
+
+        with pytest.raises(ValueError, match="old formatted external forcing file"):
+            ExternalForcingConverter.from_mdu(mdu)
+
+    def test_the_old_ext_file_is_still_converted_when_the_entry_is_empty(
+        self, tmp_path
+    ):
+        mdu = _write_model(tmp_path, inifield=False, old_ext=True)
+        text = mdu.read_text().replace("[geometry]\n", "[geometry]\nIniFieldFile =\n", 1)
+        mdu.write_text(text)
+
+        converter = _convert(mdu)
+
+        blocks = _spatial_blocks(converter.ext_model.filepath)
+        assert [b.quantity for b in blocks] == ["initialtracerdTR1"]

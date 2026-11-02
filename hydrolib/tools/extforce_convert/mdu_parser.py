@@ -767,6 +767,18 @@ class MDUParser:
         """
         return self.has_field(INIFIELD_FILE_LINE)
 
+    def has_existing_inifield_file(self) -> bool:
+        """Check if the MDU file has an inifield file defined that exists on disk.
+
+        Unlike `has_inifield_file`, an empty `IniFieldFile =` entry or an entry pointing to a missing file
+        gives False, because there is nothing to convert.
+
+        Returns:
+            bool: True if the IniFieldFile entry has a value and the file exists, False otherwise
+        """
+        value = self.get_keyword(INIFIELD_FILE_LINE) if self.has_inifield_file() else None
+        return bool(value) and (self.mdu_path.parent / str(value)).is_file()
+
     def has_structure_file(self) -> bool:
         """Check if the MDU file has an structure file defined.
 

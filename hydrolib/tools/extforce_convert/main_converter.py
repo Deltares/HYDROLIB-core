@@ -743,11 +743,9 @@ class ExternalForcingConverter:
 
         # an MDU without an old external forcing file can still have an inifield file to convert; only when it
         # has neither is the missing old file an error (raised by `extforce_file`)
+        has_old_ext_file = mdu_parser.extforce_block.extforcefile is not None
         extoldfile = None
-        if (
-            mdu_parser.extforce_block.extforcefile is not None
-            or not mdu_parser.has_inifield_file()
-        ):
+        if has_old_ext_file or not mdu_parser.has_existing_inifield_file():
             extoldfile = (
                 mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
             )
