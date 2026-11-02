@@ -1,0 +1,7 @@
+﻿id,branchId,chainage,shift,definitionId
+CrossSection1,Channel_1D_1_A,1000,0,CrossSection_1D_1
+CrossSection2,Channel_1D_1_A,95000,0,CrossSection_1D_2
+CrossSection3,Channel_1D_1_B,1000,0,CrossSection_1D_3
+CrossSection4,Channel_1D_1_B,95000,0,CrossSection_1D_4
+CrossSection5,Channel_1D_1,1000,0,CrossSection_1D_5
+CrossSection6,Channel_1D_1,113000,0,CrossSection_1D_6
