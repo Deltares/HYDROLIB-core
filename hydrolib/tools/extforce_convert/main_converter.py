@@ -21,7 +21,7 @@ from hydrolib.core.dflowfm.ext.models import (
     Spatial,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
-from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+from hydrolib.core.dflowfm.inifield.models import AbstractSpatialField, IniFieldModel
 from hydrolib.core.dflowfm.mba.models import (
     MassBalanceArea,
     MassBalanceAreaGeneral,
@@ -35,6 +35,7 @@ from hydrolib.core.dflowfm.structure.models import (
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
+    InifieldToSpatialConverter,
     MassBalanceAreaConverter,
     LateralConverter,
     SourceSinkConverter,
@@ -55,7 +56,7 @@ class ExternalForcingConverter:
     def __init__(
         self,
         *,
-        extold_model: PathOrStr | ExtOldModel,
+        extold_model: PathOrStr | ExtOldModel | None,
         ext_file: PathOrStr | None = None,
         structure_file: PathOrStr | None = None,
         mdu_parser: MDUParser,
@@ -70,9 +71,10 @@ class ExternalForcingConverter:
         old external forcing file, if no paths were given by the user for the new models.
 
         Args:
-            extold_model (PathOrStr, ExtOldModel):
+            extold_model (PathOrStr, ExtOldModel, None):
                 ExtOldModel or path to the old external forcing file. if `ExtOldModel` without a filepath the
-                `ExtOldModel` will be assumed to be in the, current working directory.
+                `ExtOldModel` will be assumed to be in the, current working directory. `None` for an MDU that
+                has no old external forcing file, only an inifield file to convert.
             ext_file (PathOrStr, optional):
                 Path to the new external forcing file.
             structure_file (PathOrStr, optional):
@@ -125,7 +127,10 @@ class ExternalForcingConverter:
             >>> converter.update() #doctest: +SKIP
             ```
         """
-        if isinstance(extold_model, Path) or isinstance(extold_model, str):
+        if extold_model is None:
+            # an MDU with only an inifield file: nothing to convert from the old external forcings
+            extold_model = ExtOldModel()
+        elif isinstance(extold_model, Path) or isinstance(extold_model, str):
             # if the extold model is given as path/str then read the file
             extold_model = self._read_old_file(extold_model, path_style=path_style)
         else:
@@ -165,6 +170,7 @@ class ExternalForcingConverter:
         # loaded lazily, only a source/sink conversion needs it
         self._inifield_model: IniFieldModel | None = None
         self._inifield_loaded = False
+        self._inifield_converted = False
         # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
         self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
@@ -329,6 +335,7 @@ class ExternalForcingConverter:
                 at call site to inspect the updated models.
         """
         self._log_conversion_details()
+        self._convert_inifield_blocks()
         num_quantities = len(self.extold_model.forcing)
 
         type_field_map = self._type_field_map()
@@ -458,13 +465,17 @@ class ExternalForcingConverter:
         Returns:
             list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
         """
-        if not self._inifield_loaded:
-            self._inifield_model = self._load_inifield_model()
-            self._inifield_loaded = True
-        model = self._inifield_model
+        model = self._get_inifield_model()
         initials = model.initial if model else []
         parameters = model.parameter if model else []
         return [block.quantity for block in (*initials, *parameters)]
+
+    def _get_inifield_model(self) -> IniFieldModel | None:
+        """Return the inifield model of the MDU, loading it on the first call and caching it."""
+        if not self._inifield_loaded:
+            self._inifield_model = self._load_inifield_model()
+            self._inifield_loaded = True
+        return self._inifield_model
 
     def _load_inifield_model(self) -> IniFieldModel | None:
         """Load the inifield file referenced by the MDU, if it exists on disk.
@@ -474,10 +485,58 @@ class ExternalForcingConverter:
                 does not reference an inifield file or the referenced path is missing.
         """
         model = None
-        inifield_path = self.mdu_parser.get_inifield_file(None)
-        if inifield_path is not None and Path(inifield_path).is_file():
-            model = IniFieldModel(filepath=inifield_path, recurse=False)
+        if self.mdu_parser.has_inifield_file():
+            inifield_path = self.mdu_parser.get_inifield_file(None)
+            if isinstance(inifield_path, (str, Path)) and Path(inifield_path).is_file():
+                model = IniFieldModel(filepath=inifield_path, recurse=False)
         return model
+
+    def _inifield_data_path(self, block: AbstractSpatialField, model: IniFieldModel) -> Path:
+        """Resolve the data file path of an inifield block for the new external forcings file.
+
+        With the MDU setting `pathsRelativeToParent` a relative path is relative to the file it is written
+        in, so it is re-expressed relative to the new external forcings file. Otherwise paths are relative to
+        the MDU and stay as they are.
+
+        Args:
+            block (AbstractSpatialField): The inifield block whose data file is resolved.
+            model (IniFieldModel): The inifield model the block belongs to.
+
+        Returns:
+            Path: The path to write in the `Spatial` block.
+        """
+        path = block.datafile.filepath
+        if path is not None and not path.is_absolute() and self.mdu_parser.is_relative_to_parent:
+            path = Path(
+                os.path.relpath(
+                    (model.filepath.parent / path).resolve(),
+                    self.ext_model.filepath.parent.resolve(),
+                )
+            )
+        return path
+
+    def _convert_inifield_blocks(self) -> None:
+        """Convert the `[Initial]` and `[Parameter]` blocks of the inifield file to `[Spatial]` blocks.
+
+        The blocks are converted in the order they appear in the inifield file and put **in front of** the
+        `[Spatial]` blocks already in the new external forcings file, which are in front of the blocks
+        converted from the old external forcings file. That is the order in which the kernel reads the
+        sources (inifield, new ext, old ext), so blocks for the same quantity combine as before, and the
+        tracer numbering follows the same precedence.
+
+        Notes:
+            - Does nothing when the MDU has no inifield file.
+            - A second call does nothing.
+        """
+        model = self._get_inifield_model()
+        if model is not None and not self._inifield_converted:
+            converter = InifieldToSpatialConverter()
+            blocks = [
+                converter.convert(block, self._inifield_data_path(block, model))
+                for block in model.blocks_in_file_order()
+            ]
+            self.ext_model.spatial = blocks + list(self.ext_model.spatial)
+            self._inifield_converted = True
 
     def _convert_forcing(
         self, forcing
@@ -596,7 +655,7 @@ class ExternalForcingConverter:
                 print(f"Removing legacy file:{file}")
                 file.unlink()
 
-        if not self.un_supported_quantities:
+        if not self.un_supported_quantities and self.extold_model.filepath is not None:
             self.extold_model.filepath.unlink()
 
     @classmethod
@@ -630,16 +689,27 @@ class ExternalForcingConverter:
 
         Raises:
             FileNotFoundError: If the MDU file does not exist.
-            ValueError: If the old external forcing file is not found in the MDU file.
+            ValueError: If the MDU file has neither an old external forcing file nor an inifield file.
             DeprecationWarning: If the MDU file contains unknown keywords.
         """
         mdu_parser = MDUParser(mdu_file)
 
-        extoldfile = (
-            mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
-        )
+        # an MDU without an old external forcing file can still have an inifield file to convert; only when it
+        # has neither is the missing old file an error (raised by `extforce_file`)
+        extoldfile = None
+        if (
+            mdu_parser.extforce_block.extforcefile is not None
+            or not mdu_parser.has_inifield_file()
+        ):
+            extoldfile = (
+                mdu_parser.mdu_path.parent / mdu_parser.extforce_block.extforce_file
+            )
 
-        ext_file = mdu_parser.extforce_block.get_new_extforce_file()
+        # without an old external forcing file and without a new one in the MDU there is no name to derive the
+        # new file from; the converter then falls back to its default file name
+        ext_file = None
+        if extoldfile is not None or mdu_parser.extforce_block.extforcefilenew:
+            ext_file = mdu_parser.extforce_block.get_new_extforce_file()
         structure_file = mdu_parser.get_structure_file()
         mba_file = mdu_parser.get_mba_file()
 
@@ -668,6 +738,9 @@ class ExternalForcingConverter:
             num_quantities=self.ext_model.n_forcing_blocks,
             remove_old_ext_file=remove_old_ext_file,
         )
+
+        if self._inifield_converted:
+            self.mdu_parser.remove_inifield_file()
 
         if len(self.structure_model.structure) > 0:
             self.mdu_parser.update_structure_file(self.structure_model.filepath.name)

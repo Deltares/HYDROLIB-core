@@ -4,6 +4,7 @@ from typing import Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
+from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import TimeInterpolation
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink, ForcingModel
@@ -1755,14 +1756,12 @@ class TestConvertSourceSinkWithSubstanceFile:
         assert first_value["sourcesink_tracerX"] == 10.0
         assert first_value["sourcesink_tracerA"] == 11.0
 
-    def test_invalid_inifield_does_not_affect_run_without_source_sink(
-        self, tmp_path: Path
-    ):
-        """The inifield file is read lazily, so an invalid one does not break a run without a source/sink.
+    def test_invalid_inifield_fails_the_conversion(self, tmp_path: Path):
+        """The inifield file is converted to `[Spatial]` blocks, so an invalid one fails the conversion.
 
-        Only the source/sink conversion needs the inifield tracer quantities for the TIM column order
-        (review finding M2). The old ext file here has no source/sink, and the inifield file the MDU
-        references is invalid (unknown `dataFileType`): the conversion must still succeed and never load it.
+        The old ext file here has no source/sink, and the inifield file the MDU references is invalid
+        (unknown `dataFileType`). The inifield file is the input of the conversion, so the error must surface
+        instead of the file being left behind, still referenced from the MDU.
         """
         model_dir = tmp_path / "invalid_inifield"
         model_dir.mkdir()
@@ -1808,12 +1807,9 @@ class TestConvertSourceSinkWithSubstanceFile:
         converter = ExternalForcingConverter.from_mdu(
             model_dir / "model.mdu", debug=True
         )
-        ext_model, _ = converter.update()
 
-        assert [spatial.quantity for spatial in ext_model.spatial] == [
-            "initialtracerX"
-        ]
-        assert converter._inifield_loaded is False
+        with pytest.raises(ValidationError):
+            converter.update()
 
 
 def write_tracer_model(

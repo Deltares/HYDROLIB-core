@@ -935,6 +935,16 @@ class MDUParser:
         """
         self.update_file_entry(INIFIELD_FILE_LINE, file_name, "geometry")
 
+    def remove_inifield_file(self) -> None:
+        """Remove the IniFieldFile entry from the MDU file.
+
+        Notes:
+            - The keyword is deprecated; its blocks are converted to `[Spatial]` blocks of the new external
+            forcings file.
+            - Nothing happens when the MDU file has no IniFieldFile entry.
+        """
+        self.delete_line(keyword=INIFIELD_FILE_LINE)
+
     def update_structure_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
 
