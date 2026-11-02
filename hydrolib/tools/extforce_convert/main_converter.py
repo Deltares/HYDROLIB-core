@@ -586,6 +586,8 @@ class ExternalForcingConverter:
             self.ext_model.spatial = blocks + list(self.ext_model.spatial)
             self._inifield_spatial_blocks = blocks
             self._inifield_converted = True
+            # nothing refers to the inifield file any more, so `clean` removes it with the other legacy files
+            self.legacy_files = [Path(model.filepath)]
 
     def _convert_forcing(
         self, forcing
@@ -698,7 +700,7 @@ class ExternalForcingConverter:
         )
 
     def clean(self):
-        """Clean the directory from the old external forcing file and the time file."""
+        """Clean the directory from the old external forcing file, the inifield file and the time file."""
         if len(self.legacy_files) > 0:
             for file in self.legacy_files:
                 print(f"Removing legacy file:{file}")

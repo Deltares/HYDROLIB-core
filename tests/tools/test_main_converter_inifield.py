@@ -187,6 +187,13 @@ class TestInifieldOnly:
 
         assert (tmp_path / "inifield.ini").is_file()
 
+    def test_clean_removes_the_inifield_file(self, tmp_path):
+        converter = _convert(_write_model(tmp_path))
+
+        converter.clean()
+
+        assert not (tmp_path / "inifield.ini").exists()
+
 
 class TestInifieldWithOldAndNewExt:
     def test_inifield_blocks_come_before_the_converted_old_ext_blocks(self, tmp_path):
