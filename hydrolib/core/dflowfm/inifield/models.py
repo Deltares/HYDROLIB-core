@@ -317,7 +317,7 @@ class IniFieldModel(INIModel):
         return headers
 
     def blocks_in_file_order(self) -> List[InitialField | ParameterField]:
-        """List the `[Initial]` and `[Parameter]` blocks in the order they appear in the file.
+        r"""List the `[Initial]` and `[Parameter]` blocks in the order they appear in the file.
 
         The parsed model keeps the two kinds of blocks in separate lists, which loses how they were
         interleaved in the file. The order matters because blocks for the same quantity are applied top to
@@ -329,6 +329,38 @@ class IniFieldModel(INIModel):
             List[InitialField | ParameterField]: The blocks of this model, in file order. When the model has no
                 file on disk, or its blocks were added or removed after loading (so the file no longer matches),
                 all `[Initial]` blocks followed by all `[Parameter]` blocks.
+
+        Examples:
+            - A model built in memory lists the initial blocks, then the parameter blocks:
+                ```python
+                >>> from hydrolib.core.dflowfm.inifield.models import (
+                ...     IniFieldModel, InitialField, ParameterField)
+                >>> model = IniFieldModel(
+                ...     initial=[InitialField(quantity="waterlevel", datafile="a.xyz", datafiletype="sample")],
+                ...     parameter=[ParameterField(quantity="friction", datafile="b.xyz", datafiletype="sample")],
+                ... )
+                >>> [block.quantity for block in model.blocks_in_file_order()]
+                ['waterlevel', 'friction']
+
+                ```
+            - A model read from a file keeps the order of the file:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+                >>> text = (
+                ...     "[General]\nfileVersion = 2.00\nfileType = iniField\n\n"
+                ...     "[Parameter]\nquantity = friction\ndataFile = a.xyz\ndataFileType = sample\n\n"
+                ...     "[Initial]\nquantity = waterlevel\ndataFile = b.xyz\ndataFileType = sample\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     path = Path(folder) / "inifield.ini"
+                ...     _ = path.write_text(text)
+                ...     model = IniFieldModel(filepath=path, recurse=False)
+                ...     print([block.quantity for block in model.blocks_in_file_order()])
+                ['friction', 'waterlevel']
+
+                ```
         """
         headers = self._block_headers_in_file_order()
         matches_file = (

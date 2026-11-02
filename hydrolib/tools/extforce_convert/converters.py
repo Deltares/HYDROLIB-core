@@ -576,10 +576,41 @@ class CombinedQuantityConverter(SpatialConverter):
 
 
 class InifieldError(Exception):
-    """The inifield file of the MDU could not be read, so it cannot be converted."""
+    """The inifield file of the MDU could not be read, so it cannot be converted.
+
+    Raised by `ExternalForcingConverter` when the inifield file exists but `IniFieldModel` cannot parse it. The
+    message names the file.
+
+    Examples:
+        - Read the message of the error:
+            ```python
+            >>> from hydrolib.tools.extforce_convert.converters import InifieldError
+            >>> error = InifieldError("The inifield file 'inifield.ini' could not be read")
+            >>> str(error)
+            "The inifield file 'inifield.ini' could not be read"
+
+            ```
+        - Catch it like any other exception:
+            ```python
+            >>> from hydrolib.tools.extforce_convert.converters import InifieldError
+            >>> try:
+            ...     raise InifieldError("The inifield file 'a.ini' could not be read")
+            ... except InifieldError as error:
+            ...     print(error)
+            The inifield file 'a.ini' could not be read
+
+            ```
+
+    See Also:
+        InifieldToSpatialConverter: Converts the blocks of an inifield file that could be read.
+    """
 
     def __init__(self, error_message: str):
-        """Initialize with an error message."""
+        """Initialize with an error message.
+
+        Args:
+            error_message: The message that names the inifield file and the problem.
+        """
         super().__init__(error_message)
 
 
@@ -599,6 +630,53 @@ class InifieldToSpatialConverter:
     - A polygon block without a `value` (e.g. `initialverticalsalinityprofile`) keeps `dataFile` and
       `dataFileType=polygon`.
     - The legacy single-character `operand` values were already parsed into their word form on read.
+
+    Examples:
+        - Convert a gridded block; only the keywords set in the inifield are written:
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.core.dflowfm.inifield.models import ParameterField
+            >>> from hydrolib.tools.extforce_convert.converters import InifieldToSpatialConverter
+            >>> block = ParameterField(
+            ...     quantity="frictionCoefficient",
+            ...     dataFile="friction.xyz",
+            ...     dataFileType="sample",
+            ...     interpolationMethod="triangulation",
+            ...     operand="+",
+            ... )
+            >>> spatial = InifieldToSpatialConverter().convert(block, Path("friction.xyz"))
+            >>> spatial.quantity, spatial.datafile.filepath.name
+            ('frictionCoefficient', 'friction.xyz')
+            >>> print(spatial.operand)
+            add
+            >>> sorted(spatial.model_fields_set)
+            ['datafile', 'datafiletype', 'interpolationmethod', 'operand', 'quantity']
+
+            ```
+        - Convert a polygon with a value to the `dataValue` form:
+            ```python
+            >>> from pathlib import Path
+            >>> from hydrolib.core.dflowfm.inifield.models import InitialField
+            >>> from hydrolib.tools.extforce_convert.converters import InifieldToSpatialConverter
+            >>> block = InitialField(
+            ...     quantity="waterlevel",
+            ...     dataFile="region.pol",
+            ...     dataFileType="polygon",
+            ...     interpolationMethod="constant",
+            ...     value=1.5,
+            ... )
+            >>> spatial = InifieldToSpatialConverter().convert(block, Path("region.pol"))
+            >>> spatial.datavalue, spatial.targetmaskfile.filepath.name
+            (1.5, 'region.pol')
+            >>> print(spatial.interpolationmethod)
+            constant
+            >>> print(spatial.datafile)
+            None
+
+            ```
+
+    See Also:
+        SpatialConverter: Converts the quantities of the old external forcings file to `[Spatial]` blocks.
     """
 
     # inifield attribute -> Spatial attribute, for the keywords copied when they were set in the source block
@@ -639,6 +717,42 @@ class InifieldToSpatialConverter:
 
         Raises:
             SpatialError: If the converted keywords do not form a valid `Spatial` block.
+
+        Warns:
+            UserWarning: If a polygon block of an `initialvertical*` quantity has a `value`, which a `[Spatial]`
+                block with `dataFile` cannot hold.
+
+        Examples:
+            - Convert the extrapolation setting and the operand:
+                ```python
+                >>> from pathlib import Path
+                >>> from hydrolib.core.dflowfm.inifield.models import ParameterField
+                >>> from hydrolib.tools.extforce_convert.converters import InifieldToSpatialConverter
+                >>> block = ParameterField(
+                ...     quantity="frictionCoefficient",
+                ...     dataFile="a.xyz",
+                ...     dataFileType="sample",
+                ...     operand="*",
+                ...     extrapolationMethod=True,
+                ... )
+                >>> spatial = InifieldToSpatialConverter().convert(block, Path("a.xyz"))
+                >>> print(spatial.operand)
+                multiply
+                >>> spatial.extrapolationallowed
+                True
+
+                ```
+            - Write another data file path than the one in the inifield:
+                ```python
+                >>> from pathlib import Path
+                >>> from hydrolib.core.dflowfm.inifield.models import InitialField
+                >>> from hydrolib.tools.extforce_convert.converters import InifieldToSpatialConverter
+                >>> block = InitialField(quantity="salinity", dataFile="s.xyz", dataFileType="sample")
+                >>> spatial = InifieldToSpatialConverter().convert(block, Path("../sub/s.xyz"))
+                >>> spatial.datafile.filepath.as_posix()
+                '../sub/s.xyz'
+
+                ```
         """
         data: dict[str, Any] = {"quantity": block.quantity}
 
