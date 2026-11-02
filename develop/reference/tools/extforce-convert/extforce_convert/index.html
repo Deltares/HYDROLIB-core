@@ -4002,11 +4002,13 @@ You're not viewing the latest release version.
 <h3 id="21-high-level-overview">2.1. High-Level Overview<a class="headerlink" href="#21-high-level-overview" title="Permanent link">&para;</a></h3>
 <p><code>ExternalForcingConverter</code> converts legacy D-Flow FM external forcings files (old <code>.ext</code> format, represented by <code>ExtOldModel</code>) into the newer model structure consisting of:</p>
 <ul>
-<li>A new external forcings file (<code>ExtModel</code>) with boundary, lateral, meteo, and source/sink blocks.</li>
-<li>An initial fields file (<code>IniFieldModel</code>) with <code>InitialField</code> and <code>ParameterField</code> blocks.</li>
+<li>A new external forcings file (<code>ExtModel</code>) with <code>[Boundary]</code>, <code>[Lateral]</code>, <code>[SourceSink]</code> and <code>[Spatial]</code> blocks.
+  Meteo, initial-condition and parameter quantities all become <code>[Spatial]</code> blocks; the converter no longer writes an
+  initial field file.</li>
 <li>A structures file (<code>StructureModel</code>) with <code>Structure</code> blocks.</li>
+<li>A mass balance area file (<code>MassBalanceAreaModel</code>) with <code>MassBalanceArea</code> blocks.</li>
 </ul>
-<p>It orchestrates per-forcing conversion using a pluggable converter factory (<code>ConverterFactory</code>) that selects a concrete converter based on the forcing quantity. The class can optionally update an MDU file (<code>MDUParser</code>) to point to the newly generated files and can back up/clean legacy artifacts.</p>
+<p>It orchestrates per-forcing conversion using a pluggable converter factory (<code>ConverterFactory</code>) that selects a concrete converter based on the forcing quantity. An MDU parser (<code>MDUParser</code>) is required: it supplies the model metadata the converters need, and the MDU file is updated to point to the newly generated files. The class can also back up/clean legacy artifacts.</p>
 <p>Typical place in a larger system: infrastructure/tooling layer. It acts as a migration utility or pipeline step used to modernize project inputs.</p>
 <h3 id="22-key-responsibilities-and-collaborations">2.2. Key Responsibilities and Collaborations<a class="headerlink" href="#22-key-responsibilities-and-collaborations" title="Permanent link">&para;</a></h3>
 <p>Primary responsibilities:</p>
@@ -4015,19 +4017,24 @@ You're not viewing the latest release version.
 <li>For each forcing block:</li>
 <li>Detect and skip unsupported quantities (optionally strict or permissive via <code>debug</code>).</li>
 <li>Choose and invoke the appropriate converter via <code>ConverterFactory</code>.</li>
-<li>Append the converted block to the correct target model (<code>ExtModel</code>, <code>IniFieldModel</code>, or <code>StructureModel</code>).</li>
-<li>Optionally update the MDU file to reference new outputs and remove the old external forcing file if fully converted.</li>
+<li>Append the converted block(s) to the correct target model (<code>ExtModel</code>, <code>StructureModel</code>, or <code>MassBalanceAreaModel</code>).
+    A converter may return several blocks for one legacy quantity (e.g. a combined quantity split into one
+    <code>[Spatial]</code> block per component); all of them are appended.</li>
+<li>Make blocks that write the same <code>.bc</code> file share one <code>ForcingModel</code> (<code>ForcingFileRegistry</code>), so the file is
+    written once instead of being overwritten.</li>
+<li>Update the MDU file to reference new outputs and remove the old external forcing file reference if fully converted.</li>
 <li>Persist new models to disk with optional backups; optionally remove legacy files produced during conversion.</li>
 </ul>
 <p>Key collaborators and how they’re used:</p>
 <ul>
 <li><code>hydrolib.core.dflowfm.extold.models.ExtOldModel</code> (input): Parsed representation of old <code>.ext</code>; the source of forcings.</li>
-<li><code>hydrolib.core.dflowfm.ext.models.ExtModel</code> (output): Destination model for boundary, lateral, meteo, sources/sinks.</li>
-<li><code>hydrolib.core.dflowfm.inifield.models.IniFieldModel</code> (output): Destination model for initial/parameter fields.</li>
+<li><code>hydrolib.core.dflowfm.ext.models.ExtModel</code> (output): Destination model for boundary, lateral, source/sink and spatial blocks.</li>
 <li><code>hydrolib.core.dflowfm.structure.models.StructureModel</code> (output): Destination model for structures.</li>
+<li><code>hydrolib.core.dflowfm.mba.models.MassBalanceAreaModel</code> (output): Destination model for mass balance areas.</li>
 <li><code>hydrolib.tools.extforce_convert.converters.ConverterFactory</code> (strategy selection): Creates the correct converter class for a given quantity.</li>
-<li><code>BoundaryConditionConverter</code>, <code>SourceSinkConverter</code>, <code>SpatialConverter</code> are concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are all routed to <code>SpatialConverter</code> (producing <code>[Spatial]</code> blocks).</li>
-<li><code>hydrolib.tools.extforce_convert.mdu_parser.MDUParser</code> (optional): Reads MDU metadata (e.g., <code>refdate</code>, temperature/salinity flags) and updates references to new files.</li>
+<li><code>BoundaryConditionConverter</code>, <code>LateralConverter</code>, <code>SourceSinkConverter</code>, <code>SpatialConverter</code> and <code>MassBalanceAreaConverter</code> are the concrete converters used depending on the quantity. Meteo, initial-condition and parameter quantities are routed to <code>SpatialConverter</code> (producing <code>[Spatial]</code> blocks); combined quantities (e.g. a wind vector) go to <code>CombinedQuantityConverter</code>, a <code>SpatialConverter</code> subclass that splits them into one block per component.</li>
+<li><code>hydrolib.tools.extforce_convert.forcing_registry.ForcingFileRegistry</code>: Lets blocks that resolve to the same <code>.bc</code> path share one <code>ForcingModel</code>.</li>
+<li><code>hydrolib.tools.extforce_convert.mdu_parser.MDUParser</code> (required): Reads MDU metadata (e.g., <code>refdate</code>, temperature/salinity flags, the inifield, structure and mass balance area files) and updates references to new files.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.CONVERTER_DATA</code> (capabilities): Reports unsupported quantities.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.construct_filemodel_new_or_existing</code> (model builder): Ensures destination models exist (new or from existing files) with minimal recursion.</li>
 <li><code>hydrolib.tools.extforce_convert.utils.backup_file</code> (safety): Creates backups before overwriting.</li>
@@ -4042,27 +4049,32 @@ You're not viewing the latest release version.
 <p>Constructor</p>
 <ul>
 <li><code>__init__(
-    extold_model: Union[PathOrStr, ExtOldModel],
-    ext_file: Optional[PathOrStr] = None,
-    structure_file: Optional[PathOrStr] = None,
-    mdu_parser: MDUParser = None,
+    *,
+    extold_model: PathOrStr | ExtOldModel,
+    ext_file: PathOrStr | None = None,
+    structure_file: PathOrStr | None = None,
+    mdu_parser: MDUParser,
     verbose: bool = False,
-    path_style: PathStyle = None,
-    debug: Optional[bool] = False,
+    path_style: PathStyle | None = None,
+    debug: bool | None = False,
+    mba_file: PathOrStr | None = None,
   )</code></li>
+<li>All arguments are keyword-only.</li>
 <li>Parameters:<ul>
 <li><code>extold_model</code>: Path to legacy <code>.ext</code> or an <code>ExtOldModel</code> instance. If a path or str, the file is loaded via <code>_read_old_file()</code>.</li>
-<li><code>ext_file</code>: Destination path for new external forcings (<code>ExtModel</code>). Defaults to <code>new-external-forcing.ext</code> in the same directory as the legacy file.</li>
-<li><code>structure_file</code>: Destination path for <code>StructureModel</code>. Defaults to <code>new-structure.ini</code>.</li>
-<li><code>mdu_parser</code>: Optional <code>MDUParser</code> to provide FM metadata (e.g., <code>refdate</code>, temperature/salinity) and to update the MDU file.</li>
+<li><code>ext_file</code>: Destination path for new external forcings (<code>ExtModel</code>). Defaults to <code>new-external-forcing.ext</code> in the directory of the MDU file. If the file exists, the converted quantities are appended to it.</li>
+<li><code>structure_file</code>: Destination path for <code>StructureModel</code>. Defaults to <code>new-structure.ini</code> in the MDU directory.</li>
+<li><code>mdu_parser</code>: <strong>Required</strong> <code>MDUParser</code>. Provides FM metadata (e.g., <code>refdate</code>, temperature/salinity), the root directory (the MDU's parent), and is used to update the MDU file.</li>
 <li><code>verbose</code>: If <code>True</code>, prints conversion details to stdout.</li>
 <li><code>path_style</code>: Controls conversion/interpretation of absolute paths (Windows/Unix style) when reading/writing models.</li>
 <li><code>debug</code>: If <code>True</code>, unsupported quantities are skipped (not converted) without raising; otherwise an error is raised.</li>
+<li><code>mba_file</code>: Destination path for <code>MassBalanceAreaModel</code>. Defaults to <code>new_mba.ini</code> in the MDU directory.</li>
 </ul>
 </li>
 <li>Side effects:<ul>
 <li>May read the legacy <code>.ext</code> file.</li>
 <li>Creates model objects for new outputs (not yet written).</li>
+<li>Snapshots the quantities already present in the new ext file, so the source/sink converter can order tracer columns by the kernel's precedence.</li>
 <li>Computes <code>un_supported_quantities</code> early via <code>check_unsupported_quantities()</code>.</li>
 </ul>
 </li>
@@ -4076,13 +4088,13 @@ You're not viewing the latest release version.
 <ul>
 <li><code>from_mdu(
     mdu_file: PathOrStr,
-    ext_file_user: Optional[PathOrStr] = None,
-    structure_file_user: Optional[PathOrStr] = None,
-    path_style: Optional[PathStyle] = None,
+    path_style: PathStyle | None = None,
     debug: bool = False,
   ) -&gt; ExternalForcingConverter</code></li>
 <li>Purpose: Create a converter using paths resolved from an MDU file.</li>
-<li>Parameters: as above, with explicit user overrides for destination files.</li>
+<li>Parameters: <code>mdu_file</code>, <code>path_style</code> and <code>debug</code> as above. The output file paths cannot be overridden: the new
+    external forcings, structure and mass balance area files are always read from the MDU. When the MDU references an
+    existing file, the converted quantities are appended to it; otherwise a default file is created next to the MDU.</li>
 <li>Returns: A fully initialized <code>ExternalForcingConverter</code>.</li>
 <li>Side effects: Parses the MDU file; determines legacy <code>.ext</code> path and output file paths.</li>
 <li>Exceptions (per docstring and expected behavior):<ul>
@@ -4106,16 +4118,16 @@ You're not viewing the latest release version.
 <p>Get/Set: Controls additional logging to stdout.</p>
 </li>
 <li>
-<p><code>mdu_parser: Optional[MDUParser]</code></p>
+<p><code>mdu_parser: MDUParser</code></p>
 </li>
 <li>
-<p>Get: Returns <code>MDUParser</code> if set; otherwise <code>None</code>.</p>
+<p>Get: Returns the <code>MDUParser</code> the converter was created with.</p>
 </li>
 <li>
 <p><code>root_dir: Path</code></p>
 </li>
 <li>
-<p>Get: Directory inferred from the provided legacy <code>.ext</code> file or the MDU’s location.</p>
+<p>Get: The directory of the MDU file (<code>mdu_parser.mdu_path.parent</code>).</p>
 </li>
 <li>
 <p><code>path_style: Optional[PathStyle]</code></p>
@@ -4137,13 +4149,13 @@ You're not viewing the latest release version.
 <p>Set: <code>ext_model(path: PathOrStr)</code>: Replaces the destination model using <code>construct_filemodel_new_or_existing</code>.</p>
 </li>
 <li>
-<p><code>inifield_model: IniFieldModel</code></p>
+<p><code>structure_model: StructureModel</code></p>
 </li>
 <li>
 <p>Get/Set analogous to <code>ext_model</code>.</p>
 </li>
 <li>
-<p><code>structure_model: StructureModel</code></p>
+<p><code>mba_model: MassBalanceAreaModel</code></p>
 </li>
 <li>
 <p>Get/Set analogous to <code>ext_model</code>.</p>
@@ -4155,9 +4167,9 @@ You're not viewing the latest release version.
 <p>Set during initialization by <code>check_unsupported_quantities()</code>. Lowercased quantity names that are unsupported according to <code>CONVERTER_DATA</code>.</p>
 </li>
 <li>
-<p>Conditional attribute: <code>temperature_salinity_data: Dict[str, int]</code></p>
+<p>Attribute: <code>temperature_salinity_data: Dict[str, int]</code></p>
 </li>
-<li>Present only if <code>mdu_parser</code> is provided; used for <code>SourceSink</code> and boundary conversions (needs <code>refdate</code>).</li>
+<li>Taken from <code>mdu_parser.temperature_salinity_data</code>; used for <code>SourceSink</code> conversions.</li>
 </ul>
 <p>Public methods</p>
 <ul>
@@ -4168,20 +4180,20 @@ You're not viewing the latest release version.
 <p>Exceptions: If <code>debug</code> is <code>False</code>, errors on unsupported quantities (raised by <code>CONVERTER_DATA.check_unsupported_quantities</code>).</p>
 </li>
 <li>
-<p><code>update(self) -&gt; tuple[ExtModel, IniFieldModel, StructureModel] | None</code></p>
+<p><code>update(self) -&gt; tuple[ExtModel, StructureModel] | None</code></p>
 </li>
 <li>Purpose: Convert all eligible forcings from the legacy model and append them to the correct destination models.</li>
 <li>Behavior:<ul>
 <li>Logs details if <code>verbose</code>.</li>
 <li>Iterates forcings, shows a progress bar (<code>tqdm</code>).</li>
 <li>For unsupported quantities: prints a message (with <code>debug</code> state) and skips.</li>
-<li>For supported quantities: calls <code>_convert_forcing</code>, maps the resulting block type to the correct destination model (<code>_type_field_map</code>) and appends it.</li>
-<li>If <code>mdu_parser</code> exists, updates the MDU file.</li>
+<li>For supported quantities: calls <code>_convert_forcing</code>, which returns one block or a list of blocks. Each block is registered with the <code>ForcingFileRegistry</code> (shared <code>.bc</code> files), mapped to the destination model by type (<code>_type_field_map</code>: <code>Boundary</code>, <code>Lateral</code>, <code>SourceSink</code>, <code>Spatial</code> -&gt; <code>ExtModel</code>; <code>Structure</code> -&gt; <code>StructureModel</code>; <code>MassBalanceArea</code> -&gt; <code>MassBalanceAreaModel</code>) and appended.</li>
+<li>Updates the MDU file (<code>_update_mdu_file</code>).</li>
 <li>If any unsupported quantities exist, prunes <code>extold_model.forcing</code> to contain only those remaining unsupported forcings.</li>
 </ul>
 </li>
-<li>Returns: <code>(ext_model, structure_model)</code> for inspection by callers.</li>
-<li>Side effects: Updates in-memory models; prints progress/logs; modifies <code>extold_model.forcing</code> contents if unsupported quantities exist.</li>
+<li>Returns: <code>(ext_model, structure_model)</code> for inspection by callers. Nothing is written to disk until <code>save()</code>; inspect <code>mba_model</code> through its property.</li>
+<li>Side effects: Updates in-memory models and the MDU parser; prints progress/logs; modifies <code>extold_model.forcing</code> contents if unsupported quantities exist.</li>
 <li>
 <p>Exceptions:</p>
 <ul>
@@ -4192,13 +4204,13 @@ You're not viewing the latest release version.
 <li>
 <p><code>save(self, backup: bool = True, recursive: bool = True) -&gt; None</code></p>
 </li>
-<li>Purpose: Persist the new/updated models to disk. Update MDU parser file if present.</li>
+<li>Purpose: Persist the new/updated models to disk and the updated MDU file.</li>
 <li>Behavior:<ul>
-<li>Saves <code>IniFieldModel</code> if it has any <code>initial</code>/<code>parameter</code> entries (with <code>exclude_unset=False</code> per kernel requirements).</li>
-<li>Saves <code>StructureModel</code> if it has any <code>structure</code> entries.</li>
+<li>Saves <code>StructureModel</code> if it has any <code>structure</code> entries (the <code>[General]</code> block is always written).</li>
+<li>Saves <code>MassBalanceAreaModel</code> if it has any <code>massbalancearea</code> entries (the <code>[General]</code> block is always written).</li>
 <li>If unsupported quantities exist, backs up and saves the old <code>ExtOldModel</code> (containing only unsupported entries after <code>update</code>).</li>
-<li>Saves <code>ExtModel</code> if any of its sections contain items (makes backup first if overwriting and <code>backup=True</code>).</li>
-<li>If <code>mdu_parser</code> exists, calls <code>mdu_parser.clean()</code> and <code>mdu_parser.save(backup=backup)</code>.</li>
+<li>Saves <code>ExtModel</code> if it has any forcing blocks (<code>n_forcing_blocks</code>), with a backup first if overwriting and <code>backup=True</code>; the <code>[General]</code> block is always written.</li>
+<li>Calls <code>mdu_parser.clean()</code> and <code>mdu_parser.save(backup=backup)</code>.</li>
 </ul>
 </li>
 <li>
@@ -4219,11 +4231,13 @@ You're not viewing the latest release version.
 <ul>
 <li><code>_read_old_file(ext_old_file: PathOrStr, path_style: Optional[PathStyle]) -&gt; ExtOldModel</code></li>
 <li><code>_type_field_map(self) -&gt; dict[type, tuple[Any, str]]</code> (maps block types to destination models/attributes).</li>
-<li><code>_convert_forcing(self, forcing) -&gt; Union[Boundary, Lateral, Meteo, SourceSink, InitialField, ParameterField, Structure]</code></li>
-<li>Note: The annotation in code lists only <code>Boundary|Lateral|Meteo|SourceSink</code>, but actual behavior also includes <code>Spatial</code> (for meteo, initial-condition and parameter quantities) and <code>Structure</code> via the specific converters.</li>
+<li><code>_convert_forcing(self, forcing) -&gt; Boundary | Lateral | Spatial | SourceSink | MassBalanceArea | list[...]</code></li>
+<li>Note: The annotation in code is narrower (<code>Boundary | Lateral | Meteo | SourceSink | MassBalanceArea</code>). Actual behavior also includes <code>Spatial</code> (for meteo, initial-condition and parameter quantities) and a list of blocks for combined quantities.</li>
 <li>Exceptions: <code>ValueError</code> if MDU info missing for <code>SourceSink</code> or boundary conversions.</li>
-<li><code>_update_mdu_file(self) -&gt; None</code></li>
+<li><code>_resolve_forcing_path(self, forcing, ref_path) -&gt; Path</code> (resolves the data file of a <code>[Spatial]</code> block relative to the new ext file, honouring <code>pathsRelativeToParent</code>).</li>
+<li><code>_update_mdu_file(self) -&gt; None</code> (also sets <code>mbaFile</code> and <code>mbaInterval</code> when mass balance areas were converted; <code>mbaInterval</code> is taken from <code>DtMassBalance</code>, falling back to <code>DtProcesses</code>, with a <code>UserWarning</code> if neither exists).</li>
 <li><code>_save_structure_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
+<li><code>_save_mba_model(self, backup: bool, recursive: bool) -&gt; None</code></li>
 <li><code>_log_conversion_details(self) -&gt; None</code></li>
 </ul>
 <p>Example usage</p>
@@ -4255,8 +4269,8 @@ You're not viewing the latest release version.
     <span class="n">mdu_parser</span><span class="o">=</span><span class="n">mdu_parser</span><span class="p">,</span>  
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  
 <span class="p">)</span>  
-<span class="n">ext_model</span><span class="p">,</span> <span class="n">ini_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
-<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  
+<span class="n">ext_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <ul>
 <li>From legacy file path (requires an explicit <code>MDUParser</code>)</li>
@@ -4288,8 +4302,7 @@ You're not viewing the latest release version.
 <p>Typical creation and use:</p>
 <ol>
 <li>Instantiate the converter:</li>
-<li>Provide either a path to the legacy <code>.ext</code> or an <code>ExtOldModel</code> instance.</li>
-<li>Optionally provide <code>mdu_parser</code> (or use <code>from_mdu</code>), which is required for certain conversions:<ul>
+<li>Provide either a path to the legacy <code>.ext</code> or an <code>ExtOldModel</code> instance, together with an <code>MDUParser</code> (or use <code>from_mdu</code>, which builds both). The MDU supplies metadata for certain conversions:<ul>
 <li><code>SourceSink</code> needs temperature/salinity flags and <code>refdate</code>.</li>
 <li>Boundary condition conversion needs <code>refdate</code> (start time).</li>
 </ul>
@@ -4298,21 +4311,22 @@ You're not viewing the latest release version.
 <li>For each forcing block in <code>extold_model.forcing</code>:<ul>
 <li>If the quantity is unsupported, it is skipped and remains in <code>extold_model</code> (post-update the legacy model contains only these unsupported entries).</li>
 <li>Otherwise, a concrete converter is created (<code>ConverterFactory.create_converter</code>) and <code>convert()</code> is invoked with the required context.</li>
-<li>The converted block is appended to the appropriate destination model, chosen by type.</li>
+<li>The converted block(s) are appended to the appropriate destination model, chosen by type.</li>
 </ul>
 </li>
-<li>If <code>mdu_parser</code> exists, <code>_update_mdu_file()</code> modifies MDU references to point to the new files and (optionally) remove the old ext file reference if everything was converted.</li>
+<li><code>_update_mdu_file()</code> modifies MDU references to point to the new files and removes the old ext file reference if everything was converted.</li>
 <li>Call <code>save()</code> to write outputs to disk, with backups as needed.</li>
 <li>Optionally call <code>clean()</code> to delete any temporary legacy files and, when fully converted, remove the old <code>.ext</code> file.</li>
 </ol>
 <p>Important invariants/constraints:</p>
 <ul>
-<li>If converting <code>SourceSink</code> or boundary conditions, <code>mdu_parser</code> (or equivalent <code>temperature_salinity_data</code> and <code>refdate</code>) must be available; otherwise a <code>ValueError</code> is raised.</li>
+<li><code>mdu_parser</code> is mandatory; <code>SourceSink</code> and boundary conversions raise a <code>ValueError</code> if the MDU lacks the needed <code>refdate</code> or temperature/salinity data.</li>
 <li><code>un_supported_quantities</code> are determined at initialization:</li>
 <li><code>debug=False</code> (strict): raises on unsupported quantities during detection.</li>
 <li><code>debug=True</code> (permissive): allows conversion to proceed, skipping unsupported ones.</li>
-<li>Destination models are created (or opened if existing) in the legacy file’s directory unless explicitly overridden.</li>
-<li>When saving <code>IniFieldModel</code>, <code>exclude_unset=False</code> is used to satisfy kernel requirements.</li>
+<li>Destination models are created (or opened if existing) in the MDU file’s directory unless the MDU references other paths (<code>from_mdu</code>) or explicit paths are passed to the constructor.</li>
+<li>Saved models use <code>exclude_unset=True</code>, and the <code>[General]</code> block of the ext, structure and mass balance area files is set explicitly so that it is always written.</li>
+<li>Same-quantity block order is preserved: blocks are appended in legacy file order, because the kernel applies them top to bottom.</li>
 </ul>
 <hr />
 <h3 id="3-diagrams">3. Diagrams<a class="headerlink" href="#3-diagrams" title="Permanent link">&para;</a></h3>
@@ -4344,16 +4358,16 @@ Hold "Ctrl" to enable pan &amp; zoom
     subgraph Filesystem
       OldExt[(old.ext file)]
       NewExt[(new external forcings .ext)]
-      NewIni[(inifields.ini)]
       NewStr[(structures.ini)]
+      NewMba[(new_mba.ini)]
       Backups[(.bak backups)]
     end
 
     Client[[Caller]] --&gt; Conv[ExternalForcingConverter]
     Conv --&gt; OldExt
     Conv --&gt; NewExt
-    Conv --&gt; NewIni
     Conv --&gt; NewStr
+    Conv --&gt; NewMba
     Conv -. optional .-&gt; Backups
 
     subgraph FM
@@ -4391,15 +4405,15 @@ Hold "Ctrl" to enable pan &amp; zoom
     </nav>
     <pre class="mermaid"><code>classDiagram
     class ExternalForcingConverter {
-        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug)
-        + from_mdu(mdu_file, ext_file_user, structure_file_user, path_style, debug) ExternalForcingConverter
+        + __init__(extold_model, ext_file, structure_file, mdu_parser, verbose, path_style, debug, mba_file)
+        + from_mdu(mdu_file, path_style, debug) ExternalForcingConverter
         + update() tuple~ExtModel, StructureModel~
         + save(backup, recursive) void
         + clean() void
         + check_unsupported_quantities() list~str~
         + ext_model: ExtModel
-        + inifield_model: IniFieldModel
         + structure_model: StructureModel
+        + mba_model: MassBalanceAreaModel
         + extold_model: ExtOldModel
         + root_dir: Path
         + path_style: PathStyle
@@ -4407,14 +4421,14 @@ Hold "Ctrl" to enable pan &amp; zoom
         + legacy_files: list~Path~
         - debug: bool
         - un_supported_quantities: list~str~
-        - temperature_salinity_data?: Dict~str, int~
+        + temperature_salinity_data: Dict~str, int~
     }
 
     ExternalForcingConverter --&gt; ExtOldModel : reads
     ExternalForcingConverter --&gt; ExtModel : writes
-    ExternalForcingConverter --&gt; IniFieldModel : writes
     ExternalForcingConverter --&gt; StructureModel : writes
-    ExternalForcingConverter --&gt; MDUParser : optional
+    ExternalForcingConverter --&gt; MassBalanceAreaModel : writes
+    ExternalForcingConverter --&gt; MDUParser : requires
     ExternalForcingConverter ..&gt; ConverterFactory : uses
     ConverterFactory &lt;.. ExternalForcingConverter : create_converter()</code></pre> 
     
@@ -4449,8 +4463,8 @@ Hold "Ctrl" to enable pan &amp; zoom
     participant Conv as ExternalForcingConverter
     participant Old as ExtOldModel
     participant NewExt as ExtModel
-    participant NewIni as IniFieldModel
     participant NewStr as StructureModel
+    participant NewMba as MassBalanceAreaModel
     participant CF as ConverterFactory
     participant FS as FileSystem
 
@@ -4459,8 +4473,8 @@ Hold "Ctrl" to enable pan &amp; zoom
     MDU--&gt;&gt;Conv: extforce file, refdate, temp/salinity flags
     Conv-&gt;&gt;Old: load legacy ext (if given as path)
     Conv-&gt;&gt;NewExt: load new ext (if given as path)
-    Conv-&gt;&gt;NewIni: load New initialfield file (if given as path)
-    Conv-&gt;&gt;NewStr: load New initialfield file (if given as path)
+    Conv-&gt;&gt;NewStr: load new structure file (if it exists)
+    Conv-&gt;&gt;NewMba: load new mass balance area file (if it exists)
 
     Client-&gt;&gt;Conv: update
     loop each forcing in Old.forcing
@@ -4474,24 +4488,20 @@ Hold "Ctrl" to enable pan &amp; zoom
                 Conv-&gt;&gt;MDU: get refdate and temp/salinity
             end
             Conv-&gt;&gt;Conv: convert forcing
-            Conv-&gt;&gt;NewExt: append if Boundary/Lateral/Meteo/SourceSink
-            Conv-&gt;&gt;NewIni: append if Initial/Parameter
+            Conv-&gt;&gt;NewExt: append if Boundary/Lateral/SourceSink/Spatial
             Conv-&gt;&gt;NewStr: append if Structure
+            Conv-&gt;&gt;NewMba: append if MassBalanceArea
         end
     end
-    alt mdu_parser present
-        Conv-&gt;&gt;MDU: update file references
-    end
+    Conv-&gt;&gt;MDU: update file references
 
     Client-&gt;&gt;Conv: save (backup=true)
-    Conv-&gt;&gt;NewIni: save
-    Conv-&gt;&gt;NewStr: save
+    Conv-&gt;&gt;NewStr: save (if any structures)
+    Conv-&gt;&gt;NewMba: save (if any mass balance areas)
     Conv-&gt;&gt;Old: save unsupported-only (if any)
-    Conv-&gt;&gt;NewExt: save
-    alt mdu_parser present
-        Conv-&gt;&gt;MDU: clean
-        Conv-&gt;&gt;MDU: save
-    end
+    Conv-&gt;&gt;NewExt: save (if any forcing blocks)
+    Conv-&gt;&gt;MDU: clean
+    Conv-&gt;&gt;MDU: save
 
     opt cleanup
         Client-&gt;&gt;Conv: clean
@@ -4538,13 +4548,10 @@ Hold "Ctrl" to enable pan &amp; zoom
     F --&gt; L{More forcings?}
     K --&gt; L
     L --&gt;|Yes| D
-    L --&gt;|No| M{MDU parser present?}
-    M --&gt;|Yes| N[Update MDU file]
-    M --&gt;|No| O[Skip]
+    L --&gt;|No| N[Update MDU file]
     N --&gt; P{Unsupported quantities exist?}
-    O --&gt; P
     P --&gt;|Yes| Q[Keep legacy model with unsupported only]
-    P --&gt;|No| R[The Legacy model is empty, \n then delete]
+    P --&gt;|No| R[The Legacy model is fully converted, \n clean deletes it]
     Q --&gt; S[Return models]
     R --&gt; S[Return models]
 
@@ -4554,8 +4561,8 @@ Hold "Ctrl" to enable pan &amp; zoom
         C1 --&gt; D1{Converter type}
         D1 --&gt;|SourceSink| E1[Needs temp salinity and refdate]
         D1 --&gt;|Boundary| E2[Needs refdate]
-        D1 --&gt;|Initial or Parameters| E3[Resolve relative path]
-        D1 --&gt;|Other| E4[Simple convert]
+        D1 --&gt;|Spatial: meteo, initial or parameters| E3[Resolve relative path]
+        D1 --&gt;|Lateral or mass balance area| E4[Simple convert]
         E1 --&gt; F1[Convert with quantities and start time]
         E2 --&gt; F2[Convert with start time]
         E3 --&gt; F3[Convert with forcing path]
@@ -4573,6 +4580,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 <li>Cohesion &amp; scope: High cohesion around conversion concerns; the class mediates between input model, conversion strategies, and output models.</li>
 <li>Extension points:</li>
 <li>Add new quantity support by adding a converter and registering it in <code>ConverterFactory</code> and <code>CONVERTER_DATA</code>.</li>
+<li>Converters may return a list of blocks for one legacy quantity; <code>update()</code> appends each block separately.</li>
 <li><code>_type_field_map</code> defines how converted block types are routed; extending with new block types would require updating this mapping.</li>
 <li>Contracts/assumptions:</li>
 <li>Some conversions require FM metadata (e.g., <code>refdate</code>, temperature/salinity flags) from <code>MDUParser</code>.</li>
@@ -4582,36 +4590,37 @@ Hold "Ctrl" to enable pan &amp; zoom
 </ul>
 <hr />
 <h3 id="5-usage-examples">5. Usage Examples<a class="headerlink" href="#5-usage-examples" title="Permanent link">&para;</a></h3>
-<p>1) Convert using a legacy <code>.ext</code> path</p>
+<p>1) Convert using <code>from_mdu</code> (recommended)</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
-    <span class="n">extold_model</span><span class="o">=</span><span class="s2">"path/to/old-forcings.ext"</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># skip unsupported quantities without raising</span>
-<span class="p">)</span>
-<span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># debug: skip unsupported quantities</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>     <span class="c1"># performs conversion and updates MDU references</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>       <span class="c1"># writes new models and MDU; may back up existing files</span>
 <span class="c1"># If everything converted and you want to remove legacy artifacts</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
 </code></pre></div>
-<p>2) Convert using <code>from_mdu</code> (recommended for <code>SourceSink</code>/boundary quantities)</p>
+<p>2) Convert using a legacy <code>.ext</code> path (an <code>MDUParser</code> is required)</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span>
-    <span class="n">mdu_file</span><span class="o">=</span><span class="s2">"path/to/model.mdu"</span><span class="p">,</span>
-    <span class="n">ext_file_user</span><span class="o">=</span><span class="s2">"path/to/output/forcings.ext"</span><span class="p">,</span>  <span class="c1"># optional override</span>
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
+    <span class="n">extold_model</span><span class="o">=</span><span class="s2">"path/to/old-forcings.ext"</span><span class="p">,</span>
+    <span class="n">mdu_parser</span><span class="o">=</span><span class="n">MDUParser</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">),</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>     <span class="c1"># performs conversion and updates MDU references</span>
-<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>       <span class="c1"># writes new models and MDU; may back up existing files</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 <p>3) Provide custom output file locations</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.mdu_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDUParser</span>
 
 <span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="p">(</span>
     <span class="n">extold_model</span><span class="o">=</span><span class="s2">".../old.ext"</span><span class="p">,</span>
+    <span class="n">mdu_parser</span><span class="o">=</span><span class="n">MDUParser</span><span class="p">(</span><span class="s2">".../model.mdu"</span><span class="p">),</span>
     <span class="n">ext_file</span><span class="o">=</span><span class="s2">".../new/forcings.ext"</span><span class="p">,</span>
     <span class="n">structure_file</span><span class="o">=</span><span class="s2">".../new/structures.ini"</span><span class="p">,</span>
+    <span class="n">mba_file</span><span class="o">=</span><span class="s2">".../new/mba.ini"</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">converter</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -4620,12 +4629,12 @@ Hold "Ctrl" to enable pan &amp; zoom
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
 
 <span class="c1"># Create a converter from the FM model so the required MDU metadata is available.</span>
-<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">)</span>  
+<span class="n">converter</span> <span class="o">=</span> <span class="n">ExternalForcingConverter</span><span class="o">.</span><span class="n">from_mdu</span><span class="p">(</span><span class="s2">"path/to/model.mdu"</span><span class="p">)</span>
 
-<span class="n">ext_model</span><span class="p">,</span> <span class="n">ini_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">meteo</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">boundary</span><span class="p">))</span>  
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ini_model</span><span class="o">.</span><span class="n">initial</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ini_model</span><span class="o">.</span><span class="n">parameter</span><span class="p">))</span>  
-<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">struct_model</span><span class="o">.</span><span class="n">structure</span><span class="p">))</span>  
+<span class="n">ext_model</span><span class="p">,</span> <span class="n">struct_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">spatial</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ext_model</span><span class="o">.</span><span class="n">boundary</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">struct_model</span><span class="o">.</span><span class="n">structure</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">mba_model</span><span class="o">.</span><span class="n">massbalancearea</span><span class="p">))</span>
 </code></pre></div>
 <hr />
 <h3 id="6-quality-safety-requirements">6. Quality &amp; Safety Requirements<a class="headerlink" href="#6-quality-safety-requirements" title="Permanent link">&para;</a></h3>
