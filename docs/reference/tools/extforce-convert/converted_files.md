@@ -20,8 +20,7 @@ After conversion
 ```
 project/
 ├─ model.mdu                      # updated to reference new files
-├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
-├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
+├─ new-external-forcing.ext       # ExtModel: boundary/lateral/sourcesink/spatial
 ├─ new-structure.ini              # StructureModel: structures (if any)
 └─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
 ```
@@ -62,9 +61,9 @@ ExtForceFileNew                     =                                           
   quantities are reported in the log.
 - If all the quantities are converted the `ExtForceFile` entry is removed and the `ExtForceFileNew` entry is updated to
   point to the new file.
-- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` already exist, the converter will append the new entries to the existing
+- If the `ExtForceFileNew`/`StructureFile`/`mbaFile` already exist, the converter will append the new entries to the existing
   file.
-- If the `ExtForceFileNew`/`IniFieldFile`/`StructureFile` does not exist, the converter will create it, add the new
+- If the `ExtForceFileNew`/`StructureFile`/`mbaFile` does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
 - `ExtForceFileNew` may list **several files separated by a space** (a file name containing spaces must be enclosed
   in double quotes; D-Flow FM 1D2D User Manual, the `ExtForceFileNew` keyword). When more than one file is listed,
@@ -106,36 +105,24 @@ quantity     = waterlevelbnd
 locationFile = OB_001_orgsize.pli
 forcingfile  = BoundaryConditions.bc     # converter provides the correct BC file
 
-[meteo]
-Quantity        = rainfall_rate
-ForcingFile     = era_20181001.nc
-forcingVariableName  = mer               # Variable name used in forcingfile associated with this forcing. See UM Section C.5.3
-forcingFileType      = netcdf            # Type of forcingFile.
+[spatial]
+quantity             = rainfall_rate
+dataFile             = era_20181001.nc
+dataFileType         = netcdf            # Type of dataFile.
+dataVariableName     = mer               # Variable name used in dataFile associated with this forcing. See UM Section C.5.3
 interpolationMethod  = linearSpaceTime   # Type of (spatial) interpolation.
-operand              = +                 # How this data is combined with previous data for the same quantity (if any).
+operand              = override          # How this data is combined with previous data for the same quantity (if any).
 extrapolationAllowed = 0                 # Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.
 ```
 
-- Boundary/lateral/meteorology/source-sink entries go to `new-external-forcing.ext`.
-- Initial/parameter fields go to `new-initial-conditions.ini`.
+- Boundary/lateral/source-sink entries go to `new-external-forcing.ext`.
+- Meteo, initial-condition and parameter quantities all become `[spatial]` blocks in `new-external-forcing.ext`. The
+  converter no longer writes an initial field file (`[initial]`/`[parameter]` blocks are deprecated in favour of
+  `[spatial]`).
 - Structures go to `new-structure.ini`.
-
-### After: initial/parameter fields (`new-initial-conditions.ini`)
-Only created and saved if there are converted initial or parameter entries.
-
-```ini
-[General]
-fileVersion = 1.00
-fileType    = inifield
-
-[initial]
-quantity = waterlevel
-value    = 0.0
-
-[parameter]
-quantity = roughness
-value    = 0.03
-```
+- Mass balance areas go to `new_mba.ini`.
+- The order of the blocks is the order of the legacy file: blocks of the same quantity combine top to bottom, so the
+  converter never reorders them.
 
 ### After: structures (`new-structure.ini`)
 Only created and saved if there are converted structures.
@@ -153,7 +140,7 @@ chainage = 1234.0
 ```
 
 ### MDU references: before vs after
-If an `MDUParser` is supplied (e.g., when using `from_mdu`), the MDU file is updated to reference the new files.
+The converter always has an `MDUParser` (the MDU file is required), so the MDU file is updated to reference the new files.
 
 Before (simplified)
 ```ini
@@ -167,7 +154,6 @@ After (simplified)
 ExtForceFileNew = new-external-forcing.ext
 
 [geometry]
-IniFieldFile   = new-initial-conditions.ini    ; only if inifield has entries
 StructureFile  = new-structure.ini             ; only if structures exist
 
 [output]
@@ -203,7 +189,7 @@ The `clean()` method performs two types of removals after a successful conversio
 How are `legacy_files` populated?
 - Boundary condition conversion scans for related time-series or composition files next to the location file (e.g., `.pli`) and records found `.tim`, `.t3d`, and `.cmp` files as legacy artifacts.
 - Source/sink conversion records the corresponding `.tim` file for the polyline location.
-- These paths are resolved relative to the converter `root_dir` (the MDU directory when using `from_mdu`, otherwise the legacy `.ext` directory).
+- These paths are resolved relative to the converter `root_dir` (the directory of the MDU file).
 
 How to trigger cleanup
 - Programmatic:
@@ -242,30 +228,38 @@ Notes
 ### 1) Legacy `.ext` blocks → new models
 
 A single legacy block may be routed to different destination models depending on the quantity:
-- Meteo quantities → `[meteo]` block in `new-external-forcing.ext`.
+- Meteo, initial-condition and parameter quantities → `[spatial]` block in `new-external-forcing.ext`.
+- Combined meteo quantities (e.g. `humidity_airtemperature_cloudiness`) → one `[spatial]` block per component.
+- Lateral discharge quantities (`lateraldischarge`, `lateraldischarge1d`, `lateraldischarge2d`) → `[lateral]` block in
+  `new-external-forcing.ext`.
 - Boundary quantities → `[boundary]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
 - Source/sink quantities → `[sourcesink]` block in `new-external-forcing.ext` and a `.bc` file is generated/updated.
-- Initial/parameter quantities → `[initial]` / `[parameter]` block in `new-initial-conditions.ini`.
 - Structures → `[structure]` in `new-structure.ini`.
 - Mass balance area quantities (`waqmassbalancearea<name>`) → `[MassBalanceArea]` block in a new `_mba.ini`
   file, plus `mbaFile`/`mbaInterval` keywords in the MDU `[output]` section.
 
-#### 1.1) Meteo Block (new external forcing file)
+#### 1.1) Meteo block (new external forcing file)
 ```ini
 QUANTITY=rainfall_rate
-FILENAME=rainschematic.tim
+FILENAME=rainschematic.xyz
 FILETYPE=7
 METHOD=1
 OPERAND=O
 ```
-Mapped to `[meteo]` (new external forcings):
-- `QUANTITY` → `quantity`
-- `FILENAME` → `forcingfile` (path preserved; path style may be normalized)
-- `FILETYPE` → `forcingfiletype` via mapping (see table below)
-- `METHOD` → `interpolationmethod` (and possibly `averaging*` fields; see below)
+Mapped to `[spatial]` (new external forcings):
+- `QUANTITY` → `quantity` (renamed for a few quantities; see “Quantity renames”)
+- `FILENAME` → `dataFile` (path preserved; path style may be normalized)
+- `FILETYPE` → `dataFileType` via mapping (see table below)
+- `METHOD` → `interpolationMethod` (and possibly `averaging*` fields; see below)
 - `OPERAND` → `operand`
-- Legacy `VARNAME` (if present) → `forcingVariableName`
+- Legacy `VARNAME` (if present) → `dataVariableName`
+- Legacy `LAYER` (if present) → `targetLayer` (`-1` → bottom, `0` → all, positive values kept)
+- Any `tracer*` keys present are copied as-is
 - If `SOURCEMASK` is present → not supported (conversion raises error)
+- A uniform time series (`FILETYPE=1`, a `.tim` file) is converted to a `.bc` file: the block gets
+  `dataFileType = bcAscii`, `dataFile` points to the `.bc` file next to the new external forcings file, and the `.tim`
+  is recorded in `converter.legacy_files`. The `.tim` must have a single data column and the MDU `RefDate` is required.
+- `windspeedfactor` and `solarradiationfactor` are always written with `operand = multiply`, whatever `OPERAND` says.
 - Extrapolation options:
   - `EXTRAPOLATIONMETHOD`/`EXTRAPOLATION_METHOD` (int/flag) → `extrapolationAllowed` (boolean)
   - `MAXSEARCHRADIUS` → `extrapolationSearchRadius`
@@ -303,7 +297,7 @@ Mapped to `[sourcesink]` (new external forcings) plus a `.bc` file:
 - MDU required: `RefDate`; temperature/salinity flags determine which quantities to include.
 - If `zsource`/`zsink` elevations are present in the polyline, they are preserved.
 
-#### 1.4) initial/parameter block (polygon)
+#### 1.4) Initial-condition/parameter block (polygon)
 ```ini
 QUANTITY=initialwaterlevel
 FILENAME=start_area.pol
@@ -313,18 +307,31 @@ AVERAGINGTYPE=2
 OPERAND=O
 VALUE=0.15
 ```
-Mapped to `new-initial-conditions.ini`:
-- `QUANTITY` → `[initial].quantity` (renamed if the quantity is listed in `renamed_quantities`; see below)
-- `FILENAME` → `datafile`
-- `FILETYPE=10` → `datafiletype = polygon`
-- `METHOD`/`AVERAGINGTYPE` → `interpolationmethod` and `averaging*` fields (see below)
-- `OPERAND` → `operand`
-- `VALUE` is preserved for polygon data
-- Any `tracer*` keys present are copied as-is
+Mapped to a `[spatial]` block in `new-external-forcing.ext`. A polygon quantity becomes a constant value masked by
+the polygon:
+
+```ini
+[spatial]
+quantity            = initialwaterlevel
+targetMaskFile      = start_area.pol
+dataValue           = 0.15
+operand             = override
+interpolationMethod = constant
+```
+
+- `QUANTITY` → `quantity` (renamed if the quantity is listed in `renamed_quantities`; see below)
+- `FILENAME` (polygon) → `targetMaskFile`
+- `VALUE` → `dataValue`
+- `OPERAND` → `operand`; `interpolationMethod` is always `constant`
+- `METHOD`/`AVERAGINGTYPE` are not used for polygon quantities
+- Exception: `initialvertical*` quantities keep the polygon as `dataFile` (with `dataFileType = polygon`) and always get
+  `interpolationMethod = constant`
+- Initial-condition and parameter quantities with a gridded data file (not a polygon) are converted like the meteo block
+  above: `dataFile`, `dataFileType`, `interpolationMethod`, `averaging*`, `operand`, `extrapolationAllowed`
 
 ##### Quantity renames (legacy → new)
 
-A few quantities are spelled differently in the initial and parameter fields file than in the old external
+A few quantities are spelled differently in the new `[spatial]` blocks than in the old external
 forcings file. The converter resolves them through the `renamed_quantities` table in
 `hydrolib/tools/extforce_convert/data/data.yaml`; any quantity not listed there is written out unchanged.
 
@@ -332,6 +339,10 @@ forcings file. The converter resolves them through the `renamed_quantities` tabl
 |----------------|----------------|----------------------------------------------------------------------------------------------|
 | `sea_ice_thickness` | `seaIceThickness` | See D-Flow FM UM Sec. 16.1                                                                   |
 | `sea_ice_area_fraction` | `seaIceAreaFraction` | See D-Flow FM UM Sec. 16.1                                                                   |
+| `nudge_salinity_temperature` | `nudgeSalinityTemperature` | |
+| `friction_coefficient_time_dependent` | `frictionCoefficientTimeDependent` | |
+| `windspeedfactor` | `windxy` | Written with `operand = multiply` |
+| `solarradiationfactor` | `solarradiation` | Written with `operand = multiply` |
 | `bedrock_surface_elevation` | `bedrockSurfaceElevation` | Parked — the quantity is still unsupported, so this rename is not reached by a converter run |
 
 Old names are matched case-insensitively; the new names are written verbatim, since the kernel expects
@@ -344,7 +355,7 @@ that exact casing.
 - 5 → `spiderweb`
 - 6 → `curvigrid`
 - 7 → `sample`
-- 10 → `polygon` (initial/parameter)
+- 9, 10 → `polygon`
 - 11 → `netcdf`
 - 12 → `map` (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as `ncFlow`)
 - 3 (spatially varying wind/pressure) → not supported (raises error)
@@ -373,7 +384,38 @@ that exact casing.
   - `averagingnummin` from `NUMMIN`
   - `averagingpercentile` from `PERCENTILEMINMAX`
 
-#### 1.5) Mass balance area block (separate `_mba.ini` file)
+#### 1.5) Lateral block (new external forcing file)
+`lateraldischarge`, `lateraldischarge1d` and `lateraldischarge2d` are mapped to a `[lateral]` block whose
+`locationType` is `all`, `1d` and `2d` respectively. A time-series discharge (`.tim`) is converted to a `.bc` file; the
+MDU `RefDate` is required for the time unit.
+
+#### 1.6) Combined quantities (split into one block per component)
+A combined quantity bundles several variables in one old `QUANTITY`, with one data column per component (configured in
+`combined_quantities` in `data.yaml`), e.g. `humidity_airtemperature_cloudiness` (humidity, airtemperature,
+cloudiness).
+
+- **Uniform time series** (`.tim`/`.tem`, `FILETYPE=1`): split into one `[spatial]` block per component, all with
+  `dataFileType = bcAscii` and all pointing at a single shared `.bc` file. The `.bc` holds one `timeseries` `[Forcing]`
+  block with `time` plus every component column, and each `[spatial]` block resolves its own column by quantity name.
+  The number of data columns must equal the number of components. The `.tim` is recorded in `converter.legacy_files`.
+- **Other file types** (curvi, spiderweb, netcdf, e.g. the `airpressure_*` families): not split. A single `[spatial]`
+  block keeps the native file and the mapped `dataFileType`.
+
+```ini
+[spatial]
+quantity     = humidity
+dataFile     = meteo.bc
+dataFileType = bcAscii
+...
+
+[spatial]
+quantity     = airtemperature
+dataFile     = meteo.bc
+dataFileType = bcAscii
+...
+```
+
+#### 1.7) Mass balance area block (separate `_mba.ini` file)
 ```ini
 QUANTITY=waqmassbalanceareaEstruaryWest
 FILENAME=EstruaryWest.pol
@@ -557,13 +599,13 @@ Tip
 - For boundary/sourcesink `.bc` paths:
   - Boundary: `<polyline>.bc` (same directory as the `.pli`).
   - Source/sink: relative to the MDU root based on the TIM file location, with `.bc` extension.
-- For initial/parameter `datafile` paths:
-  - If the MDU setting `PathsRelativeToParent = 1`, absolute or MDU-relative filenames inside the legacy `.ext` may be rewritten relative to the inifield file location to keep references consistent.
+- For `[spatial]` `dataFile`/`targetMaskFile` paths:
+  - If the MDU setting `PathsRelativeToParent = 1`, MDU-relative filenames inside the legacy `.ext` are rewritten relative to the new external forcings file location to keep references consistent. Absolute paths are kept.
   - Otherwise, the original path is kept.
 
 #### 6) Unsupported/changed fields
 
-- `SOURCEMASK` is no longer supported for meteo/initial/parameter blocks; conversion raises an error when encountered.
+- `SOURCEMASK` is no longer supported for spatial (meteo/initial/parameter) blocks; conversion raises an error when encountered.
 - Some legacy `FILETYPE` values are no longer supported (see mapping table above).
 - Boundary and source/sink conversions require MDU context:
   - `RefDate` must be present.
