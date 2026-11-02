@@ -321,7 +321,9 @@ class IniFieldModel(INIModel):
 
         The parsed model keeps the two kinds of blocks in separate lists, which loses how they were
         interleaved in the file. The order matters because blocks for the same quantity are applied top to
-        bottom (D-Flow FM User Manual §D.2). It is recovered by reading the section headers of the file again.
+        bottom (D-Flow FM User Manual §D.2). It is recovered by reading the section headers of the file again,
+        so the file is assumed to be unchanged since the model was loaded; the order is trusted whenever the
+        number of `[Initial]` and `[Parameter]` blocks in the file equals the number in the model.
 
         Returns:
             List[InitialField | ParameterField]: The blocks of this model, in file order. When the model has no

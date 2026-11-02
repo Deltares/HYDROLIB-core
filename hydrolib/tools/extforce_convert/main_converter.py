@@ -173,7 +173,7 @@ class ExternalForcingConverter:
         )
         self._mdu_parser = mdu_parser
 
-        # loaded lazily, only a source/sink conversion needs it
+        # loaded on first use by `update()` (converted to `[Spatial]` blocks) or by the source/sink conversion
         self._inifield_model: IniFieldModel | None = None
         self._inifield_loaded = False
         self._inifield_converted = False
@@ -467,8 +467,8 @@ class ExternalForcingConverter:
 
         All quantities are returned, not only the tracer ones: the source/sink converter keeps the
         tracer / sediment-fraction ones by prefix. The inifield model is loaded on the first call and cached
-        (`self._inifield_model`), so a run without a source/sink never reads the inifield file and is not
-        affected by it. When the MDU references no inifield file, an empty list is returned.
+        (`self._inifield_model`), so the file is read once, whether `update()` or the source/sink conversion asks
+        first. When the MDU references no inifield file, an empty list is returned.
 
         Returns:
             list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
@@ -498,7 +498,7 @@ class ExternalForcingConverter:
         model = None
         if self.mdu_parser.has_inifield_file():
             inifield_path = self.mdu_parser.get_inifield_file(None)
-            if isinstance(inifield_path, (str, Path)) and Path(inifield_path).is_file():
+            if inifield_path is not None and Path(inifield_path).is_file():
                 try:
                     model = IniFieldModel(filepath=inifield_path, recurse=False)
                 except ValidationError as error:
