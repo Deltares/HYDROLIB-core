@@ -4,6 +4,7 @@ from typing import Tuple
 
 import pytest
 
+from hydrolib.core.base.models import DiskOnlyFileModel
 from hydrolib.core.dflowfm import ExtModel, FMModel, ForcingModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from tests.tools.test_main_converter import _make_mdu_parser_mock
@@ -45,7 +46,9 @@ OPERAND      =O
 
 class TestRecurseBase:
     @staticmethod
-    def _create_model(model_dir: Path) -> Tuple[Path, Path, Path]:
+    def _create_model(
+        model_dir: Path, quantity: str = "discharge"
+    ) -> Tuple[Path, Path, Path, Path]:
         model_dir.mkdir(parents=True, exist_ok=True)
         old_file = model_dir / "old_ext.ext"
         old_file.write_text(_OLD_EXT_CONTENT)
@@ -56,13 +59,27 @@ class TestRecurseBase:
         bc_file = model_dir / "pt_discharge.bc"
         bc_file.write_text(_BC_CONTENT)
 
-        return old_file, ext_file, bc_file
+        if quantity != "discharge":
+            bc_file = model_dir / f"{quantity}.bc"
+            bc_file.write_text(_BC_CONTENT.replace("discharge", f"{quantity}delta"))
+            ext_file.write_text(_NEW_EXT_CONTENT + f"{quantity}Delta = {bc_file.name}\n")
+
+        mdu_file = model_dir / "model.mdu"
+        mdu_file.write_text(
+            "[General]\n"
+            "fileVersion = 1.09\n"
+            "fileType = modelDef\n"
+            "[External Forcing]\n"
+            f"extForceFileNew = {ext_file.name}\n"
+        )
+
+        return old_file, ext_file, bc_file, mdu_file
 
 class TestRecurseTrue(TestRecurseBase):
     """The .bc files referenced by the new external forcing file (like hyd07_z_for_hydromt)."""
 
     def test_bc_files_loaded_and_saved_with_recurse(self, tmp_path: Path):
-        old_file, ext_file, bc_file = self._create_model(tmp_path / "model")
+        old_file, ext_file, bc_file, _ = self._create_model(tmp_path / "model")
 
         converter = ExternalForcingConverter(
             extold_model=old_file,
@@ -85,7 +102,7 @@ class TestRecurseTrue(TestRecurseBase):
 
     def test_delta_suffix_removed_with_recurse(self, tmp_path: Path):
         """Legacy `<quantity>Delta` keywords referencing .bc files are renamed to the base name when saving."""
-        old_file, ext_file, bc_file = self._create_model(tmp_path / "model")
+        old_file, ext_file, bc_file, _ = self._create_model(tmp_path / "model")
         sal_bc = bc_file.with_name("sal_temp.bc")
         sal_bc.write_text(_BC_CONTENT.replace("discharge", "salinitydelta"))
         ext_file.write_text(
@@ -119,56 +136,9 @@ class TestRecurseTrue(TestRecurseBase):
         assert "delta" not in sal_bc.read_text().lower()
 
 
-class TestFMModelDeltaSuffix(TestRecurseBase):
-    @pytest.fixture(params=["salinity", "tracerOXY"])
-    def legacy_model_files(self, tmp_path: Path, request):
-        _, ext_file, _ = self._create_model(tmp_path / "model")
-        quantity = request.param
-        bc_file = ext_file.with_name(f"{quantity}.bc")
-        bc_file.write_text(_BC_CONTENT.replace("discharge", f"{quantity}delta"))
-        ext_file.write_text(
-            _NEW_EXT_CONTENT + f"{quantity}Delta = {bc_file.name}\n"
-        )
-        mdu_file = ext_file.with_name("model.mdu")
-        mdu_file.write_text(
-            "[General]\n"
-            "fileVersion = 1.09\n"
-            "fileType = modelDef\n"
-            "[External Forcing]\n"
-            f"extForceFileNew = {ext_file.name}\n"
-        )
-
-        return mdu_file, ext_file, bc_file, quantity
-
-    def test_delta_suffix_removed_on_load(self, legacy_model_files):
-        mdu_file, ext_file, bc_file, quantity = legacy_model_files
-        model = FMModel(mdu_file, recurse=True)
-        ext_model = model.external_forcing.extforcefilenew
-        assert isinstance(ext_model, ExtModel)
-        assert len(ext_model.sourcesink) == 1
-        sourcesink = ext_model.sourcesink[0]
-        assert sourcesink.id == "Q_S"
-        assert f"{quantity.lower()}delta" not in sourcesink.model_dump()
-        for field, path, bc_quantity in (
-            ("discharge", ext_file.with_name("pt_discharge.bc"), "discharge"),
-            (quantity.lower(), bc_file, quantity),
-        ):
-            forcing_model = getattr(sourcesink, field)
-            assert isinstance(forcing_model, ForcingModel)
-            assert forcing_model.filepath.name == path.name
-            assert len(forcing_model.forcing) == 1
-            forcing = forcing_model.forcing[0]
-            assert [pair.quantity for pair in forcing.quantityunitpair] == [
-                "time",
-                bc_quantity,
-            ]
-            assert forcing.datablock == [[0.0, 1.0], [60.0, 2.0]]
-
-        assert "delta" in ext_file.read_text().lower()
-        assert "delta" in bc_file.read_text().lower()
-
-    def test_delta_suffix_removed_on_save_and_reload(self, legacy_model_files):
-        mdu_file, ext_file, bc_file, quantity = legacy_model_files
+    @pytest.mark.parametrize("quantity", ["salinity", "tracerOXY"])
+    def test_fmm_model_delta_suffix_removed_on_save_and_reload(self, tmp_path: Path, quantity):
+        _, ext_file, bc_file, mdu_file = self._create_model(tmp_path / "model", quantity)
         model = FMModel(mdu_file, recurse=True)
         sourcesink = model.external_forcing.extforcefilenew.sourcesink[0]
         model.save(recurse=True)
@@ -178,6 +148,7 @@ class TestFMModelDeltaSuffix(TestRecurseBase):
 
         reloaded = FMModel(mdu_file, recurse=True)
         reloaded_ext = reloaded.external_forcing.extforcefilenew
+
         assert isinstance(reloaded_ext, ExtModel)
         assert len(reloaded_ext.sourcesink) == 1
         reloaded_sourcesink = reloaded_ext.sourcesink[0]
@@ -197,11 +168,38 @@ class TestFMModelDeltaSuffix(TestRecurseBase):
                 == original_forcing.forcing[0].datablock
             )
 
-
 class TestRecurseFalse(TestRecurseBase):
+    @pytest.mark.parametrize("quantity", ["salinity", "tracerOXY"])
+    def test_fmm_model_delta_suffix_kept_on_save_and_reload(
+        self, tmp_path: Path, quantity
+    ):
+        _, ext_file, bc_file, mdu_file = self._create_model(tmp_path / "model", quantity)
+        paths = (ext_file, bc_file, ext_file.with_name("pt_discharge.bc"))
+        original_contents = {path: path.read_bytes() for path in paths}
+        assert "delta" in ext_file.read_text().lower()
+        assert "delta" in bc_file.read_text().lower()
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "error", message=".*suffix `delta`", category=UserWarning
+            )
+            model = FMModel(mdu_file, recurse=False)
+            ext_reference = model.external_forcing.extforcefilenew
+            assert isinstance(ext_reference, DiskOnlyFileModel)
+            assert ext_reference.filepath == Path(ext_file.name)
+
+            model.save(recurse=False)
+            reloaded = FMModel(mdu_file, recurse=False)
+
+        reloaded_reference = reloaded.external_forcing.extforcefilenew
+        assert isinstance(reloaded_reference, DiskOnlyFileModel)
+        assert reloaded_reference.filepath == ext_reference.filepath
+        for path, content in original_contents.items():
+            assert path.read_bytes() == content
+
     def test_delta_suffix_kept_in_bc_without_recurse(self, tmp_path: Path):
         """Without recurse the .bc files are never loaded, so they are not rewritten."""
-        old_file, ext_file, bc_file = self._create_model(tmp_path / "model")
+        old_file, ext_file, bc_file, _ = self._create_model(tmp_path / "model")
         sal_bc = bc_file.with_name("sal_temp.bc")
         sal_bc.write_text(_BC_CONTENT.replace("discharge", "salinitydelta"))
         ext_file.write_text(_NEW_EXT_CONTENT + "salinityDelta   = sal_temp.bc\n")
@@ -224,7 +222,7 @@ class TestRecurseFalse(TestRecurseBase):
         assert "delta" in sal_bc.read_text().lower()
 
     def test_bc_files_not_loaded_without_recurse(self, tmp_path: Path):
-        old_file, ext_file, bc_file = self._create_model(tmp_path / "model")
+        old_file, ext_file, bc_file, _ = self._create_model(tmp_path / "model")
 
         converter = ExternalForcingConverter(
             extold_model=old_file,
