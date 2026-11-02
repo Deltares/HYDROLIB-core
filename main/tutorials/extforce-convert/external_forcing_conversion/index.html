@@ -1667,6 +1667,17 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#-recurse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --recurse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-remove-legacy-files-r" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4058,6 +4069,17 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#-recurse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --recurse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-remove-legacy-files-r" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4146,6 +4168,7 @@ You're not viewing the latest release version.
 <li><a href="#-no-backup"><code>--no-backup</code></a></li>
 </ul>
 </li>
+<li><a href="#-recurse"><code>--recurse</code></a></li>
 <li><a href="#-remove-legacy-files-r"><code>--remove-legacy-files</code> / <code>-r</code></a></li>
 <li><a href="#-path-style-unixwindows"><code>--path-style {unix,windows}</code></a></li>
 </ul>
@@ -4208,6 +4231,11 @@ contains <code>_ext</code> are skipped. If one model fails, the error is printed
 <p><strong>Syntax</strong>: <code>--no-backup</code><br />
 By default, the tool creates a backup of each file that will be overwritten. Use <code>--no-backup</code> to disable backups and overwrite files in-place.</p>
 <hr />
+<h3 id="-recurse"><code>--recurse</code><a class="headerlink" href="#-recurse" title="Permanent link">&para;</a></h3>
+<p><strong>Syntax</strong>: <code>--recurse</code><br />
+Recursively resolves and loads files referenced by the existing new-format external forcing file, including <code>.bc</code> files. Default is <code>False</code>.</p>
+<p>This option is independent of <code>--dir</code>: <code>--dir</code> searches subdirectories for <code>.mdu</code> files, while <code>--recurse</code> controls loading referenced files.</p>
+<hr />
 <h3 id="-remove-legacy-files-r"><code>--remove-legacy-files</code> / <code>-r</code><a class="headerlink" href="#-remove-legacy-files-r" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--remove-legacy-files</code> or <code>-r</code><br />
 Deletes old/legacy files (e.g., <code>.tim</code>) after successfully converting them to the new format. Default is <code>False</code>.</p>
@@ -4242,6 +4270,12 @@ Handle absolute paths in input files according to the specified style. Use this 
    <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-d<span class="w"> </span>/path/to/projects
 </code></pre></div>
    Searches the directory and subdirectories for <code>.mdu</code> files and converts them.</p>
+</li>
+<li>
+<p><strong>Convert an MDU file and normalize legacy quantities in referenced <code>.bc</code> files</strong>:
+   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-m<span class="w"> </span>path/to/project.mdu<span class="w"> </span>--recurse
+</code></pre></div>
+   Loads the files referenced by the existing new-format external forcing file and saves normalized quantity names in both the external forcing file and its referenced <code>.bc</code> files.</p>
 </li>
 </ol>
 <hr />
