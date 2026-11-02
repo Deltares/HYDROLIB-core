@@ -553,12 +553,14 @@ class ExternalForcingConverter:
         """
         path = block.datafile.filepath
         if path is not None and not path.is_absolute() and self.mdu_parser.is_relative_to_parent:
-            path = Path(
-                os.path.relpath(
-                    (model.filepath.parent / path).resolve(),
-                    self.ext_model.filepath.parent.resolve(),
+            absolute = (model.filepath.parent / path).resolve()
+            try:
+                path = Path(
+                    os.path.relpath(absolute, self.ext_model.filepath.parent.resolve())
                 )
-            )
+            except ValueError:
+                # no relative path exists between two drives (Windows)
+                path = absolute
         return path
 
     def _convert_inifield_blocks(self) -> None:

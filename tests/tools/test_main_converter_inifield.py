@@ -297,3 +297,88 @@ class TestEmptyOrMissingInifieldEntry:
 
         blocks = _spatial_blocks(converter.ext_model.filepath)
         assert [b.quantity for b in blocks] == ["initialtracerdTR1"]
+
+
+def _write_nested_model(root: Path, *, relative_to_parent: bool, data_file: str) -> Path:
+    """Write a model whose inifield is in `sub/` and whose new ext file is in `ext/`."""
+    (root / "sub").mkdir()
+    (root / "ext").mkdir()
+    (root / "sub" / "inifield.ini").write_text(
+        INIFIELD_TRACER.replace("a.xyz", data_file)
+    )
+    mdu = root / "model.mdu"
+    mdu.write_text(
+        MDU_TEMPLATE.format(
+            inifield=(
+                "IniFieldFile = sub/inifield.ini\n"
+                f"PathsRelativeToParent = {int(relative_to_parent)}\n"
+            ),
+            extforce="ExtForceFileNew = ext/new.ext\n",
+        )
+    )
+    return mdu
+
+
+class TestInifieldDataPath:
+    def _data_path(self, converter: ExternalForcingConverter) -> Path:
+        converter.update()
+        return converter.ext_model.spatial[0].datafile.filepath
+
+    def test_paths_stay_as_they_are_without_paths_relative_to_parent(self, tmp_path):
+        mdu = _write_nested_model(tmp_path, relative_to_parent=False, data_file="a.xyz")
+
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        assert self._data_path(converter) == Path("a.xyz")
+
+    def test_paths_are_made_relative_to_the_new_ext_file(self, tmp_path):
+        mdu = _write_nested_model(tmp_path, relative_to_parent=True, data_file="a.xyz")
+
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        assert self._data_path(converter) == Path("../sub/a.xyz")
+
+    def test_an_absolute_path_is_kept(self, tmp_path):
+        absolute = (tmp_path / "data" / "a.xyz").resolve()
+        mdu = _write_nested_model(
+            tmp_path, relative_to_parent=True, data_file=absolute.as_posix()
+        )
+
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        assert self._data_path(converter) == absolute
+
+    def test_a_path_on_another_drive_falls_back_to_the_absolute_path(
+        self, tmp_path, monkeypatch
+    ):
+        mdu = _write_nested_model(tmp_path, relative_to_parent=True, data_file="a.xyz")
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        def other_drive(*_args, **_kwargs):
+            raise ValueError("path is on mount 'C:', start on mount 'D:'")
+
+        monkeypatch.setattr("os.path.relpath", other_drive)
+
+        assert self._data_path(converter) == (tmp_path / "sub" / "a.xyz").resolve()
+
+
+class TestRepeatedAndEmptyInifield:
+    def test_a_second_update_adds_no_blocks(self, tmp_path):
+        converter = ExternalForcingConverter.from_mdu(_write_model(tmp_path))
+        converter.update()
+        first = list(converter.ext_model.spatial)
+
+        converter.update()
+
+        assert converter.ext_model.spatial == first
+
+    def test_an_inifield_without_blocks_writes_no_ext_file(self, tmp_path):
+        mdu = _write_model(
+            tmp_path,
+            inifield_text="[General]\nfileVersion = 2.00\nfileType = iniField\n",
+        )
+
+        converter = _convert(mdu)
+
+        assert not converter.ext_model.filepath.exists()
+        assert "extforcefilenew" not in mdu.read_text().lower()
