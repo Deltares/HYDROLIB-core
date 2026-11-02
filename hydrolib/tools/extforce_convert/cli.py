@@ -186,7 +186,6 @@ def main(args=None):
 
     Required (mutually exclusive, pick one):
       --mdufile, -m MDUFILE         Use MDUFILE to determine input/output files automatically.
-      --extoldfile, -e EXTOLDFILE   Convert a specific legacy external forcing file.
       --dir, -d DIR                 Recursively find and convert all .mdu files in DIR.
 
     Optional:
@@ -205,7 +204,7 @@ def main(args=None):
 
     Notes:
       - The output file paths are always derived automatically: from the MDU file with `--mdufile`, and
-        next to the legacy file with `--extoldfile` (or `--dir`).
+        next to the legacy file with `--dir`.
       - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 
@@ -213,10 +212,6 @@ def main(args=None):
         - Use an MDU file and let the tool determine I/O automatically
             ```shell
             >>> extforce_convert --mdufile model.mdu # doctest: +SKIP
-            ```
-        - Convert a specific legacy .ext file
-            ```shell
-            >>> extforce_convert --extoldfile old.ext # doctest: +SKIP
             ```
         - Recursively convert all models in a directory
             ```shell
@@ -242,7 +237,7 @@ def main(args=None):
             debug=args.debug_mode,
         )
     else:
-        print("Error: no input specified. Use one of --mdufile, --extoldfile or --dir.")
+        print("Error: no input specified. Use one of --mdufile or --dir.")
 
 
 def convert_with_mdu_file(args: Namespace):

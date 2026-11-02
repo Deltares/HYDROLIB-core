@@ -24,7 +24,7 @@ This document provides detailed usage instructions, argument descriptions, and e
 
 ## Introduction
 
-`extforce-convert` is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. This tool can handle:
+`extforce-convert` is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. The converted quantities are written to a new external forcings file (`[Boundary]`, `[Lateral]`, `[SourceSink]` and `[Spatial]` blocks; meteo, initial-condition and parameter quantities all become `[Spatial]` blocks), a structures file and a mass balance area file, and the MDU file is updated to reference them. This tool can handle:
 - Conversions of a single `mdu` file, also converting all model files that are linked to it.
 - Recursively converting all `.mdu` files within a specified directory.
 
@@ -80,7 +80,7 @@ Convert the supported quantities only and leave unsupported quantities in the ol
 
 ### Mutually Exclusive Options
 
-You must choose **one** of these three arguments to specify your source of legacy external forcing data.
+You must choose **one** of these arguments to specify your source of legacy external forcing data (`--mdufile` or `--dir`).
 
 #### `--mdufile` / `-m`
 **Syntax**: `--mdufile MDUFILE` or `-m MDUFILE`  
@@ -89,8 +89,10 @@ Specifies an `mdu` file from which input and output filenames for the conversion
 
 #### `--dir` / `-d`
 **Syntax**: `--dir DIRECTORY` or `-d DIRECTORY`  
-Specifies a directory path; the tool will search recursively for `.mdu` files and convert them.
+Specifies a directory path; the tool will search recursively for `.mdu` files and convert them. MDU files whose name
+contains `_ext` are skipped. If one model fails, the error is printed and the tool continues with the next one.
 - **Example**: `-d /path/to/projects`
+
 
 The output filenames are always derived automatically: from the MDU file when using `--mdufile`, and next to
 the legacy file when using `--dir`.
