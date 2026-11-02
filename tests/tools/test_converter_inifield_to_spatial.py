@@ -226,3 +226,16 @@ class TestDataFilePath:
         result = InifieldToSpatialConverter().convert(block, Path("sub/a.xyz"))
 
         assert result.datafile.filepath == Path("sub/a.xyz")
+
+
+class TestUnconvertedValueWarning:
+    def test_the_warning_does_not_name_a_polygon_for_other_file_types(self):
+        block = InitialField(
+            quantity="salinity", dataFile="s.xyz", dataFileType="sample", value=1.0
+        )
+
+        with pytest.warns(UserWarning) as record:
+            InifieldToSpatialConverter().convert(block, Path("s.xyz"))
+
+        message = str(record[0].message)
+        assert "dataFileType=polygon" not in message, message

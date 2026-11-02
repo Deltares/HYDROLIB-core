@@ -694,6 +694,15 @@ class InifieldToSpatialConverter:
         "tracerdecaytime": "tracerdecaytime",
     }
 
+    def __init__(self):
+        """Initialize the converter.
+
+        Attributes:
+            unconverted_quantities (list[str]): Quantities of the converted blocks whose `value` has no
+                counterpart in the `[Spatial]` block and was therefore dropped.
+        """
+        self.unconverted_quantities: list[str] = []
+
     @staticmethod
     def _is_inside_polygon_value(block: AbstractSpatialField) -> bool:
         """Whether the block sets a constant `value` inside a polygon (not a vertical profile polygon)."""
@@ -768,9 +777,10 @@ class InifieldToSpatialConverter:
         else:
             data["datafile"] = DiskOnlyFileModel(new_data_path)
             if block.value is not None:
+                self.unconverted_quantities.append(block.quantity)
                 warnings.warn(
                     f"The 'value' ({block.value}) of the {block.quantity} block is not converted: a [Spatial] "
-                    "block with dataFile and dataFileType=polygon has no keyword for it.",
+                    "block with a dataFile has no keyword for it.",
                     UserWarning,
                     stacklevel=2,
                 )

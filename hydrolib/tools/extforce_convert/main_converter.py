@@ -501,12 +501,28 @@ class ExternalForcingConverter:
             if inifield_path is not None and Path(inifield_path).is_file():
                 try:
                     model = IniFieldModel(filepath=inifield_path, recurse=False)
-                except ValidationError as error:
+                    self._check_has_sections(Path(inifield_path))
+                except (ValidationError, ValueError, TypeError) as error:
                     raise InifieldError(
                         f"The inifield file '{inifield_path}' could not be read, so it cannot be converted "
                         f"to [Spatial] blocks: {error}"
                     ) from error
         return model
+
+    @staticmethod
+    def _check_has_sections(inifield_path: Path) -> None:
+        """Raise a `ValueError` when a non-empty inifield file has no `[section]` header.
+
+        The ini parser reads such a file as an empty one, so it would be converted to nothing and then
+        removed.
+        """
+        lines = [
+            line.strip()
+            for line in inifield_path.read_text(errors="replace").splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+        if lines and not any(line.startswith("[") for line in lines):
+            raise ValueError("the file has content but no [section] header")
 
     def _warn_on_tracer_order(self) -> None:
         """Warn when inifield tracers end up behind the `[Boundary]` tracers of the new external forcings file.
@@ -619,7 +635,15 @@ class ExternalForcingConverter:
             self.ext_model.spatial = blocks + list(self.ext_model.spatial)
             self._inifield_spatial_blocks = blocks
             self._inifield_converted = True
-            self._register_inifield_as_legacy_file(Path(model.filepath))
+            if converter.unconverted_quantities:
+                warnings.warn(
+                    f"The inifield file '{model.filepath}' is not removed when the legacy files are cleaned: "
+                    f"the value of {', '.join(converter.unconverted_quantities)} was not converted.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+            else:
+                self._register_inifield_as_legacy_file(Path(model.filepath))
 
     def _convert_forcing(
         self, forcing

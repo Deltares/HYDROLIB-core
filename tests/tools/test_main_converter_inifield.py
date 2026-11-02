@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from hydrolib.core.dflowfm.ext.models import ExtModel
+from hydrolib.tools.extforce_convert.converters import InifieldError
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 
 MDU_TEMPLATE = """\
@@ -472,3 +473,54 @@ class TestInifieldOutsideMduDirectory:
         converter.clean()
 
         assert (model_dir / "sub" / "inifield.ini").is_file()
+
+
+VERTICAL_WITH_VALUE = """\
+[General]
+fileVersion = 2.00
+fileType = iniField
+
+[Initial]
+quantity = initialverticalsalinityprofile
+dataFile = profile.pol
+dataFileType = polygon
+value = 1.0
+"""
+
+DUPLICATE_GENERAL = """\
+[General]
+fileVersion = 2.00
+fileType = iniField
+
+[General]
+fileVersion = 2.00
+"""
+
+
+class TestInifieldWithUnconvertedValue:
+    """A `value` that cannot be converted keeps the inifield file on disk."""
+
+    def test_clean_keeps_the_file_and_update_warns(self, tmp_path):
+        mdu = _write_model(tmp_path, inifield_text=VERTICAL_WITH_VALUE)
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with pytest.warns(UserWarning, match="not removed.*initialverticalsalinityprofile"):
+            converter.update()
+        converter.save(backup=False)
+        converter.clean()
+
+        assert (tmp_path / "inifield.ini").is_file()
+
+
+class TestUnreadableInifield:
+    """A file that is not an inifield file raises `InifieldError`, whatever the parser raised."""
+
+    @pytest.mark.parametrize(
+        "text", ["this is not an ini file\nat all\n", DUPLICATE_GENERAL]
+    )
+    def test_update_raises_inifield_error(self, tmp_path, text):
+        mdu = _write_model(tmp_path, inifield_text=text)
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with pytest.raises(InifieldError, match="inifield.ini"):
+            converter.update()
