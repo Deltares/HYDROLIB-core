@@ -135,8 +135,10 @@ them even when the MDU has no old `ExtForceFile`.
   forcings file, which are in front of the blocks converted from the old external forcings file. That is the order in
   which D-Flow FM reads the sources (inifield, new ext, old ext), so blocks of the same quantity combine as before.
 - The `IniFieldFile` entry is removed from the MDU file. The inifield file itself stays on disk, unless the legacy files
-  are removed (`--remove-legacy` / `ExternalForcingConverter.clean()`); a file outside the MDU directory, or a
-  symbolic link, is never removed (it may be shared with other models) and the converter warns.
+  are removed (`--remove-legacy-files` / `ExternalForcingConverter.clean()`); a file outside the MDU directory, or a
+  symbolic link, is never removed (it may be shared with other models) and the converter warns. A file inside the
+  MDU directory is removed even when another MDU in that folder also refers to it. A file with a block whose `value`
+  could not be converted is not removed either (the converter warns).
 - `[spatial]` blocks are written after the `[boundary]` blocks. When an inifield tracer (`initialtracer*`,
   `initialsedfrac*`) and a `[boundary]` tracer (`tracerbnd*`, `sedfracbnd*`) end up in the same file, the converter warns
   that D-Flow FM may number the tracers in another order than before.

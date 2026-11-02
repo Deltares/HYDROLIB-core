@@ -327,8 +327,9 @@ class IniFieldModel(INIModel):
 
         Returns:
             List[InitialField | ParameterField]: The blocks of this model, in file order. When the model has no
-                file on disk, or its blocks were added or removed after loading (so the file no longer matches),
-                all `[Initial]` blocks followed by all `[Parameter]` blocks.
+                file on disk, or the file has another number of `[Initial]` or `[Parameter]` blocks than the
+                model (the counts are all that is compared), all `[Initial]` blocks followed by all
+                `[Parameter]` blocks.
 
         Examples:
             - A model built in memory lists the initial blocks, then the parameter blocks:

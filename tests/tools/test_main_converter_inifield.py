@@ -1,4 +1,5 @@
 import warnings
+from functools import partialmethod
 from pathlib import Path
 
 import pytest
@@ -145,6 +146,18 @@ def _convert(mdu: Path) -> ExternalForcingConverter:
 
 def _spatial_blocks(ext_path: Path) -> list:
     return ExtModel(filepath=ext_path, recurse=False).spatial
+
+
+def _relpath_on_other_drive(*_args, **_kwargs):
+    raise ValueError("path is on mount 'C:', start on mount 'D:'")
+
+
+_REAL_IS_SYMLINK = Path.is_symlink
+
+
+def _is_symlink_of(path: Path, linked: str) -> bool:
+    """Stand-in for `Path.is_symlink` that reports the path named `linked` as a link."""
+    return path.name == linked or _REAL_IS_SYMLINK(path)
 
 
 class TestInifieldOnly:
@@ -362,10 +375,7 @@ class TestInifieldDataPath:
         mdu = _write_nested_model(tmp_path, relative_to_parent=True, data_file="a.xyz")
         converter = ExternalForcingConverter.from_mdu(mdu)
 
-        def other_drive(*_args, **_kwargs):
-            raise ValueError("path is on mount 'C:', start on mount 'D:'")
-
-        monkeypatch.setattr("os.path.relpath", other_drive)
+        monkeypatch.setattr("os.path.relpath", _relpath_on_other_drive)
 
         assert self._data_path(converter) == (tmp_path / "sub" / "a.xyz").resolve()
 
@@ -462,9 +472,8 @@ class TestInifieldOutsideMduDirectory:
             )
         )
         converter = ExternalForcingConverter.from_mdu(mdu)
-        original = Path.is_symlink
         monkeypatch.setattr(
-            Path, "is_symlink", lambda self: self.name == linked or original(self)
+            Path, "is_symlink", partialmethod(_is_symlink_of, linked)
         )
 
         with pytest.warns(UserWarning, match="symbolic link"):
@@ -524,3 +533,49 @@ class TestUnreadableInifield:
 
         with pytest.raises(InifieldError, match="inifield.ini"):
             converter.update()
+
+
+MIXED_TRACERS = """\
+[General]
+fileVersion = 2.00
+fileType = iniField
+
+[Parameter]
+quantity = initialtracerB
+dataFile = b.xyz
+dataFileType = sample
+
+[Initial]
+quantity = initialtracerA
+dataFile = a.xyz
+dataFileType = sample
+"""
+
+
+class TestInifieldTracerQuantities:
+    def test_quantities_follow_the_order_of_the_file(self, tmp_path):
+        mdu = _write_model(tmp_path, inifield_text=MIXED_TRACERS)
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        assert converter._inifield_tracer_quantities() == [
+            "initialtracerB",
+            "initialtracerA",
+        ]
+
+
+class TestTracerOrderWarningOnce:
+    def test_a_second_update_does_not_repeat_the_warning(self, tmp_path):
+        mdu = _write_model(
+            tmp_path, inifield_text=INIFIELD_TRACER, new_ext=True, new_ext_text=NEW_EXT_BOUNDARY_TRACER
+        )
+        converter = ExternalForcingConverter.from_mdu(mdu)
+        with pytest.warns(UserWarning, match="tracer"):
+            converter.update()
+
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
+            converter.update()
+
+        assert not [w for w in record if "tracer" in str(w.message)], [
+            str(w.message) for w in record
+        ]

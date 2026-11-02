@@ -177,6 +177,7 @@ class ExternalForcingConverter:
         self._inifield_model: IniFieldModel | None = None
         self._inifield_loaded = False
         self._inifield_converted = False
+        self._tracer_order_warned = False
         self._inifield_spatial_blocks: list[Spatial] = []
         # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
         self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
@@ -471,12 +472,11 @@ class ExternalForcingConverter:
         first. When the MDU references no inifield file, an empty list is returned.
 
         Returns:
-            list[str]: Quantity names of the inifield blocks, `[Initial]` first, then `[Parameter]`, in file order.
+            list[str]: Quantity names of the inifield blocks, in the order of the file.
         """
         model = self._get_inifield_model()
-        initials = model.initial if model else []
-        parameters = model.parameter if model else []
-        return [block.quantity for block in (*initials, *parameters)]
+        blocks = model.blocks_in_file_order() if model else []
+        return [block.quantity for block in blocks]
 
     def _get_inifield_model(self) -> IniFieldModel | None:
         """Return the inifield model of the MDU, loading it on the first call and caching it."""
@@ -542,7 +542,8 @@ class ExternalForcingConverter:
             for block in self.ext_model.boundary
             if block.quantity.lower().startswith(self.BOUNDARY_TRACER_PREFIXES)
         ]
-        if spatial_tracers and boundary_tracers:
+        if spatial_tracers and boundary_tracers and not self._tracer_order_warned:
+            self._tracer_order_warned = True
             warnings.warn(
                 f"The inifield tracer(s) {', '.join(spatial_tracers)} were moved into [Spatial] blocks, which "
                 f"are written after the [Boundary] blocks. The new external forcings file also has the "
@@ -550,7 +551,7 @@ class ExternalForcingConverter:
                 "different order than before (inifield, new ext, old ext). Check the tracer order in the "
                 "diagnostics (.dia) file.",
                 UserWarning,
-                stacklevel=2,
+                stacklevel=3,
             )
 
     def _inifield_data_path(self, block: AbstractSpatialField, model: IniFieldModel) -> Path:
@@ -591,25 +592,26 @@ class ExternalForcingConverter:
             inifield_path (Path): The resolved path of the converted inifield file.
         """
         mdu_dir = Path(os.path.abspath(self.mdu_parser.mdu_path.parent))
-        written = Path(
-            os.path.abspath(mdu_dir / self.mdu_parser.get_keyword(INIFIELD_FILE_LINE))
-        )
+        as_written = mdu_dir / self.mdu_parser.get_keyword(INIFIELD_FILE_LINE)
+        written = Path(os.path.abspath(as_written))
         inside = written.is_relative_to(mdu_dir) and inifield_path.resolve().is_relative_to(
             mdu_dir.resolve()
         )
+        # the links are looked up on the path before `..` is collapsed, as the file system follows them
         linked = any(
             element.is_symlink()
-            for element in (written, *written.parents)
+            for element in (as_written, *as_written.parents)
             if element != mdu_dir and element.is_relative_to(mdu_dir)
         )
         if inside and not linked:
             self.legacy_files = [inifield_path]
         else:
+            reason = "outside the MDU directory" if not inside else "a symbolic link or behind one"
             warnings.warn(
-                f"The inifield file '{inifield_path}' is outside the MDU directory or a symbolic link, so it "
-                "is not removed when the legacy files are cleaned.",
+                f"The inifield file '{inifield_path}' is {reason}, so it is not removed when the legacy "
+                "files are cleaned.",
                 UserWarning,
-                stacklevel=2,
+                stacklevel=4,
             )
 
     def _convert_inifield_blocks(self) -> None:
@@ -640,7 +642,7 @@ class ExternalForcingConverter:
                     f"The inifield file '{model.filepath}' is not removed when the legacy files are cleaned: "
                     f"the value of {', '.join(converter.unconverted_quantities)} was not converted.",
                     UserWarning,
-                    stacklevel=2,
+                    stacklevel=3,
                 )
             else:
                 self._register_inifield_as_legacy_file(Path(model.filepath))

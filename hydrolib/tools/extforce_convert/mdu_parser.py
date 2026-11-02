@@ -988,7 +988,7 @@ class MDUParser:
 
         Notes:
             - The keyword is deprecated; its blocks are converted to `[Spatial]` blocks of the new external
-            forcings file.
+              forcings file.
             - Nothing happens when the MDU file has no IniFieldFile entry.
 
         Examples:

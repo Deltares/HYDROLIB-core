@@ -605,14 +605,6 @@ class InifieldError(Exception):
         InifieldToSpatialConverter: Converts the blocks of an inifield file that could be read.
     """
 
-    def __init__(self, error_message: str):
-        """Initialize with an error message.
-
-        Args:
-            error_message: The message that names the inifield file and the problem.
-        """
-        super().__init__(error_message)
-
 
 class InifieldToSpatialConverter:
     """Convert an inifield `[Initial]` / `[Parameter]` block to a `[Spatial]` block.

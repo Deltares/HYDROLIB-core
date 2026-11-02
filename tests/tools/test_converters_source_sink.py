@@ -1852,7 +1852,7 @@ def write_tracer_model(
 class TestExternalForcingConverterTracerQuantities:
     """The tracer quantity collectors that feed the source/sink TIM column ordering."""
 
-    def test_inifield_quantities_list_initial_then_parameter_in_file_order(
+    def test_inifield_quantities_list_blocks_in_file_order(
         self, tmp_path: Path
     ):
         mdu = write_tracer_model(
@@ -1872,9 +1872,9 @@ class TestExternalForcingConverterTracerQuantities:
         converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
 
         assert converter._inifield_tracer_quantities() == [
+            "frictionCoefficient",
             "initialtracerB",
             "initialtracerA",
-            "frictionCoefficient",
         ]
 
     def test_inifield_quantities_empty_when_mdu_has_no_inifield_file(
