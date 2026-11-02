@@ -53,6 +53,10 @@ from hydrolib.tools.extforce_convert.utils import (
 class ExternalForcingConverter:
     """Converter for old external forcing files to the new format."""
 
+    # quantity prefixes of the tracers / sediment fractions defined as `[Spatial]` and as `[Boundary]` blocks
+    SPATIAL_TRACER_PREFIXES = ("initialtracer", "initialsedfrac")
+    BOUNDARY_TRACER_PREFIXES = ("tracerbnd", "sedfracbnd")
+
     def __init__(
         self,
         *,
@@ -171,6 +175,7 @@ class ExternalForcingConverter:
         self._inifield_model: IniFieldModel | None = None
         self._inifield_loaded = False
         self._inifield_converted = False
+        self._inifield_spatial_blocks: list[Spatial] = []
         # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
         self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
@@ -383,6 +388,7 @@ class ExternalForcingConverter:
                 progress_bar.update(1)
 
         self._update_mdu_file()
+        self._warn_on_tracer_order()
 
         if self.un_supported_quantities:
             # replace the forcings by the forcings that were not converted (the unsupported quantities)
@@ -491,6 +497,35 @@ class ExternalForcingConverter:
                 model = IniFieldModel(filepath=inifield_path, recurse=False)
         return model
 
+    def _warn_on_tracer_order(self) -> None:
+        """Warn when inifield tracers end up behind the `[Boundary]` tracers of the new external forcings file.
+
+        The kernel numbers the tracers in the order it meets them: inifield first, then the new external
+        forcings file, then the old one. The `[Spatial]` blocks made from the inifield file are written after
+        all `[Boundary]` blocks, so an inifield tracer (`initialtracer*`, `initialsedfrac*`) can come after a
+        `[Boundary]` tracer (`tracerbnd*`, `sedfracbnd*`) and the tracers may then be numbered in another order.
+        """
+        spatial_tracers = [
+            block.quantity
+            for block in self._inifield_spatial_blocks
+            if block.quantity.lower().startswith(self.SPATIAL_TRACER_PREFIXES)
+        ]
+        boundary_tracers = [
+            block.quantity
+            for block in self.ext_model.boundary
+            if block.quantity.lower().startswith(self.BOUNDARY_TRACER_PREFIXES)
+        ]
+        if spatial_tracers and boundary_tracers:
+            warnings.warn(
+                f"The inifield tracer(s) {', '.join(spatial_tracers)} were moved into [Spatial] blocks, which "
+                f"are written after the [Boundary] blocks. The new external forcings file also has the "
+                f"[Boundary] tracer(s) {', '.join(boundary_tracers)}, so D-Flow FM may number the tracers in a "
+                "different order than before (inifield, new ext, old ext). Check the tracer order in the "
+                "diagnostics (.dia) file.",
+                UserWarning,
+                stacklevel=2,
+            )
+
     def _inifield_data_path(self, block: AbstractSpatialField, model: IniFieldModel) -> Path:
         """Resolve the data file path of an inifield block for the new external forcings file.
 
@@ -536,6 +571,7 @@ class ExternalForcingConverter:
                 for block in model.blocks_in_file_order()
             ]
             self.ext_model.spatial = blocks + list(self.ext_model.spatial)
+            self._inifield_spatial_blocks = blocks
             self._inifield_converted = True
 
     def _convert_forcing(

@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import pytest
@@ -83,8 +84,36 @@ dataFileType = sample
 """
 
 
+INIFIELD_TRACER = """[General]
+fileVersion = 2.00
+fileType = iniField
+
+[Initial]
+quantity = initialtracerX
+dataFile = a.xyz
+dataFileType = sample
+interpolationMethod = triangulation
+"""
+
+NEW_EXT_BOUNDARY_TRACER = """[General]
+fileVersion = 2.01
+fileType = extForce
+
+[Boundary]
+quantity = tracerbndA
+locationFile = a.pli
+forcingFile = a.bc
+"""
+
+
 def _write_model(
-    root: Path, *, inifield: bool = True, old_ext: bool = False, new_ext: bool = False
+    root: Path,
+    *,
+    inifield: bool = True,
+    old_ext: bool = False,
+    new_ext: bool = False,
+    inifield_text: str = INIFIELD,
+    new_ext_text: str = NEW_EXT,
 ) -> Path:
     extforce = []
     if old_ext:
@@ -92,10 +121,10 @@ def _write_model(
         (root / "tracer.pol").write_text(POLYGON)
         extforce.append("ExtForceFile = old.ext")
     if new_ext:
-        (root / "new.ext").write_text(NEW_EXT)
+        (root / "new.ext").write_text(new_ext_text)
         extforce.append("ExtForceFileNew = new.ext")
     if inifield:
-        (root / "inifield.ini").write_text(INIFIELD)
+        (root / "inifield.ini").write_text(inifield_text)
     mdu = root / "model.mdu"
     mdu.write_text(
         MDU_TEMPLATE.format(
@@ -208,3 +237,37 @@ class TestWithoutInifield:
 
         with pytest.raises(ValueError):
             ExternalForcingConverter.from_mdu(mdu)
+
+
+class TestTracerOrderWarning:
+    """Inifield tracers move behind the `[Boundary]` tracers of the new ext file."""
+
+    def test_warns_when_an_inifield_tracer_meets_a_boundary_tracer(self, tmp_path):
+        mdu = _write_model(
+            tmp_path,
+            inifield_text=INIFIELD_TRACER,
+            new_ext=True,
+            new_ext_text=NEW_EXT_BOUNDARY_TRACER,
+        )
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with pytest.warns(UserWarning, match="initialtracerX.*tracerbndA"):
+            converter.update()
+
+    def test_no_warning_without_a_boundary_tracer(self, tmp_path):
+        mdu = _write_model(tmp_path, inifield_text=INIFIELD_TRACER)
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UserWarning)
+            converter.update()
+
+    def test_no_warning_without_an_inifield_tracer(self, tmp_path):
+        mdu = _write_model(
+            tmp_path, new_ext=True, new_ext_text=NEW_EXT_BOUNDARY_TRACER
+        )
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UserWarning)
+            converter.update()
