@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import warnings
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
@@ -652,6 +653,13 @@ class InifieldToSpatialConverter:
             data["interpolationmethod"] = InterpolationMethod.constant
         else:
             data["datafile"] = DiskOnlyFileModel(new_data_path)
+            if block.value is not None:
+                warnings.warn(
+                    f"The 'value' ({block.value}) of the {block.quantity} block is not converted: a [Spatial] "
+                    "block with dataFile and dataFileType=polygon has no keyword for it.",
+                    UserWarning,
+                    stacklevel=2,
+                )
 
         return SpatialConverter._create_spatial_block(data)
 

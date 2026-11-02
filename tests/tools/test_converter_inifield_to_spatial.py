@@ -191,6 +191,34 @@ class TestPolygonWithValue:
         assert result.datavalue is None
 
 
+class TestVerticalProfileValue:
+    def test_value_on_a_vertical_profile_polygon_is_dropped_with_a_warning(self):
+        block = _initial(
+            quantity="initialverticalsalinityprofile",
+            dataFile="profile.pol",
+            dataFileType="polygon",
+            interpolationMethod="constant",
+            value=3.0,
+        )
+
+        with pytest.warns(UserWarning, match="value.*initialverticalsalinityprofile"):
+            result = InifieldToSpatialConverter().convert(block, Path("profile.pol"))
+
+        assert result.datavalue is None
+
+    def test_vertical_profile_without_value_does_not_warn(self):
+        block = _initial(
+            quantity="initialverticalsalinityprofile",
+            dataFile="profile.pol",
+            dataFileType="polygon",
+            interpolationMethod="constant",
+        )
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", UserWarning)
+            InifieldToSpatialConverter().convert(block, Path("profile.pol"))
+
+
 class TestDataFilePath:
     def test_converted_path_replaces_the_source_path(self):
         block = _parameter(quantity="q", dataFile="a.xyz", dataFileType="sample")
