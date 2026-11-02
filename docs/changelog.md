@@ -1,3 +1,9 @@
+## 1.6.1 (2026-11-02)
+
+### Fix
+
+- **ini**: keep None fields when assigning attributes on INIBasedModel (#1288)
+
 ## 1.6.0 (2026-10-27)
 
 - MDU files containing an obsolete keyword no longer
