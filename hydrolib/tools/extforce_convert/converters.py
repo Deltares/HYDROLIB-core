@@ -574,6 +574,14 @@ class CombinedQuantityConverter(SpatialConverter):
         return self._create_spatial_block(block_data)
 
 
+class InifieldError(Exception):
+    """The inifield file of the MDU could not be read, so it cannot be converted."""
+
+    def __init__(self, error_message: str):
+        """Initialize with an error message."""
+        super().__init__(error_message)
+
+
 class InifieldToSpatialConverter:
     """Convert an inifield `[Initial]` / `[Parameter]` block to a `[Spatial]` block.
 

@@ -4,7 +4,6 @@ from typing import Dict, Optional
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pydantic import ValidationError
 
 from hydrolib.core.dflowfm.bc.models import TimeInterpolation
 from hydrolib.core.dflowfm.ext.models import ExtModel, SourceSink, ForcingModel
@@ -15,6 +14,7 @@ from hydrolib.core.dflowfm.extold.models import (
 )
 from hydrolib.tools.extforce_convert import converters as converters_module
 from hydrolib.tools.extforce_convert.converters import (
+    InifieldError,
     SourceSinkConverter,
     TimQuantityNamesBuilder,
 )
@@ -1808,7 +1808,7 @@ class TestConvertSourceSinkWithSubstanceFile:
             model_dir / "model.mdu", debug=True
         )
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(InifieldError, match="bad_inifield.ini"):
             converter.update()
 
 

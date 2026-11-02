@@ -7,6 +7,7 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
+from pydantic import ValidationError
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
@@ -35,6 +36,7 @@ from hydrolib.core.dflowfm.structure.models import (
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
+    InifieldError,
     InifieldToSpatialConverter,
     MassBalanceAreaConverter,
     LateralConverter,
@@ -489,12 +491,21 @@ class ExternalForcingConverter:
         Returns:
             Optional[IniFieldModel]: The parsed inifield model, or None when the MDU
                 does not reference an inifield file or the referenced path is missing.
+
+        Raises:
+            InifieldError: If the inifield file exists but cannot be parsed.
         """
         model = None
         if self.mdu_parser.has_inifield_file():
             inifield_path = self.mdu_parser.get_inifield_file(None)
             if isinstance(inifield_path, (str, Path)) and Path(inifield_path).is_file():
-                model = IniFieldModel(filepath=inifield_path, recurse=False)
+                try:
+                    model = IniFieldModel(filepath=inifield_path, recurse=False)
+                except ValidationError as error:
+                    raise InifieldError(
+                        f"The inifield file '{inifield_path}' could not be read, so it cannot be converted "
+                        f"to [Spatial] blocks: {error}"
+                    ) from error
         return model
 
     def _warn_on_tracer_order(self) -> None:
