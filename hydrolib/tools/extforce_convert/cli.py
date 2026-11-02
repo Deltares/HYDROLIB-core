@@ -139,7 +139,8 @@ def _get_parser() -> argparse.ArgumentParser:
         action="store",
         type=valid_file_with_extension(".ext"),
         metavar="EXTOLDFILE",
-        help="Input EXTOLDFILE to be converted.",
+        # kept only for backward compatibility; it always raises, so it is hidden from `--help`
+        help=argparse.SUPPRESS,
     )
     group.add_argument(
         "--dir",
