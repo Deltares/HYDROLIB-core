@@ -257,7 +257,7 @@ Mapped to `[spatial]` (new external forcings):
 - Any `tracer*` keys present are copied as-is
 - If `SOURCEMASK` is present → not supported (conversion raises error)
 - A uniform time series (`FILETYPE=1`, a `.tim` file) is converted to a `.bc` file: the block gets
-  `dataFileType = bcAscii`, `dataFile` points to the `.bc` file next to the new external forcings file, and the `.tim`
+  `dataFileType = bcAscii`, `dataFile` points to a `.bc` file with the same path and stem as the `.tim`, and the `.tim`
   is recorded in `converter.legacy_files`. The `.tim` must have a single data column and the MDU `RefDate` is required.
 - `windspeedfactor` and `solarradiationfactor` are always written with `operand = multiply`, whatever `OPERAND` says.
 - Extrapolation options:
@@ -395,7 +395,7 @@ A combined quantity bundles several variables in one old `QUANTITY`, with one da
 cloudiness).
 
 - **Uniform time series** (`.tim`/`.tem`, `FILETYPE=1`): split into one `[spatial]` block per component, all with
-  `dataFileType = bcAscii` and all pointing at a single shared `.bc` file. The `.bc` holds one `timeseries` `[Forcing]`
+  `dataFileType = bcAscii` and all pointing at a single shared `.bc` file (same path and stem as the `.tim`). The `.bc` holds one `timeseries` `[Forcing]`
   block with `time` plus every component column, and each `[spatial]` block resolves its own column by quantity name.
   The number of data columns must equal the number of components. The `.tim` is recorded in `converter.legacy_files`.
 - **Other file types** (curvi, spiderweb, netcdf, e.g. the `airpressure_*` families): not split. A single `[spatial]`
