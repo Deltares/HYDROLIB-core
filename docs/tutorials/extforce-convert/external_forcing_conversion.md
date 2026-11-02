@@ -42,7 +42,7 @@ Once installed, the `extforce-convert` command should be available in your PATH 
 ```bash
 extforce-convert [options]
 ```
-This will not work if your Python script folder is not acceccible. Alternatively, you may run it using (note the underscore):
+This will not work if your Python script folder is not accessible. Alternatively, you may run it using (note the underscore):
 ```bash
 python -m hydrolib.tools.extforce_convert.cli [options]
 ```
