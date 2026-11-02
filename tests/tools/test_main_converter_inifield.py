@@ -422,7 +422,7 @@ class TestInifieldOutsideMduDirectory:
     def test_clean_keeps_a_symbolic_link_to_the_inifield(self, tmp_path):
         model_dir = tmp_path / "model"
         model_dir.mkdir()
-        target = tmp_path / "inifield-target.ini"
+        target = model_dir / "real-inifield.ini"
         target.write_text(INIFIELD_TRACER)
         try:
             (model_dir / "inifield.ini").symlink_to(target)
@@ -439,5 +439,36 @@ class TestInifieldOutsideMduDirectory:
         converter.save(backup=False)
         converter.clean()
 
-        assert target.is_file()
+        assert target.is_file(), "the target of the link must not be removed"
         assert (model_dir / "inifield.ini").is_symlink()
+
+    @pytest.mark.parametrize("linked", ["inifield.ini", "sub"])
+    def test_a_link_in_the_path_written_in_the_mdu_is_detected(
+        self, tmp_path, monkeypatch, linked
+    ):
+        """The link check looks at the path as written in the MDU, not at the resolved path.
+
+        Args:
+            linked: Name of the path element that is reported as a symbolic link.
+        """
+        model_dir = tmp_path / "model"
+        (model_dir / "sub").mkdir(parents=True)
+        (model_dir / "sub" / "inifield.ini").write_text(INIFIELD_TRACER)
+        mdu = model_dir / "model.mdu"
+        mdu.write_text(
+            MDU_TEMPLATE.format(
+                inifield="IniFieldFile = sub/inifield.ini\n", extforce=""
+            )
+        )
+        converter = ExternalForcingConverter.from_mdu(mdu)
+        original = Path.is_symlink
+        monkeypatch.setattr(
+            Path, "is_symlink", lambda self: self.name == linked or original(self)
+        )
+
+        with pytest.warns(UserWarning, match="symbolic link"):
+            converter.update()
+        converter.save(backup=False)
+        converter.clean()
+
+        assert (model_dir / "sub" / "inifield.ini").is_file()

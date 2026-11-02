@@ -43,7 +43,7 @@ from hydrolib.tools.extforce_convert.converters import (
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
-from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+from hydrolib.tools.extforce_convert.mdu_parser import INIFIELD_FILE_LINE, MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
@@ -568,13 +568,25 @@ class ExternalForcingConverter:
 
         Nothing refers to the inifield file any more once its blocks are converted. The path comes from the
         MDU file, so a file outside the MDU directory (a file shared with other models) or a symbolic link is
-        never removed; a warning says so instead.
+        never removed; a warning says so instead. The link check looks at the path as written in the MDU, and
+        at every folder between the MDU directory and the file, because the resolved path has no links left.
 
         Args:
-            inifield_path (Path): The path of the converted inifield file.
+            inifield_path (Path): The resolved path of the converted inifield file.
         """
-        mdu_dir = self.mdu_parser.mdu_path.parent.resolve()
-        if inifield_path.resolve().is_relative_to(mdu_dir) and not inifield_path.is_symlink():
+        mdu_dir = Path(os.path.abspath(self.mdu_parser.mdu_path.parent))
+        written = Path(
+            os.path.abspath(mdu_dir / self.mdu_parser.get_keyword(INIFIELD_FILE_LINE))
+        )
+        inside = written.is_relative_to(mdu_dir) and inifield_path.resolve().is_relative_to(
+            mdu_dir.resolve()
+        )
+        linked = any(
+            element.is_symlink()
+            for element in (written, *written.parents)
+            if element != mdu_dir and element.is_relative_to(mdu_dir)
+        )
+        if inside and not linked:
             self.legacy_files = [inifield_path]
         else:
             warnings.warn(
