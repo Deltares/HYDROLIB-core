@@ -1,9 +1,10 @@
+import warnings
 from pathlib import Path
 from typing import Tuple
 
 import pytest
 
-from hydrolib.core.dflowfm import ForcingModel
+from hydrolib.core.dflowfm import ExtModel, FMModel, ForcingModel
 from hydrolib.tools.extforce_convert.main_converter import ExternalForcingConverter
 from tests.tools.test_main_converter import _make_mdu_parser_mock
 
@@ -97,7 +98,10 @@ class TestRecurseTrue(TestRecurseBase):
 
         mdu_parser = _make_mdu_parser_mock(old_file.parent)
 
-        with pytest.warns(UserWarning, match="suffix `delta`"):
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "error", message=".*suffix `delta`", category=UserWarning
+            )
             converter = ExternalForcingConverter(
                 extold_model=old_file,
                 ext_file=ext_file,
@@ -117,6 +121,81 @@ class TestRecurseTrue(TestRecurseBase):
 
         assert sal_bc.exists()
         assert "delta" not in sal_bc.read_text().lower()
+
+    def test_delta_suffix_removed_with_fmmodel(self, tmp_path: Path):
+        """FMModel normalizes legacy EXT and BC quantities on load and save."""
+        _, ext_file, bc_file = self._create_model(tmp_path / "model")
+        sal_bc = bc_file.with_name("sal_temp.bc")
+        tracer_bc = bc_file.with_name("tracer_oxy.bc")
+        sal_bc.write_text(_BC_CONTENT.replace("discharge", "salinitydelta"))
+        tracer_bc.write_text(_BC_CONTENT.replace("discharge", "tracerOXYdelta"))
+        ext_file.write_text(
+            _NEW_EXT_CONTENT
+            + f"salinityDelta   = {sal_bc.name}\n"
+            + f"tracerOXYdelta  = {tracer_bc.name}\n"
+        )
+        mdu_file = ext_file.with_name("model.mdu")
+        mdu_file.write_text(
+            "[General]\n"
+            "fileVersion = 1.09\n"
+            "fileType = modelDef\n"
+            "[External Forcing]\n"
+            f"extForceFileNew = {ext_file.name}\n"
+        )
+
+        model = FMModel(mdu_file, recurse=True)
+        ext_model = model.external_forcing.extforcefilenew
+        assert isinstance(ext_model, ExtModel)
+        assert len(ext_model.sourcesink) == 1
+        sourcesink = ext_model.sourcesink[0]
+        assert sourcesink.id == "Q_S"
+        assert "salinitydelta" not in sourcesink.model_dump()
+        assert "traceroxydelta" not in sourcesink.model_dump()
+        for quantity, path, bc_quantity in (
+            ("discharge", bc_file, "discharge"),
+            ("salinity", sal_bc, "salinity"),
+            ("traceroxy", tracer_bc, "tracerOXY"),
+        ):
+            forcing_model = getattr(sourcesink, quantity)
+            assert isinstance(forcing_model, ForcingModel)
+            assert forcing_model.filepath.name == path.name
+            assert len(forcing_model.forcing) == 1
+            forcing = forcing_model.forcing[0]
+            assert [pair.quantity for pair in forcing.quantityunitpair] == [
+                "time",
+                bc_quantity,
+            ]
+            assert forcing.datablock == [[0.0, 1.0], [60.0, 2.0]]
+
+        assert "delta" in ext_file.read_text().lower()
+        assert "delta" in sal_bc.read_text().lower()
+        assert "delta" in tracer_bc.read_text().lower()
+
+        model.save(recurse=True)
+
+        for path in (ext_file, bc_file, sal_bc, tracer_bc):
+            assert "delta" not in path.read_text().lower()
+
+        reloaded = FMModel(mdu_file, recurse=True)
+        reloaded_ext = reloaded.external_forcing.extforcefilenew
+        assert isinstance(reloaded_ext, ExtModel)
+        assert len(reloaded_ext.sourcesink) == 1
+        reloaded_sourcesink = reloaded_ext.sourcesink[0]
+        assert reloaded_sourcesink.id == sourcesink.id
+        for quantity in ("discharge", "salinity", "traceroxy"):
+            original_forcing = getattr(sourcesink, quantity)
+            saved_forcing = getattr(reloaded_sourcesink, quantity)
+            assert isinstance(saved_forcing, ForcingModel)
+            assert saved_forcing.filepath == original_forcing.filepath
+            assert len(saved_forcing.forcing) == 1
+            assert (
+                saved_forcing.forcing[0].quantityunitpair
+                == original_forcing.forcing[0].quantityunitpair
+            )
+            assert (
+                saved_forcing.forcing[0].datablock
+                == original_forcing.forcing[0].datablock
+            )
 
 
 class TestRecurseFalse(TestRecurseBase):
