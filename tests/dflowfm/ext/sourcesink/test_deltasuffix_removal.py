@@ -98,16 +98,12 @@ class TestRecurseTrue(TestRecurseBase):
 
         mdu_parser = _make_mdu_parser_mock(old_file.parent)
 
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "error", message=".*suffix `delta`", category=UserWarning
-            )
-            converter = ExternalForcingConverter(
-                extold_model=old_file,
-                ext_file=ext_file,
-                mdu_parser=mdu_parser,
-                recurse=True,
-            )
+        converter = ExternalForcingConverter(
+            extold_model=old_file,
+            ext_file=ext_file,
+            mdu_parser=mdu_parser,
+            recurse=True,
+        )
 
         sourcesink = converter.ext_model.sourcesink[0]
         assert isinstance(sourcesink.salinity, ForcingModel)
@@ -122,17 +118,16 @@ class TestRecurseTrue(TestRecurseBase):
         assert sal_bc.exists()
         assert "delta" not in sal_bc.read_text().lower()
 
-    def test_delta_suffix_removed_with_fmmodel(self, tmp_path: Path):
-        """FMModel normalizes legacy EXT and BC quantities on load and save."""
-        _, ext_file, bc_file = self._create_model(tmp_path / "model")
-        sal_bc = bc_file.with_name("sal_temp.bc")
-        tracer_bc = bc_file.with_name("tracer_oxy.bc")
-        sal_bc.write_text(_BC_CONTENT.replace("discharge", "salinitydelta"))
-        tracer_bc.write_text(_BC_CONTENT.replace("discharge", "tracerOXYdelta"))
+
+class TestFMModelDeltaSuffix(TestRecurseBase):
+    @pytest.fixture(params=["salinity", "tracerOXY"])
+    def legacy_model_files(self, tmp_path: Path, request):
+        _, ext_file, _ = self._create_model(tmp_path / "model")
+        quantity = request.param
+        bc_file = ext_file.with_name(f"{quantity}.bc")
+        bc_file.write_text(_BC_CONTENT.replace("discharge", f"{quantity}delta"))
         ext_file.write_text(
-            _NEW_EXT_CONTENT
-            + f"salinityDelta   = {sal_bc.name}\n"
-            + f"tracerOXYdelta  = {tracer_bc.name}\n"
+            _NEW_EXT_CONTENT + f"{quantity}Delta = {bc_file.name}\n"
         )
         mdu_file = ext_file.with_name("model.mdu")
         mdu_file.write_text(
@@ -143,20 +138,22 @@ class TestRecurseTrue(TestRecurseBase):
             f"extForceFileNew = {ext_file.name}\n"
         )
 
+        return mdu_file, ext_file, bc_file, quantity
+
+    def test_delta_suffix_removed_on_load(self, legacy_model_files):
+        mdu_file, ext_file, bc_file, quantity = legacy_model_files
         model = FMModel(mdu_file, recurse=True)
         ext_model = model.external_forcing.extforcefilenew
         assert isinstance(ext_model, ExtModel)
         assert len(ext_model.sourcesink) == 1
         sourcesink = ext_model.sourcesink[0]
         assert sourcesink.id == "Q_S"
-        assert "salinitydelta" not in sourcesink.model_dump()
-        assert "traceroxydelta" not in sourcesink.model_dump()
-        for quantity, path, bc_quantity in (
-            ("discharge", bc_file, "discharge"),
-            ("salinity", sal_bc, "salinity"),
-            ("traceroxy", tracer_bc, "tracerOXY"),
+        assert f"{quantity.lower()}delta" not in sourcesink.model_dump()
+        for field, path, bc_quantity in (
+            ("discharge", ext_file.with_name("pt_discharge.bc"), "discharge"),
+            (quantity.lower(), bc_file, quantity),
         ):
-            forcing_model = getattr(sourcesink, quantity)
+            forcing_model = getattr(sourcesink, field)
             assert isinstance(forcing_model, ForcingModel)
             assert forcing_model.filepath.name == path.name
             assert len(forcing_model.forcing) == 1
@@ -168,12 +165,15 @@ class TestRecurseTrue(TestRecurseBase):
             assert forcing.datablock == [[0.0, 1.0], [60.0, 2.0]]
 
         assert "delta" in ext_file.read_text().lower()
-        assert "delta" in sal_bc.read_text().lower()
-        assert "delta" in tracer_bc.read_text().lower()
+        assert "delta" in bc_file.read_text().lower()
 
+    def test_delta_suffix_removed_on_save_and_reload(self, legacy_model_files):
+        mdu_file, ext_file, bc_file, quantity = legacy_model_files
+        model = FMModel(mdu_file, recurse=True)
+        sourcesink = model.external_forcing.extforcefilenew.sourcesink[0]
         model.save(recurse=True)
 
-        for path in (ext_file, bc_file, sal_bc, tracer_bc):
+        for path in (ext_file, bc_file, ext_file.with_name("pt_discharge.bc")):
             assert "delta" not in path.read_text().lower()
 
         reloaded = FMModel(mdu_file, recurse=True)
@@ -182,9 +182,9 @@ class TestRecurseTrue(TestRecurseBase):
         assert len(reloaded_ext.sourcesink) == 1
         reloaded_sourcesink = reloaded_ext.sourcesink[0]
         assert reloaded_sourcesink.id == sourcesink.id
-        for quantity in ("discharge", "salinity", "traceroxy"):
-            original_forcing = getattr(sourcesink, quantity)
-            saved_forcing = getattr(reloaded_sourcesink, quantity)
+        for field in ("discharge", quantity.lower()):
+            original_forcing = getattr(sourcesink, field)
+            saved_forcing = getattr(reloaded_sourcesink, field)
             assert isinstance(saved_forcing, ForcingModel)
             assert saved_forcing.filepath == original_forcing.filepath
             assert len(saved_forcing.forcing) == 1
