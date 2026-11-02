@@ -43,7 +43,11 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.inifield.models import (
+    AbstractSpatialField,
+    DataFileType,
+    InterpolationMethod,
+)
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaError
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
@@ -568,6 +572,80 @@ class CombinedQuantityConverter(SpatialConverter):
         block_data["datafile"] = forcing_model
         block_data["datafiletype"] = DataFileType.bcascii
         return self._create_spatial_block(block_data)
+
+
+class InifieldToSpatialConverter:
+    """Convert an inifield `[Initial]` / `[Parameter]` block to a `[Spatial]` block.
+
+    The inifield file is deprecated: its blocks move to the `[Spatial]` blocks of the new external forcings
+    file (UNST-9273). `Spatial` is a superset of the inifield blocks, so every keyword of
+    `AbstractSpatialField` has a counterpart; only the keywords that were explicitly set in the source block
+    are copied, so the converted block does not gain defaults the source did not write.
+
+    Keyword changes:
+
+    - `extrapolationMethod` becomes `extrapolationAllowed`.
+    - A polygon block with a `value` becomes `dataValue` + `targetMaskFile=<*.pol>` +
+      `interpolationMethod=constant` (the polygon `dataFileType` is discouraged for "inside polygon" data).
+    - A polygon block without a `value` (e.g. `initialverticalsalinityprofile`) keeps `dataFile` and
+      `dataFileType=polygon`.
+    - The legacy single-character `operand` values were already parsed into their word form on read.
+    """
+
+    # inifield attribute -> Spatial attribute, for the keywords copied when they were set in the source block
+    KEYWORD_MAP = {
+        "datafiletype": "datafiletype",
+        "interpolationmethod": "interpolationmethod",
+        "operand": "operand",
+        "averagingtype": "averagingtype",
+        "averagingrelsize": "averagingrelsize",
+        "averagingnummin": "averagingnummin",
+        "averagingpercentile": "averagingpercentile",
+        "extrapolationmethod": "extrapolationallowed",
+        "locationtype": "locationtype",
+        "tracerfallvelocity": "tracerfallvelocity",
+        "tracerdecaytime": "tracerdecaytime",
+    }
+
+    @staticmethod
+    def _is_inside_polygon_value(block: AbstractSpatialField) -> bool:
+        """Whether the block sets a constant `value` inside a polygon (not a vertical profile polygon)."""
+        return (
+            block.datafiletype == DataFileType.polygon
+            and block.value is not None
+            and not block.quantity.lower().startswith("initialvertical")
+        )
+
+    def convert(self, block: AbstractSpatialField, new_data_path: Path) -> Spatial:
+        """Convert an inifield block to a `Spatial` block.
+
+        Args:
+            block (AbstractSpatialField):
+                The `[Initial]` or `[Parameter]` block of an inifield file.
+            new_data_path (Path):
+                The path of the data file (or polygon) as it must be written in the new external forcings file.
+
+        Returns:
+            Spatial: The equivalent `[Spatial]` block.
+
+        Raises:
+            SpatialError: If the converted keywords do not form a valid `Spatial` block.
+        """
+        data: dict[str, Any] = {"quantity": block.quantity}
+
+        for source, target in self.KEYWORD_MAP.items():
+            if source in block.model_fields_set:
+                data[target] = getattr(block, source)
+
+        if self._is_inside_polygon_value(block):
+            data.pop("datafiletype", None)
+            data["targetmaskfile"] = DiskOnlyFileModel(new_data_path)
+            data["datavalue"] = block.value
+            data["interpolationmethod"] = InterpolationMethod.constant
+        else:
+            data["datafile"] = DiskOnlyFileModel(new_data_path)
+
+        return SpatialConverter._create_spatial_block(data)
 
 
 class BoundaryConditionConverter(BaseConverter):
