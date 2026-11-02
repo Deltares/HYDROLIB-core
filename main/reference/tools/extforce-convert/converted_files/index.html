@@ -3660,17 +3660,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#after-initialparameter-fields-new-initial-conditionsini" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        After: initial/parameter fields (new-initial-conditions.ini)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#after-structures-new-structureini" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3747,7 +3736,7 @@ You're not viewing the latest release version.
   <a href="#11-meteo-block-new-external-forcing-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.1) Meteo Block (new external forcing file)
+        1.1) Meteo block (new external forcing file)
       
     </span>
   </a>
@@ -3777,15 +3766,15 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#14-initialparameter-block-polygon" class="md-nav__link">
+  <a href="#14-initial-conditionparameter-block-polygon" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.4) initial/parameter block (polygon)
+        1.4) Initial-condition/parameter block (polygon)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1.4) initial/parameter block (polygon)">
+    <nav class="md-nav" aria-label="1.4) Initial-condition/parameter block (polygon)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -3827,10 +3816,32 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
+  <a href="#15-lateral-block-new-external-forcing-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.5) Mass balance area block (separate _mba.ini file)
+        1.5) Lateral block (new external forcing file)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-combined-quantities-split-into-one-block-per-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6) Combined quantities (split into one block per component)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7) Mass balance area block (separate _mba.ini file)
       
     </span>
   </a>
@@ -4137,17 +4148,6 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#after-initialparameter-fields-new-initial-conditionsini" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        After: initial/parameter fields (new-initial-conditions.ini)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#after-structures-new-structureini" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4224,7 +4224,7 @@ You're not viewing the latest release version.
   <a href="#11-meteo-block-new-external-forcing-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.1) Meteo Block (new external forcing file)
+        1.1) Meteo block (new external forcing file)
       
     </span>
   </a>
@@ -4254,15 +4254,15 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#14-initialparameter-block-polygon" class="md-nav__link">
+  <a href="#14-initial-conditionparameter-block-polygon" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.4) initial/parameter block (polygon)
+        1.4) Initial-condition/parameter block (polygon)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="1.4) initial/parameter block (polygon)">
+    <nav class="md-nav" aria-label="1.4) Initial-condition/parameter block (polygon)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4304,10 +4304,32 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
-  <a href="#15-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
+  <a href="#15-lateral-block-new-external-forcing-file" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.5) Mass balance area block (separate _mba.ini file)
+        1.5) Lateral block (new external forcing file)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-combined-quantities-split-into-one-block-per-component" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6) Combined quantities (split into one block per component)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-mass-balance-area-block-separate-_mbaini-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7) Mass balance area block (separate _mba.ini file)
       
     </span>
   </a>
@@ -4467,8 +4489,7 @@ You're not viewing the latest release version.
 <p>After conversion
 <div class="highlight"><pre><span></span><code>project/
 ├─ model.mdu                      # updated to reference new files
-├─ new-external-forcing.ext       # ExtModel: boundary/lateral/meteo/sourcesink
-├─ new-initial-conditions.ini     # IniFieldModel: initial/parameter entries (if any)
+├─ new-external-forcing.ext       # ExtModel: boundary/lateral/sourcesink/spatial
 ├─ new-structure.ini              # StructureModel: structures (if any)
 └─ new_mba.ini                    # MassBalanceAreaModel: mass balance areas (if any)
 </code></pre></div></p>
@@ -4506,9 +4527,9 @@ You're not viewing the latest release version.
   quantities are reported in the log.
 - If all the quantities are converted the <code>ExtForceFile</code> entry is removed and the <code>ExtForceFileNew</code> entry is updated to
   point to the new file.
-- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> already exist, the converter will append the new entries to the existing
+- If the <code>ExtForceFileNew</code>/<code>StructureFile</code>/<code>mbaFile</code> already exist, the converter will append the new entries to the existing
   file.
-- If the <code>ExtForceFileNew</code>/<code>IniFieldFile</code>/<code>StructureFile</code> does not exist, the converter will create it, add the new
+- If the <code>ExtForceFileNew</code>/<code>StructureFile</code>/<code>mbaFile</code> does not exist, the converter will create it, add the new
   entries, save it, and update the MDU file to reference it.
 - <code>ExtForceFileNew</code> may list <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed
   in double quotes; D-Flow FM 1D2D User Manual, the <code>ExtForceFileNew</code> keyword). When more than one file is listed,
@@ -4543,34 +4564,25 @@ You're not viewing the latest release version.
 <span class="na">locationFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">OB_001_orgsize.pli</span>
 <span class="na">forcingfile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">BoundaryConditions.bc</span><span class="w">     </span><span class="c1"># converter provides the correct BC file</span>
 
-<span class="k">[meteo]</span>
-<span class="na">Quantity</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">rainfall_rate</span>
-<span class="na">ForcingFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">era_20181001.nc</span>
-<span class="na">forcingVariableName</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">mer</span><span class="w">               </span><span class="c1"># Variable name used in forcingfile associated with this forcing. See UM Section C.5.3</span>
-<span class="na">forcingFileType</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">netcdf</span><span class="w">            </span><span class="c1"># Type of forcingFile.</span>
+<span class="k">[spatial]</span>
+<span class="na">quantity</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s">rainfall_rate</span>
+<span class="na">dataFile</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s">era_20181001.nc</span>
+<span class="na">dataFileType</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s">netcdf</span><span class="w">            </span><span class="c1"># Type of dataFile.</span>
+<span class="na">dataVariableName</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">mer</span><span class="w">               </span><span class="c1"># Variable name used in dataFile associated with this forcing. See UM Section C.5.3</span>
 <span class="na">interpolationMethod</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">linearSpaceTime</span><span class="w">   </span><span class="c1"># Type of (spatial) interpolation.</span>
-<span class="na">operand</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">+</span><span class="w">                 </span><span class="c1"># How this data is combined with previous data for the same quantity (if any).</span>
+<span class="na">operand</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s">override</span><span class="w">          </span><span class="c1"># How this data is combined with previous data for the same quantity (if any).</span>
 <span class="na">extrapolationAllowed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0</span><span class="w">                 </span><span class="c1"># Optionally allow nearest neighbour extrapolation in space (0: no, 1: yes). Default off.</span>
 </code></pre></div>
 <ul>
-<li>Boundary/lateral/meteorology/source-sink entries go to <code>new-external-forcing.ext</code>.</li>
-<li>Initial/parameter fields go to <code>new-initial-conditions.ini</code>.</li>
+<li>Boundary/lateral/source-sink entries go to <code>new-external-forcing.ext</code>.</li>
+<li>Meteo, initial-condition and parameter quantities all become <code>[spatial]</code> blocks in <code>new-external-forcing.ext</code>. The
+  converter no longer writes an initial field file (<code>[initial]</code>/<code>[parameter]</code> blocks are deprecated in favour of
+  <code>[spatial]</code>).</li>
 <li>Structures go to <code>new-structure.ini</code>.</li>
+<li>Mass balance areas go to <code>new_mba.ini</code>.</li>
+<li>The order of the blocks is the order of the legacy file: blocks of the same quantity combine top to bottom, so the
+  converter never reorders them.</li>
 </ul>
-<h3 id="after-initialparameter-fields-new-initial-conditionsini">After: initial/parameter fields (<code>new-initial-conditions.ini</code>)<a class="headerlink" href="#after-initialparameter-fields-new-initial-conditionsini" title="Permanent link">&para;</a></h3>
-<p>Only created and saved if there are converted initial or parameter entries.</p>
-<div class="highlight"><pre><span></span><code><span class="k">[General]</span>
-<span class="na">fileVersion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.00</span>
-<span class="na">fileType</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">inifield</span>
-
-<span class="k">[initial]</span>
-<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">waterlevel</span>
-<span class="na">value</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">0.0</span>
-
-<span class="k">[parameter]</span>
-<span class="na">quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">roughness</span>
-<span class="na">value</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s">0.03</span>
-</code></pre></div>
 <h3 id="after-structures-new-structureini">After: structures (<code>new-structure.ini</code>)<a class="headerlink" href="#after-structures-new-structureini" title="Permanent link">&para;</a></h3>
 <p>Only created and saved if there are converted structures.</p>
 <div class="highlight"><pre><span></span><code><span class="k">[General]</span>
@@ -4584,7 +4596,7 @@ You're not viewing the latest release version.
 <span class="na">chainage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1234.0</span>
 </code></pre></div>
 <h3 id="mdu-references-before-vs-after">MDU references: before vs after<a class="headerlink" href="#mdu-references-before-vs-after" title="Permanent link">&para;</a></h3>
-<p>If an <code>MDUParser</code> is supplied (e.g., when using <code>from_mdu</code>), the MDU file is updated to reference the new files.</p>
+<p>The converter always has an <code>MDUParser</code> (the MDU file is required), so the MDU file is updated to reference the new files.</p>
 <p>Before (simplified)
 <div class="highlight"><pre><span></span><code><span class="k">[external forcing]</span>
 <span class="na">ExtForceFile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">old-forcings.ext</span>
@@ -4594,7 +4606,6 @@ You're not viewing the latest release version.
 <span class="na">ExtForceFileNew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">new-external-forcing.ext</span>
 
 <span class="k">[geometry]</span>
-<span class="na">IniFieldFile</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">new-initial-conditions.ini</span><span class="w">    </span><span class="c1">; only if inifield has entries</span>
 <span class="na">StructureFile</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">new-structure.ini</span><span class="w">             </span><span class="c1">; only if structures exist</span>
 
 <span class="k">[output]</span>
@@ -4625,7 +4636,7 @@ You're not viewing the latest release version.
 <p>How are <code>legacy_files</code> populated?
 - Boundary condition conversion scans for related time-series or composition files next to the location file (e.g., <code>.pli</code>) and records found <code>.tim</code>, <code>.t3d</code>, and <code>.cmp</code> files as legacy artifacts.
 - Source/sink conversion records the corresponding <code>.tim</code> file for the polyline location.
-- These paths are resolved relative to the converter <code>root_dir</code> (the MDU directory when using <code>from_mdu</code>, otherwise the legacy <code>.ext</code> directory).</p>
+- These paths are resolved relative to the converter <code>root_dir</code> (the directory of the MDU file).</p>
 <p>How to trigger cleanup
 - Programmatic:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">hydrolib.tools.extforce_convert.main_converter</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExternalForcingConverter</span>
@@ -4652,28 +4663,36 @@ You're not viewing the latest release version.
 - Some legacy options are no longer supported; see “Unsupported/changed fields”.</p>
 <h3 id="1-legacy-ext-blocks-new-models">1) Legacy <code>.ext</code> blocks → new models<a class="headerlink" href="#1-legacy-ext-blocks-new-models" title="Permanent link">&para;</a></h3>
 <p>A single legacy block may be routed to different destination models depending on the quantity:
-- Meteo quantities → <code>[meteo]</code> block in <code>new-external-forcing.ext</code>.
+- Meteo, initial-condition and parameter quantities → <code>[spatial]</code> block in <code>new-external-forcing.ext</code>.
+- Combined meteo quantities (e.g. <code>humidity_airtemperature_cloudiness</code>) → one <code>[spatial]</code> block per component.
+- Lateral discharge quantities (<code>lateraldischarge</code>, <code>lateraldischarge1d</code>, <code>lateraldischarge2d</code>) → <code>[lateral]</code> block in
+  <code>new-external-forcing.ext</code>.
 - Boundary quantities → <code>[boundary]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
 - Source/sink quantities → <code>[sourcesink]</code> block in <code>new-external-forcing.ext</code> and a <code>.bc</code> file is generated/updated.
-- Initial/parameter quantities → <code>[initial]</code> / <code>[parameter]</code> block in <code>new-initial-conditions.ini</code>.
 - Structures → <code>[structure]</code> in <code>new-structure.ini</code>.
 - Mass balance area quantities (<code>waqmassbalancearea&lt;name&gt;</code>) → <code>[MassBalanceArea]</code> block in a new <code>_mba.ini</code>
   file, plus <code>mbaFile</code>/<code>mbaInterval</code> keywords in the MDU <code>[output]</code> section.</p>
-<h4 id="11-meteo-block-new-external-forcing-file">1.1) Meteo Block (new external forcing file)<a class="headerlink" href="#11-meteo-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
+<h4 id="11-meteo-block-new-external-forcing-file">1.1) Meteo block (new external forcing file)<a class="headerlink" href="#11-meteo-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">rainfall_rate</span>
-<span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.tim</span>
+<span class="na">FILENAME</span><span class="o">=</span><span class="s">rainschematic.xyz</span>
 <span class="na">FILETYPE</span><span class="o">=</span><span class="s">7</span>
 <span class="na">METHOD</span><span class="o">=</span><span class="s">1</span>
 <span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
 </code></pre></div>
-Mapped to <code>[meteo]</code> (new external forcings):
-- <code>QUANTITY</code> → <code>quantity</code>
-- <code>FILENAME</code> → <code>forcingfile</code> (path preserved; path style may be normalized)
-- <code>FILETYPE</code> → <code>forcingfiletype</code> via mapping (see table below)
-- <code>METHOD</code> → <code>interpolationmethod</code> (and possibly <code>averaging*</code> fields; see below)
+Mapped to <code>[spatial]</code> (new external forcings):
+- <code>QUANTITY</code> → <code>quantity</code> (renamed for a few quantities; see “Quantity renames”)
+- <code>FILENAME</code> → <code>dataFile</code> (path preserved; path style may be normalized)
+- <code>FILETYPE</code> → <code>dataFileType</code> via mapping (see table below)
+- <code>METHOD</code> → <code>interpolationMethod</code> (and possibly <code>averaging*</code> fields; see below)
 - <code>OPERAND</code> → <code>operand</code>
-- Legacy <code>VARNAME</code> (if present) → <code>forcingVariableName</code>
+- Legacy <code>VARNAME</code> (if present) → <code>dataVariableName</code>
+- Legacy <code>LAYER</code> (if present) → <code>targetLayer</code> (<code>-1</code> → bottom, <code>0</code> → all, positive values kept)
+- Any <code>tracer*</code> keys present are copied as-is
 - If <code>SOURCEMASK</code> is present → not supported (conversion raises error)
+- A uniform time series (<code>FILETYPE=1</code>, a <code>.tim</code> file) is converted to a <code>.bc</code> file: the block gets
+  <code>dataFileType = bcAscii</code>, <code>dataFile</code> points to a <code>.bc</code> file with the same path and stem as the <code>.tim</code>, and the <code>.tim</code>
+  is recorded in <code>converter.legacy_files</code>. The <code>.tim</code> must have a single data column and the MDU <code>RefDate</code> is required.
+- <code>windspeedfactor</code> and <code>solarradiationfactor</code> are always written with <code>operand = multiply</code>, whatever <code>OPERAND</code> says.
 - Extrapolation options:
   - <code>EXTRAPOLATIONMETHOD</code>/<code>EXTRAPOLATION_METHOD</code> (int/flag) → <code>extrapolationAllowed</code> (boolean)
   - <code>MAXSEARCHRADIUS</code> → <code>extrapolationSearchRadius</code></p>
@@ -4706,7 +4725,7 @@ Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</co
 - <code>.bc</code> file path: relative to MDU root, derived from the TIM path with <code>.bc</code> extension.
 - MDU required: <code>RefDate</code>; temperature/salinity flags determine which quantities to include.
 - If <code>zsource</code>/<code>zsink</code> elevations are present in the polyline, they are preserved.</p>
-<h4 id="14-initialparameter-block-polygon">1.4) initial/parameter block (polygon)<a class="headerlink" href="#14-initialparameter-block-polygon" title="Permanent link">&para;</a></h4>
+<h4 id="14-initial-conditionparameter-block-polygon">1.4) Initial-condition/parameter block (polygon)<a class="headerlink" href="#14-initial-conditionparameter-block-polygon" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">initialwaterlevel</span>
 <span class="na">FILENAME</span><span class="o">=</span><span class="s">start_area.pol</span>
 <span class="na">FILETYPE</span><span class="o">=</span><span class="s">10</span>
@@ -4715,16 +4734,28 @@ Mapped to <code>[sourcesink]</code> (new external forcings) plus a <code>.bc</co
 <span class="na">OPERAND</span><span class="o">=</span><span class="s">O</span>
 <span class="na">VALUE</span><span class="o">=</span><span class="s">0.15</span>
 </code></pre></div>
-Mapped to <code>new-initial-conditions.ini</code>:
-- <code>QUANTITY</code> → <code>[initial].quantity</code> (renamed if the quantity is listed in <code>renamed_quantities</code>; see below)
-- <code>FILENAME</code> → <code>datafile</code>
-- <code>FILETYPE=10</code> → <code>datafiletype = polygon</code>
-- <code>METHOD</code>/<code>AVERAGINGTYPE</code> → <code>interpolationmethod</code> and <code>averaging*</code> fields (see below)
-- <code>OPERAND</code> → <code>operand</code>
-- <code>VALUE</code> is preserved for polygon data
-- Any <code>tracer*</code> keys present are copied as-is</p>
+Mapped to a <code>[spatial]</code> block in <code>new-external-forcing.ext</code>. A polygon quantity becomes a constant value masked by
+the polygon:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[spatial]</span>
+<span class="na">quantity</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s">initialwaterlevel</span>
+<span class="na">targetMaskFile</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s">start_area.pol</span>
+<span class="na">dataValue</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s">0.15</span>
+<span class="na">operand</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s">override</span>
+<span class="na">interpolationMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">constant</span>
+</code></pre></div>
+<ul>
+<li><code>QUANTITY</code> → <code>quantity</code> (renamed if the quantity is listed in <code>renamed_quantities</code>; see below)</li>
+<li><code>FILENAME</code> (polygon) → <code>targetMaskFile</code></li>
+<li><code>VALUE</code> → <code>dataValue</code></li>
+<li><code>OPERAND</code> → <code>operand</code>; <code>interpolationMethod</code> is always <code>constant</code></li>
+<li><code>METHOD</code>/<code>AVERAGINGTYPE</code> are not used for polygon quantities</li>
+<li>Exception: <code>initialvertical*</code> quantities keep the polygon as <code>dataFile</code> (with <code>dataFileType = polygon</code>) and always get
+  <code>interpolationMethod = constant</code></li>
+<li>Initial-condition and parameter quantities with a gridded data file (not a polygon) are converted like the meteo block
+  above: <code>dataFile</code>, <code>dataFileType</code>, <code>interpolationMethod</code>, <code>averaging*</code>, <code>operand</code>, <code>extrapolationAllowed</code></li>
+</ul>
 <h5 id="quantity-renames-legacy-new">Quantity renames (legacy → new)<a class="headerlink" href="#quantity-renames-legacy-new" title="Permanent link">&para;</a></h5>
-<p>A few quantities are spelled differently in the initial and parameter fields file than in the old external
+<p>A few quantities are spelled differently in the new <code>[spatial]</code> blocks than in the old external
 forcings file. The converter resolves them through the <code>renamed_quantities</code> table in
 <code>hydrolib/tools/extforce_convert/data/data.yaml</code>; any quantity not listed there is written out unchanged.</p>
 <table>
@@ -4747,6 +4778,26 @@ forcings file. The converter resolves them through the <code>renamed_quantities<
 <td>See D-Flow FM UM Sec. 16.1</td>
 </tr>
 <tr>
+<td><code>nudge_salinity_temperature</code></td>
+<td><code>nudgeSalinityTemperature</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>friction_coefficient_time_dependent</code></td>
+<td><code>frictionCoefficientTimeDependent</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>windspeedfactor</code></td>
+<td><code>windxy</code></td>
+<td>Written with <code>operand = multiply</code></td>
+</tr>
+<tr>
+<td><code>solarradiationfactor</code></td>
+<td><code>solarradiation</code></td>
+<td>Written with <code>operand = multiply</code></td>
+</tr>
+<tr>
 <td><code>bedrock_surface_elevation</code></td>
 <td><code>bedrockSurfaceElevation</code></td>
 <td>Parked — the quantity is still unsupported, so this rename is not reached by a converter run</td>
@@ -4763,7 +4814,7 @@ that exact casing.</p>
 <li>5 → <code>spiderweb</code></li>
 <li>6 → <code>curvigrid</code></li>
 <li>7 → <code>sample</code></li>
-<li>10 → <code>polygon</code> (initial/parameter)</li>
+<li>9, 10 → <code>polygon</code></li>
 <li>11 → <code>netcdf</code></li>
 <li>12 → <code>map</code> (D-Flow FM NetCDF map output; some Delft3D manual sections still refer to this as <code>ncFlow</code>)</li>
 <li>3 (spatially varying wind/pressure) → not supported (raises error)</li>
@@ -4792,7 +4843,46 @@ kernel and by hydrolib-core (see <a href="https://github.com/Deltares/HYDROLIB-c
 <li><code>averagingnummin</code> from <code>NUMMIN</code></li>
 <li><code>averagingpercentile</code> from <code>PERCENTILEMINMAX</code></li>
 </ul>
-<h4 id="15-mass-balance-area-block-separate-_mbaini-file">1.5) Mass balance area block (separate <code>_mba.ini</code> file)<a class="headerlink" href="#15-mass-balance-area-block-separate-_mbaini-file" title="Permanent link">&para;</a></h4>
+<h4 id="15-lateral-block-new-external-forcing-file">1.5) Lateral block (new external forcing file)<a class="headerlink" href="#15-lateral-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
+<p><code>lateraldischarge</code>, <code>lateraldischarge1d</code> and <code>lateraldischarge2d</code> are mapped to a <code>[lateral]</code> block whose
+<code>locationType</code> is <code>all</code>, <code>1d</code> and <code>2d</code> respectively.</p>
+<ul>
+<li><code>FILENAME</code> (polygon) → <code>locationFile</code>; the block <code>id</code> is taken from the polygon and <code>name</code> is the old <code>QUANTITY</code>.</li>
+<li><code>discharge</code> comes from the first of these that applies:</li>
+<li>a constant <code>VALUE</code> in the old block, written as is;</li>
+<li>otherwise the <code>.tim</code> file(s) next to the polygon whose stem starts with the polygon stem (e.g. <code>lateral.tim</code>,
+    <code>lateral_0001.tim</code>, <code>lateral_0002.tim</code>). They are merged and converted to a <code>.bc</code> file with the polygon's path and
+    stem (<code>lateral.bc</code>), and <code>discharge</code> points to it. The forcing is named after the polygon stem, or
+    <code>&lt;stem&gt;_0001</code>, <code>&lt;stem&gt;_0002</code>, … when there are several columns. The <code>.tim</code> files are recorded in
+    <code>converter.legacy_files</code>.</li>
+<li>If neither a <code>VALUE</code> nor a <code>.tim</code> is found, the conversion raises a <code>ValueError</code>.</li>
+<li>The MDU <code>RefDate</code> is required for every lateral conversion, not only for time series.</li>
+</ul>
+<h4 id="16-combined-quantities-split-into-one-block-per-component">1.6) Combined quantities (split into one block per component)<a class="headerlink" href="#16-combined-quantities-split-into-one-block-per-component" title="Permanent link">&para;</a></h4>
+<p>A combined quantity bundles several variables in one old <code>QUANTITY</code>, with one data column per component (configured in
+<code>combined_quantities</code> in <code>data.yaml</code>), e.g. <code>humidity_airtemperature_cloudiness</code> (humidity, airtemperature,
+cloudiness).</p>
+<ul>
+<li><strong>Uniform time series</strong> (<code>.tim</code>/<code>.tem</code>, <code>FILETYPE=1</code>): split into one <code>[spatial]</code> block per component, all with
+  <code>dataFileType = bcAscii</code> and all pointing at a single shared <code>.bc</code> file (same path and stem as the <code>.tim</code>). The <code>.bc</code> holds one <code>timeseries</code> <code>[Forcing]</code>
+  block with <code>time</code> plus every component column, and each <code>[spatial]</code> block resolves its own column by quantity name.
+  The number of data columns must equal the number of components. The <code>.tim</code> is recorded in <code>converter.legacy_files</code>.</li>
+<li><strong>Other file types</strong> (curvi, spiderweb, netcdf, e.g. the <code>airpressure_*</code> families): not split. A single <code>[spatial]</code>
+  block keeps the native file and the mapped <code>dataFileType</code>.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">[spatial]</span>
+<span class="na">quantity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">humidity</span>
+<span class="na">dataFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">meteo.bc</span>
+<span class="na">dataFileType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">bcAscii</span>
+<span class="na">...</span>
+
+<span class="k">[spatial]</span>
+<span class="na">quantity</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">airtemperature</span>
+<span class="na">dataFile</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">meteo.bc</span>
+<span class="na">dataFileType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">bcAscii</span>
+<span class="na">...</span>
+</code></pre></div>
+<h4 id="17-mass-balance-area-block-separate-_mbaini-file">1.7) Mass balance area block (separate <code>_mba.ini</code> file)<a class="headerlink" href="#17-mass-balance-area-block-separate-_mbaini-file" title="Permanent link">&para;</a></h4>
 <p><div class="highlight"><pre><span></span><code><span class="na">QUANTITY</span><span class="o">=</span><span class="s">waqmassbalanceareaEstruaryWest</span>
 <span class="na">FILENAME</span><span class="o">=</span><span class="s">EstruaryWest.pol</span>
 <span class="na">FILETYPE</span><span class="o">=</span><span class="s">10</span>
@@ -4954,13 +5044,13 @@ Resulting <code>.bc</code> astronomic snippet (named component):
 <li>For boundary/sourcesink <code>.bc</code> paths:</li>
 <li>Boundary: <code>&lt;polyline&gt;.bc</code> (same directory as the <code>.pli</code>).</li>
 <li>Source/sink: relative to the MDU root based on the TIM file location, with <code>.bc</code> extension.</li>
-<li>For initial/parameter <code>datafile</code> paths:</li>
-<li>If the MDU setting <code>PathsRelativeToParent = 1</code>, absolute or MDU-relative filenames inside the legacy <code>.ext</code> may be rewritten relative to the inifield file location to keep references consistent.</li>
+<li>For <code>[spatial]</code> <code>dataFile</code>/<code>targetMaskFile</code> paths:</li>
+<li>If the MDU setting <code>PathsRelativeToParent = 1</code>, MDU-relative filenames inside the legacy <code>.ext</code> are rewritten relative to the new external forcings file location to keep references consistent. Absolute paths are kept.</li>
 <li>Otherwise, the original path is kept.</li>
 </ul>
 <h4 id="6-unsupportedchanged-fields">6) Unsupported/changed fields<a class="headerlink" href="#6-unsupportedchanged-fields" title="Permanent link">&para;</a></h4>
 <ul>
-<li><code>SOURCEMASK</code> is no longer supported for meteo/initial/parameter blocks; conversion raises an error when encountered.</li>
+<li><code>SOURCEMASK</code> is no longer supported for spatial (meteo/initial/parameter) blocks; conversion raises an error when encountered.</li>
 <li>Some legacy <code>FILETYPE</code> values are no longer supported (see mapping table above).</li>
 <li>Boundary and source/sink conversions require MDU context:</li>
 <li><code>RefDate</code> must be present.</li>
