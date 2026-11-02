@@ -4200,8 +4200,8 @@ Specifies an <code>mdu</code> file from which input and output filenames for the
 Specifies a directory path; the tool will search recursively for <code>.mdu</code> files and convert them. MDU files whose name
 contains <code>_ext</code> are skipped. If one model fails, the error is printed and the tool continues with the next one.
 - <strong>Example</strong>: <code>-d /path/to/projects</code></p>
-<p>The output filenames are always derived automatically: from the MDU file when using <code>--mdufile</code>, and next to
-the legacy file when using <code>--dir</code>.</p>
+<p>The output filenames are always derived automatically from the MDU file, for both <code>--mdufile</code> and <code>--dir</code>
+(the latter applies it to every <code>.mdu</code> file it finds).</p>
 <hr />
 <h3 id="backups">Backups<a class="headerlink" href="#backups" title="Permanent link">&para;</a></h3>
 <h4 id="-no-backup"><code>--no-backup</code><a class="headerlink" href="#-no-backup" title="Permanent link">&para;</a></h4>

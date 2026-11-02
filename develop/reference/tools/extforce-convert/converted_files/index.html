@@ -4690,7 +4690,7 @@ Mapped to <code>[spatial]</code> (new external forcings):
 - Any <code>tracer*</code> keys present are copied as-is
 - If <code>SOURCEMASK</code> is present → not supported (conversion raises error)
 - A uniform time series (<code>FILETYPE=1</code>, a <code>.tim</code> file) is converted to a <code>.bc</code> file: the block gets
-  <code>dataFileType = bcAscii</code>, <code>dataFile</code> points to the <code>.bc</code> file next to the new external forcings file, and the <code>.tim</code>
+  <code>dataFileType = bcAscii</code>, <code>dataFile</code> points to a <code>.bc</code> file with the same path and stem as the <code>.tim</code>, and the <code>.tim</code>
   is recorded in <code>converter.legacy_files</code>. The <code>.tim</code> must have a single data column and the MDU <code>RefDate</code> is required.
 - <code>windspeedfactor</code> and <code>solarradiationfactor</code> are always written with <code>operand = multiply</code>, whatever <code>OPERAND</code> says.
 - Extrapolation options:
@@ -4845,15 +4845,26 @@ kernel and by hydrolib-core (see <a href="https://github.com/Deltares/HYDROLIB-c
 </ul>
 <h4 id="15-lateral-block-new-external-forcing-file">1.5) Lateral block (new external forcing file)<a class="headerlink" href="#15-lateral-block-new-external-forcing-file" title="Permanent link">&para;</a></h4>
 <p><code>lateraldischarge</code>, <code>lateraldischarge1d</code> and <code>lateraldischarge2d</code> are mapped to a <code>[lateral]</code> block whose
-<code>locationType</code> is <code>all</code>, <code>1d</code> and <code>2d</code> respectively. A time-series discharge (<code>.tim</code>) is converted to a <code>.bc</code> file; the
-MDU <code>RefDate</code> is required for the time unit.</p>
+<code>locationType</code> is <code>all</code>, <code>1d</code> and <code>2d</code> respectively.</p>
+<ul>
+<li><code>FILENAME</code> (polygon) → <code>locationFile</code>; the block <code>id</code> is taken from the polygon and <code>name</code> is the old <code>QUANTITY</code>.</li>
+<li><code>discharge</code> comes from the first of these that applies:</li>
+<li>a constant <code>VALUE</code> in the old block, written as is;</li>
+<li>otherwise the <code>.tim</code> file(s) next to the polygon whose stem starts with the polygon stem (e.g. <code>lateral.tim</code>,
+    <code>lateral_0001.tim</code>, <code>lateral_0002.tim</code>). They are merged and converted to a <code>.bc</code> file with the polygon's path and
+    stem (<code>lateral.bc</code>), and <code>discharge</code> points to it. The forcing is named after the polygon stem, or
+    <code>&lt;stem&gt;_0001</code>, <code>&lt;stem&gt;_0002</code>, … when there are several columns. The <code>.tim</code> files are recorded in
+    <code>converter.legacy_files</code>.</li>
+<li>If neither a <code>VALUE</code> nor a <code>.tim</code> is found, the conversion raises a <code>ValueError</code>.</li>
+<li>The MDU <code>RefDate</code> is required for every lateral conversion, not only for time series.</li>
+</ul>
 <h4 id="16-combined-quantities-split-into-one-block-per-component">1.6) Combined quantities (split into one block per component)<a class="headerlink" href="#16-combined-quantities-split-into-one-block-per-component" title="Permanent link">&para;</a></h4>
 <p>A combined quantity bundles several variables in one old <code>QUANTITY</code>, with one data column per component (configured in
 <code>combined_quantities</code> in <code>data.yaml</code>), e.g. <code>humidity_airtemperature_cloudiness</code> (humidity, airtemperature,
 cloudiness).</p>
 <ul>
 <li><strong>Uniform time series</strong> (<code>.tim</code>/<code>.tem</code>, <code>FILETYPE=1</code>): split into one <code>[spatial]</code> block per component, all with
-  <code>dataFileType = bcAscii</code> and all pointing at a single shared <code>.bc</code> file. The <code>.bc</code> holds one <code>timeseries</code> <code>[Forcing]</code>
+  <code>dataFileType = bcAscii</code> and all pointing at a single shared <code>.bc</code> file (same path and stem as the <code>.tim</code>). The <code>.bc</code> holds one <code>timeseries</code> <code>[Forcing]</code>
   block with <code>time</code> plus every component column, and each <code>[spatial]</code> block resolves its own column by quantity name.
   The number of data columns must equal the number of components. The <code>.tim</code> is recorded in <code>converter.legacy_files</code>.</li>
 <li><strong>Other file types</strong> (curvi, spiderweb, netcdf, e.g. the <code>airpressure_*</code> families): not split. A single <code>[spatial]</code>
