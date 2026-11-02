@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1616,6 +1616,17 @@ You're not viewing the latest release version.
     <span class="md-ellipsis">
       
         --mdufile / -m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-extoldfile-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --extoldfile / -e
       
     </span>
   </a>
@@ -4014,6 +4025,17 @@ You're not viewing the latest release version.
 </li>
         
           <li class="md-nav__item">
+  <a href="#-extoldfile-e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        --extoldfile / -e
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-dir-d" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4139,6 +4161,7 @@ You're not viewing the latest release version.
 <li><a href="#-debug-mode"><code>--debug-mode</code></a></li>
 <li><a href="#mutually-exclusive-options">Mutually Exclusive Options</a><ul>
 <li><a href="#-mdufile-m"><code>--mdufile</code> / <code>-m</code></a></li>
+<li><a href="#-extoldfile-e"><code>--extoldfile</code> / <code>-e</code></a></li>
 <li><a href="#-dir-d"><code>--dir</code> / <code>-d</code></a></li>
 </ul>
 </li>
@@ -4156,18 +4179,18 @@ You're not viewing the latest release version.
 <hr />
 <h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
 <p><code>extforce-convert</code> is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. This tool can handle:
-- Conversions of a single <code>mdu</code> file, also converting all model files that are linked to it.
+- Conversions of a single <code>mdu</code> file.
+- Conversions of a standalone legacy external forcing file.
 - Recursively converting all <code>.mdu</code> files within a specified directory.</p>
+<p>Note: Depending on your installation, the executable may be named <code>extforce-convert</code> or <code>extforce_convert</code>. You can always run it as a module: <code>python -m hydrolib.tools.extforce_convert.cli</code>.</p>
 <hr />
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>To use the <code>extforce-convert</code> CLI directly from your terminal, make sure that the <code>hydrolib-core</code> Python package is installed in your environment.</p>
-<p>Simply install or update <code>hydrolib-core</code> in your environment:
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>hydrolib-core
+<p>To use the CLI directly from your terminal, ensure that:
+1. The <code>hydrolib</code> Python package is installed in your environment.</p>
+<p>If <code>extforce-convert</code> is distributed as part of <code>hydrolib</code>, simply install or update <code>hydrolib</code>:
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>hydrolib
 </code></pre></div>
-Once installed, the <code>extforce-convert</code> command should be available in your PATH (after activating your environment):
-<div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-This will not work if your Python script folder is not acceccible. Alternatively, you may run it using (note the underscore):
+Once installed, the <code>extforce-convert</code> command should be available in your PATH if your Python script folder is accessible. Alternatively, you may run it using:
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>hydrolib.tools.extforce_convert.cli<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 </code></pre></div></p>
 <hr />
@@ -4175,19 +4198,19 @@ This will not work if your Python script folder is not acceccible. Alternatively
 <p>The basic usage pattern is:
 <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
 </code></pre></div>
-Where exactly one of <code>--mdufile</code> or <code>--dir</code> is required.</p>
+Where exactly one of <code>--mdufile</code>, <code>--extoldfile</code>, or <code>--dir</code> is required.</p>
 <hr />
 <h2 id="arguments">Arguments<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
 <p>Below is a complete list of arguments supported by the CLI:</p>
 <h3 id="-version"><code>--version</code><a class="headerlink" href="#-version" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--version</code><br />
-Displays the version of the <code>hydrolib-core</code> package currently installed, then exits.</p>
+Displays the version of the <code>hydrolib</code> package currently installed, then exits.</p>
 <h3 id="-verbose-v"><code>--verbose</code> / <code>-v</code><a class="headerlink" href="#-verbose-v" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--verbose</code> or <code>-v</code><br />
 Enables additional diagnostic information during the conversion process. Use this option if you need more insight into what the tool is doing.</p>
 <h3 id="-debug-mode"><code>--debug-mode</code><a class="headerlink" href="#-debug-mode" title="Permanent link">&para;</a></h3>
 <p><strong>Syntax</strong>: <code>--debug-mode</code><br />
-Convert the supported quantities only and leave unsupported quantities in the old external forcing file. Default is <code>False</code>. Without this flag, a conversion will fail if any unsupported quantities are present. Most quantities are already supported so most users won't need this option. This option will be removed when all quantities are supported.</p>
+Convert the supported quantities only and leave unsupported quantities in the old external forcing file. Default is <code>False</code>. Without this flag, a conversion will fail if any unsupported quantities are present.</p>
 <hr />
 <h3 id="mutually-exclusive-options">Mutually Exclusive Options<a class="headerlink" href="#mutually-exclusive-options" title="Permanent link">&para;</a></h3>
 <p>You must choose <strong>one</strong> of these three arguments to specify your source of legacy external forcing data.</p>
@@ -4195,12 +4218,16 @@ Convert the supported quantities only and leave unsupported quantities in the ol
 <p><strong>Syntax</strong>: <code>--mdufile MDUFILE</code> or <code>-m MDUFILE</code><br />
 Specifies an <code>mdu</code> file from which input and output filenames for the conversion are automatically inferred.
 - <strong>Example</strong>: <code>-m path/to/project.mdu</code></p>
+<h4 id="-extoldfile-e"><code>--extoldfile</code> / <code>-e</code><a class="headerlink" href="#-extoldfile-e" title="Permanent link">&para;</a></h4>
+<p><strong>Syntax</strong>: <code>--extoldfile EXTOLDFILE</code> or <code>-e EXTOLDFILE</code><br />
+Specifies a single legacy external forcing file (e.g., <code>.ext</code> format) to be converted.
+- <strong>Example</strong>: <code>-e path/to/old_external_forcing.ext</code></p>
 <h4 id="-dir-d"><code>--dir</code> / <code>-d</code><a class="headerlink" href="#-dir-d" title="Permanent link">&para;</a></h4>
 <p><strong>Syntax</strong>: <code>--dir DIRECTORY</code> or <code>-d DIRECTORY</code><br />
 Specifies a directory path; the tool will search recursively for <code>.mdu</code> files and convert them.
 - <strong>Example</strong>: <code>-d /path/to/projects</code></p>
 <p>The output filenames are always derived automatically: from the MDU file when using <code>--mdufile</code>, and next to
-the legacy file when using <code>--dir</code>.</p>
+the legacy file when using <code>--extoldfile</code> (or <code>--dir</code>).</p>
 <hr />
 <h3 id="backups">Backups<a class="headerlink" href="#backups" title="Permanent link">&para;</a></h3>
 <h4 id="-no-backup"><code>--no-backup</code><a class="headerlink" href="#-no-backup" title="Permanent link">&para;</a></h4>
@@ -4219,34 +4246,35 @@ Handle absolute paths in input files according to the specified style. Use this 
 <p>Below are several usage examples to illustrate typical operations:</p>
 <ol>
 <li>
-<p><strong>Basic usage: convert a single MDU file, preserving backups</strong>:
-   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-m<span class="w"> </span>path/to/project.mdu
+<p><strong>Convert a single MDU file, preserving backups, with verbose mode</strong>:
+   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-m<span class="w"> </span>path/to/project.mdu<span class="w"> </span>-v
 </code></pre></div>
-   This command infers the input/output from the <code>project.mdu</code> file, converts any old external forcing file into new-format files and creates backup files.</p>
+   This command infers the input/output from the <code>project.mdu</code> file, prints extra diagnostic info, and creates backup files.</p>
 </li>
 <li>
-<p><strong>Convert a single MDU file/model with verbose mode, do not create backups and removes legacy files</strong>:
-   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-m<span class="w"> </span>path/to/project.mdu<span class="w"> </span>-v<span class="w"> </span>--no-backup<span class="w"> </span>--remove-legacy-files
+<p><strong>Convert a legacy external forcing file, do not create backups</strong>:
+   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-e<span class="w"> </span>oldforcing.ext<span class="w"> </span>--no-backup
 </code></pre></div>
-   This command infers the input/output from the <code>project.mdu</code> file, prints extra diagnostic info, does not create backup files and removes legacy files (e.g. <code>.tim</code>) after conversion.</p>
+   This converts an old external forcing file into new-format files (named automatically next to the legacy
+   file) and overwrites any existing files without backups.</p>
+</li>
+<li>
+<p><strong>Recursively convert all <code>.mdu</code> files in a directory, remove legacy files</strong>:
+   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-d<span class="w"> </span>/path/to/projects<span class="w"> </span>--remove-legacy-files
+</code></pre></div>
+   Searches the directory and subdirectories for <code>.mdu</code> files, converts them, and removes the old <code>.tim</code> files after conversion.</p>
 </li>
 <li>
 <p><strong>Convert with path handling and debug mode</strong>:
    <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-m<span class="w"> </span>path/to/project.mdu<span class="w"> </span>--path-style<span class="w"> </span>unix<span class="w"> </span>--debug-mode
 </code></pre></div>
-   Forces Unix-style path handling and converts supported quantities while leaving unsupported ones in the old file.</p>
-</li>
-<li>
-<p><strong>Recursively convert all <code>.mdu</code> files in a directory</strong>:
-   <div class="highlight"><pre><span></span><code>extforce-convert<span class="w"> </span>-d<span class="w"> </span>/path/to/projects
-</code></pre></div>
-   Searches the directory and subdirectories for <code>.mdu</code> files and converts them.</p>
+   Forces Unix-style path handling (useful on Windows for models authored on Unix) and converts supported quantities while leaving unsupported ones in the old file.</p>
 </li>
 </ol>
 <hr />
 <h2 id="additional-notes">Additional Notes<a class="headerlink" href="#additional-notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li>If no valid input argument (<code>--mdufile</code> or <code>--dir</code>) is provided, the program will exit with an error indicating that no input was specified.</li>
+<li>If no valid input argument (<code>--mdufile</code>, <code>--extoldfile</code>, or <code>--dir</code>) is provided, the program will exit with an error indicating that no input was specified.</li>
 <li>Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.</li>
 <li>When the MDU's <code>ExtForceFileNew</code> lists <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the <strong>first</strong> listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.</li>
 <li>If you encounter any errors during conversion, re-run the command with <code>-v</code> (verbose) or check the backup files (if enabled) for debugging.</li>
