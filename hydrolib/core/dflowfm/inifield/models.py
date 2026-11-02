@@ -16,6 +16,7 @@ from pydantic import (
 from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.utils import to_key
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import (
     AveragingType,
@@ -25,6 +26,7 @@ from hydrolib.core.dflowfm.common.models import (
 )
 from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.dflowfm.ini.parser import Parser
 from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
     make_list,
@@ -298,6 +300,46 @@ class IniFieldModel(INIModel):
     @classmethod
     def _ext(cls) -> str:
         return ".ini"
+
+    def _block_headers_in_file_order(self) -> list[str] | None:
+        """Read the order of the `[Initial]` / `[Parameter]` headers from the file on disk.
+
+        Returns:
+            list[str] | None: The lowercase headers (`"initial"` / `"parameter"`) in file order, or None
+                when the model has no file on disk to read the order from.
+        """
+        headers = None
+        path = self._resolved_filepath
+        if path is not None and path.is_file():
+            document = Parser.parse(path)
+            keys = [to_key(section.header) for section in document.sections]
+            headers = [key for key in keys if key in ("initial", "parameter")]
+        return headers
+
+    def blocks_in_file_order(self) -> List[InitialField | ParameterField]:
+        """List the `[Initial]` and `[Parameter]` blocks in the order they appear in the file.
+
+        The parsed model keeps the two kinds of blocks in separate lists, which loses how they were
+        interleaved in the file. The order matters because blocks for the same quantity are applied top to
+        bottom (D-Flow FM User Manual §D.2). It is recovered by reading the section headers of the file again.
+
+        Returns:
+            List[InitialField | ParameterField]: The blocks of this model, in file order. When the model has no
+                file on disk, or its blocks were added or removed after loading (so the file no longer matches),
+                all `[Initial]` blocks followed by all `[Parameter]` blocks.
+        """
+        headers = self._block_headers_in_file_order()
+        matches_file = (
+            headers is not None
+            and headers.count("initial") == len(self.initial)
+            and headers.count("parameter") == len(self.parameter)
+        )
+        if matches_file:
+            sources = {"initial": iter(self.initial), "parameter": iter(self.parameter)}
+            blocks = [next(sources[header]) for header in headers]
+        else:
+            blocks = [*self.initial, *self.parameter]
+        return blocks
 
     @classmethod
     def _filename(cls) -> str:
