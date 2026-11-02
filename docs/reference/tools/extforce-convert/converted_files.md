@@ -119,10 +119,39 @@ extrapolationAllowed = 0                 # Optionally allow nearest neighbour ex
 - Meteo, initial-condition and parameter quantities all become `[spatial]` blocks in `new-external-forcing.ext`. The
   converter no longer writes an initial field file (`[initial]`/`[parameter]` blocks are deprecated in favour of
   `[spatial]`).
+- The `[Initial]` and `[Parameter]` blocks of an existing inifield file (`IniFieldFile` in the MDU) are converted to
+  `[spatial]` blocks as well, see [the inifield file](#the-inifield-file).
 - Structures go to `new-structure.ini`.
 - Mass balance areas go to `new_mba.ini`.
 - The order of the blocks is the order of the legacy file: blocks of the same quantity combine top to bottom, so the
   converter never reorders them.
+
+### The inifield file
+The `IniFieldFile` keyword is deprecated; its blocks belong in the new external forcings file. The converter converts
+them even when the MDU has no old `ExtForceFile`.
+
+- The blocks are converted in the order they have in the inifield file (`[Initial]` and `[Parameter]` blocks
+  interleaved as written) and are put **in front of** the `[spatial]` blocks that were already in the new external
+  forcings file, which are in front of the blocks converted from the old external forcings file. That is the order in
+  which D-Flow FM reads the sources (inifield, new ext, old ext), so blocks of the same quantity combine as before.
+- The `IniFieldFile` entry is removed from the MDU file. The inifield file itself stays on disk, unless the legacy files
+  are removed (`--remove-legacy` / `ExternalForcingConverter.clean()`).
+- `[spatial]` blocks are written after the `[boundary]` blocks. When an inifield tracer (`initialtracer*`,
+  `initialsedfrac*`) and a `[boundary]` tracer (`tracerbnd*`, `sedfracbnd*`) end up in the same file, the converter warns
+  that D-Flow FM may number the tracers in another order than before.
+- A data file path is kept as written; with `PathsRelativeToParent = 1` it is made relative to the new external
+  forcings file.
+
+| Inifield keyword | `[spatial]` keyword |
+|---|---|
+| `quantity`, `dataFile`, `dataFileType`, `interpolationMethod`, `averagingType`, `averagingRelSize`, `averagingNumMin`, `averagingPercentile`, `locationType`, `tracerFallVelocity`, `tracerDecayTime` | the same keyword |
+| `operand` (`O`, `A`, `+`, `*`, `X`, `N`) | `operand` (`override`, `overrideIfMissing`, `add`, `multiply`, `maximum`, `minimum`) |
+| `extrapolationMethod` | `extrapolationAllowed` |
+| `dataFile` (a polygon) + `dataFileType = polygon` + `value` | `targetMaskFile` + `dataValue` + `interpolationMethod = constant` |
+
+Only the keywords set in the inifield are written. A polygon without a `value` (the `initialvertical*` quantities)
+keeps `dataFile` and `dataFileType = polygon`; if it has a `value`, that value cannot be converted and a warning is
+given.
 
 ### After: structures (`new-structure.ini`)
 Only created and saved if there are converted structures.

@@ -5,7 +5,8 @@
 
 - A new external forcings file (`ExtModel`) with `[Boundary]`, `[Lateral]`, `[SourceSink]` and `[Spatial]` blocks.
   Meteo, initial-condition and parameter quantities all become `[Spatial]` blocks; the converter no longer writes an
-  initial field file.
+  initial field file. The `[Initial]` and `[Parameter]` blocks of the inifield file (`IniFieldFile`) are converted to
+  `[Spatial]` blocks too, and the `IniFieldFile` entry is removed from the MDU file.
 - A structures file (`StructureModel`) with `Structure` blocks.
 - A mass balance area file (`MassBalanceAreaModel`) with `MassBalanceArea` blocks.
 
@@ -55,7 +56,7 @@ Constructor
 
 - `__init__(
     *,
-    extold_model: PathOrStr | ExtOldModel,
+    extold_model: PathOrStr | ExtOldModel | None,
     ext_file: PathOrStr | None = None,
     structure_file: PathOrStr | None = None,
     mdu_parser: MDUParser,
@@ -66,7 +67,7 @@ Constructor
   )`
   - All arguments are keyword-only.
   - Parameters:
-    - `extold_model`: Path to legacy `.ext` or an `ExtOldModel` instance. If a path or str, the file is loaded via `_read_old_file()`.
+    - `extold_model`: Path to legacy `.ext` or an `ExtOldModel` instance. If a path or str, the file is loaded via `_read_old_file()`. `None` for an MDU that has no legacy `.ext` file, only an inifield file to convert.
     - `ext_file`: Destination path for new external forcings (`ExtModel`). Defaults to `new-external-forcing.ext` in the directory of the MDU file. If the file exists, the converted quantities are appended to it.
     - `structure_file`: Destination path for `StructureModel`. Defaults to `new-structure.ini` in the MDU directory.
     - `mdu_parser`: **Required** `MDUParser`. Provides FM metadata (e.g., `refdate`, temperature/salinity), the root directory (the MDU's parent), and is used to update the MDU file.
@@ -98,7 +99,7 @@ Classmethod
   - Side effects: Parses the MDU file; determines legacy `.ext` path and output file paths.
   - Exceptions (per docstring and expected behavior):
     - `FileNotFoundError` if MDU is missing.
-    - `ValueError` if the legacy ext file is not found in the MDU.
+    - `ValueError` if the MDU has neither a legacy ext file nor an existing inifield file (an empty `IniFieldFile =` entry, or one pointing to a missing file, does not count).
     - `DeprecationWarning` if unknown keywords in the MDU (raised by `MDUParser`).
 
 Properties
@@ -149,6 +150,7 @@ Public methods
   - Purpose: Convert all eligible forcings from the legacy model and append them to the correct destination models.
   - Behavior:
     - Logs details if `verbose`.
+    - Converts the `[Initial]` and `[Parameter]` blocks of the inifield file first (see [Converted files](converted_files.md)).
     - Iterates forcings, shows a progress bar (`tqdm`).
     - For unsupported quantities: prints a message (with `debug` state) and skips.
     - For supported quantities: calls `_convert_forcing`, which returns one block or a list of blocks. Each block is registered with the `ForcingFileRegistry` (shared `.bc` files), mapped to the destination model by type (`_type_field_map`: `Boundary`, `Lateral`, `SourceSink`, `Spatial` -> `ExtModel`; `Structure` -> `StructureModel`; `MassBalanceArea` -> `MassBalanceAreaModel`) and appended.
@@ -159,6 +161,7 @@ Public methods
   - Exceptions:
     - `NotImplementedError` if a converted block’s type is unknown to `_type_field_map`.
     - `ValueError` from `_convert_forcing` if required MDU data is missing for certain converters.
+    - `InifieldError` if the inifield file exists but cannot be parsed; the message names the file.
 
 - `save(self, backup: bool = True, recursive: bool = True) -> None`
   - Purpose: Persist the new/updated models to disk and the updated MDU file.
