@@ -12,7 +12,6 @@ This document provides detailed usage instructions, argument descriptions, and e
     - [`--debug-mode`](#-debug-mode)
     - [Mutually Exclusive Options](#mutually-exclusive-options)
         - [`--mdufile` / `-m`](#-mdufile-m)
-        - [`--extoldfile` / `-e`](#-extoldfile-e)
         - [`--dir` / `-d`](#-dir-d)
     - [Backups](#backups)
         - [`--no-backup`](#-no-backup)
@@ -26,25 +25,25 @@ This document provides detailed usage instructions, argument descriptions, and e
 
 ## Introduction
 
-`extforce-convert` is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. This tool can handle:
-- Conversions of a single `mdu` file.
-- Conversions of a standalone legacy external forcing file.
+`extforce-convert` is a command-line tool that helps migrate legacy external forcing configurations in D-Flow FM to the newest, more modular format. The converted quantities are written to a new external forcings file (`[Boundary]`, `[Lateral]`, `[SourceSink]` and `[Spatial]` blocks; meteo, initial-condition and parameter quantities all become `[Spatial]` blocks), a structures file and a mass balance area file, and the MDU file is updated to reference them. This tool can handle:
+- Conversions of a single `mdu` file, also converting all model files that are linked to it.
 - Recursively converting all `.mdu` files within a specified directory.
-
-Note: Depending on your installation, the executable may be named `extforce-convert` or `extforce_convert`. You can always run it as a module: `python -m hydrolib.tools.extforce_convert.cli`.
 
 ---
 
 ## Installation
 
-To use the CLI directly from your terminal, ensure that:
-1. The `hydrolib` Python package is installed in your environment.
+To use the `extforce-convert` CLI directly from your terminal, make sure that the `hydrolib-core` Python package is installed in your environment.
 
-If `extforce-convert` is distributed as part of `hydrolib`, simply install or update `hydrolib`:
+Simply install or update `hydrolib-core` in your environment:
 ```bash
-pip install hydrolib
+pip install hydrolib-core
 ```
-Once installed, the `extforce-convert` command should be available in your PATH if your Python script folder is accessible. Alternatively, you may run it using:
+Once installed, the `extforce-convert` command should be available in your PATH (after activating your environment):
+```bash
+extforce-convert [options]
+```
+This will not work if your Python script folder is not accessible. Alternatively, you may run it using (note the underscore):
 ```bash
 python -m hydrolib.tools.extforce_convert.cli [options]
 ```
@@ -57,7 +56,7 @@ The basic usage pattern is:
 ```bash
 extforce-convert [options]
 ```
-Where exactly one of `--mdufile`, `--extoldfile`, or `--dir` is required.
+Where exactly one of `--mdufile` or `--dir` is required.
 
 ---
 
@@ -67,7 +66,7 @@ Below is a complete list of arguments supported by the CLI:
 
 ### `--version`
 **Syntax**: `--version`  
-Displays the version of the `hydrolib` package currently installed, then exits.
+Displays the version of the `hydrolib-core` package currently installed, then exits.
 
 ### `--verbose` / `-v`
 **Syntax**: `--verbose` or `-v`  
@@ -75,31 +74,29 @@ Enables additional diagnostic information during the conversion process. Use thi
 
 ### `--debug-mode`
 **Syntax**: `--debug-mode`  
-Convert the supported quantities only and leave unsupported quantities in the old external forcing file. Default is `False`. Without this flag, a conversion will fail if any unsupported quantities are present.
+Convert the supported quantities only and leave unsupported quantities in the old external forcing file. Default is `False`. Without this flag, a conversion will fail if any unsupported quantities are present. Most quantities are already supported so most users won't need this option. This option will be removed when all quantities are supported.
+
 
 ---
 
 ### Mutually Exclusive Options
 
-You must choose **one** of these three arguments to specify your source of legacy external forcing data.
+You must choose **one** of these arguments to specify your source of legacy external forcing data (`--mdufile` or `--dir`).
 
 #### `--mdufile` / `-m`
 **Syntax**: `--mdufile MDUFILE` or `-m MDUFILE`  
 Specifies an `mdu` file from which input and output filenames for the conversion are automatically inferred.
 - **Example**: `-m path/to/project.mdu`
 
-#### `--extoldfile` / `-e`
-**Syntax**: `--extoldfile EXTOLDFILE` or `-e EXTOLDFILE`  
-Specifies a single legacy external forcing file (e.g., `.ext` format) to be converted.
-- **Example**: `-e path/to/old_external_forcing.ext`
-
 #### `--dir` / `-d`
 **Syntax**: `--dir DIRECTORY` or `-d DIRECTORY`  
-Specifies a directory path; the tool will search recursively for `.mdu` files and convert them.
+Specifies a directory path; the tool will search recursively for `.mdu` files and convert them. MDU files whose name
+contains `_ext` are skipped. If one model fails, the error is printed and the tool continues with the next one.
 - **Example**: `-d /path/to/projects`
 
-The output filenames are always derived automatically: from the MDU file when using `--mdufile`, and next to
-the legacy file when using `--extoldfile` (or `--dir`).
+
+The output filenames are always derived automatically from the MDU file, for both `--mdufile` and `--dir`
+(the latter applies it to every `.mdu` file it finds).
 
 ---
 
@@ -131,34 +128,35 @@ Handle absolute paths in input files according to the specified style. Use this 
 
 ---
 
+
 ## Examples
 
 Below are several usage examples to illustrate typical operations:
 
-1. **Convert a single MDU file, preserving backups, with verbose mode**:
+1. **Basic usage: convert a single MDU file, preserving backups**:
    ```bash
-   extforce-convert -m path/to/project.mdu -v
+   extforce-convert -m path/to/project.mdu
    ```
-   This command infers the input/output from the `project.mdu` file, prints extra diagnostic info, and creates backup files.
+   This command infers the input/output from the `project.mdu` file, converts any old external forcing file into new-format files and creates backup files.
 
-2. **Convert a legacy external forcing file, do not create backups**:
+2. **Convert a single MDU file/model with verbose mode, do not create backups and removes legacy files**:
    ```bash
-   extforce-convert -e oldforcing.ext --no-backup
+   extforce-convert -m path/to/project.mdu -v --no-backup --remove-legacy-files
    ```
-   This converts an old external forcing file into new-format files (named automatically next to the legacy
-   file) and overwrites any existing files without backups.
+   This command infers the input/output from the `project.mdu` file, prints extra diagnostic info, does not create backup files and removes legacy files (e.g. `.tim`) after conversion.
 
-3. **Recursively convert all `.mdu` files in a directory, remove legacy files**:
-   ```bash
-   extforce-convert -d /path/to/projects --remove-legacy-files
-   ```
-   Searches the directory and subdirectories for `.mdu` files, converts them, and removes the old `.tim` files after conversion.
-
-4. **Convert with path handling and debug mode**:
+3. **Convert with path handling and debug mode**:
    ```bash
    extforce-convert -m path/to/project.mdu --path-style unix --debug-mode
    ```
-   Forces Unix-style path handling (useful on Windows for models authored on Unix) and converts supported quantities while leaving unsupported ones in the old file.
+   Forces Unix-style path handling and converts supported quantities while leaving unsupported ones in the old file.
+
+4. **Recursively convert all `.mdu` files in a directory**:
+   ```bash
+   extforce-convert -d /path/to/projects
+   ```
+   Searches the directory and subdirectories for `.mdu` files and converts them.
+
 
 5. **Convert an MDU file and normalize legacy quantities in referenced `.bc` files**:
    ```bash
@@ -170,7 +168,7 @@ Below are several usage examples to illustrate typical operations:
 
 ## Additional Notes
 
-- If no valid input argument (`--mdufile`, `--extoldfile`, or `--dir`) is provided, the program will exit with an error indicating that no input was specified.
+- If no valid input argument (`--mdufile` or `--dir`) is provided, the program will exit with an error indicating that no input was specified.
 - Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.
 - When the MDU's `ExtForceFileNew` lists **several files separated by a space** (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the **first** listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.
 - If you encounter any errors during conversion, re-run the command with `-v` (verbose) or check the backup files (if enabled) for debugging.
