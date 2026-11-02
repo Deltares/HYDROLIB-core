@@ -140,6 +140,16 @@ class QuantityUnitPair(BaseModel):
     vertpositionindex: Optional[int] = Field(default=None, alias="vertPositionIndex")
     """int (optional): This is a (one-based) index into the verticalposition-specification, assigning a vertical position to the quantity (t3D-blocks only)."""
 
+    @field_validator("quantity", mode="before")
+    @classmethod
+    def _strip_delta_suffix(cls, value: Any) -> Any:
+        """Normalize legacy quantities ending in 'delta' by removing the suffix."""
+        if isinstance(value, str):
+            lowered = value.lower()
+            if lowered.endswith("delta"):
+                value = value[:-5]
+        return value
+
     def _to_properties(self):
         """Generator function that yields the ini Property objects for a single QuantityUnitPair object.
 

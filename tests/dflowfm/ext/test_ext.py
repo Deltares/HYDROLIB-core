@@ -14,11 +14,14 @@ from hydrolib.core.dflowfm.bc.models import (
 )
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
+    BubbleScreen,
     ExtModel,
+    Lateral,
     Meteo,
     MeteoForcingFileType,
     MeteoInterpolationMethod,
     SourceSink,
+    Spatial,
 )
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.tim.models import TimModel
@@ -29,6 +32,60 @@ from tests.utils import invalid_test_data_dir, test_data_dir
 class TestExtModel:
     """Class to test all methods contained in the
     hydrolib.core.dflowfm.ext.models.ExtModel class"""
+
+    def test_get_forcing_files_empty(self):
+        assert ExtModel().get_forcing_files() == []
+
+    @pytest.mark.parametrize(
+        "field, block_type",
+        [
+            ("boundary", Boundary),
+            ("lateral", Lateral),
+            ("sourcesink", SourceSink),
+            ("bubblescreen", BubbleScreen),
+            ("meteo", Meteo),
+            ("spatial", Spatial),
+        ],
+    )
+    def test_get_forcing_files_each_block_type(self, field, block_type):
+        block = block_type.model_construct()
+        model = ExtModel.model_construct(**{field: [block]})
+
+        blocks = model.get_forcing_files()
+
+        assert len(blocks) == 1
+        assert blocks[0] is block
+
+    def test_get_forcing_files_preserves_order_and_duplicates(self):
+        boundary = Boundary.model_construct()
+        other_boundary = Boundary.model_construct()
+        lateral = Lateral.model_construct()
+        sourcesink = SourceSink.model_construct()
+        bubblescreen = BubbleScreen.model_construct()
+        meteo = Meteo.model_construct()
+        spatial = Spatial.model_construct()
+        model = ExtModel.model_construct(
+            spatial=[spatial],
+            meteo=[meteo],
+            bubblescreen=[bubblescreen],
+            sourcesink=[sourcesink],
+            lateral=[lateral],
+            boundary=[boundary, other_boundary, boundary],
+        )
+
+        blocks = model.get_forcing_files()
+        expected = [
+            boundary,
+            other_boundary,
+            boundary,
+            lateral,
+            sourcesink,
+            bubblescreen,
+            meteo,
+            spatial,
+        ]
+        assert len(blocks) == len(expected)
+        assert all(actual is original for actual, original in zip(blocks, expected))
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
         input_ext = (
