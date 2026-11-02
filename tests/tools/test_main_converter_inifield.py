@@ -389,3 +389,55 @@ class TestRepeatedAndEmptyInifield:
 
         assert not converter.ext_model.filepath.exists()
         assert "extforcefilenew" not in mdu.read_text().lower()
+
+
+class TestInifieldOutsideMduDirectory:
+    """A shared inifield file outside the MDU directory is converted but never removed."""
+
+    def _converter(self, tmp_path: Path) -> tuple[ExternalForcingConverter, Path]:
+        model_dir = tmp_path / "model"
+        shared = tmp_path / "shared"
+        model_dir.mkdir()
+        shared.mkdir()
+        (shared / "inifield.ini").write_text(INIFIELD_TRACER)
+        mdu = model_dir / "model.mdu"
+        mdu.write_text(
+            MDU_TEMPLATE.format(
+                inifield="IniFieldFile = ../shared/inifield.ini\n", extforce=""
+            )
+        )
+        return ExternalForcingConverter.from_mdu(mdu), shared / "inifield.ini"
+
+    def test_clean_keeps_the_file_and_update_warns(self, tmp_path):
+        converter, inifield = self._converter(tmp_path)
+
+        with pytest.warns(UserWarning, match="outside the MDU directory"):
+            converter.update()
+        converter.save(backup=False)
+        converter.clean()
+
+        assert inifield.is_file()
+        assert [b.quantity for b in converter.ext_model.spatial] == ["initialtracerX"]
+
+    def test_clean_keeps_a_symbolic_link_to_the_inifield(self, tmp_path):
+        model_dir = tmp_path / "model"
+        model_dir.mkdir()
+        target = tmp_path / "inifield-target.ini"
+        target.write_text(INIFIELD_TRACER)
+        try:
+            (model_dir / "inifield.ini").symlink_to(target)
+        except OSError:
+            pytest.skip("symbolic links are not permitted here")
+        mdu = model_dir / "model.mdu"
+        mdu.write_text(
+            MDU_TEMPLATE.format(inifield="IniFieldFile = inifield.ini\n", extforce="")
+        )
+        converter = ExternalForcingConverter.from_mdu(mdu)
+
+        with pytest.warns(UserWarning, match="symbolic link"):
+            converter.update()
+        converter.save(backup=False)
+        converter.clean()
+
+        assert target.is_file()
+        assert (model_dir / "inifield.ini").is_symlink()

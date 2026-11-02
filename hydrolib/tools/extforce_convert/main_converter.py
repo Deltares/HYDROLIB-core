@@ -563,6 +563,27 @@ class ExternalForcingConverter:
                 path = absolute
         return path
 
+    def _register_inifield_as_legacy_file(self, inifield_path: Path) -> None:
+        """Let `clean` remove the converted inifield file, when it belongs to this model.
+
+        Nothing refers to the inifield file any more once its blocks are converted. The path comes from the
+        MDU file, so a file outside the MDU directory (a file shared with other models) or a symbolic link is
+        never removed; a warning says so instead.
+
+        Args:
+            inifield_path (Path): The path of the converted inifield file.
+        """
+        mdu_dir = self.mdu_parser.mdu_path.parent.resolve()
+        if inifield_path.resolve().is_relative_to(mdu_dir) and not inifield_path.is_symlink():
+            self.legacy_files = [inifield_path]
+        else:
+            warnings.warn(
+                f"The inifield file '{inifield_path}' is outside the MDU directory or a symbolic link, so it "
+                "is not removed when the legacy files are cleaned.",
+                UserWarning,
+                stacklevel=2,
+            )
+
     def _convert_inifield_blocks(self) -> None:
         """Convert the `[Initial]` and `[Parameter]` blocks of the inifield file to `[Spatial]` blocks.
 
@@ -586,8 +607,7 @@ class ExternalForcingConverter:
             self.ext_model.spatial = blocks + list(self.ext_model.spatial)
             self._inifield_spatial_blocks = blocks
             self._inifield_converted = True
-            # nothing refers to the inifield file any more, so `clean` removes it with the other legacy files
-            self.legacy_files = [Path(model.filepath)]
+            self._register_inifield_as_legacy_file(Path(model.filepath))
 
     def _convert_forcing(
         self, forcing
