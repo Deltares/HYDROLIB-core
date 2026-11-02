@@ -16,6 +16,7 @@ This document provides detailed usage instructions, argument descriptions, and e
         - [`--dir` / `-d`](#-dir-d)
     - [Backups](#backups)
         - [`--no-backup`](#-no-backup)
+    - [`--recurse`](#-recurse)
     - [`--remove-legacy-files` / `-r`](#-remove-legacy-files-r)
     - [`--path-style {unix,windows}`](#-path-style-unixwindows)
 - [Examples](#examples)
@@ -110,6 +111,14 @@ By default, the tool creates a backup of each file that will be overwritten. Use
 
 ---
 
+### `--recurse`
+**Syntax**: `--recurse`  
+Recursively resolves and loads files referenced by the existing new-format external forcing file, including `.bc` files. Default is `False`.
+
+This option is independent of `--dir`: `--dir` searches subdirectories for `.mdu` files, while `--recurse` controls loading referenced files.
+
+---
+
 ### `--remove-legacy-files` / `-r`
 **Syntax**: `--remove-legacy-files` or `-r`  
 Deletes old/legacy files (e.g., `.tim`) after successfully converting them to the new format. Default is `False`.
@@ -150,6 +159,12 @@ Below are several usage examples to illustrate typical operations:
    extforce-convert -m path/to/project.mdu --path-style unix --debug-mode
    ```
    Forces Unix-style path handling (useful on Windows for models authored on Unix) and converts supported quantities while leaving unsupported ones in the old file.
+
+5. **Convert an MDU file and normalize legacy quantities in referenced `.bc` files**:
+   ```bash
+   extforce-convert -m path/to/project.mdu --recurse
+   ```
+   Loads the files referenced by the existing new-format external forcing file and saves normalized quantity names in both the external forcing file and its referenced `.bc` files.
 
 ---
 
