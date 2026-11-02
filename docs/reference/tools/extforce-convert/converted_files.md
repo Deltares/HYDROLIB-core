@@ -386,8 +386,18 @@ that exact casing.
 
 #### 1.5) Lateral block (new external forcing file)
 `lateraldischarge`, `lateraldischarge1d` and `lateraldischarge2d` are mapped to a `[lateral]` block whose
-`locationType` is `all`, `1d` and `2d` respectively. A time-series discharge (`.tim`) is converted to a `.bc` file; the
-MDU `RefDate` is required for the time unit.
+`locationType` is `all`, `1d` and `2d` respectively.
+
+- `FILENAME` (polygon) → `locationFile`; the block `id` is taken from the polygon and `name` is the old `QUANTITY`.
+- `discharge` comes from the first of these that applies:
+  - a constant `VALUE` in the old block, written as is;
+  - otherwise the `.tim` file(s) next to the polygon whose stem starts with the polygon stem (e.g. `lateral.tim`,
+    `lateral_0001.tim`, `lateral_0002.tim`). They are merged and converted to a `.bc` file with the polygon's path and
+    stem (`lateral.bc`), and `discharge` points to it. The forcing is named after the polygon stem, or
+    `<stem>_0001`, `<stem>_0002`, … when there are several columns. The `.tim` files are recorded in
+    `converter.legacy_files`.
+  - If neither a `VALUE` nor a `.tim` is found, the conversion raises a `ValueError`.
+- The MDU `RefDate` is required for every lateral conversion, not only for time series.
 
 #### 1.6) Combined quantities (split into one block per component)
 A combined quantity bundles several variables in one old `QUANTITY`, with one data column per component (configured in
