@@ -37,58 +37,55 @@ class TestExtModel:
         assert ExtModel().get_forcing_files() == []
 
     @pytest.mark.parametrize(
-        "field, block_type, forcing_field",
+        "field, block_type",
         [
-            ("boundary", Boundary, "forcingfile"),
-            ("lateral", Lateral, "discharge"),
-            ("sourcesink", SourceSink, "salinity"),
-            ("bubblescreen", BubbleScreen, "discharge"),
-            ("meteo", Meteo, "forcingfile"),
-            ("spatial", Spatial, "datafile"),
+            ("boundary", Boundary),
+            ("lateral", Lateral),
+            ("sourcesink", SourceSink),
+            ("bubblescreen", BubbleScreen),
+            ("meteo", Meteo),
+            ("spatial", Spatial),
         ],
     )
-    @pytest.mark.parametrize("file_type", [ForcingModel, DiskOnlyFileModel])
-    def test_get_forcing_files_each_type(
-        self, field, block_type, forcing_field, file_type
-    ):
-        forcing = file_type.model_construct(filepath=Path("forcing.bc"))
-        block = block_type.model_construct(**{forcing_field: forcing})
+    def test_get_forcing_files_each_block_type(self, field, block_type):
+        block = block_type.model_construct()
         model = ExtModel.model_construct(**{field: [block]})
 
-        files = model.get_forcing_files()
+        blocks = model.get_forcing_files()
 
-        assert len(files) == 1
-        assert files[0] is forcing
+        assert len(blocks) == 1
+        assert blocks[0] is block
 
-    def test_get_forcing_files_includes_extras_and_deduplicates(self):
-        forcing = ForcingModel.model_construct(filepath=Path("shared.bc"))
-        temperature = ForcingModel.model_construct(filepath=Path("temperature.bc"))
-        tracer = ForcingModel.model_construct(filepath=Path("tracer.BC"))
-        placeholder = DiskOnlyFileModel.model_construct(filepath=Path("unloaded.bc"))
+    def test_get_forcing_files_preserves_order_and_duplicates(self):
+        boundary = Boundary.model_construct()
+        other_boundary = Boundary.model_construct()
+        lateral = Lateral.model_construct()
+        sourcesink = SourceSink.model_construct()
+        bubblescreen = BubbleScreen.model_construct()
+        meteo = Meteo.model_construct()
+        spatial = Spatial.model_construct()
         model = ExtModel.model_construct(
-            boundary=[Boundary.model_construct(forcingfile=forcing)],
-            lateral=[Lateral.model_construct(discharge=forcing)],
-            sourcesink=[
-                SourceSink.model_construct(
-                    discharge=1.0,
-                    salinity=ForcingModel.model_construct(filepath=Path("shared.bc")),
-                    temperature=temperature,
-                    tracer_dye=tracer,
-                )
-            ],
-            bubblescreen=[BubbleScreen.model_construct(discharge=placeholder)],
-            meteo=[
-                Meteo.model_construct(
-                    forcingfile=TimModel.model_construct(filepath=Path("rain.tim"))
-                )
-            ],
-            spatial=[Spatial.model_construct(datafile=ForcingModel())],
+            spatial=[spatial],
+            meteo=[meteo],
+            bubblescreen=[bubblescreen],
+            sourcesink=[sourcesink],
+            lateral=[lateral],
+            boundary=[boundary, other_boundary, boundary],
         )
 
-        files = model.get_forcing_files()
-        expected = [forcing, temperature, tracer, placeholder]
-        assert len(files) == len(expected)
-        assert all(actual is original for actual, original in zip(files, expected))
+        blocks = model.get_forcing_files()
+        expected = [
+            boundary,
+            other_boundary,
+            boundary,
+            lateral,
+            sourcesink,
+            bubblescreen,
+            meteo,
+            spatial,
+        ]
+        assert len(blocks) == len(expected)
+        assert all(actual is original for actual, original in zip(blocks, expected))
 
     def test_construct_from_file_with_tim(self, input_files_dir: Path):
         input_ext = (

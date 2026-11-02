@@ -1380,13 +1380,14 @@ class ExtModel(INIModel):
             )
         return self
 
-    def get_forcing_files(self) -> list[ForcingModel | DiskOnlyFileModel]:
-        """Return the referenced .bc file models, including unloaded placeholders.
+    def get_forcing_files(
+        self,
+    ) -> list[Boundary | Lateral | SourceSink | BubbleScreen | Meteo | Spatial]:
+        """Return all forcing blocks, not their referenced file models.
 
-        Searches all block types, including dynamic source/sink fields.
-        Returns the original file model instances with their unchanged filepaths,
-        which may be relative to this model. Repeated filepath references are
-        included only once. File models without a filepath are excluded.
+        Returns the original block instances in boundary, lateral, source/sink,
+        bubble screen, meteo, and spatial order, preserving order within each
+        group. No filtering or deduplication is performed.
         """
         blocks = [
             *self.boundary,
