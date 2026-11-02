@@ -203,8 +203,8 @@ def main(args=None):
       args (Optional[List[str]]): Optional list of argument strings to parse instead of sys.argv. Useful for testing.
 
     Notes:
-      - The output file paths are always derived automatically: from the MDU file with `--mdufile`, and
-        next to the legacy file with `--dir`.
+      - The output file paths are always derived automatically from the MDU file, with both `--mdufile` and
+        `--dir` (which applies it to every `.mdu` file it finds).
       - When `--debug-mode` is provided, only supported quantities are converted; unsupported quantities remain in the
         legacy external forcing file. Without this flag, encountering unsupported quantities results in a failure.
 

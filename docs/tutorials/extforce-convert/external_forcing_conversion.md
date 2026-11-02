@@ -94,8 +94,8 @@ contains `_ext` are skipped. If one model fails, the error is printed and the to
 - **Example**: `-d /path/to/projects`
 
 
-The output filenames are always derived automatically: from the MDU file when using `--mdufile`, and next to
-the legacy file when using `--dir`.
+The output filenames are always derived automatically from the MDU file, for both `--mdufile` and `--dir`
+(the latter applies it to every `.mdu` file it finds).
 
 ---
 
