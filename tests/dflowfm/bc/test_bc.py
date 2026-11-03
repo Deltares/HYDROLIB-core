@@ -63,6 +63,18 @@ class TestQuantityUnitPair:
         assert pair.unit == "some_unit"
         assert pair.vertpositionindex == 123
 
+    @pytest.mark.parametrize(
+        "input_quantity, expected_quantity",
+        [
+            ("waterleveldelta", "waterlevel"),
+            ("WATERLEVELDELTA", "WATERLEVEL"),
+            ("waterLevelDeLtA", "waterLevel"),
+        ],
+    )
+    def test_strip_delta_suffix_case_insensitive(self, input_quantity, expected_quantity):
+        pair = QuantityUnitPair(quantity=input_quantity, unit="m")
+        assert pair.quantity == expected_quantity
+
 
 class TestTimeSeries:
 

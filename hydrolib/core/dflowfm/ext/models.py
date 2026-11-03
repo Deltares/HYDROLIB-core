@@ -16,6 +16,7 @@ from pydantic.types import NonNegativeFloat, PositiveInt
 from strenum import StrEnum
 
 from hydrolib.core.base._deprecation import DeprecatedAttributeAlias
+from hydrolib.core.base.file_manager import file_load_context
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     set_default_disk_only_file_model,
@@ -93,7 +94,7 @@ def _coordinate_length(v) -> int:
     return result
 
 
-def _is_dynamic_forcing_delta_key(key: Any) -> bool:
+def _is_dynamic_forcing_key(key: Any) -> bool:
     """Return True if `key` names a dynamic `tracer<...>Delta`/`sedFrac<...>Delta` field.
 
     Per D-Flow FM User Manual Table C.8 (§C.6.2.4), `[SourceSink]` blocks
@@ -106,9 +107,11 @@ def _is_dynamic_forcing_delta_key(key: Any) -> bool:
     result = False
     if isinstance(key, str):
         lowered = key.lower()
-        result = lowered.endswith("delta") and lowered.startswith(("tracer", "sedfrac"))
+        result = (
+            lowered.startswith(("tracer", "sedfrac"))
+            and not lowered.startswith(("tracerbnd", "sedfracbnd"))
+        )
     return result
-
 
 def _resolve_forcing_data(
     v: Any, *, allow_realtime: bool = True
@@ -174,6 +177,47 @@ def _resolve_forcing_data(
     elif isinstance(v, dict):
         result = ForcingModel(**v)
     return result
+
+def _get_recurse_setting() -> bool | None:
+    """Return the `recurse` setting of the active file-load context.
+
+    Returns:
+        bool | None: The `recurse` value, or `None` when no load settings have been
+            initialised (e.g. the model is built directly in Python).
+    """
+    with file_load_context() as context:
+        settings = getattr(context, "_load_settings", None)
+        result = None if settings is None else settings.recurse
+    return result
+
+
+def _remove_delta_suffix(values: Any) -> Any:
+    """Renames any keys ending with "delta" to their base name (removing the suffix)."""
+    recurse = _get_recurse_setting()
+    lowercase_map = {k.lower(): k for k in values}
+    list_of_altered_quantities = set()
+    for lower_key, original_key in lowercase_map.items():
+        if lower_key.endswith("delta"):
+            base_key = lower_key.removesuffix("delta")
+            if base_key not in values:
+                list_of_altered_quantities.add(original_key)
+                values[base_key] = values.pop(original_key)
+            else:
+                values.pop(original_key)
+    if list_of_altered_quantities and not recurse:
+        warnings.warn(
+            f"Legacy keywords with suffix `delta` will soon be deprecated:"
+            f" {', '.join(sorted(list_of_altered_quantities))} have been converted to their base names."
+            " To also remove the `delta` suffixes from quantities in associated .bc files, "
+            "load the MDU file with FMModel(..., recurse=True) or the ExtForceFileNew "
+            "file with ExtModel(..., recurse=True), then save the model with "
+            "save(recurse=True). This updates the referenced .bc files just as the "
+            "converter does with recurse=True. Alternatively, remove the suffixes "
+            "from the .bc quantities manually.",
+            UserWarning,
+            stacklevel=2,
+        )
+    return values
 
 
 FILETYPE_FILEMODEL_MAPPING = {
@@ -481,21 +525,15 @@ class SourceSink(CoordinateValidator, INIBasedModel):
         this validator extends the same coercion to the dynamic Delta-suffix
         fields that arrive via `extra="allow"`.
 
-        Legacy dynamic fields (`initialtracer_*`, `tracerbnd*`, `sedfracbnd_*`,
-        `initialsedfrac_*`) do not end with `delta` and are left untouched.
+        Also removes the Delta-suffix from the keys.
         """
         if isinstance(values, dict):
-            # Migrate legacy salinityDelta/temperatureDelta keys (any casing) from old-format ext files.
-            lowercase_map = {k.lower(): k for k in values}
-            if "salinitydelta" in lowercase_map and "salinity" not in values:
-                values["salinity"] = values.pop(lowercase_map["salinitydelta"])
-            if "temperaturedelta" in lowercase_map and "temperature" not in values:
-                values["temperature"] = values.pop(lowercase_map["temperaturedelta"])
             for key in values:
-                if _is_dynamic_forcing_delta_key(key):
+                if _is_dynamic_forcing_key(key):
                     values[key] = _resolve_forcing_data(
                         values[key], allow_realtime=False
                     )
+            values = _remove_delta_suffix(values)
         return values
 
     @classmethod
@@ -508,10 +546,10 @@ class SourceSink(CoordinateValidator, INIBasedModel):
             for key in input_data.keys()
             if key not in fields
             and (
-                key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
-                or _is_dynamic_forcing_delta_key(key)
-                or key in dynamic_fields
-                or key == _DYNAMIC_FIELDS_KEY
+                       key.startswith(SOURCE_SINKS_QUANTITIES_VALID_PREFIXES)
+                       or _is_dynamic_forcing_key(key)
+                       or key in dynamic_fields
+                       or key == _DYNAMIC_FIELDS_KEY
             )
         ]
         return set(unknown_keywords)
@@ -1344,6 +1382,25 @@ class ExtModel(INIModel):
                 stacklevel=2,
             )
         return self
+
+    def get_forcing_files(
+        self,
+    ) -> list[Boundary | Lateral | SourceSink | BubbleScreen | Meteo | Spatial]:
+        """Return all forcing blocks, not their referenced file models.
+
+        Returns the original block instances in boundary, lateral, source/sink,
+        bubble screen, meteo, and spatial order, preserving order within each
+        group. No filtering or deduplication is performed.
+        """
+        blocks = [
+            *self.boundary,
+            *self.lateral,
+            *self.sourcesink,
+            *self.bubblescreen,
+            *self.meteo,
+            *self.spatial,
+        ]
+        return blocks
 
     @property
     def n_forcing_blocks(self) -> int:

@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
 from hydrolib.core.base.utils import PathStyle
+from hydrolib.core.dflowfm.bc.models import ForcingModel
 from hydrolib.core.dflowfm.ext.models import (
     Boundary,
     ExtGeneral,
@@ -48,7 +49,7 @@ from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
     construct_filemodel_new_or_existing,
-    path_relative_to_parent,
+    path_relative_to_parent
 )
 
 
@@ -70,6 +71,7 @@ class ExternalForcingConverter:
         path_style: PathStyle | None = None,
         debug: bool | None = False,
         mba_file: PathOrStr | None = None,
+        recurse: bool = False
     ):
         r"""Initialize the converter.
 
@@ -155,7 +157,7 @@ class ExternalForcingConverter:
         # create the new models if not provided by the user in the same directory as the old external file
         path = rdir / "new-external-forcing.ext" if ext_file is None else ext_file
         self._ext_model = construct_filemodel_new_or_existing(
-            ExtModel, path, recurse=False
+            ExtModel, path, recurse=recurse
         )
 
         path = rdir / "new-structure.ini" if structure_file is None else structure_file
@@ -715,6 +717,8 @@ class ExternalForcingConverter:
         if self.ext_model.n_forcing_blocks:
             if backup and self.ext_model.filepath.exists():
                 backup_file(self.ext_model.filepath)
+            if backup and recursive:
+                self._backup_bc_files()
 
             # explicitly set the [General] block to ensure it's always written to the new external forcing file.
             # without it, the ext file will be saved without it as the exclude_unset=True
@@ -757,6 +761,18 @@ class ExternalForcingConverter:
             recurse=recursive, exclude_unset=True, path_style=self.path_style
         )
 
+    def _backup_bc_files(self):
+        """Backup the .bc files referenced by the new external forcing model."""
+        filepaths_to_back_up = set()
+        for block in self.ext_model.get_forcing_files():
+            for _, value in block:
+                if isinstance(value, ForcingModel) and value.filepath is not None:
+                    filepaths_to_back_up.add(value.filepath)
+        for file in filepaths_to_back_up:
+            path = self.ext_model.filepath.parent / file
+            if path.is_file():
+                backup_file(path)
+
     def clean(self):
         """Clean the directory from the old external forcing file, the inifield file and the time file."""
         if len(self.legacy_files) > 0:
@@ -773,6 +789,7 @@ class ExternalForcingConverter:
         mdu_file: PathOrStr,
         path_style: PathStyle | None = None,
         debug: bool = False,
+        recurse: bool = False,
     ) -> ExternalForcingConverter:
         """Create the converter from the MDU file.
 
@@ -792,6 +809,8 @@ class ExternalForcingConverter:
             debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+            recurse (bool, optional):
+                Recursively load files referenced by the existing external forcing model. Defaults to False.
 
         Returns:
             ExternalForcingConverter: The converter object.
@@ -828,6 +847,7 @@ class ExternalForcingConverter:
             path_style=path_style,
             debug=debug,
             mba_file=mba_file,
+            recurse=recurse
         )
 
     def _update_mdu_file(self):
@@ -890,6 +910,7 @@ def recursive_converter(
     suppress_errors: bool = False,
     remove_legacy: bool = False,
     debug: bool = False,
+    recurse: bool = False,
 ):
     """Migrate all external forcings files in a directory tree to the new format.
 
@@ -901,6 +922,7 @@ def recursive_converter(
         debug (bool, Optional):
                 Enable debug mode. In debug mode unsupported quantities will be skipped and not raise an error.
                 Defaults to False.
+        recurse (bool, optional): Recursively load files referenced by the existing external forcing model. Defaults to False.
     """
     mdu_files = [
         path for path in Path(root_dir).rglob("*.mdu") if "_ext" not in path.name
@@ -913,7 +935,9 @@ def recursive_converter(
 
         for path in tqdm(mdu_files, desc="Converting files"):
             try:
-                converter = ExternalForcingConverter.from_mdu(path, debug=debug)
+                converter = ExternalForcingConverter.from_mdu(
+                    path, debug=debug, recurse=recurse
+                )
                 _, _ = converter.update()
                 converter.save(backup=backup)
                 if remove_legacy:
