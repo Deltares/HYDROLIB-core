@@ -4004,7 +4004,8 @@ You're not viewing the latest release version.
 <ul>
 <li>A new external forcings file (<code>ExtModel</code>) with <code>[Boundary]</code>, <code>[Lateral]</code>, <code>[SourceSink]</code> and <code>[Spatial]</code> blocks.
   Meteo, initial-condition and parameter quantities all become <code>[Spatial]</code> blocks; the converter no longer writes an
-  initial field file.</li>
+  initial field file. The <code>[Initial]</code> and <code>[Parameter]</code> blocks of the inifield file (<code>IniFieldFile</code>) are converted to
+  <code>[Spatial]</code> blocks too, and the <code>IniFieldFile</code> entry is removed from the MDU file.</li>
 <li>A structures file (<code>StructureModel</code>) with <code>Structure</code> blocks.</li>
 <li>A mass balance area file (<code>MassBalanceAreaModel</code>) with <code>MassBalanceArea</code> blocks.</li>
 </ul>
@@ -4050,7 +4051,7 @@ You're not viewing the latest release version.
 <ul>
 <li><code>__init__(
     *,
-    extold_model: PathOrStr | ExtOldModel,
+    extold_model: PathOrStr | ExtOldModel | None,
     ext_file: PathOrStr | None = None,
     structure_file: PathOrStr | None = None,
     mdu_parser: MDUParser,
@@ -4061,7 +4062,7 @@ You're not viewing the latest release version.
   )</code></li>
 <li>All arguments are keyword-only.</li>
 <li>Parameters:<ul>
-<li><code>extold_model</code>: Path to legacy <code>.ext</code> or an <code>ExtOldModel</code> instance. If a path or str, the file is loaded via <code>_read_old_file()</code>.</li>
+<li><code>extold_model</code>: Path to legacy <code>.ext</code> or an <code>ExtOldModel</code> instance. If a path or str, the file is loaded via <code>_read_old_file()</code>. <code>None</code> for an MDU that has no legacy <code>.ext</code> file, only an inifield file to convert.</li>
 <li><code>ext_file</code>: Destination path for new external forcings (<code>ExtModel</code>). Defaults to <code>new-external-forcing.ext</code> in the directory of the MDU file. If the file exists, the converted quantities are appended to it.</li>
 <li><code>structure_file</code>: Destination path for <code>StructureModel</code>. Defaults to <code>new-structure.ini</code> in the MDU directory.</li>
 <li><code>mdu_parser</code>: <strong>Required</strong> <code>MDUParser</code>. Provides FM metadata (e.g., <code>refdate</code>, temperature/salinity), the root directory (the MDU's parent), and is used to update the MDU file.</li>
@@ -4099,7 +4100,7 @@ You're not viewing the latest release version.
 <li>Side effects: Parses the MDU file; determines legacy <code>.ext</code> path and output file paths.</li>
 <li>Exceptions (per docstring and expected behavior):<ul>
 <li><code>FileNotFoundError</code> if MDU is missing.</li>
-<li><code>ValueError</code> if the legacy ext file is not found in the MDU.</li>
+<li><code>ValueError</code> if the MDU has neither a legacy ext file nor an existing inifield file (an empty <code>IniFieldFile =</code> entry, or one pointing to a missing file, does not count).</li>
 <li><code>DeprecationWarning</code> if unknown keywords in the MDU (raised by <code>MDUParser</code>).</li>
 </ul>
 </li>
@@ -4185,6 +4186,7 @@ You're not viewing the latest release version.
 <li>Purpose: Convert all eligible forcings from the legacy model and append them to the correct destination models.</li>
 <li>Behavior:<ul>
 <li>Logs details if <code>verbose</code>.</li>
+<li>Converts the <code>[Initial]</code> and <code>[Parameter]</code> blocks of the inifield file first (see <a href="../converted_files/">Converted files</a>).</li>
 <li>Iterates forcings, shows a progress bar (<code>tqdm</code>).</li>
 <li>For unsupported quantities: prints a message (with <code>debug</code> state) and skips.</li>
 <li>For supported quantities: calls <code>_convert_forcing</code>, which returns one block or a list of blocks. Each block is registered with the <code>ForcingFileRegistry</code> (shared <code>.bc</code> files), mapped to the destination model by type (<code>_type_field_map</code>: <code>Boundary</code>, <code>Lateral</code>, <code>SourceSink</code>, <code>Spatial</code> -&gt; <code>ExtModel</code>; <code>Structure</code> -&gt; <code>StructureModel</code>; <code>MassBalanceArea</code> -&gt; <code>MassBalanceAreaModel</code>) and appended.</li>
@@ -4199,6 +4201,7 @@ You're not viewing the latest release version.
 <ul>
 <li><code>NotImplementedError</code> if a converted block’s type is unknown to <code>_type_field_map</code>.</li>
 <li><code>ValueError</code> from <code>_convert_forcing</code> if required MDU data is missing for certain converters.</li>
+<li><code>InifieldError</code> if the inifield file exists but cannot be parsed; the message names the file.</li>
 </ul>
 </li>
 <li>
