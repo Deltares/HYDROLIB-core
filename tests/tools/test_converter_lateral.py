@@ -202,6 +202,144 @@ class TestLateralConverter:
 			path.name for path in river_tim_files
 		]
 
+	@pytest.mark.parametrize(
+		"salinity, temperature, n_columns, expected_quantities",
+		[
+			pytest.param(1, True, 3, ["discharge", "salinity", "temperature"], id="salinity-and-temperature"),
+			pytest.param(1, False, 2, ["discharge", "salinity"], id="salinity-only"),
+			pytest.param(0, True, 2, ["discharge", "temperature"], id="temperature-only"),
+		],
+	)
+	def test_convert_polyfile_with_transport_columns_preserves_transport_forcings(
+		self,
+		tmp_path: Path,
+		lateral_files_dir: Path,
+		mdu_parser_mock: MagicMock,
+		salinity: int,
+		temperature: bool,
+		n_columns: int,
+		expected_quantities: list[str],
+	):
+		shutil.copy2(lateral_files_dir / "lateral.pli", tmp_path / "lateral.pli")
+		extra = " 10.0 25.0"[: 5 * (n_columns - 1)]
+		(tmp_path / "lateral_0001.tim").write_text(
+			f"0.0 1.0{extra}\n60.0 2.0{extra}\n"
+		)
+		mdu_parser_mock.temperature_salinity_data = {
+			"refdate": "minutes since 2015-01-01 00:00:00",
+			"salinity": salinity,
+			"temperature": temperature,
+		}
+		converter = LateralConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+		forcing = _make_poly_forcing("lateraldischarge", Path("lateral.pli"))
+
+		result = converter.convert(forcing)
+
+		assert isinstance(result.discharge, ForcingModel)
+		assert result.applytransport == 1
+		assert [series.name for series in result.discharge.forcing] == ["lateral"] * len(expected_quantities)
+		assert [series.quantityunitpair[1].quantity for series in result.discharge.forcing] == expected_quantities
+		assert result.discharge.forcing[0].datablock == [[0.0, 1.0], [60.0, 2.0]]
+		assert result.discharge.forcing[1].datablock == [[0.0, 10.0], [60.0, 10.0]]
+		if "salinity" in expected_quantities:
+			assert isinstance(result.salinity, ForcingModel)
+		else:
+			assert result.salinity is None
+		if "temperature" in expected_quantities:
+			index = expected_quantities.index("temperature")
+			assert isinstance(result.temperature, ForcingModel)
+			assert result.discharge.forcing[index].datablock == [[0.0, 25.0], [60.0, 25.0]]
+		else:
+			assert result.temperature is None
+
+	def test_convert_polyfile_with_single_column_and_transport_enabled(
+		self,
+		tmp_path: Path,
+		lateral_files_dir: Path,
+		mdu_parser_mock: MagicMock,
+	):
+		shutil.copy2(lateral_files_dir / "lateral.pli", tmp_path / "lateral.pli")
+		(tmp_path / "lateral_0001.tim").write_text("0.0 -1.0\n60.0 -2.0\n")
+		mdu_parser_mock.temperature_salinity_data = {
+			"refdate": "minutes since 2015-01-01 00:00:00",
+			"salinity": 1,
+			"temperature": True,
+		}
+		converter = LateralConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+		forcing = _make_poly_forcing("lateraldischarge", Path("lateral.pli"))
+
+		result = converter.convert(forcing)
+
+		assert result.discharge.forcing[0].datablock == [[0.0, -1.0], [60.0, -2.0]]
+		assert result.salinity is None
+		assert result.temperature is None
+		assert result.applytransport is None
+
+	def test_convert_polyfile_with_multiple_tim_files_and_transport_columns(
+		self,
+		tmp_path: Path,
+		lateral_files_dir: Path,
+		mdu_parser_mock: MagicMock,
+	):
+		shutil.copy2(lateral_files_dir / "river.pli", tmp_path / "river.pli")
+		(tmp_path / "river_0001.tim").write_text("0.0 1.0 10.0 25.0\n60.0 2.0 11.0 26.0\n")
+		(tmp_path / "river_0002.tim").write_text("0.0 3.0 30.0 45.0\n60.0 4.0 31.0 46.0\n")
+		mdu_parser_mock.temperature_salinity_data = {
+			"refdate": "minutes since 2015-01-01 00:00:00",
+			"salinity": 1,
+			"temperature": True,
+		}
+		converter = LateralConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+		forcing = _make_poly_forcing("lateraldischarge", Path("river.pli"))
+
+		result = converter.convert(forcing)
+
+		assert isinstance(result.discharge, ForcingModel)
+		assert isinstance(result.salinity, ForcingModel)
+		assert isinstance(result.temperature, ForcingModel)
+		assert result.applytransport == 1
+		assert [series.name for series in result.discharge.forcing] == [
+			"river_0001",
+			"river_0001",
+			"river_0001",
+			"river_0002",
+			"river_0002",
+			"river_0002",
+		]
+		assert [series.quantityunitpair[1].quantity for series in result.discharge.forcing] == [
+			"discharge",
+			"salinity",
+			"temperature",
+			"discharge",
+			"salinity",
+			"temperature",
+		]
+		assert result.discharge.forcing[0].datablock == [[0.0, 1.0], [60.0, 2.0]]
+		assert result.discharge.forcing[1].datablock == [[0.0, 10.0], [60.0, 11.0]]
+		assert result.discharge.forcing[2].datablock == [[0.0, 25.0], [60.0, 26.0]]
+		assert result.discharge.forcing[3].datablock == [[0.0, 3.0], [60.0, 4.0]]
+		assert result.discharge.forcing[4].datablock == [[0.0, 30.0], [60.0, 31.0]]
+		assert result.discharge.forcing[5].datablock == [[0.0, 45.0], [60.0, 46.0]]
+
+	def test_convert_polyfile_with_unexpected_number_of_columns_raises(
+		self,
+		tmp_path: Path,
+		lateral_files_dir: Path,
+		mdu_parser_mock: MagicMock,
+	):
+		shutil.copy2(lateral_files_dir / "lateral.pli", tmp_path / "lateral.pli")
+		(tmp_path / "lateral_0001.tim").write_text("0.0 1.0 10.0 25.0\n60.0 2.0 10.0 25.0\n")
+		mdu_parser_mock.temperature_salinity_data = {
+			"refdate": "minutes since 2015-01-01 00:00:00",
+			"salinity": 0,
+			"temperature": False,
+		}
+		converter = LateralConverter(mdu_parser=mdu_parser_mock, root_dir=tmp_path)
+		forcing = _make_poly_forcing("lateraldischarge", Path("lateral.pli"))
+
+		with pytest.raises(LateralError, match="has 3 data columns"):
+			converter.convert(forcing)
+
 	def test_convert_polyfile_without_value_or_tim_raises_value_error(
 		self,
 		converter: LateralConverter,
