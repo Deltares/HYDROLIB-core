@@ -7,7 +7,6 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-from pydantic import ValidationError
 from tqdm import tqdm
 
 from hydrolib.core.base.file_manager import PathOrStr
@@ -23,7 +22,6 @@ from hydrolib.core.dflowfm.ext.models import (
     Spatial,
 )
 from hydrolib.core.dflowfm.extold.models import ExtOldModel
-from hydrolib.core.dflowfm.inifield.models import AbstractSpatialField, IniFieldModel
 from hydrolib.core.dflowfm.mba.models import (
     MassBalanceArea,
     MassBalanceAreaGeneral,
@@ -37,14 +35,13 @@ from hydrolib.core.dflowfm.structure.models import (
 from hydrolib.tools.extforce_convert.converters import (
     BoundaryConditionConverter,
     ConverterFactory,
-    InifieldError,
     InifieldToSpatialConverter,
     MassBalanceAreaConverter,
     LateralConverter,
     SourceSinkConverter,
 )
 from hydrolib.tools.extforce_convert.forcing_registry import ForcingFileRegistry
-from hydrolib.tools.extforce_convert.mdu_parser import INIFIELD_FILE_LINE, MDUParser
+from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
 from hydrolib.tools.extforce_convert.utils import (
     CONVERTER_DATA,
     backup_file,
@@ -56,9 +53,6 @@ from hydrolib.tools.extforce_convert.utils import (
 class ExternalForcingConverter:
     """Converter for old external forcing files to the new format."""
 
-    # quantity prefixes of the tracers / sediment fractions defined as `[Spatial]` and as `[Boundary]` blocks
-    SPATIAL_TRACER_PREFIXES = ("initialtracer", "initialsedfrac")
-    BOUNDARY_TRACER_PREFIXES = ("tracerbnd", "sedfracbnd")
 
     def __init__(
         self,
@@ -176,11 +170,7 @@ class ExternalForcingConverter:
         self._mdu_parser = mdu_parser
 
         # loaded on first use by `update()` (converted to `[Spatial]` blocks) or by the source/sink conversion
-        self._inifield_model: IniFieldModel | None = None
-        self._inifield_loaded = False
-        self._inifield_converted = False
-        self._tracer_order_warned = False
-        self._inifield_spatial_blocks: list[Spatial] = []
+        self._inifield_converter = InifieldToSpatialConverter(mdu_parser=mdu_parser)
         # snapshot before `update()` appends converted old-ext blocks, see `_new_ext_tracer_quantities`
         self._pre_existing_new_ext_tracers = self._read_new_ext_tracer_quantities()
 
@@ -393,7 +383,9 @@ class ExternalForcingConverter:
                 progress_bar.update(1)
 
         self._update_mdu_file()
-        self._warn_on_tracer_order()
+        self._inifield_converter.warn_on_tracer_order(
+            [block.quantity for block in self.ext_model.boundary]
+        )
 
         if self.un_supported_quantities:
             # replace the forcings by the forcings that were not converted (the unsupported quantities)
@@ -466,188 +458,34 @@ class ExternalForcingConverter:
         return self._pre_existing_new_ext_tracers
 
     def _inifield_tracer_quantities(self) -> list[str]:
-        """Collect the quantity names of the `[Initial]` and `[Parameter]` blocks of the inifield file.
+        """Collect the quantity names of the inifield blocks, for the source/sink conversion.
 
-        All quantities are returned, not only the tracer ones: the source/sink converter keeps the
-        tracer / sediment-fraction ones by prefix. The inifield model is loaded on the first call and cached
-        (`self._inifield_model`), so the file is read once, whether `update()` or the source/sink conversion asks
-        first. When the MDU references no inifield file, an empty list is returned.
+        The inifield file is read once, whether `update()` or the source/sink conversion asks first.
 
         Returns:
-            list[str]: Quantity names of the inifield blocks, in the order of the file.
+            list[str]: Quantity names of the inifield blocks in the order of the file; empty when the MDU
+                references no inifield file.
         """
-        model = self._get_inifield_model()
-        blocks = model.blocks_in_file_order() if model else []
-        return [block.quantity for block in blocks]
-
-    def _get_inifield_model(self) -> IniFieldModel | None:
-        """Return the inifield model of the MDU, loading it on the first call and caching it."""
-        if not self._inifield_loaded:
-            self._inifield_model = self._load_inifield_model()
-            self._inifield_loaded = True
-        return self._inifield_model
-
-    def _load_inifield_model(self) -> IniFieldModel | None:
-        """Load the inifield file referenced by the MDU, if it exists on disk.
-
-        Returns:
-            Optional[IniFieldModel]: The parsed inifield model, or None when the MDU
-                does not reference an inifield file or the referenced path is missing.
-
-        Raises:
-            InifieldError: If the inifield file exists but cannot be parsed.
-        """
-        model = None
-        if self.mdu_parser.has_inifield_file():
-            inifield_path = self.mdu_parser.get_inifield_file(None)
-            if inifield_path is not None and Path(inifield_path).is_file():
-                try:
-                    model = IniFieldModel(filepath=inifield_path, recurse=False)
-                    self._check_has_sections(Path(inifield_path))
-                except (ValidationError, ValueError, TypeError) as error:
-                    raise InifieldError(
-                        f"The inifield file '{inifield_path}' could not be read, so it cannot be converted "
-                        f"to [Spatial] blocks: {error}"
-                    ) from error
-        return model
-
-    @staticmethod
-    def _check_has_sections(inifield_path: Path) -> None:
-        """Raise a `ValueError` when a non-empty inifield file has no `[section]` header.
-
-        The ini parser reads such a file as an empty one, so it would be converted to nothing and then
-        removed.
-        """
-        lines = [
-            line.strip()
-            for line in inifield_path.read_text(errors="replace").splitlines()
-            if line.strip() and not line.strip().startswith("#")
-        ]
-        if lines and not any(line.startswith("[") for line in lines):
-            raise ValueError("the file has content but no [section] header")
-
-    def _warn_on_tracer_order(self) -> None:
-        """Warn when inifield tracers end up behind the `[Boundary]` tracers of the new external forcings file.
-
-        The kernel numbers the tracers in the order it meets them: inifield first, then the new external
-        forcings file, then the old one. The `[Spatial]` blocks made from the inifield file are written after
-        all `[Boundary]` blocks, so an inifield tracer (`initialtracer*`, `initialsedfrac*`) can come after a
-        `[Boundary]` tracer (`tracerbnd*`, `sedfracbnd*`) and the tracers may then be numbered in another order.
-        """
-        spatial_tracers = [
-            block.quantity
-            for block in self._inifield_spatial_blocks
-            if block.quantity.lower().startswith(self.SPATIAL_TRACER_PREFIXES)
-        ]
-        boundary_tracers = [
-            block.quantity
-            for block in self.ext_model.boundary
-            if block.quantity.lower().startswith(self.BOUNDARY_TRACER_PREFIXES)
-        ]
-        if spatial_tracers and boundary_tracers and not self._tracer_order_warned:
-            self._tracer_order_warned = True
-            warnings.warn(
-                f"The inifield tracer(s) {', '.join(spatial_tracers)} were moved into [Spatial] blocks, which "
-                f"are written after the [Boundary] blocks. The new external forcings file also has the "
-                f"[Boundary] tracer(s) {', '.join(boundary_tracers)}, so D-Flow FM may number the tracers in a "
-                "different order than before (inifield, new ext, old ext). Check the tracer order in the "
-                "diagnostics (.dia) file.",
-                UserWarning,
-                stacklevel=3,
-            )
-
-    def _inifield_data_path(self, block: AbstractSpatialField, model: IniFieldModel) -> Path:
-        """Resolve the data file path of an inifield block for the new external forcings file.
-
-        With the MDU setting `pathsRelativeToParent` a relative path is relative to the file it is written
-        in, so it is re-expressed relative to the new external forcings file. Otherwise paths are relative to
-        the MDU and stay as they are.
-
-        Args:
-            block (AbstractSpatialField): The inifield block whose data file is resolved.
-            model (IniFieldModel): The inifield model the block belongs to.
-
-        Returns:
-            Path: The path to write in the `Spatial` block.
-        """
-        path = block.datafile.filepath
-        if path is not None and not path.is_absolute() and self.mdu_parser.is_relative_to_parent:
-            absolute = (model.filepath.parent / path).resolve()
-            try:
-                path = Path(
-                    os.path.relpath(absolute, self.ext_model.filepath.parent.resolve())
-                )
-            except ValueError:
-                # no relative path exists between two drives (Windows)
-                path = absolute
-        return path
-
-    def _register_inifield_as_legacy_file(self, inifield_path: Path) -> None:
-        """Let `clean` remove the converted inifield file, when it belongs to this model.
-
-        Nothing refers to the inifield file any more once its blocks are converted. The path comes from the
-        MDU file, so a file outside the MDU directory (a file shared with other models) or a symbolic link is
-        never removed; a warning says so instead. The link check looks at the path as written in the MDU, and
-        at every folder between the MDU directory and the file, because the resolved path has no links left.
-
-        Args:
-            inifield_path (Path): The resolved path of the converted inifield file.
-        """
-        mdu_dir = Path(os.path.abspath(self.mdu_parser.mdu_path.parent))
-        as_written = mdu_dir / self.mdu_parser.get_keyword(INIFIELD_FILE_LINE)
-        written = Path(os.path.abspath(as_written))
-        inside = written.is_relative_to(mdu_dir) and inifield_path.resolve().is_relative_to(
-            mdu_dir.resolve()
-        )
-        # the links are looked up on the path before `..` is collapsed, as the file system follows them
-        linked = any(
-            element.is_symlink()
-            for element in (as_written, *as_written.parents)
-            if element != mdu_dir and element.is_relative_to(mdu_dir)
-        )
-        if inside and not linked:
-            self.legacy_files = [inifield_path]
-        else:
-            reason = "outside the MDU directory" if not inside else "a symbolic link or behind one"
-            warnings.warn(
-                f"The inifield file '{inifield_path}' is {reason}, so it is not removed when the legacy "
-                "files are cleaned.",
-                UserWarning,
-                stacklevel=4,
-            )
+        return self._inifield_converter.tracer_quantities()
 
     def _convert_inifield_blocks(self) -> None:
         """Convert the `[Initial]` and `[Parameter]` blocks of the inifield file to `[Spatial]` blocks.
 
-        The blocks are converted in the order they appear in the inifield file and put **in front of** the
-        `[Spatial]` blocks already in the new external forcings file, which are in front of the blocks
-        converted from the old external forcings file. That is the order in which the kernel reads the
-        sources (inifield, new ext, old ext), so blocks for the same quantity combine as before, and the
-        tracer numbering follows the same precedence.
+        The blocks are put **in front of** the `[Spatial]` blocks already in the new external forcings file,
+        which are in front of the blocks converted from the old external forcings file. That is the order in
+        which the kernel reads the sources (inifield, new ext, old ext), so blocks for the same quantity
+        combine as before, and the tracer numbering follows the same precedence.
 
         Notes:
             - Does nothing when the MDU has no inifield file.
             - A second call does nothing.
         """
-        model = self._get_inifield_model()
-        if model is not None and not self._inifield_converted:
-            converter = InifieldToSpatialConverter()
-            blocks = [
-                converter.convert(block, self._inifield_data_path(block, model))
-                for block in model.blocks_in_file_order()
-            ]
-            self.ext_model.spatial = blocks + list(self.ext_model.spatial)
-            self._inifield_spatial_blocks = blocks
-            self._inifield_converted = True
-            if converter.unconverted_quantities:
-                warnings.warn(
-                    f"The inifield file '{model.filepath}' is not removed when the legacy files are cleaned: "
-                    f"the value of {', '.join(converter.unconverted_quantities)} was not converted.",
-                    UserWarning,
-                    stacklevel=3,
-                )
-            else:
-                self._register_inifield_as_legacy_file(Path(model.filepath))
+        converter = self._inifield_converter
+        if not converter.converted:
+            blocks = converter.convert_file(self.ext_model.filepath)
+            if converter.converted:
+                self.ext_model.spatial = blocks + list(self.ext_model.spatial)
+                self.legacy_files = converter.legacy_files
 
     def _convert_forcing(
         self, forcing
@@ -866,7 +704,7 @@ class ExternalForcingConverter:
             remove_old_ext_file=remove_old_ext_file,
         )
 
-        if self._inifield_converted:
+        if self._inifield_converter.converted:
             self.mdu_parser.remove_inifield_file()
 
         if len(self.structure_model.structure) > 0:

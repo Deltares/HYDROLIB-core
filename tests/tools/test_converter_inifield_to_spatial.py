@@ -239,3 +239,20 @@ class TestUnconvertedValueWarning:
 
         message = str(record[0].message)
         assert "dataFileType=polygon" not in message, message
+
+
+class TestWithoutMduParser:
+    def test_a_block_converts_without_a_parser(self):
+        block = InitialField(quantity="salinity", dataFile="s.xyz", dataFileType="sample")
+
+        spatial = InifieldToSpatialConverter().convert(block, Path("s.xyz"))
+
+        assert spatial.quantity == "salinity"
+
+    def test_the_file_conversion_needs_a_parser(self):
+        with pytest.raises(ValueError, match="needs an MDUParser"):
+            InifieldToSpatialConverter().convert_file(Path("new.ext"))
+
+    def test_the_tracer_quantities_need_a_parser(self):
+        with pytest.raises(ValueError, match="needs an MDUParser"):
+            InifieldToSpatialConverter().tracer_quantities()
