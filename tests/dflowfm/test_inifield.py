@@ -459,3 +459,95 @@ class TestInitialVerticalProfilePolygonValidation:
         )
 
         assert np.isclose(model.value, 12.34)
+
+
+class TestBlocksInFileOrder:
+    _CONTENT = """\
+[General]
+fileVersion = 2.00
+fileType = iniField
+
+[Parameter]
+quantity = frictionCoefficient
+dataFile = a.xyz
+dataFileType = sample
+
+[Initial]
+quantity = waterlevel
+dataFile = b.xyz
+dataFileType = sample
+
+[Parameter]
+quantity = frictionCoefficient
+dataFile = c.xyz
+dataFileType = sample
+operand = *
+"""
+
+    @pytest.mark.unit
+    def test_interleaving_of_initial_and_parameter_blocks_is_kept(self, tmp_path):
+        path = tmp_path / "inifield.ini"
+        path.write_text(self._CONTENT)
+        model = IniFieldModel(filepath=path, recurse=False)
+
+        blocks = model.blocks_in_file_order()
+
+        assert [b.datafile.filepath.name for b in blocks] == [
+            "a.xyz",
+            "b.xyz",
+            "c.xyz",
+        ]
+        assert [type(b) for b in blocks] == [ParameterField, InitialField, ParameterField]
+
+    @pytest.mark.unit
+    def test_blocks_are_the_model_objects(self, tmp_path):
+        path = tmp_path / "inifield.ini"
+        path.write_text(self._CONTENT)
+        model = IniFieldModel(filepath=path, recurse=False)
+
+        blocks = model.blocks_in_file_order()
+
+        assert blocks[0] is model.parameter[0]
+        assert blocks[1] is model.initial[0]
+        assert blocks[2] is model.parameter[1]
+
+    @pytest.mark.unit
+    def test_model_without_a_file_lists_initial_then_parameter(self):
+        model = IniFieldModel(
+            initial=[
+                InitialField(
+                    quantity="waterlevel", datafile="b.xyz", datafiletype="sample"
+                )
+            ],
+            parameter=[
+                ParameterField(
+                    quantity="frictionCoefficient",
+                    datafile="a.xyz",
+                    datafiletype="sample",
+                )
+            ],
+        )
+
+        blocks = model.blocks_in_file_order()
+
+        assert [type(b) for b in blocks] == [InitialField, ParameterField]
+
+    @pytest.mark.unit
+    def test_blocks_added_after_loading_fall_back_to_initial_then_parameter(
+        self, tmp_path
+    ):
+        path = tmp_path / "inifield.ini"
+        path.write_text(self._CONTENT)
+        model = IniFieldModel(filepath=path, recurse=False)
+        model.initial.append(
+            InitialField(quantity="salinity", datafile="d.xyz", datafiletype="sample")
+        )
+
+        blocks = model.blocks_in_file_order()
+
+        assert [type(b) for b in blocks] == [
+            InitialField,
+            InitialField,
+            ParameterField,
+            ParameterField,
+        ]

@@ -43,7 +43,10 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldParametersQuantity,
     ExtOldSourcesSinks,
 )
-from hydrolib.core.dflowfm.inifield.models import DataFileType, InterpolationMethod
+from hydrolib.core.dflowfm.inifield.models import (
+    DataFileType,
+    InterpolationMethod,
+)
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaError
 from hydrolib.core.dflowfm.polyfile.models import PolyFile
 from hydrolib.core.dflowfm.substance.models import Substance, SubstanceModel
@@ -2201,7 +2204,7 @@ class TimToForcingConverter:
         Examples:
             ```python
             >>> from hydrolib.core.dflowfm.tim.models import TimModel
-            >>> from hydrolib.tools.extforce_convert.converters import TimToForcingConverter
+            >>> from hydrolib.tools.extforce_convert.converters.converters import TimToForcingConverter
             >>> file_path = "tests/data/input/tim/single_data_for_timeseries.tim"
             >>> user_defined_names = ["discharge"]
             >>> tim_model = TimModel(file_path, user_defined_names)
@@ -2384,7 +2387,7 @@ class T3DToForcingConverter:
         Examples:
             ```python
             >>> from hydrolib.core.dflowfm.t3d.models import T3DModel, T3DTimeRecord
-            >>> from hydrolib.tools.extforce_convert.converters import T3DToForcingConverter
+            >>> from hydrolib.tools.extforce_convert.converters.converters import T3DToForcingConverter
             >>> from hydrolib.core.dflowfm.bc.models import QuantityUnitPair, T3D
             >>> t3d_model = T3DModel(
             ...     layer_type="SIGMA",

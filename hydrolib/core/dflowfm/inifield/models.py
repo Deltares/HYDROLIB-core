@@ -16,6 +16,7 @@ from pydantic import (
 from pydantic.types import NonNegativeFloat, PositiveInt
 
 from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.utils import to_key
 from hydrolib.core.dflowfm.common import LocationType
 from hydrolib.core.dflowfm.common.models import (
     AveragingType,
@@ -25,6 +26,7 @@ from hydrolib.core.dflowfm.common.models import (
 )
 from hydrolib.core.dflowfm.ini.io_models import Section
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
+from hydrolib.core.dflowfm.ini.parser import Parser
 from hydrolib.core.dflowfm.ini.util import (
     enum_value_parser,
     make_list,
@@ -298,6 +300,81 @@ class IniFieldModel(INIModel):
     @classmethod
     def _ext(cls) -> str:
         return ".ini"
+
+    def _block_headers_in_file_order(self) -> list[str] | None:
+        """Read the order of the `[Initial]` / `[Parameter]` headers from the file on disk.
+
+        Returns:
+            list[str] | None: The lowercase headers (`"initial"` / `"parameter"`) in file order, or None
+                when the model has no file on disk to read the order from.
+        """
+        headers = None
+        path = self._resolved_filepath
+        if path is not None and path.is_file():
+            document = Parser.parse(path)
+            keys = [to_key(section.header) for section in document.sections]
+            headers = [key for key in keys if key in ("initial", "parameter")]
+        return headers
+
+    def blocks_in_file_order(self) -> List[InitialField | ParameterField]:
+        r"""List the `[Initial]` and `[Parameter]` blocks in the order they appear in the file.
+
+        The parsed model keeps the two kinds of blocks in separate lists, which loses how they were
+        interleaved in the file. The order matters because blocks for the same quantity are applied top to
+        bottom (D-Flow FM User Manual §D.2). It is recovered by reading the section headers of the file again,
+        so the file is assumed to be unchanged since the model was loaded; the order is trusted whenever the
+        number of `[Initial]` and `[Parameter]` blocks in the file equals the number in the model.
+
+        Returns:
+            List[InitialField | ParameterField]: The blocks of this model, in file order. When the model has no
+                file on disk, or the file has another number of `[Initial]` or `[Parameter]` blocks than the
+                model (the counts are all that is compared), all `[Initial]` blocks followed by all
+                `[Parameter]` blocks.
+
+        Examples:
+            - A model built in memory lists the initial blocks, then the parameter blocks:
+                ```python
+                >>> from hydrolib.core.dflowfm.inifield.models import (
+                ...     IniFieldModel, InitialField, ParameterField)
+                >>> model = IniFieldModel(
+                ...     initial=[InitialField(quantity="waterlevel", datafile="a.xyz", datafiletype="sample")],
+                ...     parameter=[ParameterField(quantity="friction", datafile="b.xyz", datafiletype="sample")],
+                ... )
+                >>> [block.quantity for block in model.blocks_in_file_order()]
+                ['waterlevel', 'friction']
+
+                ```
+            - A model read from a file keeps the order of the file:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.core.dflowfm.inifield.models import IniFieldModel
+                >>> text = (
+                ...     "[General]\nfileVersion = 2.00\nfileType = iniField\n\n"
+                ...     "[Parameter]\nquantity = friction\ndataFile = a.xyz\ndataFileType = sample\n\n"
+                ...     "[Initial]\nquantity = waterlevel\ndataFile = b.xyz\ndataFileType = sample\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     path = Path(folder) / "inifield.ini"
+                ...     _ = path.write_text(text)
+                ...     model = IniFieldModel(filepath=path, recurse=False)
+                ...     print([block.quantity for block in model.blocks_in_file_order()])
+                ['friction', 'waterlevel']
+
+                ```
+        """
+        headers = self._block_headers_in_file_order()
+        matches_file = (
+            headers is not None
+            and headers.count("initial") == len(self.initial)
+            and headers.count("parameter") == len(self.parameter)
+        )
+        if matches_file:
+            sources = {"initial": iter(self.initial), "parameter": iter(self.parameter)}
+            blocks = [next(sources[header]) for header in headers]
+        else:
+            blocks = [*self.initial, *self.parameter]
+        return blocks
 
     @classmethod
     def _filename(cls) -> str:

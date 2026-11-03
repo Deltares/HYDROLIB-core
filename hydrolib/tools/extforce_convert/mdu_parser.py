@@ -767,6 +767,54 @@ class MDUParser:
         """
         return self.has_field(INIFIELD_FILE_LINE)
 
+    def has_existing_inifield_file(self) -> bool:
+        r"""Check if the MDU file has an inifield file defined that exists on disk.
+
+        Unlike `has_inifield_file`, an empty `IniFieldFile =` entry or an entry pointing to a missing file
+        gives False, because there is nothing to convert.
+
+        Returns:
+            bool: True if the IniFieldFile entry has a value and the file exists, False otherwise
+
+        Examples:
+            - The entry points to a file that exists:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> mdu_text = (
+                ...     "[geometry]\nIniFieldFile = inifield.ini\n\n[time]\nRefDate = 20200101\n\n"
+                ...     "[physics]\nSalinity = 0\nTemperature = 0\n\n[external forcing]\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     _ = (Path(folder) / "inifield.ini").write_text("")
+                ...     _ = (Path(folder) / "model.mdu").write_text(mdu_text)
+                ...     MDUParser(Path(folder) / "model.mdu").has_existing_inifield_file()
+                True
+
+                ```
+            - The entry points to a file that is missing:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> mdu_text = (
+                ...     "[geometry]\nIniFieldFile = missing.ini\n\n[time]\nRefDate = 20200101\n\n"
+                ...     "[physics]\nSalinity = 0\nTemperature = 0\n\n[external forcing]\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     _ = (Path(folder) / "model.mdu").write_text(mdu_text)
+                ...     MDUParser(Path(folder) / "model.mdu").has_existing_inifield_file()
+                False
+
+                ```
+
+        See Also:
+            has_inifield_file: Only checks that the keyword is in the MDU file.
+        """
+        value = self.get_keyword(INIFIELD_FILE_LINE) if self.has_inifield_file() else None
+        return bool(value) and (self.mdu_path.parent / str(value)).is_file()
+
     def has_structure_file(self) -> bool:
         """Check if the MDU file has an structure file defined.
 
@@ -934,6 +982,53 @@ class MDUParser:
             if it exists but has no value, it is populated with the new value.
         """
         self.update_file_entry(INIFIELD_FILE_LINE, file_name, "geometry")
+
+    def remove_inifield_file(self) -> None:
+        r"""Remove the IniFieldFile entry from the MDU file.
+
+        Notes:
+            - The keyword is deprecated; its blocks are converted to `[Spatial]` blocks of the new external
+              forcings file.
+            - Nothing happens when the MDU file has no IniFieldFile entry.
+
+        Examples:
+            - Remove the entry from the content of the MDU file:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> mdu_text = (
+                ...     "[geometry]\nIniFieldFile = inifield.ini\n\n[time]\nRefDate = 20200101\n\n"
+                ...     "[physics]\nSalinity = 0\nTemperature = 0\n\n[external forcing]\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     _ = (Path(folder) / "model.mdu").write_text(mdu_text)
+                ...     parser = MDUParser(Path(folder) / "model.mdu")
+                ...     parser.remove_inifield_file()
+                ...     parser.has_inifield_file()
+                False
+
+                ```
+            - Removing an entry that is not there changes nothing:
+                ```python
+                >>> import tempfile
+                >>> from pathlib import Path
+                >>> from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
+                >>> mdu_text = (
+                ...     "[time]\nRefDate = 20200101\n\n[physics]\nSalinity = 0\nTemperature = 0\n\n"
+                ...     "[external forcing]\n"
+                ... )
+                >>> with tempfile.TemporaryDirectory() as folder:
+                ...     _ = (Path(folder) / "model.mdu").write_text(mdu_text)
+                ...     parser = MDUParser(Path(folder) / "model.mdu")
+                ...     before = len(parser.content)
+                ...     parser.remove_inifield_file()
+                ...     len(parser.content) == before
+                True
+
+                ```
+        """
+        self.delete_line(keyword=INIFIELD_FILE_LINE)
 
     def update_structure_file(self, file_name: str) -> None:
         """Update the IniFieldFile entry in the MDU file.
