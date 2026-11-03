@@ -24,7 +24,7 @@ class InifieldError(Exception):
     Examples:
         - Read the message of the error:
             ```python
-            >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldError
+            >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldError
             >>> error = InifieldError("The inifield file 'inifield.ini' could not be read")
             >>> str(error)
             "The inifield file 'inifield.ini' could not be read"
@@ -32,7 +32,7 @@ class InifieldError(Exception):
             ```
         - Catch it like any other exception:
             ```python
-            >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldError
+            >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldError
             >>> try:
             ...     raise InifieldError("The inifield file 'a.ini' could not be read")
             ... except InifieldError as error:
@@ -68,7 +68,7 @@ class InifieldToSpatialConverter:
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.core.dflowfm.inifield.models import ParameterField
-            >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldToSpatialConverter
+            >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldToSpatialConverter
             >>> block = ParameterField(
             ...     quantity="frictionCoefficient",
             ...     dataFile="friction.xyz",
@@ -89,7 +89,7 @@ class InifieldToSpatialConverter:
             ```python
             >>> from pathlib import Path
             >>> from hydrolib.core.dflowfm.inifield.models import InitialField
-            >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldToSpatialConverter
+            >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldToSpatialConverter
             >>> block = InitialField(
             ...     quantity="waterlevel",
             ...     dataFile="region.pol",
@@ -387,7 +387,7 @@ class InifieldToSpatialConverter:
                 ```python
                 >>> from pathlib import Path
                 >>> from hydrolib.core.dflowfm.inifield.models import ParameterField
-                >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldToSpatialConverter
+                >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldToSpatialConverter
                 >>> block = ParameterField(
                 ...     quantity="frictionCoefficient",
                 ...     dataFile="a.xyz",
@@ -406,7 +406,7 @@ class InifieldToSpatialConverter:
                 ```python
                 >>> from pathlib import Path
                 >>> from hydrolib.core.dflowfm.inifield.models import InitialField
-                >>> from hydrolib.tools.extforce_convert.converters.initial_field import InifieldToSpatialConverter
+                >>> from hydrolib.tools.extforce_convert.converters.inifield import InifieldToSpatialConverter
                 >>> block = InitialField(quantity="salinity", dataFile="s.xyz", dataFileType="sample")
                 >>> spatial = InifieldToSpatialConverter().convert(block, Path("../sub/s.xyz"))
                 >>> spatial.datafile.filepath.as_posix()

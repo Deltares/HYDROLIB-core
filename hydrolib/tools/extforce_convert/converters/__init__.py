@@ -15,4 +15,4 @@ from hydrolib.tools.extforce_convert.converters.converters import (
     CombinedQuantityConverter,
     CMPToForcingConverter
 )
-from hydrolib.tools.extforce_convert.converters.initial_field import InifieldToSpatialConverter, InifieldError
+from hydrolib.tools.extforce_convert.converters.inifield import InifieldToSpatialConverter, InifieldError
