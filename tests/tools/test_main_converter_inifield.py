@@ -1,4 +1,3 @@
-import warnings
 from functools import partialmethod
 from pathlib import Path
 
@@ -95,16 +94,6 @@ quantity = initialtracerX
 dataFile = a.xyz
 dataFileType = sample
 interpolationMethod = triangulation
-"""
-
-NEW_EXT_BOUNDARY_TRACER = """[General]
-fileVersion = 2.01
-fileType = extForce
-
-[Boundary]
-quantity = tracerbndA
-locationFile = a.pli
-forcingFile = a.bc
 """
 
 
@@ -258,40 +247,6 @@ class TestWithoutInifield:
 
         with pytest.raises(ValueError):
             ExternalForcingConverter.from_mdu(mdu)
-
-
-class TestTracerOrderWarning:
-    """Inifield tracers move behind the `[Boundary]` tracers of the new ext file."""
-
-    def test_warns_when_an_inifield_tracer_meets_a_boundary_tracer(self, tmp_path):
-        mdu = _write_model(
-            tmp_path,
-            inifield_text=INIFIELD_TRACER,
-            new_ext=True,
-            new_ext_text=NEW_EXT_BOUNDARY_TRACER,
-        )
-        converter = ExternalForcingConverter.from_mdu(mdu)
-
-        with pytest.warns(UserWarning, match="initialtracerX.*tracerbndA"):
-            converter.update()
-
-    def test_no_warning_without_a_boundary_tracer(self, tmp_path):
-        mdu = _write_model(tmp_path, inifield_text=INIFIELD_TRACER)
-        converter = ExternalForcingConverter.from_mdu(mdu)
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", UserWarning)
-            converter.update()
-
-    def test_no_warning_without_an_inifield_tracer(self, tmp_path):
-        mdu = _write_model(
-            tmp_path, new_ext=True, new_ext_text=NEW_EXT_BOUNDARY_TRACER
-        )
-        converter = ExternalForcingConverter.from_mdu(mdu)
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("error", UserWarning)
-            converter.update()
 
 
 class TestEmptyOrMissingInifieldEntry:
@@ -560,22 +515,4 @@ class TestInifieldTracerQuantities:
         assert converter._inifield_converter.tracer_quantities() == [
             "initialtracerB",
             "initialtracerA",
-        ]
-
-
-class TestTracerOrderWarningOnce:
-    def test_a_second_update_does_not_repeat_the_warning(self, tmp_path):
-        mdu = _write_model(
-            tmp_path, inifield_text=INIFIELD_TRACER, new_ext=True, new_ext_text=NEW_EXT_BOUNDARY_TRACER
-        )
-        converter = ExternalForcingConverter.from_mdu(mdu)
-        with pytest.warns(UserWarning, match="tracer"):
-            converter.update()
-
-        with warnings.catch_warnings(record=True) as record:
-            warnings.simplefilter("always")
-            converter.update()
-
-        assert not [w for w in record if "tracer" in str(w.message)], [
-            str(w.message) for w in record
         ]

@@ -383,9 +383,6 @@ class ExternalForcingConverter:
                 progress_bar.update(1)
 
         self._update_mdu_file()
-        self._inifield_converter.warn_on_tracer_order(
-            [block.quantity for block in self.ext_model.boundary]
-        )
 
         if self.un_supported_quantities:
             # replace the forcings by the forcings that were not converted (the unsupported quantities)

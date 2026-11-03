@@ -126,10 +126,6 @@ class InifieldToSpatialConverter:
         "tracerdecaytime": "tracerdecaytime",
     }
 
-    # quantity prefixes of the tracers / sediment fractions defined as `[Spatial]` and as `[Boundary]` blocks
-    SPATIAL_TRACER_PREFIXES = ("initialtracer", "initialsedfrac")
-    BOUNDARY_TRACER_PREFIXES = ("tracerbnd", "sedfracbnd")
-
     def __init__(self, mdu_parser: MDUParser | None = None):
         """Initialize the converter.
 
@@ -151,7 +147,6 @@ class InifieldToSpatialConverter:
         self._model: IniFieldModel | None = None
         self._loaded = False
         self._converted = False
-        self._tracer_order_warned = False
         self._blocks: list[Spatial] = []
 
     @property
@@ -192,10 +187,9 @@ class InifieldToSpatialConverter:
     def convert_file(self, ext_path: Path) -> list[Spatial]:
         """Convert all blocks of the inifield file to `[Spatial]` blocks, in the order of the file.
 
-        The caller puts the blocks **in front of** the `[Spatial]` blocks of the new external forcings file,
-        which is the order in which the kernel reads its sources (inifield, new ext, old ext). After the call
-        `legacy_files` holds the inifield file, unless it is outside the MDU directory, a symbolic link, or has
-        a `value` that could not be converted; a warning says so then.
+        The caller puts the blocks **in front of** the `[Spatial]` blocks of the new external forcings file.
+        After the call `legacy_files` holds the inifield file, unless it is outside the MDU directory, a
+        symbolic link, or has a `value` that could not be converted; a warning says so then.
 
         Args:
             ext_path (Path): The new external forcings file the blocks are written to; data file paths are
@@ -241,9 +235,7 @@ class InifieldToSpatialConverter:
         """Convert the inifield file and put its blocks in front of the `[Spatial]` blocks of `ext_model`.
 
         The blocks go **in front of** the `[Spatial]` blocks already in the new external forcings file, which
-        are in front of the blocks converted from the old external forcings file. That is the order in which
-        the kernel reads its sources (inifield, new ext, old ext), so blocks for the same quantity combine as
-        before, and the tracer numbering follows the same precedence.
+        are in front of the blocks converted from the old external forcings file.
 
         Args:
             ext_model (ExtModel): The new external forcings model; its `spatial` list is extended in place.
@@ -261,41 +253,6 @@ class InifieldToSpatialConverter:
         if self._converted and not was_converted:
             ext_model.spatial = blocks + list(ext_model.spatial)
         return [] if was_converted else list(self.legacy_files)
-
-    def warn_on_tracer_order(self, boundary_quantities: list[str]) -> None:
-        """Warn when inifield tracers end up behind the `[Boundary]` tracers of the new external forcings file.
-
-        The kernel numbers the tracers in the order it meets them: inifield first, then the new external
-        forcings file, then the old one. The `[Spatial]` blocks made from the inifield file are written after
-        all `[Boundary]` blocks, so an inifield tracer (`initialtracer*`, `initialsedfrac*`) can come after a
-        `[Boundary]` tracer (`tracerbnd*`, `sedfracbnd*`) and the tracers may then be numbered in another order.
-        The warning is given once.
-
-        Args:
-            boundary_quantities (list[str]): Quantity names of the `[Boundary]` blocks of the new external
-                forcings file.
-        """
-        spatial_tracers = [
-            block.quantity
-            for block in self._blocks
-            if block.quantity.lower().startswith(self.SPATIAL_TRACER_PREFIXES)
-        ]
-        boundary_tracers = [
-            quantity
-            for quantity in boundary_quantities
-            if quantity.lower().startswith(self.BOUNDARY_TRACER_PREFIXES)
-        ]
-        if spatial_tracers and boundary_tracers and not self._tracer_order_warned:
-            self._tracer_order_warned = True
-            warnings.warn(
-                f"The inifield tracer(s) {', '.join(spatial_tracers)} were moved into [Spatial] blocks, which "
-                f"are written after the [Boundary] blocks. The new external forcings file also has the "
-                f"[Boundary] tracer(s) {', '.join(boundary_tracers)}, so D-Flow FM may number the tracers in a "
-                "different order than before (inifield, new ext, old ext). Check the tracer order in the "
-                "diagnostics (.dia) file.",
-                UserWarning,
-                stacklevel=3,
-            )
 
     def _load_model(self) -> IniFieldModel | None:
         """Load the inifield file referenced by the MDU, if it exists on disk."""
