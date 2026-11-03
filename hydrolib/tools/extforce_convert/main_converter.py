@@ -335,7 +335,7 @@ class ExternalForcingConverter:
                 at call site to inspect the updated models.
         """
         self._log_conversion_details()
-        self._convert_inifield_blocks()
+        self.legacy_files = self._inifield_converter.prepend_to(self.ext_model)
         num_quantities = len(self.extold_model.forcing)
 
         type_field_map = self._type_field_map()
@@ -457,36 +457,6 @@ class ExternalForcingConverter:
         """
         return self._pre_existing_new_ext_tracers
 
-    def _inifield_tracer_quantities(self) -> list[str]:
-        """Collect the quantity names of the inifield blocks, for the source/sink conversion.
-
-        The inifield file is read once, whether `update()` or the source/sink conversion asks first.
-
-        Returns:
-            list[str]: Quantity names of the inifield blocks in the order of the file; empty when the MDU
-                references no inifield file.
-        """
-        return self._inifield_converter.tracer_quantities()
-
-    def _convert_inifield_blocks(self) -> None:
-        """Convert the `[Initial]` and `[Parameter]` blocks of the inifield file to `[Spatial]` blocks.
-
-        The blocks are put **in front of** the `[Spatial]` blocks already in the new external forcings file,
-        which are in front of the blocks converted from the old external forcings file. That is the order in
-        which the kernel reads the sources (inifield, new ext, old ext), so blocks for the same quantity
-        combine as before, and the tracer numbering follows the same precedence.
-
-        Notes:
-            - Does nothing when the MDU has no inifield file.
-            - A second call does nothing.
-        """
-        converter = self._inifield_converter
-        if not converter.converted:
-            blocks = converter.convert_file(self.ext_model.filepath)
-            if converter.converted:
-                self.ext_model.spatial = blocks + list(self.ext_model.spatial)
-                self.legacy_files = converter.legacy_files
-
     def _convert_forcing(
         self, forcing
     ) -> Boundary | Lateral | Meteo | SourceSink | MassBalanceArea:
@@ -512,7 +482,7 @@ class ExternalForcingConverter:
                 forcing,
                 self.extold_model.quantities,
                 new_ext_tracer_quantities=self._new_ext_tracer_quantities(),
-                inifield_tracer_quantities=self._inifield_tracer_quantities(),
+                inifield_tracer_quantities=self._inifield_converter.tracer_quantities(),
             )
         elif isinstance(converter_class, BoundaryConditionConverter):
             new_quantity_block = converter_class.convert(forcing)

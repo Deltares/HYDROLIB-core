@@ -1871,7 +1871,7 @@ class TestExternalForcingConverterTracerQuantities:
 
         converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
 
-        assert converter._inifield_tracer_quantities() == [
+        assert converter._inifield_converter.tracer_quantities() == [
             "frictionCoefficient",
             "initialtracerB",
             "initialtracerA",
@@ -1884,7 +1884,7 @@ class TestExternalForcingConverterTracerQuantities:
 
         converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
 
-        assert converter._inifield_tracer_quantities() == []
+        assert converter._inifield_converter.tracer_quantities() == []
 
     def test_inifield_quantities_empty_when_inifield_file_is_missing_on_disk(
         self, tmp_path: Path
@@ -1893,7 +1893,7 @@ class TestExternalForcingConverterTracerQuantities:
 
         converter = ExternalForcingConverter.from_mdu(mdu, debug=True)
 
-        assert converter._inifield_tracer_quantities() == []
+        assert converter._inifield_converter.tracer_quantities() == []
 
     def test_new_ext_quantities_list_boundaries_before_spatial(self, tmp_path: Path):
         """The kernel registers the new ext boundaries first, then the spatial fields, each in file order."""

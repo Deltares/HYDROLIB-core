@@ -557,7 +557,7 @@ class TestInifieldTracerQuantities:
         mdu = _write_model(tmp_path, inifield_text=MIXED_TRACERS)
         converter = ExternalForcingConverter.from_mdu(mdu)
 
-        assert converter._inifield_tracer_quantities() == [
+        assert converter._inifield_converter.tracer_quantities() == [
             "initialtracerB",
             "initialtracerA",
         ]

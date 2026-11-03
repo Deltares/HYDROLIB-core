@@ -3,7 +3,7 @@ import os
 from typing import Any
 from pathlib import Path
 from pydantic import ValidationError
-from hydrolib.core.dflowfm.ext.models import Spatial
+from hydrolib.core.dflowfm.ext.models import ExtModel, Spatial
 from hydrolib.core.dflowfm.inifield.models import AbstractSpatialField, IniFieldModel, DataFileType, InterpolationMethod
 from hydrolib.tools.extforce_convert.mdu_parser import INIFIELD_FILE_LINE
 from hydrolib.tools.extforce_convert.mdu_parser import MDUParser
@@ -236,6 +236,31 @@ class InifieldToSpatialConverter:
             else:
                 self.legacy_files = [Path(model.filepath)]
         return blocks
+
+    def prepend_to(self, ext_model: ExtModel) -> list[Path]:
+        """Convert the inifield file and put its blocks in front of the `[Spatial]` blocks of `ext_model`.
+
+        The blocks go **in front of** the `[Spatial]` blocks already in the new external forcings file, which
+        are in front of the blocks converted from the old external forcings file. That is the order in which
+        the kernel reads its sources (inifield, new ext, old ext), so blocks for the same quantity combine as
+        before, and the tracer numbering follows the same precedence.
+
+        Args:
+            ext_model (ExtModel): The new external forcings model; its `spatial` list is extended in place.
+
+        Returns:
+            list[Path]: The inifield files that may be removed with the legacy files; empty when the MDU has no
+                inifield file, when it cannot be removed, or when it was converted by an earlier call.
+
+        Raises:
+            InifieldError: If the inifield file exists but cannot be read.
+            ValueError: If the converter has no `mdu_parser`.
+        """
+        was_converted = self._converted
+        blocks = self.convert_file(ext_model.filepath)
+        if self._converted and not was_converted:
+            ext_model.spatial = blocks + list(ext_model.spatial)
+        return [] if was_converted else list(self.legacy_files)
 
     def warn_on_tracer_order(self, boundary_quantities: list[str]) -> None:
         """Warn when inifield tracers end up behind the `[Boundary]` tracers of the new external forcings file.
