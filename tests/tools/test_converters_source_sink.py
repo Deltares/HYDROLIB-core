@@ -12,7 +12,7 @@ from hydrolib.core.dflowfm.extold.models import (
     ExtOldModel,
     ExtOldQuantity,
 )
-from hydrolib.tools.extforce_convert import converters as converters_module
+from hydrolib.tools.extforce_convert.converters import converters as converters_module
 from hydrolib.tools.extforce_convert.converters import (
     InifieldError,
     SourceSinkConverter,
