@@ -3,6 +3,35 @@ The external forcing .ext file contains the forcing data for a [D-Flow FM](../..
 This includes open boundaries, lateral discharges, source/sink terms, bubble screens, and meteorological forcings.
 The documentation below only concerns the 'new' format (`ExtForceFileNew` in the MDU file).
 
+## Source/sink quantity normalization
+
+When reading `[SourceSink]` blocks, HYDROLIB-core removes the legacy `Delta`
+suffix from quantity keys, case-insensitively:
+
+| Input key | Normalized key |
+|-----------|----------------|
+| `salinityDelta` | `salinity` |
+| `temperatureDelta` | `temperature` |
+| `tracer<name>Delta` | `tracer<name>` |
+| `sedFrac<name>Delta` | `sedfrac<name>` |
+
+EXT keys are stored in lowercase, so `tracerOXYDelta`, for example, becomes
+`traceroxy`. Normalization happens on read, not only during conversion, and
+applies both when loading an `ExtModel` directly and when loading an `FMModel`
+that references the file through `ExtForceFileNew`. Saving writes the normalized
+keys without the suffix.
+
+With `recurse=True`, referenced `.bc` files are also loaded and their quantity
+names have any trailing `Delta` suffix removed, case-insensitively. A recursive
+save writes these normalized quantities back to the `.bc` files. No
+Delta-suffix warning is issued.
+
+With `recurse=False`, EXT keys are still normalized, but referenced `.bc` files
+are not loaded or rewritten. A `UserWarning` is issued when legacy keys are
+normalized, advising you to remove the suffixes from the `.bc` quantities
+manually or reload with `recurse=True` and save recursively. Reading alone does
+not modify files on disk.
+
 ## Class hierarchy
 
 The `[Meteo]` and `[Spatial]` blocks (this file) and the `[Initial]` / `[Parameter]` blocks
