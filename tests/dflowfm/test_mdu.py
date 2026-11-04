@@ -1,3 +1,4 @@
+import os
 import shutil
 import warnings
 from pathlib import Path
@@ -5,13 +6,15 @@ from typing import Callable
 
 import pytest
 
-from hydrolib.core.base.models import DiskOnlyFileModel
+from hydrolib.core.base.models import DiskOnlyFileModel, ModelSaveSettings
 from hydrolib.core.dflowfm.bc.models import ForcingModel
-from hydrolib.core.dflowfm.ext.models import Boundary
+from hydrolib.core.dflowfm.ext.models import Boundary, ExtModel
 from hydrolib.core.dflowfm.friction.models import FrictGeneral
+from hydrolib.core.dflowfm.ini.serializer import INISerializerConfig
 from hydrolib.core.dflowfm.mba.models import MassBalanceArea, MassBalanceAreaModel
 from hydrolib.core.dflowfm.mdu.models import (
     Calibration,
+    ExternalForcing,
     FMModel,
     Geometry,
     InfiltrationMethod,
@@ -94,6 +97,61 @@ class TestModels:
         importfm.geometry.netfile.network = network
 
         assert importfm.model_dump() == fmmodel.model_dump()
+
+    @pytest.mark.parametrize("recurse", [False, True])
+    @pytest.mark.parametrize("path_style", ["unix", "windows"])
+    @pytest.mark.parametrize(
+        "raw_value, filenames",
+        [
+            ('"new extforce.ext"', ["new extforce.ext"]),
+            ("new.ext other.ext", ["new.ext", "other.ext"]),
+            (
+                '"new extforce.ext" other.ext "third,forcing.ext"',
+                ["new extforce.ext", "other.ext", "third,forcing.ext"],
+            ),
+            (
+                "\"forcing files/new's forcing.ext\"",
+                ["forcing files/new's forcing.ext"],
+            ),
+            ("'new \"extforce\".ext'", ['new "extforce".ext']),
+        ],
+    )
+    def test_extforcefilenew_save_reload(
+        self, tmp_path, recurse, path_style, raw_value, filenames
+    ):
+        if recurse:
+            if os.name == "nt" and any('"' in filename for filename in filenames):
+                pytest.skip("Double quotes are not valid in Windows filenames.")
+            for filename in filenames:
+                ExtModel().save(tmp_path / filename)
+
+        input_mdu = tmp_path / "input.mdu"
+        input_mdu.write_text(
+            f"[External Forcing]\nextForceFileNew = {raw_value}\n",
+            encoding="utf-8",
+        )
+
+        model = FMModel(input_mdu, recurse=recurse, path_style="unix")
+        expected_paths = [Path(filename) for filename in filenames]
+        assert [
+            entry.filepath for entry in model.external_forcing.extforcefilenew
+        ] == expected_paths
+
+        output_mdu = tmp_path / "output.mdu"
+        model.save(output_mdu, recurse=recurse, path_style=path_style)
+
+        reloaded = FMModel(output_mdu, recurse=recurse, path_style=path_style)
+        assert [
+            entry.filepath for entry in reloaded.external_forcing.extforcefilenew
+        ] == expected_paths
+
+    def test_extforcefilenew_rejects_unrepresentable_quoted_filename(self):
+        forcing = ExternalForcing(
+            extforcefilenew=[DiskOnlyFileModel(filepath=Path('new "forcing\'s".ext'))]
+        )
+
+        with pytest.raises(ValueError, match="both single and double quotes"):
+            forcing._to_section(INISerializerConfig(), ModelSaveSettings())
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (

@@ -17,6 +17,7 @@ from hydrolib.core.base.file_manager import ResolveRelativeMode
 from hydrolib.core.base.models import (
     DiskOnlyFileModel,
     FileModel,
+    ModelSaveSettings,
     set_default_disk_only_file_model,
 )
 from hydrolib.core.base.utils import PathToDictionaryConverter, parse_files_names
@@ -1023,7 +1024,12 @@ class ExternalForcing(INIBasedModel):
         None, alias="extForceFile"
     )
     extforcefilenew: Optional[List[Union[ExtModel, DiskOnlyFileModel]]] = Field(
-        None, alias="extForceFileNew"
+        None,
+        alias="extForceFileNew",
+        description=(
+            "New-format external forcing files; filenames with spaces or commas "
+            "are quoted when saved."
+        ),
     )
     rainfall: Optional[bool] = Field(None, alias="rainfall")
     qext: Optional[bool] = Field(None, alias="qExt")
@@ -1045,6 +1051,32 @@ class ExternalForcing(INIBasedModel):
         if isinstance(v, str):
             v = parse_files_names(v)
         return v
+
+    def _convert_value(
+        self,
+        key: str,
+        v: Any,
+        config: INISerializerConfig,
+        save_settings: ModelSaveSettings,
+    ) -> str:
+        value = super()._convert_value(key, v, config, save_settings)
+        if (
+            key == "extforcefilenew"
+            and isinstance(v, FileModel)
+            and v.filepath is not None
+        ):
+            if any(char.isspace() or char == "," for char in value) or value.startswith(
+                ('"', "'")
+            ):
+                for quote in ('"', "'"):
+                    if quote not in value:
+                        return f"{quote}{value}{quote}"
+                raise ValueError(
+                    f"Cannot serialize extForceFileNew filename {value!r}: "
+                    "a quoted filename cannot contain both single and double quotes."
+                )
+        return value
+
 
 class Hydrology(INIBasedModel):
     """
