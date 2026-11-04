@@ -186,7 +186,7 @@ class TestFileModel:
         geometry.frictfile[1].filepath = roughness_main  # type: ignore[arg-type]
         geometry.frictfile[2].filepath = roughness_sewer  # type: ignore[arg-type]
 
-        extforce = reference_model.external_forcing.extforcefilenew
+        extforce = reference_model.external_forcing.extforcefilenew[0]
 
         extforce.filepath = extforcefile  # type: ignore[arg-type]
         extforce.boundary[0].forcingfile.filepath = forcingfile  # type: ignore[arg-type]
@@ -206,7 +206,7 @@ class TestFileModel:
         assert read_geometry.frictfile[1].filepath == roughness_main  # type: ignore[arg-type]
         assert read_geometry.frictfile[2].filepath == roughness_sewer  # type: ignore[arg-type]
 
-        read_extforce = read_model.external_forcing.extforcefilenew
+        read_extforce = read_model.external_forcing.extforcefilenew[0]
 
         assert read_extforce.filepath == extforcefile  # type: ignore[arg-type]
         assert Path(read_extforce.boundary[0].forcingfile.filepath) == forcingfile  # type: ignore[arg-type]
@@ -305,7 +305,7 @@ class TestFileModel:
         assert roughness_sewer.save_location == self._resolve(roughness_sewer.filepath, other_dir)  # type: ignore
         assert not roughness_sewer.save_location.is_file()  # type: ignore
 
-        extforcefile = model.external_forcing.extforcefilenew
+        extforcefile = model.external_forcing.extforcefilenew[0]
         assert extforcefile.save_location == self._resolve(extforcefile.filepath, other_dir)  # type: ignore
         assert not extforcefile.save_location.is_file()  # type: ignore
 
