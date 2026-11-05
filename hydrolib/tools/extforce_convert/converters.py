@@ -1738,10 +1738,12 @@ class LateralConverter(BaseConverter):
         location_data = self._get_location_data(forcing)
 
         time_unit = self._require_reference_date("Lateral conversion")
-
+        # id should match bc.forcing.name, maybe we want to use `location_data["id"]`
+        # instead ("L1"), but then bc.forcing.name should also be updated
+        id = location_data["locationfile"].stem
         data = {
             **location_data,
-            "name": forcing.quantity,
+            "id": id, # this is currently overwriting location_data["id"]
             "locationtype": location_type,
             "discharge": self._get_discharge(forcing, time_unit),
         }
@@ -1786,7 +1788,7 @@ class LateralConverter(BaseConverter):
         if tim_files:
             tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
             n_columns = len(tim_model.get_units())
-            tim_model.quantities_names = ["discharge"] * n_columns
+            tim_model.quantities_names = ["lateral_discharge"] * n_columns
             self.legacy_files = tim_files
             result = tim_model
         else:

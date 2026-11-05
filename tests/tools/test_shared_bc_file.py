@@ -319,7 +319,7 @@ class TestBlocksSharingBcFile:
 
         model_dir = _convert(tmp_path / "m", old_ext, files)
 
-        assert _bc_quantities(model_dir / "afstroming.bc") == ["discharge"]
+        assert _bc_quantities(model_dir / "afstroming.bc") == ["lateral_discharge"]
 
     def test_identical_entries_are_written_once(self, tmp_path: Path):
         """Guard: an entry listed twice must not be written twice.

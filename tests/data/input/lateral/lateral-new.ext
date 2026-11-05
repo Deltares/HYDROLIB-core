@@ -5,15 +5,13 @@ fileVersion = 3.00
 fileType    = extForce
 
 [Lateral]
-id           = L1
-name         = lateraldischarge1d
+id           = afstroming
 locationType = 1d
 locationFile = afstroming.pol
 discharge    = afstroming.bc
 
 [Lateral]
-id           = L2
-name         = lateraldischarge2d
+id           = rainfall_minus_evaporation
 locationType = 2d
 locationFile = rainfall_minus_evaporation.pol
 discharge    = rainfall_minus_evaporation.bc
