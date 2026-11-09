@@ -1738,8 +1738,7 @@ class LateralConverter(BaseConverter):
         location_data = self._get_location_data(forcing)
 
         time_unit = self._require_reference_date("Lateral conversion")
-        # id should match bc.forcing.name, maybe we want to use `location_data["id"]`
-        # instead ("L1"), but then bc.forcing.name should also be updated
+        # id should match bc.forcing.name
         id = location_data["locationfile"].stem
         data = {
             **location_data,
