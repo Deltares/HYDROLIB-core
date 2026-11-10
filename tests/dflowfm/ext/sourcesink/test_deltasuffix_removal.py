@@ -140,14 +140,14 @@ class TestRecurseTrue(TestRecurseBase):
     def test_fmm_model_delta_suffix_removed_on_save_and_reload(self, tmp_path: Path, quantity):
         _, ext_file, bc_file, mdu_file = self._create_model(tmp_path / "model", quantity)
         model = FMModel(mdu_file, recurse=True)
-        sourcesink = model.external_forcing.extforcefilenew.sourcesink[0]
+        sourcesink = model.external_forcing.extforcefilenew[0].sourcesink[0]
         model.save(recurse=True)
 
         for path in (ext_file, bc_file, ext_file.with_name("pt_discharge.bc")):
             assert "delta" not in path.read_text().lower()
 
         reloaded = FMModel(mdu_file, recurse=True)
-        reloaded_ext = reloaded.external_forcing.extforcefilenew
+        reloaded_ext = reloaded.external_forcing.extforcefilenew[0]
 
         assert isinstance(reloaded_ext, ExtModel)
         assert len(reloaded_ext.sourcesink) == 1
@@ -184,14 +184,14 @@ class TestRecurseFalse(TestRecurseBase):
                 "error", message=".*suffix `delta`", category=UserWarning
             )
             model = FMModel(mdu_file, recurse=False)
-            ext_reference = model.external_forcing.extforcefilenew
+            ext_reference = model.external_forcing.extforcefilenew[0]
             assert isinstance(ext_reference, DiskOnlyFileModel)
             assert ext_reference.filepath == Path(ext_file.name)
 
             model.save(recurse=False)
             reloaded = FMModel(mdu_file, recurse=False)
 
-        reloaded_reference = reloaded.external_forcing.extforcefilenew
+        reloaded_reference = reloaded.external_forcing.extforcefilenew[0]
         assert isinstance(reloaded_reference, DiskOnlyFileModel)
         assert reloaded_reference.filepath == ext_reference.filepath
         for path, content in original_contents.items():
