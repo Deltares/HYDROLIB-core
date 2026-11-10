@@ -1738,11 +1738,8 @@ class LateralConverter(BaseConverter):
         location_data = self._get_location_data(forcing)
 
         time_unit = self._require_reference_date("Lateral conversion")
-        # id should match bc.forcing.name
-        id = location_data["locationfile"].stem
         data = {
             **location_data,
-            "id": id, # this is currently overwriting location_data["id"]
             "locationtype": location_type,
             "discharge": self._get_discharge(forcing, time_unit),
         }
@@ -1878,7 +1875,8 @@ class LateralConverter(BaseConverter):
             raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
 
         return {
-            "id": forcing.filename.get_id(),
+            # id should match bc.forcing.name
+            "id": forcing.filename.filepath.stem,
             "locationfile": forcing.filename.filepath,
         }
 
