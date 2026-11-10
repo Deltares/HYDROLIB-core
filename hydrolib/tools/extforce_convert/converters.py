@@ -1875,7 +1875,7 @@ class LateralConverter(BaseConverter):
             raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
 
         return {
-            # id should match bc.forcing.name
+            # ext.lateral.id should match bc.forcing.name for the forcing to be found
             "id": forcing.filename.filepath.stem,
             "locationfile": forcing.filename.filepath,
         }
