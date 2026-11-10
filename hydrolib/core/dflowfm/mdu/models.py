@@ -1064,17 +1064,18 @@ class ExternalForcing(INIBasedModel):
             key == "extforcefilenew"
             and isinstance(v, FileModel)
             and v.filepath is not None
+            and (
+                any(char.isspace() or char == "," for char in value)
+                or value.startswith(('"', "'"))
+            )
         ):
-            if any(char.isspace() or char == "," for char in value) or value.startswith(
-                ('"', "'")
-            ):
-                for quote in ('"', "'"):
-                    if quote not in value:
-                        return f"{quote}{value}{quote}"
-                raise ValueError(
-                    f"Cannot serialize extForceFileNew filename {value!r}: "
-                    "a quoted filename cannot contain both single and double quotes."
-                )
+            for quote in ('"', "'"):
+                if quote not in value:
+                    return f"{quote}{value}{quote}"
+            raise ValueError(
+                f"Cannot serialize extForceFileNew filename {value!r}: "
+                "a quoted filename cannot contain both single and double quotes."
+            )
         return value
 
 
