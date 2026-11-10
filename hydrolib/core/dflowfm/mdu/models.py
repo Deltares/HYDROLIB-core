@@ -1024,7 +1024,7 @@ class ExternalForcing(INIBasedModel):
         None, alias="extForceFile"
     )
     extforcefilenew: Optional[List[Union[ExtModel, DiskOnlyFileModel]]] = Field(
-        None,
+        default_factory=list,
         alias="extForceFileNew",
         description=(
             "New-format external forcing files; filenames with spaces or commas "
