@@ -5575,7 +5575,7 @@ It is represented by the classes below.</p>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"extForceFile"</span>
     <span class="p">)</span>
     <span class="n">extforcefilenew</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ExtModel</span><span class="p">,</span> <span class="n">DiskOnlyFileModel</span><span class="p">]]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
         <span class="n">alias</span><span class="o">=</span><span class="s2">"extForceFileNew"</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">"New-format external forcing files; filenames with spaces or commas "</span>
