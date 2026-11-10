@@ -995,24 +995,24 @@ class ExternalForcing(INIBasedModel):
     class Comments(INIBasedModel.Comments):
         """Comments for the ExternalForcing section fields."""
 
-        extforcefile: str | None = Field(
+        extforcefile: Optional[str] = Field(
             "Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification.",
             alias="extForceFile",
         )
-        extforcefilenew: str | None = Field(
+        extforcefilenew: Optional[str] = Field(
             "New format for external forcings file *.ext, link with bcformat boundary conditions specification.",
             alias="extForceFileNew",
         )
-        rainfall: str | None = Field(
+        rainfall: Optional[str] = Field(
             "Include rainfall, (0=no, 1=yes).", alias="rainfall"
         )
-        qext: str | None = Field(
+        qext: Optional[str] = Field(
             "Include user Qin/out, externally provided, (0=no, 1=yes).", alias="qExt"
         )
-        evaporation: str | None = Field(
+        evaporation: Optional[str] = Field(
             "Include evaporation in water balance, (0=no, 1=yes).", alias="evaporation"
         )
-        windext: str | None = Field(
+        windext: Optional[str] = Field(
             "Include wind, externally provided, (0=no, 1=reserved for EC, 2=yes).",
             alias="windExt",
         )
@@ -1020,10 +1020,10 @@ class ExternalForcing(INIBasedModel):
     comments: Comments = Comments()
 
     _header: Literal["External Forcing"] = "External Forcing"
-    extforcefile: ExtOldModel | DiskOnlyFileModel | None = Field(
+    extforcefile: Optional[Union[ExtOldModel, DiskOnlyFileModel]] = Field(
         None, alias="extForceFile"
     )
-    extforcefilenew: list[ExtModel | DiskOnlyFileModel] | None = Field(
+    extforcefilenew: Optional[List[Union[ExtModel, DiskOnlyFileModel]]] = Field(
         None,
         alias="extForceFileNew",
         description=(
@@ -1031,10 +1031,10 @@ class ExternalForcing(INIBasedModel):
             "are quoted when saved."
         ),
     )
-    rainfall: bool | None = Field(None, alias="rainfall")
-    qext: bool | None = Field(None, alias="qExt")
-    evaporation: bool | None = Field(None, alias="evaporation")
-    windext: int | None = Field(None, alias="windExt")
+    rainfall: Optional[bool] = Field(None, alias="rainfall")
+    qext: Optional[bool] = Field(None, alias="qExt")
+    evaporation: Optional[bool] = Field(None, alias="evaporation")
+    windext: Optional[int] = Field(None, alias="windExt")
 
     def is_intermediate_link(self) -> bool:
         return True

@@ -149,9 +149,11 @@ class TestModels:
         forcing = ExternalForcing(
             extforcefilenew=[DiskOnlyFileModel(filepath=Path('new "forcing\'s".ext'))]
         )
+        serializer_config = INISerializerConfig()
+        save_settings = ModelSaveSettings()
 
         with pytest.raises(ValueError, match="both single and double quotes"):
-            forcing._to_section(INISerializerConfig(), ModelSaveSettings())
+            forcing._to_section(serializer_config, save_settings)
 
     def test_mdu_file_with_network_is_read_correctly(self):
         input_mdu = (
@@ -791,12 +793,12 @@ class TestOutput:
         tmp_mdu_path.write_text(tmp_mdu)
 
         with pytest.raises(ValueError) as exc_err:
-            model = FMModel(filepath=tmp_mdu_path)
+            FMModel(filepath=tmp_mdu_path)
 
-            excluded_fields = model._exclude_fields()
-            assert len(excluded_fields) > 0
-            for excluded_field in excluded_fields:
-                assert excluded_field not in str(exc_err.value)
+        excluded_fields = FMModel._exclude_fields()
+        assert len(excluded_fields) > 0
+        for excluded_field in excluded_fields:
+            assert excluded_field not in str(exc_err.value)
 
 
 class TestOutputDir:
