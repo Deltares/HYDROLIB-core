@@ -156,8 +156,8 @@ class TestLateralConverter:
 		result = converter.convert(forcing)
 
 		assert isinstance(result, Lateral)
-		assert result.name == quantity
-		assert result.id == "lat_node"
+		# assert result.name == quantity
+		assert result.id == lateral_poly_file.stem # "lat_node"
 		assert result.locationtype == expected_location_type
 		assert result.locationfile.filepath == lateral_poly_file
 		assert result.discharge == pytest.approx(1.23)

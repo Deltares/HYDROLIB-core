@@ -1738,10 +1738,8 @@ class LateralConverter(BaseConverter):
         location_data = self._get_location_data(forcing)
 
         time_unit = self._require_reference_date("Lateral conversion")
-
         data = {
             **location_data,
-            "name": forcing.quantity,
             "locationtype": location_type,
             "discharge": self._get_discharge(forcing, time_unit),
         }
@@ -1786,7 +1784,7 @@ class LateralConverter(BaseConverter):
         if tim_files:
             tim_model = BoundaryConditionConverter.merge_tim_files(tim_files, quantity)
             n_columns = len(tim_model.get_units())
-            tim_model.quantities_names = ["discharge"] * n_columns
+            tim_model.quantities_names = ["lateral_discharge"] * n_columns
             self.legacy_files = tim_files
             result = tim_model
         else:
@@ -1877,7 +1875,8 @@ class LateralConverter(BaseConverter):
             raise ValueError("Lateral conversion expects FILENAME to be a PolyFile.")
 
         return {
-            "id": forcing.filename.get_id(),
+            # ext.lateral.id should match bc.forcing.name for the forcing to be found
+            "id": forcing.filename.filepath.stem,
             "locationfile": forcing.filename.filepath,
         }
 
