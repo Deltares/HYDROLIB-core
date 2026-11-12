@@ -3,7 +3,7 @@
 import warnings
 from enum import IntEnum
 from pathlib import Path
-from typing import Callable, Dict, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Iterator
 
 from pydantic import Field
 
@@ -269,16 +269,16 @@ class Parser:
     """
 
     def __init__(
-        self, file_path: Path, has_z_value: bool = False, verbose: bool = False
+        self, file_path: Path, has_z_value: Optional[bool] = None, verbose: bool = False
     ) -> None:
         """Create a new Parser.
 
         Args:
             file_path (Path):
                 Name of the file being parsed, only used for providing proper warnings.
-            has_z_value (bool, optional):
-                Whether to interpret the third column as z-coordinates.
-                Defaults to False.
+            has_z_value (Optional[bool], optional):
+                Whether to interpret the third column as z-coordinates. If omitted,
+                infer this from each block's column count.
             verbose (bool, optional):
                 Whether to show warnings when parsing the file. Defaults to False.
         """
@@ -408,8 +408,16 @@ class Parser:
             self._handle_new_error("Expected valid dimensions")
 
     def _parse_next_point(self, line: str) -> None:
+        dimensions = self._current_block.dimensions
+        if dimensions is None:
+            raise RuntimeError("Cannot parse a point before block dimensions are set.")
+        has_z_value = (
+            self._has_z_value
+            if self._has_z_value is not None
+            else _determine_has_z_value(dimensions[1])
+        )
         point = Parser._convert_to_point(
-            line, self._current_block.dimensions[1], self._has_z_value  # type: ignore
+            line, dimensions[1], has_z_value
         )
 
         if point is not None:
@@ -567,10 +575,9 @@ def read_polyfile(
 
     Note that the points can be arbitrarily indented, and the comments are optional.
 
-    if no has_z_value has been defined, it will be based on the file path
-    extensions of the filepath:
-    - .pliz will default to True
-    - .pli and .pol will default to False
+    If ``has_z_values`` is not specified, blocks with three or more columns
+    interpret the third column as z and any remaining columns as data. Blocks
+    with two columns contain only x and y. The file suffix does not affect parsing.
 
     Empty lines and unexpected whitespace will be flagged as warnings, and ignored.
 
@@ -585,7 +592,8 @@ def read_polyfile(
         filepath:
             Path to the pli(z)/pol convention structured file.
         has_z_values:
-            Whether to create points containing a z-value. Defaults to None.
+            Whether to interpret the third column as z for all blocks. When omitted,
+            infer this separately for each block from its column count.
         verbose:
             Whether to show warnings when parsing the file. Defaults to False.
 
@@ -595,9 +603,6 @@ def read_polyfile(
     Returns:
         Dict: The dictionary describing the data of a PolyObject.
     """
-    if has_z_values is None:
-        has_z_values = _determine_has_z_value(filepath)
-
     parser = Parser(filepath, has_z_value=has_z_values, verbose=verbose)
 
     content = open_file_with_fallback_encoding(filepath)
@@ -605,5 +610,8 @@ def read_polyfile(
         parser.feed_line(line)
 
     objs = parser.finalize()
+
+    if has_z_values is None:
+        has_z_values = any(obj.metadata.n_columns >= 3 for obj in objs)
 
     return {"has_z_values": has_z_values, "objects": objs}
