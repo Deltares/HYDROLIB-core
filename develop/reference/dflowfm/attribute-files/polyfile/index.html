@@ -5866,18 +5866,18 @@ start with a '*'.</p>
 <details class="notes" open>
   <summary>Notes</summary>
   <ul>
-<li>Blocks with at least three columns are interpreted as containing z-values in
-  the third column, regardless of the file extension. Any remaining columns
-  are stored as data.</li>
-<li>Blocks with two columns contain only x and y coordinates.</li>
+<li>The <code>has_z_values</code> attribute is used to determine if the PolyFile contains z-values.</li>
+<li>The <code>has_z_values</code> is false by default and should be set to true if the PolyFile path ends with <code>.pliz</code>.</li>
+<li>The <code>***.pliz</code> file should have a 2*3 structure, where the third column contains the z-values, otherwise
+(the parser will give an error).</li>
 <li>If there is a label in the file, the parser will ignore the label and read the file as a normal polyline file.
 <div class="highlight"><pre><span></span><code>tfl_01
     2 2
     0.00 1.00 #zee
     0.00 2.00 #zee
 </code></pre></div></li>
-<li>If the dimensions are 2*5, the first three columns will be considered as x, y, z values
-  and the last two columns will be considered as data values.
+<li>if the file is .pliz, and the dimensions are 2*5 the first three columns will be considered as x, y, z values
+and the last two columns will be considered as data values.
 <div class="highlight"><pre><span></span><code>L1
     2 5
     63.35 12.95 -4.20 -5.35 0
@@ -6029,10 +6029,10 @@ start with a '*'.</p>
 <span class="sd">    Poly-file (.pol/.pli/.pliz) representation.</span>
 
 <span class="sd">    Notes:</span>
-<span class="sd">        - Blocks with at least three columns are interpreted as containing z-values in</span>
-<span class="sd">          the third column, regardless of the file extension. Any remaining columns</span>
-<span class="sd">          are stored as data.</span>
-<span class="sd">        - Blocks with two columns contain only x and y coordinates.</span>
+<span class="sd">        - The `has_z_values` attribute is used to determine if the PolyFile contains z-values.</span>
+<span class="sd">        - The `has_z_values` is false by default and should be set to true if the PolyFile path ends with `.pliz`.</span>
+<span class="sd">        - The `***.pliz` file should have a 2*3 structure, where the third column contains the z-values, otherwise</span>
+<span class="sd">        (the parser will give an error).</span>
 <span class="sd">        - If there is a label in the file, the parser will ignore the label and read the file as a normal polyline file.</span>
 <span class="sd">        ```</span>
 <span class="sd">        tfl_01</span>
@@ -6040,8 +6040,8 @@ start with a '*'.</p>
 <span class="sd">            0.00 1.00 #zee</span>
 <span class="sd">            0.00 2.00 #zee</span>
 <span class="sd">        ```</span>
-<span class="sd">        - If the dimensions are 2*5, the first three columns will be considered as x, y, z values</span>
-<span class="sd">          and the last two columns will be considered as data values.</span>
+<span class="sd">        - if the file is .pliz, and the dimensions are 2*5 the first three columns will be considered as x, y, z values</span>
+<span class="sd">        and the last two columns will be considered as data values.</span>
 <span class="sd">        ```</span>
 <span class="sd">        L1</span>
 <span class="sd">            2 5</span>
@@ -8356,15 +8356,7 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
 <span class="normal">528</span>
 <span class="normal">529</span>
 <span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span>
-<span class="normal">533</span>
-<span class="normal">534</span>
-<span class="normal">535</span>
-<span class="normal">536</span>
-<span class="normal">537</span>
-<span class="normal">538</span>
-<span class="normal">539</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parser</span><span class="p">:</span>
+<span class="normal">531</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Parser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Parser provides the functionality to parse a polyfile line by line.</span>
 
 <span class="sd">    The Parser parses blocks describing PolyObject instances by relying on</span>
@@ -8389,16 +8381,16 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a new Parser.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_path (Path):</span>
 <span class="sd">                Name of the file being parsed, only used for providing proper warnings.</span>
-<span class="sd">            has_z_value (Optional[bool], optional):</span>
-<span class="sd">                Whether to interpret the third column as z-coordinates. If omitted,</span>
-<span class="sd">                infer this from each block's column count.</span>
+<span class="sd">            has_z_value (bool, optional):</span>
+<span class="sd">                Whether to interpret the third column as z-coordinates.</span>
+<span class="sd">                Defaults to False.</span>
 <span class="sd">            verbose (bool, optional):</span>
 <span class="sd">                Whether to show warnings when parsing the file. Defaults to False.</span>
 <span class="sd">        """</span>
@@ -8528,16 +8520,8 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_new_error</span><span class="p">(</span><span class="s2">"Expected valid dimensions"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_next_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dimensions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_block</span><span class="o">.</span><span class="n">dimensions</span>
-        <span class="k">if</span> <span class="n">dimensions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Cannot parse a point before block dimensions are set."</span><span class="p">)</span>
-        <span class="n">has_z_value</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_has_z_value</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_z_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">_determine_has_z_value</span><span class="p">(</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="p">)</span>
         <span class="n">point</span> <span class="o">=</span> <span class="n">Parser</span><span class="o">.</span><span class="n">_convert_to_point</span><span class="p">(</span>
-            <span class="n">line</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">has_z_value</span>
+            <span class="n">line</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_block</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_z_value</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">point</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -8677,7 +8661,7 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
 
 
 <h3 id="hydrolib.core.dflowfm.polyfile.parser.Parser.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 <a href="#hydrolib.core.dflowfm.polyfile.parser.Parser.__init__" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -8719,16 +8703,16 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
                 <code>has_z_value</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bool">bool</span>]</code>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to interpret the third column as z-coordinates. If omitted,
-infer this from each block's column count.</p>
+                <p>Whether to interpret the third column as z-coordinates.
+Defaults to False.</p>
               </div>
             </td>
             <td>
-                  <code>None</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -8795,16 +8779,16 @@ infer this from each block's column count.</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create a new Parser.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path):</span>
 <span class="sd">            Name of the file being parsed, only used for providing proper warnings.</span>
-<span class="sd">        has_z_value (Optional[bool], optional):</span>
-<span class="sd">            Whether to interpret the third column as z-coordinates. If omitted,</span>
-<span class="sd">            infer this from each block's column count.</span>
+<span class="sd">        has_z_value (bool, optional):</span>
+<span class="sd">            Whether to interpret the third column as z-coordinates.</span>
+<span class="sd">            Defaults to False.</span>
 <span class="sd">        verbose (bool, optional):</span>
 <span class="sd">            Whether to show warnings when parsing the file. Defaults to False.</span>
 <span class="sd">    """</span>
@@ -9133,9 +9117,10 @@ L008
 ...
 </code></pre></div></p>
 <p>Note that the points can be arbitrarily indented, and the comments are optional.</p>
-<p>If <code>has_z_values</code> is not specified, blocks with three or more columns
-interpret the third column as z and any remaining columns as data. Blocks
-with two columns contain only x and y. The file suffix does not affect parsing.</p>
+<p>if no has_z_value has been defined, it will be based on the file path
+extensions of the filepath:
+- .pliz will default to True
+- .pli and .pol will default to False</p>
 <p>Empty lines and unexpected whitespace will be flagged as warnings, and ignored.</p>
 <p>If invalid syntax is detected within a block, an error will be created. This block
 will be ignored for the purpose of creating PolyObject instances.
@@ -9181,8 +9166,7 @@ be reported as warnings.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to interpret the third column as z for all blocks. When omitted,
-infer this separately for each block from its column count.</p>
+                <p>Whether to create points containing a z-value. Defaults to None.</p>
               </div>
             </td>
             <td>
@@ -9257,7 +9241,15 @@ infer this separately for each block from its column count.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>hydrolib/core/dflowfm/polyfile/parser.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">546</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
+<span class="normal">541</span>
+<span class="normal">542</span>
+<span class="normal">543</span>
+<span class="normal">544</span>
+<span class="normal">545</span>
+<span class="normal">546</span>
 <span class="normal">547</span>
 <span class="normal">548</span>
 <span class="normal">549</span>
@@ -9320,15 +9312,7 @@ infer this separately for each block from its column count.</p>
 <span class="normal">606</span>
 <span class="normal">607</span>
 <span class="normal">608</span>
-<span class="normal">609</span>
-<span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span>
-<span class="normal">616</span>
-<span class="normal">617</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_polyfile</span><span class="p">(</span>
+<span class="normal">609</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_polyfile</span><span class="p">(</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_values</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Read the specified file and return the corresponding data.</span>
@@ -9360,9 +9344,10 @@ infer this separately for each block from its column count.</p>
 
 <span class="sd">    Note that the points can be arbitrarily indented, and the comments are optional.</span>
 
-<span class="sd">    If ``has_z_values`` is not specified, blocks with three or more columns</span>
-<span class="sd">    interpret the third column as z and any remaining columns as data. Blocks</span>
-<span class="sd">    with two columns contain only x and y. The file suffix does not affect parsing.</span>
+<span class="sd">    if no has_z_value has been defined, it will be based on the file path</span>
+<span class="sd">    extensions of the filepath:</span>
+<span class="sd">    - .pliz will default to True</span>
+<span class="sd">    - .pli and .pol will default to False</span>
 
 <span class="sd">    Empty lines and unexpected whitespace will be flagged as warnings, and ignored.</span>
 
@@ -9377,8 +9362,7 @@ infer this separately for each block from its column count.</p>
 <span class="sd">        filepath:</span>
 <span class="sd">            Path to the pli(z)/pol convention structured file.</span>
 <span class="sd">        has_z_values:</span>
-<span class="sd">            Whether to interpret the third column as z for all blocks. When omitted,</span>
-<span class="sd">            infer this separately for each block from its column count.</span>
+<span class="sd">            Whether to create points containing a z-value. Defaults to None.</span>
 <span class="sd">        verbose:</span>
 <span class="sd">            Whether to show warnings when parsing the file. Defaults to False.</span>
 
@@ -9388,6 +9372,9 @@ infer this separately for each block from its column count.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        Dict: The dictionary describing the data of a PolyObject.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">has_z_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">has_z_values</span> <span class="o">=</span> <span class="n">_determine_has_z_value</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
     <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">has_z_value</span><span class="o">=</span><span class="n">has_z_values</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="n">content</span> <span class="o">=</span> <span class="n">open_file_with_fallback_encoding</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
@@ -9395,9 +9382,6 @@ infer this separately for each block from its column count.</p>
         <span class="n">parser</span><span class="o">.</span><span class="n">feed_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
     <span class="n">objs</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">has_z_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">has_z_values</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">n_columns</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s2">"has_z_values"</span><span class="p">:</span> <span class="n">has_z_values</span><span class="p">,</span> <span class="s2">"objects"</span><span class="p">:</span> <span class="n">objs</span><span class="p">}</span>
 </code></pre></div></td></tr></table></div>
