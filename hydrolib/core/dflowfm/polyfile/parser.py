@@ -539,8 +539,11 @@ class Parser:
             return None
 
 
-def _determine_has_z_value(input_val: Union[Path, Iterator[str]]) -> bool:
-    return isinstance(input_val, Path) and input_val.suffix == ".pliz"
+def _determine_has_z_value(nr_columns: int) -> bool:
+    has_z = False
+    if nr_columns >= 3:
+        has_z = True
+    return has_z
 
 
 def read_polyfile(

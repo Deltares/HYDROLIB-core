@@ -549,9 +549,13 @@ def test_polyfile_can_be_saved_without_errors_and_is_same_as_input():
 @pytest.mark.parametrize(
     "suffix, dimensions, points, has_z, expected_z, expected_data",
     [
+        (".pli", "2 2", ["1 2", "4 5"], False, None, []),
         (".pli", "2 3", ["1 2 -3", "4 5 -6"], True, -3, []),
         (".pli", "2 4", ["1 2 -3 8", "4 5 -6 9"], True, -3, [8]),
         (".pliz", "2 2", ["1 2", "4 5"], False, None, []),
+        (".pliz", "2 3", ["1 2 -3", "4 5 -6"], True, -3, []),
+        (".pliz", "2 4", ["1 2 -3 8", "4 5 -6 9"], True, -3, [8]),
+
     ],
 )
 def test_read_polyfile_infers_z_from_columns_not_suffix(
