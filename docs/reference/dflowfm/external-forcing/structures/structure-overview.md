@@ -541,7 +541,7 @@ class GeneralStructure(Structure):
     extraresistance: float | None = Field(0.0, alias="extraResistance")
     dynstructext: float | None = Field(None, alias="dynstructext")
     gateheightintervalcntrl: float | None = Field(None, alias="gateheightintervalcntrl")
-    gateheight: float | None = Field(1e10, alias="gateHeight")
+    gateheight: ForcingData = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
         Field(GateOpeningHorizontalDirection.symmetric.value,

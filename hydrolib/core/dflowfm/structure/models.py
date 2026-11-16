@@ -23,7 +23,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel, ModelSaveSettings
 from hydrolib.core.base.utils import str_is_empty_or_none
-from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, RealTime
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -82,7 +82,7 @@ def load_model(value):
 
 
 ForcingDataUnion = Annotated[
-    Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
+    Union[float, RealTime, TimModel, ForcingModel], BeforeValidator(load_model)
 ]
 
 CrestWidthField = Annotated[float | None, Field(alias="crestWidth")]
