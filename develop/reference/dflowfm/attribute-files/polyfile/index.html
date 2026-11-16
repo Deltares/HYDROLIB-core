@@ -8391,14 +8391,14 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a new Parser.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            file_path (Path):</span>
 <span class="sd">                Name of the file being parsed, only used for providing proper warnings.</span>
-<span class="sd">            has_z_value (Optional[bool], optional):</span>
+<span class="sd">            has_z_value (bool | None, optional):</span>
 <span class="sd">                Whether to interpret the third column as z-coordinates. If omitted,</span>
 <span class="sd">                infer this from each block's column count.</span>
 <span class="sd">            verbose (bool, optional):</span>
@@ -8721,7 +8721,7 @@ empty lines will generate a warning, and will be ignored by the parser.</p>
                 <code>has_z_value</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bool">bool</span>]</code>
+                  <code><span title="bool">bool</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8797,14 +8797,14 @@ infer this from each block's column count.</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">has_z_value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create a new Parser.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        file_path (Path):</span>
 <span class="sd">            Name of the file being parsed, only used for providing proper warnings.</span>
-<span class="sd">        has_z_value (Optional[bool], optional):</span>
+<span class="sd">        has_z_value (bool | None, optional):</span>
 <span class="sd">            Whether to interpret the third column as z-coordinates. If omitted,</span>
 <span class="sd">            infer this from each block's column count.</span>
 <span class="sd">        verbose (bool, optional):</span>
