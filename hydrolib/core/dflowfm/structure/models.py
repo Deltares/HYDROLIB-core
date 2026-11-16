@@ -1141,7 +1141,7 @@ class GeneralStructure(CrestWidthValidator, Structure):
     gateheightintervalcntrl: float | None = Field(
         None, alias="gateheightintervalcntrl"
     )
-    gateheight: float | None = Field(1e10, alias="gateHeight")
+    gateheight: ForcingDataUnion = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
