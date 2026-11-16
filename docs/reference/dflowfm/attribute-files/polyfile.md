@@ -261,9 +261,12 @@ z_source, z_sink = polyfile.get_z_sources_sinks()
 ## File Extensions
 
 The module supports different file extensions:
-- `.pli`: Standard polyline file
-- `.pol`: Polygon file (same format as .pli)
-- `.pliz`: Polyline file with z-values
+- `.pli`: Standard polyline file, normally not containing z-values, but can be used for polylines with z-values.
+- `.pol`: Polygon file (same format as .pli). Normally not containing z-values, but can be used for polygons with z-values.
+- `.pliz`: Polyline file, normally containing z-values, but can also be used for polylines without z-values.
+
+The presence of z-values is determined by the `has_z_values` attribute in the `PolyFile` class which checks the number of columns in the first block of the file. 
+If the number of columns is 3 or more, it is assumed that z-values are present.
 
 ## Error Handling
 

@@ -1,6 +1,6 @@
 import inspect
 from pathlib import Path
-from typing import Iterator, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import pytest
 
@@ -229,20 +229,11 @@ class TestErrorBuilder:
 
 
 @pytest.mark.parametrize(
-    "input_value,expected_value",
-    [
-        (Path("some.pliz"), True),
-        (Path("some.pol"), False),
-        (Path("some.pli"), False),
-        (Path("some.png"), False),
-        (Path("some.ext"), False),
-        (["some iterator value"], False),
-    ],
+    "n_columns,expected_value",
+    [(2, False), (3, True), (4, True)],
 )
-def test_determine_has_z_value(
-    input_value: Union[Path, Iterator[str]], expected_value: bool
-):
-    assert _determine_has_z_value(input_value) == expected_value
+def test_determine_has_z_value(n_columns: int, expected_value: bool):
+    assert _determine_has_z_value(n_columns) == expected_value
 
 @pytest.mark.parametrize(
     "points,expected_z_values",

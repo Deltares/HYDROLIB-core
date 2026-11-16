@@ -201,23 +201,24 @@ class TestGetZSourcesSinks:
 
 class TestPLIZExtension:
 
-    def test_with_z_and_pliz_extension_2by2(self, polylines_dir: Path):
+    def test_pliz_extension_does_not_override_two_column_dimensions(
+        self, polylines_dir: Path
+    ):
         """
-        The test check a 2*2 polyline file with z values, the extension is correct, but the dimensions are 2*2.
-        not 2*3
-        the parser only reads the length of the dimensions in the second line and ignores the z values.
+        The declared column count determines whether a z value is parsed. Extra
+        values on a row are ignored even when the file has a .pliz extension.
         ```
         tfl_01
             2 2
             0.00000000000000000	0.00000000000000000 5
             0.00000000000000000	2.00000000000000000 5
         ```
-
-        - To read the z values correctly, the dimensions should be 2*3, and the extension should be pliz.
         """
         path = polylines_dir / "boundary-polyline-with-z-no-label.pliz"
-        with pytest.raises(ValueError):
-            PolyFile(path)
+        polyfile = PolyFile(path)
+        points = polyfile.objects[0].points
+        assert points[0] == Point(x=0, y=0, z=None, data=[])
+        assert points[1] == Point(x=0, y=2, z=None, data=[])
 
     def test_with_z_and_pliz_extension_2by3(self, polylines_dir: Path):
         """
