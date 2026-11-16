@@ -18,6 +18,26 @@ from tests.utils import WrapperTest, test_input_dir
 
 
 class TestGeneralStructure:
+    def test_initialize_gateheight_with_timfile_initializes_timmodel(self):
+        gateheight = test_input_dir / "tim" / "single_data_for_timeseries.tim"
+        values = self._create_general_structure_values()
+        values["gateheight"] = gateheight
+        structure = GeneralStructure(**values)
+
+        assert isinstance(structure.gateheight, TimModel)
+
+    def test_initialize_gateheight_with_bcfile_initializes_forcingmodel(self):
+        gateheight = (
+            test_input_dir
+            / "dflowfm_individual_files"
+            / "FlowFM_boundaryconditions2d_and_vectors.bc"
+        )
+        values = self._create_general_structure_values()
+        values["gateheight"] = gateheight
+        structure = GeneralStructure(**values)
+
+        assert isinstance(structure.gateheight, ForcingModel)
+
     def test_initialize_gateopeningwidth_with_timfile_initializes_timmodel(self):
         gateloweredgelevel = test_input_dir / "tim" / "single_data_for_timeseries.tim"
         values = self._create_general_structure_values()
