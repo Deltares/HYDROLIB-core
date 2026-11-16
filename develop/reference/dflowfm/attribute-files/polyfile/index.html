@@ -5430,9 +5430,11 @@ Hold "Ctrl" to enable pan &amp; zoom
 </code></pre></div>
 <h2 id="file-extensions">File Extensions<a class="headerlink" href="#file-extensions" title="Permanent link">&para;</a></h2>
 <p>The module supports different file extensions:
-- <code>.pli</code>: Standard polyline file
-- <code>.pol</code>: Polygon file (same format as .pli)
-- <code>.pliz</code>: Polyline file with z-values</p>
+- <code>.pli</code>: Standard polyline file, normally not containing z-values, but can be used for polylines with z-values.
+- <code>.pol</code>: Polygon file (same format as .pli). Normally not containing z-values, but can be used for polygons with z-values.
+- <code>.pliz</code>: Polyline file, normally containing z-values, but can also be used for polylines without z-values.</p>
+<p>The presence of z-values is determined by the <code>has_z_values</code> attribute in the <code>PolyFile</code> class which checks the number of columns in the first block of the file. 
+If the number of columns is 3 or more, it is assumed that z-values are present.</p>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <p>The parser includes robust error handling for various issues:
 - Invalid dimensions
