@@ -565,10 +565,10 @@ def test_read_polyfile_infers_z_from_columns_not_suffix(
     tmp_path: Path,
     suffix: str,
     dimensions: str,
-    points: List[str],
+    points: list[str],
     has_z: bool,
-    expected_z: Optional[float],
-    expected_data: List[float],
+    expected_z: float | None,
+    expected_data: list[float],
 ):
     filepath = tmp_path / f"polyline{suffix}"
     filepath.write_text(

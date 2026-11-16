@@ -269,14 +269,14 @@ class Parser:
     """
 
     def __init__(
-        self, file_path: Path, has_z_value: Optional[bool] = None, verbose: bool = False
+        self, file_path: Path, has_z_value: bool | None = None, verbose: bool = False
     ) -> None:
         """Create a new Parser.
 
         Args:
             file_path (Path):
                 Name of the file being parsed, only used for providing proper warnings.
-            has_z_value (Optional[bool], optional):
+            has_z_value (bool | None, optional):
                 Whether to interpret the third column as z-coordinates. If omitted,
                 infer this from each block's column count.
             verbose (bool, optional):
