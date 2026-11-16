@@ -555,6 +555,9 @@ def test_polyfile_can_be_saved_without_errors_and_is_same_as_input():
         (".pliz", "2 2", ["1 2", "4 5"], False, None, []),
         (".pliz", "2 3", ["1 2 -3", "4 5 -6"], True, -3, []),
         (".pliz", "2 4", ["1 2 -3 8", "4 5 -6 9"], True, -3, [8]),
+        (".pol", "2 2", ["1 2", "4 5"], False, None, []),
+        (".pol", "2 3", ["1 2 -3", "4 5 -6"], True, -3, []),
+        (".pol", "2 4", ["1 2 -3 8", "4 5 -6 9"], True, -3, [8]),
 
     ],
 )
