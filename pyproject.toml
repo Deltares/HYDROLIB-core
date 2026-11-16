@@ -13,9 +13,9 @@ dependencies = [
     # numpy v2 is required for python 3.13 support
     "numpy>=2.0,<3",
     # >=2.12: ValidationInfo.field_name is set on attribute assignment (needed by INIBasedModel)
-    "pydantic>=2.12,<3",
+    "pydantic>=2.14.3,<3",
     "lxml>=6.0,<7",
-    "meshkernel>=8.4.0,<9",
+    "meshkernel>=8.4.1,<9",
     "strenum>=0,<1",
     "tqdm>=4.67.1,<5",
     "pandas>=2.0.0",
@@ -48,11 +48,11 @@ dev = [
     "markupsafe>=3.0,<4",
     # xarray >=2024.6.0 supports numpy 2.0
     "xarray>=2024.6.0",
-    "pyfakefs>=6.0,<7",
+    "pyfakefs>=6.3.2,<7",
     "geopandas>=1.0.0,<2",
     "pytest-env>=1.1,<2",
     # emSign CA incident: earlier pip vendors a certifi that trusts the compromised eMudhra intermediates
-    "pip>=26.2.2",
+    "pip>=26.3",
 ]
 docs = [
     "openpyxl>=3.1.5,<4",
@@ -66,12 +66,12 @@ docs = [
     "mkdocs-jupyter>=0.26.0,<0.27",
     "mike>=2.0.0,<3",
     "jupyter>=1.0.0,<2",
-    "notebook>=7.3.2,<8",
+    "notebook>=7.6.5,<8",
     "mkdocstrings-python>=2.0,<3",
     "mkdocs-mermaid2-plugin>=1.2.1,<2",
     "mkdocs-panzoom-plugin>=0.4.2,<0.5",
     # emSign CA incident: earlier pip vendors a certifi that trusts the compromised eMudhra intermediates
-    "pip>=26.2.2",
+    "pip>=26.3",
 ]
 
 [project.urls]
