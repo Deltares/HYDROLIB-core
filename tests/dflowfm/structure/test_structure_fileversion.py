@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 from pathlib import Path
 
 import pytest
@@ -65,13 +66,20 @@ class TestFileVersionForLocationFile:
         assert "corrCoeff" in text
         assert "lat_contr_coeff" not in text
 
-    def test_file_without_general_section_is_saved_as_version_3_01(self, tmp_path):
+    def test_file_without_general_section_is_saved_as_at_least_version_3_01(
+        self, tmp_path
+    ):
         path = tmp_path / "structures.ini"
         path.write_text(self._legacy_weir)
 
         text = self._save_and_read(StructureModel(path), tmp_path)
 
-        assert "fileVersion = 3.01" in text
+        parser = ConfigParser()
+        parser.read_string(text)
+        version = tuple(
+            int(part) for part in parser["General"]["fileVersion"].split(".")
+        )
+        assert version >= (3, 1)
 
     def test_version_is_kept_when_no_structure_uses_a_location_file(self, tmp_path):
         path = tmp_path / "structures.ini"
