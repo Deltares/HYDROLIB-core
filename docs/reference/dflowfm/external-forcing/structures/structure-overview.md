@@ -130,7 +130,7 @@ classDiagram
 
 ```
 # Union of supported time-varying or static forcing inputs
-ForcingData = float | TimModel | ForcingModel
+ForcingDataUnion = float | TimModel | ForcingModel
 ```
 
 ### How subclass selection works (factory behavior)
@@ -279,7 +279,7 @@ class Weir(Structure):
     type: Literal["weir"] = Field("weir", alias="type")
     allowedflowdir: FlowDirection | None = Field(FlowDirection.both.value,
                                                  alias="allowedFlowDir")
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: float | None = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -318,7 +318,7 @@ class Culvert(Structure):
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: ForcingData | None = Field(alias="valveOpeningHeight")
+    valveopeningheight: ForcingDataUnion | None = Field(alias="valveOpeningHeight")
     numlosscoeff: int | None = Field(alias="numLossCoeff")
     relopening: list[float] | None = Field(alias="relOpening")
     losscoeff: list[float] | None = Field(alias="lossCoeff")
@@ -380,7 +380,7 @@ class Pump(Structure):
     orientation: Orientation | None = Field(alias="orientation")
     controlside: str | None = Field(alias="controlSide")
     numstages: int | None = Field(alias="numStages")
-    capacity: ForcingData = Field(alias="capacity")
+    capacity: ForcingDataUnion = Field(alias="capacity")
 
     startlevelsuctionside: list[float] | None = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: list[float] | None = Field(alias="stopLevelSuctionSide")
@@ -436,9 +436,9 @@ class Orifice(Structure):
     allowedflowdir: FlowDirection | None = Field(FlowDirection.both.value,
                                                  alias="allowedFlowDir")
 
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnionUnion = Field(alias="crestLevel")
     crestwidth: float | None = Field(None, alias="crestWidth")
-    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnionUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -479,11 +479,11 @@ class Gate(Structure):
     type: Literal["gate"] = Field("gate", alias="type")
 
     crestwidth: float | None = Field(None, alias="crestWidth")
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnionUnion = Field(alias="crestLevel")
 
-    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
-    gateheight: ForcingData = Field(alias="gateHeight")
-    gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
+    gateloweredgelevel: ForcingDataUnionUnion = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingDataUnionUnion = Field(alias="gateHeight")
+    gateopeningwidth: ForcingDataUnionUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
@@ -519,7 +519,7 @@ class GeneralStructure(Structure):
     upstream2level: float | None = Field(0.0, alias="upstream2Level")
 
     crestwidth: float | None = Field(10.0, alias="crestWidth")
-    crestlevel: ForcingData | None = Field(0.0, alias="crestLevel")
+    crestlevel: ForcingDataUnion | None = Field(0.0, alias="crestLevel")
     crestlength: float | None = Field(0.0, alias="crestLength")
 
     downstream1width: float | None = Field(10.0, alias="downstream1Width")
@@ -527,7 +527,7 @@ class GeneralStructure(Structure):
     downstream2width: float | None = Field(10.0, alias="downstream2Width")
     downstream2level: float | None = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: ForcingData | None = Field(11.0, alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
     posfreegateflowcoeff: float | None = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: float | None = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: float | None = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -541,8 +541,8 @@ class GeneralStructure(Structure):
     extraresistance: float | None = Field(0.0, alias="extraResistance")
     dynstructext: float | None = Field(None, alias="dynstructext")
     gateheightintervalcntrl: float | None = Field(None, alias="gateheightintervalcntrl")
-    gateheight: ForcingData = Field(1e10, alias="gateHeight")
-    gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
+    gateheight: ForcingDataUnion = Field(1e10, alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
         Field(GateOpeningHorizontalDirection.symmetric.value,
               alias="gateOpeningHorizontalDirection")
