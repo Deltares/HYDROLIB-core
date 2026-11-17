@@ -251,6 +251,9 @@ class TestConvertParameters:
             pytest.param(
                 ExtOldQuantity.TotalWaveEnergyDissipation,
                 "totalwaveenergydissipation"),
+            pytest.param(
+                ExtOldQuantity.WindStressCoefficient,
+                "windstresscoefficient"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
