@@ -702,14 +702,15 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "FLOE_DIAMETER", "floe_diameter"],
+        ids=["quantity", "quantity_uppercase", "quantity_lowercase"],
     )
     def test_debug_unsupported_quantities_conversion(
         self, old_model, unsupported_quantity: str
     ):
         old_model["forcing"][1]["quantity"] = unsupported_quantity
         ext_old_model = ExtOldModel(**old_model)
+        expected_quantity = ext_old_model.forcing[1].quantity
         ext_old_model.filepath = Path("tests/data/input/mock_file.ext")
         converter = ExternalForcingConverter(
             extold_model=ext_old_model,
@@ -719,12 +720,12 @@ class TestExternalFocingConverter:
         converter.update()
 
         assert converter.un_supported_quantities == {unsupported_quantity.lower()}
-        assert ext_old_model.forcing[0].quantity == unsupported_quantity
+        assert ext_old_model.forcing[0].quantity == expected_quantity
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "FLOE_DIAMETER", "floe_diameter"],
+        ids=["quantity", "quantity_uppercase", "quantity_lowercase"],
     )
     def test_no_debug_unsupported_quantities_conversion(
         self, old_model, unsupported_quantity: str
@@ -747,8 +748,8 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "FLOE_DIAMETER", "floe_diameter"],
+        ids=["quantity", "quantity_uppercase", "quantity_lowercase"],
     )
     def test_debug_unsupported_quantities_save(
         self, old_model, tmp_path: Path, unsupported_quantity: str
