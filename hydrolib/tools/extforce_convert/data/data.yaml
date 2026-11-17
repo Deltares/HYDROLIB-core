@@ -6,14 +6,12 @@ mdu:
 external_forcing:
     unsupported_quantities:
         # Meteo
-        - windstresscoefficient
         - wind_speed
         - wind_from_direction
         # Parameters
         - floe_diameter
         - waqmonitoringarea
         - ibotlevtype
-        - friction_coefficient_time_dependent
         # structure
         - damlevel
         - gateloweredgelevel
@@ -28,12 +26,7 @@ external_forcing:
         - erodablelayerthicknessgrainsize2
         - erodablelayerthicknessgrainsize3
         - shiptxy
-        # will be moved from the initial conditions file to the new forcing file
-        # do not convert for now
-        - bedrock_surface_elevation
-    unsupported_prefixes:
-        # initial conditions
-        - initialsediment
+
     # Quantities the kernel spells differently in the initial and parameter fields
     # file than in the old external forcings file. Keys are matched
     # case-insensitively; values are emitted verbatim, so their casing matters.
@@ -41,12 +34,11 @@ external_forcing:
         sea_ice_thickness: seaIceThickness
         sea_ice_area_fraction: seaIceAreaFraction
         nudge_salinity_temperature: nudgeSalinityTemperature
-        # `bedrock_surface_elevation` is also in `unsupported_quantities` above, so a run of the converter
-        # rejects it.
         bedrock_surface_elevation: bedrockSurfaceElevation
-        friction_coefficient_time_dependent: frictionCoefficientTimeDependent
+        friction_coefficient_time_dependent: frictionCoefficient
         windspeedfactor: windxy
         solarradiationfactor: solarradiation
+        windstresscoefficient: windStressCoefficient
 
     vector_quantities:
         uxuyadvectionvelocitybnd: {"ux": "m s-1", "uy": "m s-1"}
