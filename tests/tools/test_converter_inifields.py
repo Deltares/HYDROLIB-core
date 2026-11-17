@@ -253,7 +253,7 @@ class TestConvertParameters:
                 "totalwaveenergydissipation"),
             pytest.param(
                 ExtOldQuantity.WindStressCoefficient,
-                "windstresscoefficient"),
+                "windStressCoefficient"),
         ],
     )
     def test_parameter_quantity(self, quantity, expected_quantity):
