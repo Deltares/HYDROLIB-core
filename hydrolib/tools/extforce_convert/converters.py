@@ -259,6 +259,8 @@ class SpatialBlockBuilder:
             self.block = convert_interpolation_data(self.forcing, self.block)
             if is_initial_vertical:
                 self.block["interpolationmethod"] = InterpolationMethod.constant
+            if self.file_type == DataFileType.arcinfo:
+                self.block["interpolationmethod"] = InterpolationMethod.bilinear
             self.block["operand"] = self._set_operand()
             self.block["extrapolationallowed"] = bool(
                 self.forcing.extrapolation_method
