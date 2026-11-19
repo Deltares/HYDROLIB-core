@@ -185,7 +185,7 @@ class SpatialBlockBuilder:
             dict[str, Any]: the keyword arguments for the `Spatial` constructor.
         """
         self._require_no_sourcemask()
-        self._set_representation()
+        self.block = self._set_representation()
         self._set_common_fields()
         return self.block
 
@@ -215,8 +215,8 @@ class SpatialBlockBuilder:
             operand = self.forcing.operand
         return operand
 
-    def _set_representation(self):
-        """Populate `self.block` with the spatial representation for this forcing.
+    def _set_representation(self) -> dict[str, Any]:
+        """Build the spatial representation for this forcing.
 
         There are three mutually exclusive representations:
 
@@ -226,6 +226,8 @@ class SpatialBlockBuilder:
         - An `initialvertical*` polygon keeps the polygon as its `dataFile`.
         - Any other quantity is a gridded data file, carrying the interpolation /
           averaging settings, operand, extrapolation toggle and tracer fields.
+          UNST-10142 / GitHub #1160 requires `bilinear` interpolation when an
+          `arcinfo` file would otherwise use `triangulation`.
 
         UNST-9218 / GitHub #1104: `initialvertical*` quantities must always use
         `interpolationMethod=constant`; the old `METHOD` value (typically 3 →
@@ -234,44 +236,60 @@ class SpatialBlockBuilder:
         """
         is_polygon = self.file_type == DataFileType.polygon
         is_initial_vertical = self.quantity_name.startswith("initialvertical")
-        if is_polygon and not is_initial_vertical:
-            self.block = {
-                "quantity": self.quantity_name,
-                "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
-                "datavalue": self.forcing.value,
-                "operand": self._set_operand(),
-                "interpolationmethod": InterpolationMethod.constant,
-            }
-        elif is_polygon:
-            self.block = {
-                "quantity": self.quantity_name,
-                "datafile": DiskOnlyFileModel(self.new_forcing_path),
-                "datafiletype": self.file_type,
-                "interpolationmethod": InterpolationMethod.constant,
-                "operand": self._set_operand(),
-            }
-        else:
-            self.block = {
-                "quantity": self.quantity_name,
-                "datafile": DiskOnlyFileModel(self.new_forcing_path),
-                "datafiletype": self.file_type,
-            }
-            self.block = convert_interpolation_data(self.forcing, self.block)
+        if is_polygon:
             if is_initial_vertical:
-                self.block["interpolationmethod"] = InterpolationMethod.constant
-            if self.file_type == DataFileType.arcinfo:
-                self.block["interpolationmethod"] = InterpolationMethod.bilinear
-            self.block["operand"] = self._set_operand()
-            self.block["extrapolationallowed"] = bool(
-                self.forcing.extrapolation_method
-            )
-            self._add_tracers()
+                block = self._build_polygon_file()
+            else:
+                block = self._build_polygon_value()
+        else:
+            block = self._build_gridded_file(is_initial_vertical)
+        return block
 
-    def _add_tracers(self):
+    def _build_polygon_value(self) -> dict[str, Any]:
+        """Build a constant polygon-masked value representation."""
+        return {
+            "quantity": self.quantity_name,
+            "targetmaskfile": DiskOnlyFileModel(self.new_forcing_path),
+            "datavalue": self.forcing.value,
+            "operand": self._set_operand(),
+            "interpolationmethod": InterpolationMethod.constant,
+        }
+
+    def _build_polygon_file(self) -> dict[str, Any]:
+        """Build a polygon data-file representation for an initial vertical quantity."""
+        return {
+            "quantity": self.quantity_name,
+            "datafile": DiskOnlyFileModel(self.new_forcing_path),
+            "datafiletype": self.file_type,
+            "interpolationmethod": InterpolationMethod.constant,
+            "operand": self._set_operand(),
+        }
+
+    def _build_gridded_file(self, is_initial_vertical: bool) -> dict[str, Any]:
+        """Build a gridded-file representation and its interpolation settings."""
+        block = {
+            "quantity": self.quantity_name,
+            "datafile": DiskOnlyFileModel(self.new_forcing_path),
+            "datafiletype": self.file_type,
+        }
+        block = convert_interpolation_data(self.forcing, block)
+        if is_initial_vertical:
+            block["interpolationmethod"] = InterpolationMethod.constant
+        elif (
+            self.file_type == DataFileType.arcinfo
+            and block["interpolationmethod"] == InterpolationMethod.triangulation
+        ):
+            block["interpolationmethod"] = InterpolationMethod.bilinear
+        block["operand"] = self._set_operand()
+        block["extrapolationallowed"] = bool(self.forcing.extrapolation_method)
+        self._add_tracers(block)
+        return block
+
+    def _add_tracers(self, block: dict[str, Any]) -> None:
         """Copy any `tracer*` fields set on the forcing into the block unchanged."""
         for key, value in self.forcing.model_dump().items():
             if key.lower().startswith("tracer") and value is not None:
-                self.block[key] = value
+                block[key] = value
 
     def _set_common_fields(self):
         """Add the fields shared by every representation: variable name and layer.
