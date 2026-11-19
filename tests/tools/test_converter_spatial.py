@@ -95,6 +95,56 @@ class TestConvertSpatial:
         assert spatial.targetmaskfile is None
         assert spatial.interpolationmethod == InterpolationMethod.constant
 
+    @pytest.mark.parametrize(
+        "quantity, filetype, method, expected_interpolation",
+        [
+            pytest.param(
+                "bedlevel",
+                4,
+                5,
+                InterpolationMethod.bilinear,
+                id="arcinfo-triangulation",
+            ),
+            pytest.param(
+                "initialwaterlevel",
+                4,
+                5,
+                InterpolationMethod.bilinear,
+                id="initial-arcinfo-triangulation",
+            ),
+            pytest.param(
+                "frictioncoefficient",
+                7,
+                5,
+                InterpolationMethod.triangulation,
+                id="sample-triangulation",
+            ),
+            pytest.param(
+                "horizontaleddyviscositycoefficient",
+                4,
+                6,
+                InterpolationMethod.averaging,
+                id="arcinfo-averaging",
+            ),
+        ],
+    )
+    def test_interpolation_method_depends_on_filetype_and_method(
+        self, quantity, filetype, method, expected_interpolation
+    ):
+        forcing = ExtOldForcing(
+            quantity=quantity,
+            filename="data-file",
+            filetype=filetype,
+            method=method,
+            operand="O",
+        )
+
+        spatial = SpatialConverter(mdu_parser=_make_mdu_parser_mock()).convert(
+            forcing, forcing.filename.filepath
+        )
+
+        assert spatial.interpolationmethod == expected_interpolation
+
 
 _RAINFALL_EXPECTED = {
     "quantity": "rainfall",
@@ -753,7 +803,7 @@ _SPATIAL_BLOCKS = [
     ("initialtracerCBOD5", True, "Estruary.pol", 3.0, None, InterpolationMethod.constant, None),
     # WAQ non-polygon parameters
     ("waqparameterSalinity", False, "salinity.xyz", None, DataFileType.sample, InterpolationMethod.averaging, AveragingType.nearestnb),
-    ("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo, InterpolationMethod.triangulation, None),
+    ("waqparameterTemp", False, "temperature.asc", None, DataFileType.arcinfo, InterpolationMethod.bilinear, None),
     # WAQ polygon parameters
     ("waqparameterSOD", True, "Estruary.pol", 1.0, None, InterpolationMethod.constant, None),
     ("waqsegmentfunctionSOD", True, "Estruary.pol", 1.5, None, InterpolationMethod.constant, None),
@@ -772,7 +822,7 @@ class TestWaqQuantitiesConversion:
     The MDU file (westernscheldt.mdu) references:
         - initialtracerOXY, initialtracerCBOD5  (polygon / InsidePolygon)
         - waqparameterSalinity                  (samples, METHOD=6 / averaging)
-        - waqparameterTemp                       (arcInfo, METHOD=5 / triangulation)
+        - waqparameterTemp                       (arcInfo, METHOD=5 / bilinear)
         - waqparameterSOD                        (polygon)
         - waqsegmentfunctionSOD                  (polygon)
         - waqsegmentnumberSOD                    (polygon)
