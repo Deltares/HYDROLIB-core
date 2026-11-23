@@ -53,6 +53,8 @@ dev = [
     "pytest-env>=1.1,<2",
     # emSign CA incident: earlier pip vendors a certifi that trusts the compromised eMudhra intermediates
     "pip>=26.2.2",
+    # soupsieve releases before 2.10 have more known advisories; fixed releases need python >= 3.11.5
+    "soupsieve>=2.10",
 ]
 docs = [
     "openpyxl>=3.1.5,<4",
