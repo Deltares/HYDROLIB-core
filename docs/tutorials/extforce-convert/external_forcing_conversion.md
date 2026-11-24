@@ -166,8 +166,36 @@ Below are several usage examples to illustrate typical operations:
 
 ---
 
+## Status
+
+### Known model differences
+
+Sometimes the converted model will give different results, the following cases are known and will not change in the future:
+- Any WAQ inifields that do not have boundary conditions prescribed behave differently between old and new extfile. In the old extfile the boundaries are initialized with the initial field values if the mirror cells are covered with samples. In the new extfile these are consistently forced with 0-values. To maintain the old behaviour, add explicit boundary conditions for these quantities. More information available in https://github.com/Deltares/HYDROLIB-core/issues/1241#issuecomment-6194211845. >> this also goes for salinity i.c.w. diagnostic computation: https://github.com/Deltares/HYDROLIB-core/issues/1311
+- when a delta suffix is present in the new extfile it will be removed. This is intended behaviour, but the delta suffix is not removed in the linked bc files, causing the quantities not to be found by the kernel. A warning is emitted about running the converter again with `recurse=True` (`--recurse`) but the user can also manually remove the delta suffixes from the bc file(s).
+
+### Known performance limitations
+
+Sometimes the conversion can be relatively slow:
+- bc files that are mentioned multiple times (for instance `discharge_salinity_temperature_sorsin`) are written multiple times, this can take quite some time.
+- netcdf files are not actually read, but nevertheless large netcdf files can make the conversion very slow because of md5 checksums being computed.
+
+### Known exclusions
+- The `StructureFile` file (e.g. `structures.ini`) is deliberately left untouched by `extforce-convert`. Users can manually update their structure file to the latest version (v3.x) by reading and writing it with `hydrolib.core.dflowfm.structure.models.StructureModel`. However, this step is excluded in the automatic conversion since this might cause different model results. To retain the old structure behaviour as close as possible, consult the [D-Flow FM User manual](https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual.pdf) section C.14.10 and manually update your structure file and mdu file.
+
+### Known issues in the Delft3D FM 2027.01 kernel
+
+The `extforce-convert` tool helps you with converting your model to the new ext file. Most of the models will be supported by Delft3D FM 2027.01. Some kernel issues cause different model results or errors after converting to the new extfile. These will be resolved in 2027.02:
+- incorrect global initialisation of a polygon: [UNST-10214](https://issuetracker.deltares.nl/browse/UNST-10214) (fixed in DIMRset 2.32.00)
+- multiple Spatial blocks with a non-override operand and targetMaskFile only use the last mask: [UNST-10436](https://issuetracker.deltares.nl/browse/UNST-10436)
+- spatially uniform data in combination with targetMaskFile does not work: [UNST-10507](https://issuetracker.deltares.nl/browse/UNST-10507)
+- not possbile to multipy bcascii global timeseries with xyz sample set in new ext file (this was possible in old ext): [UNST-10530](https://issuetracker.deltares.nl/browse/UNST-10530)
+- pump in structures v3 goes in opposite direction compared to structures v0: [UNST-10462](https://issuetracker.deltares.nl/browse/UNST-10462) / [UNST-10496](https://issuetracker.deltares.nl/browse/UNST-10496)
+
+
 ## Additional Notes
 
+- Your model is updated in-place. For testing purposes, please execute the converter on a copy of your model.
 - If no valid input argument (`--mdufile` or `--dir`) is provided, the program will exit with an error indicating that no input was specified.
 - Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.
 - When the MDU's `ExtForceFileNew` lists **several files separated by a space** (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the **first** listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.
