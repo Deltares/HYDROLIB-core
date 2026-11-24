@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -1712,6 +1712,67 @@ You're not viewing the latest release version.
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-model-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known model differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-performance-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known performance limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-exclusions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known exclusions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-issues-in-the-delft3d-fm-202701-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issues in the Delft3D FM 2027.01 kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -4118,6 +4179,67 @@ You're not viewing the latest release version.
 </li>
       
         <li class="md-nav__item">
+  <a href="#status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-model-differences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known model differences
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-performance-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known performance limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-exclusions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known exclusions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#known-issues-in-the-delft3d-fm-202701-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issues in the Delft3D FM 2027.01 kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#additional-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4279,8 +4401,29 @@ Handle absolute paths in input files according to the specified style. Use this 
 </li>
 </ol>
 <hr />
+<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">&para;</a></h2>
+<h3 id="known-model-differences">Known model differences<a class="headerlink" href="#known-model-differences" title="Permanent link">&para;</a></h3>
+<p>Sometimes the converted model will give different results, the following cases are known and will not change in the future:
+- Any WAQ inifields that do not have boundary conditions prescribed behave differently between old and new extfile. In the old extfile the boundaries are initialized with the initial field values if the mirror cells are covered with samples. In the new extfile these are consistently forced with 0-values. To maintain the old behaviour, add explicit boundary conditions for these quantities. More information available in https://github.com/Deltares/HYDROLIB-core/issues/1241#issuecomment-6194211845. &gt;&gt; this also goes for salinity i.c.w. diagnostic computation: https://github.com/Deltares/HYDROLIB-core/issues/1311
+- when a delta suffix is present in the new extfile it will be removed. This is intended behaviour, but the delta suffix is not removed in the linked bc files, causing the quantities not to be found by the kernel. A warning is emitted about running the converter again with <code>recurse=True</code> (<code>--recurse</code>) but the user can also manually remove the delta suffixes from the bc file(s).</p>
+<h3 id="known-performance-limitations">Known performance limitations<a class="headerlink" href="#known-performance-limitations" title="Permanent link">&para;</a></h3>
+<p>Sometimes the conversion can be relatively slow:
+- bc files that are mentioned multiple times (for instance <code>discharge_salinity_temperature_sorsin</code>) are written multiple times, this can take quite some time.
+- netcdf files are not actually read, but nevertheless large netcdf files can make the conversion very slow because of md5 checksums being computed.</p>
+<h3 id="known-exclusions">Known exclusions<a class="headerlink" href="#known-exclusions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The <code>StructureFile</code> file (e.g. <code>structures.ini</code>) is deliberately left untouched by <code>extforce-convert</code>. Users can manually update their structure file to the latest version (v3.x) by reading and writing it with <code>hydrolib.core.dflowfm.structure.models.StructureModel</code>. However, this step is excluded in the automatic conversion since this might cause different model results. To retain the old structure behaviour as close as possible, consult the <a href="https://content.oss.deltares.nl/delft3d/D-Flow_FM_User_Manual.pdf">D-Flow FM User manual</a> section C.14.10 and manually update your structure file and mdu file.</li>
+</ul>
+<h3 id="known-issues-in-the-delft3d-fm-202701-kernel">Known issues in the Delft3D FM 2027.01 kernel<a class="headerlink" href="#known-issues-in-the-delft3d-fm-202701-kernel" title="Permanent link">&para;</a></h3>
+<p>The <code>extforce-convert</code> tool helps you with converting your model to the new ext file. Most of the models will be supported by Delft3D FM 2027.01. Some kernel issues cause different model results or errors after converting to the new extfile. These will be resolved in 2027.02:
+- incorrect global initialisation of a polygon: <a href="https://issuetracker.deltares.nl/browse/UNST-10214">UNST-10214</a> (fixed in DIMRset 2.32.00)
+- multiple Spatial blocks with a non-override operand and targetMaskFile only use the last mask: <a href="https://issuetracker.deltares.nl/browse/UNST-10436">UNST-10436</a>
+- spatially uniform data in combination with targetMaskFile does not work: <a href="https://issuetracker.deltares.nl/browse/UNST-10507">UNST-10507</a>
+- not possbile to multipy bcascii global timeseries with xyz sample set in new ext file (this was possible in old ext): <a href="https://issuetracker.deltares.nl/browse/UNST-10530">UNST-10530</a>
+- pump in structures v3 goes in opposite direction compared to structures v0: <a href="https://issuetracker.deltares.nl/browse/UNST-10462">UNST-10462</a> / <a href="https://issuetracker.deltares.nl/browse/UNST-10496">UNST-10496</a></p>
 <h2 id="additional-notes">Additional Notes<a class="headerlink" href="#additional-notes" title="Permanent link">&para;</a></h2>
 <ul>
+<li>Your model is updated in-place. For testing purposes, please execute the converter on a copy of your model.</li>
 <li>If no valid input argument (<code>--mdufile</code> or <code>--dir</code>) is provided, the program will exit with an error indicating that no input was specified.</li>
 <li>Each conversion process involves parsing the old file(s), generating new format files, and (optionally) deleting or backing up files as directed by the command-line options.</li>
 <li>When the MDU's <code>ExtForceFileNew</code> lists <strong>several files separated by a space</strong> (a file name containing spaces must be enclosed in double quotes), the converted quantities are appended to the <strong>first</strong> listed file only; the remaining files are left unchanged and a warning naming them is printed. All migrated quantities are written into that single new external forcings file.</li>
