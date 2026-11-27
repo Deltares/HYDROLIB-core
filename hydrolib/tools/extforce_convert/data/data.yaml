@@ -20,6 +20,7 @@ external_forcing:
         - pump1d
         - checkvalve
         - valve1D
+        - movingstationtxy
         # no type of forcing
         - __bathymetry__
         - erodablelayerthicknessgrainsize1
