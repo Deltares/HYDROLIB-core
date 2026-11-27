@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4388,7 +4388,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     }
 
     class StructureGeneral {
-      +fileversion: str = 3.01  (alias: fileVersion)
+      +fileversion: str = 3.02  (alias: fileVersion)
       +filetype: structure  (alias: fileType)
     }
 
@@ -4462,7 +4462,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 </div>
 <h4 id="type-alias-used-across-models">Type alias used across models<a class="headerlink" href="#type-alias-used-across-models" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code># Union of supported time-varying or static forcing inputs
-ForcingDataUnion = float | TimModel | ForcingModel
+ForcingDataUnion = float | TimModel | ForcingModel | RealTime
 </code></pre></div>
 <h3 id="how-subclass-selection-works-factory-behavior">How subclass selection works (factory behavior)<a class="headerlink" href="#how-subclass-selection-works-factory-behavior" title="Permanent link">&para;</a></h3>
 <p>When deserializing a <code>[Structure]</code> block from an INI file or a Python <code>dict</code>, the base <code>Structure</code> model auto-selects the correct subclass by looking at the (case-insensitive) <code>type</code> field:</p>
