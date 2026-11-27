@@ -436,9 +436,9 @@ class Orifice(Structure):
     allowedflowdir: FlowDirection | None = Field(FlowDirection.both.value,
                                                  alias="allowedFlowDir")
 
-    crestlevel: ForcingDataUnionUnion = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: float | None = Field(None, alias="crestWidth")
-    gateloweredgelevel: ForcingDataUnionUnion = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -479,11 +479,11 @@ class Gate(Structure):
     type: Literal["gate"] = Field("gate", alias="type")
 
     crestwidth: float | None = Field(None, alias="crestWidth")
-    crestlevel: ForcingDataUnionUnion = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
 
-    gateloweredgelevel: ForcingDataUnionUnion = Field(alias="gateLowerEdgeLevel")
-    gateheight: ForcingDataUnionUnion = Field(alias="gateHeight")
-    gateopeningwidth: ForcingDataUnionUnion | None = Field(0.0, alias="gateOpeningWidth")
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingDataUnion = Field(alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
