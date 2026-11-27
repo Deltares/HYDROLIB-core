@@ -23,7 +23,7 @@ from strenum import StrEnum
 
 from hydrolib.core.base.models import DiskOnlyFileModel, ModelSaveSettings
 from hydrolib.core.base.utils import str_is_empty_or_none
-from hydrolib.core.dflowfm.bc.models import ForcingModel
+from hydrolib.core.dflowfm.bc.models import ForcingModel, RealTime
 from hydrolib.core.dflowfm.friction.models import FrictionType
 from hydrolib.core.dflowfm.ini.models import INIBasedModel, INIGeneral, INIModel
 from hydrolib.core.dflowfm.ini.util import (
@@ -82,7 +82,7 @@ def load_model(value):
 
 
 ForcingDataUnion = Annotated[
-    Union[float, TimModel, ForcingModel], BeforeValidator(load_model)
+    Union[float, RealTime, TimModel, ForcingModel], BeforeValidator(load_model)
 ]
 
 CrestWidthField = Annotated[float | None, Field(alias="crestWidth")]
@@ -1141,7 +1141,7 @@ class GeneralStructure(CrestWidthValidator, Structure):
     gateheightintervalcntrl: float | None = Field(
         None, alias="gateheightintervalcntrl"
     )
-    gateheight: float | None = Field(1e10, alias="gateHeight")
+    gateheight: ForcingDataUnion = Field(1e10, alias="gateHeight")
     gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
@@ -1298,9 +1298,9 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         None, alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[ForcingDataUnion] = Field(
-        None, alias="dambreakLevelsAndWidths"
-    )
+    dambreaklevelsandwidths: Optional[
+        Annotated[float | TimModel | ForcingModel, BeforeValidator(load_model)]
+  ] = Field(None, alias="dambreakLevelsAndWidths")
 
     @field_validator("algorithm", mode="after")
     @classmethod
@@ -1487,7 +1487,7 @@ class StructureGeneral(INIGeneral):
     """`[General]` section with structure file metadata."""
 
     _header: Literal["General"] = "General"
-    fileversion: str = Field("3.01", alias="fileVersion")
+    fileversion: str = Field("3.02", alias="fileVersion")
     filetype: Literal["structure"] = Field("structure", alias="fileType")
 
 
