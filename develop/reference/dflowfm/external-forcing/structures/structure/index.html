@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -7848,7 +7848,7 @@ Typically inside the structure list of a <a class="autorefs autorefs-internal" h
     <span class="n">gateheightintervalcntrl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"gateheightintervalcntrl"</span>
     <span class="p">)</span>
-    <span class="n">gateheight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"gateHeight"</span><span class="p">)</span>
+    <span class="n">gateheight</span><span class="p">:</span> <span class="n">ForcingDataUnion</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">1e10</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"gateHeight"</span><span class="p">)</span>
     <span class="n">gateopeningwidth</span><span class="p">:</span> <span class="n">ForcingDataUnion</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"gateOpeningWidth"</span><span class="p">)</span>
     <span class="n">gateopeninghorizontaldirection</span><span class="p">:</span> <span class="n">GateOpeningHorizontalDirection</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">GateOpeningHorizontalDirection</span><span class="o">.</span><span class="n">symmetric</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -10408,7 +10408,7 @@ of a structure to define its coordinates.</p>
 <span class="w">    </span><span class="sd">"""`[General]` section with structure file metadata."""</span>
 
     <span class="n">_header</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"General"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"General"</span>
-    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"3.01"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
+    <span class="n">fileversion</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"3.02"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileVersion"</span><span class="p">)</span>
     <span class="n">filetype</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"structure"</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">"structure"</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"fileType"</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>

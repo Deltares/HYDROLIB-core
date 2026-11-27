@@ -62,7 +62,7 @@
     
     
   <meta name="panzoom-theme" content="material">
-<meta name="panzoom-data" content='{"selectors": [".d2", ".mermaid"], "initial_zoom_level": 1.0}'> </head>
+<meta name="panzoom-data" content='{"selectors": [".mermaid", ".d2"], "initial_zoom_level": 1.0}'> </head>
   
   
     
@@ -4462,7 +4462,7 @@ Hold "Ctrl" to enable pan &amp; zoom
 </div>
 <h4 id="type-alias-used-across-models">Type alias used across models<a class="headerlink" href="#type-alias-used-across-models" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code># Union of supported time-varying or static forcing inputs
-ForcingData = float | TimModel | ForcingModel
+ForcingDataUnion = float | TimModel | ForcingModel
 </code></pre></div>
 <h3 id="how-subclass-selection-works-factory-behavior">How subclass selection works (factory behavior)<a class="headerlink" href="#how-subclass-selection-works-factory-behavior" title="Permanent link">&para;</a></h3>
 <p>When deserializing a <code>[Structure]</code> block from an INI file or a Python <code>dict</code>, the base <code>Structure</code> model auto-selects the correct subclass by looking at the (case-insensitive) <code>type</code> field:</p>
@@ -4661,7 +4661,7 @@ class DambreakAlgorithm(int, Enum):
     type: Literal["weir"] = Field("weir", alias="type")
     allowedflowdir: FlowDirection | None = Field(FlowDirection.both.value,
                                                  alias="allowedFlowDir")
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: float | None = Field(None, alias="crestWidth")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
@@ -4693,7 +4693,7 @@ keywords, the legacy one is reported as an unknown keyword.</p>
     inletlosscoeff: float = Field(alias="inletLossCoeff")
     outletlosscoeff: float = Field(alias="outletLossCoeff")
     valveonoff: bool = Field(alias="valveOnOff")
-    valveopeningheight: ForcingData | None = Field(alias="valveOpeningHeight")
+    valveopeningheight: ForcingDataUnion | None = Field(alias="valveOpeningHeight")
     numlosscoeff: int | None = Field(alias="numLossCoeff")
     relopening: list[float] | None = Field(alias="relOpening")
     losscoeff: list[float] | None = Field(alias="lossCoeff")
@@ -4770,7 +4770,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     orientation: Orientation | None = Field(alias="orientation")
     controlside: str | None = Field(alias="controlSide")
     numstages: int | None = Field(alias="numStages")
-    capacity: ForcingData = Field(alias="capacity")
+    capacity: ForcingDataUnion = Field(alias="capacity")
 
     startlevelsuctionside: list[float] | None = Field(alias="startLevelSuctionSide")
     stoplevelsuctionside: list[float] | None = Field(alias="stopLevelSuctionSide")
@@ -4841,9 +4841,9 @@ Hold "Ctrl" to enable pan &amp; zoom
     allowedflowdir: FlowDirection | None = Field(FlowDirection.both.value,
                                                  alias="allowedFlowDir")
 
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
     crestwidth: float | None = Field(None, alias="crestWidth")
-    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
     corrcoeff: float = Field(1.0, alias="corrCoeff")
     usevelocityheight: bool = Field(True, alias="useVelocityHeight")
 
@@ -4899,11 +4899,11 @@ Hold "Ctrl" to enable pan &amp; zoom
     type: Literal["gate"] = Field("gate", alias="type")
 
     crestwidth: float | None = Field(None, alias="crestWidth")
-    crestlevel: ForcingData = Field(alias="crestLevel")
+    crestlevel: ForcingDataUnion = Field(alias="crestLevel")
 
-    gateloweredgelevel: ForcingData = Field(alias="gateLowerEdgeLevel")
-    gateheight: ForcingData = Field(alias="gateHeight")
-    gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
+    gateloweredgelevel: ForcingDataUnion = Field(alias="gateLowerEdgeLevel")
+    gateheight: ForcingDataUnion = Field(alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None = Field(
         GateOpeningHorizontalDirection.symmetric.value,
         alias="gateOpeningHorizontalDirection",
@@ -4957,7 +4957,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     upstream2level: float | None = Field(0.0, alias="upstream2Level")
 
     crestwidth: float | None = Field(10.0, alias="crestWidth")
-    crestlevel: ForcingData | None = Field(0.0, alias="crestLevel")
+    crestlevel: ForcingDataUnion | None = Field(0.0, alias="crestLevel")
     crestlength: float | None = Field(0.0, alias="crestLength")
 
     downstream1width: float | None = Field(10.0, alias="downstream1Width")
@@ -4965,7 +4965,7 @@ Hold "Ctrl" to enable pan &amp; zoom
     downstream2width: float | None = Field(10.0, alias="downstream2Width")
     downstream2level: float | None = Field(0.0, alias="downstream2Level")
 
-    gateloweredgelevel: ForcingData | None = Field(11.0, alias="gateLowerEdgeLevel")
+    gateloweredgelevel: ForcingDataUnion | None = Field(11.0, alias="gateLowerEdgeLevel")
     posfreegateflowcoeff: float | None = Field(1.0, alias="posFreeGateFlowCoeff")
     posdrowngateflowcoeff: float | None = Field(1.0, alias="posDrownGateFlowCoeff")
     posfreeweirflowcoeff: float | None = Field(1.0, alias="posFreeWeirFlowCoeff")
@@ -4979,8 +4979,8 @@ Hold "Ctrl" to enable pan &amp; zoom
     extraresistance: float | None = Field(0.0, alias="extraResistance")
     dynstructext: float | None = Field(None, alias="dynstructext")
     gateheightintervalcntrl: float | None = Field(None, alias="gateheightintervalcntrl")
-    gateheight: float | None = Field(1e10, alias="gateHeight")
-    gateopeningwidth: ForcingData | None = Field(0.0, alias="gateOpeningWidth")
+    gateheight: ForcingDataUnion = Field(1e10, alias="gateHeight")
+    gateopeningwidth: ForcingDataUnion | None = Field(0.0, alias="gateOpeningWidth")
     gateopeninghorizontaldirection: GateOpeningHorizontalDirection | None =
         Field(GateOpeningHorizontalDirection.symmetric.value,
               alias="gateOpeningHorizontalDirection")
