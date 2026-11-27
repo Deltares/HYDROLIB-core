@@ -54,7 +54,7 @@ classDiagram
     }
 
     class StructureGeneral {
-      +fileversion: str = 3.01  (alias: fileVersion)
+      +fileversion: str = 3.02  (alias: fileVersion)
       +filetype: structure  (alias: fileType)
     }
 
@@ -130,7 +130,7 @@ classDiagram
 
 ```
 # Union of supported time-varying or static forcing inputs
-ForcingDataUnion = float | TimModel | ForcingModel
+ForcingDataUnion = float | TimModel | ForcingModel | RealTime
 ```
 
 ### How subclass selection works (factory behavior)
