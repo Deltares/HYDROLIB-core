@@ -1298,9 +1298,9 @@ class Dambreak(Structure):
     waterleveldownstreamnodeid: Optional[str] = Field(
         None, alias="waterLevelDownstreamNodeId"
     )
-    dambreaklevelsandwidths: Optional[ForcingDataUnion] = Field(
-        None, alias="dambreakLevelsAndWidths"
-    )
+    dambreaklevelsandwidths: Optional[
+        Annotated[float | TimModel | ForcingModel, BeforeValidator(load_model)]
+  ] = Field(None, alias="dambreakLevelsAndWidths")
 
     @field_validator("algorithm", mode="after")
     @classmethod
