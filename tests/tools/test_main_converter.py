@@ -702,8 +702,8 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "floe_diameter"],
+        ids=["quantity_pump1d", "quantity_floe_diameter"],
     )
     def test_debug_unsupported_quantities_conversion(
         self, old_model, unsupported_quantity: str
@@ -723,8 +723,8 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "floe_diameter"],
+        ids=["quantity_pump1d", "quantity_floe_diameter"],
     )
     def test_no_debug_unsupported_quantities_conversion(
         self, old_model, unsupported_quantity: str
@@ -747,8 +747,8 @@ class TestExternalFocingConverter:
 
     @pytest.mark.parametrize(
         "unsupported_quantity",
-        ["pump1d", "initialsedimentSand", "initialsedimentfine"],
-        ids=["quantity", "prefix_capitalized", "prefix_lowercase"],
+        ["pump1d", "floe_diameter"],
+        ids=["quantity_pump1d", "quantity_floe_diameter"],
     )
     def test_debug_unsupported_quantities_save(
         self, old_model, tmp_path: Path, unsupported_quantity: str

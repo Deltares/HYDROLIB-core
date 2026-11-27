@@ -143,6 +143,17 @@ class TestMissingQuantities:
 class TestOldToNewQuantityNames:
     """Tests for the `renamed_quantities` rename table on `ExternalForcingConfigs`."""
 
+    expected_renames = {
+        "sea_ice_thickness": "seaIceThickness",
+        "sea_ice_area_fraction": "seaIceAreaFraction",
+        "nudge_salinity_temperature": "nudgeSalinityTemperature",
+        "bedrock_surface_elevation": "bedrockSurfaceElevation",
+        "friction_coefficient_time_dependent": "frictionCoefficient",
+        "windspeedfactor": "windxy",
+        "solarradiationfactor": "solarradiation",
+        "windstresscoefficient": "windStressCoefficient",
+    }
+
     def test_keys_are_normalized_and_values_kept_verbatim(self):
         """
         Input: an entry padded with whitespace and spelled in mixed case.
@@ -239,19 +250,19 @@ class TestOldToNewQuantityNames:
     def test_configured_renames_are_loaded_from_data_yaml(self):
         """
         Input: the `CONVERTER_DATA` singleton built from `data.yaml` at import time.
-        Expect: the sea ice entries documented in UM Sec.15.8.1 are present, and adding
-            the section left the unsupported lists untouched.
+        Expect: exactly the expected quantity names are configured, and the
+            unsupported lists remain available.
         """
         configs = CONVERTER_DATA.external_forcing
-        assert (
-            configs.renamed_quantities["sea_ice_thickness"] == "seaIceThickness"
-        )
-        assert (
-            configs.renamed_quantities["sea_ice_area_fraction"]
-            == "seaIceAreaFraction"
-        )
+        assert configs.renamed_quantities.keys() == self.expected_renames.keys()
         assert configs.unsupported_quantities
-        assert configs.unsupported_prefixes
+        assert configs.unsupported_prefixes == []
+
+    @pytest.mark.parametrize("quantity, expected", expected_renames.items())
+    def test_configured_quantity_rename(self, quantity, expected):
+        configs = CONVERTER_DATA.external_forcing
+        assert configs.renamed_quantities[quantity] == expected
+        assert configs.rename_quantity(quantity) == expected
 
     @pytest.mark.parametrize(
         "invalid",
