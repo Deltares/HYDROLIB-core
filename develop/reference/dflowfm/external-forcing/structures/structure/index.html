@@ -6227,9 +6227,9 @@ Typically inside the structure list of a <a class="autorefs autorefs-internal" h
     <span class="n">waterleveldownstreamnodeid</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"waterLevelDownstreamNodeId"</span>
     <span class="p">)</span>
-    <span class="n">dambreaklevelsandwidths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ForcingDataUnion</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"dambreakLevelsAndWidths"</span>
-    <span class="p">)</span>
+    <span class="n">dambreaklevelsandwidths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+        <span class="n">Annotated</span><span class="p">[</span><span class="nb">float</span> <span class="o">|</span> <span class="n">TimModel</span> <span class="o">|</span> <span class="n">ForcingModel</span><span class="p">,</span> <span class="n">BeforeValidator</span><span class="p">(</span><span class="n">load_model</span><span class="p">)]</span>
+  <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">"dambreakLevelsAndWidths"</span><span class="p">)</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"algorithm"</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
